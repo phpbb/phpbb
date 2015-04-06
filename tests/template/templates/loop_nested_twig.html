@@ -1,0 +1,6 @@
+{% for outer_inner in outer %}
+outer - {{ outer_inner.S_ROW_COUNT }}{% if outer_inner.VARIABLE %} - {{ outer_inner.VARIABLE }}{% endif %}{% if TEST_MORE %}[{{ outer_inner.S_BLOCK_NAME }}|{{ outer_inner.S_NUM_ROWS }}]{% endif %}
+{% for middle in outer_inner.middle %}
+middle - {{ middle.S_ROW_COUNT }}{% if middle.VARIABLE %} - {{ middle.VARIABLE }}{% endif %}{% if TEST_MORE %}[{{ middle.S_BLOCK_NAME }}|{{ middle.S_NUM_ROWS }}]{% endif %}
+{% endfor %}
+{% endfor %}

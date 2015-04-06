@@ -1167,12 +1167,10 @@ class install_install extends module
 
 			foreach ($sql_query as $sql)
 			{
-				//$sql = trim(str_replace('|', ';', $sql));
-				if (!$db->sql_query($sql))
-				{
-					$error = $db->sql_error();
-					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
-				}
+				// Ignore errors when the functions or types already exist
+				// to allow installing phpBB twice in the same database with
+				// a different prefix
+				$db->sql_query($sql);
 			}
 			unset($sql_query);
 		}

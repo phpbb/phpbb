@@ -40,21 +40,21 @@
 			</dl>
 		<!-- ELSEIF S_CONTACT_ADMIN-->
 			<dl>
-				<dt><label>{L_RECIPIENT}:</label></dt>
+				<dt><label>{L_RECIPIENT}{L_COLON}</label></dt>
 				<dd><strong>{L_ADMINISTRATOR}</strong></dd>
 			</dl>
 			<!-- IF not S_IS_REGISTERED -->
 			<dl>
-				<dt><label for="email">{L_SENDER_EMAIL_ADDRESS}:</label></dt>
+				<dt><label for="email">{L_SENDER_EMAIL_ADDRESS}{L_COLON}</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="1" value="{EMAIL}" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="name">{L_SENDER_NAME}:</label></dt>
+				<dt><label for="name">{L_SENDER_NAME}{L_COLON}</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="2" value="{NAME}" /></dd>
 			</dl>
 			<!-- ENDIF -->
 			<dl>
-				<dt><label for="subject">{L_SUBJECT}:</label></dt>
+				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
 				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="3" value="{SUBJECT}" /></dd>
 			</dl>
 		<!-- ELSE -->

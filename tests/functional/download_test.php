@@ -66,6 +66,11 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 
 	public function test_download_accessible()
 	{
+		if (!class_exists('finfo'))
+		{
+			$this->markTestSkipped('Unable to run test with fileinfo disabled');
+		}
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Download #1',
@@ -118,6 +123,11 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 
 	public function test_download_softdeleted_post()
 	{
+		if (!class_exists('finfo'))
+		{
+			$this->markTestSkipped('Unable to run test with fileinfo disabled');
+		}
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Download #1',
@@ -180,6 +190,11 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 
 	public function test_download_softdeleted_topic()
 	{
+		if (!class_exists('finfo'))
+		{
+			$this->markTestSkipped('Unable to run test with fileinfo disabled');
+		}
+
 		$this->load_ids(array(
 			'forums' => array(
 				'Download #1',

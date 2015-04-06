@@ -352,6 +352,12 @@ class twig extends \phpbb\template\base
 		// cleanup
 		unset($vars['loops']['.']);
 
+		// Inject in the main context the value added by assign_block_vars() to be able to use directly the Twig loops.
+		foreach ($vars['loops'] as $key => &$value)
+		{
+			$vars[$key] = $value;
+		}
+
 		return $vars;
 	}
 

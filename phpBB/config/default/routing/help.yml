@@ -1,0 +1,3 @@
+phpbb_help_controller:
+    path: /{mode}
+    defaults: { _controller: phpbb.help.controller:handle }

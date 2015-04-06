@@ -42,6 +42,19 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_perm_from'	=> 2,
 		));
 		$crawler = self::submit($form);
+
+		// Create second user which does not have m_delete permission
+		$this->add_lang('acp/permissions');
+
+		$second_user = $this->create_user('no m_delete moderator');
+		$this->add_user_group("GLOBAL_MODERATORS", 'no m_delete moderator', true);
+
+		// Set m_delete to never
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&user_id[0]=$second_user&type=m_&sid={$this->sid}");
+		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
+		$data = array("setting[$second_user][0][m_delete]" => ACL_NEVER);
+		$form->setValues($data);
+		$crawler = self::submit($form);
 	}
 
 	public function test_create_post()
@@ -98,6 +111,23 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Re: Soft Delete Topic #1-#2'],
 		), 'after replying');
+
+		// Test creating another reply
+		$post3 = $this->create_post($this->data['forums']['Soft Delete #1'], $post['topic_id'], 'Re: Soft Delete Topic #1-#3', 'This is another test post posted by the testing framework.');
+		$crawler = self::request('GET', "viewtopic.php?t={$post3['topic_id']}&sid={$this->sid}");
+
+		$this->assertContains('Re: Soft Delete Topic #1-#3', $crawler->filter('html')->text());
+		$this->data['posts']['Re: Soft Delete Topic #1-#3'] = (int) $post3['post_id'];
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 3,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 0,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Re: Soft Delete Topic #1-#3'],
+		), 'after replying a second time');
 	}
 
 	public function test_softdelete_post()
@@ -114,22 +144,73 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3',
+			),
+		));
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 3,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 0,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Re: Soft Delete Topic #1-#3'],
+		), 'before softdelete');
+
+		$this->add_lang('posting');
+		$crawler = self::request('GET', "posting.php?mode=delete&f={$this->data['forums']['Soft Delete #1']}&p={$this->data['posts']['Re: Soft Delete Topic #1-#3']}&sid={$this->sid}");
+		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+
+		$form = $crawler->selectButton('Yes')->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('POST_DELETED', $crawler->text());
+
+		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
+			'forum_posts_approved'		=> 2,
+			'forum_posts_unapproved'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
+			'forum_topics_approved'		=> 1,
+			'forum_topics_unapproved'	=> 0,
+			'forum_topics_softdeleted'	=> 0,
+			'forum_last_post_id'		=> $this->data['posts']['Re: Soft Delete Topic #1-#2'],
+		), 'after softdelete');
+
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
+		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+	}
+
+	public function test_softdelete_post_no_m_delete()
+	{
+		$this->login('no m_delete moderator');
+		$this->load_ids(array(
+			'forums' => array(
+				'Soft Delete #1',
+				'Soft Delete #2',
+			),
+			'topics' => array(
+				'Soft Delete Topic #1',
+			),
+			'posts' => array(
+				'Soft Delete Topic #1',
+				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3',
 			),
 		));
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 2,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Re: Soft Delete Topic #1-#2'],
-		), 'before softdelete');
+		), 'before softdelete without m_delete');
 
 		$this->add_lang('posting');
 		$crawler = self::request('GET', "posting.php?mode=delete&f={$this->data['forums']['Soft Delete #1']}&p={$this->data['posts']['Re: Soft Delete Topic #1-#2']}&sid={$this->sid}");
-		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+		$this->assertNotContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();
 		$crawler = self::submit($form);
@@ -138,12 +219,12 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
 			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'],
-		), 'after softdelete');
+		), 'after softdelete without m_delete');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
 		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
@@ -163,13 +244,14 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3',
 			),
 		));
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -212,7 +294,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -234,6 +316,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
@@ -250,7 +333,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -283,7 +366,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
 			'forum_posts_approved'		=> 0,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 2,
+			'forum_posts_softdeleted'	=> 3,
 			'forum_topics_approved'		=> 0,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 1,
@@ -305,6 +388,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
@@ -321,7 +405,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
 			'forum_posts_approved'		=> 0,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 2,
+			'forum_posts_softdeleted'	=> 3,
 			'forum_topics_approved'		=> 0,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 1,
@@ -344,7 +428,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 0,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 2,
+			'forum_posts_softdeleted'	=> 3,
 			'forum_topics_approved'		=> 0,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 1,
@@ -376,13 +460,14 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 0,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 2,
+			'forum_posts_softdeleted'	=> 3,
 			'forum_topics_approved'		=> 0,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 1,
@@ -417,7 +502,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -449,13 +534,14 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -495,7 +581,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 0,
+			'forum_posts_softdeleted'	=> 1,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -528,6 +614,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
@@ -539,7 +626,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 1,
@@ -562,13 +649,14 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 1,
@@ -603,7 +691,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -625,13 +713,14 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 			'posts' => array(
 				'Soft Delete Topic #1',
 				'Re: Soft Delete Topic #1-#2',
+				'Re: Soft Delete Topic #1-#3'
 			),
 		));
 
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -660,7 +749,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #1'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
@@ -670,11 +759,11 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->assert_forum_details($this->data['forums']['Soft Delete #2'], array(
 			'forum_posts_approved'		=> 1,
 			'forum_posts_unapproved'	=> 0,
-			'forum_posts_softdeleted'	=> 1,
+			'forum_posts_softdeleted'	=> 2,
 			'forum_topics_approved'		=> 1,
 			'forum_topics_unapproved'	=> 0,
 			'forum_topics_softdeleted'	=> 0,
-			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'] + 2,
+			'forum_last_post_id'		=> $this->data['posts']['Soft Delete Topic #1'] + 3,
 		), 'after forking #2');
 	}
 

@@ -174,11 +174,6 @@ class acp_extensions
 					trigger_error($user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if ($phpbb_extension_manager->is_enabled($ext_name))
-				{
-					redirect($this->u_action);
-				}
-
 				try
 				{
 					while ($phpbb_extension_manager->enable_step($ext_name))

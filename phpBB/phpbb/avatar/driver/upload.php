@@ -29,7 +29,7 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param \phpbb_path_helper $path_helper phpBB path helper
+	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
@@ -48,8 +48,10 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function get_data($row, $ignore_config = false)
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+
 		return array(
-			'src' => $this->path_helper->get_web_root_path() . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'src' => $root_path . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);

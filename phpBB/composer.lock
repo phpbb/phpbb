@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2038bc8bd0fea66b22774ca7bca11a79",
+    "hash": "25df57c9c90534dcc86d31175b248719",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -145,7 +145,7 @@
                     "Psr\\Log\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -162,6 +162,64 @@
                 "psr-3"
             ],
             "time": "2012-12-21 11:40:51"
+        },
+        {
+            "name": "s9e/text-formatter",
+            "version": "dev-release/php5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/s9e/TextFormatter.git",
+                "reference": "4e0d311a3c56d0db4a7789e31457053be8148283"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/4e0d311a3c56d0db4a7789e31457053be8148283",
+                "reference": "4e0d311a3c56d0db4a7789e31457053be8148283",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-filter": "*",
+                "lib-pcre": ">=7.2",
+                "php": ">=5.3.3"
+            },
+            "suggest": {
+                "ext-intl": "Allows international URLs to be accepted by the URL filter",
+                "ext-json": "Enables the generation of a JavaScript parser",
+                "ext-mbstring": "Enables some optimizations in the PHP renderer",
+                "ext-tokenizer": "Enables optimizations in the PHP renderer",
+                "ext-xsl": "Enables the XSLT renderer",
+                "ext-zlib": "Enables gzip compression when scraping content via the MediaEmbed plugin"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "s9e\\TextFormatter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Multi-purpose text formatting and markup library. Plugins offer support for BBCodes, Markdown, emoticons, HTML, embedding media (YouTube, etc...), enhanced typography and more.",
+            "keywords": [
+                "bbcode",
+                "bbcodes",
+                "blog",
+                "censor",
+                "embed",
+                "emoji",
+                "emoticons",
+                "engine",
+                "forum",
+                "html",
+                "markdown",
+                "markup",
+                "media",
+                "parser",
+                "shortcodes"
+            ],
+            "time": "2015-03-30 22:52:16"
         },
         {
             "name": "symfony/config",
@@ -960,16 +1018,14 @@
                     "Twig_": "lib/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "notification-url": "http://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
             ],
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Armin Ronacher",
@@ -1376,8 +1432,7 @@
             "authors": [
                 {
                     "name": "Michiel Rook",
-                    "email": "mrook@php.net",
-                    "role": "Lead"
+                    "email": "mrook@php.net"
                 },
                 {
                     "name": "Phing Community",
@@ -2530,6 +2585,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "s9e/text-formatter": 20,
         "symfony/config": 20,
         "symfony/console": 20,
         "symfony/dependency-injection": 20,
