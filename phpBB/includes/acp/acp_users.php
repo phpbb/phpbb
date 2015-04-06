@@ -151,9 +151,9 @@ class acp_users
 		}
 
 		$template->assign_vars(array(
-			'U_BACK'			=> ( (empty($redirect)) ? $this->u_action : $redirect_url ),
+			'U_BACK'			=> (empty($redirect)) ? $this->u_action : $redirect_url,
 			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
-			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . ( (empty($redirect)) ? '' : '&amp;' . $redirect_tag ),
+			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id . ((empty($redirect)) ? '' : '&amp;' . $redirect_tag),
 			'S_FORM_OPTIONS'	=> $s_form_options,
 			'MANAGED_USERNAME'	=> $user_row['username'])
 		);
@@ -240,7 +240,7 @@ class acp_users
 									'action'		=> $action,
 									'update'		=> true,
 									'delete'		=> 1,
-									'delete_type'	=> $delete_type
+									'delete_type'	=> $delete_type,
 								);
 
 								// Checks if the redirection page is specified
