@@ -231,6 +231,13 @@ class messenger
 			$template_lang = basename($config['default_lang']);
 		}
 
+		$ext_template_paths = array(
+			array(
+				'name' 		=> $template_lang . '_email',
+				'ext_path' 	=> 'language/' . $template_lang . '/email' . $template_dir_prefix,
+			),
+		);
+
 		if ($template_path)
 		{
 			$template_paths = array(
@@ -246,23 +253,38 @@ class messenger
 				$template_path . $template_dir_prefix,
 			);
 
+			$board_language = basename($config['default_lang']);
+
 			// we can only specify default language fallback when the path is not a custom one for which we
 			// do not know the default language alternative
-			if ($template_lang !== basename($config['default_lang']))
+			if ($template_lang !== $board_language)
 			{
 				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-				$fallback_template_path .= basename($config['default_lang']) . '/email';
+				$fallback_template_path .= $board_language . '/email';
 
 				$template_paths[] = $fallback_template_path . $template_dir_prefix;
+
+				$ext_template_paths[] = array(
+					'name'		=> $board_language . '_email',
+					'ext_path'	=> 'language/' . $board_language . '/email' . $template_dir_prefix,
+				);
+			}
+			// If everything fails just fall back to en template
+			if ($template_lang !== 'en' && $board_language !== 'en')
+			{
+				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+				$fallback_template_path .= 'en/email';
+
+				$template_paths[] = $fallback_template_path . $template_dir_prefix;
+
+				$ext_template_paths[] = array(
+					'name'		=> 'en_email',
+					'ext_path'	=> 'language/en/email' . $template_dir_prefix,
+				);
 			}
 		}
 
-		$this->set_template_paths(array(
-			array(
-				'name' 		=> $template_lang . '_email',
-				'ext_path' 	=> 'language/' . $template_lang . '/email' . $template_dir_prefix,
-			),
-		), $template_paths);
+		$this->set_template_paths($ext_template_paths, $template_paths);
 
 		$this->template->set_filenames(array(
 			'body'		=> $template_file . '.txt',
