@@ -339,8 +339,8 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
-			$imagesize = new \phpbb\upload\imagesize();
-			$size_info = $imagesize->get_imagesize(htmlspecialchars_decode($in));
+			$imagesize = new \fastImageSize\fastImageSize();
+			$size_info = $imagesize->getImageSize(htmlspecialchars_decode($in));
 
 			if ($size_info === false)
 			{

@@ -203,7 +203,7 @@ services:
         class: phpbb\template\context
 
     upload_imagesize:
-        class: phpbb\upload\imagesize
+        class: fastImageSize\fastImageSize
 
     version_helper:
         class: phpbb\version_helper

@@ -57,7 +57,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			new \phpbb\mimetype\content_guesser,
 		);
 		$guesser = new \phpbb\mimetype\guesser($guessers);
-		$imagesize = new \phpbb\upload\imagesize();
+		$imagesize = new \fastImageSize\fastImageSize();
 
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));

@@ -172,7 +172,7 @@ class local extends \phpbb\avatar\driver\driver
 				// Match all images in the gallery folder
 				if (preg_match('#^[^&\'"<>]+\.(?:' . implode('|', $this->allowed_extensions) . ')$#i', $image) && is_file($file_path . '/' . $image))
 				{
-					$dims = $this->imagesize->get_imagesize($file_path . '/' . $image);
+					$dims = $this->imagesize->getImageSize($file_path . '/' . $image);
 
 					if ($dims === false)
 					{

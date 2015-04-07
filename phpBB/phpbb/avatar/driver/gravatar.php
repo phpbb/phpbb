@@ -108,7 +108,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 			$row['avatar_width'] = $row['avatar_height'] = min($this->config['avatar_max_width'], $this->config['avatar_max_height']);
 			$url = $this->get_gravatar_url($row);
 
-			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = $this->imagesize->get_imagesize($url)) === false))
+			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = $this->imagesize->getImageSize($url)) === false))
 			{
 				$error[] = 'UNABLE_GET_IMAGE_SIZE';
 				return false;

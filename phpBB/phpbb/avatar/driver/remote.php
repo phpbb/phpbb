@@ -93,7 +93,7 @@ class remote extends \phpbb\avatar\driver\driver
 		}
 
 		// Get image dimensions
-		if (($width <= 0 || $height <= 0) && (($image_data = $this->imagesize->get_imagesize($url)) === false))
+		if (($width <= 0 || $height <= 0) && (($image_data = $this->imagesize->getImageSize($url)) === false))
 		{
 			$error[] = 'UNABLE_GET_IMAGE_SIZE';
 			return false;
