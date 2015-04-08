@@ -71,16 +71,16 @@
         },
         {
             "name": "marc1706/fast-image-size",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marc1706/fast-image-size.git",
-                "reference": "99fb3c4aab631a39db7e8638450b59f562a47bb1"
+                "reference": "8cb57d887542cdbeddd7d7c85eac6b59e4038687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marc1706/fast-image-size/zipball/99fb3c4aab631a39db7e8638450b59f562a47bb1",
-                "reference": "99fb3c4aab631a39db7e8638450b59f562a47bb1",
+                "url": "https://api.github.com/repos/marc1706/fast-image-size/zipball/8cb57d887542cdbeddd7d7c85eac6b59e4038687",
+                "reference": "8cb57d887542cdbeddd7d7c85eac6b59e4038687",
                 "shasum": ""
             },
             "require": {
@@ -118,7 +118,7 @@
                 "php",
                 "size"
             ],
-            "time": "2015-04-07 13:37:04"
+            "time": "2015-04-08 13:05:30"
         },
         {
             "name": "patchwork/utf8",
