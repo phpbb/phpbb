@@ -213,6 +213,8 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('file.phpbb.gif', 'gif'),
 			array('file..', ''),
 			array('.file..jpg.webp', 'webp'),
+			array('/test.com/file', ''),
+			array('/test.com/file.gif', 'gif'),
 		);
 	}
 
