@@ -2580,7 +2580,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	}
 
 	// Make sure we don't redirect to external URLs
-	if (!$disable_cd_check && strpos($url, generate_board_url(true)) !== 0)
+	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
 	{
 		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
 	}

@@ -24,6 +24,9 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", 'Tried to redirect to potentially insecure url.', false),
 			array('javascript:test', false, 'http://localhost/phpBB/../javascript:test'),
 			array('http://localhost/phpBB/index.php;url=', 'Tried to redirect to potentially insecure url.', false),
+			array('https://foobar.com\@http://localhost/phpBB', false, 'http://localhost/phpBB'),
+			array('https://foobar.com\@localhost/troll/http://localhost/', 'Tried to redirect to potentially insecure url.', false),
+			array('http://localhost.foobar.com\@localhost/troll/http://localhost/', 'Tried to redirect to potentially insecure url.', false),
 		);
 	}
 
