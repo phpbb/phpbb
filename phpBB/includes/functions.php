@@ -2782,7 +2782,7 @@ function send_status_line($code, $message)
 	}
 	else
 	{
-		if (!empty($_SERVER['SERVER_PROTOCOL']))
+		if (!empty($_SERVER['SERVER_PROTOCOL']) && is_string($_SERVER['SERVER_PROTOCOL']) && preg_match('#^HTTP/[0-9]\.[0-9]$#', $_SERVER['SERVER_PROTOCOL']))
 		{
 			$version = $_SERVER['SERVER_PROTOCOL'];
 		}
