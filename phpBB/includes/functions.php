@@ -2347,15 +2347,9 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Clean URL and check if we go outside the forum directory
 	$url = $phpbb_path_helper->clean_url($url);
 
-	if (!$disable_cd_check && strpos($url, generate_board_url(true)) === false)
-	{
-		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
-	}
-
-	// Make sure we don't redirect to external URLs
 	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
 	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
