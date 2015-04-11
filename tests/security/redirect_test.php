@@ -51,6 +51,9 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array('../index.php', false, false, 'http://localhost/index.php'),
 			array('../index.php', true, false, 'http://localhost/index.php'),
 			array('./index.php', false, false, 'http://localhost/phpBB/index.php'),
+			array('https://foobar.com\@http://localhost/phpBB', false, false, 'http://localhost/phpBB'),
+			array('https://foobar.com\@localhost/troll/http://localhost/', false, 'INSECURE_REDIRECT', false),
+			array('http://localhost.foobar.com\@localhost/troll/http://localhost/', false, 'INSECURE_REDIRECT', false),
 		);
 	}
 
