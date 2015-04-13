@@ -12,7 +12,7 @@
 */
 
 define('IN_PHPBB', true);
-$phpbb_root_path = 'phpBB/';
+$phpbb_root_path = __DIR__ . '/../phpBB/';
 $phpEx = 'php';
 require_once $phpbb_root_path . 'includes/startup.php';
 
