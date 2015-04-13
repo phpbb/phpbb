@@ -12,8 +12,15 @@
 */
 
 define('IN_PHPBB', true);
-$phpbb_root_path = __DIR__ . '/../phpBB/';
+$phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
+
+// We need to check if we got problems with relative paths
+if (!file_exists($phpbb_root_path . 'includes/startup.php'))
+{
+	$phpbb_root_path = __DIR__ . '/../phpBB/';
+}
+
 require_once $phpbb_root_path . 'includes/startup.php';
 
 $table_prefix = 'phpbb_';
