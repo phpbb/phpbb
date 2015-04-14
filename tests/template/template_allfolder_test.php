@@ -28,7 +28,10 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$this->user = $user;
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(

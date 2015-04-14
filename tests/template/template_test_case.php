@@ -15,6 +15,7 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_template_template_test_case extends phpbb_test_case
 {
+	protected $lang;
 	protected $template;
 	protected $template_path;
 	protected $user;
@@ -23,6 +24,17 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
+
+	static protected $language_reflection_lang;
+
+	static public function setUpBeforeClass()
+	{
+		parent::setUpBeforeClass();
+
+		$reflection = new ReflectionClass('\phpbb\language\language');
+		self::$language_reflection_lang = $reflection->getProperty('lang');
+		self::$language_reflection_lang->setAccessible(true);
+	}
 
 	protected function display($handle)
 	{
@@ -65,7 +77,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$this->lang = $lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$this->user = $user;
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
@@ -145,7 +160,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		{
 			foreach ($lang_vars as $name => $value)
 			{
-				$this->user->lang[$name] = $value;
+				self::$language_reflection_lang->setValue($this->lang, array_merge(
+					self::$language_reflection_lang->getValue($this->lang),
+					array($name => $value)
+				));
 			}
 		}
 

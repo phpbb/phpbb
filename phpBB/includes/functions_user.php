@@ -3384,7 +3384,7 @@ function get_group_name($group_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || ($row['group_type'] == GROUP_SPECIAL && empty($user->lang)))
+	if (!$row || ($row['group_type'] == GROUP_SPECIAL && !$user->is_setup()))
 	{
 		return '';
 	}

@@ -482,3 +482,22 @@ function phpbb_realpath($path)
 
 	return $phpbb_filesystem->realpath($path);
 }
+
+/**
+ * Determine which plural form we should use.
+ * For some languages this is not as simple as for English.
+ *
+ * @param $rule		int			ID of the plural rule we want to use, see http://wiki.phpbb.com/Plural_Rules#Plural_Rules
+ * @param $number	int|float	The number we want to get the plural case for. Float numbers are floored.
+ * @return	int		The plural-case we need to use for the number plural-rule combination
+ *
+ * @deprecated 3.2.0-dev (To be removed: 3.3.0)
+ */
+function phpbb_get_plural_form($rule, $number)
+{
+	global $phpbb_container;
+
+	/** @var \phpbb\language\language $language */
+	$language = $phpbb_container->get('language');
+	return $language->get_plural_form($number, $rule);
+}

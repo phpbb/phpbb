@@ -84,7 +84,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		);
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
 
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';

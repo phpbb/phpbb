@@ -157,7 +157,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				'banana',
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewcensors', false);
 
 					$phpbb_container->set('user', $user);
@@ -168,7 +172,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				'banana',
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewcensors', false);
 
 					$config = new \phpbb\config\config(array('allow_nocensors' => true));
@@ -182,7 +190,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				'apple',
 				function ($phpbb_container, $test)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewcensors', false);
 
 					$config = new \phpbb\config\config(array('allow_nocensors' => true));
@@ -207,7 +219,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				'http://localhost/foo.swf',
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewflash', false);
 
 					$phpbb_container->set('user', $user);
@@ -222,7 +238,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				'<a href="http://localhost/mrgreen.gif" class="postlink">http://localhost/mrgreen.gif</a>',
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewimg', false);
 
 					$phpbb_container->set('user', $user);
@@ -237,7 +257,11 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				':)',
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('smilies', false);
 
 					$phpbb_container->set('user', $user);
@@ -291,9 +315,13 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			2 => '<b>bold</b>'
 		);
 
+		global $phpbb_root_path, $phpEx;
+
 		foreach ($tests as $style_id => $expected)
 		{
-			$user = new \phpbb\user('\\phpbb\\datetime');
+			$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+			$lang = new \phpbb\language\language($lang_loader);
+			$user = new \phpbb\user($lang, '\phpbb\datetime');
 			$user->style = array('style_id' => $style_id);
 
 			$phpbb_container = new phpbb_mock_container_builder;
@@ -311,10 +339,12 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 
 	public function test_style_inheritance1()
 	{
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_root_path, $phpEx;
 
 		// Style 3 inherits from 2 which inherits from 1. Only style 1 has a bbcode.html
-		$user = new \phpbb\user('\\phpbb\\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->style = array('style_id' => 3);
 
 		$phpbb_container = new phpbb_mock_container_builder;
@@ -331,7 +361,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 
 	public function test_style_inheritance2()
 	{
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_root_path, $phpEx;
 
 		// Style 5 inherits from 4, but both have a bbcode.html
 		$tests = array(
@@ -341,7 +371,9 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 
 		foreach ($tests as $style_id => $expected)
 		{
-			$user = new \phpbb\user('\\phpbb\\datetime');
+			$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+			$lang = new \phpbb\language\language($lang_loader);
+			$user = new \phpbb\user($lang, '\phpbb\datetime');
 			$user->style = array('style_id' => $style_id);
 
 			$phpbb_container = new phpbb_mock_container_builder;

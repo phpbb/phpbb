@@ -34,8 +34,12 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 	{
 		global $cache, $user;
 
+		global $phpbb_root_path, $phpEx;
+
 		$cache = new phpbb_mock_cache;
-		$user = new \phpbb\user('\\phpbb\\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->optionset('viewcensors', true);
 		$user->optionset('viewflash', true);
 		$user->optionset('viewimg', true);
@@ -66,7 +70,11 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 		$phpbb_container = new phpbb_mock_container_builder;
 
-		$user = new \phpbb\user('\\phpbb\\datetime');
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->optionset('viewcensors', false);
 
 		$config = new \phpbb\config\config(array('allow_nocensors' => true));
@@ -153,7 +161,11 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 				true,
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewflash', false);
 
 					$phpbb_container->set('user', $user);
@@ -169,7 +181,11 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 				true,
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('viewimg', false);
 
 					$phpbb_container->set('user', $user);
@@ -185,7 +201,11 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 				true,
 				function ($phpbb_container)
 				{
-					$user = new \phpbb\user('\\phpbb\\datetime');
+					global $phpbb_root_path, $phpEx;
+
+					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+					$lang = new \phpbb\language\language($lang_loader);
+					$user = new \phpbb\user($lang, '\phpbb\datetime');
 					$user->optionset('smilies', false);
 
 					$phpbb_container->set('user', $user);

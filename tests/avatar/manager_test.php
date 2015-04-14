@@ -94,7 +94,9 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		// Set up avatar manager
 		$this->manager = new \phpbb\avatar\manager($this->config, $avatar_drivers, $phpbb_container);
 		$this->db = $this->new_dbal();
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 	}
 
 	protected function avatar_drivers()
@@ -277,7 +279,12 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 	public function test_localize_errors()
 	{
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		global $phpbb_root_path, $phpEx;
+
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime')
+		);
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),

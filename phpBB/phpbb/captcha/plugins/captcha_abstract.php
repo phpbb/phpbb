@@ -195,7 +195,7 @@ abstract class captcha_abstract
 	{
 		global $config, $db, $user;
 
-		if (empty($user->lang))
+		if (!$user->is_setup())
 		{
 			$user->setup();
 		}
