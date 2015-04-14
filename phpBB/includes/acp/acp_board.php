@@ -520,6 +520,12 @@ class acp_board
 				continue;
 			}
 
+			if ($config_name == 'new_member_post_limit' && $submit)
+			{
+				// Now apply the new configuration to all current users
+				$this->set_new_post_limit($config[$config_name], $cfg_array[$config_name]);
+			}
+
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($config_name == 'email_function_name')
@@ -960,6 +966,67 @@ class acp_board
 			SET user_style = ' . (int) $style_id . '
 			WHERE user_id = ' . ANONYMOUS;
 		$db->sql_query($sql);
+	}
+
+	/**
+	* Sets the post limit for new users
+	* This will remove users from the group if they have reached the limit
+	* and add new users which haven't reached it yet
+	*
+	* @param	int		$old_limit	Old post limit
+	* @param	int		$new_limit	New post limit
+	*/
+	public function set_new_post_limit($old_limit, $new_limit)
+	{
+		global $db, $phpbb_root_path, $phpEx;
+
+		if ($old_limit <= $new_limit)
+		{
+			return;
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'NEWLY_REGISTERED'
+				AND group_type = " . GROUP_SPECIAL;
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		if (!$group_id)
+		{
+			return;
+		}
+
+		$sql = 'SELECT user_id, username
+			FROM ' . USERS_TABLE . '
+			WHERE user_new = 1
+				AND user_posts >= ' . (int) $new_limit;
+		$result = $db->sql_query($sql);
+
+		$user_ids = $usernames = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_ids[] = $row['user_id'];
+			$usernames[$row['user_id']] = $row['username'];
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($user_ids))
+		{
+			if (!function_exists('group_user_del'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
+
+			group_user_del($group_id, $user_ids, $usernames);
+
+			// Now set user_new to 0 so leave_newly_registered won't trigger this again
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_new = 0
+				WHERE ' . $db->sql_in_set('user_id', $user_ids);
+			$db->sql_query($sql);
+		}
 	}
 
 	/**
