@@ -267,8 +267,8 @@ class plupload
 		{
 			$resize = sprintf(
 				'resize: {width: %d, height: %d, quality: 100},',
-				(int) $this->config['img_max_height'],
-				(int) $this->config['img_max_width']
+				(int) $this->config['img_max_width'],
+				(int) $this->config['img_max_height']
 			);
 		}
 
