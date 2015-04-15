@@ -436,15 +436,6 @@
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/CHANGELOG.md" />
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/README.md" />
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/phpunit.xml.dist" />
-
-        <delete dir="${dir}/vendor/marc1706/fast-image-size/tests" />
-        <delete dir="${dir}/vendor/marc1706/fast-image-size/travis" />
-        <delete dir="${dir}/vendor/marc1706/fast-image-size/.git" />
-        <delete file="${dir}/vendor/marc1706/fast-image-size/.gitignore" />
-        <delete file="${dir}/vendor/marc1706/fast-image-size/.travis.yml" />
-        <delete file="${dir}/vendor/marc1706/fast-image-size/composer.phar" />
-        <delete file="${dir}/vendor/marc1706/fast-image-size/phpunit.xml.dist" />
-        <delete file="${dir}/vendor/marc1706/fast-image-size/README.md" />
 	</target>
 
 	<target name="clean-diff-dir">
