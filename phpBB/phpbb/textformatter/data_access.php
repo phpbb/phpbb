@@ -115,7 +115,7 @@ class data_access
 	*/
 	protected function get_styles()
 	{
-		$sql = 'SELECT style_id, style_path, bbcode_bitfield FROM ' . $this->styles_table;
+		$sql = 'SELECT style_id, style_path, style_parent_id, bbcode_bitfield FROM ' . $this->styles_table;
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
