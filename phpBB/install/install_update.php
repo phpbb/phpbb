@@ -55,6 +55,8 @@ class install_update extends module
 
 	var $update_to_version;
 
+	protected $filesystem;
+
 	// Set to false
 	var $test_update = false;
 
@@ -86,6 +88,8 @@ class install_update extends module
 		// Writes into global $cache
 		/* @var $cache \phpbb\cache\service */
 		$cache = $phpbb_container->get('cache');
+
+		$this->filesystem = $phpbb_container->get('filesystem');
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -961,7 +965,7 @@ class install_update extends module
 				// Now init the connection
 				if ($update_mode == 'download')
 				{
-					if (function_exists('phpbb_is_writable') && !phpbb_is_writable($phpbb_root_path . 'store/'))
+					if ($this->filesystem->is_writable($phpbb_root_path . 'store/'))
 					{
 						trigger_error(sprintf('The directory “%s” is not writable.', $phpbb_root_path . 'store/'), E_USER_ERROR);
 					}

@@ -405,7 +405,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $phpbb_root_path, $user, $phpbb_dispatcher;
+	global $phpbb_root_path, $user, $phpbb_dispatcher, $phpbb_filesystem;
 
 	$type	= 0;
 	$min	= 1;
@@ -586,7 +586,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				// Check if the path is writable
 				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath' || $config_definition['validate'] === 'absolute_path_writable')
 				{
-					if (file_exists($path) && !phpbb_is_writable($path))
+					if (file_exists($path) && !$phpbb_filesystem->is_writable($path))
 					{
 						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
 					}

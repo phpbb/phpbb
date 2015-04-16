@@ -43,9 +43,15 @@ if (!empty($setmodules))
 */
 class install_install extends module
 {
+	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
 	function install_install(&$p_master)
 	{
 		$this->p_master = &$p_master;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	function main($mode, $sub)
@@ -466,13 +472,29 @@ class install_install extends module
 			if (!file_exists($phpbb_root_path . $dir))
 			{
 				@mkdir($phpbb_root_path . $dir, 0777);
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
+
 				$exists = true;
 			}
 
@@ -514,7 +536,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!phpbb_is_writable($phpbb_root_path . $dir))
+				if (!$this->filesystem->is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -892,7 +914,7 @@ class install_install extends module
 		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER']);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && $this->filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx)) || $this->filesystem->is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
@@ -914,7 +936,14 @@ class install_install extends module
 			if ($written)
 			{
 				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
-				phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -1193,7 +1222,7 @@ class install_install extends module
 				include($phpbb_root_path . 'includes/constants.' . $phpEx);
 			}
 
-			$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+			$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
 			$classes = $finder->core_path('phpbb/db/migration/data/')
 				->get_classes();
 
@@ -2029,7 +2058,7 @@ class install_install extends module
 	{
 		global $config, $phpbb_root_path;
 
-		if (!phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'))
+		if (!$this->filesystem->is_writable($phpbb_root_path . 'images/avatars/upload/'))
 		{
 			$config->set('allow_avatar', 0);
 			$config->set('allow_avatar_upload', 0);

@@ -86,16 +86,23 @@ class router implements RouterInterface
 	protected $route_collection;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	 * Construct method
 	 *
+	 * @param \phpbb\filesystem\filesystem_interface $filesystem	Filesystem helper
 	 * @param manager	$extension_manager	Extension manager
 	 * @param string	$phpbb_root_path	phpBB root path
 	 * @param string	$php_ext			PHP file extension
 	 * @param string	$environment		Name of the current environment
 	 * @param array		$routing_files		Array of strings containing paths to YAML files holding route information
 	 */
-	public function __construct(manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
 	{
+		$this->filesystem			= $filesystem;
 		$this->extension_manager	= $extension_manager;
 		$this->routing_files		= $routing_files;
 		$this->phpbb_root_path		= $phpbb_root_path;
@@ -148,7 +155,7 @@ class router implements RouterInterface
 			$this->route_collection = new RouteCollection;
 			foreach ($this->routing_files as $file_path)
 			{
-				$loader = new YamlFileLoader(new FileLocator(phpbb_realpath($base_path)));
+				$loader = new YamlFileLoader(new FileLocator($this->filesystem->realpath($base_path)));
 				$this->route_collection->addCollection($loader->load($file_path));
 			}
 		}

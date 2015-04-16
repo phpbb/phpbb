@@ -117,7 +117,7 @@ function phpbb_clean_path($path)
 			new phpbb\symfony_request(
 				$request
 			),
-			new phpbb\filesystem(),
+			new phpbb\filesystem\filesystem(),
 			$request,
 			$phpbb_root_path,
 			$phpEx
@@ -396,4 +396,89 @@ function get_tables(&$db)
 	$db_tools = $db_tools_factory->get($db);
 
 	return $db_tools->sql_list_tables();
+}
+
+/**
+ * Global function for chmodding directories and files for internal use
+ *
+ * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
+ * The function determines owner and group from common.php file and sets the same to the provided file.
+ * The function uses bit fields to build the permissions.
+ * The function sets the appropiate execute bit on directories.
+ *
+ * Supported constants representing bit fields are:
+ *
+ * CHMOD_ALL - all permissions (7)
+ * CHMOD_READ - read permission (4)
+ * CHMOD_WRITE - write permission (2)
+ * CHMOD_EXECUTE - execute permission (1)
+ *
+ * NOTE: The function uses POSIX extension and fileowner()/filegroup() functions. If any of them is disabled, this function tries to build proper permissions, by calling is_readable() and is_writable() functions.
+ *
+ * @param string	$filename	The file/directory to be chmodded
+ * @param int	$perms		Permissions to set
+ *
+ * @return bool	true on success, otherwise false
+ *
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::phpbb_chmod() instead
+ */
+function phpbb_chmod($filename, $perms = CHMOD_READ)
+{
+	global $phpbb_filesystem;
+
+	try
+	{
+		$phpbb_filesystem->phpbb_chmod($filename, $perms);
+	}
+	catch (\phpbb\filesystem\exception\filesystem_exception $e)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Test if a file/directory is writable
+ *
+ * This function calls the native is_writable() when not running under
+ * Windows and it is not disabled.
+ *
+ * @param string $file Path to perform write test on
+ * @return bool True when the path is writable, otherwise false.
+ *
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::is_writable() instead
+ */
+function phpbb_is_writable($file)
+{
+	global $phpbb_filesystem;
+
+	return $phpbb_filesystem->is_writable($file);
+}
+
+/**
+ * Checks if a path ($path) is absolute or relative
+ *
+ * @param string $path Path to check absoluteness of
+ * @return boolean
+ *
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::is_absolute_path() instead
+ */
+function phpbb_is_absolute($path)
+{
+	global $phpbb_filesystem;
+
+	return $phpbb_filesystem->is_absolute_path($path);
+}
+
+/**
+ * A wrapper for realpath
+ *
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::realpath() instead
+ */
+function phpbb_realpath($path)
+{
+	global $phpbb_filesystem;
+
+	return $phpbb_filesystem->realpath($path);
 }

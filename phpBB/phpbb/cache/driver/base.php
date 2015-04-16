@@ -177,13 +177,9 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function remove_file($filename, $check = false)
 	{
-		if (!function_exists('phpbb_is_writable'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
+		global $phpbb_filesystem;
 
-		if ($check && !phpbb_is_writable($this->cache_dir))
+		if ($check && !$phpbb_filesystem->is_writable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.
 			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);

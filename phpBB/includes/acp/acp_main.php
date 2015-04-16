@@ -26,7 +26,7 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $cache, $user, $auth, $template, $request, $phpbb_log;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher, $phpbb_filesystem;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -649,7 +649,7 @@ class acp_main
 			}
 		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && $phpbb_filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));

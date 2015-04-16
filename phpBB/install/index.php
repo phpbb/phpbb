@@ -270,7 +270,7 @@ $config = new \phpbb\config\config(array(
 /* @var $symfony_request \phpbb\symfony_request */
 $symfony_request = $phpbb_container->get('symfony_request');
 
-/* @var $phpbb_filesystem \phpbb\filesystem */
+/* @var $phpbb_filesystem \phpbb\filesystem\filesystem_interface */
 $phpbb_filesystem = $phpbb_container->get('filesystem');
 
 /* @var $phpbb_path_helper \phpbb\path_helper */
