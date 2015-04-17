@@ -1,0 +1,121 @@
+<?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\install\helper\iohandler;
+
+/**
+ * Base class for installer input-output handlers
+ */
+abstract class iohandler_base implements iohandler_interface
+{
+	/**
+	 * Array of errors
+	 *
+	 * Errors should be added, when the installation cannot continue without
+	 * user interaction. If the aim is to notify the user about something, please
+	 * use a warning instead.
+	 *
+	 * @var array
+	 */
+	protected $errors;
+
+	/**
+	 * Array of warnings
+	 *
+	 * @var array
+	 */
+	protected $warnings;
+
+	/**
+	 * Array of logs
+	 *
+	 * @var array
+	 */
+	protected $logs;
+
+	/**
+	 * @var \phpbb\language\language
+	 */
+	protected $language;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->errors	= array();
+		$this->warnings	= array();
+		$this->logs		= array();
+	}
+
+	/**
+	 * Set language service
+	 *
+	 * @param \phpbb\language\language $language
+	 *
+	 * @return null
+	 */
+	public function set_language(\phpbb\language\language $language)
+	{
+		$this->language = $language;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function add_error_message($error_title, $error_description = false)
+	{
+		$this->errors[] = $this->translate_message($error_title, $error_description);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function add_warning_message($warning_title, $warning_description = false)
+	{
+		$this->warnings[] = $this->translate_message($warning_title, $warning_description);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function add_log_message($log_title, $log_description = false)
+	{
+		$this->logs[] = $this->translate_message($log_title, $log_description);
+	}
+
+	/**
+	 * Localize message.
+	 *
+	 * Note: When an array is passed into the parameters below, it will be
+	 * resolved as printf($param[0], $param[1], ...).
+	 *
+	 * @param array|string		$title			Title of the message
+	 * @param array|string|bool	$description	Description of the message
+	 *
+	 * @return array	Localized message in an array
+	 */
+	protected function translate_message($title, $description)
+	{
+		$message_array = array();
+
+		$message_array['title'] = call_user_func_array(array($this->language, 'lang'), (array) $title);
+
+		if ($description !== false)
+		{
+			$message_array['description'] = call_user_func_array(array($this->language, 'lang'), (array) $description);
+		}
+
+		return $message_array;
+	}
+}
