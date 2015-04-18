@@ -417,11 +417,11 @@ class filespec
 				{
 					if (!isset($types[$this->image_info['type']]))
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info['type'], $this->mimetype);
+						$this->error[] = $user->lang('IMAGE_FILETYPE_INVALID', $this->image_info['type'], $this->mimetype);
 					}
 					else
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info['type']][0], $this->extension);
+						$this->error[] = $user->lang('IMAGE_FILETYPE_MISMATCH', $types[$this->image_info['type']][0], $this->extension);
 					}
 				}
 
