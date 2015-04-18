@@ -1,0 +1,43 @@
+services:
+    installer.obtain_data.admin:
+        class: phpbb\install\module\obtain_data\task\obtain_admin_data
+        arguments:
+            - @installer.helper.config
+            - @installer.helper.iohandler
+
+    installer.obtain_data.board:
+        class: phpbb\install\module\obtain_data\task\obtain_board_data
+        arguments:
+            - @installer.helper.config
+            - @installer.helper.iohandler
+            - @language.helper.language_file
+
+    installer.obtain_data.database:
+        class: phpbb\install\module\obtain_data\task\obtain_database_data
+        arguments:
+            - @installer.helper.database
+            - @installer.helper.config
+            - @installer.helper.iohandler
+
+    installer.obtain_data.email:
+        class: phpbb\install\module\obtain_data\task\obtain_email_data
+        arguments:
+            - @installer.helper.config
+            - @installer.helper.iohandler
+
+    installer.obtain_data.imagick:
+        class: phpbb\install\module\obtain_data\task\obtain_imagick_path
+        arguments:
+            - @installer.helper.config
+
+    installer.obtain_data.server:
+        class: phpbb\install\module\obtain_data\task\obtain_server_data
+        arguments:
+            - @installer.helper.config
+            - @installer.helper.iohandler
+
+    installer.module.obtain_data_install:
+        class: phpbb\install\module\obtain_data\module
+        parent: installer.module_base
+        arguments:
+            - ["installer.obtain_data.admin", "installer.obtain_data.database", "installer.obtain_data.server", "installer.obtain_data.email", "installer.obtain_data.board", "installer.obtain_data.imagick"]

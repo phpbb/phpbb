@@ -1,0 +1,36 @@
+services:
+    installer.install_database.create_schema:
+        class: phpbb\install\module\install_database\task\create_schema
+        arguments:
+            - @installer.helper.config
+            - @installer.helper.database
+            - @filesystem
+            - @installer.helper.iohandler
+           # - @installer.helper.container_factory
+            - %core.root_path%
+            - %core.php_ext%
+
+    installer.install_database.add_default_data:
+        class: phpbb\install\module\install_database\task\add_default_data
+        arguments:
+            - @installer.helper.database
+            - @installer.helper.config
+            - @installer.helper.iohandler
+            - @installer.helper.container_factory
+            - @language
+
+    installer.install_database.add_config_settings:
+        class: phpbb\install\module\install_database\task\add_config_settings
+        arguments:
+            - @filesystem
+            - @installer.helper.config
+            - @installer.helper.iohandler
+            - @installer.helper.container_factory
+            - @language
+            - %core.root_path%
+
+    installer.module.database_install:
+        class: phpbb\install\module\install_database\module
+        parent: installer.module_base
+        arguments:
+            - ["installer.install_database.create_schema", "installer.install_database.add_default_data", "installer.install_database.add_config_settings"]

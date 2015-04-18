@@ -1,0 +1,20 @@
+services:
+    installer.requirements.task.filesystem:
+        class: phpbb\install\module\requirements\task\check_filesystem
+        arguments:
+            - @filesystem
+            - @installer.helper.iohandler
+            - %core.root_path%
+            - %core.php_ext%
+
+    installer.requirements.task.server:
+        class: phpbb\install\module\requirements\task\check_server_environment
+        arguments:
+            - @installer.helper.database
+            - @installer.helper.iohandler
+
+    installer.module.requirements_install:
+        class: phpbb\install\module\requirements\module
+        parent: installer.module_base
+        arguments:
+            - ["installer.requirements.task.filesystem", "installer.requirements.task.server"]

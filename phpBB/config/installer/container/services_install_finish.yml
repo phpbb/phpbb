@@ -1,0 +1,20 @@
+services:
+    installer.finish.populate_migrations:
+        class: phpbb\install\module\install_finish\task\populate_migrations
+        arguments:
+            - @installer.helper.container_factory
+
+    installer.finish.notify_user:
+        class: phpbb\install\module\install_finish\task\notify_user
+        arguments:
+            - @installer.helper.container_factory
+            - @installer.helper.config
+            - @installer.helper.iohandler
+            - %core.root_path%
+            - %core.php_ext%
+
+    installer.module.finish_install:
+        class: phpbb\install\module\install_filesystem\module
+        parent: installer.module_base
+        arguments:
+            - ["installer.finish.populate_migrations", "installer.finish.notify_user"]

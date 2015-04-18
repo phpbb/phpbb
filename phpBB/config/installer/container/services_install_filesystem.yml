@@ -1,0 +1,16 @@
+services:
+    installer.filesystem.create_config:
+        class: phpbb\install\module\install_filesystem\task\create_config_file
+        arguments:
+            - @filesystem
+            - @installer.helper.config
+            - @installer.helper.database
+            - @installer.helper.iohandler
+            - %core.root_path%
+            - %core.php_ext%
+
+    installer.module.filesystem_install:
+        class: phpbb\install\module\install_filesystem\module
+        parent: installer.module_base
+        arguments:
+            - ["installer.filesystem.create_config"]
