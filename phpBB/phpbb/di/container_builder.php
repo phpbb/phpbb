@@ -150,7 +150,7 @@ class container_builder
 		$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
 		if ($this->dump_container && $config_cache->isFresh())
 		{
-			require($container_filename);
+			require($config_cache->getPath());
 			$this->container = new \phpbb_cache_container();
 		}
 		else
