@@ -70,13 +70,16 @@ class sqlite extends \phpbb\db\driver\driver
 		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('sqlite_version')) === false)
 		{
 			$result = @sqlite_query('SELECT sqlite_version() AS version', $this->db_connect_id);
-			$row = @sqlite_fetch_array($result, SQLITE_ASSOC);
-
-			$this->sql_server_version = (!empty($row['version'])) ? $row['version'] : 0;
-
-			if (!empty($cache) && $use_cache)
+			if ($result)
 			{
-				$cache->put('sqlite_version', $this->sql_server_version);
+				$row = sqlite_fetch_array($result, SQLITE_ASSOC);
+
+				$this->sql_server_version = (!empty($row['version'])) ? $row['version'] : 0;
+
+				if (!empty($cache) && $use_cache)
+				{
+					$cache->put('sqlite_version', $this->sql_server_version);
+				}
 			}
 		}
 
@@ -145,14 +148,14 @@ class sqlite extends \phpbb\db\driver\driver
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
+				if (!$this->query_result)
+				{
+					return false;
+				}
+
 				if ($cache && $cache_ttl)
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
-				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
 			else if (defined('DEBUG'))
@@ -211,7 +214,7 @@ class sqlite extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id !== false) ? @sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
+		return ($query_id) ? sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
 	}
 
 	/**
@@ -231,7 +234,7 @@ class sqlite extends \phpbb\db\driver\driver
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id !== false) ? @sqlite_seek($query_id, $rownum) : false;
+		return ($query_id) ? @sqlite_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -362,9 +365,12 @@ class sqlite extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @sqlite_query($query, $this->db_connect_id);
-				while ($void = @sqlite_fetch_array($result, SQLITE_ASSOC))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+					while ($void = sqlite_fetch_array($result, SQLITE_ASSOC))
+					{
+						// Take the time spent on parsing rows into account
+					}
 				}
 
 				$splittime = explode(' ', microtime());

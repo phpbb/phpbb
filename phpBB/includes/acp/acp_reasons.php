@@ -27,14 +27,14 @@ class acp_reasons
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $request;
+		global $request, $phpbb_log;
 
 		$user->add_lang(array('mcp', 'acp/posting'));
 
 		// Set up general vars
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$reason_id = request_var('id', 0);
+		$reason_id = $request->variable('id', 0);
 
 		$this->tpl_name = 'acp_reasons';
 		$this->page_title = 'ACP_REASONS';
@@ -50,8 +50,8 @@ class acp_reasons
 			case 'edit':
 
 				$reason_row = array(
-					'reason_title'			=> utf8_normalize_nfc(request_var('reason_title', '', true)),
-					'reason_description'	=> utf8_normalize_nfc(request_var('reason_description', '', true)),
+					'reason_title'			=> $request->variable('reason_title', '', true),
+					'reason_description'	=> $request->variable('reason_description', '', true),
 				);
 
 				if ($submit)
@@ -139,7 +139,7 @@ class acp_reasons
 							$log = 'UPDATED';
 						}
 
-						add_log('admin', 'LOG_REASON_' . $log, $reason_row['reason_title']);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_REASON_' . $log, false, array($reason_row['reason_title']));
 						trigger_error($user->lang['REASON_' . $log] . adm_back_link($this->u_action));
 					}
 				}
@@ -264,7 +264,7 @@ class acp_reasons
 
 					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
 
-					add_log('admin', 'LOG_REASON_REMOVED', $reason_row['reason_title']);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_REASON_REMOVED', false, array($reason_row['reason_title']));
 					trigger_error($user->lang['REASON_REMOVED'] . adm_back_link($this->u_action));
 				}
 				else

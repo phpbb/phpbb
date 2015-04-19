@@ -47,6 +47,11 @@ class filespec
 	var $upload = '';
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	 * The plupload object
 	 * @var \phpbb\plupload\plupload
 	 */
@@ -62,7 +67,7 @@ class filespec
 	* File Class
 	* @access private
 	*/
-	function filespec($upload_ary, $upload_namespace, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	function filespec($upload_ary, $upload_namespace, \phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		if (!isset($upload_ary))
 		{
@@ -97,6 +102,7 @@ class filespec
 		$this->upload = $upload_namespace;
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
+		$this->filesystem = $phpbb_filesystem;
 	}
 
 	/**
@@ -374,7 +380,14 @@ class filespec
 				return false;
 			}
 
-			phpbb_chmod($this->destination_file, $chmod);
+			try
+			{
+				$this->filesystem->phpbb_chmod($this->destination_file, $chmod);
+			}
+			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			{
+				// Do nothing
+			}
 		}
 
 		// Try to get real filesize from destination folder
@@ -500,8 +513,14 @@ class fileupload
 	var $upload_timeout = 6;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* Init file upload class.
 	*
+	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param string $error_prefix Used error messages will get prefixed by this string
 	* @param array $allowed_extensions Array of allowed extensions, for example array('jpg', 'jpeg', 'gif', 'png')
 	* @param int $max_filesize Maximum filesize
@@ -513,13 +532,14 @@ class fileupload
 	*										contain any of its values. Defaults to false.
 	*
 	*/
-	function fileupload($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false, $disallowed_content = false)
+	function fileupload(\phpbb\filesystem\filesystem_interface $filesystem, $error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false, $disallowed_content = false)
 	{
 		$this->set_allowed_extensions($allowed_extensions);
 		$this->set_max_filesize($max_filesize);
 		$this->set_allowed_dimensions($min_width, $min_height, $max_width, $max_height);
 		$this->set_error_prefix($error_prefix);
 		$this->set_disallowed_content($disallowed_content);
+		$this->filesystem = $filesystem;
 	}
 
 	/**
@@ -613,7 +633,7 @@ class fileupload
 			}
 		}
 
-		$file = new filespec($upload, $this, $mimetype_guesser, $plupload);
+		$file = new filespec($upload, $this, $this->filesystem, $mimetype_guesser, $plupload);
 
 		if ($file->init_error)
 		{
@@ -694,7 +714,7 @@ class fileupload
 			$upload['type'] = $filedata['type'];
 		}
 
-		$file = new filespec($upload, $this, $mimetype_guesser);
+		$file = new filespec($upload, $this, $this->filesystem, $mimetype_guesser);
 
 		if ($file->init_error)
 		{
@@ -932,7 +952,7 @@ class fileupload
 
 		$upload_ary['tmp_name'] = $filename;
 
-		$file = new filespec($upload_ary, $this, $mimetype_guesser);
+		$file = new filespec($upload_ary, $this, $this->filesystem, $mimetype_guesser);
 		$this->common_checks($file);
 
 		return $file;

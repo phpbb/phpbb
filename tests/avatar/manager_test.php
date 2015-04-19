@@ -35,6 +35,8 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->method('get')
 			->will($this->returnArgument(0));
 
+		$filesystem = new \phpbb\filesystem\filesystem();
+
 		// Prepare dependencies for avatar manager and driver
 		$this->config = new \phpbb\config\config(array());
 		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
@@ -42,7 +44,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -76,7 +78,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $guesser, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')

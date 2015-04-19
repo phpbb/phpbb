@@ -18,7 +18,6 @@ class acp_permissions_info
 		return array(
 			'filename'	=> 'acp_permissions',
 			'title'		=> 'ACP_PERMISSIONS',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'intro'					=> array('title' => 'ACP_PERMISSIONS', 'auth' => 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth', 'cat' => array('ACP_CAT_PERMISSIONS')),
 				'trace'					=> array('title' => 'ACP_PERMISSION_TRACE', 'auth' => 'acl_a_viewauth', 'display' => false, 'cat' => array('ACP_PERMISSION_MASKS')),

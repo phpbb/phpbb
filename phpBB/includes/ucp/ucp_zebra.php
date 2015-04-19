@@ -44,7 +44,7 @@ class ucp_zebra
 
 			foreach ($var_ary as $var => $default)
 			{
-				$data[$var] = request_var($var, $default, true);
+				$data[$var] = $request->variable($var, $default, true);
 			}
 
 			if (!empty($data['add']) || sizeof($data['usernames']))

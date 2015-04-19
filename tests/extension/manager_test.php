@@ -150,7 +150,8 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
-		$db_tools = new \phpbb\db\tools($db);
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($db);
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$php_ext = 'php';
 		$table_prefix = 'phpbb_';
@@ -176,7 +177,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$container,
 			$db,
 			$config,
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$user,
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
