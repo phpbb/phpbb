@@ -34,7 +34,10 @@ class acp_inactive
 		global $config, $db, $user, $auth, $template, $phpbb_container;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		if (!function_exists('user_active_flip'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		$user->add_lang('memberlist');
 
@@ -109,7 +112,10 @@ class acp_inactive
 
 						if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
 						{
-							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+							if (!class_exists('messenger'))
+							{
+								include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+							}
 
 							$messenger = new messenger(false);
 
@@ -196,7 +202,10 @@ class acp_inactive
 					if ($row = $db->sql_fetchrow($result))
 					{
 						// Send the messages
-						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+						if (!class_exists('messenger'))
+						{
+							include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+						}
 
 						$messenger = new messenger();
 						$usernames = $user_ids = array();

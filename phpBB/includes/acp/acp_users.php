@@ -57,7 +57,10 @@ class acp_users
 		// Whois (special case)
 		if ($action == 'whois')
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			if (!function_exists('user_get_id_name'))
+			{
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			}
 
 			$this->page_title = 'WHOIS';
 			$this->tpl_name = 'simple_body';
@@ -170,7 +173,10 @@ class acp_users
 		{
 			case 'overview':
 
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('user_get_id_name'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				$user->add_lang('acp/ban');
 
@@ -354,7 +360,10 @@ class acp_users
 
 							if ($config['email_enable'])
 							{
-								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+								if (!class_exists('messenger'))
+								{
+									include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+								}
 
 								$server_url = generate_board_url();
 
@@ -437,7 +446,10 @@ class acp_users
 									$phpbb_notifications = $phpbb_container->get('notification_manager');
 									$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+									if (!class_exists('messenger'))
+									{
+										include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+									}
 
 									$messenger = new messenger(false);
 
@@ -1361,7 +1373,10 @@ class acp_users
 
 			case 'profile':
 
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('user_get_id_name'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				$cp = $phpbb_container->get('profilefields.manager');
 
@@ -1520,7 +1535,10 @@ class acp_users
 
 			case 'prefs':
 
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('user_get_id_name'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				$data = array(
 					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
@@ -1790,8 +1808,6 @@ class acp_users
 
 			case 'avatar':
 
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
 				$avatars_enabled = false;
 
 				if ($config['allow_avatar'])
@@ -1946,8 +1962,15 @@ class acp_users
 
 			case 'sig':
 
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				if (!function_exists('generate_smilies'))
+				{
+					include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				}
+
+				if (!function_exists('display_custom_bbcodes'))
+				{
+					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				}
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $this->optionget($user_row, 'sig_bbcode') : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $this->optionget($user_row, 'sig_smilies') : false;
@@ -1958,7 +1981,10 @@ class acp_users
 
 				if ($submit || $preview)
 				{
-					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+					if (!class_exists('messenger'))
+					{
+						include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+					}
 
 					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
 					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
@@ -2199,7 +2225,10 @@ class acp_users
 
 			case 'groups':
 
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('group_user_attributes'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				$user->add_lang(array('groups', 'acp/groups'));
 				$group_id = request_var('g', 0);
@@ -2415,7 +2444,10 @@ class acp_users
 
 			case 'perm':
 
-				include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+				if (!class_exists('auth_admin'))
+				{
+					include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+				}
 
 				$auth_admin = new auth_admin();
 
