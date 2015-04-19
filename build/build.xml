@@ -319,6 +319,8 @@
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
 		<delete file="${dir}/vendor/psr/log/README.md" />
 
+		<delete dir="${dir}/vendor/s9e/text-formatter/.git" />
+
 		<delete dir="${dir}/vendor/symfony/config/Symfony/Component/Config/Tests" />
 		<delete dir="${dir}/vendor/symfony/config/Symfony/Component/Config/.git" />
 		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/.gitignore" />
