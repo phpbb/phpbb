@@ -263,7 +263,11 @@ phpbb.ajaxify = function(options) {
 			}
 			phpbb.clearLoadingTimeout();
 			var errorText = false;
-			if (typeof errorThrown === 'string' && errorThrown.length > 0) {
+			var responseText = $.parseJSON(jqXHR.responseText);
+			if (typeof responseText.message === 'string' && responseText.message.length > 0) {
+				errorText = responseText.message;
+			}
+			else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
 				errorText = errorThrown;
 			}
 			else {
