@@ -27,6 +27,8 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array('https://foobar.com\@http://localhost/phpBB', 'Tried to redirect to potentially insecure url.', false),
 			array('https://foobar.com\@localhost/troll/http://localhost/', 'Tried to redirect to potentially insecure url.', false),
 			array('http://localhost.foobar.com\@localhost/troll/http://localhost/', 'Tried to redirect to potentially insecure url.', false),
+			array('http://localhost/phpBB', false, 'http://localhost/phpBB'),
+			array('http://localhost/phpBB/', false, 'http://localhost/phpBB/'),
 		);
 	}
 
