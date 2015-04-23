@@ -45,18 +45,20 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		self::create_post(2,
 			1,
-			'Unsupported characters',
-			"This is a test with these weird characters: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
-			array(),
-			'Your message contains the following unsupported characters'
-		);
-
-		self::create_post(2,
-			1,
 			"Unsupported: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
 			'This is a test with emoji characters in the topic title.',
 			array(),
 			'Your subject contains the following unsupported characters'
 		);
+	}
+
+	public function test_supported_unicode_characters()
+	{
+		$this->login();
+
+		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
+		$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', "This is a test with these weird characters: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6");
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertContains("\xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6", $crawler->text());
 	}
 }
