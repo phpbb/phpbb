@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "91cc998d47b703a7bc4f726217d7a3a9",
+    "hash": "d5368b75d221b5573b30307cb2f25f3b",
     "packages": [
         {
             "name": "lusitanian/oauth",
