@@ -2309,7 +2309,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
 		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
-			trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+			trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 		}
 	}
 	else if ($url[0] == '/')
