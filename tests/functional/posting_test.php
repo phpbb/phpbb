@@ -61,4 +61,14 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 		$this->assertContains("\xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6", $crawler->text());
 	}
+
+	public function test_html_entities()
+	{
+		$this->login();
+
+		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
+		$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', '&#128512;');
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertContains('&#128512;', $crawler->text());
+	}
 }
