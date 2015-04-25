@@ -1975,13 +1975,19 @@ function phpbb_request_http_version()
 {
 	global $request;
 
+	$version = '';
 	if ($request && $request->server('SERVER_PROTOCOL'))
 	{
-		return $request->server('SERVER_PROTOCOL');
+		$version = $request->server('SERVER_PROTOCOL');
 	}
 	else if (isset($_SERVER['SERVER_PROTOCOL']))
 	{
-		return $_SERVER['SERVER_PROTOCOL'];
+		$version = $_SERVER['SERVER_PROTOCOL'];
+	}
+
+	if (!empty($version) && is_string($version) && preg_match('#^HTTP/[0-9]\.[0-9]$#', $version))
+	{
+		return $version;
 	}
 
 	return 'HTTP/1.0';
