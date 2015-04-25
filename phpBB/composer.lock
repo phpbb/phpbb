@@ -169,12 +169,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "5b7d4c40bdef53f26ca6b09e85163f28e852f16b"
+                "reference": "31fe627a4a82d41098a2db8036287c0693c79f13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/5b7d4c40bdef53f26ca6b09e85163f28e852f16b",
-                "reference": "5b7d4c40bdef53f26ca6b09e85163f28e852f16b",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/31fe627a4a82d41098a2db8036287c0693c79f13",
+                "reference": "31fe627a4a82d41098a2db8036287c0693c79f13",
                 "shasum": ""
             },
             "require": {
@@ -219,7 +219,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2015-04-22 15:15:46"
+            "time": "2015-04-25 20:58:33"
         },
         {
             "name": "symfony/config",
