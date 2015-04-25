@@ -130,7 +130,7 @@ if (phpbb_has_trailing_path($phpEx))
 	{
 		$prefix = 'Status:';
 	}
-	else if (!empty($_SERVER['SERVER_PROTOCOL']))
+	else if (!empty($_SERVER['SERVER_PROTOCOL']) && is_string($_SERVER['SERVER_PROTOCOL']) && preg_match('#^HTTP/[0-9]\.[0-9]$#', $_SERVER['SERVER_PROTOCOL']))
 	{
 		$prefix = $_SERVER['SERVER_PROTOCOL'];
 	}
