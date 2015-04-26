@@ -219,6 +219,8 @@ class filespec
 	*/
 	static public function get_extension($filename)
 	{
+		$filename = utf8_basename($filename);
+
 		if (strpos($filename, '.') === false)
 		{
 			return '';
