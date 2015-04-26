@@ -43,21 +43,21 @@ require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container_builder->set_dump_container(false);
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file);
+
+$phpbb_container_builder->without_cache();
 
 $input = new ArgvInput();
 
 if ($input->hasParameterOption(array('--safe-mode')))
 {
-	$phpbb_container_builder->set_use_extensions(false);
-	$phpbb_container_builder->set_dump_container(false);
+	$phpbb_container_builder->without_extensions();
 }
 else
 {
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
 }
 
 $phpbb_container = $phpbb_container_builder->get_container();

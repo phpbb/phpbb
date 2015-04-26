@@ -13,6 +13,7 @@
 
 namespace phpbb\di;
 
+use phpbb\filesystem\filesystem;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,6 +26,11 @@ use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfiguration
 class container_builder
 {
 	/**
+	 * @var string The environment to use.
+	 */
+	protected $environment;
+
+	/**
 	 * @var string phpBB Root Path
 	 */
 	protected $phpbb_root_path;
@@ -35,89 +41,58 @@ class container_builder
 	protected $php_ext;
 
 	/**
-	* The container under construction
-	*
-	* @var ContainerBuilder
-	*/
+	 * The container under construction
+	 *
+	 * @var ContainerBuilder
+	 */
 	protected $container;
 
 	/**
-	* @var \phpbb\db\driver\driver_interface
-	*/
-	protected $dbal_connection = null;
-
-	/**
-	* @var array the installed extensions
-	*/
-	protected $installed_exts = null;
-
-	/**
-	* Indicates whether the php config file should be injected into the container (default to true).
-	*
-	* @var bool
-	*/
-	protected $inject_config = true;
-
-	/**
-	* Indicates whether extensions should be used (default to true).
-	*
-	* @var bool
-	*/
+	 * Indicates whether extensions should be used (default to true).
+	 *
+	 * @var bool
+	 */
 	protected $use_extensions = true;
 
 	/**
-	* Defines a custom path to find the configuration of the container (default to $this->phpbb_root_path . 'config')
-	*
-	* @var string
-	*/
+	 * Defines a custom path to find the configuration of the container (default to $this->phpbb_root_path . 'config')
+	 *
+	 * @var string
+	 */
 	protected $config_path = null;
 
 	/**
-	* Indicates whether the phpBB compile pass should be used (default to true).
-	*
-	* @var bool
-	*/
-	protected $use_custom_pass = true;
+	 * Indicates whether the container should be dumped to the filesystem (default to true).
+	 *
+	 * If DEBUG_CONTAINER is set this option is ignored and a new container is build.
+	 *
+	 * @var bool
+	 */
+	protected $use_cache = true;
 
 	/**
-	* Indicates whether the kernel compile pass should be used (default to true).
-	*
-	* @var bool
-	*/
-	protected $use_kernel_pass = true;
-
-	/**
-	* Indicates whether the container should be dumped to the filesystem (default to true).
-	*
-	* If DEBUG_CONTAINER is set this option is ignored and a new container is build.
-	*
-	* @var bool
-	*/
-	protected $dump_container = true;
-
-	/**
-	* Indicates if the container should be compiled automatically (default to true).
-	*
-	* @var bool
-	*/
+	 * Indicates if the container should be compiled automatically (default to true).
+	 *
+	 * @var bool
+	 */
 	protected $compile_container = true;
 
 	/**
-	* Custom parameters to inject into the container.
-	*
-	* Default to true:
-	* 	array(
-	* 		'core.root_path', $this->phpbb_root_path,
-	* 		'core.php_ext', $this->php_ext,
-	* );
-	*
-	* @var array
-	*/
+	 * Custom parameters to inject into the container.
+	 *
+	 * Default to:
+	 * 	array(
+	 * 		'core.root_path', $this->phpbb_root_path,
+	 * 		'core.php_ext', $this->php_ext,
+	 * );
+	 *
+	 * @var array
+	 */
 	protected $custom_parameters = null;
 
 	/**
-	* @var \phpbb\config_php_file
-	*/
+	 * @var \phpbb\config_php_file
+	 */
 	protected $config_php_file;
 
 	/**
@@ -126,169 +101,216 @@ class container_builder
 	protected $cache_dir;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\config_php_file $config_php_file
-	* @param string $phpbb_root_path Path to the phpbb includes directory.
-	* @param string $php_ext php file extension
-	*/
-	function __construct(\phpbb\config_php_file $config_php_file, $phpbb_root_path, $php_ext)
+	 * @var array
+	 */
+	private $container_extensions;
+
+	/**
+	 * Constructor
+	 *
+	 * @param string $phpbb_root_path Path to the phpbb includes directory.
+	 * @param string $php_ext php file extension
+	 */
+	function __construct($phpbb_root_path, $php_ext)
 	{
-		$this->config_php_file = $config_php_file;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
 
 	/**
-	* Build and return a new Container respecting the current configuration
-	*
-	* @return \phpbb_cache_container|ContainerBuilder
-	*/
+	 * Build and return a new Container respecting the current configuration
+	 *
+	 * @return \phpbb_cache_container|ContainerBuilder
+	 */
 	public function get_container()
 	{
 		$container_filename = $this->get_container_filename();
 		$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
-		if ($this->dump_container && $config_cache->isFresh())
+		if ($this->use_cache && $config_cache->isFresh())
 		{
 			require($config_cache->getPath());
 			$this->container = new \phpbb_cache_container();
+
+			return $this->container;
 		}
-		else
+
+		$this->container_extensions = array(new extension\core($this->get_config_path()));
+
+		if ($this->use_extensions)
 		{
-			$container_extensions = array(new \phpbb\di\extension\core($this->get_config_path()));
-
-			if ($this->use_extensions)
-			{
-				$installed_exts = $this->get_installed_extensions();
-				foreach ($installed_exts as $ext_name => $path)
-				{
-					$extension_class = '\\' . str_replace('/', '\\', $ext_name) . '\\di\\extension';
-
-					if (!class_exists($extension_class))
-					{
-						$extension_class = '\phpbb\extension\di\extension_base';
-					}
-
-					$container_extensions[] = new $extension_class($ext_name, $path);
-				}
-			}
-
-			if ($this->inject_config)
-			{
-				$container_extensions[] = new \phpbb\di\extension\config($this->config_php_file);
-			}
-
-			$this->container = $this->create_container($container_extensions);
-
-			if ($this->use_custom_pass)
-			{
-				// Symfony Kernel Listeners
-				$this->container->addCompilerPass(new \phpbb\di\pass\collection_pass());
-				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
-
-				if ($this->use_kernel_pass)
-				{
-					$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
-				}
-			}
-
-			$filesystem = new \phpbb\filesystem\filesystem();
-			$loader = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
-			$loader->load($this->container->getParameter('core.environment') . '/config.yml');
-
-			$this->inject_custom_parameters();
-
-			if ($this->compile_container)
-			{
-				$this->container->compile();
-			}
-
-			if ($this->dump_container)
-			{
-				$this->dump_container($config_cache);
-			}
+			$this->load_extensions();
 		}
 
-		$this->container->set('config.php', $this->config_php_file);
+		// Inject the config
+		$this->container_extensions[] = new extension\config($this->config_php_file);
+
+		$this->container = $this->create_container($this->container_extensions);
+
+		// Easy collections through tags
+		$this->container->addCompilerPass(new pass\collection_pass());
+
+		// Event listeners "phpBB style"
+		$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
+
+		// Event listeners "Symfony style"
+		$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
+
+		$filesystem = new filesystem();
+		$loader = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
+		$loader->load($this->container->getParameter('core.environment') . '/config.yml');
+
+		$this->inject_custom_parameters();
 
 		if ($this->compile_container)
 		{
-			$this->inject_dbal();
+			$this->container->compile();
+
+			if ($this->use_cache)
+			{
+				$this->dump_container($config_cache);
+			}
 		}
 
 		return $this->container;
 	}
 
 	/**
-	* Set if the extensions should be used.
-	*
-	* @param bool $use_extensions
-	*/
-	public function set_use_extensions($use_extensions)
+	 * Enable the extensions.
+	 *
+	 * @param string $environment The environment to use
+	 * @return $this
+	 */
+	public function with_environment($environment)
 	{
-		$this->use_extensions = $use_extensions;
+		$this->environment = $environment;
+
+		return $this;
 	}
 
 	/**
-	* Set if the phpBB compile pass have to be used.
-	*
-	* @param bool $use_custom_pass
-	*/
-	public function set_use_custom_pass($use_custom_pass)
+	 * Enable the extensions.
+	 *
+	 * @return $this
+	 */
+	public function with_extensions()
 	{
-		$this->use_custom_pass = $use_custom_pass;
+		$this->use_extensions = true;
+
+		return $this;
 	}
 
 	/**
-	* Set if the kernel compile pass have to be used.
-	*
-	* @param bool $use_kernel_pass
-	*/
-	public function set_use_kernel_pass($use_kernel_pass)
+	 * Disable the extensions.
+	 *
+	 * @return $this
+	 */
+	public function without_extensions()
 	{
-		$this->use_kernel_pass = $use_kernel_pass;
+		$this->use_extensions = false;
+
+		return $this;
 	}
 
 	/**
-	* Set if the php config file should be injecting into the container.
-	*
-	* @param bool $inject_config
-	*/
-	public function set_inject_config($inject_config)
+	 * Enable the caching of the container.
+	 *
+	 * If DEBUG_CONTAINER is set this option is ignored and a new container is build.
+	 *
+	 * @return $this
+	 */
+	public function with_cache()
 	{
-		$this->inject_config = $inject_config;
+		$this->use_cache = true;
+
+		return $this;
 	}
 
 	/**
-	* Set if a dump container should be used.
-	*
-	* If DEBUG_CONTAINER is set this option is ignored and a new container is build.
-	*
-	* @var bool $dump_container
-	*/
-	public function set_dump_container($dump_container)
+	 * Disable the caching of the container.
+	 *
+	 * @return $this
+	 */
+	public function without_cache()
 	{
-		$this->dump_container = $dump_container;
+		$this->use_cache = false;
+
+		return $this;
 	}
 
 	/**
-	* Set if the container should be compiled automatically (default to true).
-	*
-	* @var bool $dump_container
-	*/
-	public function set_compile_container($compile_container)
+	 * Set the cache directory.
+	 *
+	 * @param string $cache_dir The cache directory.
+	 * @return $this
+	 */
+	public function with_cache_dir($cache_dir)
 	{
-		$this->compile_container = $compile_container;
+		$this->cache_dir = $cache_dir;
+
+		return $this;
 	}
 
 	/**
-	* Set a custom path to find the configuration of the container
-	*
-	* @param string $config_path
-	*/
-	public function set_config_path($config_path)
+	 * Enable the compilation of the container.
+	 *
+	 * @return $this
+	 */
+	public function with_compiled_container()
+	{
+		$this->compile_container = true;
+
+		return $this;
+	}
+
+	/**
+	 * Disable the compilation of the container.
+	 *
+	 * @return $this
+	 */
+	public function without_compiled_container()
+	{
+		$this->compile_container = false;
+
+		return $this;
+	}
+
+	/**
+	 * Set a custom path to find the configuration of the container.
+	 *
+	 * @param string $config_path
+	 * @return $this
+	 */
+	public function with_config_path($config_path)
 	{
 		$this->config_path = $config_path;
+
+		return $this;
+	}
+
+	/**
+	 * Set custom parameters to inject into the container.
+	 *
+	 * @param array $custom_parameters
+	 * @return $this
+	 */
+	public function with_custom_parameters($custom_parameters)
+	{
+		$this->custom_parameters = $custom_parameters;
+
+		return $this;
+	}
+
+	/**
+	 * Set custom parameters to inject into the container.
+	 *
+	 * @param \phpbb\config_php_file $config_php_file
+	 * @return $this
+	 */
+	public function with_config(\phpbb\config_php_file $config_php_file)
+	{
+		$this->config_php_file = $config_php_file;
+
+		return $this;
 	}
 
 	/**
@@ -302,26 +324,6 @@ class container_builder
 	}
 
 	/**
-	* Set custom parameters to inject into the container.
-	*
-	* @param array $custom_parameters
-	*/
-	public function set_custom_parameters($custom_parameters)
-	{
-		$this->custom_parameters = $custom_parameters;
-	}
-
-	/**
-	 * Set the path to the cache directory.
-	 *
-	 * @param string $cache_dir Path to the cache directory
-	 */
-	public function set_cache_dir($cache_dir)
-	{
-		$this->cache_dir = $cache_dir;
-	}
-
-	/**
 	 * Returns the path to the cache directory (default: root_path/cache/environment).
 	 *
 	 * @return string Path to the cache directory.
@@ -332,10 +334,61 @@ class container_builder
 	}
 
 	/**
-	* Dump the container to the disk.
-	*
-	* @param ConfigCache $cache The config cache
-	*/
+	 * Load the enabled extensions.
+	 */
+	protected function load_extensions()
+	{
+		if ($this->config_php_file !== null)
+		{
+			// Build an intermediate container to load the ext list from the database
+			$container_builder = new container_builder($this->phpbb_root_path, $this->php_ext);
+			$ext_container = $container_builder
+				->without_cache()
+				->without_extensions()
+				->with_config($this->config_php_file)
+				->with_environment('production')
+				->without_compiled_container()
+				->get_container()
+			;
+
+			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\null');
+			$ext_container->compile();
+
+			$extensions = $ext_container->get('ext.manager')->all_enabled();
+
+			// Load each extension found
+			foreach ($extensions as $ext_name => $path)
+			{
+				$extension_class = '\\' . str_replace('/', '\\', $ext_name) . '\\di\\extension';
+
+				if (!class_exists($extension_class))
+				{
+					$extension_class = '\\phpbb\\extension\\di\\extension_base';
+				}
+
+				$this->container_extensions[] = new $extension_class($ext_name, $path);
+
+				// Load extension autoloader
+				$filename = $path . 'vendor/autoload.php';
+				if (file_exists($filename))
+				{
+					require $filename;
+				}
+			}
+		}
+		else
+		{
+			// To load the extensions we need the database credentials.
+			// Automatically disable the extensions if we don't have them.
+			$this->use_extensions = false;
+		}
+	}
+
+	/**
+	 * Dump the container to the disk.
+	 *
+	 * @param ConfigCache $cache The config cache
+	 */
 	protected function dump_container($cache)
 	{
 		$dumper = new PhpDumper($this->container);
@@ -348,73 +401,11 @@ class container_builder
 	}
 
 	/**
-	* Inject the connection into the container if one was opened.
-	*/
-	protected function inject_dbal()
-	{
-		if ($this->dbal_connection !== null)
-		{
-			$this->container->get('dbal.conn')->set_driver($this->dbal_connection);
-		}
-	}
-
-	/**
-	* Get DB connection.
-	*
-	* @return \phpbb\db\driver\driver_interface
-	*/
-	protected function get_dbal_connection()
-	{
-		if ($this->dbal_connection === null)
-		{
-			$dbal_driver_class = $this->config_php_file->convert_30_dbms_to_31($this->config_php_file->get('dbms'));
-			$this->dbal_connection = new $dbal_driver_class();
-			$this->dbal_connection->sql_connect(
-				$this->config_php_file->get('dbhost'),
-				$this->config_php_file->get('dbuser'),
-				$this->config_php_file->get('dbpasswd'),
-				$this->config_php_file->get('dbname'),
-				$this->config_php_file->get('dbport'),
-				defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
-			);
-		}
-
-		return $this->dbal_connection;
-	}
-
-	/**
-	* Get enabled extensions.
-	*
-	* @return array enabled extensions
-	*/
-	protected function get_installed_extensions()
-	{
-		$db = $this->get_dbal_connection();
-		$extension_table = $this->config_php_file->get('table_prefix') . 'ext';
-
-		$sql = 'SELECT *
-			FROM ' . $extension_table . '
-			WHERE ext_active = 1';
-
-		$result = $db->sql_query($sql);
-		$rows = $db->sql_fetchrowset($result);
-		$db->sql_freeresult($result);
-
-		$exts = array();
-		foreach ($rows as $row)
-		{
-			$exts[$row['ext_name']] = $this->phpbb_root_path . 'ext/' . $row['ext_name'] . '/';
-		}
-
-		return $exts;
-	}
-
-	/**
-	* Create the ContainerBuilder object
-	*
-	* @param array $extensions Array of Container extension objects
-	* @return ContainerBuilder object
-	*/
+	 * Create the ContainerBuilder object
+	 *
+	 * @param array $extensions Array of Container extension objects
+	 * @return ContainerBuilder object
+	 */
 	protected function create_container(array $extensions)
 	{
 		$container = new ContainerBuilder(new ParameterBag($this->get_core_parameters()));
@@ -425,7 +416,6 @@ class container_builder
 		{
 			$container->registerExtension($extension);
 			$extensions_alias[] = $extension->getAlias();
-			//$container->loadFromExtension($extension->getAlias());
 		}
 
 		$container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions_alias));
@@ -487,10 +477,10 @@ class container_builder
 	}
 
 	/**
-	* Get the filename under which the dumped container will be stored.
-	*
-	* @return string Path for dumped container
-	*/
+	 * Get the filename under which the dumped container will be stored.
+	 *
+	 * @return string Path for dumped container
+	 */
 	protected function get_container_filename()
 	{
 		$filename = str_replace(array('/', '.'), array('slash', 'dot'), $this->phpbb_root_path);
@@ -504,6 +494,6 @@ class container_builder
 	 */
 	protected function get_environment()
 	{
-		return PHPBB_ENVIRONMENT;
+		return $this->environment ?: PHPBB_ENVIRONMENT;
 	}
 }

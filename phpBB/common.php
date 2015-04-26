@@ -96,21 +96,21 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-phpbb_load_extensions_autoloaders($phpbb_root_path);
+\Symfony\Component\Debug\Debug::enable(E_ALL);
 
 // Set up container
-try
-{
-	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-	$phpbb_container = $phpbb_container_builder->get_container();
-}
+/*try
+{*/
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
+/*}
 catch (InvalidArgumentException $e)
 {
 	trigger_error(
 		'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
 		E_USER_ERROR
 	);
-}
+}*/
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));

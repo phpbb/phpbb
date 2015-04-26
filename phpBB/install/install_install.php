@@ -110,8 +110,8 @@ class install_install extends module
 				$request->enable_super_globals();
 
 				// Create a normal container now
-				$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-				$phpbb_container = $phpbb_container_builder->get_container();
+				$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+				$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 
 				// Sets the global variables
 				/* @var $cache \phpbb\cache\service */
