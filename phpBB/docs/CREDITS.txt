@@ -24,9 +24,10 @@ phpBB Lead Developer:    naderman (Nils Adermann)
 
 phpBB Developers:        bantu (Andreas Fischer)
                          dhruv.goel92 (Dhruv Goel)
+                         Elsensee (Oliver Schramm)
                          marc1706 (Marc Alexander)
                          nickvergessen (Joas Schilling)
-                         nicofuma (Tristan Darricau)
+                         Nicofuma (Tristan Darricau)
                          prototech (Cesar Gallegos)
 
 For a list of phpBB Team members, please see:

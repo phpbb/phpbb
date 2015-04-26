@@ -797,7 +797,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		else
 		{
-			$bbcode_bitfield = $text_only_message = '';
+			$text_only_message = '';
 			$attach_list = array();
 
 			while ($row = $db->sql_fetchrow($result))
@@ -817,7 +817,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				if ($return_chars == -1 || utf8_strlen($text_only_message) < ($return_chars + 3))
 				{
 					$row['display_text_only'] = false;
-					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 					// Does this post have an attachment? If so, add it to the list
 					if ($row['post_attachment'] && $config['allow_attachments'])
@@ -836,13 +835,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$db->sql_freeresult($result);
 
 			unset($text_only_message);
-
-			// Instantiate BBCode if needed
-			if ($bbcode_bitfield !== '')
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-			}
 
 			// Pull attachment data
 			if (sizeof($attach_list))

@@ -213,6 +213,8 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('file.phpbb.gif', 'gif'),
 			array('file..', ''),
 			array('.file..jpg.webp', 'webp'),
+			array('/test.com/file', ''),
+			array('/test.com/file.gif', 'gif'),
 		);
 	}
 
@@ -266,6 +268,11 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_is_image_get_mimetype($filename, $mimetype, $expected)
 	{
+		if (!class_exists('finfo') && strtolower(substr(PHP_OS, 0, 3)) === 'win')
+		{
+			$this->markTestSkipped('Unable to test mimetype guessing without fileinfo support on Windows');
+		}
+
 		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
 		$filespec->get_mimetype($this->path . $filename);
 		$this->assertEquals($expected, $filespec->is_image());

@@ -114,6 +114,18 @@ class ucp_profile
 						$error[] = 'FORM_INVALID';
 					}
 
+					/**
+					* Validate user data on editing registration data in UCP
+					*
+					* @event core.ucp_profile_reg_details_validate
+					* @var	array	data			Array with user profile data
+					* @var	bool	submit			Flag indicating if submit button has been pressed
+					* @var array	error			Array of any generated errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('data', 'submit', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.ucp_profile_reg_details_validate', compact($vars)));
+
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
@@ -353,6 +365,18 @@ class ucp_profile
 						$error[] = 'FORM_INVALID';
 					}
 
+					/**
+					* Validate user data on editing profile in UCP
+					*
+					* @event core.ucp_profile_validate_profile_info
+					* @var	array	data			Array with user profile data
+					* @var	bool	submit			Flag indicating if submit button has been pressed
+					* @var array	error			Array of any generated errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('data', 'submit', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.ucp_profile_validate_profile_info', compact($vars)));
+
 					if (!sizeof($error))
 					{
 						$data['notify'] = $user->data['user_notify_type'];
@@ -380,9 +404,10 @@ class ucp_profile
 						* @event core.ucp_profile_info_modify_sql_ary
 						* @var	array	cp_data		Array with the user custom profile fields data
 						* @var	array	data		Array with user profile data
+						* @var  array	sql_ary		user options data we update
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data');
+						$vars = array('cp_data', 'data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '

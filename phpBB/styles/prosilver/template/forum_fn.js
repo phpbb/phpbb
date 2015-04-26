@@ -376,12 +376,19 @@ function parseDocument($container) {
 
 		function resize() {
 			var width = 0,
-				diff = $left.outerWidth(true) - $left.width();
+				diff = $left.outerWidth(true) - $left.width(),
+				minWidth = Math.max($this.width() / 3, 240),
+				maxWidth;
 
 			$right.each(function() {
-				width += $(this).outerWidth(true);
+				var $this = $(this);
+				if ($this.is(':visible')) {
+					width += $this.outerWidth(true);
+				}
 			});
-			$left.css('max-width', Math.floor($this.width() - width - diff) + 'px');
+
+			maxWidth = $this.width() - width - diff;
+			$left.css('max-width', Math.floor(Math.max(maxWidth, minWidth)) + 'px');
 		}
 
 		resize();
@@ -410,7 +417,13 @@ function parseDocument($container) {
 		// Function that checks breadcrumbs
 		function check() {
 			var height = $this.height(),
-				width = $body.width();
+				width;
+
+			// Test max-width set in code for .navlinks above
+			width = parseInt($this.css('max-width'));
+			if (!width) {
+ 				width = $body.width();
+			}
 
 			maxHeight = parseInt($this.css('line-height'));
 			$links.each(function() {

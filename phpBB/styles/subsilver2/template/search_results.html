@@ -1,5 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
+<!-- EVENT search_results_header_before -->
+
 <form method="post" action="{S_SEARCH_ACTION}">
 
 <table width="100%" cellspacing="1">
@@ -8,9 +10,11 @@
 </tr>
 <tr>
 	<td class="genmed"><!-- IF SEARCH_TOPIC -->{L_SEARCHED_TOPIC}{L_COLON} <a href="{U_SEARCH_TOPIC}"><b>{SEARCH_TOPIC}</b></a><br /><!-- ENDIF --><!-- IF SEARCH_WORDS -->{L_SEARCHED_FOR}{L_COLON} <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a><!-- ENDIF --><!-- IF IGNORED_WORDS --> {L_IGNORED_TERMS}{L_COLON} <b>{IGNORED_WORDS}</b><!-- ENDIF --></td>
-	<td align="{S_CONTENT_FLOW_END}"><!-- IF SEARCH_IN_RESULTS --><span class="genmed">{L_SEARCH_IN_RESULTS}{L_COLON} </span><input class="post" type="text" name="add_keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /><!-- ENDIF --></td>
+	<td align="{S_CONTENT_FLOW_END}"><!-- EVENT search_results_searchbox_after --><!-- IF SEARCH_IN_RESULTS --><span class="genmed">{L_SEARCH_IN_RESULTS}{L_COLON} </span><input class="post" type="text" name="add_keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /><!-- ENDIF --></td>
 </tr>
 </table>
+
+<!-- EVENT search_results_header_after -->
 
 <br clear="all" />
 

@@ -398,7 +398,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
  */
 function user_delete($mode, $user_ids, $retain_username = true)
 {
-	global $cache, $config, $db, $user, $phpbb_dispatcher;
+	global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container;
 	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
@@ -671,6 +671,9 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
 	phpbb_delete_users_pms($user_ids);
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+	$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_ids);
 
 	$db->sql_transaction('commit');
 

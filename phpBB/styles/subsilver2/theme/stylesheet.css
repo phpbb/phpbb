@@ -322,6 +322,10 @@ th {
 	padding: 7px 5px;
 }
 
+th.center {
+	text-align: center;
+}
+
 td {
 	padding: 2px;
 }

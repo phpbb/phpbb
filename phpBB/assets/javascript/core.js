@@ -408,7 +408,9 @@ phpbb.ajaxify = function(options) {
 		$elements.find('input:submit').click(function () {
 			var $this = $(this);
 
-			$this.siblings('[data-clicked]').removeAttr('data-clicked');
+			// Remove data-clicked attribute from any submit button of form
+			$this.parents('form:first').find('input:submit[data-clicked]').removeAttr('data-clicked');
+
 			$this.attr('data-clicked', 'true');
 		});
 	}

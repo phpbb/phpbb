@@ -330,14 +330,17 @@ switch ($mode)
 		{
 			$is_authed = true;
 		}
-	break;
+
+	// no break;
 
 	case 'soft_delete':
-		if ($user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+		if (!$is_authed && $user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 		{
+			// Fall back to soft_delete if we have no permissions to delete posts but to soft delete them
 			$is_authed = true;
+			$mode = 'soft_delete';
 		}
-		else
+		else if (!$is_authed)
 		{
 			// Display the same error message for softdelete we use for delete
 			$mode = 'delete';
@@ -1517,9 +1520,13 @@ if (!sizeof($error) && $preview)
 			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
 		));
 
-		$parse_poll->message = implode("\n", $post_data['poll_options']);
-		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
-		$preview_poll_options = explode('<br />', $parse_poll->message);
+		$preview_poll_options = array();
+		foreach ($post_data['poll_options'] as $poll_option)
+		{
+			$parse_poll->message = $poll_option;
+			$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
+			$preview_poll_options[] = $parse_poll->message;
+		}
 		unset($parse_poll);
 
 		foreach ($preview_poll_options as $key => $option)
