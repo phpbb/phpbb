@@ -118,7 +118,6 @@ $phpbb_class_loader_ext->register();
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 $phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_container = $phpbb_container_builder
-	->with_config($phpbb_config_php_file)
 	->without_extensions()
 	->without_cache()
 	->without_compiled_container()

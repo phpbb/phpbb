@@ -142,7 +142,10 @@ class container_builder
 		}
 
 		// Inject the config
-		$this->container_extensions[] = new extension\config($this->config_php_file);
+		if ($this->config_php_file)
+		{
+			$this->container_extensions[] = new extension\config($this->config_php_file);
+		}
 
 		$this->container = $this->create_container($this->container_extensions);
 
