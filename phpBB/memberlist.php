@@ -1174,13 +1174,19 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_from[] = array(
-				USER_GROUP_TABLE	=> 'ug'
+			$sql_join[] = array(
+				'FROM'	=> array(
+					USER_GROUP_TABLE	=> 'ug',
+				),
+				'ON' => 'u.user_id = ug.user_id',
 			);
+			//$sql_from[] = array(
+			//	USER_GROUP_TABLE	=> 'ug'
+			//);
 			$order_by = 'ug.group_leader DESC, ';
 
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
-			$sql_where_data = " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
+			$sql_where_data = " AND ug.group_id = $group_id";
 		}
 
 		// Sorting and order
@@ -1215,6 +1221,10 @@ switch ($mode)
 			if (!empty($sql_from))
 			{
 				$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
+			}
+			if(!empty($sql_join))
+			{
+				$sql_array['LEFT_JOIN'] = $sql_join;
 			}
 			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
@@ -1415,7 +1425,10 @@ switch ($mode)
 		{
 			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
-
+		if(!empty($sql_join))
+		{
+			$sql_array['LEFT_JOIN'] = $sql_join;
+		}
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
@@ -1468,6 +1481,10 @@ switch ($mode)
 				if (!empty($sql_from))
 				{
 					$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
+				}
+				if(!empty($sql_join))
+				{
+					$sql_array['LEFT_JOIN'] = $sql_join;
 				}
 				$sql = $db->sql_build_query('SELECT', $sql_array);
 			}
