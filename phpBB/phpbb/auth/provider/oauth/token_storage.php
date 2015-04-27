@@ -13,7 +13,6 @@
 
 namespace phpbb\auth\provider\oauth;
 
-
 use OAuth\OAuth1\Token\StdOAuth1Token;
 use OAuth\Common\Token\TokenInterface;
 use OAuth\Common\Storage\TokenStorageInterface;

@@ -138,6 +138,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 			// Check docblocks
 			$find = array(
 				T_COMMENT,
+				T_DOC_COMMENT_CLOSE_TAG,
 				T_DOC_COMMENT,
 				T_CLASS,
 				T_FUNCTION,
@@ -147,42 +148,30 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 			$comment_end = $phpcsFile->findPrevious($find, ($function_declaration - 1));
 			if ($comment_end !== false)
 			{
-				if (!$tokens[$comment_end]['code'] !== T_DOC_COMMENT)
+				if ($tokens[$comment_end]['code'] === T_DOC_COMMENT_CLOSE_TAG)
 				{
-					$comment_start = ($phpcsFile->findPrevious(T_DOC_COMMENT, ($comment_end - 1), null, true) + 1);
-					$comment      = $phpcsFile->getTokensAsString($comment_start, ($comment_end - $comment_start + 1));
-
-					try
-					{
-						$comment_parser = new PHP_CodeSniffer_CommentParser_FunctionCommentParser($comment, $phpcsFile);
-						$comment_parser->parse();
-
-						// Check @param
-						foreach ($comment_parser->getParams() as $param) {
-							$type = $param->getType();
-							$types = explode('|', str_replace('[]', '', $type));
-							foreach ($types as $type)
-							{
-								$ok = $this->check($phpcsFile, $type, $class_name_full, $class_name_short, $param->getLine() + $comment_start) ? true : $ok;
-							}
+					$comment_start = $tokens[$comment_end]['comment_opener'];
+					foreach ($tokens[$comment_start]['comment_tags'] as $tag) {
+						if ($tokens[$tag]['content'] !== '@param' && $tokens[$tag]['content'] !== '@return' && $tokens[$tag]['content'] !== '@throws') {
+							continue;
 						}
 
-						// Check @return
-						$return = $comment_parser->getReturn();
-						if ($return !== null)
+						$classes = $tokens[($tag + 2)]['content'];
+						$space = strpos($classes, ' ');
+						if ($space !== false) {
+							$classes = substr($classes, 0, $space);
+						}
+
+						$tab = strpos($classes, "\t");
+						if ($tab !== false) {
+							$classes = substr($classes, 0, $tab);
+						}
+
+						$classes = explode('|', str_replace('[]', '', $classes));
+						foreach ($classes as $class)
 						{
-							$type = $return->getValue();
-							$types = explode('|', str_replace('[]', '', $type));
-							foreach ($types as $type)
-							{
-								$ok = $this->check($phpcsFile, $type, $class_name_full, $class_name_short, $return->getLine() + $comment_start) ? true : $ok;
-							}
+							$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tokens[$tag + 2]['line']) ? true : $ok;
 						}
-					}
-					catch (PHP_CodeSniffer_CommentParser_ParserException $e)
-					{
-						$line = ($e->getLineWithinComment() + $comment_start);
-						$phpcsFile->addError($e->getMessage(), $line, 'FailedParse');
 					}
 				}
 			}

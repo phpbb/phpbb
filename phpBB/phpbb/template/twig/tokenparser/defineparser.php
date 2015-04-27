@@ -14,7 +14,6 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-
 class defineparser extends \Twig_TokenParser
 {
 	/**
