@@ -8,43 +8,8 @@ application:
         - agent
     volumes:
         - ./phpBB/:/var/www/html
-        # This is a trick to make it loadable by Symfony ;)
-        #- app/config/parameters.yml.dist:/var/www/html/app/config/parameters_default.yml
-        #- docker/frontend/parameters.yml.dist:/var/www/html/app/config/parameters.yml.dist
-        #- docker/frontend/parameters_docker.yml:/var/www/html/app/config/parameters_docker.yml
-        #- docker/frontend/parameters.yml:/var/www/html/app/config/parameters.yml
-        #- docker/signify/publicKeys.json:/var/www/html/app/config/publicKeys.json
-        #- /var/www/html/app/cache
-        #- /var/www/html/app/logs
-        #- /var/www/html/app/sessions
     volumes_from:
         - data
-
-# frontend:
-#     build: docker/frontend
-#     links:
-#         - amqp
-#         - db
-#         - agent
-#         # - signify
-#     environment:
-#         SYMFONY_ENV: prod
-#         PROFILER_AGENT_VERSION: 0.1
-#         PROFILER_PROBE_VERSION: 0.1
-#         PROFILER_PACKAGES_DOMAIN: packages.blackfire.io
-#     volumes_from:
-#         - data
-#
-# web:
-#     image: nginx:1.7
-#     links:
-#         - frontend
-#     ports:
-#         - "8080:80"
-#     volumes:
-#         - "docker/nginx:/etc/nginx:ro"
-#     volumes_from:
-#         - data
 
 mysql:
     image: mysql:5.6.24
