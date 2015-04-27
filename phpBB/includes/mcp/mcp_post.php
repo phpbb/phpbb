@@ -280,7 +280,7 @@ function mcp_post_details($id, $mode, $action)
 	* @since 3.1.5-RC1
 	*/
 	$vars = array(
-		'poll_info',
+		'post_info',
 		'mcp_post_template_data',
 		'attachments',
 		's_additional_opts',
