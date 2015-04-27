@@ -8,7 +8,7 @@
 *
 */
 
-define('UPDATES_TO_VERSION', '3.0.14-dev');
+define('UPDATES_TO_VERSION', '3.0.14-RC1');
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 define('DEBUG_FROM_VERSION', false);
@@ -949,7 +949,7 @@ function database_update_info()
 						// this column was removed from the database updater
 						// after 3.0.9-RC3 was released. It might still exist
 						// in 3.0.9-RCX installations and has to be dropped in
-						// 3.0.14 after the db_tools class is capable of properly
+						// 3.0.15 after the db_tools class is capable of properly
 						// removing a primary key.
 						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),
@@ -1014,9 +1014,13 @@ function database_update_info()
 		// No changes from 3.0.12 to 3.0.13-RC1
 		'3.0.12'		=> array(),
 		// No changes from 3.0.13-RC1 to 3.0.13
-		'3.0.13-RC1'		=> array(),
+		'3.0.13-RC1'	=> array(),
+		// No changes from 3.0.13 to 3.0.13-PL1
+		'3.0.13'		=> array(),
+		// No changes from 3.0.13-PL1 to 3.0.14-RC1
+		'3.0.13-PL1'	=> array(),
 
-		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.14-RC1 */
+		/** @todo DROP LOGIN_ATTEMPT_TABLE.attempt_id in 3.0.15-RC1 */
 	);
 }
 
@@ -2265,6 +2269,14 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.13-RC1 to 3.0.13
 		case '3.0.13-RC1':
+		break;
+
+		// No changes from 3.0.13 to 3.0.13-PL1
+		case '3.0.13':
+		break;
+
+		// No changes from 3.0.13-PL1 to 3.0.14-RC1
+		case '3.0.13-PL1':
 		break;
 	}
 }
