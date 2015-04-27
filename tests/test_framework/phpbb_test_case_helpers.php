@@ -458,6 +458,10 @@ class phpbb_test_case_helpers
 		{
 			$dispatcher = new phpbb_mock_event_dispatcher;
 		}
+		if (!isset($phpbb_dispatcher))
+		{
+			$phpbb_dispatcher = $dispatcher;
+		}
 
 		// Create and register the text_formatter.s9e.factory service
 		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $cache_dir, $cache_key_parser, $cache_key_renderer);

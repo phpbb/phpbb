@@ -289,7 +289,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', false, true),
 			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
 			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
-			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH', true),
+			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH png jpg', true),
 		);
 	}
 
