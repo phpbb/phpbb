@@ -26,6 +26,7 @@ function mcp_post_details($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth, $cache;
+	global $phpbb_dispatcher;
 
 	$user->add_lang('posting');
 
@@ -104,6 +105,21 @@ function mcp_post_details($id, $mode, $action)
 					trigger_error('FORM_INVALID');
 				}
 			}
+
+		break;
+
+		default:
+
+			/**
+			* This event allows you to handle custom post moderation options
+			*
+			* @event core.mcp_post_additional_options
+			* @var	string	action		Post moderation action name
+			* @var	array	post_info	Information on the affected post
+			* @since 3.1.5-RC1
+			*/
+			$vars = array('action', 'post_info');
+			extract($phpbb_dispatcher->trigger_event('core.mcp_post_additional_options', compact($vars)));
 
 		break;
 	}
@@ -197,7 +213,7 @@ function mcp_post_details($id, $mode, $action)
 		$l_deleted_by = '';
 	}
 
-	$template->assign_vars(array(
+	$mcp_post_template_data = array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1&amp;mode=post_details", // Use this for mode paramaters
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
@@ -249,7 +265,32 @@ function mcp_post_details($id, $mode, $action)
 
 		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
 		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
-	));
+	);
+
+	$s_additional_opts = false;
+
+	/**
+	* Event to add/modify MCP post template data
+	*
+	* @event core.mcp_post_template_data
+	* @var	array	post_info					Array with the post information
+	* @var	array	mcp_post_template_data		Array with the MCP post template data
+	* @var	array	attachments					Array with the post attachments, if any
+	* @var	bool	s_additional_opts			Must be set to true in extension if additional options are presented in MCP post panel
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'poll_info',
+		'mcp_post_template_data',
+		'attachments',
+		's_additional_opts',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_poll_template_data', compact($vars)));
+
+	$template->assign_vars($mcp_post_template_data);
+	$template->assign_var('S_MCP_POST_ADDITIONAL_OPTS', $s_additional_opts);
+
+	unset($mcp_post_template_data);
 
 	// Get User Notes
 	$log_data = array();

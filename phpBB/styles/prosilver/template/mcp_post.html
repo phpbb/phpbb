@@ -144,7 +144,7 @@
 	</div>
 </div>
 
-<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
+<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER or S_MCP_POST_ADDITIONAL_OPTS -->
 	<div class="panel">
 		<div class="inner">
 
@@ -166,6 +166,10 @@
 			{S_FORM_TOKEN}
 			</fieldset>
 			</form>
+		<!-- ENDIF -->
+
+		<!-- IF S_MCP_POST_ADDITIONAL_OPTS -->
+		<!-- EVENT mcp_post_additional_options -->
 		<!-- ENDIF -->
 
 		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
