@@ -285,7 +285,7 @@ function mcp_post_details($id, $mode, $action)
 		'attachments',
 		's_additional_opts',
 	);
-	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_poll_template_data', compact($vars)));
+	extract($phpbb_dispatcher->trigger_event('core.mcp_post_template_data', compact($vars)));
 
 	$template->assign_vars($mcp_post_template_data);
 	$template->assign_var('S_MCP_POST_ADDITIONAL_OPTS', $s_additional_opts);
