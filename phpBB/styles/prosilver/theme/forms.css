@@ -243,6 +243,9 @@ fieldset.submit-buttons input {
 	max-width: 100%;
 	font-size: 1.2em;
 	resize: vertical;
+	outline: 3px dashed transparent;
+	outline-offset: -4px;
+	transition: .5s;
 }
 
 /* Emoticons panel */

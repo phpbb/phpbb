@@ -1232,6 +1232,14 @@ phpbb.applyCodeEditor = function(textarea) {
 	});
 };
 
+phpbb.applyDragNDrop = function(textarea) {
+	$('html').on('dragenter dragover', function () {
+		$(textarea).addClass('drag-n-drop');
+	}).on('dragleave dragout dragend drop', function() {
+		$(textarea).removeClass('drag-n-drop');
+	});
+};
+
 /**
 * List of classes that toggle dropdown menu,
 * list of classes that contain visible dropdown menu
