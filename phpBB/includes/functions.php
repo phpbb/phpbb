@@ -2492,7 +2492,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
 		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
-			$url = generate_board_url();
+			trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
 		}
 	}
 	else if ($url[0] == '/')
@@ -2577,6 +2577,12 @@ function redirect($url, $return = false, $disable_cd_check = false)
 				$url = generate_board_url() . '/' . $url;
 			}
 		}
+	}
+
+	// Make sure we don't redirect to external URLs
+	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
+	{
+		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
 	}
 
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2

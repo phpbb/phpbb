@@ -18,12 +18,17 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 	{
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(
-			array('data://x', false, 'http://localhost/phpBB'),
+			array('data://x', 'Tried to redirect to potentially insecure url.', false),
 			array('bad://localhost/phpBB/index.php', 'Tried to redirect to potentially insecure url.', false),
-			array('http://www.otherdomain.com/somescript.php', false, 'http://localhost/phpBB'),
+			array('http://www.otherdomain.com/somescript.php', 'Tried to redirect to potentially insecure url.', false),
 			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", 'Tried to redirect to potentially insecure url.', false),
 			array('javascript:test', false, 'http://localhost/phpBB/../javascript:test'),
 			array('http://localhost/phpBB/index.php;url=', 'Tried to redirect to potentially insecure url.', false),
+			array('https://foobar.com\@http://localhost/phpBB', 'Tried to redirect to potentially insecure url.', false),
+			array('https://foobar.com\@localhost/troll/http://localhost/', 'Tried to redirect to potentially insecure url.', false),
+			array('http://localhost.foobar.com\@localhost/troll/http://localhost/', 'Tried to redirect to potentially insecure url.', false),
+			array('http://localhost/phpBB', false, 'http://localhost/phpBB'),
+			array('http://localhost/phpBB/', false, 'http://localhost/phpBB/'),
 		);
 	}
 
