@@ -73,9 +73,10 @@ class language
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\language\language_file_loader	$loader	Language file loader
+	 * @param \phpbb\language\language_file_loader	$loader			Language file loader
+	 * @param array|null							$common_modules	Array of common language modules to load (optional)
 	 */
-	public function __construct(language_file_loader $loader)
+	public function __construct(language_file_loader $loader, $common_modules = null)
 	{
 		$this->loader = $loader;
 
@@ -92,9 +93,17 @@ class language
 		);
 
 		// Common language files
-		$this->common_language_files = array(
-			'common',
-		);
+		if (is_array($common_modules))
+		{
+			$this->common_language_files = $common_modules;
+		}
+		else
+		{
+			$this->common_language_files = array(
+				'common',
+			);
+		}
+
 		$this->common_language_files_loaded = false;
 
 		$this->language_fallback = array(self::FALLBACK_LANGUAGE);
