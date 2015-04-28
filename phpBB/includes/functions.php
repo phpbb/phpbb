@@ -1740,7 +1740,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
 		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
-			$url = generate_board_url();
+			trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 		}
 	}
 	else if ($url[0] == '/')
@@ -1778,7 +1778,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Clean URL and check if we go outside the forum directory
 	$url = $phpbb_path_helper->clean_url($url);
 
-	if (!$disable_cd_check && strpos($url, generate_board_url(true)) === false)
+	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
 	{
 		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
