@@ -1,3 +1,5 @@
 [email]user@example.org[/email]
 [email=user@example.org]...[/email]
 [email subject="Hello" body="Sent from phpBB"]user@example.org[/email]
+[email subject="Hi there"]user@example.org[/email]
+[email body="Hi there"]user@example.org[/email]
