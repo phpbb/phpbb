@@ -11,6 +11,7 @@ parameters:
     tables.forums: %core.table_prefix%forums
     tables.log: %core.table_prefix%log
     tables.migrations: %core.table_prefix%migrations
+    tables.moderator_cache: %core.table_prefix%moderator_cache
     tables.modules: %core.table_prefix%modules
     tables.notification_types: %core.table_prefix%notification_types
     tables.notifications: %core.table_prefix%notifications

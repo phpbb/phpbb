@@ -8,13 +8,16 @@ imports:
     - { resource: services_db.yml }
     - { resource: services_event.yml }
     - { resource: services_feed.yml }
+    - { resource: services_files.yml }
     - { resource: services_help.yml }
+    - { resource: services_http.yml }
     - { resource: services_language.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
     - { resource: services_module.yml }
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
+    - { resource: services_php.yml }
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }
@@ -107,18 +110,8 @@ services:
             - %core.php_ext%
             - @cache.driver
 
-    filesystem:
-        class: phpbb\filesystem\filesystem
-
     file_downloader:
         class: phpbb\file_downloader
-
-    http_kernel:
-        class: Symfony\Component\HttpKernel\HttpKernel
-        arguments:
-            - @dispatcher
-            - @controller.resolver
-            - @request_stack
 
     log:
         class: phpbb\log\log
@@ -142,9 +135,6 @@ services:
             - %core.php_ext%
             - %core.adm_relative_path%
 
-    php_ini:
-        class: phpbb\php\ini
-
     plupload:
         class: phpbb\plupload\plupload
         arguments:
@@ -154,22 +144,6 @@ services:
             - @user
             - @php_ini
             - @mimetype.guesser
-
-    request:
-        class: phpbb\request\request
-        arguments:
-            - null
-            - %core.disable_super_globals%
-
-    # WARNING: The Symfony request does not escape the input and should be used very carefully
-    #           prefer the phpbb request (service @request) as possible
-    symfony_request:
-        class: phpbb\symfony_request
-        arguments:
-            - @request
-
-    request_stack:
-        class: Symfony\Component\HttpFoundation\RequestStack
 
     upload_imagesize:
         class: fastImageSize\fastImageSize
