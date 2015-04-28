@@ -99,7 +99,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			new \phpbb\filesystem\filesystem(),
-			$this->user,
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,
@@ -120,7 +119,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
 		}
 	}
 
@@ -137,7 +137,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->fail($e);
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->fail($message);
 		}
 
 		$json = json_decode(file_get_contents($this->phpbb_root_path . 'ext/vendor2/foo/composer.json'), true);
@@ -169,7 +170,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', $field_name));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', $field_name));
 		}
 	}
 
@@ -183,7 +185,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'authors'));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', 'authors'));
 		}
 
 		$manager->merge_metadata(array(
@@ -199,7 +202,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'author name'));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', 'author name'));
 		}
 	}
 
@@ -232,7 +236,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_INVALID', $field_name));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_INVALID', $field_name));
 		}
 	}
 
@@ -256,7 +261,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch(\phpbb\extension\exception $e)
 		{
-			$this->fail($e);
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->fail($message);
 		}
 	}
 
@@ -352,7 +358,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->config,
 			$this->extension_manager,
 			$this->template,
-			$this->user,
 			$this->phpbb_root_path
 		);
 	}
