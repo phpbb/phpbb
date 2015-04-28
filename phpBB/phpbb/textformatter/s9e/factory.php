@@ -68,7 +68,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'b'     => '[B]{TEXT}[/B]',
 		'code'  => '[CODE]{TEXT}[/CODE]',
 		'color' => '[COLOR={COLOR}]{TEXT}[/COLOR]',
-		'email' => '[EMAIL={EMAIL;useContent}]{TEXT}[/EMAIL]',
+		'email' => '[EMAIL={EMAIL;useContent} subject={TEXT;optional;postFilter=urlencode} body={TEXT;optional;postFilter=urlencode}]{TEXT}[/EMAIL]',
 		'flash' => '[FLASH={NUMBER1},{NUMBER2} width={NUMBER1;postFilter=#flashwidth} height={NUMBER2;postFilter=#flashheight} url={URL;useContent} /]',
 		'i'     => '[I]{TEXT}[/I]',
 		'img'   => '[IMG src={IMAGEURL;useContent}]',
@@ -97,7 +97,18 @@ class factory implements \phpbb\textformatter\cache_interface
 		'img'   => '<img src="{IMAGEURL}" alt="{L_IMAGE}"/>',
 		'size'  => '<span style="font-size: {FONTSIZE}%; line-height: normal"><xsl:apply-templates/></span>',
 		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
-		'email' => '<a href="mailto:{EMAIL}"><xsl:apply-templates/></a>',
+		'email' => '<a>
+			<xsl:attribute name="href">
+				<xsl:text>mailto:</xsl:text>
+				<xsl:value-of select="@email"/>
+				<xsl:if test="@subject or @body">
+					<xsl:text>?</xsl:text>
+					<xsl:if test="@subject">subject=<xsl:value-of select="@subject"/></xsl:if>
+					<xsl:if test="@body"><xsl:if test="@subject">&amp;</xsl:if>body=<xsl:value-of select="@body"/></xsl:if>
+				</xsl:if>
+			</xsl:attribute>
+			<xsl:apply-templates/>
+		</a>',
 	);
 
 	/**
