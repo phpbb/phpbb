@@ -1233,10 +1233,15 @@ phpbb.applyCodeEditor = function(textarea) {
 };
 
 phpbb.applyDragNDrop = function(textarea) {
-	$('html').on('dragenter dragover', function () {
+	$('body').on('dragenter dragover', function () {
 		$(textarea).addClass('drag-n-drop');
 	}).on('dragleave dragout dragend drop', function() {
 		$(textarea).removeClass('drag-n-drop');
+	});
+	$(textarea).on('dragenter dragover', function () {
+		$(textarea).addClass('drag-n-drop-highlight');
+	}).on('dragleave dragout dragend drop', function() {
+		$(textarea).removeClass('drag-n-drop-highlight');
 	});
 };
 

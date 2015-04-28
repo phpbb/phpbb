@@ -978,7 +978,11 @@ fieldset.quick-login input.inputbox {
 }
 
 #message-box textarea.drag-n-drop {
-	outline-color: rgba(17, 163, 234, 0.7);
+	outline-color: rgba(102, 102, 102, 0.5);
+}
+
+#message-box textarea.drag-n-drop-highlight {
+	outline-color: rgba(17, 163, 234, 0.5);
 }
 
 /* Input field styles
