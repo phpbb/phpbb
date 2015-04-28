@@ -1776,7 +1776,7 @@ li.pagination ul {
 
 /* Action Highlighting
 ---------------------------------------- */
-.successbox, .errorbox {
+.successbox, .errorbox, .warningbox {
 	padding: 8px;
 	margin: 10px 0;
 	color: #FFFFFF;
@@ -1798,6 +1798,10 @@ li.pagination ul {
 
 .errorbox {
 	background-color: #BC2A4D;
+}
+
+.warningbox {
+    background-color: #fca600;
 }
 
 .successbox h3, .errorbox h3 {

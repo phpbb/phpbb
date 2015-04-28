@@ -1,0 +1,13 @@
+<!-- INCLUDE install_header.html -->
+<h1>{L_INSTALL}</h1>
+{CONTENT}
+<!-- IF SHOW_INSTALL_START_FORM -->
+<form id="install_install" method="post" action="{U_ACTION}">
+    <fieldset class="submit-buttons">
+        <legend>{L_SUBMIT}</legend>
+        <input name="install" type="submit" value="{L_INSTALL}" />
+    </fieldset>
+</form>
+<!-- ENDIF -->
+<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/installer.js -->
+<!-- INCLUDE install_footer.html -->
