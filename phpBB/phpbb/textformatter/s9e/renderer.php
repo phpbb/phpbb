@@ -234,10 +234,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		}
 
 		$html = $this->renderer->render($xml);
-		if (stripos($html, '<code') !== false)
-		{
-			$html = $this->replace_tabs_in_code($html);
-		}
 
 		/**
 		* Modify a rendered text
@@ -251,45 +247,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
 
 		return $html;
-	}
-
-	/**
-	* Replace tabs in code elements
-	*
-	* @see bbcode::bbcode_second_pass_code()
-	*
-	* @param  string $html Original HTML
-	* @return string       Modified HTML
-	*/
-	protected function replace_tabs_in_code($html)
-	{
-		return preg_replace_callback(
-			'((<code[^>]*>)(.*?)(</code>))is',
-			function ($captures)
-			{
-				$code = $captures[2];
-
-				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
-				$code = str_replace('  ', '&nbsp; ', $code);
-				$code = str_replace('  ', ' &nbsp;', $code);
-				$code = str_replace("\n ", "\n&nbsp;", $code);
-
-				// keep space at the beginning
-				if (!empty($code) && $code[0] == ' ')
-				{
-					$code = '&nbsp;' . substr($code, 1);
-				}
-
-				// remove newline at the beginning
-				if (!empty($code) && $code[0] == "\n")
-				{
-					$code = substr($code, 1);
-				}
-
-				return $captures[1] . $code . $captures[3];
-			},
-			$html
-		);
 	}
 
 	/**
