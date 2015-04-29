@@ -978,10 +978,18 @@ fieldset.quick-login input.inputbox {
 }
 
 #message-box textarea.drag-n-drop {
+	-webkit-outline-color: rgba(102, 102, 102, 0.5);
+	-moz-outline-color: rgba(102, 102, 102, 0.5);
+	-ms-outline-color: rgba(102, 102, 102, 0.5);
+	-o-outline-color: rgba(102, 102, 102, 0.5);
 	outline-color: rgba(102, 102, 102, 0.5);
 }
 
 #message-box textarea.drag-n-drop-highlight {
+	-webkit-outline-color: rgba(17, 163, 234, 0.5);
+	-moz-outline-color: rgba(17, 163, 234, 0.5);
+	-ms-outline-color: rgba(17, 163, 234, 0.5);
+	-o-outline-color: rgba(17, 163, 234, 0.5);
 	outline-color: rgba(17, 163, 234, 0.5);
 }
 
