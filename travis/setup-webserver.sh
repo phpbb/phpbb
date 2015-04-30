@@ -6,12 +6,6 @@
 set -e
 set -x
 
-if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
-then
-	# Add PPA providing dependencies for recent HHVM on Ubuntu 12.04.
-	sudo add-apt-repository -y ppa:mapnik/boost
-fi
-
 sudo apt-get update
 sudo apt-get install -y nginx realpath
 
@@ -23,20 +17,8 @@ PHPBB_ROOT_PATH=$(realpath "$DIR/../phpBB")
 NGINX_CONF="/etc/nginx/sites-enabled/default"
 APP_SOCK=$(realpath "$DIR")/php-app.sock
 
-if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
+if [ "$TRAVIS_PHP_VERSION" != 'hhvm' ]
 then
-	# Upgrade to a recent stable version of HHVM
-	sudo apt-get -o Dpkg::Options::="--force-confnew" install -y hhvm-nightly
-
-	HHVM_LOG=$(realpath "$DIR")/hhvm.log
-
-	sudo hhvm \
-		--mode daemon \
-		--user "$USER" \
-		-vServer.Type=fastcgi \
-		-vServer.FileSocket="$APP_SOCK" \
-		-vLog.File="$HHVM_LOG"
-else
 	# php-fpm
 	PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
 	PHP_FPM_CONF="$DIR/php-fpm.conf"
