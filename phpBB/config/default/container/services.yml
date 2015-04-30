@@ -15,6 +15,7 @@ imports:
     - { resource: services_password.yml }
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
+    - { resource: services_routing.yml }
     - { resource: services_text_formatter.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
@@ -156,25 +157,6 @@ services:
         arguments:
             - null
             - %core.disable_super_globals%
-
-    router:
-        class: phpbb\routing\router
-        arguments:
-            - @filesystem
-            - @ext.manager
-            - %core.root_path%
-            - %core.php_ext%
-            - %core.environment%
-
-    router.listener:
-        class: Symfony\Component\HttpKernel\EventListener\RouterListener
-        arguments:
-            - @router
-            - null
-            - null
-            - @request_stack
-        tags:
-            - { name: kernel.event_subscriber }
 
     # WARNING: The Symfony request does not escape the input and should be used very carefully
     #           prefer the phpbb request (service @request) as possible

@@ -120,7 +120,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$this->router = new phpbb_mock_router($this->filesystem, $this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$this->router = new phpbb_mock_router($this->filesystem, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT, $this->extension_manager);
 		$this->router->find_routing_files($this->extension_manager->all_enabled(false));
 		$this->router->find(dirname(__FILE__) . '/');
 		// Set correct current phpBB root path
