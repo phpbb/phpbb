@@ -494,11 +494,9 @@ class phpbb_test_case_helpers
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			$cache_key_parser,
-			$user,
 			$factory,
 			$dispatcher
 		);
-
 		$container->set('text_formatter.parser', $parser);
 		$container->set('text_formatter.s9e.parser', $parser);
 
