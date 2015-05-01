@@ -38,7 +38,7 @@ class phpbb_textreparser_post_text_test extends phpbb_database_test_case
 	public function testReparse($min_id, $max_id, $expected)
 	{
 		$db = $this->new_dbal();
-		$reparser = new \phpbb\textreparser\post_text($db);
+		$reparser = new \phpbb\textreparser\plugins\post_text($db);
 		$reparser->reparse_range($min_id, $max_id);
 		$sql = 'SELECT post_id, post_text
 			FROM ' . POSTS_TABLE . "

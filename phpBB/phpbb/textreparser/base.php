@@ -16,21 +16,6 @@ namespace phpbb\textreparser;
 abstract class base implements reparser_interface
 {
 	/**
-	* @var \phpbb\db\driver\driver_interface
-	*/
-	protected $db;
-
-	/**
-	* Constructor
-	*
-	* @param \phpbb\db\driver\driver_interface $db Database connection
-	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db)
-	{
-		$this->db = $db;
-	}
-
-	/**
 	* {@inheritdoc}
 	*/
 	abstract public function get_max_id();
