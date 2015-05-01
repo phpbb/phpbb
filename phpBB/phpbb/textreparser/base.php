@@ -63,8 +63,8 @@ abstract class base implements reparser_interface
 			$bitfield,
 			$flags,
 			$unparsed['enable_bbcode'],
-			$unparsed['enable_smilies'],
-			$unparsed['enable_magic_url']
+			$unparsed['enable_magic_url'],
+			$unparsed['enable_smilies']
 		);
 
 		// Save the new text if it has changed

@@ -45,6 +45,29 @@ abstract class row_based_plugin extends base
 	abstract protected function get_table_name();
 
 	/**
+	* Add fields to given row, if applicable
+	*
+	* The enable_* fields are not always saved to the database. Sometimes we need to guess their
+	* original value based on the text content or possibly other fields
+	*
+	* @param  array $row Original row
+	* @return array      Complete row
+	*/
+	protected function add_missing_fields(array $row)
+	{
+		if (!isset($row['enable_bbcode'], $row['enable_smilies'], $row['enable_magic_url']))
+		{
+			$row += array(
+				'enable_bbcode'    => !empty($row['bbcode_uid']),
+				'enable_smilies'   => (strpos($row['text'], '<!-- s') !== false),
+				'enable_magic_url' => (strpos($row['text'], '<!-- m -->') !== false),
+			);
+		}
+
+		return $row;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_max_id()
@@ -67,16 +90,7 @@ abstract class row_based_plugin extends base
 		$result = $this->db->sql_query($this->get_records_query($min_id, $max_id));
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (!isset($row['enable_bbcode'], $row['enable_smilies'], $row['enable_magic_url']))
-			{
-				// Those fields are not saved to the database, we need to guess their original value
-				$row += array(
-					'enable_bbcode'    => !empty($row['bbcode_uid']),
-					'enable_smilies'   => (strpos($row['text'], '<!-- s') !== false),
-					'enable_magic_url' => (strpos($row['text'], '<!-- m -->') !== false)
-				);
-			}
-			$records[] = $row;
+			$records[] = $this->add_missing_fields($row);
 		}
 		$this->db->sql_freeresult($result);
 

@@ -16,14 +16,47 @@ namespace phpbb\textreparser\plugins;
 class user_signature extends \phpbb\textreparser\row_based_plugin
 {
 	/**
+	* @var array Bit numbers used for user options
+	* @see \phpbb\user
+	*/
+	protected $keyoptions;
+
+	/**
+	* Constructor
+	*
+	* Retrieves and saves the bit numbers used for user options
+	*/
+	public function __construct()
+	{
+		$class_vars = get_class_vars('phpbb\\user');
+		$this->keyoptions = $class_vars['keyoptions'];
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	protected function add_missing_fields(array $row)
+	{
+		$options = $row['user_options'];
+		$row += array(
+			'enable_bbcode'    => phpbb_optionget($this->keyoptions['sig_bbcode'], $options),
+			'enable_smilies'   => phpbb_optionget($this->keyoptions['sig_smilies'], $options),
+			'enable_magic_url' => phpbb_optionget($this->keyoptions['sig_links'], $options),
+		);
+
+		return $row;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	protected function get_columns()
 	{
 		return array(
-			'id'         => 'user_id',
-			'text'       => 'user_sig',
-			'bbcode_uid' => 'user_sig_bbcode_uid',
+			'id'           => 'user_id',
+			'text'         => 'user_sig',
+			'bbcode_uid'   => 'user_sig_bbcode_uid',
+			'user_options' => 'user_options',
 		);
 	}
 
