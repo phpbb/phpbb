@@ -18,7 +18,7 @@ class forum_rules extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_columns()
+	public function get_columns()
 	{
 		return array(
 			'id'         => 'forum_id',
@@ -30,7 +30,7 @@ class forum_rules extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_table_name()
+	public function get_table_name()
 	{
 		return FORUMS_TABLE;
 	}

@@ -18,7 +18,7 @@ class group_description extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_columns()
+	public function get_columns()
 	{
 		return array(
 			'id'         => 'group_id',
@@ -30,7 +30,7 @@ class group_description extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_table_name()
+	public function get_table_name()
 	{
 		return GROUPS_TABLE;
 	}

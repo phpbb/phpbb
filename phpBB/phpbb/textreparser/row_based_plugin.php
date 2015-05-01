@@ -35,14 +35,14 @@ abstract class row_based_plugin extends base
 	*
 	* @return array
 	*/
-	abstract protected function get_columns();
+	abstract public function get_columns();
 
 	/**
 	* Return the name of the table used by this plugin
 	*
 	* @return string
 	*/
-	abstract protected function get_table_name();
+	abstract public function get_table_name();
 
 	/**
 	* Add fields to given row, if applicable

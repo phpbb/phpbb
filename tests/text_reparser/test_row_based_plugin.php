@@ -1,0 +1,92 @@
+<?php
+/**
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
+require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
+require_once __DIR__ . '/../test_framework/phpbb_database_test_case.php';
+
+abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_test_case
+{
+	protected $db;
+
+	public function setUp()
+	{
+		global $config;
+		if (!isset($config))
+		{
+			$config = new \phpbb\config\config(array());
+		}
+		$this->get_test_case_helpers()->set_s9e_services();
+		$this->db = $this->new_dbal();
+		parent::setUp();
+	}
+
+	/**
+	* @dataProvider getReparseTests
+	*/
+	public function testReparse($min_id, $max_id, $expected)
+	{
+		$reparser = $this->get_reparser();
+		$reparser->reparse_range($min_id, $max_id);
+
+		$ids = array();
+		foreach ($expected as $row)
+		{
+			$ids[] = $row['id'];
+		}
+
+		$columns = $reparser->get_columns();
+		$sql = 'SELECT ' . $columns['id'] . ' AS id, ' . $columns['text'] . ' AS text
+			FROM ' . $reparser->get_table_name() . '
+			WHERE ' . $this->db->sql_in_set($columns['id'], $ids);
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+		$this->assertEquals($expected, $rows);
+	}
+
+	public function getReparseTests()
+	{
+		return array(
+			array(
+				2,
+				5,
+				array(
+					array(
+						'id'   => 1,
+						'text' => 'This row should be [b]ignored[/b]',
+					),
+					array(
+						'id'   => 2,
+						'text' => '<t>[b]Not bold[/b] :) http://example.org</t>',
+					),
+					array(
+						'id'   => 3,
+						'text' => '<r><B><s>[b]</s>Bold<e>[/b]</e></B> :) http://example.org</r>',
+					),
+					array(
+						'id'   => 4,
+						'text' => '<r>[b]Not bold[/b] <E>:)</E> http://example.org</r>',
+					),
+					array(
+						'id'   => 5,
+						'text' => '<r>[b]Not bold[/b] :) <URL url="http://example.org">http://example.org</URL></r>',
+					),
+					array(
+						'id'   => 1000,
+						'text' => 'This row should be [b]ignored[/b]',
+					),
+				)
+			),
+		);
+	}
+}

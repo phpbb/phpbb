@@ -18,7 +18,7 @@ class poll_option extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_columns()
+	public function get_columns()
 	{
 		return array(
 			'id'   => 'poll_option_id',
@@ -43,7 +43,7 @@ class poll_option extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_table_name()
+	public function get_table_name()
 	{
 		return POLL_OPTIONS_TABLE;
 	}
