@@ -56,7 +56,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
 		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}

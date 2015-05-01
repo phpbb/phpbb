@@ -47,3 +47,18 @@ services:
 
     template.twig.extensions.debug:
         class: Twig_Extension_Debug
+
+    template:
+        class: phpbb\template\twig\twig
+        arguments:
+            - @path_helper
+            - @config
+            - @template_context
+            - @template.twig.environment
+            - %core.template.cache_path%
+            - @user
+            - @template.twig.extensions.collection
+            - @ext.manager
+
+    template_context:
+        class: phpbb\template\context

@@ -633,7 +633,6 @@ class messenger
 		$this->template = new \phpbb\template\twig\twig(
 			$phpbb_container->get('path_helper'),
 			$phpbb_container->get('config'),
-			$phpbb_container->get('user'),
 			new \phpbb\template\context(),
 			new \phpbb\template\twig\environment(
 				$phpbb_container->get('config'),
@@ -647,6 +646,7 @@ class messenger
 				)
 			),
 			$phpbb_container->getParameter('core.root_path') . 'cache/',
+			$phpbb_container->get('user'),
 			$phpbb_container->get('template.twig.extensions.collection'),
 			$phpbb_extension_manager
 		);

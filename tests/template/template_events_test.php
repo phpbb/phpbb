@@ -169,7 +169,7 @@ Zeta test event in all',
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
 		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
