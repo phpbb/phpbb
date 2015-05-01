@@ -1,0 +1,63 @@
+services:
+    text_reparser.admin_contact_info:
+        class: phpbb\textreparser\admincontactinfo
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.forum_description:
+        class: phpbb\textreparser\forumdescription
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.forum_rules:
+        class: phpbb\textreparser\forumrules
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.group_description:
+        class: phpbb\textreparser\groupdescription
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.pm_text:
+        class: phpbb\textreparser\pmtext
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.poll_option:
+        class: phpbb\textreparser\polloption
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.poll_title:
+        class: phpbb\textreparser\polltitle
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.post_text:
+        class: phpbb\textreparser\posttext
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
+
+    text_reparser.user_signature:
+        class: phpbb\textreparser\usersignature
+        arguments:
+            - @dbal.conn
+        tags:
+            - { name: text_reparser.plugin }
