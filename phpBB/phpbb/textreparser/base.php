@@ -30,6 +30,62 @@ abstract class base implements reparser_interface
 	abstract protected function get_records($min_id, $max_id);
 
 	/**
+	* Guess whether given BBCode is in use in given record
+	*
+	* @param  array  $record
+	* @param  string $bbcode
+	* @return bool
+	*/
+	protected function guess_bbcode(array $record, $bbcode)
+	{
+		if (!empty($record['bbcode_uid']))
+		{
+			// Look for the closing tag, e.g. [/url]
+			$match = '[/' . $bbcode . ':' . $record['bbcode_uid'];
+			if (stripos($record['text'], $match) !== false)
+			{
+				return true;
+			}
+		}
+
+		if (substr($record['text'], 0, 2) == '<r')
+		{
+			// Look for the closing tag inside of a e element, in an element of the same name, e.g.
+			// <e>[/url]</e></URL>
+			$match = '<e>[/' . $bbcode . ']</e></' . $bbcode . '>';
+			if (stripos($record['text'], $match) !== false)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	* Guess whether magic URLs are in use in given record
+	*
+	* @param  array $record
+	* @return bool
+	*/
+	protected function guess_magic_url(array $record)
+	{
+		// Look for <!-- m --> or for a URL tag that's not immediately followed by <s>
+		return (strpos($record['text'], '<!-- m -->') !== false || preg_match('(<URL [^>]++>(?!<s>))', strpos($row['text'])));
+	}
+
+	/**
+	* Guess whether smilies are in use in given record
+	*
+	* @param  array $record
+	* @return bool
+	*/
+	protected function guess_smilies(array $record)
+	{
+		return (strpos($row['text'], '<!-- s') !== false || strpos($row['text'], '<E>') !== false);
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function reparse_range($min_id, $max_id)

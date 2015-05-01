@@ -59,9 +59,18 @@ abstract class row_based_plugin extends base
 		{
 			$row += array(
 				'enable_bbcode'    => !empty($row['bbcode_uid']),
-				'enable_smilies'   => (strpos($row['text'], '<!-- s') !== false),
-				'enable_magic_url' => (strpos($row['text'], '<!-- m -->') !== false),
+				'enable_smilies'   => $this->guess_smilies($row),
+				'enable_magic_url' => $this->guess_magic_url($row),
 			);
+		}
+
+		// Those BBCodes are disabled based on context and user permissions and that value is never
+		// stored in the database. Here we test whether they were used in the original text.
+		$bbcodes = array('flash', 'img', 'quote', 'url');
+		foreach ($bbcodes as $bbcode)
+		{
+			$field_name = 'enable_' . $bbcode;
+			$row[$field_name] = $this->guess_bbcode($row, $bbcode);
 		}
 
 		return $row;
