@@ -30,7 +30,7 @@ class version_helper_remote_test extends \phpbb_test_case
 		));
 		$container = new \phpbb_mock_container_builder();
 		$db = new \phpbb\db\driver\factory($container);
-		$this->cache = $this->getMock('\phpbb\cache\service', array('get'), array(new \phpbb\cache\driver\null(), $config, $db, '../../', 'php'));
+		$this->cache = $this->getMock('\phpbb\cache\service', array('get'), array(new \phpbb\cache\driver\void(), $config, $db, '../../', 'php'));
 		$this->cache->expects($this->any())
 			->method('get')
 			->with($this->anything())

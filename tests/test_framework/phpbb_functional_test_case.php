@@ -576,7 +576,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\void();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_notifications = new phpbb_mock_notification_manager();
@@ -622,7 +622,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\void();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
@@ -661,7 +661,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\void();
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
