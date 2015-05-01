@@ -14,7 +14,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
 require_once __DIR__ . '/../test_framework/phpbb_database_test_case.php';
 
-class phpbb_textreparser_posttext_test extends phpbb_database_test_case
+class phpbb_textreparser_post_text_test extends phpbb_database_test_case
 {
 	public function setUp()
 	{
@@ -38,7 +38,7 @@ class phpbb_textreparser_posttext_test extends phpbb_database_test_case
 	public function testReparse($min_id, $max_id, $expected)
 	{
 		$db = $this->new_dbal();
-		$reparser = new \phpbb\textreparser\posttext($db);
+		$reparser = new \phpbb\textreparser\post_text($db);
 		$reparser->reparse_range($min_id, $max_id);
 		$sql = 'SELECT post_id, post_text
 			FROM ' . POSTS_TABLE . "

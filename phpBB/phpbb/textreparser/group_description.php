@@ -13,14 +13,14 @@
 
 namespace phpbb\textreparser;
 
-class forumrules extends base
+class group_description extends base
 {
 	/**
 	* {@inheritdoc}
 	*/
 	public function get_max_id()
 	{
-		$sql = 'SELECT MAX(forum_id) AS max_id FROM ' . FORUMS_TABLE;
+		$sql = 'SELECT MAX(group_id) AS max_id FROM ' . GROUPS_TABLE;
 		$result = $this->db->sql_query($sql);
 		$max_id = (int) $this->db->sql_fetchfield('max_id');
 		$this->db->sql_freeresult($result);
@@ -33,9 +33,9 @@ class forumrules extends base
 	*/
 	protected function get_records($min_id, $max_id)
 	{
-		$sql = 'SELECT forum_id AS id, forum_rules AS text, forum_rules_uid AS bbcode_uid
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id BETWEEN ' . $min_id . ' AND ' . $max_id;
+		$sql = 'SELECT group_id AS id, group_desc AS text, group_desc_uid AS bbcode_uid
+			FROM ' . GROUPS_TABLE . '
+			WHERE group_id BETWEEN ' . $min_id . ' AND ' . $max_id;
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -55,9 +55,9 @@ class forumrules extends base
 	*/
 	protected function save_record(array $record)
 	{
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET forum_rules = '" . $this->db->sql_escape($record['text']) . "'
-			WHERE forum_id = " . $record['id'];
+		$sql = 'UPDATE ' . GROUPS_TABLE . "
+			SET group_desc = '" . $this->db->sql_escape($record['text']) . "'
+			WHERE group_id = " . $record['id'];
 		$this->db->sql_query($sql);
 	}
 }

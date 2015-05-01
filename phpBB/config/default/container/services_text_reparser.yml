@@ -1,62 +1,62 @@
 services:
     text_reparser.admin_contact_info:
-        class: phpbb\textreparser\admincontactinfo
+        class: phpbb\textreparser\admin_contact_info
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.forum_description:
-        class: phpbb\textreparser\forumdescription
+        class: phpbb\textreparser\forum_description
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.forum_rules:
-        class: phpbb\textreparser\forumrules
+        class: phpbb\textreparser\forum_rules
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.group_description:
-        class: phpbb\textreparser\groupdescription
+        class: phpbb\textreparser\group_description
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.pm_text:
-        class: phpbb\textreparser\pmtext
+        class: phpbb\textreparser\pm_text
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.poll_option:
-        class: phpbb\textreparser\polloption
+        class: phpbb\textreparser\poll_option
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.poll_title:
-        class: phpbb\textreparser\polltitle
+        class: phpbb\textreparser\poll_title
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.post_text:
-        class: phpbb\textreparser\posttext
+        class: phpbb\textreparser\post_text
         arguments:
             - @dbal.conn
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.user_signature:
-        class: phpbb\textreparser\usersignature
+        class: phpbb\textreparser\user_signature
         arguments:
             - @dbal.conn
         tags:

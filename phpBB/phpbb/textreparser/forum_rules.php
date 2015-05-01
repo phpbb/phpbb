@@ -13,7 +13,7 @@
 
 namespace phpbb\textreparser;
 
-class forumdescription extends base
+class forum_rules extends base
 {
 	/**
 	* {@inheritdoc}
@@ -33,7 +33,7 @@ class forumdescription extends base
 	*/
 	protected function get_records($min_id, $max_id)
 	{
-		$sql = 'SELECT forum_id AS id, forum_desc AS text, forum_desc_uid AS bbcode_uid
+		$sql = 'SELECT forum_id AS id, forum_rules AS text, forum_rules_uid AS bbcode_uid
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id BETWEEN ' . $min_id . ' AND ' . $max_id;
 		$result = $this->db->sql_query($sql);
@@ -56,7 +56,7 @@ class forumdescription extends base
 	protected function save_record(array $record)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET forum_desc = '" . $this->db->sql_escape($record['text']) . "'
+			SET forum_rules = '" . $this->db->sql_escape($record['text']) . "'
 			WHERE forum_id = " . $record['id'];
 		$this->db->sql_query($sql);
 	}

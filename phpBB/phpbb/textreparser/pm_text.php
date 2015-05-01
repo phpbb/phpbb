@@ -13,7 +13,7 @@
 
 namespace phpbb\textreparser;
 
-class pmtext extends base
+class pm_text extends base
 {
 	/**
 	* {@inheritdoc}

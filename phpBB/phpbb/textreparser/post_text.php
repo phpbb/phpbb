@@ -13,14 +13,14 @@
 
 namespace phpbb\textreparser;
 
-class groupdescription extends base
+class post_text extends base
 {
 	/**
 	* {@inheritdoc}
 	*/
 	public function get_max_id()
 	{
-		$sql = 'SELECT MAX(group_id) AS max_id FROM ' . GROUPS_TABLE;
+		$sql = 'SELECT MAX(post_id) AS max_id FROM ' . POSTS_TABLE;
 		$result = $this->db->sql_query($sql);
 		$max_id = (int) $this->db->sql_fetchfield('max_id');
 		$this->db->sql_freeresult($result);
@@ -33,17 +33,10 @@ class groupdescription extends base
 	*/
 	protected function get_records($min_id, $max_id)
 	{
-		$sql = 'SELECT group_id AS id, group_desc AS text, group_desc_uid AS bbcode_uid
-			FROM ' . GROUPS_TABLE . '
-			WHERE group_id BETWEEN ' . $min_id . ' AND ' . $max_id;
+		$sql = 'SELECT post_id AS id, enable_bbcode, enable_smilies, enable_magic_url, post_text AS text, bbcode_uid
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id BETWEEN ' . $min_id . ' AND ' . $max_id;
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			// Those fields are not saved to the database, we need to guess their original value
-			$row['enable_bbcode']    = !empty($row['bbcode_uid']);
-			$row['enable_smilies']   = (strpos($row['text'], '<!-- s') !== false);
-			$row['enable_magic_url'] = (strpos($row['text'], '<!-- m -->') !== false);
-		}
 		$records = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
@@ -55,9 +48,9 @@ class groupdescription extends base
 	*/
 	protected function save_record(array $record)
 	{
-		$sql = 'UPDATE ' . GROUPS_TABLE . "
-			SET group_desc = '" . $this->db->sql_escape($record['text']) . "'
-			WHERE group_id = " . $record['id'];
+		$sql = 'UPDATE ' . POSTS_TABLE . "
+			SET post_text = '" . $this->db->sql_escape($record['text']) . "'
+			WHERE post_id = " . $record['id'];
 		$this->db->sql_query($sql);
 	}
 }
