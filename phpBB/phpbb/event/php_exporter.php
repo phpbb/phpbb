@@ -242,7 +242,8 @@ class php_exporter
 					$changed_versions = array();
 					if (!empty($changed_line_nums))
 					{
-						foreach ($changed_line_nums as $changed_line_num) {
+						foreach ($changed_line_nums as $changed_line_num)
+						{
 							$changed_versions[] = $this->validate_changed($this->file_lines[$changed_line_num]);
 						}
 					}
@@ -656,7 +657,7 @@ class php_exporter
 	{
 		$match = array();
 		$line = str_replace("\t", ' ', ltrim($line, "\t "));
-		preg_match('#^\* @change(d)? (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)( (?:.*))?$#', ltrim($line, "\t "), $match);
+		preg_match('#^\* @change(d)? (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)( (?:.*))?$#', $line, $match);
 		if (!isset($match[2]))
 		{
 			throw new \LogicException("Invalid '@changed' information for event "
