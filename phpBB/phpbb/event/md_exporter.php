@@ -191,19 +191,35 @@ class md_exporter
 
 	/**
 	* Format the php events as a wiki table
+	*
+	* @param string $action
 	* @return string		Number of events found
 	*/
-	public function export_events_for_wiki()
+	public function export_events_for_wiki($action = '')
 	{
 		if ($this->filter === 'adm')
 		{
-			$wiki_page = '= ACP Template Events =' . "\n";
+			if ($action === 'diff')
+			{
+				$wiki_page = '=== ACP Template Events ===' . "\n";
+			}
+			else
+			{
+				$wiki_page = '= ACP Template Events =' . "\n";
+			}
 			$wiki_page .= '{| class="zebra sortable" cellspacing="0" cellpadding="5"' . "\n";
 			$wiki_page .= '! Identifier !! Placement !! Added in Release !! Explanation' . "\n";
 		}
 		else
 		{
-			$wiki_page = '= Template Events =' . "\n";
+			if ($action === 'diff')
+			{
+				$wiki_page = '=== Template Events ===' . "\n";
+			}
+			else
+			{
+				$wiki_page = '= Template Events =' . "\n";
+			}
 			$wiki_page .= '{| class="zebra sortable" cellspacing="0" cellpadding="5"' . "\n";
 			$wiki_page .= '! Identifier !! Prosilver Placement (If applicable) !! Subsilver Placement (If applicable) !! Added in Release !! Explanation' . "\n";
 		}

@@ -158,11 +158,20 @@ class php_exporter
 
 	/**
 	* Format the php events as a wiki table
+	*
+	* @param string $action
 	* @return string
 	*/
-	public function export_events_for_wiki()
+	public function export_events_for_wiki($action = '')
 	{
-		$wiki_page = '= PHP Events (Hook Locations) =' . "\n";
+		if ($action === 'diff')
+		{
+			$wiki_page = '=== PHP Events (Hook Locations) ===' . "\n";
+		}
+		else
+		{
+			$wiki_page = '= PHP Events (Hook Locations) =' . "\n";
+		}
 		$wiki_page .= '{| class="sortable zebra" cellspacing="0" cellpadding="5"' . "\n";
 		$wiki_page .= '! Identifier !! Placement !! Arguments !! Added in Release !! Explanation' . "\n";
 		foreach ($this->events as $event)

@@ -28,6 +28,9 @@ function usage()
 	echo "    all:\n";
 	echo "        Generate the complete wikipage for https://wiki.phpbb.com/Event_List\n";
 	echo "\n";
+	echo "    diff:\n";
+	echo "        Generate the Event Diff for the release highlights\n";
+	echo "\n";
 	echo "    php:\n";
 	echo "        Generate the PHP event section of Event_List\n";
 	echo "\n";
@@ -36,6 +39,9 @@ function usage()
 	echo "\n";
 	echo "    styles:\n";
 	echo "        Generate the Styles Template event section of Event_List\n";
+	echo "\n";
+	echo "VERSION (diff only):\n";
+	echo "    Filter events (minimum version)\n";
 	echo "\n";
 	echo "EXTENSION (Optional):\n";
 	echo "    If not given, only core events will be exported.\n";
@@ -55,8 +61,8 @@ function validate_argument_count($arguments, $count)
 validate_argument_count($argc, 1);
 
 $action = $argv[1];
-$extension = isset($argv[2]) && $argv[2] !== 'null' ? $argv[2] : null;
-$min_version = isset($argv[3]) ? $argv[3] : null;
+$extension = isset($argv[2]) ? $argv[2] : null;
+$min_version = null;
 require __DIR__ . '/../phpbb/event/php_exporter.' . $phpEx;
 require __DIR__ . '/../phpbb/event/md_exporter.' . $phpEx;
 require __DIR__ . '/../includes/functions.' . $phpEx;
@@ -68,10 +74,19 @@ switch ($action)
 	case 'all':
 		echo '__FORCETOC__' . "\n";
 
+	case 'diff':
+		if ($action === 'diff')
+		{
+			echo '== Event changes ==' . "\n";
+		}
+		$min_version = $extension;
+		$extension = isset($argv[3]) ? $argv[3] : null;
+
+
 	case 'php':
 		$exporter = new \phpbb\event\php_exporter($phpbb_root_path, $extension, $min_version);
 		$exporter->crawl_phpbb_directory_php();
-		echo $exporter->export_events_for_wiki();
+		echo $exporter->export_events_for_wiki($action);
 
 		if ($action === 'php')
 		{
@@ -81,9 +96,16 @@ switch ($action)
 		// no break;
 
 	case 'styles':
-		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension);
-		$exporter->crawl_phpbb_directory_styles('docs/events.md');
-		echo $exporter->export_events_for_wiki();
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension, $min_version);
+		if ($min_version && $action === 'diff')
+		{
+			$exporter->crawl_eventsmd('docs/events.md', 'styles');
+		}
+		else
+		{
+			$exporter->crawl_phpbb_directory_styles('docs/events.md');
+		}
+		echo $exporter->export_events_for_wiki($action);
 
 		if ($action === 'styles')
 		{
@@ -93,9 +115,16 @@ switch ($action)
 		// no break;
 
 	case 'adm':
-		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension);
-		$exporter->crawl_phpbb_directory_adm('docs/events.md');
-		echo $exporter->export_events_for_wiki();
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension, $min_version);
+		if ($min_version && $action === 'diff')
+		{
+			$exporter->crawl_eventsmd('docs/events.md', 'adm');
+		}
+		else
+		{
+			$exporter->crawl_phpbb_directory_adm('docs/events.md');
+		}
+		echo $exporter->export_events_for_wiki($action);
 
 		if ($action === 'all')
 		{
