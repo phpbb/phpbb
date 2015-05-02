@@ -71,16 +71,17 @@ require __DIR__ . '/../phpbb/recursive_dot_prefix_filter_iterator.' . $phpEx;
 
 switch ($action)
 {
-	case 'all':
-		echo '__FORCETOC__' . "\n";
 
 	case 'diff':
-		if ($action === 'diff')
-		{
-			echo '== Event changes ==' . "\n";
-		}
+		echo '== Event changes ==' . "\n";
 		$min_version = $extension;
 		$extension = isset($argv[3]) ? $argv[3] : null;
+
+	case 'all':
+		if ($action === 'all')
+		{
+			echo '__FORCETOC__' . "\n";
+		}
 
 
 	case 'php':
