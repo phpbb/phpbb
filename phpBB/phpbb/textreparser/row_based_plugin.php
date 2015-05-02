@@ -45,38 +45,6 @@ abstract class row_based_plugin extends base
 	abstract public function get_table_name();
 
 	/**
-	* Add fields to given row, if applicable
-	*
-	* The enable_* fields are not always saved to the database. Sometimes we need to guess their
-	* original value based on the text content or possibly other fields
-	*
-	* @param  array $row Original row
-	* @return array      Complete row
-	*/
-	protected function add_missing_fields(array $row)
-	{
-		if (!isset($row['enable_bbcode'], $row['enable_smilies'], $row['enable_magic_url']))
-		{
-			$row += array(
-				'enable_bbcode'    => !empty($row['bbcode_uid']),
-				'enable_smilies'   => $this->guess_smilies($row),
-				'enable_magic_url' => $this->guess_magic_url($row),
-			);
-		}
-
-		// Those BBCodes are disabled based on context and user permissions and that value is never
-		// stored in the database. Here we test whether they were used in the original text.
-		$bbcodes = array('flash', 'img', 'quote', 'url');
-		foreach ($bbcodes as $bbcode)
-		{
-			$field_name = 'enable_' . $bbcode;
-			$row[$field_name] = $this->guess_bbcode($row, $bbcode);
-		}
-
-		return $row;
-	}
-
-	/**
 	* {@inheritdoc}
 	*/
 	public function get_max_id()

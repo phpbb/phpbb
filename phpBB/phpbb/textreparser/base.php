@@ -30,6 +30,38 @@ abstract class base implements reparser_interface
 	abstract protected function get_records($min_id, $max_id);
 
 	/**
+	* Add fields to given record, if applicable
+	*
+	* The enable_* fields are not always saved to the database. Sometimes we need to guess their
+	* original value based on the text content or possibly other fields
+	*
+	* @param  array $record Original record
+	* @return array         Complete record
+	*/
+	protected function add_missing_fields(array $record)
+	{
+		if (!isset($record['enable_bbcode'], $record['enable_smilies'], $record['enable_magic_url']))
+		{
+			$record += array(
+				'enable_bbcode'    => !empty($record['bbcode_uid']),
+				'enable_smilies'   => $this->guess_smilies($record),
+				'enable_magic_url' => $this->guess_magic_url($record),
+			);
+		}
+
+		// Those BBCodes are disabled based on context and user permissions and that value is never
+		// stored in the database. Here we test whether they were used in the original text.
+		$bbcodes = array('flash', 'img', 'quote', 'url');
+		foreach ($bbcodes as $bbcode)
+		{
+			$field_name = 'enable_' . $bbcode . '_bbcode';
+			$record[$field_name] = $this->guess_bbcode($record, $bbcode);
+		}
+
+		return $record;
+	}
+
+	/**
 	* Guess whether given BBCode is in use in given record
 	*
 	* @param  array  $record
@@ -120,7 +152,11 @@ abstract class base implements reparser_interface
 			$flags,
 			$unparsed['enable_bbcode'],
 			$unparsed['enable_magic_url'],
-			$unparsed['enable_smilies']
+			$unparsed['enable_smilies'],
+			$unparsed['enable_img_bbcode'],
+			$unparsed['enable_flash_bbcode'],
+			$unparsed['enable_quote_bbcode'],
+			$unparsed['enable_url_bbcode']
 		);
 
 		// Save the new text if it has changed
