@@ -60,7 +60,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$cache = $this->cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			new \phpbb\cache\driver\void(),
 			$this->config,
 			$this->db,
 			$phpbb_root_path,
