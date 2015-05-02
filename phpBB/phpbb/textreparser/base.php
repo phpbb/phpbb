@@ -43,7 +43,7 @@ abstract class base implements reparser_interface
 		if (!isset($record['enable_bbcode'], $record['enable_smilies'], $record['enable_magic_url']))
 		{
 			$record += array(
-				'enable_bbcode'    => !empty($record['bbcode_uid']),
+				'enable_bbcode'    => $this->guess_bbcodes($record),
 				'enable_smilies'   => $this->guess_smilies($record),
 				'enable_magic_url' => $this->guess_magic_url($record),
 			);
@@ -56,6 +56,13 @@ abstract class base implements reparser_interface
 		{
 			$field_name = 'enable_' . $bbcode . '_bbcode';
 			$record[$field_name] = $this->guess_bbcode($record, $bbcode);
+		}
+
+		// Magic URLs are tied to the URL BBCode, that's why if magic URLs are enabled we make sure
+		// that the URL BBCode is also enabled
+		if ($record['enable_magic_url'])
+		{
+			$record['enable_url_bbcode'] = true;
 		}
 
 		return $record;
@@ -74,7 +81,7 @@ abstract class base implements reparser_interface
 		{
 			// Look for the closing tag, e.g. [/url]
 			$match = '[/' . $bbcode . ':' . $record['bbcode_uid'];
-			if (stripos($record['text'], $match) !== false)
+			if (strpos($record['text'], $match) !== false)
 			{
 				return true;
 			}
@@ -84,11 +91,38 @@ abstract class base implements reparser_interface
 		{
 			// Look for the closing tag inside of a e element, in an element of the same name, e.g.
 			// <e>[/url]</e></URL>
-			$match = '<e>[/' . $bbcode . ']</e></' . $bbcode . '>';
-			if (stripos($record['text'], $match) !== false)
+			$match = '<e>[/' . $bbcode . ']</e></' . strtoupper($bbcode) . '>';
+			if (strpos($record['text'], $match) !== false)
 			{
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	/**
+	* Guess whether any BBCode is in use in given record
+	*
+	* @param  array $record
+	* @return bool
+	*/
+	protected function guess_bbcodes(array $record)
+	{
+		if (!empty($record['bbcode_uid']))
+		{
+			// Test whether the bbcode_uid is in use
+			$match = ':' . $record['bbcode_uid'];
+			if (strpos($record['text'], $match) !== false)
+			{
+				return true;
+			}
+		}
+
+		if (substr($record['text'], 0, 2) == '<r')
+		{
+			// Look for a closing tag inside of an e element
+			return (bool) preg_match('(<e>\\[/\\w+\\]</e>)', $match);
 		}
 
 		return false;
@@ -103,7 +137,7 @@ abstract class base implements reparser_interface
 	protected function guess_magic_url(array $record)
 	{
 		// Look for <!-- m --> or for a URL tag that's not immediately followed by <s>
-		return (strpos($record['text'], '<!-- m -->') !== false || preg_match('(<URL [^>]++>(?!<s>))', strpos($row['text'])));
+		return (strpos($record['text'], '<!-- m -->') !== false || preg_match('(<URL [^>]++>(?!<s>))', $record['text']));
 	}
 
 	/**
@@ -114,7 +148,7 @@ abstract class base implements reparser_interface
 	*/
 	protected function guess_smilies(array $record)
 	{
-		return (strpos($row['text'], '<!-- s') !== false || strpos($row['text'], '<E>') !== false);
+		return (strpos($record['text'], '<!-- s') !== false || strpos($record['text'], '<E>') !== false);
 	}
 
 	/**
@@ -143,8 +177,10 @@ abstract class base implements reparser_interface
 				OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS
 			)
 		);
+		// generate_text_for_edit() and decode_message() actually return the text as HTML. It has to
+		// be decoded to plain text before it can be reparsed
+		$parsed_text = html_entity_decode($unparsed['text'], ENT_QUOTES, 'UTF-8');
 		$bitfield = $flags = null;
-		$parsed_text = $unparsed['text'];
 		generate_text_for_storage(
 			$parsed_text,
 			$unparsed['bbcode_uid'],

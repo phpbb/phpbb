@@ -62,28 +62,56 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 				5,
 				array(
 					array(
-						'id'   => 1,
+						'id'   => '1',
 						'text' => 'This row should be [b]ignored[/b]',
 					),
 					array(
-						'id'   => 2,
+						'id'   => '2',
 						'text' => '<t>[b]Not bold[/b] :) http://example.org</t>',
 					),
 					array(
-						'id'   => 3,
+						'id'   => '3',
 						'text' => '<r><B><s>[b]</s>Bold<e>[/b]</e></B> :) http://example.org</r>',
 					),
 					array(
-						'id'   => 4,
+						'id'   => '4',
 						'text' => '<r>[b]Not bold[/b] <E>:)</E> http://example.org</r>',
 					),
 					array(
-						'id'   => 5,
+						'id'   => '5',
 						'text' => '<r>[b]Not bold[/b] :) <URL url="http://example.org">http://example.org</URL></r>',
 					),
 					array(
-						'id'   => 1000,
+						'id'   => '1000',
 						'text' => 'This row should be [b]ignored[/b]',
+					),
+				)
+			),
+			array(
+				6,
+				7,
+				array(
+					array(
+						'id'   => '6',
+						'text' => '<r><FLASH height="345" url="http://example.org/flash.swf" width="123"><s>[flash=123,345]</s>http://example.org/flash.swf<e>[/flash]</e></FLASH></r>',
+					),
+					array(
+						'id'   => '7',
+						'text' => '<t>[flash=123,345]http://example.org/flash.swf[/flash]</t>',
+					),
+				)
+			),
+			array(
+				8,
+				9,
+				array(
+					array(
+						'id'   => '8',
+						'text' => '<r><IMG src="http://example.org/img.png"><s>[img]</s>http://example.org/img.png<e>[/img]</e></IMG></r>',
+					),
+					array(
+						'id'   => '9',
+						'text' => '<t>[img]http://example.org/img.png[/img]</t>',
 					),
 				)
 			),
