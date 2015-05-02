@@ -24,6 +24,12 @@ class md_exporter
 	/** @var string phpBB Root Path */
 	protected $root_path;
 
+	/** @var string The minimum version for the events to return */
+	protected $min_version;
+
+	/** @var string The maximum version for the events to return */
+	protected $max_version;
+
 	/** @var string */
 	protected $filter;
 
@@ -36,8 +42,10 @@ class md_exporter
 	/**
 	* @param string $phpbb_root_path
 	* @param mixed $extension	String 'vendor/ext' to filter, null for phpBB core
+	* @param string $min_version
+	* @param string $max_version
 	*/
-	public function __construct($phpbb_root_path, $extension = null)
+	public function __construct($phpbb_root_path, $extension = null, $min_version = null, $max_version = null)
 	{
 		$this->root_path = $phpbb_root_path;
 		$this->path = $this->root_path;
@@ -49,6 +57,8 @@ class md_exporter
 		$this->events = array();
 		$this->events_by_file = array();
 		$this->filter = $this->current_event = '';
+		$this->min_version = $min_version;
+		$this->max_version = $max_version;
 	}
 
 	/**
@@ -152,6 +162,11 @@ class md_exporter
 			$files = $this->validate_file_list($file_details);
 			$since = $this->validate_since($since);
 
+			if (!$this->version_is_filtered($since))
+			{
+				continue;
+			}
+
 			$this->events[$event_name] = array(
 				'event'			=> $this->current_event,
 				'files'			=> $files,
@@ -161,6 +176,17 @@ class md_exporter
 		}
 
 		return sizeof($this->events);
+	}
+
+	/**
+	 * The version to check
+	 *
+	 * @param string $version
+	 */
+	protected function version_is_filtered($version)
+	{
+		return (!$this->min_version || phpbb_version_compare($this->min_version, $version, '<='))
+		&& (!$this->max_version || phpbb_version_compare($this->max_version, $version, '>='));
 	}
 
 	/**
