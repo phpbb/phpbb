@@ -248,14 +248,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 		$container->set('migrator', $migrator);
 		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
-		$user = new \phpbb\user('\phpbb\datetime');
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
 			$db,
 			$config,
 			new phpbb\filesystem\filesystem(),
-			$user,
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,

@@ -63,14 +63,12 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		);
 		$container->set('migrator', $this->migrator);
 		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
-		$user = new \phpbb\user('\phpbb\datetime');
 
 		$this->extension_manager = new \phpbb\extension\manager(
 			$container,
 			$this->db,
 			$this->config,
 			new phpbb\filesystem\filesystem(),
-			$user,
 			'phpbb_ext',
 			dirname(__FILE__) . '/../../phpBB/',
 			'php',
