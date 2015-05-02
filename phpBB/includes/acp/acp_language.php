@@ -31,7 +31,7 @@ class acp_language
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $template, $phpbb_log;
+		global $config, $db, $user, $template, $phpbb_log, $phpbb_container;
 		global $phpbb_root_path, $phpEx, $request;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -377,37 +377,19 @@ class acp_language
 		$db->sql_freeresult($result);
 
 		$new_ary = $iso = array();
-		$dp = @opendir("{$phpbb_root_path}language");
 
-		if ($dp)
+		/** @var \phpbb\language\language_file_helper $language_helper */
+		$language_helper = $phpbb_container->get('language.helper.language_file');
+		$iso = $language_helper->get_available_languages();
+
+		foreach ($iso as $lang_array)
 		{
-			while (($file = readdir($dp)) !== false)
-			{
-				if ($file[0] == '.' || !is_dir($phpbb_root_path . 'language/' . $file))
-				{
-					continue;
-				}
+			$lang_iso = $lang_array['iso'];
 
-				if (file_exists("{$phpbb_root_path}language/$file/iso.txt"))
-				{
-					if (!in_array($file, $installed))
-					{
-						if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
-						{
-							if (sizeof($iso) == 3)
-							{
-								$new_ary[$file] = array(
-									'iso'		=> $file,
-									'name'		=> trim($iso[0]),
-									'local_name'=> trim($iso[1]),
-									'author'	=> trim($iso[2])
-								);
-							}
-						}
-					}
-				}
+			if (!in_array($lang_iso, $installed))
+			{
+				$new_ary[$lang_iso] = $lang_array;
 			}
-			closedir($dp);
 		}
 
 		unset($installed);

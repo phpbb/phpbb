@@ -474,7 +474,9 @@ class phpbb_test_case_helpers
 		}
 		else
 		{
-			$user = new \phpbb\user('\phpbb\datetime');
+			$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+			$lang = new \phpbb\language\language($lang_loader);
+			$user = new \phpbb\user($lang, '\phpbb\datetime');
 			$user->optionset('viewcensors', true);
 			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);

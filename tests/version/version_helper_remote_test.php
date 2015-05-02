@@ -37,13 +37,15 @@ class version_helper_remote_test extends \phpbb_test_case
 			->will($this->returnValue(false));
 		$this->file_downloader = new phpbb_mock_file_downloader();
 
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+
 		$this->version_helper = new \phpbb\version_helper(
 			$this->cache,
 			$config,
 			$this->file_downloader,
-			new \phpbb\user('\phpbb\datetime')
+			new \phpbb\user(new \phpbb\language\language($lang_loader), '\phpbb\datetime')
 		);
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$this->user = new \phpbb\user(new \phpbb\language\language($lang_loader), '\phpbb\datetime');
 		$this->user->add_lang('acp/common');
 	}
 

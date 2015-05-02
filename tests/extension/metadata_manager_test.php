@@ -45,7 +45,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->db_tools = $factory->get($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = 'php';
-		$this->user = new \phpbb\user('\phpbb\datetime');
 		$this->table_prefix = 'phpbb_';
 
 		$container = new phpbb_mock_container_builder();
@@ -75,8 +74,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)));
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 
 		$container = new phpbb_mock_container_builder();
 
@@ -104,6 +101,16 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->phpEx,
 			$this->cache
 		);
+
+		global $phpbb_root_path;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $this->phpEx);
+		$lang_loader->set_extension_manager($this->extension_manager);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
+
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 	}
 
 	// Should fail from missing composer.json
@@ -168,7 +175,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$manager->validate($field_name);
 			$this->fail('Exception not triggered');
 		}
-		catch(\phpbb\extension\exception $e)
+		catch (\phpbb\extension\exception $e)
 		{
 			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', $field_name));
@@ -234,7 +241,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$manager->validate($field_name);
 			$this->fail('Exception not triggered');
 		}
-		catch(\phpbb\extension\exception $e)
+		catch (\phpbb\extension\exception $e)
 		{
 			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 			$this->assertEquals($message, $this->user->lang('META_FIELD_INVALID', $field_name));
@@ -259,10 +266,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		{
 			$this->assertEquals(true, $manager->validate('enable'));
 		}
-		catch(\phpbb\extension\exception $e)
+		catch (\phpbb\extension\exception $e)
 		{
 			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-			$this->fail($message);
 		}
 	}
 

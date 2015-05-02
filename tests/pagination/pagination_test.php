@@ -26,10 +26,13 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));

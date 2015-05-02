@@ -18,20 +18,20 @@ class extension extends \Twig_Extension
 	/** @var \phpbb\template\context */
 	protected $context;
 
-	/** @var \phpbb\user */
-	protected $user;
+	/** @var \phpbb\language\language */
+	protected $language;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\template\context $context
-	* @param \phpbb\user $user
+	* @param \phpbb\language\language $language
 	* @return \phpbb\template\twig\extension
 	*/
-	public function __construct(\phpbb\template\context $context, $user)
+	public function __construct(\phpbb\template\context $context, $language)
 	{
 		$this->context = $context;
-		$this->user = $user;
+		$this->language = $language;
 	}
 
 	/**
@@ -181,6 +181,6 @@ class extension extends \Twig_Extension
 		// LA_ is transformed into lang(\'$1\')|escape('js'), so we should not
 		// need to check for it
 
-		return call_user_func_array(array($this->user, 'lang'), $args);
+		return call_user_func_array(array($this->language, 'lang'), $args);
 	}
 }

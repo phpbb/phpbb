@@ -33,7 +33,7 @@ services:
         class: phpbb\template\twig\extension
         arguments:
             - @template_context
-            - @user
+            - @language
         tags:
             - { name: twig.extension }
 
