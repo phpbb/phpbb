@@ -48,6 +48,11 @@ class phpbb_notification_manager_helper extends \phpbb\notification\manager
 
 		$item = new $item_type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $this->phpbb_root_path, $this->php_ext, $this->notification_types_table, $this->notifications_table, $this->user_notifications_table);
 
+		if ($item_type === 'phpbb\\notification\\type\\quote')
+		{
+			$item->set_utils(new \phpbb\textformatter\s9e\utils);
+		}
+
 		$item->set_notification_manager($this);
 
 		$item->set_initial_data($data);

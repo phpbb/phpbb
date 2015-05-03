@@ -29,6 +29,14 @@ interface utils_interface
 	public function clean_formatting($text);
 
 	/**
+	* Get a list of quote authors, limited to the first level of quotes
+	*
+	* @param  string   $text Parsed text
+	* @return string[]       List of authors
+	*/
+	public function get_quote_authors($text);
+
+	/**
 	* Remove given BBCode and its content, at given nesting depth
 	*
 	* @param  string  $text        Parsed text
