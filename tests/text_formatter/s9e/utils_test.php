@@ -75,6 +75,40 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 	}
 
 	/**
+	* @dataProvider get_quote_authors_tests
+	*/
+	public function test_get_quote_authors($original, $expected)
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$utils     = $container->get('text_formatter.utils');
+		$parser    = $container->get('text_formatter.parser');
+
+		$this->assertSame($expected, $utils->get_quote_authors($parser->parse($original)));
+	}
+
+	public function get_quote_authors_tests()
+	{
+		return array(
+			array(
+				'No quotes here',
+				array()
+			),
+			array(
+				'[quote="foo"]..[/quote] [quote]..[/quote]',
+				array('foo')
+			),
+			array(
+				'[quote="foo"]..[/quote] [quote="bar"]..[/quote]',
+				array('foo', 'bar')
+			),
+			array(
+				'[quote="foo"].[quote="baz"]..[/quote].[/quote] [quote="bar"]..[/quote]',
+				array('foo', 'bar')
+			),
+		);
+	}
+
+	/**
 	* @dataProvider get_remove_bbcode_tests
 	*/
 	public function test_remove_bbcode($original, $name, $depth, $expected)
