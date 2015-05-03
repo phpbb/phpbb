@@ -47,7 +47,8 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 		$columns = $reparser->get_columns();
 		$sql = 'SELECT ' . $columns['id'] . ' AS id, ' . $columns['text'] . ' AS text
 			FROM ' . $reparser->get_table_name() . '
-			WHERE ' . $this->db->sql_in_set($columns['id'], $ids);
+			WHERE ' . $this->db->sql_in_set($columns['id'], $ids) . '
+			ORDER BY id';
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
