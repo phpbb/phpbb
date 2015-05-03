@@ -74,7 +74,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		set_config_count(null, null, null, $config);
 
 		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			new \phpbb\cache\driver\dummy(),
 			$config,
 			$db,
 			$phpbb_root_path,

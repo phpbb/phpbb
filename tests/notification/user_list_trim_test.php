@@ -37,7 +37,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		set_config_count(null, null, null, $config);
 
 		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			new \phpbb\cache\driver\dummy(),
 			$config,
 			$db,
 			$phpbb_root_path,

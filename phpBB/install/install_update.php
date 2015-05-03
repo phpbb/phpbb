@@ -113,7 +113,7 @@ class install_update extends module
 		unset($dbpasswd);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 		set_config(null, null, null, $config);
 		set_config_count(null, null, null, $config);
 
