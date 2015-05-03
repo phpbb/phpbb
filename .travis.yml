@@ -44,6 +44,7 @@ script:
   - travis/check-sami-parse-errors.sh $DB $TRAVIS_PHP_VERSION
   - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION
   - travis/check-executable-files.sh $DB $TRAVIS_PHP_VERSION ./
+  - sh -c "if [ '$SLOWTESTS' != '1' -a '$DB' = 'mysqli' ]; then phpBB/vendor/bin/phpunit tests/lint_test.php; fi"
   - sh -c "if [ '$SLOWTESTS' != '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml; fi"
   - sh -c "if [ '$SLOWTESTS' = '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow; fi"
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.3' -a '$DB' = 'mysqli' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
