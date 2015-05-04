@@ -189,7 +189,7 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
-	global $phpbb_root_path, $phpEx, $config, $lang;
+	global $phpbb_root_path, $phpEx, $config, $lang, $phpbb_filesystem;
 
 	$dbms = $dbms_details['DRIVER'];
 
@@ -205,7 +205,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 	}
 
 	// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-	if (($dbms_details['DRIVER'] == 'phpbb\db\driver\sqlite' || $dbms_details['DRIVER'] == 'phpbb\db\driver\sqlite3') && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+	if (($dbms_details['DRIVER'] == 'phpbb\db\driver\sqlite' || $dbms_details['DRIVER'] == 'phpbb\db\driver\sqlite3') && stripos($phpbb_filesystem->realpath($dbhost), $phpbb_filesystem->realpath('../')) === 0)
 	{
 		$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
 		return false;

@@ -623,7 +623,7 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager, $phpbb_container;
+		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
@@ -641,7 +641,9 @@ class messenger
 				$phpbb_container,
 				$phpbb_container->getParameter('core.root_path') . 'cache/',
 				$phpbb_container->get('ext.manager'),
-				new \phpbb\template\twig\loader()
+				new \phpbb\template\twig\loader(
+					$phpbb_filesystem
+				)
 			),
 			$phpbb_container->getParameter('core.root_path') . 'cache/',
 			$phpbb_container->get('template.twig.extensions.collection'),
@@ -672,14 +674,20 @@ class queue
 	var $eol = "\n";
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* constructor
 	*/
 	function queue()
 	{
-		global $phpEx, $phpbb_root_path;
+		global $phpEx, $phpbb_root_path, $phpbb_filesystem;
 
 		$this->data = array();
 		$this->cache_file = "{$phpbb_root_path}cache/queue.$phpEx";
+		$this->filesystem = $phpbb_filesystem;
 	}
 
 	/**
@@ -865,7 +873,14 @@ class queue
 				fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->queue_data), true) . ");\n\n?>");
 				fclose($fp);
 
-				phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+				try
+				{
+					$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -907,7 +922,14 @@ class queue
 			fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->data), true) . ");\n\n?>");
 			fclose($fp);
 
-			phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+			try
+			{
+				$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+			}
+			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			{
+				// Do nothing
+			}
 		}
 
 		$lock->release();

@@ -16,10 +16,6 @@ namespace phpbb\extension;
 /**
  * Exception class for metadata
  */
-class exception extends \UnexpectedValueException
+class exception extends \phpbb\exception\runtime_exception
 {
-	public function __toString()
-	{
-		return $this->getMessage();
-	}
 }

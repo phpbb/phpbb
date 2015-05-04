@@ -6,7 +6,7 @@
 <meta name="description" content="Ascraeus coding guidelines document" />
 <title>phpBB3 &bull; Coding Guidelines</title>
 
-<link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<link href="assets/css/stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
 
 </head>
 
@@ -16,16 +16,16 @@
 	<a id="top" name="top" accesskey="t"></a>
 	<div id="page-header">
 		<div class="headerbar">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<div class="inner">
 
 			<div id="doc-description">
-				<a href="../index.php" id="logo"><img src="site_logo.gif" alt="" /></a>
+				<a href="../index.php" id="logo"><img src="assets/images/site_logo.gif" alt="" /></a>
 				<h1>Coding Guidelines</h1>
 				<p>Ascraeus coding guidelines document</p>
 				<p style="display: none;"><a href="#start_here">Skip</a></p>
 			</div>
 
-			<span class="corners-bottom"><span></span></span></div>
+			</div>
 		</div>
 	</div>
 
@@ -35,12 +35,14 @@
 
 <!-- BEGIN DOCUMENT -->
 
-<p>These are the phpBB Coding Guidelines for Ascraeus, all attempts should be made to follow them as closely as possible.</p>
+<p class="paragraph main-description">
+	These are the phpBB Coding Guidelines for Ascraeus, all attempts should be made to follow them as closely as possible.
+</p>
 
 <h1>Coding Guidelines</h1>
 
 	<div class="paragraph menu">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 
@@ -89,7 +91,7 @@
 
 		</div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
@@ -97,7 +99,7 @@
 <a name="defaults"></a><h2>1. Defaults</h2>
 
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 
@@ -109,8 +111,8 @@
 
 	<div class="codebox"><pre>
 {TAB}$mode{TAB}{TAB}= $request->variable('mode', '');
-{TAB}$search_id{TAB}= $request->variable('search_id', '');
-	</pre></div>
+{TAB}$search_id{TAB}= $request->variable('search_id', '');</pre>
+	</div>
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
 
@@ -133,8 +135,8 @@
 * For full copyright and license information, please see
 * the docs/CREDITS.txt file.
 *
-*/
-	</pre></div>
+*/</pre>
+	</div>
 
 	<p>Please see the <a href="#locations">File Locations section</a> for the correct package name.</p>
 
@@ -157,8 +159,8 @@
 
 /**
 */
-{CODE}
-	</pre></div>
+{CODE}</pre>
+	</div>
 
 	<h4>Files containing only functions:</h4>
 
@@ -185,8 +187,8 @@ Small code snipped, mostly one or two defines or an if statement
 /**
 * {DOCUMENTATION}
 */
-class ...
-	</pre></div>
+class ...</pre>
+	</div>
 
 	<a name="locations"></a><h3>1.iii. File Locations</h3>
 
@@ -274,7 +276,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
@@ -282,7 +284,7 @@ PHPBB_QA                   (Set board to QA-Mode, which means the updater also c
 <a name="code"></a><h2>2. Code Layout/Guidelines</h2>
 
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 
@@ -317,8 +319,8 @@ for ($i = 0; $i &lt; $outer_size; $i++)
    {
       foo($i, $j);
    }
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<h4>Function Names:</h4>
 	<p>Functions should also be named descriptively. We're not programming in C here, we don't want to write functions called things like "stristr()". Again, all lower-case names with words separated by a single underscore character in PHP, and camel caps in JavaScript. Function names should be prefixed with "phpbb_" and preferably have a verb in them somewhere. Good function names are <code>phpbb_print_login_status()</code>, <code>phpbb_get_user_data()</code>, etc. Constructor functions in JavaScript should begin with a capital letter.</p>
@@ -344,14 +346,14 @@ phpbb/
   dir/
     class_name.php
       subdir/
-        class_name.php
-	</pre></div>
+        class_name.php</pre>
+	</div>
 
 	<div class="codebox"><pre>
 \phpbb\class_name            - phpbb/class_name.php
 \phpbb\dir\class_name        - phpbb/dir/class_name.php
-\phpbb\dir\subdir\class_name - phpbb/dir/subdir/class_name.php
-	</pre></div>
+\phpbb\dir\subdir\class_name - phpbb/dir/subdir/class_name.php</pre>
+	</div>
 
 
 	<h4>Summary:</h4>
@@ -377,8 +379,8 @@ while (condition)
 	do_stuff();
 
 for ($i = 0; $i &lt; size; $i++)
-	do_stuff($i);
-	</pre></div>
+	do_stuff($i);</pre>
+	</div>
 
 	<p class="good">// These are all right. </p>
 	<div class="codebox"><pre>
@@ -395,8 +397,8 @@ while (condition)
 for ($i = 0; $i &lt; size; $i++)
 {
 	do_stuff();
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<h4>Where to put the braces:</h4>
 	<p>In PHP code, braces always go on their own line. The closing brace should also always be at the same column as the corresponding opening brace, examples:</p>
@@ -427,8 +429,8 @@ while (condition)
 function do_stuff()
 {
 	...
-}
-	</pre></div>
+}</pre>
+	</div>
 	
 	<p>In JavaScript code, braces always go on the same line:</p>
 
@@ -451,8 +453,8 @@ while (condition) {
 
 function do_stuff() {
 	...
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<h4>Use spaces between tokens:</h4>
 	<p>This is another simple, easy step that helps keep code readable without much effort. Whenever you write an assignment, expression, etc.. Always leave <em>one</em> space between the tokens. Basically, write code as if it was English. Put spaces between variable names and operators. Don't put spaces just after an opening bracket or before a closing bracket. Don't put spaces just before a comma or a semicolon. This is best shown with a few examples, examples:</p>
@@ -476,26 +478,26 @@ for($i=0; $i&lt;$size; $i++) ...
 for ($i = 0; $i &lt; $size; $i++) ...
 
 $i=($j &lt; $size)?0:1;
-$i = ($j &lt; $size) ? 0 : 1;
-	</pre></div>
+$i = ($j &lt; $size) ? 0 : 1;</pre>
+	</div>
 
 	<h4>Operator precedence:</h4>
 	<p>Do you know the exact precedence of all the operators in PHP? Neither do I. Don't guess. Always make it obvious by using brackets to force the precedence of an equation so you know what it does. Remember to not over-use this, as it may harden the readability. Basically, do not enclose single expressions. Examples:</p>
 
 	<p class="bad">// what's the result? who knows. </p>
-	<div class="codebox"><pre>
-$bool = ($i &lt; 7 &amp;&amp; $j &gt; 8 || $k == 4);
-	</pre></div>
+	<div class="codebox">
+		<pre>$bool = ($i &lt; 7 &amp;&amp; $j &gt; 8 || $k == 4);</pre>
+	</div>
 
 	<p class="bad">// now you can be certain what I'm doing here.</p>
-	<div class="codebox"><pre>
-$bool = (($i &lt; 7) &amp;&amp; (($j &lt; 8) || ($k == 4)));
-	</pre></div>
+	<div class="codebox">
+		<pre>$bool = (($i &lt; 7) &amp;&amp; (($j &lt; 8) || ($k == 4)));</pre>
+	</div>
 
 	<p class="good">// But this one is even better, because it is easier on the eye but the intention is preserved</p>
-	<div class="codebox"><pre>
-$bool = ($i &lt; 7 &amp;&amp; ($j &lt; 8 || $k == 4));
-	</pre></div>
+	<div class="codebox">
+		<pre>$bool = ($i &lt; 7 &amp;&amp; ($j &lt; 8 || $k == 4));</pre>
+	</div>
 
 	<h4>Quoting strings:</h4>
 	<p>There are two different ways to quote strings in PHP - either with single quotes or with double quotes. The main difference is that the parser does variable interpolation in double-quoted strings, but not in single quoted strings. Because of this, you should <em>always</em> use single quotes <em>unless</em> you specifically need variable interpolation to be done on that string. This way, we can save the parser the trouble of parsing a bunch of strings where no interpolation needs to be done.</p>
@@ -505,25 +507,25 @@ $bool = ($i &lt; 7 &amp;&amp; ($j &lt; 8 || $k == 4));
 	<div class="codebox"><pre>
 $str = "This is a really long string with no variables for the parser to find.";
 
-do_stuff("$str");
-	</pre></div>
+do_stuff("$str");</pre>
+	</div>
 
 	<p class="good">// right</p>
 	<div class="codebox"><pre>
 $str = 'This is a really long string with no variables for the parser to find.';
 
-do_stuff($str);
-	</pre></div>
+do_stuff($str);</pre>
+	</div>
 
 	<p class="bad">// Sometimes single quotes are just not right</p>
 	<div class="codebox"><pre>
-$post_url = $phpbb_root_path . 'posting.' . $phpEx . '?mode=' . $mode . '&amp;amp;start=' . $start;
-	</pre></div>
+$post_url = $phpbb_root_path . 'posting.' . $phpEx . '?mode=' . $mode . '&amp;amp;start=' . $start;</pre>
+	</div>
 
 	<p class="good">// Double quotes are sometimes needed to not overcrowd the line with concatenations.</p>
 	<div class="codebox"><pre>
-$post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
-	</pre></div>
+$post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";</pre>
+	</div>
 
 	<p>In SQL statements mixing single and double quotes is partly allowed (following the guidelines listed here about SQL formatting), else one should try to only use one method - mostly single quotes.</p>
 
@@ -535,40 +537,40 @@ $post_url = "{$phpbb_root_path}posting.$phpEx?mode=$mode&amp;amp;start=$start";
 $foo = array(
 	'bar' => 42,
 	'boo' => 23
-);
-	</pre></div>
+);</pre>
+	</div>
 
 	<p class="good">// right </p>
 	<div class="codebox"><pre>
 $foo = array(
 	'bar' => 42,
 	'boo' => 23,
-);
-	</pre></div>
+);</pre>
+	</div>
 
 
 	<h4>Associative array keys:</h4>
 	<p>In PHP, it's legal to use a literal string as a key to an associative array without quoting that string. We don't want to do this -- the string should always be quoted to avoid confusion. Note that this is only when we're using a literal, not when we're using a variable, examples:</p>
 
 	<p class="bad">// wrong</p>
-	<div class="codebox"><pre>
-$foo = $assoc_array[blah];
-	</pre></div>
+	<div class="codebox">
+		<pre>$foo = $assoc_array[blah];</pre>
+	</div>
 
 	<p class="good">// right </p>
-	<div class="codebox"><pre>
-$foo = $assoc_array['blah'];
-	</pre></div>
+	<div class="codebox">
+		<pre>$foo = $assoc_array['blah'];</pre>
+	</div>
 
 	<p class="bad">// wrong</p>
-	<div class="codebox"><pre>
-$foo = $assoc_array["$var"];
-	</pre></div>
+	<div class="codebox">
+		<pre>$foo = $assoc_array["$var"];</pre>
+	</div>
 
 	<p class="good">// right </p>
-	<div class="codebox"><pre>
-$foo = $assoc_array[$var];
-	</pre></div>
+	<div class="codebox">
+		<pre>$foo = $assoc_array[$var];</pre>
+	</div>
 
 	<h4>Comments:</h4>
 	<p>Each complex function should be preceded by a comment that tells a programmer everything they need to know to use that function. The meaning of every parameter, the expected input, and the output are required as a minimal comment. The function's behaviour in error conditions (and what those error conditions are) should also be present - but mostly included within the comment about the output.<br /><br />Especially important to document are any assumptions the code makes, or preconditions for its proper operation. Any one of the developers should be able to look at any part of the application and figure out what's going on in a reasonable amount of time.<br /><br />Avoid using <code>/* */</code> comment blocks for one-line comments, <code>//</code> should be used for one/two-liners.</p>
@@ -582,8 +584,8 @@ $foo = $assoc_array[$var];
 	<p class="bad">// wrong </p>
 	<div class="codebox"><pre>
 $array[++$i] = $j;
-$array[$i++] = $k;
-	</pre></div>
+$array[$i++] = $k;</pre>
+	</div>
 
 	<p class="good">// right </p>
 	<div class="codebox"><pre>
@@ -591,39 +593,38 @@ $i++;
 $array[$i] = $j;
 
 $array[$i] = $k;
-$i++;
-	</pre></div>
+$i++;</pre>
+	</div>
 
 	<h4>Inline conditionals:</h4>
 	<p>Inline conditionals should only be used to do very simple things. Preferably, they will only be used to do assignments, and not for function calls or anything complex at all. They can be harmful to readability if used incorrectly, so don't fall in love with saving typing by using them, examples:</p>
 
 	<p class="bad">// Bad place to use them</p>
 	<div class="codebox"><pre>
-($i &lt; $size &amp;&amp; $j &gt; $size) ? do_stuff($foo) : do_stuff($bar);
-	</pre></div>
+($i &lt; $size &amp;&amp; $j &gt; $size) ? do_stuff($foo) : do_stuff($bar);</pre>
+	</div>
 
 	<p class="good">// OK place to use them </p>
 	<div class="codebox"><pre>
-$min = ($i &lt; $j) ? $i : $j;
-	</pre></div>
+$min = ($i &lt; $j) ? $i : $j;</pre>
+	</div>
 
 	<h4>Don't use uninitialized variables.</h4>
 	<p>For phpBB3, we intend to use a higher level of run-time error reporting. This will mean that the use of an uninitialized variable will be reported as a warning. These warnings can be avoided by using the built-in isset() function to check whether a variable has been set - but preferably the variable is always existing. For checking if an array has a key set this can come in handy though, examples:</p>
 
 	<p class="bad">// Wrong </p>
-	<div class="codebox"><pre>
-if ($forum) ...
-	</pre></div>
+	<div class="codebox">
+		<pre>if ($forum) ...</pre>
+	</div>
 
 	<p class="good">// Right </p>
-	<div class="codebox"><pre>
-if (isset($forum)) ...
-	</pre></div>
+	<div class="codebox">
+		<pre>if (isset($forum)) ...</pre></div>
 
 	<p class="good">// Also possible</p>
-	<div class="codebox"><pre>
-if (isset($forum) &amp;&amp; $forum == 5)
-	</pre></div>
+	<div class="codebox">
+		<pre>if (isset($forum) &amp;&amp; $forum == 5)</pre>
+	</div>
 
 	<p>The <code>empty()</code> function is useful if you want to check if a variable is not set or being empty (an empty string, 0 as an integer or string, NULL, false, an empty array or a variable declared, but without a value in a class). Therefore empty should be used in favor of <code>isset($array) &amp;&amp; sizeof($array) &gt; 0</code> - this can be written in a shorter way as <code>!empty($array)</code>.</p>
 
@@ -640,8 +641,8 @@ switch ($mode)
 	case 'mode2':
 		// I am doing something completely different here
 		break;
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<p class="good">// Good </p>
 	<div class="codebox"><pre>
@@ -658,8 +659,8 @@ switch ($mode)
 	default:
 		// Always assume that a case was not caught
 	break;
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<p class="good">// Also good, if you have more code between the case and the break </p>
 	<div class="codebox"><pre>
@@ -682,8 +683,8 @@ switch ($mode)
 		// Always assume that a case was not caught
 
 	break;
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<p>Even if the break for the default case is not needed, it is sometimes better to include it just for readability and completeness.</p>
 
@@ -710,8 +711,8 @@ switch ($mode)
 		// Always assume that a case was not caught
 
 	break;
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<h4>Class Members</h4>
 	<p>Use the explicit visibility qualifiers <code>public</code>, <code>private</code> and <code>protected</code> for all properties instead of <code>var</code>.
@@ -721,14 +722,14 @@ switch ($mode)
 	<p class="bad">//Wrong </p>
 	<div class="codebox"><pre>
 var $x;
-private static function f()
-	</pre></div>
+private static function f()</pre>
+	</div>
 
 	<p class="good">// Right </p>
 	<div class="codebox"><pre>
 public $x;
-static private function f()
-	</pre></div>
+static private function f()</pre>
+	</div>
 
 	<h4>Constants</h4>
 	<p>Prefer class constants over global constants created with <code>define()</code>.</p>
@@ -748,8 +749,8 @@ $sql = 'SELECT *
 &lt;-one tab-&gt;WHERE a = 1
 &lt;-two tabs-&gt;AND (b = 2
 &lt;-three tabs-&gt;OR b = 3)
-&lt;-one tab-&gt;ORDER BY b';
-	</pre></div>
+&lt;-one tab-&gt;ORDER BY b';</pre>
+	</div>
 
 	<p>Here the example with the tabs applied:</p>
 
@@ -759,8 +760,8 @@ $sql = 'SELECT *
 	WHERE a = 1
 		AND (b = 2
 			OR b = 3)
-	ORDER BY b';
-	</pre></div>
+	ORDER BY b';</pre>
+	</div>
 
 	<h4>SQL Quotes: </h4>
 	<p>Use double quotes where applicable. (The variables in these examples are typecasted to integers beforehand.) Examples: </p>
@@ -769,16 +770,16 @@ $sql = 'SELECT *
 	<div class="codebox"><pre>
 "UPDATE " . SOME_TABLE . " SET something = something_else WHERE a = $b";
 
-'UPDATE ' . SOME_TABLE . ' SET something = ' . $user_id . ' WHERE a = ' . $something;
-	</pre></div>
+'UPDATE ' . SOME_TABLE . ' SET something = ' . $user_id . ' WHERE a = ' . $something;</pre>
+	</div>
 
 	<p class="good">// These are right. </p>
 
 	<div class="codebox"><pre>
 'UPDATE ' . SOME_TABLE . " SET something = something_else WHERE a = $b";
 
-'UPDATE ' . SOME_TABLE . " SET something = $user_id WHERE a = $something";
-	</pre></div>
+'UPDATE ' . SOME_TABLE . " SET something = $user_id WHERE a = $something";</pre>
+	</div>
 
 	<p>In other words use single quotes where no variable substitution is required or where the variable involved shouldn't appear within double quotes. Otherwise use double quotes.</p>
 
@@ -789,15 +790,15 @@ $sql = 'SELECT *
 	<div class="codebox"><pre>
 $sql = 'SELECT *
 	FROM ' . SOME_TABLE . '
-	WHERE a != 2';
-	</pre></div>
+	WHERE a != 2';</pre>
+	</div>
 
 	<p class="good">// This is right. </p>
 	<div class="codebox"><pre>
 $sql = 'SELECT *
 	FROM ' . SOME_TABLE . '
-	WHERE a &lt;&gt; 2';
-	</pre></div>
+	WHERE a &lt;&gt; 2';</pre>
+	</div>
 
 	<h4>Common DBAL methods: </h4>
 
@@ -808,8 +809,8 @@ $sql = 'SELECT *
 	<div class="codebox"><pre>
 $sql = 'SELECT *
 	FROM ' . SOME_TABLE . "
-	WHERE username = '" . $db-&gt;sql_escape($username) . "'";
-	</pre></div>
+	WHERE username = '" . $db-&gt;sql_escape($username) . "'";</pre>
+	</div>
 
 	<h4>sql_query_limit():</h4>
 
@@ -830,8 +831,8 @@ $sql_ary = array(
 	'moredata'		=&gt; $another_int,
 );
 
-$db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('INSERT', $sql_ary));
-	</pre></div>
+$db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('INSERT', $sql_ary));</pre>
+	</div>
 
 	<p>To complete the example, this is how an update statement would look like:</p>
 
@@ -845,8 +846,8 @@ $sql_ary = array(
 $sql = 'UPDATE ' . SOME_TABLE . '
 	SET ' . $db-&gt;sql_build_array('UPDATE', $sql_ary) . '
 	WHERE user_id = ' . (int) $user_id;
-$db-&gt;sql_query($sql);
-	</pre></div>
+$db-&gt;sql_query($sql);</pre>
+	</div>
 
 	<p>The <code>$db-&gt;sql_build_array()</code> function supports the following modes: <code>INSERT</code> (example above), <code>INSERT_SELECT</code> (building query for <code>INSERT INTO table (...) SELECT value, column ...</code> statements), <code>UPDATE</code> (example above) and <code>SELECT</code> (for building WHERE statement [AND logic]).</p>
 
@@ -869,8 +870,8 @@ $sql_ary[] = array(
 	'moredata'		=&gt; $another_int_2,
 );
 
-$db->sql_multi_insert(SOME_TABLE, $sql_ary);
-	</pre></div>
+$db->sql_multi_insert(SOME_TABLE, $sql_ary);</pre>
+	</div>
 
 	<h4>sql_in_set():</h4>
 
@@ -880,22 +881,22 @@ $db->sql_multi_insert(SOME_TABLE, $sql_ary);
 $sql = 'SELECT *
 	FROM ' . FORUMS_TABLE . '
 	WHERE ' . $db-&gt;sql_in_set('forum_id', $forum_ids);
-$db-&gt;sql_query($sql);
-	</pre></div>
+$db-&gt;sql_query($sql);</pre>
+	</div>
 
 	<p>Based on the number of values in $forum_ids, the query can look differently.</p>
 
 	<p class="good">// SQL Statement if $forum_ids = array(1, 2, 3);</p>
 
 	<div class="codebox"><pre>
-SELECT FROM phpbb_forums WHERE forum_id IN (1, 2, 3)
-	</pre></div>
+SELECT FROM phpbb_forums WHERE forum_id IN (1, 2, 3)</pre>
+	</div>
 
 	<p class="good">// SQL Statement if $forum_ids = array(1) or $forum_ids = 1</p>
 
 	<div class="codebox"><pre>
-SELECT FROM phpbb_forums WHERE forum_id = 1
-	</pre></div>
+SELECT FROM phpbb_forums WHERE forum_id = 1</pre>
+	</div>
 
 	<p>Of course the same is possible for doing a negative match against a number of values:</p>
 
@@ -903,22 +904,22 @@ SELECT FROM phpbb_forums WHERE forum_id = 1
 $sql = 'SELECT *
 	FROM ' . FORUMS_TABLE . '
 	WHERE ' . $db-&gt;sql_in_set('forum_id', $forum_ids, <strong>true</strong>);
-$db-&gt;sql_query($sql);
-	</pre></div>
+$db-&gt;sql_query($sql);</pre>
+	</div>
 
 	<p>Based on the number of values in $forum_ids, the query can look differently here too.</p>
 
 	<p class="good">// SQL Statement if $forum_ids = array(1, 2, 3);</p>
 
 	<div class="codebox"><pre>
-SELECT FROM phpbb_forums WHERE forum_id <strong>NOT</strong> IN (1, 2, 3)
-	</pre></div>
+SELECT FROM phpbb_forums WHERE forum_id <strong>NOT</strong> IN (1, 2, 3)</pre>
+	</div>
 
 	<p class="good">// SQL Statement if $forum_ids = array(1) or $forum_ids = 1</p>
 
 	<div class="codebox"><pre>
-SELECT FROM phpbb_forums WHERE forum_id <strong>&lt;&gt;</strong> 1
-	</pre></div>
+SELECT FROM phpbb_forums WHERE forum_id <strong>&lt;&gt;</strong> 1</pre>
+	</div>
 
 	<p>If the given array is empty, an error will be produced.</p>
 
@@ -948,8 +949,8 @@ $sql_array = array(
 	'ORDER_BY'	=&gt; 'left_id',
 );
 
-$sql = $db-&gt;sql_build_query('SELECT', $sql_array);
-	</pre></div>
+$sql = $db-&gt;sql_build_query('SELECT', $sql_array);</pre>
+	</div>
 
 	<p>The possible first parameter for sql_build_query() is SELECT or SELECT_DISTINCT. As you can see, the logic is pretty self-explaining. For the LEFT_JOIN key, just add another array if you want to join on to tables for example. The added benefit of using this construct is that you are able to easily build the query statement based on conditions - for example the above LEFT_JOIN is only necessary if server side topic tracking is enabled; a slight adjustement would be:</p>
 
@@ -984,8 +985,8 @@ else
 	// Here we read the cookie data
 }
 
-$sql = $db-&gt;sql_build_query('SELECT', $sql_array);
-	</pre></div>
+$sql = $db-&gt;sql_build_query('SELECT', $sql_array);</pre>
+	</div>
 
 	<a name="optimizing"></a><h3>2.iv. Optimizations</h3>
 
@@ -997,16 +998,16 @@ $sql = $db-&gt;sql_build_query('SELECT', $sql_array);
 for ($i = 0; $i &lt; sizeof($post_data); $i++)
 {
 	do_something();
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<p class="good">// You are able to assign the (not changing) result within the loop itself</p>
 	<div class="codebox"><pre>
 for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 {
 	do_something();
-}
-	</pre></div>
+}</pre>
+	</div>
 
 	<h4>Use of in_array(): </h4>
 	<p>Try to avoid using in_array() on huge arrays, and try to not place them into loops if the array to check consist of more than 20 entries. in_array() can be very time consuming and uses a lot of cpu processing time. For little checks it is not noticeable, but if checked against a huge array within a loop those checks alone can take several seconds. If you need this functionality, try using isset() on the arrays keys instead, actually shifting the values into keys and vice versa. A call to <code>isset($array[$var])</code> is a lot faster than <code>in_array($var, array_keys($array))</code> for example.</p>
@@ -1028,29 +1029,29 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	<p class="bad">// Old method, do not use it</p>
 	<div class="codebox"><pre>
 $start = (isset($HTTP_GET_VARS['start'])) ? intval($HTTP_GET_VARS['start']) : intval($HTTP_POST_VARS['start']);
-$submit = (isset($HTTP_POST_VARS['submit'])) ? true : false;
-	</pre></div>
+$submit = (isset($HTTP_POST_VARS['submit'])) ? true : false;</pre>
+	</div>
 
 	<p class="good">// Use request var and define a default variable (use the correct type)</p>
 	<div class="codebox"><pre>
 $start = $request->variable('start', 0);
-$submit = $request->is_set_post('submit');
-	</pre></div>
+$submit = $request->is_set_post('submit');</pre>
+	</div>
 
 	<p class="bad">// $start is an int, the following use of $request->variable() therefore is not allowed</p>
 	<div class="codebox"><pre>
-$start = $request->variable('start', '0');
-	</pre></div>
+$start = $request->variable('start', '0');</pre>
+	</div>
 
 	<p class="good">// Getting an array, keys are integers, value defaults to 0</p>
 	<div class="codebox"><pre>
-$mark_array = $request->variable('mark', array(0));
-	</pre></div>
+$mark_array = $request->variable('mark', array(0));</pre>
+	</div>
 
 	<p class="good">// Getting an array, keys are strings, value defaults to 0</p>
 	<div class="codebox"><pre>
-$action_ary = $request->variable('action', array('' =&gt; 0));
-	</pre></div>
+$action_ary = $request->variable('action', array('' =&gt; 0));</pre>
+	</div>
 
 	<h4>Login checks/redirection: </h4>
 	<p>To show a forum login box use <code>login_forum_box($forum_data)</code>, else use the <code>login_box()</code> function.</p>
@@ -1073,8 +1074,8 @@ $action_ary = $request->variable('action', array('' =&gt; 0));
 		{
 			trigger_error('FORM_INVALID');
 		}
-	}
-	</pre></div>
+	}</pre>
+	</div>
 
 	<p>The string passed to <code>add_form_key()</code> needs to match the string passed to <code>check_form_key()</code>. Another requirement for this to work correctly is that all forms include the <code>{S_FORM_TOKEN}</code> template variable.</p>
 
@@ -1085,8 +1086,8 @@ $action_ary = $request->variable('action', array('' =&gt; 0));
 	<div class="codebox"><pre>
 $user-&gt;session_begin();
 $auth-&gt;acl($user-&gt;data);
-$user-&gt;setup();
-	</pre></div>
+$user-&gt;setup();</pre>
+	</div>
 
 	<p>The <code>$user-&gt;setup()</code> call can be used to pass on additional language definition and a custom style (used in viewforum).</p>
 
@@ -1094,16 +1095,16 @@ $user-&gt;setup();
 	<p>All messages/errors should be outputted by calling <code>trigger_error()</code> using the appropriate message type and language string. Example:</p>
 
 	<div class="codebox"><pre>
-trigger_error('NO_FORUM');
-	</pre></div>
+trigger_error('NO_FORUM');</pre>
+	</div>
 
 	<div class="codebox"><pre>
-trigger_error($user-&gt;lang['NO_FORUM']);
-	</pre></div>
+trigger_error($user-&gt;lang['NO_FORUM']);</pre>
+	</div>
 
 	<div class="codebox"><pre>
-trigger_error('NO_MODE', E_USER_ERROR);
-	</pre></div>
+trigger_error('NO_MODE', E_USER_ERROR);</pre>
+	</div>
 
 	<h4>Url formatting</h4>
 
@@ -1112,8 +1113,8 @@ trigger_error('NO_MODE', E_USER_ERROR);
 	<p>The <code>append_sid()</code> function from 2.0.x is available too, though it does not handle url alterations automatically. Please have a look at the code documentation if you want to get more details on how to use append_sid(). A sample call to append_sid() can look like this:</p>
 
 	<div class="codebox"><pre>
-append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;g=' . $row['group_id'])
-	</pre></div>
+append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;g=' . $row['group_id'])</pre>
+	</div>
 
 	<h4>General function usage: </h4>
 
@@ -1169,14 +1170,14 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
 
 <a name="styling"></a><h2>3. Styling</h2>
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 	<a name="cfgfiles"></a><h3>3.i. Style Config Files</h3>
@@ -1193,8 +1194,8 @@ phpbb_version = 3.1.0
 
 # Parent style
 # Set value to empty or to this style's name if this style does not have a parent style
-parent = prosilver
-	</pre></div>
+parent = prosilver</pre>
+	</div>
 	<a name="genstyling"></a><h3>3.2. General Styling Rules</h3>
 <p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the indentation and coding guidelines also apply to templates where possible.</p>
 
@@ -1252,14 +1253,14 @@ parent = prosilver
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
 
 <a name="templating"></a><h2>4. Templating</h2>
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 	<a name="templates"></a><h3>4.i. General Templating</h3>
@@ -1748,7 +1749,7 @@ This may span multiple lines.
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
@@ -1758,7 +1759,7 @@ This may span multiple lines.
 <a name="charsets"></a><h2>5. Character Sets and Encodings</h2>
 
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 
@@ -1821,7 +1822,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
@@ -1829,7 +1830,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 <a name="translation"></a><h2>6. Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</h2>
 
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 
@@ -2356,8 +2357,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 'PAGE_OF'	=&gt;	'Page %s of %s',
 		/* Just grabbing the replacements as they
 		come and hope they are in the right order */
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>&hellip; a clearer way to show explicit replacement ordering is to do:</p>
 
@@ -2366,8 +2367,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 'PAGE_OF'	=&gt;	'Page %1$s of %2$s',
 		/* Explicit ordering of the replacements,
 		even if they are the same order as English */
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>Why bother at all? Because some languages, the string transliterated back to English might read something like:</p>
 
@@ -2376,8 +2377,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 'PAGE_OF'	=&gt;	'Total of %2$s pages, currently on page %1$s',
 		/* Explicit ordering of the replacements,
 		reversed compared to English as the total comes first */
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<a name="usingplurals"></a><h3>6.iv. Using plurals</h3>
 
@@ -2395,8 +2396,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<div class="codebox"><pre>
 	...
 	$user->lang('NUMBER_OF_ELEPHANTS', $number_of_elephants);
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>And the English translation would be:</p>
 
@@ -2407,8 +2408,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		1	=> 'You have 1 elephant', // Singular
 		2	=> 'You have %d elephants', // Plural
 	),
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>While the Bosnian translation can have more cases:</p>
 
@@ -2420,16 +2421,16 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		2	=> 'You have %d slona', // Used for 5, 6,
 		3	=> ...
 	),
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p><strong>NOTE:</strong> It is okay to use plurals for an unknown number compared to a single item, when the number is not known and displayed:</p>
 	<div class="codebox"><pre>
 	...
 	'MODERATOR'	=> 'Moderator',  // Your board has 1 moderator
 	'MODERATORS'	=> 'Moderators', // Your board has multiple moderators
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<a name="writingstyle"></a><h3>6.v. Writing Style</h3>
 
@@ -2443,8 +2444,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 'CONV_ERROR_NO_AVATAR_PATH'
 	=&gt;	'Note to developer: you must specify $convertor['avatar_path'] to use %s.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p class="good">// Good - Literal straight quotes should be escaped with a backslash, ie: \</p>
 
@@ -2452,8 +2453,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 'CONV_ERROR_NO_AVATAR_PATH'
 	=&gt;	'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>However, because phpBB3 now uses UTF-8 as its sole encoding, we can actually use this to our advantage and not have to remember to escape a straight quote when we don't have to:</p>
 
@@ -2462,24 +2463,24 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<div class="codebox"><pre>
 	...
 'USE_PERMISSIONS'	=&gt;	'Test out user's permissions',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p class="good">// Okay - However, non-programmers wouldn't type "user\'s" automatically</p>
 
 	<div class="codebox"><pre>
 	...
 'USE_PERMISSIONS'	=&gt;	'Test out user\'s permissions',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p class="good">// Best - Use the Unicode Right-Single-Quotation-Mark character</p>
 
 	<div class="codebox"><pre>
 	...
 'USE_PERMISSIONS'	=&gt;	'Test out user&rsquo;s permissions',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>The <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign) and <code>&gt;</code> (greater-than sign) characters can all be used as displayed glyphs or as part of HTML markup, for example:</p>
 
@@ -2489,8 +2490,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 'FOO_BAR'	=&gt;	'PHP version &lt; 5.3.3.&lt;br /&gt;
 	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p class="good">// Okay - No more invalid HTML, but &quot;&amp;quot;&quot; is rather clumsy</p>
 
@@ -2498,8 +2499,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.3.&lt;br /&gt;
 	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p class="good">// Best - No more invalid HTML, and usage of correct typographical quotation marks</p>
 
@@ -2507,8 +2508,8 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	...
 'FOO_BAR'	=&gt;	'PHP version &amp;lt; 5.3.3.&lt;br /&gt;
 	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>Lastly, the <code>&amp;</code> (ampersand) must always be entitised regardless of where it is used:</p>
 
@@ -2517,16 +2518,16 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;bar=2&quot;&gt;Foo &amp; Bar&lt;/a&gt;.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p class="good">// Good - Valid HTML, amperands are correctly entitised in all cases</p>
 
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;amp;bar=2&quot;&gt;Foo &amp;amp; Bar&lt;/a&gt;.',
-	...
-	</pre></div>
+	...</pre>
+	</div>
 
 	<p>As for how these charcters are entered depends very much on choice of Operating System, current language locale/keyboard configuration and native abilities of the text editor used to edit phpBB language files. Please see <a href="http://en.wikipedia.org/wiki/Unicode#Input_methods">http://en.wikipedia.org/wiki/Unicode#Input_methods</a> for more information.</p>
 
@@ -2538,7 +2539,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 	<hr />
@@ -2546,7 +2547,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 <a name="disclaimer"></a><h2>7. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
-		<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner">
 
 		<div class="content">
 
@@ -2556,7 +2557,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-		<span class="corners-bottom"><span></span></span></div>
+		</div>
 	</div>
 
 <!-- END DOCUMENT -->

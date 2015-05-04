@@ -53,7 +53,7 @@ class helper
 	protected $request;
 
 	/**
-	* @var \phpbb\filesystem The filesystem object
+	* @var \phpbb\filesystem\filesystem_interface The filesystem object
 	*/
 	protected $filesystem;
 
@@ -78,11 +78,11 @@ class helper
 	* @param \phpbb\routing\router $router phpBB router
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\filesystem $filesystem The filesystem object
+	* @param \phpbb\filesystem\filesystem_interface $filesystem The filesystem object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
@@ -144,6 +144,12 @@ class helper
 		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
 
 		$base_url = $context->getBaseUrl();
+
+		// Append page name if base URL does not contain it
+		if (!empty($page_name) && strpos($base_url, '/' . $page_name) === false)
+		{
+			$base_url .= '/' . $page_name;
+		}
 
 		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
@@ -215,6 +221,20 @@ class helper
 		));
 
 		return $this->render('message_body.html', $this->user->lang($title), $code);
+	}
+
+	/**
+	 * Assigns automatic refresh time meta tag in template
+	 *
+	 * @param	int		$time	time in seconds, when redirection should occur
+	 * @param	string	$url	the URL where the user should be redirected
+	 * @return	null
+	 */
+	public function assign_meta_refresh_var($time, $url)
+	{
+		$this->template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />',
+		));
 	}
 
 	/**

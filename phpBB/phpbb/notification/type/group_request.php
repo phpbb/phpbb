@@ -26,7 +26,7 @@ class group_request extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_GROUP_REQUEST',
 	);
 
@@ -50,7 +50,7 @@ class group_request extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_id($group)
+	static public function get_item_id($group)
 	{
 		return (int) $group['user_id'];
 	}
@@ -58,7 +58,7 @@ class group_request extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_parent_id($group)
+	static public function get_item_parent_id($group)
 	{
 		// Group id is the parent
 		return (int) $group['group_id'];

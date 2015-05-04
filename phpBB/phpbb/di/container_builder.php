@@ -150,7 +150,7 @@ class container_builder
 		$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
 		if ($this->dump_container && $config_cache->isFresh())
 		{
-			require($container_filename);
+			require($config_cache->getPath());
 			$this->container = new \phpbb_cache_container();
 		}
 		else
@@ -192,7 +192,8 @@ class container_builder
 				}
 			}
 
-			$loader = new YamlFileLoader($this->container, new FileLocator(phpbb_realpath($this->get_config_path())));
+			$filesystem = new \phpbb\filesystem\filesystem();
+			$loader = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
 			$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 			$this->inject_custom_parameters();

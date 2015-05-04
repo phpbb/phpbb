@@ -311,448 +311,6 @@ function phpbb_version_compare($version1, $version2, $operator = null)
 	}
 }
 
-/**
-* Global function for chmodding directories and files for internal use
-*
-* This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
-* The function determines owner and group from common.php file and sets the same to the provided file.
-* The function uses bit fields to build the permissions.
-* The function sets the appropiate execute bit on directories.
-*
-* Supported constants representing bit fields are:
-*
-* CHMOD_ALL - all permissions (7)
-* CHMOD_READ - read permission (4)
-* CHMOD_WRITE - write permission (2)
-* CHMOD_EXECUTE - execute permission (1)
-*
-* NOTE: The function uses POSIX extension and fileowner()/filegroup() functions. If any of them is disabled, this function tries to build proper permissions, by calling is_readable() and is_writable() functions.
-*
-* @param string	$filename	The file/directory to be chmodded
-* @param int	$perms		Permissions to set
-*
-* @return bool	true on success, otherwise false
-*/
-function phpbb_chmod($filename, $perms = CHMOD_READ)
-{
-	static $_chmod_info;
-
-	// Return if the file no longer exists.
-	if (!file_exists($filename))
-	{
-		return false;
-	}
-
-	// Determine some common vars
-	if (empty($_chmod_info))
-	{
-		if (!function_exists('fileowner') || !function_exists('filegroup'))
-		{
-			// No need to further determine owner/group - it is unknown
-			$_chmod_info['process'] = false;
-		}
-		else
-		{
-			global $phpbb_root_path, $phpEx;
-
-			// Determine owner/group of common.php file and the filename we want to change here
-			$common_php_owner = @fileowner($phpbb_root_path . 'common.' . $phpEx);
-			$common_php_group = @filegroup($phpbb_root_path . 'common.' . $phpEx);
-
-			// And the owner and the groups PHP is running under.
-			$php_uid = (function_exists('posix_getuid')) ? @posix_getuid() : false;
-			$php_gids = (function_exists('posix_getgroups')) ? @posix_getgroups() : false;
-
-			// If we are unable to get owner/group, then do not try to set them by guessing
-			if (!$php_uid || empty($php_gids) || !$common_php_owner || !$common_php_group)
-			{
-				$_chmod_info['process'] = false;
-			}
-			else
-			{
-				$_chmod_info = array(
-					'process'		=> true,
-					'common_owner'	=> $common_php_owner,
-					'common_group'	=> $common_php_group,
-					'php_uid'		=> $php_uid,
-					'php_gids'		=> $php_gids,
-				);
-			}
-		}
-	}
-
-	if ($_chmod_info['process'])
-	{
-		$file_uid = @fileowner($filename);
-		$file_gid = @filegroup($filename);
-
-		// Change owner
-		if (@chown($filename, $_chmod_info['common_owner']))
-		{
-			clearstatcache();
-			$file_uid = @fileowner($filename);
-		}
-
-		// Change group
-		if (@chgrp($filename, $_chmod_info['common_group']))
-		{
-			clearstatcache();
-			$file_gid = @filegroup($filename);
-		}
-
-		// If the file_uid/gid now match the one from common.php we can process further, else we are not able to change something
-		if ($file_uid != $_chmod_info['common_owner'] || $file_gid != $_chmod_info['common_group'])
-		{
-			$_chmod_info['process'] = false;
-		}
-	}
-
-	// Still able to process?
-	if ($_chmod_info['process'])
-	{
-		if ($file_uid == $_chmod_info['php_uid'])
-		{
-			$php = 'owner';
-		}
-		else if (in_array($file_gid, $_chmod_info['php_gids']))
-		{
-			$php = 'group';
-		}
-		else
-		{
-			// Since we are setting the everyone bit anyway, no need to do expensive operations
-			$_chmod_info['process'] = false;
-		}
-	}
-
-	// We are not able to determine or change something
-	if (!$_chmod_info['process'])
-	{
-		$php = 'other';
-	}
-
-	// Owner always has read/write permission
-	$owner = CHMOD_READ | CHMOD_WRITE;
-	if (is_dir($filename))
-	{
-		$owner |= CHMOD_EXECUTE;
-
-		// Only add execute bit to the permission if the dir needs to be readable
-		if ($perms & CHMOD_READ)
-		{
-			$perms |= CHMOD_EXECUTE;
-		}
-	}
-
-	switch ($php)
-	{
-		case 'owner':
-			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
-
-			clearstatcache();
-
-			if (is_readable($filename) && phpbb_is_writable($filename))
-			{
-				break;
-			}
-
-		case 'group':
-			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + (0 << 0));
-
-			clearstatcache();
-
-			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || phpbb_is_writable($filename)))
-			{
-				break;
-			}
-
-		case 'other':
-			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + ($perms << 0));
-
-			clearstatcache();
-
-			if ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || phpbb_is_writable($filename)))
-			{
-				break;
-			}
-
-		default:
-			return false;
-		break;
-	}
-
-	return $result;
-}
-
-/**
-* Test if a file/directory is writable
-*
-* This function calls the native is_writable() when not running under
-* Windows and it is not disabled.
-*
-* @param string $file Path to perform write test on
-* @return bool True when the path is writable, otherwise false.
-*/
-function phpbb_is_writable($file)
-{
-	if (strtolower(substr(PHP_OS, 0, 3)) === 'win' || !function_exists('is_writable'))
-	{
-		if (file_exists($file))
-		{
-			// Canonicalise path to absolute path
-			$file = phpbb_realpath($file);
-
-			if (is_dir($file))
-			{
-				// Test directory by creating a file inside the directory
-				$result = @tempnam($file, 'i_w');
-
-				if (is_string($result) && file_exists($result))
-				{
-					unlink($result);
-
-					// Ensure the file is actually in the directory (returned realpathed)
-					return (strpos($result, $file) === 0) ? true : false;
-				}
-			}
-			else
-			{
-				$handle = @fopen($file, 'r+');
-
-				if (is_resource($handle))
-				{
-					fclose($handle);
-					return true;
-				}
-			}
-		}
-		else
-		{
-			// file does not exist test if we can write to the directory
-			$dir = dirname($file);
-
-			if (file_exists($dir) && is_dir($dir) && phpbb_is_writable($dir))
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-	else
-	{
-		return is_writable($file);
-	}
-}
-
-/**
-* Checks if a path ($path) is absolute or relative
-*
-* @param string $path Path to check absoluteness of
-* @return boolean
-*/
-function phpbb_is_absolute($path)
-{
-	return (isset($path[0]) && $path[0] == '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
-}
-
-/**
-* @author Chris Smith <chris@project-minerva.org>
-* @copyright 2006 Project Minerva Team
-* @param string $path The path which we should attempt to resolve.
-* @return mixed
-*/
-function phpbb_own_realpath($path)
-{
-	global $request;
-
-	// Now to perform funky shizzle
-
-	// Switch to use UNIX slashes
-	$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-	$path_prefix = '';
-
-	// Determine what sort of path we have
-	if (phpbb_is_absolute($path))
-	{
-		$absolute = true;
-
-		if ($path[0] == '/')
-		{
-			// Absolute path, *NIX style
-			$path_prefix = '';
-		}
-		else
-		{
-			// Absolute path, Windows style
-			// Remove the drive letter and colon
-			$path_prefix = $path[0] . ':';
-			$path = substr($path, 2);
-		}
-	}
-	else
-	{
-		// Relative Path
-		// Prepend the current working directory
-		if (function_exists('getcwd'))
-		{
-			// This is the best method, hopefully it is enabled!
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
-			$absolute = true;
-			if (preg_match('#^[a-z]:#i', $path))
-			{
-				$path_prefix = $path[0] . ':';
-				$path = substr($path, 2);
-			}
-			else
-			{
-				$path_prefix = '';
-			}
-		}
-		else if ($request->server('SCRIPT_FILENAME'))
-		{
-			// Warning: If chdir() has been used this will lie!
-			// Warning: This has some problems sometime (CLI can create them easily)
-			$filename = htmlspecialchars_decode($request->server('SCRIPT_FILENAME'));
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($filename)) . '/' . $path;
-			$absolute = true;
-			$path_prefix = '';
-		}
-		else
-		{
-			// We have no way of getting the absolute path, just run on using relative ones.
-			$absolute = false;
-			$path_prefix = '.';
-		}
-	}
-
-	// Remove any repeated slashes
-	$path = preg_replace('#/{2,}#', '/', $path);
-
-	// Remove the slashes from the start and end of the path
-	$path = trim($path, '/');
-
-	// Break the string into little bits for us to nibble on
-	$bits = explode('/', $path);
-
-	// Remove any . in the path, renumber array for the loop below
-	$bits = array_values(array_diff($bits, array('.')));
-
-	// Lets get looping, run over and resolve any .. (up directory)
-	for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
-	{
-		// @todo Optimise
-		if ($bits[$i] == '..' )
-		{
-			if (isset($bits[$i - 1]))
-			{
-				if ($bits[$i - 1] != '..')
-				{
-					// We found a .. and we are able to traverse upwards, lets do it!
-					unset($bits[$i]);
-					unset($bits[$i - 1]);
-					$i -= 2;
-					$max -= 2;
-					$bits = array_values($bits);
-				}
-			}
-			else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
-			{
-				// We have an absolute path trying to descend above the root of the filesystem
-				// ... Error!
-				return false;
-			}
-		}
-	}
-
-	// Prepend the path prefix
-	array_unshift($bits, $path_prefix);
-
-	$resolved = '';
-
-	$max = sizeof($bits) - 1;
-
-	// Check if we are able to resolve symlinks, Windows (prior to Vista and Server 2008) cannot.
-	$symlink_resolve = (function_exists('readlink')) ? true : false;
-
-	foreach ($bits as $i => $bit)
-	{
-		if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
-		{
-			// Path Exists
-			if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
-			{
-				// Resolved a symlink.
-				$resolved = $link . (($i == $max) ? '' : '/');
-				continue;
-			}
-		}
-		else
-		{
-			// Something doesn't exist here!
-			// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
-			// return false;
-		}
-		$resolved .= $bit . (($i == $max) ? '' : '/');
-	}
-
-	// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
-	// because we must be inside that basedir, the question is where...
-	// @internal The slash in is_dir() gets around an open_basedir restriction
-	if (!@file_exists($resolved) || (!@is_dir($resolved . '/') && !is_file($resolved)))
-	{
-		return false;
-	}
-
-	// Put the slashes back to the native operating systems slashes
-	$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
-
-	// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-	if (substr($resolved, -1) == DIRECTORY_SEPARATOR)
-	{
-		return substr($resolved, 0, -1);
-	}
-
-	return $resolved; // We got here, in the end!
-}
-
-if (!function_exists('realpath'))
-{
-	/**
-	* A wrapper for realpath
-	* @ignore
-	*/
-	function phpbb_realpath($path)
-	{
-		return phpbb_own_realpath($path);
-	}
-}
-else
-{
-	/**
-	* A wrapper for realpath
-	*/
-	function phpbb_realpath($path)
-	{
-		$realpath = realpath($path);
-
-		// Strangely there are provider not disabling realpath but returning strange values. :o
-		// We at least try to cope with them.
-		if ($realpath === $path || $realpath === false)
-		{
-			return phpbb_own_realpath($path);
-		}
-
-		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-		if (substr($realpath, -1) == DIRECTORY_SEPARATOR)
-		{
-			$realpath = substr($realpath, 0, -1);
-		}
-
-		return $realpath;
-	}
-}
-
 // functions used for building option fields
 
 /**
@@ -1029,7 +587,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	/**
 	 * This event is used for performing actions directly before marking forums,
 	 * topics or posts as read.
-	 * 
+	 *
 	 * It is also possible to prevent the marking. For that, the $should_markread parameter
 	 * should be set to FALSE.
 	 *
@@ -2161,7 +1719,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	$failover_flag = false;
 
-	if (empty($user->lang))
+	if (!$user->is_setup())
 	{
 		$user->add_lang('common');
 	}
@@ -2182,7 +1740,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
 		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
-			$url = generate_board_url();
+			trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 		}
 	}
 	else if ($url[0] == '/')
@@ -2220,7 +1778,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Clean URL and check if we go outside the forum directory
 	$url = $phpbb_path_helper->clean_url($url);
 
-	if (!$disable_cd_check && strpos($url, generate_board_url(true)) === false)
+	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
 	{
 		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
@@ -2262,7 +1820,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	}
 
 	// Redirect via an HTML form for PITA webservers
-	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
+	if (@preg_match('#WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
 	{
 		header('Refresh: 0; URL=' . $url);
 
@@ -2417,13 +1975,19 @@ function phpbb_request_http_version()
 {
 	global $request;
 
+	$version = '';
 	if ($request && $request->server('SERVER_PROTOCOL'))
 	{
-		return $request->server('SERVER_PROTOCOL');
+		$version = $request->server('SERVER_PROTOCOL');
 	}
 	else if (isset($_SERVER['SERVER_PROTOCOL']))
 	{
-		return $_SERVER['SERVER_PROTOCOL'];
+		$version = $_SERVER['SERVER_PROTOCOL'];
+	}
+
+	if (!empty($version) && is_string($version) && preg_match('#^HTTP/[0-9]\.[0-9]$#', $version))
+	{
+		return $version;
 	}
 
 	return 'HTTP/1.0';
@@ -2679,7 +2243,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$err = '';
 
 	// Make sure user->setup() has been called
-	if (empty($user->lang))
+	if (!$user->is_setup())
 	{
 		$user->setup();
 	}
@@ -2793,19 +2357,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// Special cases... determine
 		switch ($result['status'])
 		{
-			case LOGIN_ERROR_ATTEMPTS:
-
-				$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-				$captcha->init(CONFIRM_LOGIN);
-				// $captcha->reset();
-
-				$template->assign_vars(array(
-					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
-				));
-
-				$err = $user->lang[$result['error_msg']];
-			break;
-
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
 					$user->lang[$result['error_msg']],
@@ -2815,6 +2366,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'</a>'
 				);
 			break;
+
+			case LOGIN_ERROR_ATTEMPTS:
+
+				$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+				$captcha->init(CONFIRM_LOGIN);
+				// $captcha->reset();
+
+				$template->assign_vars(array(
+					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
+				));
+			// no break;
 
 			// Username, password, etc...
 			default:
@@ -3176,7 +2738,7 @@ function get_preg_expression($mode)
 		case 'email':
 			// Regex written by James Watts and Francisco Jose Martin Moreno
 			// http://fightingforalostcause.net/misc/2006/compare-email-regex.php
-			return '([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
+			return '((?:[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%\'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+)@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)';
 		break;
 
 		case 'bbcode_htm':
@@ -3706,7 +3268,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 		case E_USER_ERROR:
 
-			if (!empty($user) && !empty($user->lang))
+			if (!empty($user) && $user->is_setup())
 			{
 				$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 				$msg_title = (!isset($msg_title)) ? $user->lang['GENERAL_ERROR'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
@@ -3826,7 +3388,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			// We re-init the auth array to get correct results on login/logout
 			$auth->acl($user->data);
 
-			if (empty($user->lang))
+			if (!$user->is_setup())
 			{
 				$user->setup();
 			}
@@ -3915,11 +3477,13 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 */
 function phpbb_filter_root_path($errfile)
 {
+	global $phpbb_filesystem;
+
 	static $root_path;
 
 	if (empty($root_path))
 	{
-		$root_path = phpbb_realpath(dirname(__FILE__) . '/../');
+		$root_path = $phpbb_filesystem->realpath(dirname(__FILE__) . '/../');
 	}
 
 	return str_replace(array($root_path, '\\'), array('[ROOT]', '/'), $errfile);
@@ -4045,9 +3609,10 @@ function obtain_users_online($item_id = 0, $item = 'forum')
 */
 function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum')
 {
-	global $config, $db, $user, $auth;
+	global $config, $db, $user, $auth, $phpbb_dispatcher;
 
-	$user_online_link = $online_userlist = '';
+	$guests_online = $hidden_online = $l_online_users = $online_userlist = $visible_online = '';
+	$user_online_link = $rowset = array();
 	// Need caps version of $item for language-strings
 	$item_caps = strtoupper($item);
 
@@ -4057,9 +3622,28 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $online_users['online_users']) . '
 				ORDER BY username_clean ASC';
-		$result = $db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		/**
+		* Modify SQL query to obtain online users data
+		*
+		* @event core.obtain_users_online_string_sql
+		* @var	array	online_users	Array with online users data
+		*								from obtain_users_online()
+		* @var	int		item_id			Restrict online users to item id
+		* @var	string	item			Restrict online users to a certain
+		*								session item, e.g. forum for
+		*								session_forum_id
+		* @var	string	sql				SQL query to obtain users online data
+		* @since 3.1.4-RC1
+		*/
+		$vars = array('online_users', 'item_id', 'item', 'sql');
+		extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_sql', compact($vars)));
+
+		$result = $db->sql_query($sql);
+		$rowset = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		foreach ($rowset as $row)
 		{
 			// User is logged in and therefore not a guest
 			if ($row['user_id'] != ANONYMOUS)
@@ -4071,13 +3655,12 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 
 				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
 				{
-					$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
-					$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
+					$user_online_link[$row['user_id']] = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
 				}
 			}
 		}
-		$db->sql_freeresult($result);
 	}
+	$online_userlist = implode(', ', $user_online_link);
 
 	if (!$online_userlist)
 	{
@@ -4109,6 +3692,33 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	{
 		$l_online_users = $user->lang('ONLINE_USERS_TOTAL', (int) $online_users['total_online'], $visible_online, $hidden_online);
 	}
+
+	/**
+	* Modify online userlist data
+	*
+	* @event core.obtain_users_online_string_modify
+	* @var	array	online_users		Array with online users data
+	*									from obtain_users_online()
+	* @var	int		item_id				Restrict online users to item id
+	* @var	string	item				Restrict online users to a certain
+	*									session item, e.g. forum for
+	*									session_forum_id
+	* @var	array	rowset				Array with online users data
+	* @var	array	user_online_link	Array with online users items (usernames)
+	* @var	string	online_userlist		String containing users online list
+	* @var	string	l_online_users		String with total online users count info
+	* @since 3.1.4-RC1
+	*/
+	$vars = array(
+		'online_users',
+		'item_id',
+		'item',
+		'rowset',
+		'user_online_link',
+		'online_userlist',
+		'l_online_users',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_modify', compact($vars)));
 
 	return array(
 		'online_userlist'	=> $online_userlist,
@@ -4149,178 +3759,6 @@ function phpbb_optionset($bit, $set, $data)
 	}
 
 	return $data;
-}
-
-/**
-* Determine which plural form we should use.
-* For some languages this is not as simple as for English.
-*
-* @param $rule		int			ID of the plural rule we want to use, see http://wiki.phpbb.com/Plural_Rules#Plural_Rules
-* @param $number	int|float	The number we want to get the plural case for. Float numbers are floored.
-* @return	int		The plural-case we need to use for the number plural-rule combination
-*/
-function phpbb_get_plural_form($rule, $number)
-{
-	$number = (int) $number;
-
-	if ($rule > 15 || $rule < 0)
-	{
-		trigger_error('INVALID_PLURAL_RULE');
-	}
-
-	/**
-	* The following plural rules are based on a list published by the Mozilla Developer Network
-	* https://developer.mozilla.org/en/Localization_and_Plurals
-	*/
-	switch ($rule)
-	{
-		case 0:
-			/**
-			* Families: Asian (Chinese, Japanese, Korean, Vietnamese), Persian, Turkic/Altaic (Turkish), Thai, Lao
-			* 1 - everything: 0, 1, 2, ...
-			*/
-			return 1;
-
-		case 1:
-			/**
-			* Families: Germanic (Danish, Dutch, English, Faroese, Frisian, German, Norwegian, Swedish), Finno-Ugric (Estonian, Finnish, Hungarian), Language isolate (Basque), Latin/Greek (Greek), Semitic (Hebrew), Romanic (Italian, Portuguese, Spanish, Catalan)
-			* 1 - 1
-			* 2 - everything else: 0, 2, 3, ...
-			*/
-			return ($number == 1) ? 1 : 2;
-
-		case 2:
-			/**
-			* Families: Romanic (French, Brazilian Portuguese)
-			* 1 - 0, 1
-			* 2 - everything else: 2, 3, ...
-			*/
-			return (($number == 0) || ($number == 1)) ? 1 : 2;
-
-		case 3:
-			/**
-			* Families: Baltic (Latvian)
-			* 1 - 0
-			* 2 - ends in 1, not 11: 1, 21, ... 101, 121, ...
-			* 3 - everything else: 2, 3, ... 10, 11, 12, ... 20, 22, ...
-			*/
-			return ($number == 0) ? 1 : ((($number % 10 == 1) && ($number % 100 != 11)) ? 2 : 3);
-
-		case 4:
-			/**
-			* Families: Celtic (Scottish Gaelic)
-			* 1 - is 1 or 11: 1, 11
-			* 2 - is 2 or 12: 2, 12
-			* 3 - others between 3 and 19: 3, 4, ... 10, 13, ... 18, 19
-			* 4 - everything else: 0, 20, 21, ...
-			*/
-			return ($number == 1 || $number == 11) ? 1 : (($number == 2 || $number == 12) ? 2 : (($number >= 3 && $number <= 19) ? 3 : 4));
-
-		case 5:
-			/**
-			* Families: Romanic (Romanian)
-			* 1 - 1
-			* 2 - is 0 or ends in 01-19: 0, 2, 3, ... 19, 101, 102, ... 119, 201, ...
-			* 3 - everything else: 20, 21, ...
-			*/
-			return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 0) && ($number % 100 < 20))) ? 2 : 3);
-
-		case 6:
-			/**
-			* Families: Baltic (Lithuanian)
-			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
-			* 2 - ends in 0 or ends in 10-20: 0, 10, 11, 12, ... 19, 20, 30, 40, ...
-			* 3 - everything else: 2, 3, ... 8, 9, 22, 23, ... 29, 32, 33, ...
-			*/
-			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 < 2) || (($number % 100 >= 10) && ($number % 100 < 20))) ? 2 : 3);
-
-		case 7:
-			/**
-			* Families: Slavic (Croatian, Serbian, Russian, Ukrainian)
-			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, ...
-			* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ...
-			* 3 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, ...
-			*/
-			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 10) || ($number % 100 >= 20))) ? 2 : 3);
-
-		case 8:
-			/**
-			* Families: Slavic (Slovak, Czech)
-			* 1 - 1
-			* 2 - 2, 3, 4
-			* 3 - everything else: 0, 5, 6, 7, ...
-			*/
-			return ($number == 1) ? 1 : ((($number >= 2) && ($number <= 4)) ? 2 : 3);
-
-		case 9:
-			/**
-			* Families: Slavic (Polish)
-			* 1 - 1
-			* 2 - ends in 2-4, not 12-14: 2, 3, 4, 22, 23, 24, 32, ... 104, 122, ...
-			* 3 - everything else: 0, 5, 6, ... 11, 12, 13, 14, 15, ... 20, 21, 25, ...
-			*/
-			return ($number == 1) ? 1 : ((($number % 10 >= 2) && ($number % 10 <= 4) && (($number % 100 < 12) || ($number % 100 > 14))) ? 2 : 3);
-
-		case 10:
-			/**
-			* Families: Slavic (Slovenian, Sorbian)
-			* 1 - ends in 01: 1, 101, 201, ...
-			* 2 - ends in 02: 2, 102, 202, ...
-			* 3 - ends in 03-04: 3, 4, 103, 104, 203, 204, ...
-			* 4 - everything else: 0, 5, 6, 7, 8, 9, 10, 11, ...
-			*/
-			return ($number % 100 == 1) ? 1 : (($number % 100 == 2) ? 2 : ((($number % 100 == 3) || ($number % 100 == 4)) ? 3 : 4));
-
-		case 11:
-			/**
-			* Families: Celtic (Irish Gaeilge)
-			* 1 - 1
-			* 2 - 2
-			* 3 - is 3-6: 3, 4, 5, 6
-			* 4 - is 7-10: 7, 8, 9, 10
-			* 5 - everything else: 0, 11, 12, ...
-			*/
-			return ($number == 1) ? 1 : (($number == 2) ? 2 : (($number >= 3 && $number <= 6) ? 3 : (($number >= 7 && $number <= 10) ? 4 : 5)));
-
-		case 12:
-			/**
-			* Families: Semitic (Arabic)
-			* 1 - 1
-			* 2 - 2
-			* 3 - ends in 03-10: 3, 4, ... 10, 103, 104, ... 110, 203, 204, ...
-			* 4 - ends in 11-99: 11, ... 99, 111, 112, ...
-			* 5 - everything else: 100, 101, 102, 200, 201, 202, ...
-			* 6 - 0
-			*/
-			return ($number == 1) ? 1 : (($number == 2) ? 2 : ((($number % 100 >= 3) && ($number % 100 <= 10)) ? 3 : ((($number % 100 >= 11) && ($number % 100 <= 99)) ? 4 : (($number != 0) ? 5 : 6))));
-
-		case 13:
-			/**
-			* Families: Semitic (Maltese)
-			* 1 - 1
-			* 2 - is 0 or ends in 01-10: 0, 2, 3, ... 9, 10, 101, 102, ...
-			* 3 - ends in 11-19: 11, 12, ... 18, 19, 111, 112, ...
-			* 4 - everything else: 20, 21, ...
-			*/
-			return ($number == 1) ? 1 : ((($number == 0) || (($number % 100 > 1) && ($number % 100 < 11))) ? 2 : ((($number % 100 > 10) && ($number % 100 < 20)) ? 3 : 4));
-
-		case 14:
-			/**
-			* Families: Slavic (Macedonian)
-			* 1 - ends in 1: 1, 11, 21, ...
-			* 2 - ends in 2: 2, 12, 22, ...
-			* 3 - everything else: 0, 3, 4, ... 10, 13, 14, ... 20, 23, ...
-			*/
-			return ($number % 10 == 1) ? 1 : (($number % 10 == 2) ? 2 : 3);
-
-		case 15:
-			/**
-			* Families: Icelandic
-			* 1 - ends in 1, not 11: 1, 21, 31, ... 101, 121, 131, ...
-			* 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
-			*/
-			return (($number % 10 == 1) && ($number % 100 != 11)) ? 1 : 2;
-	}
 }
 
 /**
@@ -4816,6 +4254,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -4869,7 +4309,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
 		'U_USER_PROFILE'		=> get_username_string('profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
-		'U_FAQ'					=> append_sid("{$phpbb_root_path}faq.$phpEx"),
+		'U_FAQ'					=> $controller_helper->route('phpbb_help_controller', array('mode' => 'faq')),
 		'U_SEARCH_SELF'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=egosearch'),
 		'U_SEARCH_NEW'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=newposts'),
 		'U_SEARCH_UNANSWERED'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unanswered'),

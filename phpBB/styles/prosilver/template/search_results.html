@@ -1,21 +1,25 @@
 <!-- INCLUDE overall_header.html -->
 
+<!-- EVENT search_results_header_before -->
+
 <h2 class="searchresults-title"><!-- IF SEARCH_TITLE -->{SEARCH_TITLE}<!-- ELSE -->{SEARCH_MATCHES}<!-- ENDIF --><!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
 <!-- IF SEARCHED_QUERY --> <p>{L_SEARCHED_QUERY}{L_COLON} <strong>{SEARCHED_QUERY}</strong></p><!-- ENDIF -->
 <!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS}{L_COLON} <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
 <!-- IF PHRASE_SEARCH_DISABLED --> <p><strong>{L_PHRASE_SEARCH_DISABLED}</strong></p><!-- ENDIF -->
 
 <!-- IF SEARCH_TOPIC -->
-	<p><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO_TOPIC}</a></p>
+	<p class="return-link"><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO_TOPIC}</a></p>
 <!-- ELSE -->
-	<p><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_GO_TO_SEARCH_ADV}</a></p>
+	<p class="advanced-search-link"><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_GO_TO_SEARCH_ADV}</a></p>
 <!-- ENDIF -->
+
+<!-- EVENT search_results_header_after -->
 
 <!-- IF .pagination or SEARCH_MATCHES or TOTAL_MATCHES or PAGE_NUMBER -->
 	<div class="action-bar top">
 
 	<!-- IF TOTAL_MATCHES > 0 -->
-		<div class="search-box">
+		<div class="search-box" role="search">
 			<form method="post" action="{S_SEARCH_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" placeholder="{L_SEARCH_IN_RESULTS}" />
@@ -25,6 +29,8 @@
 			</form>
 		</div>
 	<!-- ENDIF -->
+
+		<!-- EVENT search_results_searchbox_after -->
 
 		<div class="pagination">
 			{SEARCH_MATCHES}

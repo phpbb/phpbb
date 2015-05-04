@@ -32,10 +32,10 @@ class kernel_terminate_subscriber implements EventSubscriberInterface
 		exit_handler();
 	}
 
-	public static function getSubscribedEvents()
+	static public function getSubscribedEvents()
 	{
 		return array(
-			KernelEvents::TERMINATE		=> 'on_kernel_terminate',
+			KernelEvents::TERMINATE		=> array('on_kernel_terminate', ~PHP_INT_MAX),
 		);
 	}
 }

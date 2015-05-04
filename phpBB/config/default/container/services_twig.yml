@@ -19,6 +19,8 @@ services:
 
     template.twig.loader:
         class: phpbb\template\twig\loader
+        arguments:
+            - @filesystem
 
     template.twig.extensions.collection:
         class: phpbb\di\service_collection
@@ -31,7 +33,7 @@ services:
         class: phpbb\template\twig\extension
         arguments:
             - @template_context
-            - @user
+            - @language
         tags:
             - { name: twig.extension }
 

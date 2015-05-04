@@ -35,7 +35,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config(array());
 
 		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			new \phpbb\cache\driver\dummy(),
 			$config,
 			$db,
 			$phpbb_root_path,
@@ -51,7 +51,9 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 				array('u_viewprofile', 1, false),
 			)));
 
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data = array('user_lang' => 'en');
 		$user->add_lang('common');
 
@@ -71,7 +73,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 					'topic_title'	=> 'Test',
 					'poster_id'		=> 2,
 					'post_username'	=> 'A',
-					'responders'	=> null,			
+					'responders'	=> null,
 				),
 				'<strong>Reply</strong> from A in topic:',
 			),
@@ -82,7 +84,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 					'post_username'	=> 'A',
 					'responders'	=> array(
 						array('username' => '', 'poster_id' => 3),
-					),			
+					),
 				),
 				'<strong>Reply</strong> from A and <span class="username">B</span> in topic:',
 			),
@@ -94,7 +96,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 					'responders'	=> array(
 						array('username' => '', 'poster_id' => 3),
 						array('username' => '', 'poster_id' => 4),
-					),			
+					),
 				),
 				'<strong>Reply</strong> from A, <span class="username">B</span>, and <span class="username">C</span> in topic:',
 			),
@@ -107,7 +109,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 3),
 						array('username' => '', 'poster_id' => 4),
 						array('username' => '', 'poster_id' => 5),
-					),			
+					),
 				),
 				'<strong>Reply</strong> from A, <span class="username">B</span>, <span class="username">C</span>, and <span class="username">D</span> in topic:',
 			),
@@ -121,7 +123,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 						array('username' => '', 'poster_id' => 4),
 						array('username' => '', 'poster_id' => 5),
 						array('username' => '', 'poster_id' => 6),
-					),			
+					),
 				),
 				'<strong>Reply</strong> from A, <span class="username">B</span>, <span class="username">C</span>, and 2 others in topic:',
 			),

@@ -22,7 +22,12 @@ class phpbb_generate_string_list_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$this->user = $user;
 		$this->user->data = array('user_lang' => 'en');
 		$this->user->add_lang('common');
 	}
@@ -36,7 +41,7 @@ class phpbb_generate_string_list_test extends phpbb_test_case
 			),
 			array(
 				array('A'),
-				'A',	
+				'A',
 			),
 			array(
 				array(2 => 'A', 3 => 'B'),

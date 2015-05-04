@@ -117,7 +117,7 @@ abstract class captcha_abstract
 
 	function get_demo_template($id)
 	{
-		global $config, $user, $template, $phpbb_admin_path, $phpEx;
+		global $config, $user, $template, $request, $phpbb_admin_path, $phpEx;
 
 		$variables = '';
 
@@ -195,7 +195,7 @@ abstract class captcha_abstract
 	{
 		global $config, $db, $user;
 
-		if (empty($user->lang))
+		if (!$user->is_setup())
 		{
 			$user->setup();
 		}
