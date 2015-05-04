@@ -50,7 +50,8 @@ class core extends Extension
 	 */
 	public function load(array $configs, ContainerBuilder $container)
 	{
-		$loader = new YamlFileLoader($container, new FileLocator(phpbb_realpath($this->config_path)));
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$loader = new YamlFileLoader($container, new FileLocator($filesystem->realpath($this->config_path)));
 		$loader->load($container->getParameter('core.environment') . '/container/environment.yml');
 
 		$config = $this->getConfiguration($configs, $container);
@@ -67,6 +68,20 @@ class core extends Extension
 				);
 			}
 		}
+
+		// Set the Twig options if defined in the environment
+		$definition = $container->getDefinition('template.twig.environment');
+		$twig_environment_options = $definition->getArgument(6);
+		if ($config['twig']['debug'])
+		{
+			$twig_environment_options['debug'] = true;
+		}
+		if ($config['twig']['auto_reload'])
+		{
+			$twig_environment_options['auto_reload'] = true;
+		}
+		// Replace the 6th argument, the options passed to the environment
+		$definition->replaceArgument(6, $twig_environment_options);
 
 		if ($config['twig']['enable_debug_extension'])
 		{

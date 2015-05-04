@@ -142,7 +142,7 @@ Zeta test event in all',
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -151,7 +151,7 @@ Zeta test event in all',
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader('');
+		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$path_helper,

@@ -86,16 +86,23 @@ class router implements RouterInterface
 	protected $route_collection;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	 * Construct method
 	 *
+	 * @param \phpbb\filesystem\filesystem_interface $filesystem	Filesystem helper
 	 * @param manager	$extension_manager	Extension manager
 	 * @param string	$phpbb_root_path	phpBB root path
 	 * @param string	$php_ext			PHP file extension
 	 * @param string	$environment		Name of the current environment
 	 * @param array		$routing_files		Array of strings containing paths to YAML files holding route information
 	 */
-	public function __construct(manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
 	{
+		$this->filesystem			= $filesystem;
 		$this->extension_manager	= $extension_manager;
 		$this->routing_files		= $routing_files;
 		$this->phpbb_root_path		= $phpbb_root_path;
@@ -107,25 +114,25 @@ class router implements RouterInterface
 	/**
 	 * Find the list of routing files
 	 *
-	 * @param array $paths Array of paths where to look for routing files.
+	 * @param array $paths Array of paths where to look for routing files (they must be relative to the phpBB root path).
 	 * @return router
 	 */
 	public function find_routing_files(array $paths)
 	{
-		$this->routing_files = array($this->phpbb_root_path . 'config/' . $this->environment . '/routing/environment.yml');
+		$this->routing_files = array('config/' . $this->environment . '/routing/environment.yml');
 		foreach ($paths as $path)
 		{
-			if (file_exists($path . 'config/' . $this->environment . '/routing/environment.yml'))
+			if (file_exists($this->phpbb_root_path . $path . 'config/' . $this->environment . '/routing/environment.yml'))
 			{
 				$this->routing_files[] = $path . 'config/' . $this->environment . '/routing/environment.yml';
 			}
-			else if (!is_dir($path . 'config/' . $this->environment))
+			else if (!is_dir($this->phpbb_root_path . $path . 'config/' . $this->environment))
 			{
-				if (file_exists($path . 'config/default/routing/environment.yml'))
+				if (file_exists($this->phpbb_root_path . $path . 'config/default/routing/environment.yml'))
 				{
 					$this->routing_files[] = $path . 'config/default/routing/environment.yml';
 				}
-				else if (!is_dir($path . 'config/default/routing') && file_exists($path . 'config/routing.yml'))
+				else if (!is_dir($this->phpbb_root_path . $path . 'config/default/routing') && file_exists($this->phpbb_root_path . $path . 'config/routing.yml'))
 				{
 					$this->routing_files[] = $path . 'config/routing.yml';
 				}
@@ -148,7 +155,7 @@ class router implements RouterInterface
 			$this->route_collection = new RouteCollection;
 			foreach ($this->routing_files as $file_path)
 			{
-				$loader = new YamlFileLoader(new FileLocator(phpbb_realpath($base_path)));
+				$loader = new YamlFileLoader(new FileLocator($this->filesystem->realpath($base_path)));
 				$this->route_collection->addCollection($loader->load($file_path));
 			}
 		}
@@ -165,7 +172,7 @@ class router implements RouterInterface
 	{
 		if ($this->route_collection == null || empty($this->routing_files))
 		{
-			$this->find_routing_files($this->extension_manager->all_enabled())
+			$this->find_routing_files($this->extension_manager->all_enabled(false))
 				->find($this->phpbb_root_path);
 		}
 
@@ -255,7 +262,7 @@ class router implements RouterInterface
 			$cache->write($dumper->dump($options), $this->get_routes()->getResources());
 		}
 
-		require_once($cache);
+		require_once($cache->getPath());
 
 		$this->matcher = new \phpbb_url_matcher($this->context);
 	}
@@ -303,7 +310,7 @@ class router implements RouterInterface
 			$cache->write($dumper->dump($options), $this->get_routes()->getResources());
 		}
 
-		require_once($cache);
+		require_once($cache->getPath());
 
 		$this->generator = new \phpbb_url_generator($this->context);
 	}

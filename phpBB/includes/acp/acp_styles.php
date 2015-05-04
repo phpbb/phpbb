@@ -53,6 +53,9 @@ class acp_styles
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\textformatter\cache_interface */
+	protected $text_formatter_cache;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -61,7 +64,7 @@ class acp_styles
 
 	public function main($id, $mode)
 	{
-		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config;
+		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_container;
 
 		$this->db = $db;
 		$this->user = $user;
@@ -69,6 +72,7 @@ class acp_styles
 		$this->request = $request;
 		$this->cache = $cache;
 		$this->auth = $auth;
+		$this->text_formatter_cache = $phpbb_container->get('text_formatter.cache');
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
@@ -214,6 +218,12 @@ class acp_styles
 			{
 				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
 			}
+		}
+
+		// Invalidate the text formatter's cache for the new styles to take effect
+		if (!empty($installed_names))
+		{
+			$this->text_formatter_cache->invalidate();
 		}
 
 		// Show message

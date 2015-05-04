@@ -1017,7 +1017,6 @@ else
 // Container for user details, only process once
 $post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = $post_delete_list = array();
 $has_unapproved_attachments = $has_approved_attachments = $display_notice = false;
-$bbcode_bitfield = '';
 $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
@@ -1182,15 +1181,6 @@ while ($row = $db->sql_fetchrow($result))
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_rowset_data', compact($vars)));
 
 	$rowset[$row['post_id']] = $rowset_data;
-
-	// Define the global bbcode bitfield, will be used to load bbcodes
-	$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
-
-	// Is a signature attached? Are we going to display it?
-	if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
-	{
-		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['user_sig_bbcode_bitfield']);
-	}
 
 	// Cache various user specific data ... so we don't have to recompute
 	// this each time the same user appears on this page
@@ -1464,12 +1454,6 @@ if (sizeof($attach_list))
 	{
 		$display_notice = true;
 	}
-}
-
-// Instantiate BBCode if need be
-if ($bbcode_bitfield !== '')
-{
-	$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 }
 
 // Get the list of users who can receive private messages
@@ -1848,7 +1832,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f=$forum_id&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
-		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
+		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $phpbb_container->get('controller.helper')->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_RESTORE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_data['topic_visibility'] != ITEM_DELETED) ? 'deleted_posts' : 'deleted_topics') . '&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',

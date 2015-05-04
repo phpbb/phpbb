@@ -182,8 +182,7 @@
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts
-   Also see tweaks.css */
+/* column[1-2] styles are containers for two column layouts */
 .rtl .column1 {
 	float: right;
 	clear: right;
@@ -311,6 +310,13 @@
 li.breadcrumbs span:first-child > a {
 	padding-left: 0;
 	padding-right: 19px;
+}
+
+/* Notification mark read link */
+.rtl .dropdown-extended a.mark_read {
+	border-radius: 0 3px 3px 0;
+	left: 0;
+	right: auto;
 }
 
 .rtl a.top {
@@ -596,9 +602,6 @@ li.breadcrumbs span:first-child > a {
 /**
 * buttons.css
 */
-/* Rollover buttons
-   Based on: http://wellstyled.com/css-nopreload-rollovers.html
-----------------------------------------*/
 .rtl .dropdown-select {
 	padding-left: 24px;
 	padding-right: 8px;
@@ -975,10 +978,6 @@ li.breadcrumbs span:first-child > a {
 	padding-right: 17px;
 	padding-left: 0;
 }
-
-/**
-* tweaks.css
-*/
 
 
 /* Form button styles

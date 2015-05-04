@@ -47,6 +47,11 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		return '/app.php';
 	}
 
+	protected function get_base_uri()
+	{
+		return $this->get_uri();
+	}
+
 	protected function get_script_name()
 	{
 		return 'app.php';
@@ -62,14 +67,14 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->request = new phpbb_mock_request();
 		$this->request->overwrite('SCRIPT_NAME', $this->get_uri(), \phpbb\request\request_interface::SERVER);
 		$this->request->overwrite('SCRIPT_FILENAME', $this->get_script_name(), \phpbb\request\request_interface::SERVER);
-		$this->request->overwrite('REQUEST_URI', $this->get_uri(), \phpbb\request\request_interface::SERVER);
+		$this->request->overwrite('REQUEST_URI', $this->get_base_uri(), \phpbb\request\request_interface::SERVER);
 		$this->request->overwrite('SERVER_NAME', 'localhost', \phpbb\request\request_interface::SERVER);
 		$this->request->overwrite('SERVER_PORT', '80', \phpbb\request\request_interface::SERVER);
 
 		$this->symfony_request = new \phpbb\symfony_request(
 			$this->request
 		);
-		$this->filesystem = new \phpbb\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			$this->symfony_request,
 			$this->filesystem,
@@ -79,12 +84,14 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		);
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
 
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader('');
+		$loader = new \phpbb\template\twig\loader($this->filesystem, '');
 		$twig = new \phpbb\template\twig\environment(
 			$this->config,
 			$this->phpbb_path_helper,
@@ -113,8 +120,8 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$this->router = new phpbb_mock_router($this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
-		$this->router->find_routing_files($this->extension_manager->all_enabled());
+		$this->router = new phpbb_mock_router($this->filesystem, $this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$this->router->find_routing_files($this->extension_manager->all_enabled(false));
 		$this->router->find(dirname(__FILE__) . '/');
 		// Set correct current phpBB root path
 		$this->root_path = $this->get_phpbb_root_path();

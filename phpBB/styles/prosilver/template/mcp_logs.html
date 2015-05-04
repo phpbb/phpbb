@@ -22,10 +22,10 @@
 	<table class="table1">
 	<thead>
 	<tr>
-		<th>{L_USERNAME}</th>
-		<th style="text-align: center">{L_IP}</th>
-		<th style="text-align: center">{L_TIME}</th>
-		<th>{L_ACTION}</th>
+		<th class="name">{L_USERNAME}</th>
+		<th class="center">{L_IP}</th>
+		<th class="center">{L_TIME}</th>
+		<th class="name">{L_ACTION}</th>
 		<!-- IF S_CLEAR_ALLOWED --><th>{L_MARK}</th><!-- ENDIF -->
 	</tr>
 	</thead>
@@ -34,8 +34,8 @@
 		<!-- BEGIN log -->
 		<!-- IF log.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
 			<td>{log.USERNAME}</td>
-			<td style="text-align: center">{log.IP}</td>
-			<td style="text-align: center">{log.DATE}</td>
+			<td class="center">{log.IP}</td>
+			<td class="center">{log.DATE}</td>
 			<td>{log.ACTION}<br />
 			{log.DATA}
 		</td>

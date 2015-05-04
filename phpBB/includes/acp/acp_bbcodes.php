@@ -25,7 +25,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
 
 		$user->add_lang('acp/posting');
@@ -269,6 +269,7 @@ class acp_bbcodes
 
 						$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_ADDED';
 						$log_action = 'LOG_BBCODE_ADD';
@@ -280,6 +281,7 @@ class acp_bbcodes
 							WHERE bbcode_id = ' . $bbcode_id;
 						$db->sql_query($sql);
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_EDITED';
 						$log_action = 'LOG_BBCODE_EDIT';
@@ -319,6 +321,7 @@ class acp_bbcodes
 					{
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($row['bbcode_tag']));
 
 						if ($request->is_ajax())

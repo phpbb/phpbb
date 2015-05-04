@@ -1,0 +1,13 @@
+top-level content
+{% for outer_inner in outer %}
+	outer
+	{% for middle in outer_inner.middle %}
+		{{ middle.S_BLOCK_NAME }}
+		{% for inner in middle.inner %}
+			inner {{ inner.VARIABLE }}
+			{% if inner.S_FIRST_ROW %}
+				first row of {{ inner.S_NUM_ROWS }} in {{ inner.S_BLOCK_NAME }}
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+{% endfor %}

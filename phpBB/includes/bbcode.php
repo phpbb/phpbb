@@ -129,7 +129,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper, $phpbb_container;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper, $phpbb_container, $phpbb_filesystem;
 
 		if (empty($this->template_filename))
 		{
@@ -146,7 +146,9 @@ class bbcode
 					$phpbb_container,
 					$phpbb_container->getParameter('core.root_path') . 'cache/',
 					$phpbb_container->get('ext.manager'),
-					new \phpbb\template\twig\loader()
+					new \phpbb\template\twig\loader(
+						$phpbb_filesystem
+					)
 				),
 				$phpbb_container->getParameter('core.root_path') . 'cache/',
 				$phpbb_container->get('template.twig.extensions.collection'),
