@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_cache_null_driver_test extends phpbb_database_test_case
+class phpbb_cache_dummy_driver_test extends phpbb_database_test_case
 {
 	protected $driver;
 
