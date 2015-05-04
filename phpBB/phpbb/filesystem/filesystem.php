@@ -613,7 +613,7 @@ class filesystem implements filesystem_interface
 			}
 			else
 			{
-				$handle = @fopen($file, 'w');
+				$handle = @fopen($file, 'c');
 
 				if (is_resource($handle))
 				{
