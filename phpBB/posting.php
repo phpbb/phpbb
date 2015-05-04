@@ -1238,6 +1238,7 @@ if ($submit || $preview || $refresh)
 	*
 	* @event core.posting_modify_submission_errors
 	* @var	array	post_data	Array with post data
+	* @var	array	poll		Array with poll data from post (must be used instead of the post_data equivalent)
 	* @var	string	mode		What action to take if the form is submitted
 	*				post|reply|quote|edit|delete|bump|smilies|popup
 	* @var	string	page_title	Title of the mode page
@@ -1251,6 +1252,7 @@ if ($submit || $preview || $refresh)
 	*/
 	$vars = array(
 		'post_data',
+		'poll',
 		'mode',
 		'page_title',
 		'post_id',
