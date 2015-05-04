@@ -6,6 +6,7 @@ services:
         class: phpbb\template\twig\environment
         arguments:
             - @config
+            - @filesystem
             - @path_helper
             - @service_container
             - %core.template.cache_path%

@@ -138,6 +138,8 @@ Zeta test event in all',
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
+
+		$filesystem = new \phpbb\filesystem\filesystem();
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
@@ -154,6 +156,7 @@ Zeta test event in all',
 		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
+			$filesystem,
 			$path_helper,
 			$container,
 			$cache_path,

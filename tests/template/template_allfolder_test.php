@@ -33,11 +33,13 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
 
+		$filesystem = new \phpbb\filesystem\filesystem();
+
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -60,6 +62,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
+			$filesystem,
 			$path_helper,
 			$container,
 			$cache_path,

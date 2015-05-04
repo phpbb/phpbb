@@ -280,6 +280,7 @@ $cache_path = $phpbb_root_path . 'cache/';
 
 $twig_environment = new \phpbb\template\twig\environment(
 	$config,
+	$phpbb_filesystem,
 	$phpbb_path_helper,
 	$phpbb_container,
 	$cache_path,

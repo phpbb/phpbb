@@ -51,17 +51,19 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$cache_path = $this->phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
-		$phpbb_path_helper =new \phpbb\path_helper(
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			$this->phpEx
 		);
 		$twig = new \phpbb\template\twig\environment(
 			$this->config,
+			$filesystem,
 			$phpbb_path_helper,
 			$container,
 			$cache_path,
