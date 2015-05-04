@@ -1522,7 +1522,7 @@ class install_install extends module
 		include_once($phpbb_root_path . 'phpbb/search/fulltext_native.' . $phpEx);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$error = false;
 		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
@@ -1937,7 +1937,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -2009,7 +2009,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$user->session_begin();
 		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);

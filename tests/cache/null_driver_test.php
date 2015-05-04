@@ -24,7 +24,7 @@ class phpbb_cache_null_driver_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->driver = new \phpbb\cache\driver\null;
+		$this->driver = new \phpbb\cache\driver\dummy;
 	}
 
 	public function test_get_put()
