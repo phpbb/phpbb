@@ -13,7 +13,10 @@
 
 namespace phpbb\routing;
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
 use Symfony\Component\Routing\Generator\Dumper\PhpGeneratorDumper;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -22,7 +25,7 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
-use Symfony\Component\Config\FileLocator;
+
 use phpbb\extension\manager;
 
 /**
@@ -91,8 +94,14 @@ class router implements RouterInterface
 	protected $filesystem;
 
 	/**
+	 * @var ContainerInterface
+	 */
+	protected $container;
+
+	/**
 	 * Construct method
 	 *
+	 * @param ContainerInterface	$container			DI container
 	 * @param \phpbb\filesystem\filesystem_interface $filesystem	Filesystem helper
 	 * @param manager	$extension_manager	Extension manager
 	 * @param string	$phpbb_root_path	phpBB root path
@@ -100,8 +109,9 @@ class router implements RouterInterface
 	 * @param string	$environment		Name of the current environment
 	 * @param array		$routing_files		Array of strings containing paths to YAML files holding route information
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
+	public function __construct(ContainerInterface $container, \phpbb\filesystem\filesystem_interface $filesystem, manager $extension_manager, $phpbb_root_path, $php_ext, $environment, $routing_files = array())
 	{
+		$this->container			= $container;
 		$this->filesystem			= $filesystem;
 		$this->extension_manager	= $extension_manager;
 		$this->routing_files		= $routing_files;
@@ -160,7 +170,95 @@ class router implements RouterInterface
 			}
 		}
 
+		$this->resolveParameters($this->route_collection);
+
 		return $this;
+	}
+
+	/**
+	 * Replaces placeholders with service container parameter values in:
+	 * - the route defaults,
+	 * - the route requirements,
+	 * - the route pattern.
+	 * - the route host.
+	 *
+	 * @param RouteCollection $collection
+	 */
+	private function resolveParameters(RouteCollection $collection)
+	{
+		foreach ($collection as $route)
+		{
+			foreach ($route->getDefaults() as $name => $value)
+			{
+				$route->setDefault($name, $this->resolve($value));
+			}
+
+			foreach ($route->getRequirements() as $name => $value)
+			{
+				$route->setRequirement($name, $this->resolve($value));
+			}
+
+			$route->setPath($this->resolve($route->getPath()));
+			$route->setHost($this->resolve($route->getHost()));
+		}
+	}
+
+	/**
+	 * Recursively replaces placeholders with the service container parameters.
+	 *
+	 * @param mixed $value The source which might contain "%placeholders%"
+	 *
+	 * @return mixed The source with the placeholders replaced by the container
+	 *               parameters. Arrays are resolved recursively.
+	 *
+	 * @throws ParameterNotFoundException When a placeholder does not exist as a container parameter
+	 * @throws RuntimeException           When a container value is not a string or a numeric value
+	 */
+	private function resolve($value)
+	{
+		if (is_array($value))
+		{
+			foreach ($value as $key => $val)
+			{
+				$value[$key] = $this->resolve($val);
+			}
+
+			return $value;
+		}
+
+		if (!is_string($value))
+		{
+			return $value;
+		}
+
+		$container = $this->container;
+
+		$escapedValue = preg_replace_callback('/%%|%([^%\s]++)%/', function ($match) use ($container, $value)
+		{
+			// skip %%
+			if (!isset($match[1]))
+			{
+				return '%%';
+			}
+
+			$resolved = $container->getParameter($match[1]);
+
+			if (is_string($resolved) || is_numeric($resolved))
+			{
+				return (string) $resolved;
+			}
+
+			throw new RuntimeException(sprintf(
+					'The container parameter "%s", used in the route configuration value "%s", '.
+					'must be a string or numeric, but it is of type %s.',
+					$match[1],
+					$value,
+					gettype($resolved)
+				)
+			);
+		}, $value);
+
+		return str_replace('%%', '%', $escapedValue);
 	}
 
 	/**

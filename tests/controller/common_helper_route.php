@@ -89,6 +89,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
 
 		$container = new phpbb_mock_container_builder();
+		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader($this->filesystem, '');
@@ -120,7 +121,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$this->router = new phpbb_mock_router($this->filesystem, $this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$this->router = new phpbb_mock_router($container, $this->filesystem, $this->extension_manager, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
 		$this->router->find_routing_files($this->extension_manager->all_enabled(false));
 		$this->router->find(dirname(__FILE__) . '/');
 		// Set correct current phpBB root path
@@ -154,6 +155,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '/' . $this->path_to_app() . 'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -194,6 +198,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '/' . $this->path_to_app() . 'foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -234,6 +241,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -274,6 +284,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false,  'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -314,6 +327,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -354,6 +370,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -434,6 +453,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '//localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '//localhost/' . $this->path_to_app() . 'foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 

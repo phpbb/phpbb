@@ -160,6 +160,7 @@ services:
     router:
         class: phpbb\routing\router
         arguments:
+            - @service_container
             - @filesystem
             - @ext.manager
             - %core.root_path%
