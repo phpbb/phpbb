@@ -50,7 +50,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 			$this->cache->get_driver()
 		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$phpbb_log = new \phpbb\log\null();
+		$phpbb_log = new \phpbb\log\dummy();
 		$this->get_test_case_helpers()->set_s9e_services();
 
 		// Now on to the actual test

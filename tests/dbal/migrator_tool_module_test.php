@@ -31,7 +31,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$skip_add_log = true;
 
 		$db = $this->db = $this->new_dbal();
-		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\null(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
+		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = $this->user = new \phpbb\user($lang, '\phpbb\datetime');

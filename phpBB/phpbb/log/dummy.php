@@ -14,9 +14,9 @@
 namespace phpbb\log;
 
 /**
-* Null logger
+* Dummy logger
 */
-class null implements log_interface
+class dummy implements log_interface
 {
 	/**
 	* {@inheritdoc}
