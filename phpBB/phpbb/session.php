@@ -1541,12 +1541,23 @@ class session
 	*/
 	public function update_session($session_data, $session_id = null)
 	{
-		global $db;
+		global $db, $phpbb_dispatcher;
 
 		$session_id = ($session_id) ? $session_id : $this->session_id;
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
 			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
 		$db->sql_query($sql);
+
+		/**
+		* Event to send session information to extension
+		*
+		* @event core.update_session
+		* @var	array		session_data				Associative array of session keys to be updated
+		* @var	array		session_id				current user's session_id
+		* @since 3.1.4
+		*/
+		$vars = array('session_data', 'session_id');
+		extract($phpbb_dispatcher->trigger_event('core.update_session', compact($vars)));
 	}
 }
