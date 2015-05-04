@@ -2,6 +2,7 @@ services:
     router:
         class: phpbb\routing\router
         arguments:
+            - @service_container
             - @filesystem
             - %core.root_path%
             - %core.php_ext%
