@@ -12,6 +12,8 @@
 */
 
 define('IN_PHPBB', true);
+define('PHPBB_ENVIRONMENT', 'test');
+
 $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
 require_once $phpbb_root_path . 'includes/startup.php';

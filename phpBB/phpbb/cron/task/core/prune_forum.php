@@ -31,7 +31,7 @@ class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\para
 	* If $forum_data is given, it is assumed to contain necessary information
 	* about a single forum that is to be pruned.
 	*
-	* If $forum_data is not given, forum id will be retrieved via request_var
+	* If $forum_data is not given, forum id will be retrieved via $request->variable()
 	* and a database query will be performed to load the necessary information
 	* about the forum.
 	*/

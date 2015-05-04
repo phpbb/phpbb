@@ -230,7 +230,7 @@ class phpbb_questionnaire_phpbb_data_provider
 		if (empty($config['questionnaire_unique_id']))
 		{
 			$this->unique_id = unique_id();
-			set_config('questionnaire_unique_id', $this->unique_id);
+			$config->set('questionnaire_unique_id', $this->unique_id);
 		}
 		else
 		{

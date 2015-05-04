@@ -28,13 +28,15 @@ class phpbb_version_helper_fetch_test extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+
 		$this->version_helper = new \phpbb\version_helper(
 			$this->cache,
 			new \phpbb\config\config(array(
 				'version'	=> '3.1.0',
 			)),
 			new \phpbb\file_downloader(),
-			new \phpbb\user('\phpbb\datetime')
+			new \phpbb\user(new \phpbb\language\language($lang_loader), '\phpbb\datetime')
 		);
 	}
 

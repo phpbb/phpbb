@@ -1312,7 +1312,7 @@ function restore_config($schema)
 				$config_value = truncate_string(utf8_htmlspecialchars($config_value), 255, 255, false);
 			}
 
-			set_config($config_name, $config_value);
+			$config->set($config_name, $config_value);
 		}
 	}
 }
@@ -1968,9 +1968,9 @@ function update_dynamic_config()
 
 	if ($row)
 	{
-		set_config('newest_user_id', $row['user_id'], true);
-		set_config('newest_username', $row['username'], true);
-		set_config('newest_user_colour', $row['user_colour'], true);
+		$config->set('newest_user_id', $row['user_id'], false);
+		$config->set('newest_username', $row['username'], false);
+		$config->set('newest_user_colour', $row['user_colour'], false);
 	}
 
 //	Also do not reset record online user/date. There will be old data or the fresh data from the schema.
@@ -1984,7 +1984,7 @@ function update_dynamic_config()
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	set_config('num_posts', (int) $row['stat'], true);
+	$config->set('num_posts', (int) $row['stat'], false);
 
 	$sql = 'SELECT COUNT(topic_id) AS stat
 		FROM ' . TOPICS_TABLE . '
@@ -1993,7 +1993,7 @@ function update_dynamic_config()
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	set_config('num_topics', (int) $row['stat'], true);
+	$config->set('num_topics', (int) $row['stat'], false);
 
 	$sql = 'SELECT COUNT(user_id) AS stat
 		FROM ' . USERS_TABLE . '
@@ -2002,20 +2002,20 @@ function update_dynamic_config()
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	set_config('num_users', (int) $row['stat'], true);
+	$config->set('num_users', (int) $row['stat'], false);
 
 	$sql = 'SELECT COUNT(attach_id) as stat
 		FROM ' . ATTACHMENTS_TABLE . '
 		WHERE is_orphan = 0';
 	$result = $db->sql_query($sql);
-	set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
+	$config->set('num_files', (int) $db->sql_fetchfield('stat'), false);
 	$db->sql_freeresult($result);
 
 	$sql = 'SELECT SUM(filesize) as stat
 		FROM ' . ATTACHMENTS_TABLE . '
 		WHERE is_orphan = 0';
 	$result = $db->sql_query($sql);
-	set_config('upload_dir_size', (float) $db->sql_fetchfield('stat'), true);
+	$config->set('upload_dir_size', (float) $db->sql_fetchfield('stat'), false);
 	$db->sql_freeresult($result);
 
 	/**
@@ -2316,7 +2316,10 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+
+	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
+	$filesystem = $phpbb_filesystem;
 
 	if (substr($trg, -1) == '/')
 	{
@@ -2349,7 +2352,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 		}
 	}
 
-	if (!phpbb_is_writable($path))
+	if (!$filesystem->is_writable($path))
 	{
 		@chmod($path, 0777);
 	}
@@ -2370,7 +2373,10 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+
+	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
+	$filesystem = $phpbb_filesystem;
 
 	$dirlist = $filelist = $bad_dirs = array();
 	$src = path($src, $source_relative_path);
@@ -2384,7 +2390,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		@chmod($trg_path, 0777);
 	}
 
-	if (!phpbb_is_writable($trg_path))
+	if (!$filesystem->is_writable($trg_path))
 	{
 		$bad_dirs[] = path($config['script_path']) . $trg;
 	}
@@ -2451,7 +2457,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 				@chmod($trg_path . $dir, 0777);
 			}
 
-			if (!phpbb_is_writable($trg_path . $dir))
+			if (!$filesystem->is_writable($trg_path . $dir))
 			{
 				$bad_dirs[] = $trg . $dir;
 				$bad_dirs[] = $trg_path . $dir;

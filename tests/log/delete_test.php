@@ -30,7 +30,9 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = 1;
 		$auth = $this->getMock('\phpbb\auth\auth');
 

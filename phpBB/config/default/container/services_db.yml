@@ -1,0 +1,144 @@
+services:
+    dbal.conn:
+        class: phpbb\db\driver\factory
+        arguments:
+            - @service_container
+
+    dbal.conn.driver:
+        class: %dbal.driver.class%
+        calls:
+            - [sql_connect, [%dbal.dbhost%, %dbal.dbuser%, %dbal.dbpasswd%, %dbal.dbname%, %dbal.dbport%, false, %dbal.new_link%]]
+
+# ----- DB Tools -----
+    dbal.tools.factory:
+        class: phpbb\db\tools\factory
+
+    dbal.tools:
+        class: phpbb\db\tools\tools_interface
+        factory: ["@dbal.tools.factory", get]
+        arguments:
+            - @dbal.conn.driver
+
+# ----- DB Extractor -----
+    dbal.extractor.factory:
+        class: phpbb\db\extractor\factory
+        arguments:
+            - @dbal.conn.driver
+            - @service_container
+
+    dbal.extractor:
+        class: phpbb\db\extractor\extractor_interface
+        factory: ["@dbal.extractor.factory", get]
+
+# ----- DB Extractors for different drivers -----
+# Scope MUST be prototype for all the handlers to work correctly.
+    dbal.extractor.extractors.mssql_extractor:
+        class: phpbb\db\extractor\mssql_extractor
+        scope: prototype
+        arguments:
+            - %core.root_path%
+            - @request
+            - @dbal.conn.driver
+
+    dbal.extractor.extractors.mysql_extractor:
+        class: phpbb\db\extractor\mysql_extractor
+        scope: prototype
+        arguments:
+            - %core.root_path%
+            - @request
+            - @dbal.conn.driver
+
+    dbal.extractor.extractors.oracle_extractor:
+        class: phpbb\db\extractor\oracle_extractor
+        scope: prototype
+        arguments:
+            - %core.root_path%
+            - @request
+            - @dbal.conn.driver
+
+    dbal.extractor.extractors.postgres_extractor:
+        class: phpbb\db\extractor\postgres_extractor
+        scope: prototype
+        arguments:
+            - %core.root_path%
+            - @request
+            - @dbal.conn.driver
+
+    dbal.extractor.extractors.sqlite3_extractor:
+        class: phpbb\db\extractor\sqlite3_extractor
+        scope: prototype
+        arguments:
+            - %core.root_path%
+            - @request
+            - @dbal.conn.driver
+
+    dbal.extractor.extractors.sqlite_extractor:
+        class: phpbb\db\extractor\sqlite_extractor
+        scope: prototype
+        arguments:
+            - %core.root_path%
+            - @request
+            - @dbal.conn.driver
+
+# ----- Migrator -----
+    migrator:
+        class: phpbb\db\migrator
+        arguments:
+            - @service_container
+            - @config
+            - @dbal.conn
+            - @dbal.tools
+            - %tables.migrations%
+            - %core.root_path%
+            - %core.php_ext%
+            - %core.table_prefix%
+            - @migrator.tool_collection
+            - @migrator.helper
+
+    migrator.helper:
+        class: phpbb\db\migration\helper
+
+# ----- Migrator's tools -----
+    migrator.tool_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: migrator.tool }
+
+    migrator.tool.config:
+        class: phpbb\db\migration\tool\config
+        arguments:
+            - @config
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.config_text:
+        class: phpbb\db\migration\tool\config_text
+        arguments:
+            - @config_text
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.module:
+        class: phpbb\db\migration\tool\module
+        arguments:
+            - @dbal.conn
+            - @cache
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.modules%
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.permission:
+        class: phpbb\db\migration\tool\permission
+        arguments:
+            - @dbal.conn
+            - @cache
+            - @auth
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: migrator.tool }

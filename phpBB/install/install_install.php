@@ -43,9 +43,15 @@ if (!empty($setmodules))
 */
 class install_install extends module
 {
+	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
 	function install_install(&$p_master)
 	{
 		$this->p_master = &$p_master;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	function main($mode, $sub)
@@ -108,7 +114,10 @@ class install_install extends module
 				$phpbb_container = $phpbb_container_builder->get_container();
 
 				// Sets the global variables
+				/* @var $cache \phpbb\cache\service */
 				$cache = $phpbb_container->get('cache');
+
+				/* @var $phpbb_log \phpbb\log\log_interface */
 				$phpbb_log = $phpbb_container->get('log');
 
 				$this->build_search_index($mode, $sub);
@@ -154,7 +163,7 @@ class install_install extends module
 		// Test the minimum PHP version
 		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '5.3.3') < 0)
+		if (version_compare($php_version, '5.3.9') < 0)
 		{
 			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
@@ -463,13 +472,29 @@ class install_install extends module
 			if (!file_exists($phpbb_root_path . $dir))
 			{
 				@mkdir($phpbb_root_path . $dir, 0777);
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
+
 				$exists = true;
 			}
 
@@ -511,7 +536,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!phpbb_is_writable($phpbb_root_path . $dir))
+				if (!$this->filesystem->is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -889,7 +914,7 @@ class install_install extends module
 		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER']);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && $this->filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx)) || $this->filesystem->is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
@@ -911,7 +936,14 @@ class install_install extends module
 			if ($written)
 			{
 				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
-				phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -1190,12 +1222,14 @@ class install_install extends module
 				include($phpbb_root_path . 'includes/constants.' . $phpEx);
 			}
 
-			$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+			$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
 			$classes = $finder->core_path('phpbb/db/migration/data/')
 				->get_classes();
 
 			$sqlite_db = new \phpbb\db\driver\sqlite();
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, new \phpbb\db\tools($sqlite_db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$factory = new \phpbb\db\tools\factory();
+			$db_tools = $factory->get($sqlite_db, true);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $sqlite_db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 			$db_table_schema = $schema_generator->get_schema();
 		}
 
@@ -1207,7 +1241,8 @@ class install_install extends module
 			define('CONFIG_TABLE', $data['table_prefix'] . 'config');
 		}
 
-		$db_tools = new \phpbb\db\tools($db);
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($db);
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
 			$db_tools->sql_create_table(
@@ -1487,9 +1522,7 @@ class install_install extends module
 		include_once($phpbb_root_path . 'phpbb/search/fulltext_native.' . $phpEx);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$error = false;
 		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
@@ -1515,6 +1548,7 @@ class install_install extends module
 		// modules require an extension manager
 		if (empty($phpbb_extension_manager))
 		{
+			/* @var $phpbb_extension_manager \phpbb\extension\manager */
 			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
@@ -1903,9 +1937,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -1969,7 +2001,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -1977,9 +2009,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$user->session_begin();
 		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);
@@ -2010,7 +2040,7 @@ class install_install extends module
 		}
 
 		// And finally, add a note to the log
-		add_log('admin', 'LOG_INSTALL_INSTALLED', $config['version']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INSTALL_INSTALLED', false, array($config['version']));
 
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
@@ -2026,12 +2056,12 @@ class install_install extends module
 	*/
 	function disable_avatars_if_unwritable()
 	{
-		global $phpbb_root_path;
+		global $config, $phpbb_root_path;
 
-		if (!phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'))
+		if (!$this->filesystem->is_writable($phpbb_root_path . 'images/avatars/upload/'))
 		{
-			set_config('allow_avatar', 0);
-			set_config('allow_avatar_upload', 0);
+			$config->set('allow_avatar', 0);
+			$config->set('allow_avatar_upload', 0);
 		}
 	}
 
@@ -2078,36 +2108,38 @@ class install_install extends module
 	*/
 	function get_submitted_data()
 	{
+		global $request;
+
 		return array(
-			'language'		=> basename(request_var('language', '')),
-			'dbms'			=> request_var('dbms', ''),
-			'dbhost'		=> request_var('dbhost', '', true),
-			'dbport'		=> request_var('dbport', ''),
-			'dbuser'		=> request_var('dbuser', ''),
-			'dbpasswd'		=> request_var('dbpasswd', '', true),
-			'dbname'		=> request_var('dbname', ''),
-			'table_prefix'	=> request_var('table_prefix', ''),
-			'default_lang'	=> basename(request_var('default_lang', '')),
-			'admin_name'	=> utf8_normalize_nfc(request_var('admin_name', '', true)),
-			'admin_pass1'	=> request_var('admin_pass1', '', true),
-			'admin_pass2'	=> request_var('admin_pass2', '', true),
-			'board_email'	=> strtolower(request_var('board_email', '')),
-			'img_imagick'	=> request_var('img_imagick', ''),
-			'ftp_path'		=> request_var('ftp_path', ''),
-			'ftp_user'		=> request_var('ftp_user', ''),
-			'ftp_pass'		=> request_var('ftp_pass', ''),
-			'email_enable'	=> request_var('email_enable', ''),
-			'smtp_delivery'	=> request_var('smtp_delivery', ''),
-			'smtp_host'		=> request_var('smtp_host', ''),
-			'smtp_auth'		=> request_var('smtp_auth', ''),
-			'smtp_user'		=> request_var('smtp_user', ''),
-			'smtp_pass'		=> request_var('smtp_pass', ''),
-			'cookie_secure'	=> request_var('cookie_secure', ''),
-			'force_server_vars'	=> request_var('force_server_vars', ''),
-			'server_protocol'	=> request_var('server_protocol', ''),
-			'server_name'	=> request_var('server_name', ''),
-			'server_port'	=> request_var('server_port', ''),
-			'script_path'	=> request_var('script_path', ''),
+			'language'		=> basename($request->variable('language', '')),
+			'dbms'			=> $request->variable('dbms', ''),
+			'dbhost'		=> $request->variable('dbhost', ''),
+			'dbport'		=> $request->variable('dbport', ''),
+			'dbuser'		=> $request->variable('dbuser', ''),
+			'dbpasswd'		=> $request->variable('dbpasswd', '', true),
+			'dbname'		=> $request->variable('dbname', ''),
+			'table_prefix'	=> $request->variable('table_prefix', ''),
+			'default_lang'	=> basename($request->variable('default_lang', '')),
+			'admin_name'	=> $request->variable('admin_name', '', true),
+			'admin_pass1'	=> $request->variable('admin_pass1', '', true),
+			'admin_pass2'	=> $request->variable('admin_pass2', '', true),
+			'board_email'	=> strtolower($request->variable('board_email', '')),
+			'img_imagick'	=> $request->variable('img_imagick', ''),
+			'ftp_path'		=> $request->variable('ftp_path', ''),
+			'ftp_user'		=> $request->variable('ftp_user', ''),
+			'ftp_pass'		=> $request->variable('ftp_pass', ''),
+			'email_enable'	=> $request->variable('email_enable', ''),
+			'smtp_delivery'	=> $request->variable('smtp_delivery', ''),
+			'smtp_host'		=> $request->variable('smtp_host', ''),
+			'smtp_auth'		=> $request->variable('smtp_auth', ''),
+			'smtp_user'		=> $request->variable('smtp_user', ''),
+			'smtp_pass'		=> $request->variable('smtp_pass', ''),
+			'cookie_secure'	=> $request->variable('cookie_secure', ''),
+			'force_server_vars'	=> $request->variable('force_server_vars', ''),
+			'server_protocol'	=> $request->variable('server_protocol', ''),
+			'server_name'	=> $request->variable('server_name', ''),
+			'server_port'	=> $request->variable('server_port', ''),
+			'script_path'	=> $request->variable('script_path', ''),
 		);
 	}
 

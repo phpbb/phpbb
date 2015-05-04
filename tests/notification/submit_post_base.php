@@ -70,11 +70,9 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 		// Config
 		$config = new \phpbb\config\config(array('num_topics' => 1,'num_posts' => 1,));
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
 
 		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			new \phpbb\cache\driver\dummy(),
 			$config,
 			$db,
 			$phpbb_root_path,
@@ -85,7 +83,10 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// User
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$user->ip = '';
 		$user->data = array(
 			'user_id'		=> 2,
