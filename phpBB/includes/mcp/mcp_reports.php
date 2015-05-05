@@ -491,6 +491,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		$post_id_list[] = $row[$id_column];
 	}
+	$db->sql_freeresult($result);
 	$post_id_list = array_unique($post_id_list);
 
 	if ($pm)
