@@ -22,7 +22,7 @@ define('IN_PHPBB', true);
 
 function usage()
 {
-	echo "Usage: export_events_for_wiki.php COMMAND [EXTENSION]\n";
+	echo "Usage: export_events_for_wiki.php COMMAND [VERSION] [EXTENSION]\n";
 	echo "\n";
 	echo "COMMAND:\n";
 	echo "    all:\n";
