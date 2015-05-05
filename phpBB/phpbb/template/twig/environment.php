@@ -18,6 +18,9 @@ class environment extends \Twig_Environment
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
+	/** @var \phpbb\filesystem\filesystem */
+	protected $filesystem;
+
 	/** @var \phpbb\path_helper */
 	protected $phpbb_path_helper;
 
@@ -40,6 +43,7 @@ class environment extends \Twig_Environment
 	* Constructor
 	*
 	* @param \phpbb\config\config $phpbb_config The phpBB configuration
+	* @param \phpbb\filesystem\filesystem $filesystem
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \Symfony\Component\DependencyInjection\ContainerInterface $container The dependency injection container
 	* @param string $cache_path The path to the cache directory
@@ -47,10 +51,11 @@ class environment extends \Twig_Environment
 	* @param \Twig_LoaderInterface $loader Twig loader interface
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \Symfony\Component\DependencyInjection\ContainerInterface $container, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, \Symfony\Component\DependencyInjection\ContainerInterface $container, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
+		$this->filesystem = $filesystem;
 		$this->phpbb_path_helper = $path_helper;
 		$this->extension_manager = $extension_manager;
 		$this->container = $container;
@@ -106,13 +111,23 @@ class environment extends \Twig_Environment
 	}
 
 	/**
-	* Get the phpBB root path
-	*
-	* @return string
-	*/
+	 * Get the phpBB root path
+	 *
+	 * @return string
+	 */
 	public function get_phpbb_root_path()
 	{
 		return $this->phpbb_root_path;
+	}
+
+	/**
+	* Get the filesystem object
+	*
+	* @return \phpbb\filesystem\filesystem
+	*/
+	public function get_filesystem()
+	{
+		return $this->filesystem;
 	}
 
 	/**

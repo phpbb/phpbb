@@ -94,6 +94,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$loader = new \phpbb\template\twig\loader($this->filesystem, '');
 		$twig = new \phpbb\template\twig\environment(
 			$this->config,
+			$this->filesystem,
 			$this->phpbb_path_helper,
 			$container,
 			$cache_path,

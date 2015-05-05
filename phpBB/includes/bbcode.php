@@ -142,6 +142,7 @@ class bbcode
 				new \phpbb\template\context(),
 				new \phpbb\template\twig\environment(
 					$phpbb_container->get('config'),
+					$phpbb_container->get('filesystem'),
 					$phpbb_container->get('path_helper'),
 					$phpbb_container,
 					$phpbb_container->getParameter('core.root_path') . 'cache/',

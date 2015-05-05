@@ -22,11 +22,13 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
+		$filesystem = new \phpbb\filesystem\filesystem();
+
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -41,6 +43,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
+			$filesystem,
 			$this->phpbb_path_helper,
 			$container,
 			$cache_path,
