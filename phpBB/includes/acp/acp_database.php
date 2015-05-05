@@ -1173,6 +1173,7 @@ class postgres_extractor extends base_extractor
 				$this->flush($sql_data . ";\n");
 			}
 		}
+		$db->sql_freeresult($result);
 
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "DROP TABLE $table_name;\n";
