@@ -1004,7 +1004,7 @@ class fulltext_native extends \phpbb\search\base
 		* @var	array	ex_fid_ary			Forum ids that must not be searched on
 		* @var	array	sql_fora			SQL query for ex_fid_ary
 		* @var	int		start				How many posts to skip in the search results (used for pagination)
-		* @since 3.1.4-RC1
+		* @since 3.1.5-RC1
 		*/
 		$vars = array(
 			'total_results',
