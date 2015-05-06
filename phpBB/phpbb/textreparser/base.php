@@ -30,6 +30,11 @@ abstract class base implements reparser_interface
 	abstract protected function get_records($min_id, $max_id);
 
 	/**
+	* {@inheritdoc}
+	*/
+	abstract protected function save_record(array $record);
+
+	/**
 	* Add fields to given record, if applicable
 	*
 	* The enable_* fields are not always saved to the database. Sometimes we need to guess their
@@ -202,9 +207,4 @@ abstract class base implements reparser_interface
 			$this->save_record($record);
 		}
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	abstract protected function save_record(array $record);
 }
