@@ -103,7 +103,7 @@ class mcp_reports
 				* @var	int		post_id		The post_id of the report being viewed (if 0, it is meaningless)
 				* @var	int		report_id	The report_id of the report being viewed
 				* @var	int		report		The query's resulting row.
-				* @since 3.1.4-RC1
+				* @since 3.1.5-RC1
 				*/
 				$vars = array(
 					'sql_ary',
