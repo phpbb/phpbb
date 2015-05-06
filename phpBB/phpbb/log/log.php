@@ -564,7 +564,7 @@ class log implements \phpbb\log\log_interface
 		*									is false, no entries will be returned.
 		* @var	string	sql_additional		Additional conditions for the entries,
 		*									e.g.: 'AND l.forum_id = 1'
-		* @since 3.1.4-RC1
+		* @since 3.1.5-RC1
 		*/
 		$vars = array(
 			'get_logs_sql_ary',
