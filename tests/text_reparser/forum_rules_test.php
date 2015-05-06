@@ -19,7 +19,7 @@ class phpbb_textreparser_forum_rules_test extends phpbb_textreparser_test_row_ba
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/forums.xml');
 	}
 
-	public function get_reparser()
+	protected function get_reparser()
 	{
 		return new \phpbb\textreparser\plugins\forum_rules($this->db);
 	}

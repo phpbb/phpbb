@@ -22,21 +22,15 @@ class user_signature extends \phpbb\textreparser\row_based_plugin
 	protected $keyoptions;
 
 	/**
-	* Constructor
-	*
-	* Retrieves and saves the bit numbers used for user options
-	*/
-	public function __construct()
-	{
-		$class_vars = get_class_vars('phpbb\\user');
-		$this->keyoptions = $class_vars['keyoptions'];
-	}
-
-	/**
 	* {@inheritdoc}
 	*/
 	protected function add_missing_fields(array $row)
 	{
+		if (!isset($this->keyoptions))
+		{
+			$this->save_keyoptions();
+		}
+
 		$options = $row['user_options'];
 		$row += array(
 			'enable_bbcode'    => phpbb_optionget($this->keyoptions['sig_bbcode'], $options),
@@ -44,7 +38,7 @@ class user_signature extends \phpbb\textreparser\row_based_plugin
 			'enable_magic_url' => phpbb_optionget($this->keyoptions['sig_links'], $options),
 		);
 
-		return $row;
+		return parent::add_missing_fields($row);
 	}
 
 	/**
@@ -66,5 +60,14 @@ class user_signature extends \phpbb\textreparser\row_based_plugin
 	public function get_table_name()
 	{
 		return USERS_TABLE;
+	}
+
+	/**
+	* Save the keyoptions var from \phpbb\user
+	*/
+	protected function save_keyoptions()
+	{
+		$class_vars = get_class_vars('phpbb\\user');
+		$this->keyoptions = $class_vars['keyoptions'];
 	}
 }

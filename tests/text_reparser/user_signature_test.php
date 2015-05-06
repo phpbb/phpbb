@@ -12,15 +12,15 @@
 */
 include_once __DIR__ . '/test_row_based_plugin.php';
 
-class phpbb_textreparser_post_text_test extends phpbb_textreparser_test_row_based_plugin
+class phpbb_textreparser_user_signature_test extends phpbb_textreparser_test_row_based_plugin
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(__DIR__ . '/fixtures/posts.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/users.xml');
 	}
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\post_text($this->db);
+		return new \phpbb\textreparser\plugins\user_signature($this->db);
 	}
 }

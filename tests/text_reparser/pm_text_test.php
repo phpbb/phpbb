@@ -19,7 +19,7 @@ class phpbb_textreparser_pm_text_test extends phpbb_textreparser_test_row_based_
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/privmsgs.xml');
 	}
 
-	public function get_reparser()
+	protected function get_reparser()
 	{
 		return new \phpbb\textreparser\plugins\pm_text($this->db);
 	}

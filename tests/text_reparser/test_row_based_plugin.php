@@ -18,6 +18,8 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 {
 	protected $db;
 
+	abstract protected function get_reparser();
+
 	public function setUp()
 	{
 		global $config;
