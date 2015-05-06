@@ -443,7 +443,7 @@ class fulltext_postgres extends \phpbb\search\base
 		* @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
 		* @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
 		* @var	int		start				How many posts to skip in the search results (used for pagination)
-		* @since 3.1.4-RC1
+		* @since 3.1.5-RC1
 		*/
 		$vars = array(
 			'tsearch_query',
