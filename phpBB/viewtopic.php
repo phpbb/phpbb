@@ -806,6 +806,36 @@ if (!empty($topic_data['poll_start']))
 		($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']))) ? true : false;
 	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($cur_voted_id)) || $view == 'viewpoll') ? true : false;
 
+	/**
+	* Event to manipulate the poll data
+	*
+	* @event core.viewtopic_modify_poll_data
+	* @var	array	cur_voted_id				Array with options' IDs current user has voted for
+	* @var	int		forum_id					The topic's forum id
+	* @var	array	poll_info					Array with the poll information
+	* @var	bool	s_can_vote					Flag indicating if a user can vote
+	* @var	bool	s_display_results			Flag indicating if results or poll options should be displayed
+	* @var	int		topic_id					The id of the topic the user tries to access
+	* @var	array	topic_data					All the information from the topic and forum tables for this topic
+	* @var	string	viewtopic_url				URL to the topic page
+	* @var	array	vote_counts					Array with the vote counts for every poll option
+	* @var	array	voted_id					Array with updated options' IDs current user is voting for
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'cur_voted_id',
+		'forum_id',
+		'poll_info',
+		's_can_vote',
+		's_display_results',
+		'topic_id',
+		'topic_data',
+		'viewtopic_url',
+		'vote_counts',
+		'voted_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_poll_data', compact($vars)));
+
 	if ($update && $s_can_vote)
 	{
 
@@ -939,6 +969,7 @@ if (!empty($topic_data['poll_start']))
 
 	$topic_data['poll_title'] = generate_text_for_display($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield'], $parse_flags, true);
 
+	$poll_template_data = $poll_options_template_data = array();
 	foreach ($poll_info as $poll_option)
 	{
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
@@ -947,7 +978,7 @@ if (!empty($topic_data['poll_start']))
 		$option_pct_rel_txt = sprintf("%.1d%%", round($option_pct_rel * 100));
 		$option_most_votes = ($poll_option['poll_option_total'] > 0 && $poll_option['poll_option_total'] == $poll_most) ? true : false;
 
-		$template->assign_block_vars('poll_option', array(
+		$poll_options_template_data[] = array(
 			'POLL_OPTION_ID' 			=> $poll_option['poll_option_id'],
 			'POLL_OPTION_CAPTION' 		=> $poll_option['poll_option_text'],
 			'POLL_OPTION_RESULT' 		=> $poll_option['poll_option_total'],
@@ -957,12 +988,12 @@ if (!empty($topic_data['poll_start']))
 			'POLL_OPTION_WIDTH'     	=> round($option_pct * 250),
 			'POLL_OPTION_VOTED'			=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false,
 			'POLL_OPTION_MOST_VOTES'	=> $option_most_votes,
-		));
+		);
 	}
 
 	$poll_end = $topic_data['poll_length'] + $topic_data['poll_start'];
 
-	$template->assign_vars(array(
+	$poll_template_data = array(
 		'POLL_QUESTION'		=> $topic_data['poll_title'],
 		'TOTAL_VOTES' 		=> $poll_total,
 		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
@@ -978,9 +1009,45 @@ if (!empty($topic_data['poll_start']))
 		'S_POLL_ACTION'		=> $viewtopic_url,
 
 		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll',
-	));
+	);
 
-	unset($poll_end, $poll_info, $voted_id);
+	/**
+	* Event to add/modify poll template data
+	*
+	* @event core.viewtopic_modify_poll_template_data
+	* @var	array	cur_voted_id					Array with options' IDs current user has voted for
+	* @var	int		poll_end						The poll end time
+	* @var	array	poll_info						Array with the poll information
+	* @var	array	poll_options_template_data		Array with the poll options template data
+	* @var	array	poll_template_data				Array with the common poll template data
+	* @var	int		poll_total						Total poll votes count
+	* @var	int		poll_most						Mostly voted option votes count
+	* @var	array	topic_data						All the information from the topic and forum tables for this topic
+	* @var	string	viewtopic_url					URL to the topic page
+	* @var	array	vote_counts						Array with the vote counts for every poll option
+	* @var	array	voted_id						Array with updated options' IDs current user is voting for
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'cur_voted_id',
+		'poll_end',
+		'poll_info',
+		'poll_options_template_data',
+		'poll_template_data',
+		'poll_total',
+		'poll_most',
+		'topic_data',
+		'viewtopic_url',
+		'vote_counts',
+		'voted_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_poll_template_data', compact($vars)));
+
+	$template->assign_block_vars_array('poll_option', $poll_options_template_data);
+
+	$template->assign_vars($poll_template_data);
+
+	unset($poll_end, $poll_info, $poll_options_template_data, $poll_template_data, $voted_id);
 }
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
