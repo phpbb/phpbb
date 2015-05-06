@@ -627,7 +627,7 @@ class fulltext_postgres extends \phpbb\search\base
 		* @var	array	sql_fora			SQL query for ex_fid_ary
 		* @var	string	m_approve_fid_sql	WHERE clause condition on post_visibility restrictions
 		* @var	int		start				How many posts to skip in the search results (used for pagination)
-		* @since 3.1.4-RC1
+		* @since 3.1.5-RC1
 		*/
 		$vars = array(
 			'result_count',
