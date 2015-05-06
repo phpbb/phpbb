@@ -428,6 +428,7 @@ class bbcode
 				'u_open'	=> '<span style="text-decoration: underline">',
 				'u_close'	=> '</span>',
 				'img'		=> '<img src="$1" class="postimage" alt="' . $user->lang['IMAGE'] . '" />',
+				'url'           => '<a href="$1" class="postlink">$2</a>',
 				'size'		=> '<span style="font-size: $1%; line-height: normal">$2</span>',
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'
