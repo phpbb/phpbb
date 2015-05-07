@@ -416,8 +416,6 @@ class acp_bbcodes
 		// Allow unicode characters for URL|LOCAL_URL|RELATIVE_URL|INTTEXT tokens
 		$utf8 = preg_match('/(URL|LOCAL_URL|RELATIVE_URL|INTTEXT)/', $bbcode_match);
 
-		$utf8_pcre_properties = phpbb_pcre_utf8_support();
-
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
 		$fp_replace = preg_replace('#\[/(.*?)\]$#', '[/$1:$uid]', $fp_replace);
@@ -448,7 +446,7 @@ class acp_bbcodes
 				'!([a-zA-Z0-9-+.,_ ]+)!'	 =>	"$1"
 			),
 			'INTTEXT' => array(
-				($utf8_pcre_properties) ? '!([\p{L}\p{N}\-+,_. ]+)!u' : '!([a-zA-Z0-9\-+,_. ]+)!u'	 =>	"$1"
+				'!([\p{L}\p{N}\-+,_. ]+)!u'	 =>	"$1"
 			),
 			'IDENTIFIER' => array(
 				'!([a-zA-Z0-9-_]+)!'	 =>	"$1"
@@ -468,7 +466,7 @@ class acp_bbcodes
 			'EMAIL' => '(' . get_preg_expression('email') . ')',
 			'TEXT' => '(.*?)',
 			'SIMPLETEXT' => '([a-zA-Z0-9-+.,_ ]+)',
-			'INTTEXT' => ($utf8_pcre_properties) ? '([\p{L}\p{N}\-+,_. ]+)' : '([a-zA-Z0-9\-+,_. ]+)',
+			'INTTEXT' => '([\p{L}\p{N}\-+,_. ]+)',
 			'IDENTIFIER' => '([a-zA-Z0-9-_]+)',
 			'COLOR' => '([a-zA-Z]+|#[0-9abcdefABCDEF]+)',
 			'NUMBER' => '([0-9]+)',
@@ -476,7 +474,7 @@ class acp_bbcodes
 
 		$pad = 0;
 		$modifiers = 'i';
-		$modifiers .= ($utf8 && $utf8_pcre_properties) ? 'u' : '';
+		$modifiers .= ($utf8) ? 'u' : '';
 
 		if (preg_match_all('/\{(' . implode('|', array_keys($tokens)) . ')[0-9]*\}/i', $bbcode_match, $m))
 		{
