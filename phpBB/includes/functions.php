@@ -2811,31 +2811,19 @@ function get_preg_expression($mode)
 * Depends on whether installed PHP version supports unicode properties
 *
 * @param string	$word			word template to be replaced
-* @param bool	$use_unicode	whether or not to take advantage of PCRE supporting unicode
 *
 * @return string $preg_expr		regex to use with word censor
 */
-function get_censor_preg_expression($word, $use_unicode = true)
+function get_censor_preg_expression($word)
 {
 	// Unescape the asterisk to simplify further conversions
 	$word = str_replace('\*', '*', preg_quote($word, '#'));
 
-	if ($use_unicode && phpbb_pcre_utf8_support())
-	{
-		// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
-		$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
+	// Replace asterisk(s) inside the pattern, at the start and at the end of it with regexes
+	$word = preg_replace(array('#(?<=[\p{Nd}\p{L}_])\*+(?=[\p{Nd}\p{L}_])#iu', '#^\*+#', '#\*+$#'), array('([\x20]*?|[\p{Nd}\p{L}_-]*?)', '[\p{Nd}\p{L}_-]*?', '[\p{Nd}\p{L}_-]*?'), $word);
 
-		// Generate the final substitution
-		$preg_expr = '#(?<![\p{Nd}\p{L}_-])(' . $word . ')(?![\p{Nd}\p{L}_-])#iu';
-	}
-	else
-	{
-		// Replace the asterisk inside the pattern, at the start and at the end of it with regexes
-		$word = preg_replace(array('#(?<=\S)\*+(?=\S)#iu', '#^\*+#', '#\*+$#'), array('(\x20*?\S*?)', '\S*?', '\S*?'), $word);
-
-		// Generate the final substitution
-		$preg_expr = '#(?<!\S)(' . $word . ')(?!\S)#iu';
-	}
+	// Generate the final substitution
+	$preg_expr = '#(?<![\p{Nd}\p{L}_-])(' . $word . ')(?![\p{Nd}\p{L}_-])#iu';
 
 	return $preg_expr;
 }
@@ -4688,22 +4676,6 @@ function phpbb_user_session_handler()
 	}
 
 	return;
-}
-
-/**
-* Check if PCRE has UTF-8 support
-* PHP may not be linked with the bundled PCRE lib and instead with an older version
-*
-* @return bool	Returns true if PCRE (the regular expressions library) supports UTF-8 encoding
-*/
-function phpbb_pcre_utf8_support()
-{
-	static $utf8_pcre_properties = null;
-	if (is_null($utf8_pcre_properties))
-	{
-		$utf8_pcre_properties = (@preg_match('/\p{L}/u', 'a') !== false);
-	}
-	return $utf8_pcre_properties;
 }
 
 /**

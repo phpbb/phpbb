@@ -1647,89 +1647,37 @@ function validate_username($username, $allowed_username = false)
 		return 'INVALID_CHARS';
 	}
 
-	$mbstring = $pcre = false;
-
-	// generic UTF-8 character types supported?
-	if (phpbb_pcre_utf8_support())
-	{
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$mbstring = true;
-	}
-
 	switch ($config['allow_name_chars'])
 	{
 		case 'USERNAME_CHARS_ANY':
-			$pcre = true;
 			$regex = '.+';
 		break;
 
 		case 'USERNAME_ALPHA_ONLY':
-			$pcre = true;
 			$regex = '[A-Za-z0-9]+';
 		break;
 
 		case 'USERNAME_ALPHA_SPACERS':
-			$pcre = true;
 			$regex = '[A-Za-z0-9-[\]_+ ]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM':
-			if ($pcre)
-			{
-				$regex = '[\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[a-zA-Z0-9]+';
-			}
+			$regex = '[\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM_SPACERS':
-			if ($pcre)
-			{
-				$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[-\]_+ \[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[-\]_+ [a-zA-Z0-9]+';
-			}
+			$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_ASCII':
 		default:
-			$pcre = true;
 			$regex = '[\x01-\x7F]+';
 		break;
 	}
 
-	if ($pcre)
+	if (!preg_match('#^' . $regex . '$#u', $username))
 	{
-		if (!preg_match('#^' . $regex . '$#u', $username))
-		{
-			return 'INVALID_CHARS';
-		}
-	}
-	else if ($mbstring)
-	{
-		mb_ereg_search_init($username, '^' . $regex . '$');
-		if (!mb_ereg_search())
-		{
-			return 'INVALID_CHARS';
-		}
+		return 'INVALID_CHARS';
 	}
 
 	$sql = 'SELECT username
@@ -1784,35 +1732,10 @@ function validate_password($password)
 		return false;
 	}
 
-	$pcre = $mbstring = false;
-
-	// generic UTF-8 character types supported?
-	if (phpbb_pcre_utf8_support())
-	{
-		$upp = '\p{Lu}';
-		$low = '\p{Ll}';
-		$num = '\p{N}';
-		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$upp = '[[:upper:]]';
-		$low = '[[:lower:]]';
-		$num = '[[:digit:]]';
-		$sym = '[^[:upper:][:lower:][:digit:]]';
-		$mbstring = true;
-	}
-	else
-	{
-		$upp = '[A-Z]';
-		$low = '[a-z]';
-		$num = '[0-9]';
-		$sym = '[^A-Za-z0-9]';
-		$pcre = true;
-	}
-
+	$upp = '\p{Lu}';
+	$low = '\p{Ll}';
+	$num = '\p{N}';
+	$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 	$chars = array();
 
 	switch ($config['pass_complex'])
@@ -1835,24 +1758,11 @@ function validate_password($password)
 			$chars[] = $upp;
 	}
 
-	if ($pcre)
+	foreach ($chars as $char)
 	{
-		foreach ($chars as $char)
+		if (!preg_match('#' . $char . '#u', $password))
 		{
-			if (!preg_match('#' . $char . '#u', $password))
-			{
-				return 'INVALID_CHARS';
-			}
-		}
-	}
-	else if ($mbstring)
-	{
-		foreach ($chars as $char)
-		{
-			if (mb_ereg($char, $password) === false)
-			{
-				return 'INVALID_CHARS';
-			}
+			return 'INVALID_CHARS';
 		}
 	}
 
