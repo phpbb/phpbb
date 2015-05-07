@@ -36,7 +36,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_ADMIN_ACTIVATE_USER',
 		'group'	=> 'NOTIFICATION_GROUP_ADMINISTRATION',
 	);
@@ -52,7 +52,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_id($user)
+	static public function get_item_id($user)
 	{
 		return (int) $user['user_id'];
 	}
@@ -60,7 +60,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_parent_id($post)
+	static public function get_item_parent_id($post)
 	{
 		return 0;
 	}

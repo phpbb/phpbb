@@ -18,9 +18,6 @@
 			<exclude>../tests/lint_test.php</exclude>
 			<exclude>../tests/ui</exclude>
 		</testsuite>
-		<testsuite name="phpBB Lint Test">
-			<file>../tests/lint_test.php</file>
-		</testsuite>
 		<testsuite name="phpBB Functional Tests">
 			<directory suffix="_test.php" phpVersion="5.3.19" phpVersionOperator=">=">../tests/functional</directory>
 		</testsuite>

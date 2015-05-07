@@ -9,7 +9,6 @@ class a_info
 		return array(
 			'filename'	=> 'vendor2\\foo\\acp\\a_module',
 			'title'		=> 'Foobar',
-			'version'	=> '3.1.0-dev',
 			'modes'		=> array(
 				'config'		=> array('title' => 'Config',	'auth' => 'ext_vendor2/foo', 'cat' => array('ACP_MODS')),
 			),

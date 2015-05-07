@@ -17,10 +17,6 @@ namespace phpbb\notification;
 * Notifications exception
 */
 
-class exception extends \Exception
+class exception extends \phpbb\exception\runtime_exception
 {
-	public function __toString()
-	{
-		return $this->getMessage();
-	}
 }

@@ -1,0 +1,21 @@
+{% for test_loop_inner in test_loop %}
+loop
+{% else %}
+noloop
+{% endfor %}
+
+{% if test_loop|length %}
+loop
+{% else %}
+noloop
+{% endif %}
+
+{% if test_loop|length == 2 %}
+loop
+{% endif %}
+
+{% for test_loop_inner in test_loop %}
+{% for block_inner in block %}
+loop#{{ test_loop_inner.S_ROW_COUNT }}-block#{{ block_inner.S_ROW_COUNT }}
+{% endfor %}
+{% endfor %}

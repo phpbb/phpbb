@@ -62,7 +62,7 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 		{
 			if (is_array($value))
 			{
-				$form[$key]->$value[0]($value[1]);
+				$form[$key]->{$value[0]}($value[1]);
 			}
 			else
 			{

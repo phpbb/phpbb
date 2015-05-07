@@ -204,6 +204,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
+			global $phpbb_container;
+
+			$phpbb_container = new phpbb_mock_container_builder();
+			$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+
 			$this->cache = new \phpbb\cache\driver\file;
 		}
 
@@ -225,7 +230,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array());
 		$db = $this->get_db();
-		$db_tools = new \phpbb\db\tools($db);
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($db);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(
@@ -242,14 +248,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 		$container->set('migrator', $migrator);
 		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
-		$user = new \phpbb\user('\phpbb\datetime');
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem(),
-			$user,
+			new phpbb\filesystem\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,
@@ -410,6 +414,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$form = $crawler->selectButton('Enable')->form();
 		$crawler = self::submit($form);
 		$this->add_lang('acp/extensions');
+
+		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+		// Wait for extension to be fully enabled
+		while (sizeof($meta_refresh))
+		{
+			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+			$url = $match[1];
+			$crawler = self::request('POST', $url);
+			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+		}
+
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
 		$this->logout();
@@ -477,7 +493,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			));
 			$db->sql_query($sql);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
 				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
@@ -516,7 +532,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
 			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
 				@rmdir($phpbb_root_path . 'styles/' . $style_path);
@@ -558,7 +574,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_notifications = new phpbb_mock_notification_manager();
@@ -572,8 +588,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$passwords_manager = $this->get_passwords_manager();
 
@@ -599,13 +614,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
@@ -638,13 +656,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
@@ -935,8 +956,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
 	{
-		$this->assertSame(
-			'',
+		$this->assertNull(
 			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
 			$message ?: "Failed asserting that checkbox $name is unchecked."
 		);

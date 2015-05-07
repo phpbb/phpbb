@@ -62,6 +62,8 @@ class style_update_p1 extends \phpbb\db\migration\migration
 
 	public function styles_update()
 	{
+		global $config;
+
 		// Get list of valid 3.1 styles
 		$available_styles = array('prosilver');
 
@@ -163,7 +165,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 			$default_style = $this->db->sql_fetchfield($result);
 			$this->db->sql_freeresult($result);
 
-			set_config('default_style', $default_style);
+			$config->set('default_style', $default_style);
 
 			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
 			$this->sql_query($sql);

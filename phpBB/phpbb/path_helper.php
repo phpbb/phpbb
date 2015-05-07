@@ -21,7 +21,7 @@ class path_helper
 	/** @var \phpbb\symfony_request */
 	protected $symfony_request;
 
-	/** @var \phpbb\filesystem */
+	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
 	/** @var \phpbb\request\request_interface */
@@ -43,13 +43,13 @@ class path_helper
 	* Constructor
 	*
 	* @param \phpbb\symfony_request $symfony_request
-	* @param \phpbb\filesystem $filesystem
+	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param \phpbb\request\request_interface $request
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP file extension
 	* @param mixed $adm_relative_path Relative path admin path to adm/ root
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;

@@ -1,0 +1,19 @@
+{% for test_loop_inner in test_loop %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(0) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(0,-1) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(1) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(1,1) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(0,1) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(2,4) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(0,-7) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(-2,6) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}
+x
+{% for test_loop_inner in test_loop|subset(-2,-1) %}{{ test_loop_inner.S_FIRST_ROW }}{{ test_loop_inner.S_ROW_COUNT }}{{ test_loop_inner.S_LAST_ROW }}{% endfor %}

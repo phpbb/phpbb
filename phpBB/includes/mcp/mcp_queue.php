@@ -41,8 +41,8 @@ class mcp_queue
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
-		$forum_id = request_var('f', 0);
-		$start = request_var('start', 0);
+		$forum_id = $request->variable('f', 0);
+		$start = $request->variable('start', 0);
 
 		$this->page_title = 'MCP_QUEUE';
 
@@ -153,9 +153,10 @@ class mcp_queue
 
 				$user->add_lang(array('posting', 'viewtopic'));
 
-				$post_id = request_var('p', 0);
-				$topic_id = request_var('t', 0);
+				$post_id = $request->variable('p', 0);
+				$topic_id = $request->variable('t', 0);
 
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				if ($topic_id)
@@ -318,7 +319,7 @@ class mcp_queue
 					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 					'S_FIRST_POST'			=> ($post_info['topic_first_post_id'] == $post_id),
 
@@ -340,6 +341,8 @@ class mcp_queue
 
 				$topic_id = $request->variable('t', 0);
 				$forum_info = array();
+
+				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
 
 				if ($topic_id)
@@ -617,7 +620,7 @@ class mcp_queue
 	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config, $request, $phpbb_container, $phpbb_dispatcher;
-		global $phpEx, $phpbb_root_path;
+		global $phpEx, $phpbb_root_path, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
@@ -679,6 +682,7 @@ class mcp_queue
 				);
 			}
 
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
 			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 			foreach ($topic_info as $topic_id => $topic_data)
 			{
@@ -687,12 +691,17 @@ class mcp_queue
 
 			foreach ($approve_log as $log_data)
 			{
-				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_POST_' . strtoupper($action) . 'D', $log_data['post_subject']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_POST_' . strtoupper($action) . 'D', false, array(
+					'forum_id' => $log_data['forum_id'],
+					'topic_id' => $log_data['topic_id'],
+					$log_data['post_subject']
+				));
 			}
 
 			// Only send out the mails, when the posts are being approved
 			if ($action == 'approve')
 			{
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				// Handle notifications
@@ -863,7 +872,7 @@ class mcp_queue
 	*/
 	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config;
+		global $db, $template, $user, $config, $phpbb_log;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_dispatcher;
 
 		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
@@ -890,6 +899,7 @@ class mcp_queue
 		{
 			$notify_poster = ($action == 'approve' && isset($_REQUEST['notify_poster'])) ? true : false;
 
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
 			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 			$first_post_ids = array();
 
@@ -914,7 +924,11 @@ class mcp_queue
 
 			foreach ($approve_log as $log_data)
 			{
-				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], 'LOG_TOPIC_' . strtoupper($action) . 'D', $log_data['topic_title']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_TOPIC_' . strtoupper($action) . 'D', false, array(
+					'forum_id' => $log_data['forum_id'],
+					'topic_id' => $log_data['topic_id'],
+					$log_data['topic_title']
+				));
 			}
 
 			// Only send out the mails, when the posts are being approved
@@ -933,6 +947,7 @@ class mcp_queue
 				$db->sql_freeresult($result);
 
 				// Handle notifications
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 				foreach ($topic_info as $topic_id => $topic_data)
@@ -1055,7 +1070,7 @@ class mcp_queue
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $config, $phpbb_container, $phpbb_dispatcher;
-		global $phpEx, $phpbb_root_path, $request;
+		global $phpEx, $phpbb_root_path, $request, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
@@ -1204,16 +1219,28 @@ class mcp_queue
 					if ($is_disapproving)
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED';
-						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $disapprove_reason, $log_data['post_username']);
+						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $l_log_message, false, array(
+							'forum_id' => $log_data['forum_id'],
+							'topic_id' => $log_data['topic_id'],
+							$log_data['post_subject'],
+							$disapprove_reason,
+							$log_data['post_username']
+						));
 					}
 					else
 					{
 						$l_log_message = ($log_data['type'] == 'topic') ? 'LOG_DELETE_TOPIC' : 'LOG_DELETE_POST';
-						add_log('mod', $log_data['forum_id'], $log_data['topic_id'], $l_log_message, $log_data['post_subject'], $log_data['post_username']);
+						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $l_log_message, false, array(
+							'forum_id' => $log_data['forum_id'],
+							'topic_id' => $log_data['topic_id'],
+							$log_data['post_subject'],
+							$log_data['post_username']
+						));
 					}
 				}
 			}
 
+			/* @var $phpbb_notifications \phpbb\notification\manager */
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			$lang_reasons = array();
@@ -1375,11 +1402,6 @@ class mcp_queue
 		}
 		else
 		{
-			if (!function_exists('display_reasons'))
-			{
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-			}
-
 			$show_notify = false;
 
 			foreach ($post_info as $post_data)
@@ -1399,7 +1421,7 @@ class mcp_queue
 			$confirm_template = 'mcp_approve.html';
 			if ($is_disapproving)
 			{
-				display_reasons($reason_id);
+				$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 			}
 			else
 			{

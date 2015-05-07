@@ -259,7 +259,6 @@ dd.option {
 }
 
 .postbody h3 img {
-	/* Also see tweaks.css */
 	vertical-align: bottom;
 }
 
@@ -510,7 +509,6 @@ blockquote .codebox {
 }
 
 .codebox code {
-	/* Also see tweaks.css */
 	overflow: auto;
 	display: block;
 	height: auto;
@@ -693,7 +691,6 @@ fieldset.polls dd div {
 /* Poster profile block
 ----------------------------------------*/
 .postprofile {
-	/* Also see tweaks.css */
 	margin: 5px 0 10px 0;
 	min-height: 80px;
 	border: 1px solid transparent;
