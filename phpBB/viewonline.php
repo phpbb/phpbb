@@ -89,10 +89,26 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 }
 
 // Forum info
-$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
-	FROM ' . FORUMS_TABLE . '
-	ORDER BY left_id ASC';
-$result = $db->sql_query($sql, 600);
+$sql_ary = array(
+	'SELECT'	=> 'f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id',
+	'FROM'		=> array(
+		FORUMS_TABLE	=> 'f',
+	),
+	'ORDER_BY'	=> 'f.left_id ASC',
+);
+
+/**
+* Modify the forum data SQL query for getting additional fields if needed
+*
+* @event core.viewonline_modify_forum_data_sql
+* @var	array	sql_ary			The SQL array
+* @since 3.1.5-RC1
+*/
+$vars = array('sql_ary');
+extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_forum_data_sql', compact($vars)));
+
+$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary), 600);
+unset($sql_ary);
 
 $forum_data = array();
 while ($row = $db->sql_fetchrow($result))
