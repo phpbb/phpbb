@@ -822,7 +822,7 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	try
 	{
-		$this->filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+		$phpbb_filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
 	}
 	catch (\phpbb\filesystem\exception\filesystem_exception $e)
 	{
