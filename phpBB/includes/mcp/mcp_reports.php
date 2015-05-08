@@ -82,7 +82,7 @@ class mcp_reports
 						USERS_TABLE				=> 'u',
 					),
 
-					'WHERE'		=> '' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
+					'WHERE'		=> (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id
 						AND r.pm_id = 0',
