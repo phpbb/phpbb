@@ -733,12 +733,14 @@ function generate_forum_rules(&$forum_data)
 function generate_forum_nav(&$forum_data)
 {
 	global $db, $user, $template, $auth, $config;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
 	{
 		return;
 	}
+
+	$navlinks = $navlinks_parents = $forum_template_data = array();
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data);
@@ -758,35 +760,59 @@ function generate_forum_nav(&$forum_data)
 				continue;
 			}
 
-			$template->assign_block_vars('navlinks', array(
+			$navlinks_parents[] = array(
 				'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
 				'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
 				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 				'FORUM_NAME'	=> $parent_name,
 				'FORUM_ID'		=> $parent_forum_id,
 				'MICRODATA'		=> $microdata_attr . '="' . $parent_forum_id . '"',
-				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
+				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id),
 			);
 		}
 	}
 
-	$template->assign_block_vars('navlinks', array(
+	$navlinks = array(
 		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
 		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
 		'MICRODATA'		=> $microdata_attr . '="' . $forum_data['forum_id'] . '"',
-		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']))
+		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']),
 	);
 
-	$template->assign_vars(array(
+	$forum_template_data = array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
 
 		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
-	));
+	);
+
+	/**
+	* Event to modify the navlinks text
+	*
+	* @event core.generate_forum_nav
+	* @var	array	forum_data				Array with the forum data
+	* @var	array	forum_template_data		Array with generic forum template data
+	* @var	string	microdata_attr			The microdata attribute
+	* @var	array	navlinks_parents		Array with the forum parents navlinks data
+	* @var	array	navlinks				Array with the forum navlinks data
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'forum_data',
+		'forum_template_data',
+		'microdata_attr',
+		'navlinks_parents',
+		'navlinks',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.generate_forum_nav', compact($vars)));
+
+	$template->assign_block_vars_array('navlinks', $navlinks_parents);
+	$template->assign_block_vars('navlinks', $navlinks);
+	$template->assign_vars($forum_template_data);
 
 	return;
 }
