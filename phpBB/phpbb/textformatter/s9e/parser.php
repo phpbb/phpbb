@@ -186,7 +186,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	/**
 	* {@inheritdoc}
 	*
-	* This will translate the log entries found in s9e\TextFormatter's logger into phpBB error
+	* This will convert the log entries found in s9e\TextFormatter's logger into phpBB error
 	* messages
 	*/
 	public function get_errors()
