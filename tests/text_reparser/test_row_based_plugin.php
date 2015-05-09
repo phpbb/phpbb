@@ -32,6 +32,12 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 		parent::setUp();
 	}
 
+	public function test_get_max_id()
+	{
+		$reparser = $this->get_reparser();
+		$this->assertEquals(1000, $reparser->get_max_id());
+	}
+
 	/**
 	* @dataProvider getReparseTests
 	*/

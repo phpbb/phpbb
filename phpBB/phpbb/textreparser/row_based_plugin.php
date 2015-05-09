@@ -51,7 +51,7 @@ abstract class row_based_plugin extends base
 	{
 		$columns = $this->get_columns();
 
-		$sql = 'SELECT MAX(' . $columns['id'] . ' AS max_id FROM ' . $this->get_table_name();
+		$sql = 'SELECT MAX(' . $columns['id'] . ') AS max_id FROM ' . $this->get_table_name();
 		$result = $this->db->sql_query($sql);
 		$max_id = (int) $this->db->sql_fetchfield('max_id');
 		$this->db->sql_freeresult($result);
