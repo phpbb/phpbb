@@ -13,38 +13,62 @@
 
 namespace phpbb\textreparser\plugins;
 
-class poll_option extends \phpbb\textreparser\row_based_plugin
+class poll_option extends \phpbb\textreparser\base
 {
 	/**
-	* {@inheritdoc}
+	* @var \phpbb\db\driver\driver_interface
 	*/
-	public function get_columns()
+	protected $db;
+
+	/**
+	* Constructor
+	*
+	* @param \phpbb\db\driver\driver_interface $db Database connection
+	*/
+	public function __construct(\phpbb\db\driver\driver_interface $db)
 	{
-		return array(
-			'id'   => 'poll_option_id',
-			'text' => 'poll_option_text',
-		);
+		$this->db = $db;
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records_query($min_id, $max_id)
+	public function get_max_id()
 	{
-		$sql = 'SELECT o.poll_option_id AS id, o.poll_option_text AS text, p.bbcode_uid
+		$sql = 'SELECT MAX(topic_id) AS max_id FROM ' . POLL_OPTIONS_TABLE;
+		$result = $this->db->sql_query($sql);
+		$max_id = (int) $this->db->sql_fetchfield('max_id');
+		$this->db->sql_freeresult($result);
+
+		return $max_id;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	protected function get_records($min_id, $max_id)
+	{
+		$sql = 'SELECT o.topic_id, o.poll_option_id, o.poll_option_text AS text, p.bbcode_uid
 			FROM ' . POLL_OPTIONS_TABLE . ' o, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-			WHERE o.poll_option_id BETWEEN ' . $min_id . ' AND ' . $max_id .'
+			WHERE o.topic_id BETWEEN ' . $min_id . ' AND ' . $max_id .'
 				AND t.topic_id = o.topic_id
 				AND p.post_id = t.topic_first_post_id';
+		$result = $this->db->sql_query($sql);
+		$records = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
 
-		return $sql;
+		return $records;
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_table_name()
+	protected function save_record(array $record)
 	{
-		return POLL_OPTIONS_TABLE;
+		$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . "
+			SET poll_option_text = '" . $this->db->sql_escape($record['text']) . "'
+			WHERE topic_id = " . $record['topic_id'] . '
+				AND poll_option_id = ' . $record['poll_option_id'];
+		$this->db->sql_query($sql);
 	}
 }

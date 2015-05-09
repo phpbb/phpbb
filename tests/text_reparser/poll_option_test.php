@@ -10,10 +10,14 @@
 * the docs/CREDITS.txt file.
 *
 */
-include_once __DIR__ . '/test_row_based_plugin.php';
+require_once __DIR__ . '/../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
+require_once __DIR__ . '/../test_framework/phpbb_database_test_case.php';
 
-class phpbb_textreparser_poll_option_test extends phpbb_textreparser_test_row_based_plugin
+class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 {
+	protected $db;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/poll_options.xml');
@@ -22,5 +26,75 @@ class phpbb_textreparser_poll_option_test extends phpbb_textreparser_test_row_ba
 	protected function get_reparser()
 	{
 		return new \phpbb\textreparser\plugins\poll_option($this->db);
+	}
+
+	public function setUp()
+	{
+		global $config;
+		if (!isset($config))
+		{
+			$config = new \phpbb\config\config(array());
+		}
+		$this->get_test_case_helpers()->set_s9e_services();
+		$this->db = $this->new_dbal();
+		parent::setUp();
+	}
+
+	public function test_get_max_id()
+	{
+		$reparser = $this->get_reparser();
+		$this->assertEquals(123, $reparser->get_max_id());
+	}
+
+	public function testReparse()
+	{
+		$reparser = $this->get_reparser();
+		$reparser->reparse_range(2, 3);
+
+		$sql = 'SELECT topic_id, poll_option_id, poll_option_text
+			FROM ' . POLL_OPTIONS_TABLE . '
+			ORDER BY topic_id, poll_option_id';
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$expected = array(
+			array(
+				'topic_id'         => 1,
+				'poll_option_id'   => 1,
+				'poll_option_text' => 'This row should be [b]ignored[/b]',
+			),
+			array(
+				'topic_id'         => 1,
+				'poll_option_id'   => 2,
+				'poll_option_text' => 'This row should be [b:abcd1234]ignored[/b:abcd1234]',
+			),
+			array(
+				'topic_id'         => 2,
+				'poll_option_id'   => 1,
+				'poll_option_text' => '<r><B><s>[b]</s>Bold<e>[/b]</e></B></r>',
+			),
+			array(
+				'topic_id'         => 2,
+				'poll_option_id'   => 2,
+				'poll_option_text' => '<r><E>:)</E></r>',
+			),
+			array(
+				'topic_id'         => 2,
+				'poll_option_id'   => 3,
+				'poll_option_text' => '<r><URL url="http://example.org">http://example.org</URL></r>',
+			),
+			array(
+				'topic_id'         => 123,
+				'poll_option_id'   => 1,
+				'poll_option_text' => 'This row should be [b]ignored[/b]',
+			),
+			array(
+				'topic_id'         => 123,
+				'poll_option_id'   => 2,
+				'poll_option_text' => 'This row should be [b:abcd1234]ignored[/b:abcd1234]',
+			),
+		);
+		$this->assertEquals($expected, $rows);
 	}
 }
