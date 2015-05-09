@@ -34,6 +34,7 @@ require_once 'test_framework/phpbb_database_test_case.php';
 require_once 'test_framework/phpbb_database_test_connection_manager.php';
 require_once 'test_framework/phpbb_functional_test_case.php';
 require_once 'test_framework/phpbb_ui_test_case.php';
+require_once 'test_framework/phpbb_phpunit_cleanup_listener.php';
 
 if (version_compare(PHP_VERSION, '5.3.19', ">=") && file_exists(__DIR__ . '/vendor/autoload.php'))
 {

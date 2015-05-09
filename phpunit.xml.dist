@@ -30,6 +30,10 @@
         </testsuite>
     </testsuites>
 
+    <listeners>
+        <listener class="phpbb_phpunit_cleanup_listener"></listener>
+    </listeners>
+
     <groups>
         <exclude>
             <group>slow</group>
