@@ -1,6 +1,6 @@
 services:
-    text_reparser.admin_contact_info:
-        class: phpbb\textreparser\plugins\admin_contact_info
+    text_reparser.contact_admin_info:
+        class: phpbb\textreparser\plugins\contact_admin_info
         arguments:
             - @config_text
         tags:

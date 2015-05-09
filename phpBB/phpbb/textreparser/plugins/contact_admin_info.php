@@ -13,7 +13,7 @@
 
 namespace phpbb\textreparser\plugins;
 
-class admin_contact_info extends \phpbb\textreparser\base
+class contact_admin_info extends \phpbb\textreparser\base
 {
 	/**
 	* @var \phpbb\config\db_text
@@ -64,6 +64,6 @@ class admin_contact_info extends \phpbb\textreparser\base
 	*/
 	protected function save_record(array $record)
 	{
-		$this->config_text->set('admin_contact_info', $record['text']);
+		$this->config_text->set('contact_admin_info', $record['text']);
 	}
 }
