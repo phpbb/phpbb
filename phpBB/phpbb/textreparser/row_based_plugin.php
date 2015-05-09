@@ -65,10 +65,7 @@ abstract class row_based_plugin extends base
 	protected function get_records($min_id, $max_id)
 	{
 		$result = $this->db->sql_query($this->get_records_query($min_id, $max_id));
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$records[] = $this->add_missing_fields($row);
-		}
+		$records = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
 		return $records;

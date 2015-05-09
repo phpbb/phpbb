@@ -174,6 +174,7 @@ abstract class base implements reparser_interface
 	*/
 	protected function reparse_record(array $record)
 	{
+		$record = $this->add_missing_fields($record);
 		$unparsed = array_merge(
 			$record,
 			generate_text_for_edit(
