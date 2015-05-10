@@ -8,4 +8,4 @@ $dbname = 'phpbb';
 $dbuser = 'root';
 $dbpasswd = '';
 $table_prefix = 'phpbb_';
-$acm_type = '\phpbb\cache\driver\null';
+$acm_type = '\phpbb\cache\driver\dummy';
