@@ -195,6 +195,20 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 			}
 		}
 
+		// Checks in catch blocks
+		$old_catch = $stackPtr;
+		while (($catch = $phpcsFile->findNext(T_CATCH, ($old_catch + 1))) !== false)
+		{
+			$old_catch = $catch;
+
+			$caught_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), $catch + 1);
+			$caught_class_name_end = $phpcsFile->findNext($find, $caught_class_name_start, null, true);
+
+			$caught_class_name = trim($phpcsFile->getTokensAsString($caught_class_name_start, ($caught_class_name_end - $caught_class_name_start)));
+
+			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) ? true : $ok;
+		}
+
 		if (!$ok)
 		{
 			$error = 'There must not be unused USE statements.';
