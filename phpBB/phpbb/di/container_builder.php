@@ -21,6 +21,7 @@ use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 class container_builder
@@ -130,48 +131,53 @@ class container_builder
 		{
 			require($config_cache->getPath());
 			$this->container = new \phpbb_cache_container();
-
-			return $this->container;
 		}
-
-		$this->container_extensions = array(new extension\core($this->get_config_path()));
-
-		if ($this->use_extensions)
+		else
 		{
-			$this->load_extensions();
-		}
+			$this->container_extensions = array(new extension\core($this->get_config_path()));
 
-		// Inject the config
-		if ($this->config_php_file)
-		{
-			$this->container_extensions[] = new extension\config($this->config_php_file);
-		}
-
-		$this->container = $this->create_container($this->container_extensions);
-
-		// Easy collections through tags
-		$this->container->addCompilerPass(new pass\collection_pass());
-
-		// Event listeners "phpBB style"
-		$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
-
-		// Event listeners "Symfony style"
-		$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
-
-		$filesystem = new filesystem();
-		$loader = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
-		$loader->load($this->container->getParameter('core.environment') . '/config.yml');
-
-		$this->inject_custom_parameters();
-
-		if ($this->compile_container)
-		{
-			$this->container->compile();
-
-			if ($this->use_cache)
+			if ($this->use_extensions)
 			{
-				$this->dump_container($config_cache);
+				$this->load_extensions();
 			}
+
+			// Inject the config
+			if ($this->config_php_file)
+			{
+				$this->container_extensions[] = new extension\config($this->config_php_file);
+			}
+
+			$this->container = $this->create_container($this->container_extensions);
+
+			// Easy collections through tags
+			$this->container->addCompilerPass(new pass\collection_pass());
+
+			// Event listeners "phpBB style"
+			$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
+
+			// Event listeners "Symfony style"
+			$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
+
+			$filesystem = new filesystem();
+			$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
+			$loader->load($this->container->getParameter('core.environment') . '/config.yml');
+
+			$this->inject_custom_parameters();
+
+			if ($this->compile_container)
+			{
+				$this->container->compile();
+
+				if ($this->use_cache)
+				{
+					$this->dump_container($config_cache);
+				}
+			}
+		}
+
+		if ($this->compile_container && $this->config_php_file)
+		{
+			$this->container->set('config.php', $this->config_php_file);
 		}
 
 		return $this->container;
@@ -394,13 +400,20 @@ class container_builder
 	 */
 	protected function dump_container($cache)
 	{
-		$dumper = new PhpDumper($this->container);
-		$cached_container_dump = $dumper->dump(array(
-			'class'         => 'phpbb_cache_container',
-			'base_class'    => 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
-		));
+		try
+		{
+			$dumper                = new PhpDumper($this->container);
+			$cached_container_dump = $dumper->dump(array(
+				'class'      => 'phpbb_cache_container',
+				'base_class' => 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
+			));
 
-		$cache->write($cached_container_dump, $this->container->getResources());
+			$cache->write($cached_container_dump, $this->container->getResources());
+		}
+		catch (IOException $e)
+		{
+			// Don't fail if the cache isn't writeable
+		}
 	}
 
 	/**

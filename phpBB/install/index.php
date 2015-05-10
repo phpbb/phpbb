@@ -117,11 +117,10 @@ $phpbb_class_loader_ext->register();
 // Set up container
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 $phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
-$phpbb_container = $phpbb_container_builder
+$phpbb_container_builder
 	->without_extensions()
 	->without_cache()
 	->without_compiled_container()
-	->get_container()
 ;
 
 $other_config_path = $phpbb_root_path . 'install/update/new/config/';
