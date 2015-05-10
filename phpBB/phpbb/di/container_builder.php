@@ -360,7 +360,7 @@ class container_builder
 				->get_container()
 			;
 
-			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\null');
+			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\dummy');
 			$ext_container->compile();
 
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
