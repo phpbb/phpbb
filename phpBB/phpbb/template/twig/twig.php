@@ -359,12 +359,7 @@ class twig extends \phpbb\template\base
 
 		if ($this->user instanceof \phpbb\user)
 		{
-			$vars = array_merge(
-				$vars,
-				array(
-					'user' => $this->user,
-				)
-			);
+			$vars['user'] = $this->user;
 		}
 
 		// cleanup
