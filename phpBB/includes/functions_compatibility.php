@@ -501,3 +501,12 @@ function phpbb_get_plural_form($rule, $number)
 	$language = $phpbb_container->get('language');
 	return $language->get_plural_form($number, $rule);
 }
+
+/**
+* @return bool Always true
+* @deprecated 3.2.0-dev
+*/
+function phpbb_pcre_utf8_support()
+{
+	return true;
+}
