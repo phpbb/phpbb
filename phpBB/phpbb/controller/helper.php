@@ -13,6 +13,7 @@
 
 namespace phpbb\controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -219,14 +220,16 @@ class helper
 		{
 			global $refresh_data;
 
-			$json_response = new \phpbb\json_response;
-			$json_response->send(array(
-				'MESSAGE_TITLE'		=> $message_title,
-				'MESSAGE_TEXT'		=> $message_text,
-				'S_USER_WARNING'	=> false,
-				'S_USER_NOTICE'		=> false,
-				'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
-			));
+			return new JsonResponse(
+				array(
+					'MESSAGE_TITLE'		=> $message_title,
+					'MESSAGE_TEXT'		=> $message_text,
+					'S_USER_WARNING'	=> false,
+					'S_USER_NOTICE'		=> false,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+				),
+				$code
+			);
 		}
 
 		$this->template->assign_vars(array(
