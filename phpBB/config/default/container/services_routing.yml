@@ -1,0 +1,19 @@
+services:
+    router:
+        class: phpbb\routing\router
+        arguments:
+            - @filesystem
+            - %core.root_path%
+            - %core.php_ext%
+            - %core.environment%
+            - @ext.manager
+
+    router.listener:
+        class: Symfony\Component\HttpKernel\EventListener\RouterListener
+        arguments:
+            - @router
+            - null
+            - null
+            - @request_stack
+        tags:
+            - { name: kernel.event_subscriber }
