@@ -202,7 +202,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 			$old_catch = $catch;
 
 			$caught_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), $catch + 1);
-			$caught_class_name_end = $phpcsFile->findNext($find, $caught_class_name_start, null, true);
+			$caught_class_name_end = $phpcsFile->findNext($find, $caught_class_name_start + 1, null, true);
 
 			$caught_class_name = trim($phpcsFile->getTokensAsString($caught_class_name_start, ($caught_class_name_end - $caught_class_name_start)));
 
