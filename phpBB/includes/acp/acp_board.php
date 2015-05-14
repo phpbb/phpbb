@@ -514,7 +514,8 @@ class acp_board
 
 			if ($config_name == 'guest_style')
 			{
-				if (isset($cfg_array[$config_name])) {
+				if (isset($cfg_array[$config_name]))
+				{
 					$this->guest_style_set($cfg_array[$config_name]);
 				}
 				continue;
