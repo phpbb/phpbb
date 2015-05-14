@@ -22,7 +22,7 @@ class phpbb_template_asset_test extends phpbb_test_case
 			array('.', 'foo/bar', 'foo/bar'),
 			array('../', 'foo/bar', 'foo/bar'),
 			array('./phpBB/', 'foo/bar', 'foo/bar'),
-			array('../', __DIR__ . '/foo/bar', '../phpbb/tests/template/foo/bar'),
+			array('../', __DIR__ . '/foo/bar', '../' . basename(dirname(dirname(__DIR__))) . '/tests/template/foo/bar'),
 			array('./', __DIR__ . '/foo/bar', './tests/template/foo/bar'),
 			array('./phpBB/', __DIR__ . '/foo/bar', 'tests/template/foo/bar'),
 		);
