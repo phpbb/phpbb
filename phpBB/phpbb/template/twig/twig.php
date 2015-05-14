@@ -13,6 +13,8 @@
 
 namespace phpbb\template\twig;
 
+use phpbb\template\exception\user_object_not_available;
+
 /**
 * Twig Template class.
 */
@@ -76,14 +78,14 @@ class twig extends \phpbb\template\base
 	*
 	* @param \phpbb\path_helper $path_helper
 	* @param \phpbb\config\config $config
-	* @param \phpbb\user $user
 	* @param \phpbb\template\context $context template context
 	* @param \phpbb\template\twig\environment $twig_environment
 	* @param string $cache_path
+	* @param \phpbb\user|null $user
 	* @param array|\ArrayAccess $extensions
 	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
 	*/
-	public function __construct(\phpbb\path_helper $path_helper, $config, $user, \phpbb\template\context $context, \phpbb\template\twig\environment $twig_environment, $cache_path, $extensions = array(), \phpbb\extension\manager $extension_manager = null)
+	public function __construct(\phpbb\path_helper $path_helper, $config, \phpbb\template\context $context, \phpbb\template\twig\environment $twig_environment, $cache_path, \phpbb\user $user = null, $extensions = array(), \phpbb\extension\manager $extension_manager = null)
 	{
 		$this->path_helper = $path_helper;
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
@@ -126,9 +128,16 @@ class twig extends \phpbb\template\base
 	* Get the style tree of the style preferred by the current user
 	*
 	* @return array Style tree, most specific first
+	*
+	* @throws \phpbb\template\exception\user_object_not_available	When user service was not set
 	*/
 	public function get_user_style()
 	{
+		if ($this->user === null)
+		{
+			throw new user_object_not_available();
+		}
+
 		$style_list = array(
 			$this->user->style['style_path'],
 		);
@@ -344,10 +353,14 @@ class twig extends \phpbb\template\base
 			$context_vars['.'][0], // To get normal vars
 			array(
 				'definition'	=> new \phpbb\template\twig\definition(),
-				'user'			=> $this->user,
 				'loops'			=> $context_vars, // To get loops
 			)
 		);
+
+		if ($this->user instanceof \phpbb\user)
+		{
+			$vars['user'] = $this->user;
+		}
 
 		// cleanup
 		unset($vars['loops']['.']);

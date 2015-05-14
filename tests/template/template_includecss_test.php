@@ -64,10 +64,10 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$this->template = new phpbb\template\twig\twig(
 			$this->phpbb_path_helper,
 			$config,
-			$user,
 			$context,
 			$twig,
 			$cache_path,
+			$this->user,
 			array(new \phpbb\template\twig\extension($context, $this->user)),
 			new phpbb_mock_extension_manager(
 				dirname(__FILE__) . '/',

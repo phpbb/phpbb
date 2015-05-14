@@ -138,6 +138,7 @@ $phpbb_container_builder->set_custom_parameters(array(
 $phpbb_container = $phpbb_container_builder->get_container();
 $phpbb_container->register('dbal.conn.driver')->setSynthetic(true);
 $phpbb_container->register('template.twig.environment')->setSynthetic(true);
+$phpbb_container->register('language.loader')->setSynthetic(true);
 $phpbb_container->compile();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
@@ -288,16 +289,18 @@ $twig_environment = new \phpbb\template\twig\environment(
 	$phpbb_container->get('template.twig.loader')
 );
 
+$language_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 $phpbb_container->set('template.twig.environment', $twig_environment);
+$phpbb_container->set('language.loader', $language_loader);
 $twig_context = new \phpbb\template\context();
 $template = new \phpbb\template\twig\twig(
 	$phpbb_path_helper,
 	$config,
-	$user,
 	$twig_context,
 	$twig_environment,
 	$cache_path,
-	array(new \phpbb\template\twig\extension($twig_context, $user))
+	$user,
+	array($phpbb_container->get('template.twig.extensions.phpbb'))
 );
 
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');

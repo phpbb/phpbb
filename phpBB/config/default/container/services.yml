@@ -168,21 +168,6 @@ services:
     request_stack:
         class: Symfony\Component\HttpFoundation\RequestStack
 
-    template:
-        class: phpbb\template\twig\twig
-        arguments:
-            - @path_helper
-            - @config
-            - @user
-            - @template_context
-            - @template.twig.environment
-            - %core.template.cache_path%
-            - @template.twig.extensions.collection
-            - @ext.manager
-
-    template_context:
-        class: phpbb\template\context
-
     upload_imagesize:
         class: fastImageSize\fastImageSize
 

@@ -111,7 +111,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
-		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $this->user, $context, $twig, $cache_path, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
 		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 	}
 
