@@ -103,8 +103,9 @@
 
 <!-- IF S_IS_POSTABLE or S_NO_READ_ACCESS -->
 	<div id="pageheader">
+		<!-- EVENT viewforum_forum_title_before -->
 		<h2><!-- EVENT viewforum_forum_name_prepend --><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- EVENT viewforum_forum_name_append --></h2>
-
+		<!-- EVENT viewforum_forum_title_after -->
 		<!-- IF MODERATORS -->
 			<p class="moderators"><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON} {MODERATORS}</p>
 		<!-- ENDIF -->
