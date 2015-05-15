@@ -1786,7 +1786,7 @@ class acp_forums
 	*/
 	function delete_forum_content($forum_id)
 	{
-		global $db, $config, $phpbb_root_path, $phpEx;
+		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -1917,6 +1917,24 @@ class acp_forums
 		}
 
 		$table_ary = array(FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
+
+		/**
+		 * Perform additional actions before forum content deletion
+		 *
+		 * @event core.delete_forum_content_before_query
+		 * @var	array	table_ary	Array of tables from which all rows will be deleted that hold the forum_id
+		 * @var	int		forum_id	the forum id
+		 * @var	array	topic_ids	Array of the topic ids from the forum to be deleted 	
+		 * @var	array	post_counts	Array of counts of posts in the forum, by poster_id
+		 * @since 3.1.5-RC1
+		 */
+		$vars = array(
+				'table_ary',
+				'forum_id',
+				'topic_ids',
+				'post_counts',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.delete_forum_content_before_query', compact($vars)));
 
 		foreach ($table_ary as $table)
 		{
