@@ -65,7 +65,7 @@ class environment extends \Twig_Environment
 
 		$options = array_merge(array(
 			'cache'			=> (defined('IN_INSTALL')) ? false : $cache_path,
-			'debug'			=> defined('DEBUG'),
+			'debug'			=> false,
 			'auto_reload'	=> (bool) $this->phpbb_config['load_tplcompile'],
 			'autoescape'	=> false,
 		), $options);
