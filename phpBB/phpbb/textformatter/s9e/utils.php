@@ -35,12 +35,12 @@ class utils implements \phpbb\textformatter\utils_interface
 	}
 
 	/**
-	* Get a list of quote authors, limited to the first level of quotes
+	* Get a list of quote authors, limited to the outermost quotes
 	*
 	* @param  string   $xml Parsed text
 	* @return string[]      List of authors
 	*/
-	public function get_quote_authors($xml)
+	public function get_outermost_quote_authors($xml)
 	{
 		$authors = array();
 		if (strpos($xml, '<QUOTE ') === false)

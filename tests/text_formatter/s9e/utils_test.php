@@ -75,18 +75,18 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider get_quote_authors_tests
+	* @dataProvider get_outermost_quote_authors_tests
 	*/
-	public function test_get_quote_authors($original, $expected)
+	public function test_get_outermost_quote_authors($original, $expected)
 	{
 		$container = $this->get_test_case_helpers()->set_s9e_services();
 		$utils     = $container->get('text_formatter.utils');
 		$parser    = $container->get('text_formatter.parser');
 
-		$this->assertSame($expected, $utils->get_quote_authors($parser->parse($original)));
+		$this->assertSame($expected, $utils->get_outermost_quote_authors($parser->parse($original)));
 	}
 
-	public function get_quote_authors_tests()
+	public function get_outermost_quote_authors_tests()
 	{
 		return array(
 			array(

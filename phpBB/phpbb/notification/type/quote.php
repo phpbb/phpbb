@@ -75,7 +75,7 @@ class quote extends \phpbb\notification\type\post
 			'ignore_users'		=> array(),
 		), $options);
 
-		$usernames = $this->utils->get_quote_authors($post['post_text']);
+		$usernames = $this->utils->get_outermost_quote_authors($post['post_text']);
 
 		if (empty($usernames))
 		{
