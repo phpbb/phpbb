@@ -1,4 +1,10 @@
 services:
+    phpbb.help.manager:
+        class: phpbb\help\manager
+        arguments:
+            - @template
+            - @language
+
     phpbb.help.controller:
         class: phpbb\help\controller\help
         arguments:
@@ -6,5 +12,16 @@ services:
             - @dispatcher
             - @template
             - @user
+            - %core.root_path%
+            - %core.php_ext%
+
+    phpbb.help.controller.bbcode:
+        class: phpbb\help\controller\bbcode
+        arguments:
+            - @controller.helper
+            - @dispatcher
+            - @phpbb.help.manager
+            - @template
+            - @language
             - %core.root_path%
             - %core.php_ext%
