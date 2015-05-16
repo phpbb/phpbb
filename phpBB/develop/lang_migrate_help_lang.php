@@ -252,7 +252,7 @@ function write_help($help, array $lang)
 	global $phpbb_root_path;
 	$fp = fopen($phpbb_root_path . 'language/en/help/' . $help . '.php', 'wb');
 	fwrite($fp, get_language_file_header());
-	fwrite($fp, '$lang = array(' . "\n");
+	fwrite($fp, '$lang = array_merge($lang, array(' . "\n");
 
 	$last_key = '';
 	ksort($lang);
@@ -270,7 +270,7 @@ function write_help($help, array $lang)
 		$last_key = $key_start;
 	}
 
-	fwrite($fp, ');' . "\n");
+	fwrite($fp, '));' . "\n");
 	#fwrite($fp, $lang);
 	fclose($fp);
 }

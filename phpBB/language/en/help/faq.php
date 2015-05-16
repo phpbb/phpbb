@@ -24,7 +24,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-$lang = array(
+$lang = array_merge($lang, array(
 	'HELP_FAQ_ATTACHMENTS_ALLOWED_ANSWER'	=> 'Each board administrator can allow or disallow certain attachment types. If you are unsure what is allowed to be uploaded, contact the board administrator for assistance.',
 	'HELP_FAQ_ATTACHMENTS_ALLOWED_QUESTION'	=> 'What attachments are allowed on this board?',
 	'HELP_FAQ_ATTACHMENTS_OWN_ANSWER'	=> 'To find your list of attachments that you have uploaded, go to your User Control Panel and follow the links to the attachments section.',
@@ -183,4 +183,4 @@ $lang = array(
 	'HELP_FAQ_USERSETTINGS_SERVERTIME_QUESTION'	=> 'I changed the timezone and the time is still wrong!',
 	'HELP_FAQ_USERSETTINGS_TIMEZONE_ANSWER'	=> 'It is possible the time displayed is from a timezone different from the one you are in. If this is the case, visit your User Control Panel and change your timezone to match your particular area, e.g. London, Paris, New York, Sydney, etc. Please note that changing the timezone, like most settings, can only be done by registered users. If you are not registered, this is a good time to do so.',
 	'HELP_FAQ_USERSETTINGS_TIMEZONE_QUESTION'	=> 'The times are not correct!',
-);
+));

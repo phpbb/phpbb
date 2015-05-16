@@ -24,7 +24,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-$lang = array(
+$lang = array_merge($lang, array(
 	'HELP_BBCODE_BLOCK_IMAGES'	=> 'Showing images in posts',
 	'HELP_BBCODE_BLOCK_INTRO'	=> 'Introduction',
 	'HELP_BBCODE_BLOCK_LINKS'	=> 'Creating Links',
@@ -63,4 +63,4 @@ $lang = array(
 	'HELP_BBCODE_TEXT_COLOR_QUESTION'	=> 'How to change the text colour or size',
 	'HELP_BBCODE_TEXT_COMBINE_ANSWER'	=> 'Yes, of course you can, for example to get someones attention you may write:<br /><br /><strong>[size=200][color=red][b]</strong>LOOK AT ME!<strong>[/b][/color][/size]</strong><br /><br />this would output <span style="color:red;font-size:200%;"><strong>LOOK AT ME!</strong></span><br /><br />We don’t recommend you output lots of text that looks like this though! Remember it is up to you, the poster, to ensure tags are closed correctly. For example the following is incorrect:<br /><br /><strong>[b][u]</strong>This is wrong<strong>[/b][/u]</strong>',
 	'HELP_BBCODE_TEXT_COMBINE_QUESTION'	=> 'Can I combine formatting tags?',
-);
+));
