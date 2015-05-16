@@ -97,7 +97,8 @@ class loader extends \Twig_Loader_Filesystem
 
 		// If this is in the cache we can skip the entire process below
 		//	as it should have already been validated
-		if (isset($this->cache[$name])) {
+		if (isset($this->cache[$name]))
+		{
 			return $this->cache[$name];
 		}
 

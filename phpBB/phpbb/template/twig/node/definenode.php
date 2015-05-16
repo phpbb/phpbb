@@ -31,7 +31,8 @@ class definenode extends \Twig_Node
 	{
 		$compiler->addDebugInfo($this);
 
-		if ($this->getAttribute('capture')) {
+		if ($this->getAttribute('capture'))
+		{
 			$compiler
 				->write("ob_start();\n")
 				->subcompile($this->getNode('value'))
