@@ -5,18 +5,19 @@ services:
             - @template
             - @language
 
-    phpbb.help.controller:
-        class: phpbb\help\controller\help
+    phpbb.help.controller.bbcode:
+        class: phpbb\help\controller\bbcode
         arguments:
             - @controller.helper
             - @dispatcher
+            - @phpbb.help.manager
             - @template
-            - @user
+            - @language
             - %core.root_path%
             - %core.php_ext%
 
-    phpbb.help.controller.bbcode:
-        class: phpbb\help\controller\bbcode
+    phpbb.help.controller.faq:
+        class: phpbb\help\controller\faq
         arguments:
             - @controller.helper
             - @dispatcher

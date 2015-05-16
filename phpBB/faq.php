@@ -28,8 +28,9 @@ $user->setup();
 $controller_helper = $phpbb_container->get('controller.helper');
 
 $response = new \Symfony\Component\HttpFoundation\RedirectResponse(
-	$controller_helper->route('phpbb_help_controller', array(
-		'mode' => $request->variable('mode', 'faq'),
-	), 301)
+	$controller_helper->route(
+		$request->variable('mode', 'faq') === 'bbcode' ? 'phpbb_help_bbcode_controller' : 'phpbb_help_faq_controller'
+	),
+	301
 );
 $response->send();

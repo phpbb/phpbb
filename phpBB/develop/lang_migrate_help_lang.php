@@ -228,7 +228,7 @@ $lang_phpbb = array(
 	'HELP_FAQ_ISSUES_ADMIN_ANSWER' => $help_phpbb[79][1],
 
 );
-write_help('phpbb', $lang_phpbb);
+write_help('faq', $lang_phpbb);
 
 trigger_error('Successfully migrated help_bbcode and help_faq to help/bbcode and help/phpbb');
 
