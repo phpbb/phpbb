@@ -29,6 +29,18 @@ interface utils_interface
 	public function clean_formatting($text);
 
 	/**
+	* Create a quote block for given text
+	*
+	* Possible attributes:
+	*   - author
+	*
+	* @param  string $text       Quote's text
+	* @param  array  $attributes Quote's attributes
+	* @return string             Quote block to be used in a new post/text
+	*/
+	public function generate_quote($text, array $attributes = array());
+
+	/**
 	* Get a list of quote authors, limited to the outermost quotes
 	*
 	* @param  string   $text Parsed text

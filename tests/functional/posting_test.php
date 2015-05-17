@@ -72,6 +72,20 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->assertContains('&#128512;', $crawler->text());
 	}
 
+	public function test_quote()
+	{
+		$text     = 'Test post </textarea>"\' &&amp;amp;';
+		$expected = '[quote="admin"]' . $text . '[/quote]';
+
+		$this->login();
+		$topic = $this->create_topic(2, 'Test Topic 1', 'Test topic');
+		$post  = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
+
+		$crawler = self::request('GET', "posting.php?mode=quote&f=2&t={$post['topic_id']}&p={$post['post_id']}&sid={$this->sid}");
+
+		$this->assertContains($expected, $crawler->filter('textarea#message')->text());
+	}
+
 	/**
 	* @testdox max_quote_depth is applied to the text populating the posting form
 	*/

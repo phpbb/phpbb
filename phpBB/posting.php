@@ -1597,7 +1597,11 @@ if ($generate_quote)
 {
 	if ($config['allow_bbcode'])
 	{
-		$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+		$message_parser->message = $phpbb_container->get('text_formatter.utils')->generate_quote(
+			censor_text(trim($message_parser->message)),
+			array('author' => $post_data['quote_username'])
+		);
+		$message_parser->message .= "\n";
 	}
 	else
 	{
