@@ -56,8 +56,9 @@ class parser implements \phpbb\textformatter\parser_interface
 		* Configure the parser service
 		*
 		* Can be used to:
-		*  - register variables or custom parsers in the s9e\TextFormatter
-		*  - configure the s9e\TextFormatter parser
+		*  - toggle features or BBCodes
+		*  - register variables or custom parsers in the s9e\TextFormatter parser
+		*  - configure the s9e\TextFormatter parser's runtime settings
 		*
 		* @event core.text_formatter_s9e_parser_setup
 		* @var \phpbb\textformatter\s9e\parser parser This parser service
