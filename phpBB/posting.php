@@ -1371,10 +1371,8 @@ if ($submit || $preview || $refresh)
 			* @var	string	post_author_name	Author name for guest posts
 			* @var	bool	update_message		Boolean if the post message was changed
 			* @var	bool	update_subject		Boolean if the post subject was changed
-			* @var	bool	submit		Whether or not the form has been submitted
-			* @var	array	error		Any error strings; a non-empty array aborts form submission.
-			*				NOTE: Should be actual language strings, NOT language keys.
 			* @since 3.1.0-RC5
+			* @updated 3.1.5-RC1
 			*/
 			$vars = array(
 				'post_data',
@@ -1388,8 +1386,6 @@ if ($submit || $preview || $refresh)
 				'post_author_name',
 				'update_message',
 				'update_subject',
-				'submit',
-				'error',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_before', compact($vars)));
 
@@ -1413,10 +1409,8 @@ if ($submit || $preview || $refresh)
 			* @var	bool	update_message		Boolean if the post message was changed
 			* @var	bool	update_subject		Boolean if the post subject was changed
 			* @var	string	redirect_url		URL the user is going to be redirected to
-			* @var	bool	submit		Whether or not the form has been submitted
-			* @var	array	error		Any error strings; a non-empty array aborts form submission.
-			*				NOTE: Should be actual language strings, NOT language keys.
 			* @since 3.1.0-RC5
+			* @updated 3.1.5-RC1
 			*/
 			$vars = array(
 				'post_data',
@@ -1431,8 +1425,6 @@ if ($submit || $preview || $refresh)
 				'update_message',
 				'update_subject',
 				'redirect_url',
-				'submit',
-				'error',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_after', compact($vars)));
 
