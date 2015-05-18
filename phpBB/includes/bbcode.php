@@ -385,7 +385,16 @@ class bbcode
 						}
 
 						// Replace {L_*} lang strings
-						$bbcode_tpl = preg_replace('/{L_([A-Z0-9_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $bbcode_tpl);
+						$bbcode_tpl = preg_replace_callback('/{L_([A-Z0-9_]+)}/', function ($match) use ($user) {
+							if (!empty($user->lang[$match['1']]))
+							{
+								return $user->lang[$match['1']];
+							}
+							else
+							{
+								return ucwords(strtolower(str_replace('_', ' ', $match['1'])));
+							}
+						}, $bbcode_tpl);
 
 						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
 						{
@@ -509,7 +518,16 @@ class bbcode
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);
 
-		$tpl = preg_replace('/{L_([A-Z0-9_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+		$tpl = preg_replace_callback('/{L_([A-Z0-9_]+)}/', function ($match) use ($user) {
+			if (!empty($user->lang[$match['1']]))
+			{
+				return $user->lang[$match['1']];
+			}
+			else
+			{
+				return ucwords(strtolower(str_replace('_', ' ', $match['1'])));
+			}
+		}, $tpl);
 
 		if (!empty($replacements[$tpl_name]))
 		{
