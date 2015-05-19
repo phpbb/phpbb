@@ -29,7 +29,7 @@ class poll_title extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records_query($min_id, $max_id)
+	protected function get_records_by_range_query($min_id, $max_id)
 	{
 		$sql = 'SELECT t.topic_id AS id, t.poll_title AS text, p.bbcode_uid
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
