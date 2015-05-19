@@ -37,7 +37,7 @@ class utils implements \phpbb\textformatter\utils_interface
 	/**
 	* Return given string between quotes
 	*
-	* Will use either single- or double- quotes depending on whichever requires to be escaped.
+	* Will use either single- or double- quotes depending on whichever requires less escaping.
 	* Quotes and backslashes are escaped with backslashes where necessary
 	*
 	* @param  string $str Original string
@@ -45,9 +45,10 @@ class utils implements \phpbb\textformatter\utils_interface
 	*/
 	protected function enquote($str)
 	{
-		$quote = (strpos($str, '"') === false || strpos($str, "'") !== false) ? '"' : "'";
+		$singleQuoted = "'" . addcslashes($str, "\\'") . "'";
+		$doubleQuoted = '"' . addcslashes($str, '\\"') . '"';
 
-		return $quote . addcslashes($str, '\\' . $quote) . $quote;
+		return (strlen($singleQuoted) < strlen($doubleQuoted)) ? $singleQuoted : $doubleQuoted;
 	}
 
 	/**

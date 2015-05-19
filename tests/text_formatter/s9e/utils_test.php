@@ -149,6 +149,21 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 			),
 			array(
 				'...',
+				array('author' => 'Lots of doubles """ one single \' one backslash \\'),
+				'[quote=\'Lots of doubles """ one single \\\' one backslash \\\\\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => "Lots of singles ''' one double \" one backslash \\"),
+				'[quote="Lots of singles \'\'\' one double \\" one backslash \\\\"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => 'Defaults to doublequotes """\'\'\''),
+				'[quote="Defaults to doublequotes \\"\\"\\"\'\'\'"]...[/quote]',
+			),
+			array(
+				'...',
 				array(
 					'author'  => 'user',
 					'post_id' => 123,
