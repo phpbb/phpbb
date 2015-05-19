@@ -126,7 +126,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_init($allow_custom_bbcode = true)
 	{
-		global $phpbb_dispatcher, $bbcode_class;
+		global $phpbb_dispatcher;
 
 		static $rowset;
 
