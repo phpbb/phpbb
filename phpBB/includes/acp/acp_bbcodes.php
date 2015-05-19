@@ -558,10 +558,18 @@ class acp_bbcodes
 			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$fp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_match);
-		$fp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_replace);
-		$sp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_match);
-		$sp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_replace);
+		$fp_match = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $fp_match);
+		$fp_replace = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $fp_replace);
+		$sp_match = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $sp_match);
+		$sp_replace = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $sp_replace);
 
 		return array(
 			'bbcode_tag'				=> $bbcode_tag,
