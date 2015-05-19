@@ -62,9 +62,10 @@ abstract class row_based_plugin extends base
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records($min_id, $max_id)
+	protected function get_records_by_range($min_id, $max_id)
 	{
-		$result = $this->db->sql_query($this->get_records_query($min_id, $max_id));
+		$sql = $this->get_records_by_range_query($min_id, $max_id);
+		$result = $this->db->sql_query($sql);
 		$records = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
@@ -78,7 +79,7 @@ abstract class row_based_plugin extends base
 	* @param  integer $max_id Upper bound
 	* @return string          SQL query
 	*/
-	protected function get_records_query($min_id, $max_id)
+	protected function get_records_by_range_query($min_id, $max_id)
 	{
 		$columns = $this->get_columns();
 		$fields  = array();

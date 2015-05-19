@@ -46,7 +46,7 @@ class poll_option extends \phpbb\textreparser\base
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records($min_id, $max_id)
+	protected function get_records_by_range($min_id, $max_id)
 	{
 		$sql = 'SELECT o.topic_id, o.poll_option_id, o.poll_option_text AS text, p.bbcode_uid
 			FROM ' . POLL_OPTIONS_TABLE . ' o, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p

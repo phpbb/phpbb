@@ -25,9 +25,9 @@ abstract class base implements reparser_interface
 	*
 	* @param  integer $min_id Lower bound
 	* @param  integer $max_id Upper bound
-	* @return array           Array of record
+	* @return array           Array of records
 	*/
-	abstract protected function get_records($min_id, $max_id);
+	abstract protected function get_records_by_range($min_id, $max_id);
 
 	/**
 	* {@inheritdoc}
@@ -161,7 +161,7 @@ abstract class base implements reparser_interface
 	*/
 	public function reparse_range($min_id, $max_id)
 	{
-		foreach ($this->get_records($min_id, $max_id) as $record)
+		foreach ($this->get_records_by_range($min_id, $max_id) as $record)
 		{
 			$this->reparse_record($record);
 		}

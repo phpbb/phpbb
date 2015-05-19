@@ -41,7 +41,7 @@ class contact_admin_info extends \phpbb\textreparser\base
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records($min_id, $max_id)
+	protected function get_records_by_range($min_id, $max_id)
 	{
 		$values = $this->config_text->get_array(array(
 			'contact_admin_info',
