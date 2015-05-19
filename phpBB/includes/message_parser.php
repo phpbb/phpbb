@@ -138,19 +138,71 @@ class bbcode_firstpass extends bbcode
 		// To parse multiline URL we enable dotall option setting only for URL text
 		// but not for link itself, thus [url][/url] is not affected.
 		$this->bbcodes = array(
-			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_code($match[1], $match[2]); })),
-			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_quote($match[0]); })),
-			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_attachment($match[1], $match[2]); })),
-			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_strong($match[1]); })),
-			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_italic($match[1]); })),
-			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiU' => function ($match) { global $bbcode_class; return $bbcode_class->validate_url($match[2], ($match[3]) ? $match[3] : $match[4]); })),
-			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#uiU' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_img($match[1]); })),
-			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_size($match[1], $match[2]); })),
-			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_color($match[1], $match[2]); })),
-			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_underline($match[1]); })),
-			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_parse_list($match[0]); })),
-			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#uis' => function ($match) { global $bbcode_class; return $bbcode_class->validate_email($match[1], $match[2]); })),
-			'flash'			=> array('bbcode_id' => 11,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ui' => function ($match) { global $bbcode_class; return $bbcode_class->bbcode_flash($match[1], $match[2], $match[3]); }))
+			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_code($match[1], $match[2]);
+				}
+			)),
+			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_quote($match[0]);
+				}
+			)),
+			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_attachment($match[1], $match[2]);
+				}
+			)),
+			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_strong($match[1]);
+				}
+			)),
+			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_italic($match[1]);
+				}
+			)),
+			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiU' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->validate_url($match[2], ($match[3]) ? $match[3] : $match[4]);
+				}
+			)),
+			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#uiU' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_img($match[1]);
+				}
+			)),
+			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_size($match[1], $match[2]);
+				}
+			)),
+			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_color($match[1], $match[2]);
+				}
+			)),
+			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_underline($match[1]);
+				}
+			)),
+			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_parse_list($match[0]);
+				}
+			)),
+			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#uis' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->validate_email($match[1], $match[2]);
+				}
+			)),
+			'flash'			=> array('bbcode_id' => 11,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ui' => function ($match) use($bbcode_class)
+				{
+					return $bbcode_class->bbcode_flash($match[1], $match[2], $match[3]);
+				}
+			))
 		);
 
 		// Zero the parsed items array
