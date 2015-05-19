@@ -1250,6 +1250,16 @@ class parse_message extends bbcode_firstpass
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
+		// Remove quotes that are nested too deep
+		if ($config['max_quote_depth'] > 0)
+		{
+			$this->message = $phpbb_container->get('text_formatter.utils')->remove_bbcode(
+				$this->message,
+				'quote',
+				$config['max_quote_depth']
+			);
+		}
+
 		// Check for errors
 		$errors = $parser->get_errors();
 		if ($errors)
