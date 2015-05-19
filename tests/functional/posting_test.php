@@ -100,7 +100,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	}
 
 	/**
-	* @testdox max_quote_depth is applied to the text populating the posting form
+	* @testdox max_quote_depth is applied to the submitted text
 	*/
 	public function test_quote_depth_submit()
 	{
