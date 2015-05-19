@@ -21,6 +21,11 @@ namespace phpbb\notification\type;
 class quote extends \phpbb\notification\type\post
 {
 	/**
+	* @var \phpbb\textformatter\utils_interface
+	*/
+	protected $utils;
+
+	/**
 	* Get notification type name
 	*
 	* @return string
@@ -29,13 +34,6 @@ class quote extends \phpbb\notification\type\post
 	{
 		return 'notification.type.quote';
 	}
-
-	/**
-	* regular expression to match to find usernames
-	*
-	* @var string
-	*/
-	protected static $regular_expression_match = '#\[quote=&quot;(.+?)&quot;#';
 
 	/**
 	* Language key used to output the text
@@ -77,17 +75,16 @@ class quote extends \phpbb\notification\type\post
 			'ignore_users'		=> array(),
 		), $options);
 
-		$usernames = false;
-		preg_match_all(self::$regular_expression_match, $post['post_text'], $usernames);
+		$usernames = $this->utils->get_outermost_quote_authors($post['post_text']);
 
-		if (empty($usernames[1]))
+		if (empty($usernames))
 		{
 			return array();
 		}
 
-		$usernames[1] = array_unique($usernames[1]);
+		$usernames = array_unique($usernames);
 
-		$usernames = array_map('utf8_clean_string', $usernames[1]);
+		$usernames = array_map('utf8_clean_string', $usernames);
 
 		$users = array();
 
@@ -186,5 +183,15 @@ class quote extends \phpbb\notification\type\post
 		return array_merge(parent::get_email_template_variables(), array(
 			'AUTHOR_NAME'		=> htmlspecialchars_decode($user_data['username']),
 		));
+	}
+
+	/**
+	* Set the utils service used to retrieve quote authors
+	*
+	* @param \phpbb\textformatter\utils_interface $utils
+	*/
+	public function set_utils(\phpbb\textformatter\utils_interface $utils)
+	{
+		$this->utils = $utils;
 	}
 }

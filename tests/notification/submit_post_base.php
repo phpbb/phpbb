@@ -117,6 +117,11 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 				$phpbb_root_path, $phpEx,
 				NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
 
+			if ($type === 'quote')
+			{
+				$class->set_utils(new \phpbb\textformatter\s9e\utils);
+			}
+
 			$phpbb_container->set('notification.type.' . $type, $class);
 
 			$notification_types_array['notification.type.' . $type] = $class;

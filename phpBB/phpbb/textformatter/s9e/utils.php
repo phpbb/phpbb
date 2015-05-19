@@ -35,6 +35,31 @@ class utils implements \phpbb\textformatter\utils_interface
 	}
 
 	/**
+	* Get a list of quote authors, limited to the outermost quotes
+	*
+	* @param  string   $xml Parsed text
+	* @return string[]      List of authors
+	*/
+	public function get_outermost_quote_authors($xml)
+	{
+		$authors = array();
+		if (strpos($xml, '<QUOTE ') === false)
+		{
+			return $authors;
+		}
+
+		$dom = new \DOMDocument;
+		$dom->loadXML($xml);
+		$xpath = new \DOMXPath($dom);
+		foreach ($xpath->query('//QUOTE[not(ancestor::QUOTE)]/@author') as $author)
+		{
+			$authors[] = $author->textContent;
+		}
+
+		return $authors;
+	}
+
+	/**
 	* Remove given BBCode and its content, at given nesting depth
 	*
 	* @param  string  $xml         Parsed text
