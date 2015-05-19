@@ -35,7 +35,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			'_foo_parser',
-			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
 			$factory,
 			new phpbb_mock_event_dispatcher
 		);
@@ -63,7 +62,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			'_foo_parser',
-			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
 			$factory,
 			new phpbb_mock_event_dispatcher
 		);
@@ -92,7 +90,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$parser = new \phpbb\textformatter\s9e\parser(
 			new phpbb_mock_cache,
 			'_foo_parser',
-			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
 			$factory,
 			new phpbb_mock_event_dispatcher
 		);
@@ -126,7 +123,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$cache,
 			'_foo_parser',
-			$this->getMockBuilder('phpbb\\user')->disableOriginalConstructor()->getMock(),
 			$factory,
 			new phpbb_mock_event_dispatcher
 		);
@@ -191,7 +187,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		new \phpbb\textformatter\s9e\parser(
 			$container->get('cache.driver'),
 			'_foo_parser',
-			$container->get('user'),
 			$container->get('text_formatter.s9e.factory'),
 			$dispatcher
 		);
@@ -200,9 +195,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 	public function setup_event_callback($vars)
 	{
 		return isset($vars['parser'])
-			&& $vars['parser'] instanceof \phpbb\textformatter\s9e\parser
-			&& isset($vars['user'])
-			&& $vars['user'] instanceof \phpbb\user;
+			&& $vars['parser'] instanceof \phpbb\textformatter\s9e\parser;
 	}
 
 	/**
@@ -236,7 +229,6 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		$parser = new \phpbb\textformatter\s9e\parser(
 			$container->get('cache.driver'),
 			'_foo_parser',
-			$container->get('user'),
 			$container->get('text_formatter.s9e.factory'),
 			$dispatcher
 		);

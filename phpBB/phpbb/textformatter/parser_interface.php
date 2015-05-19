@@ -82,7 +82,8 @@ interface parser_interface
 	/**
 	* Get the list of errors that were generated during last parsing
 	*
-	* @return array
+	* @return array[] Array of arrays. Each array contains a lang string at index 0 plus any number
+	*                 of optional parameters
 	*/
 	public function get_errors();
 

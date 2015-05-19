@@ -1264,6 +1264,11 @@ class parse_message extends bbcode_firstpass
 		$errors = $parser->get_errors();
 		if ($errors)
 		{
+			foreach ($errors as $i => $args)
+			{
+				// Translate each error with $user->lang()
+				$errors[$i] = call_user_func_array(array($user, 'lang'), $args);
+			}
 			$this->warn_msg = array_merge($this->warn_msg, $errors);
 
 			return (!$update_this_message) ? $return_message : $this->warn_msg;

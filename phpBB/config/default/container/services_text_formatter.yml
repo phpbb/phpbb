@@ -41,7 +41,6 @@ services:
         arguments:
             - @cache.driver
             - %text_formatter.cache.parser.key%
-            - @user
             - @text_formatter.s9e.factory
             - @dispatcher
 
