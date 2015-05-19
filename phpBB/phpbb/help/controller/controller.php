@@ -21,9 +21,6 @@ abstract class controller
 	/** @var \phpbb\controller\helper */
 	protected $helper;
 
-	/** @var \phpbb\event\dispatcher_interface  */
-	protected $dispatcher;
-
 	/** @var \phpbb\help\manager */
 	protected $manager;
 
@@ -43,17 +40,15 @@ abstract class controller
 	 * Constructor
 	 *
 	 * @param \phpbb\controller\helper	$helper
-	 * @param \phpbb\event\dispatcher_interface	$dispatcher
 	 * @param \phpbb\help\manager		$manager
 	 * @param \phpbb\template\template	$template
 	 * @param \phpbb\language\language	$language
 	 * @param string					$root_path
 	 * @param string					$php_ext
 	 */
-	public function __construct(\phpbb\controller\helper $helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\help\manager $manager, \phpbb\template\template $template, \phpbb\language\language $language, $root_path, $php_ext)
+	public function __construct(\phpbb\controller\helper $helper, \phpbb\help\manager $manager, \phpbb\template\template $template, \phpbb\language\language $language, $root_path, $php_ext)
 	{
 		$this->helper = $helper;
-		$this->dispatcher = $dispatcher;
 		$this->manager = $manager;
 		$this->template = $template;
 		$this->language = $language;

@@ -11,7 +11,7 @@
  *
  */
 
-class phpbb_language_test extends phpbb_test_case
+class phpbb_help_manager_test extends phpbb_test_case
 {
 	/** @var \phpbb\help\manager */
 	protected $manager;
@@ -30,8 +30,9 @@ class phpbb_language_test extends phpbb_test_case
 			->getMock();
 
 		$this->manager = new \phpbb\help\manager(
-			$this->template,
-			$this->language
+			new \phpbb_mock_event_dispatcher(),
+			$this->language,
+			$this->template
 		);
 	}
 

@@ -2,14 +2,14 @@ services:
     phpbb.help.manager:
         class: phpbb\help\manager
         arguments:
-            - @template
+            - @dispatcher
             - @language
+            - @template
 
     phpbb.help.controller.bbcode:
         class: phpbb\help\controller\bbcode
         arguments:
             - @controller.helper
-            - @dispatcher
             - @phpbb.help.manager
             - @template
             - @language
@@ -20,7 +20,6 @@ services:
         class: phpbb\help\controller\faq
         arguments:
             - @controller.helper
-            - @dispatcher
             - @phpbb.help.manager
             - @template
             - @language
