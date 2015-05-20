@@ -1241,7 +1241,7 @@ phpbb.applyCodeEditor = function(textarea) {
  * @param {object} textarea Textarea DOM object to apply editor to
  */
 phpbb.showDragNDrop = function(textarea) {
-	if (textarea === 'undefined') {
+	if (textarea == null) {
 		return;
 	}
 
