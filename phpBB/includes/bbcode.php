@@ -403,14 +403,7 @@ class bbcode
 
 						// Replace {L_*} lang strings
 						$bbcode_tpl = preg_replace_callback('/{L_([A-Z0-9_]+)}/', function ($match) use ($user) {
-							if (!empty($user->lang[$match['1']]))
-							{
-								return $user->lang[$match['1']];
-							}
-							else
-							{
-								return ucwords(strtolower(str_replace('_', ' ', $match['1'])));
-							}
+							return (!empty($user->lang[$match[1]])) ? $user->lang($match[1]) : ucwords(strtolower(str_replace('_', ' ', $match[1])));
 						}, $bbcode_tpl);
 
 						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
@@ -536,14 +529,7 @@ class bbcode
 		);
 
 		$tpl = preg_replace_callback('/{L_([A-Z0-9_]+)}/', function ($match) use ($user) {
-			if (!empty($user->lang[$match['1']]))
-			{
-				return $user->lang[$match['1']];
-			}
-			else
-			{
-				return ucwords(strtolower(str_replace('_', ' ', $match['1'])));
-			}
+			return (!empty($user->lang[$match[1]])) ? $user->lang($match[1]) : ucwords(strtolower(str_replace('_', ' ', $match[1])));
 		}, $tpl);
 
 		if (!empty($replacements[$tpl_name]))
