@@ -185,10 +185,10 @@ abstract class base implements reparser_interface
 		);
 		// generate_text_for_edit() and decode_message() actually return the text as HTML. It has to
 		// be decoded to plain text before it can be reparsed
-		$parsed_text = html_entity_decode($unparsed['text'], ENT_QUOTES, 'UTF-8');
+		$text = html_entity_decode($unparsed['text'], ENT_QUOTES, 'UTF-8');
 		$bitfield = $flags = null;
 		generate_text_for_storage(
-			$parsed_text,
+			$text,
 			$unparsed['bbcode_uid'],
 			$bitfield,
 			$flags,
@@ -202,9 +202,9 @@ abstract class base implements reparser_interface
 		);
 
 		// Save the new text if it has changed
-		if ($parsed_text !== $record['text'])
+		if ($text !== $record['text'])
 		{
-			$record['text'] = $parsed_text;
+			$record['text'] = $text;
 			$this->save_record($record);
 		}
 	}
