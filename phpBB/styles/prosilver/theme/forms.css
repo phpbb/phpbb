@@ -243,15 +243,7 @@ fieldset.submit-buttons input {
 	max-width: 100%;
 	font-size: 1.2em;
 	resize: vertical;
-	-webkit-outline: 3px dashed transparent;
-	-moz-outline: 3px dashed transparent;
-	-ms-outline: 3px dashed transparent;
-	-o-outline: 3px dashed transparent;
 	outline: 3px dashed transparent;
-	-webkit-outline-offset: -4px;
-	-moz-outline-offset: -4px;
-	-ms-outline-offset: -4px;
-	-o-outline-offset: -4px;
 	outline-offset: -4px;
 	-webkit-transition: all .5s ease;
 	-moz-transition: all .5s ease;
