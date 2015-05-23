@@ -139,8 +139,9 @@ class base implements \phpbb\extension\extension_interface
 
 		foreach ($migrations as $key => $migration)
 		{
-			$reflector = new \ReflectionClass($migration);
-			if (!$reflector->isSubclassOf('\phpbb\db\migration\migration')) {
+			// If the class doesn't exist OR the class does not extend the migration class
+			// we need to skip it.
+			if (!class_exists($migration) || ($reflector = new \ReflectionClass($migration) && !$reflector->isSubclassOf('\phpbb\db\migration\migration'))) {
 				unset($migrations[$key]);
 			}
 		}
