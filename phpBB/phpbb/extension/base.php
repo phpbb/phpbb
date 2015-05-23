@@ -137,6 +137,14 @@ class base implements \phpbb\extension\extension_interface
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
 
+		foreach ($migrations as $key => $migration)
+		{
+			$reflector = new \ReflectionClass($migration);
+			if (!$reflector->isSubclassOf('\phpbb\db\migration\migration')) {
+				unset($migrations[$key]);
+			}
+		}
+
 		return $migrations;
 	}
 }
