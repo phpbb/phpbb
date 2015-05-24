@@ -149,9 +149,11 @@ class base implements \phpbb\extension\extension_interface
 
 				// Otherwise, i.e. if it doesn't exist or it is
 				// not an extend the abstract class, we unset it
-				if (class_exists($migration)) {
+				if (class_exists($migration))
+				{
 					$reflector = new \ReflectionClass($migration);
-					if ($reflector->isSubclassOf('\phpbb\db\migration\migration')) {
+					if ($reflector->isSubclassOf('\phpbb\db\migration\migration'))
+					{
 						continue;
 					}
 
