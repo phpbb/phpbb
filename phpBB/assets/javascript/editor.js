@@ -343,6 +343,37 @@ var editor = {
 			};
 		}
 	},
+
+	/**
+	 * Insert HTML in the editor at the selection point
+	 *
+	 */
+	insertHTML: function (editor, start, end){
+		alert("Misconfigured editor. The editor setup code does not override editor.insertHTML");
+	},
+	/**
+	 * Insert BBCode in the editor at the selection point
+	 * all HTML is considered literal.
+	 * This is the preferred way of adding text to the editor from an external source.
+	 *
+	 */
+	insertBBCode: function (editor, start, end){
+		alert("Misconfigured editor. The editor setup code does not override editor.insertBBCode");
+	},
+	/**
+	 * Insert text in the editor at the selection point.
+	 * A best-effort is made to make sure all text has no meaning but all BBCode may be translated to HTML in the server.
+	 *
+	 */
+	insertUnformatted: function (editor, start, end){
+		alert("Misconfigured editor. The editor setup code does not override editor.insertUnformatted");
+	}
+	/**
+	 * Get current text from the editor
+	 * A best-effort is made to make sure all HTML is translated to BBCode. The remaining content is HTML-escaped.
+	 */
+	getValue: function (editor, start, end){
+		alert("Misconfigured editor. The editor setup code does not override editor.getValue");
 	}
 }
 
