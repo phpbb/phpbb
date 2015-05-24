@@ -12,6 +12,7 @@
 */
 
 require_once dirname(__FILE__) . '/base.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_notification_group_request_test extends phpbb_tests_notification_base
 {

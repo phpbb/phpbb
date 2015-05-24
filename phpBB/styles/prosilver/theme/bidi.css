@@ -1061,17 +1061,6 @@ li.breadcrumbs span:first-child > a {
 		text-align: right;
 	}
 
-	@media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
-	{
-		.rtl ul.topiclist.forums dt {
-			margin-left: 0;
-		}
-
-		.rtl ul.topiclist.forums dt .list-inner {
-			margin-left: 0;
-		}
-	}
-
 	.rtl table.responsive.show-header thead, .rtl table.responsive.show-header th:first-child {
 		text-align: right !important;
 	}
@@ -1084,19 +1073,6 @@ li.breadcrumbs span:first-child > a {
 	----------------------------------------*/
 	.rtl .column1, .rtl .column2, .rtl .left-box.profile-details {
 		float: none;
-	}
-
-	@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
-	{
-		.rtl dl.details dt, .rtl dl.details dd {
-			float: none;
-			text-align: right;
-		}
-
-		.rtl dl.details dd {
-			margin-left: 0;
-			margin-right: 20px;
-		}
 	}
 
 	/* Post
@@ -1131,10 +1107,34 @@ li.breadcrumbs span:first-child > a {
 	.rtl fieldset dd, .rtl fieldset.fields1 dd, .rtl fieldset.fields2 dd {
 		margin-right: 20px;
 	}
+}
 
-	@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
-		.captcha-panel dd.captcha {
-			margin-right: 0;
-		}
+@media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
+{
+	/* .topiclist lists
+	----------------------------------------*/
+	.rtl ul.topiclist.forums dt {
+		margin-left: 0;
+	}
+
+	.rtl ul.topiclist.forums dt .list-inner {
+		margin-left: 0;
+	}
+}
+
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
+{
+	.rtl dl.details dt, .rtl dl.details dd {
+		float: none;
+		text-align: right;
+	}
+
+	.rtl dl.details dd {
+		margin-left: 0;
+		margin-right: 20px;
+	}
+
+	.captcha-panel dd.captcha {
+		margin-right: 0;
 	}
 }

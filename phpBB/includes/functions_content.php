@@ -78,7 +78,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	foreach ($sorts as $name => $sort_ary)
 	{
 		$key = $sort_ary['key'];
-		$selected = $$sort_ary['key'];
+		$selected = ${$sort_ary['key']};
 
 		// Check if the key is selectable. If not, we reset to the default or first key found.
 		// This ensures the values are always valid. We also set $sort_dir/sort_key/etc. to the
@@ -87,12 +87,12 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		{
 			if ($sort_ary['default'] !== false)
 			{
-				$selected = $$key = $sort_ary['default'];
+				$selected = ${$key} = $sort_ary['default'];
 			}
 			else
 			{
 				@reset($sort_ary['options']);
-				$selected = $$key = key($sort_ary['options']);
+				$selected = ${$key} = key($sort_ary['options']);
 			}
 		}
 
@@ -712,7 +712,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 		break;
 	}
 
-	$short_url = (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+	$short_url = (utf8_strlen($url) > 55) ? utf8_substr($url, 0, 39) . ' ... ' . utf8_substr($url, -10) : $url;
 
 	switch ($type)
 	{
@@ -788,28 +788,28 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 
 		// relative urls for this board
 		$magic_url_match_args[$server_url][] = array(
-			'#(^|[\n\t (>.])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#i',
+			'#(^|[\n\t (>.])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#iu',
 			MAGIC_URL_LOCAL,
 			$local_class,
 		);
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match_args[$server_url][] = array(
-			'#(^|[\n\t (>.])(' . get_preg_expression('url_inline') . ')#i',
+			'#(^|[\n\t (>.])(' . get_preg_expression('url_inline') . ')#iu',
 			MAGIC_URL_FULL,
 			$class,
 		);
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 		$magic_url_match_args[$server_url][] = array(
-			'#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#i',
+			'#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#iu',
 			MAGIC_URL_WWW,
 			$class,
 		);
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
 		$magic_url_match_args[$server_url][] = array(
-			'/(^|[\n\t (>])(' . get_preg_expression('email') . ')/i',
+			'/(^|[\n\t (>])(' . get_preg_expression('email') . ')/iu',
 			MAGIC_URL_EMAIL,
 			'',
 		);

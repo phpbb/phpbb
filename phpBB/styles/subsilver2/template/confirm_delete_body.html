@@ -14,6 +14,7 @@
 			<p class="gen">{MESSAGE_TEXT}</p>
 			<br />
 
+			<!-- IF not S_SHADOW_TOPICS -->
 			<table border="0" width="90%" cellspacing="2" cellpadding="1">
 			<!-- IF not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
 				<tr>
@@ -30,6 +31,7 @@
 				</tr>
 			</table>
 			<br />
+			<!-- ENDIF -->
 
 			{S_HIDDEN_FIELDS}
 			<input type="submit" name="confirm" value="{L_YES}" class="btnmain" />&nbsp;&nbsp;

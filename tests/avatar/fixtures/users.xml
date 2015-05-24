@@ -29,5 +29,33 @@
             <value></value>
             <value></value>
         </row>
+        <row>
+            <value>3</value>
+            <value>foo</value>
+            <value></value>
+            <value></value>
+            <value>g5_1414350991.jpg</value>
+            <value>avatar.driver.upload</value>
+            <value>80</value>
+            <value>80</value>
+        </row>
+    </table>
+    <table name="phpbb_groups">
+        <column>group_id</column>
+        <column>group_type</column>
+        <column>group_name</column>
+        <column>group_avatar</column>
+        <column>group_avatar_type</column>
+        <column>group_avatar_width</column>
+        <column>group_avatar_height</column>
+        <row>
+            <value>5</value>
+            <value>3</value>
+            <value>ADMINISTRATORS</value>
+            <value>g5_1414350991.jpg</value>
+            <value>avatar.driver.upload</value>
+            <value>80</value>
+            <value>80</value>
+        </row>
     </table>
 </dataset>

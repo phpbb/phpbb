@@ -275,7 +275,7 @@ class request implements \phpbb\request\request_interface
 	*/
 	public function file($form_name)
 	{
-		return $this->variable($form_name, array('name' => 'none'), false, \phpbb\request\request_interface::FILES);
+		return $this->variable($form_name, array('name' => 'none'), true, \phpbb\request\request_interface::FILES);
 	}
 
 	/**
@@ -415,5 +415,28 @@ class request implements \phpbb\request\request_interface
 	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST)
 	{
 		return $this->input[$super_global];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function escape($var, $multibyte)
+	{
+		if (is_array($var))
+		{
+			$result = array();
+			foreach ($var as $key => $value)
+			{
+				$this->type_cast_helper->set_var($key, $key, gettype($key), $multibyte);
+				$result[$key] = $this->escape($value, $multibyte);
+			}
+			$var = $result;
+		}
+		else
+		{
+			$this->type_cast_helper->set_var($var, $var, 'string', $multibyte);
+		}
+
+		return $var;
 	}
 }

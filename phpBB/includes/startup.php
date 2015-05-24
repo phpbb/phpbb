@@ -69,31 +69,13 @@ function deregister_globals()
 	{
 		if (isset($not_unset[$varname]))
 		{
-			// Hacking attempt. No point in continuing unless it's a COOKIE (so a cookie called GLOBALS doesn't lock users out completely)
-			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
+			// Hacking attempt. No point in continuing.
+			if (isset($_COOKIE[$varname]))
 			{
-				exit;
+				echo "Clear your cookies. ";
 			}
-			else
-			{
-				$cookie = &$_COOKIE;
-				while (isset($cookie['GLOBALS']))
-				{
-					if (!is_array($cookie['GLOBALS']))
-					{
-						break;
-					}
-
-					foreach ($cookie['GLOBALS'] as $registered_var => $value)
-					{
-						if (!isset($not_unset[$registered_var]))
-						{
-							unset($GLOBALS[$registered_var]);
-						}
-					}
-					$cookie = &$cookie['GLOBALS'];
-				}
-			}
+			echo "Malicious variable name detected. Contact the administrator and ask them to disable register_globals.";
+			exit;
 		}
 
 		unset($GLOBALS[$varname]);

@@ -37,15 +37,9 @@
     </groups>
 
     <filter>
-        <blacklist>
-            <directory>./tests</directory>
-        </blacklist>
         <whitelist>
             <directory suffix=".php">./phpBB/includes/</directory>
             <directory suffix=".php">./phpBB/phpbb/</directory>
-            <exclude>
-                <directory suffix=".php">./phpBB/includes/captcha/</directory>
-            </exclude>
         </whitelist>
     </filter>
 </phpunit>

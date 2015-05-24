@@ -2311,7 +2311,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 */
 function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (!is_array($forum_id))
 	{
@@ -2350,6 +2350,21 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	{
 		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
 	}
+
+	/**
+	* Use this event to modify the SQL that selects topics to be pruned
+	*
+	* @event core.prune_sql
+	* @var string	forum_id		The forum id
+	* @var string	prune_mode		The prune mode
+	* @var string	prune_date		The prune date
+	* @var int		prune_flags		The prune flags
+	* @var bool		auto_sync		Whether or not to perform auto sync
+	* @var string	sql_and			SQL text appended to where clause
+	* @since 3.1.3-RC1
+	*/
+	$vars = array('forum_id', 'prune_mode', 'prune_date', 'prune_flags', 'auto_sync', 'sql_and');
+	extract($phpbb_dispatcher->trigger_event('core.prune_sql', compact($vars)));
 
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_TABLE . '
@@ -2512,6 +2527,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 			{
 				$usernames_ary[$row['user_id']] = $row['username'];
 			}
+			$db->sql_freeresult($result);
 
 			foreach ($hold_ary as $user_id => $forum_id_ary)
 			{
@@ -2806,6 +2822,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 
 		$users[] = $row;
 	}
+	$db->sql_freeresult($result);
 
 	return $offset;
 }
@@ -2980,68 +2997,21 @@ function get_database_size()
 
 /**
 * Retrieve contents from remotely stored file
+*
+* @deprecated	3.1.2	Use file_downloader instead
 */
 function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
 {
-	global $user;
+	global $phpbb_container;
 
-	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
-	{
-		@fputs($fsock, "GET $directory/$filename HTTP/1.0\r\n");
-		@fputs($fsock, "HOST: $host\r\n");
-		@fputs($fsock, "Connection: close\r\n\r\n");
+	// Get file downloader and assign $errstr and $errno
+	$file_downloader = $phpbb_container->get('file_downloader');
 
-		$timer_stop = time() + $timeout;
-		stream_set_timeout($fsock, $timeout);
+	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
+	$errstr = $file_downloader->get_error_string();
+	$errno = $file_downloader->get_error_number();
 
-		$file_info = '';
-		$get_info = false;
-
-		while (!@feof($fsock))
-		{
-			if ($get_info)
-			{
-				$file_info .= @fread($fsock, 1024);
-			}
-			else
-			{
-				$line = @fgets($fsock, 1024);
-				if ($line == "\r\n")
-				{
-					$get_info = true;
-				}
-				else if (stripos($line, '404 not found') !== false)
-				{
-					$errstr = $user->lang('FILE_NOT_FOUND', $filename);
-					return false;
-				}
-			}
-
-			$stream_meta_data = stream_get_meta_data($fsock);
-
-			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
-			{
-				$errstr = $user->lang['FSOCK_TIMEOUT'];
-				return false;
-			}
-		}
-		@fclose($fsock);
-	}
-	else
-	{
-		if ($errstr)
-		{
-			$errstr = utf8_convert_message($errstr);
-			return false;
-		}
-		else
-		{
-			$errstr = $user->lang['FSOCK_DISABLED'];
-			return false;
-		}
-	}
-
-	return $file_info;
+	return $file_data;
 }
 
 /*

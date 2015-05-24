@@ -12,6 +12,7 @@
 */
 
 require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_session_extract_page_test extends phpbb_session_test_case
 {
@@ -99,7 +100,7 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					// ^-- Ignored because .. returns different directory in live vs testing
 					'query_string' => '',
 					'script_path' => '/phpBB/adm/',
-					//'root_script_path' => '/phpBB/',
+					//'root_script_path' => '/phpBB/adm/',
 					//'page' => 'adm/index.php',
 					'forum' => 0,
 				),
@@ -108,15 +109,15 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 				'./',
 				'/phpBB/adm/app.php',
 				'page=1&test=2',
-				'/phpBB/',
+				'/phpBB/adm/',
 				'/foo/bar',
 				array(
 					'page_name' => 'app.php/foo/bar',
-					'page_dir' => '',
+					//'page_dir' => '',
 					'query_string' => 'page=1&test=2',
-					'script_path' => '/phpBB/',
-					'root_script_path' => '/phpBB/',
-					'page' => 'app.php/foo/bar?page=1&test=2',
+					'script_path' => '/phpBB/adm/',
+					//'root_script_path' => '/phpBB/adm/',
+					//'page' => 'app.php/foo/bar?page=1&test=2',
 					'forum' => 0,
 				),
 			),
@@ -142,23 +143,25 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 	/** @dataProvider extract_current_page_data */
 	function test_extract_current_page($root_path, $getScriptName, $getQueryString, $getBasePath, $getPathInfo, $expected)
 	{
-		global $symfony_request;
+		global $symfony_request, $request, $phpbb_filesystem;
 
-		$symfony_request = $this->getMock("\phpbb\symfony_request", array(), array(
-			new phpbb_mock_request(),
-		));
-		$symfony_request->expects($this->any())
-			->method('getScriptName')
-			->will($this->returnValue($getScriptName));
-		$symfony_request->expects($this->any())
-			->method('getQueryString')
-			->will($this->returnValue($getQueryString));
-		$symfony_request->expects($this->any())
-			->method('getBasePath')
-			->will($this->returnValue($getBasePath));
-		$symfony_request->expects($this->any())
-			->method('getPathInfo')
-			->will($this->returnValue($getPathInfo));
+		$phpbb_filesystem = new \phpbb\filesystem();
+
+		$server['HTTP_HOST']			= 'localhost';
+		$server['SERVER_NAME']			= 'localhost';
+		$server['SERVER_ADDR']			= '127.0.0.1';
+		$server['SERVER_PORT']			= 80;
+		$server['REMOTE_ADDR']			= '127.0.0.1';
+		$server['QUERY_STRING']			= $getQueryString;
+		$server['REQUEST_URI']			= $getScriptName . $getPathInfo . ($getQueryString === '' ? '' : '?' . $getQueryString);
+		$server['SCRIPT_NAME']			= $getScriptName;
+		$server['SCRIPT_FILENAME']		= '/var/www/' . $getScriptName;
+		$server['PHP_SELF']				= $getScriptName;
+		$server['HTTP_USER_AGENT']		= 'Mozilla/5.0 (Windows; U; Windows NT 6.0; de; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14';
+		$server['HTTP_ACCEPT_LANGUAGE']	= 'de-de,de;q=0.8,en-us;q=0.5,en;q=0.3';
+
+		$request = new phpbb_mock_request(array(), array(), array(), $server);
+		$symfony_request = new \phpbb\symfony_request($request);
 
 		$output = \phpbb\session::extract_current_page($root_path);
 

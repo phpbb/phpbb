@@ -11,12 +11,12 @@
 *
 */
 
-require_once dirname(__FILE__) . '/common_avatar_test.php';
+require_once dirname(__FILE__) . '/common_avatar_test_case.php';
 
 /**
  * @group functional
  */
-class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_avatar_test
+class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_avatar_test_case
 {
 	public function get_url()
 	{

@@ -84,12 +84,12 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 			$line = $tokens[$i]['content'];
 
 			// Check that each line starts with a '*'
-			if (substr($line, 0, 1) !== '*')
+			if (substr($line, 0, 1) !== '*' && substr($line, 0, 2) !== ' *')
 			{
-				$message = 'The file doc comment should not be idented.';
+				$message = 'The file doc comment should not be indented.';
 				$phpcsFile->addWarning($message, $i);
 			}
-			else if (preg_match('/^\*\s+@([\w]+)\s+(.*)$/', $line, $match) !== 0)
+			else if (preg_match('/^[ ]?\*\s+@([\w]+)\s+(.*)$/', $line, $match) !== 0)
 			{
 				if (!isset($tags[$match[1]]))
 				{

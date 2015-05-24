@@ -397,7 +397,7 @@ class acp_prune
 			$joined_after = request_var('joined_after', '');
 			$active = request_var('active', '');
 
-			$count = request_var('count', 0);
+			$count = ($request->variable('count', '') === '') ? false : $request->variable('count', 0);
 
 			$active = ($active) ? explode('-', $active) : array();
 			$joined_before = ($joined_before) ? explode('-', $joined_before) : array();
@@ -439,7 +439,7 @@ class acp_prune
 			$where_sql .= ($username) ? ' AND username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($username))) : '';
 			$where_sql .= ($email) ? ' AND user_email ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $email)) . ' ' : '';
 			$where_sql .= $joined_sql;
-			$where_sql .= ($count) ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
+			$where_sql .= ($count !== false) ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			// First handle pruning of users who never logged in, last active date is 0000-00-00
 			if (sizeof($active) && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)

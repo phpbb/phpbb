@@ -300,7 +300,7 @@ class fulltext_native extends \phpbb\search\base
 		$this->search_query = $keywords;
 
 		$exact_words = array();
-		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
+		preg_match_all('#([^\\s+\\-|()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
 		$exact_words = $exact_words[1];
 
 		$common_ids = $words = array();
@@ -434,7 +434,7 @@ class fulltext_native extends \phpbb\search\base
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && sizeof($non_common_words))
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode($user->lang['COMMA_SEPARATOR'], $non_common_words)));
+					trigger_error(sprintf($this->user->lang['WORDS_IN_NO_POST'], implode($this->user->lang['COMMA_SEPARATOR'], $non_common_words)));
 				}
 				unset($non_common_words);
 			}

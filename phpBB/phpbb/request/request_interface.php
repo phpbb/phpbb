@@ -142,4 +142,14 @@ interface request_interface
 	* @return	array	The original array of the requested super global.
 	*/
 	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST);
+
+	/**
+	 * Escape a string variable.
+	 *
+	 * @param mixed	$value		The contents to fill with
+	 * @param bool	$multibyte	Indicates whether string values may contain UTF-8 characters.
+	 * 							Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks.
+	 * @return string|array
+	 */
+	public function escape($value, $multibyte);
 }

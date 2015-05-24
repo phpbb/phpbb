@@ -313,7 +313,7 @@ class bbcode_firstpass extends bbcode
 		$in = str_replace(' ', '%20', $in);
 
 		// Checking urls
-		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
+		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
 		{
 			return '[img]' . $in . '[/img]';
 		}
@@ -381,8 +381,8 @@ class bbcode_firstpass extends bbcode
 		$in = str_replace(' ', '%20', $in);
 
 		// Make sure $in is a URL.
-		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) &&
-			!preg_match('#^' . get_preg_expression('www_url') . '$#i', $in))
+		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $in) &&
+			!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
 		{
 			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}
@@ -973,9 +973,9 @@ class bbcode_firstpass extends bbcode
 		$url = str_replace(' ', '%20', $url);
 
 		// Checking urls
-		if (preg_match('#^' . get_preg_expression('url') . '$#i', $url) ||
-			preg_match('#^' . get_preg_expression('www_url') . '$#i', $url) ||
-			preg_match('#^' . preg_quote(generate_board_url(), '#') . get_preg_expression('relative_url') . '$#i', $url))
+		if (preg_match('#^' . get_preg_expression('url') . '$#iu', $url) ||
+			preg_match('#^' . get_preg_expression('www_url') . '$#iu', $url) ||
+			preg_match('#^' . preg_quote(generate_board_url(), '#') . get_preg_expression('relative_url') . '$#iu', $url))
 		{
 			$valid = true;
 		}
@@ -1103,7 +1103,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
-		global $config, $db, $user;
+		global $config, $db, $user, $phpbb_dispatcher;
 
 		$this->mode = $mode;
 
@@ -1156,6 +1156,58 @@ class parse_message extends bbcode_firstpass
 				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : ($user->lang('CHARS_POST_CONTAINS', $message_length) . '<br />' . $user->lang('TOO_FEW_CHARS_LIMIT', (int) $config['min_post_chars']));
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
+		}
+
+		/**
+		* This event can be used for additional message checks/cleanup before parsing
+		*
+		* @event core.message_parser_check_message
+		* @var bool		allow_bbcode			Do we allow BBCodes
+		* @var bool		allow_magic_url			Do we allow magic urls
+		* @var bool		allow_smilies			Do we allow smilies
+		* @var bool		allow_img_bbcode		Do we allow image BBCode
+		* @var bool		allow_flash_bbcode		Do we allow flash BBCode
+		* @var bool		allow_quote_bbcode		Do we allow quote BBCode
+		* @var bool		allow_url_bbcode		Do we allow url BBCode
+		* @var bool		update_this_message		Do we alter the parsed message
+		* @var string	mode					Posting mode
+		* @var string	message					The message text to parse
+		* @var string	bbcode_bitfield			The bbcode_bitfield before parsing
+		* @var string	bbcode_uid				The bbcode_uid before parsing
+		* @var bool		return					Do we return after the event is triggered if $warn_msg is not empty
+		* @var array	warn_msg				Array of the warning messages
+		* @since 3.1.2-RC1
+		* @change 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
+		*/
+		$message = $this->message;
+		$warn_msg = $this->warn_msg;
+		$return = false;
+		$bbcode_bitfield = $this->bbcode_bitfield;
+		$bbcode_uid = $this->bbcode_uid;
+		$vars = array(
+			'allow_bbcode',
+			'allow_magic_url',
+			'allow_smilies',
+			'allow_img_bbcode',
+			'allow_flash_bbcode',
+			'allow_quote_bbcode',
+			'allow_url_bbcode',
+			'update_this_message',
+			'mode',
+			'message',
+			'bbcode_bitfield',
+			'bbcode_uid',
+			'return',
+			'warn_msg',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.message_parser_check_message', compact($vars)));
+		$this->message = $message;
+		$this->warn_msg = $warn_msg;
+		$this->bbcode_bitfield = $bbcode_bitfield;
+		$this->bbcode_uid = $bbcode_uid;
+		if ($return && !empty($this->warn_msg))
+		{
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
 		// Prepare BBcode (just prepares some tags for better parsing)

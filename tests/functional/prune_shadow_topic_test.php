@@ -62,7 +62,7 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 		$crawler = self::request('GET', "viewtopic.php?t={$this->post['topic_id']}&sid={$this->sid}");
 
 		$this->assertContains('Prune Shadow #1', $crawler->filter('html')->text());
-		$this->data['topics']['Prune Shadow #1'] = (int) $post['topic_id'];
+		$this->data['topics']['Prune Shadow #1'] = (int) $this->post['topic_id'];
 		$this->data['posts']['Prune Shadow #1'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
 		$this->assert_forum_details($this->data['forums']['Prune Shadow'], array(

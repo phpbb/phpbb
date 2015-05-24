@@ -1,9 +1,8 @@
 *~
 /phpunit.xml
-/phpBB/cache/twig/*
-/phpBB/cache/*.html
-/phpBB/cache/*.php
-/phpBB/cache/*.lock
+/phpBB/cache/*
+!/phpBB/cache/.htaccess
+!/phpBB/cache/index.html
 /phpBB/composer.phar
 /phpBB/config*.php
 /phpBB/ext/*

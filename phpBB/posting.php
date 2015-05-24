@@ -73,7 +73,6 @@ $current_time = time();
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
 * @var	bool	load		Whether or not a draft is being loaded
-* @var	bool	delete		Whether or not the post is being deleted
 * @var	bool	cancel		Whether or not to cancel the form (returns to
 *							viewtopic or viewforum depending on if the user
 *							is posting a new topic or editing a post)
@@ -85,6 +84,7 @@ $current_time = time();
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
 * @since 3.1.0-a1
+* @change 3.1.2-RC1			Removed 'delete' var as it does not exist
 */
 $vars = array(
 	'post_id',
@@ -96,7 +96,6 @@ $vars = array(
 	'preview',
 	'save',
 	'load',
-	'delete',
 	'cancel',
 	'refresh',
 	'mode',
@@ -345,6 +344,48 @@ switch ($mode)
 		}
 	break;
 }
+/**
+* This event allows you to do extra auth checks and verify if the user
+* has the required permissions
+*
+* Extensions should only change the error and is_authed variables.
+*
+* @event core.modify_posting_auth
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @var	int		forum_id	ID of the forum
+* @var	int		draft_id	ID of the draft
+* @var	int		lastclick	Timestamp of when the form was last loaded
+* @var	bool	submit		Whether or not the form has been submitted
+* @var	bool	preview		Whether or not the post is being previewed
+* @var	bool	save		Whether or not a draft is being saved
+* @var	bool	load		Whether or not a draft is being loaded
+* @var	bool	refresh		Whether or not to retain previously submitted data
+* @var	string	mode		What action to take if the form has been submitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	error		Any error strings; a non-empty array aborts
+*							form submission.
+*							NOTE: Should be actual language strings, NOT
+*							language keys.
+* @var	bool	is_authed	Does the user have the required permissions?
+* @since 3.1.3-RC1
+*/
+$vars = array(
+	'post_id',
+	'topic_id',
+	'forum_id',
+	'draft_id',
+	'lastclick',
+	'submit',
+	'preview',
+	'save',
+	'load',
+	'refresh',
+	'mode',
+	'error',
+	'is_authed',
+);
+extract($phpbb_dispatcher->trigger_event('core.modify_posting_auth', compact($vars)));
 
 if (!$is_authed)
 {
@@ -870,6 +911,43 @@ if ($submit || $preview || $refresh)
 	// Parse Attachments - before checksum is calculated
 	$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
 
+	/**
+	* This event allows you to modify message text before parsing
+	*
+	* @event core.posting_modify_message_text
+	* @var	array	post_data	Array with post data
+	* @var	string	mode		What action to take if the form is submitted
+	*				post|reply|quote|edit|delete|bump|smilies|popup
+	* @var	int	post_id		ID of the post
+	* @var	int	topic_id	ID of the topic
+	* @var	int	forum_id	ID of the forum
+	* @var	bool	submit		Whether or not the form has been submitted
+	* @var	bool	preview		Whether or not the post is being previewed
+	* @var	bool	save		Whether or not a draft is being saved
+	* @var	bool	load		Whether or not a draft is being loaded
+	* @var	bool	cancel		Whether or not to cancel the form (returns to
+	*				viewtopic or viewforum depending on if the user
+	*				is posting a new topic or editing a post)
+	* @var	bool	refresh		Whether or not to retain previously submitted data
+	* @var	object	message_parser	The message parser object
+	* @since 3.1.2-RC1
+	*/
+	$vars = array(
+		'post_data',
+		'mode',
+		'post_id',
+		'topic_id',
+		'forum_id',
+		'submit',
+		'preview',
+		'save',
+		'load',
+		'cancel',
+		'refresh',
+		'message_parser',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.posting_modify_message_text', compact($vars)));
+
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
 
@@ -1125,7 +1203,7 @@ if ($submit || $preview || $refresh)
 			break;
 		}
 
-		if (!$auth->acl_get($auth_option, $forum_id))
+		if ($auth_option != '' && !$auth->acl_get($auth_option, $forum_id))
 		{
 			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod.
 			// Another case would be a mod not having sticky permissions for example but edit permissions.
@@ -1658,7 +1736,7 @@ $page_data = array(
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
-	'EDIT_REASON'			=> $request->variable('edit_reason', ''),
+	'EDIT_REASON'			=> $request->variable('edit_reason', '', true),
 	'SHOW_PANEL'			=> $request->variable('show_panel', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
 	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
@@ -1727,7 +1805,6 @@ $page_data = array(
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
 * @var	bool	load		Whether or not a draft is being loaded
-* @var	bool	delete		Whether or not the post is being deleted
 * @var	bool	cancel		Whether or not to cancel the form (returns to
 *				viewtopic or viewforum depending on if the user
 *				is posting a new topic or editing a post)
@@ -1744,6 +1821,7 @@ $page_data = array(
 *		s_topic_icons, form_enctype, s_action, s_hidden_fields,
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
+* @change 3.1.2-RC1 Removed 'delete' var as it does not exist
 */
 $vars = array(
 	'post_data',
@@ -1761,7 +1839,6 @@ $vars = array(
 	'preview',
 	'save',
 	'load',
-	'delete',
 	'cancel',
 	'refresh',
 	'error',

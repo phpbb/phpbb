@@ -137,7 +137,9 @@
 					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>
+				<!-- EVENT viewtopic_body_post_author_before -->
 				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF -->
+				<!-- EVENT viewtopic_body_post_author_after -->
 			</dt>
 
 			<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_TITLE}<!-- IF postrow.RANK_TITLE and postrow.RANK_IMG --><br /><!-- ENDIF -->{postrow.RANK_IMG}</dd><!-- ENDIF -->
@@ -247,7 +249,9 @@
 			<!-- ENDIF -->
 		<!-- ENDIF -->
 
+			<!-- EVENT viewtopic_body_postrow_post_details_before -->
 			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE} </p>
+			<!-- EVENT viewtopic_body_postrow_post_details_after -->
 
 			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
@@ -313,7 +317,7 @@
 
 		</div>
 
-		<div class="back2top"><a href="#wrap" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
+		<div class="back2top"><a href="#top" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
 
 		</div>
 	</div>

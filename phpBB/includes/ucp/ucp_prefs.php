@@ -67,9 +67,11 @@ class ucp_prefs
 				* @var	bool	submit		Do we display the form only
 				*							or did the user press submit
 				* @var	array	data		Array with current ucp options data
+				* @var	array	error		Array with list of errors
 				* @since 3.1.0-a1
+				* @changed 3.1.4-rc1 Added error variable to the event
 				*/
-				$vars = array('submit', 'data');
+				$vars = array('submit', 'data', 'error');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
 
 				if ($submit)
@@ -83,11 +85,11 @@ class ucp_prefs
 						$data['user_style'] = (int) $user->data['user_style'];
 					}
 
-					$error = validate_data($data, array(
+					$error = array_merge(validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('language_iso_name'),
 						'tz'			=> array('timezone'),
-					));
+					)), $error);
 
 					if (!check_form_key('ucp_prefs_personal'))
 					{

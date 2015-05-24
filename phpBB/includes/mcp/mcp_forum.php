@@ -165,6 +165,22 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
+
+	/**
+	* Modify SQL query before MCP forum view topic list is queried
+	*
+	* @event core.mcp_view_forum_modify_sql
+	* @var	string	sql			SQL query for forum view topic list
+	* @var	int	forum_id	ID of the forum
+	* @var	string  limit_time_sql		SQL query part for limit time
+	* @var	string  sort_order_sql		SQL query part for sort order
+	* @var	int topics_per_page			Number of topics per page
+	* @var	int start			Start value
+	* @since 3.1.2-RC1
+	*/
+	$vars = array('sql', 'forum_id', 'limit_time_sql', 'sort_order_sql', 'topics_per_page', 'start');
+	extract($phpbb_dispatcher->trigger_event('core.mcp_view_forum_modify_sql', compact($vars)));
+
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
 
 	$topic_list = $topic_tracking_info = array();

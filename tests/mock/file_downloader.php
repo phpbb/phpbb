@@ -11,9 +11,17 @@
 *
 */
 
-require __DIR__ . '/../build/' . basename(__FILE__);
+class phpbb_mock_file_downloader extends \phpbb\file_downloader
+{
+	public $data;
 
-// Removing the versions array key will make Sami use the current branch.
-unset($config['versions']);
+	public function set($data)
+	{
+		$this->data = $data;
+	}
 
-return new Sami\Sami($iterator, $config);
+	public function get($host, $directory, $filename, $port = 80, $timeout = 6)
+	{
+		return $this->data;
+	}
+}

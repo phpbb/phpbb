@@ -16,11 +16,59 @@ acp_bbcodes_edit_fieldsets_after
 * Since: 3.1.0-a3
 * Purpose: Add settings to BBCode add/edit form
 
+acp_email_options_after
+===
+* Location: adm/style/acp_email.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to mass email form
+
+acp_forums_main_settings_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums at end of main settings section
+
+acp_forums_main_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before main settings section
+
 acp_forums_normal_settings_append
 ===
 * Location: adm/style/acp_forums.html
 * Since: 3.1.0-a1
-* Purpose: Add settings to forums
+* Purpose: Add settings to forums at end of normal settings section
+
+acp_forums_normal_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before normal settings section
+
+acp_forums_prune_settings_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums at end of prune settings section
+
+acp_forums_prune_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before prune settings section
+
+acp_forums_rules_settings_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums at end of rules settings section
+
+acp_forums_rules_settings_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.2-RC1
+* Purpose: Add settings to forums before rules settings section
 
 acp_group_options_before
 ===
@@ -111,7 +159,7 @@ acp_ranks_list_column_before
 * Locations:
     + adm/style/acp_ranks.html
 * Since: 3.1.0-RC3
-* Purpose: Add content after the last column (but before the action column) 
+* Purpose: Add content after the last column (but before the action column)
 in the ranks list in the ACP
 
 acp_ranks_list_header_after
@@ -126,7 +174,7 @@ acp_ranks_list_header_before
 * Locations:
     + adm/style/acp_ranks.html
 * Since: 3.1.0-RC3
-* Purpose: Add content after the last header-column (but before the action column) 
+* Purpose: Add content after the last header-column (but before the action column)
 in the ranks list in the ACP
 
 acp_simple_footer_after
@@ -336,6 +384,14 @@ index_body_block_stats_prepend
 * Since: 3.1.0-b3
 * Purpose: Prepend content to the statistics list on the Board index
 
+index_body_forumlist_body_after
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.1
+* Purpose: Add content after the forum list body on the index page
+
 index_body_markforums_after
 ===
 * Locations:
@@ -400,6 +456,46 @@ mcp_ban_unban_before
 * Since: 3.1.0-RC3
 * Purpose: Add additional fields to the unban form in MCP
 
+mcp_front_latest_logs_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_front.html
+    + styles/subsilver2/template/mcp_front.html
+* Since: 3.1.3-RC1
+* Purpose: Add content after latest logs list
+
+mcp_front_latest_logs_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_front.html
+    + styles/subsilver2/template/mcp_front.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before latest logs list
+
+mcp_front_latest_reported_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_front.html
+    + styles/subsilver2/template/mcp_front.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before latest reported posts list
+
+mcp_front_latest_reported_pms_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_front.html
+    + styles/subsilver2/template/mcp_front.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before latest reported private messages list
+
+mcp_front_latest_unapproved_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_front.html
+    + styles/subsilver2/template/mcp_front.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before latest unapproved posts list
+
 memberlist_body_username_append
 ===
 * Locations:
@@ -417,6 +513,30 @@ memberlist_body_username_prepend
 * Since: 3.1.0-a1
 * Purpose: Add information before every username in the memberlist. Works in
 all display modes (leader, group and normal memberlist).
+
+memberlist_search_fields_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_search.html
+    + styles/subsilver2/template/memberlist_search.html
+* Since: 3.1.2-RC1
+* Purpose: Add information after the search fields column.
+
+memberlist_search_fields_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_search.html
+    + styles/subsilver2/template/memberlist_search.html
+* Since: 3.1.2-RC1
+* Purpose: Add information before the search fields column.
+
+memberlist_search_sorting_options_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_search.html
+    + styles/subsilver2/template/memberlist_search.html
+* Since: 3.1.2-RC1
+* Purpose: Add information before the search sorting options field.
 
 memberlist_view_contact_after
 ===
@@ -554,6 +674,14 @@ overall_footer_after
     + styles/subsilver2/template/overall_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content at the end of the file, directly prior to the `</body>` tag
+
+overall_footer_body_after
+===
+* Locations:
+    + styles/prosilver/template/overall_footer.html
+    + styles/subsilver2/template/overall_footer.html
+* Since: 3.1.3-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
 
 overall_footer_breadcrumb_append
 ===
@@ -755,6 +883,14 @@ posting_editor_buttons_before
     + styles/subsilver2/template/posting_buttons.html
 * Since: 3.1.0-a3
 * Purpose: Add content before the BBCode posting buttons
+
+posting_editor_buttons_custom_tags_before
+===
+* Locations:
+    + styles/prosilver/template/posting_buttons.html
+    + styles/subsilver2/template/posting_buttons.html
+* Since: 3.1.2-RC1
+* Purpose: Add content inside the BBCode posting buttons and before the customs BBCode
 
 posting_editor_message_after
 ===
@@ -1011,7 +1147,7 @@ ucp_pm_viewmessage_post_buttons_after
     + styles/prosilver/template/ucp_pm_viewmessage.html
     + styles/subsilver2/template/ucp_pm_viewmessage.html
 * Since: 3.1.0-RC3
-* Purpose: Add post button to private messages (next to edit, quote etc), at 
+* Purpose: Add post button to private messages (next to edit, quote etc), at
 the end of the list.
 
 ucp_pm_viewmessage_post_buttons_before
@@ -1020,7 +1156,7 @@ ucp_pm_viewmessage_post_buttons_before
     + styles/prosilver/template/ucp_pm_viewmessage.html
     + styles/subsilver2/template/ucp_pm_viewmessage.html
 * Since: 3.1.0-RC3
-* Purpose: Add post button to private messages (next to edit, quote etc), at 
+* Purpose: Add post button to private messages (next to edit, quote etc), at
 the start of the list.
 
 ucp_pm_viewmessage_print_head_append
@@ -1319,6 +1455,22 @@ viewtopic_body_poll_question_prepend
 * Since: 3.1.0-b3
 * Purpose: Add content directly before the poll question on the View topic screen
 
+viewtopic_body_post_author_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.3-RC1
+* Purpose: Add content directly after the post author on the view topic screen
+
+viewtopic_body_post_author_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.3-RC1
+* Purpose: Add content directly before the post author on the view topic screen
+
 viewtopic_body_post_buttons_after
 ===
 * Locations:
@@ -1378,6 +1530,22 @@ viewtopic_body_postrow_post_content_footer
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-RC4
 * Purpose: Add data at the end of the posts.
+
+viewtopic_body_postrow_post_details_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the post details
+
+viewtopic_body_postrow_post_details_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the post details
 
 viewtopic_body_postrow_post_notices_after
 ===

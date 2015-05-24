@@ -114,4 +114,25 @@ class phpbb_mock_request implements \phpbb\request\request_interface
 	{
 		$this->data[$super_global] = array_merge($this->data[$super_global], $values);
 	}
+
+	public function escape($var, $multibyte)
+	{
+		$type_cast_helper = new \phpbb\request\type_cast_helper();
+		if (is_array($var))
+		{
+			$result = array();
+			foreach ($var as $key => $value)
+			{
+				$type_cast_helper->set_var($key, $key, gettype($key), $multibyte);
+				$result[$key] = $this->escape($value, $multibyte);
+			}
+			$var = $result;
+		}
+		else
+		{
+			$type_cast_helper->set_var($var, $var, 'string', $multibyte);
+		}
+
+		return $var;
+	}
 }

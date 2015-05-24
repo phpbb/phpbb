@@ -198,9 +198,9 @@ $prefixes = array('f_', 'a_', 'm_', 'u_');
 foreach ($prefixes as $prefix)
 {
 	$var = $prefix . 'permissions';
-	if (sizeof($$var))
+	if (sizeof(${$var}))
 	{
-		foreach ($$var as $auth_option => $l_ary)
+		foreach (${$var} as $auth_option => $l_ary)
 		{
 			$sql_ary = array(
 				'auth_option'	=> $auth_option,

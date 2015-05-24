@@ -558,6 +558,7 @@ $lang = array_merge($lang, array(
 	'LOG_LOCK_POST'				=> '<strong>Locked post</strong><br />» %s',
 	'LOG_MERGE'					=> '<strong>Merged posts</strong> into topic<br />» %s',
 	'LOG_MOVE'					=> '<strong>Moved topic</strong><br />» from %1$s to %2$s',
+	'LOG_MOVED_TOPIC'			=> '<strong>Moved topic</strong><br />» %s',
 	'LOG_PM_REPORT_CLOSED'		=> '<strong>Closed PM report</strong><br />» %s',
 	'LOG_PM_REPORT_DELETED'		=> '<strong>Deleted PM report</strong><br />» %s',
 	'LOG_POST_APPROVED'			=> '<strong>Approved post</strong><br />» %s',

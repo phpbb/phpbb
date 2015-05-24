@@ -66,6 +66,7 @@
 
 <form method="post" action="{S_MODE_ACTION}" name="search">
 
+<!-- EVENT memberlist_search_fields_before -->
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
 	<th colspan="4">{L_FIND_USERNAME}</th>
@@ -111,6 +112,7 @@
 		<td colspan="2" class="row1">&nbsp;</td>
 	<!-- ENDIF -->
 </tr>
+<!-- EVENT memberlist_search_sorting_options_before -->
 <tr>
 	<td class="row1"><b class="genmed">{L_SORT_BY}{L_COLON}</b></td>
 	<td class="row2" nowrap="nowrap"><select name="sk">{S_SORT_OPTIONS}</select> <select name="sd">{S_ORDER_SELECT}</select>&nbsp;</td>
@@ -120,6 +122,7 @@
 	<td class="cat" colspan="4" align="center"><input class="btnmain" type="submit" name="submit" value="{L_SEARCH}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 </tr>
 </table>
+<!-- EVENT memberlist_search_fields_after -->
 {S_FORM_TOKEN}
 </form>
 

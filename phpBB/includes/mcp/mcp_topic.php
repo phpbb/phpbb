@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 function mcp_topic_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth, $cache, $phpbb_container;
+	global $template, $db, $user, $auth, $cache, $phpbb_container, $phpbb_dispatcher;
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
@@ -228,7 +228,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
-		$template->assign_block_vars('postrow', array(
+		$post_row = array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
@@ -250,8 +250,38 @@ function mcp_topic_view($id, $mode, $action)
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
-			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
+			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 		);
+
+		$current_row_number = $i;
+
+		/**
+		* Event to modify the template data block for topic reviews in the MCP
+		*
+		* @event core.mcp_topic_review_modify_row
+		* @var	int		id					ID of the tab we are displaying
+		* @var	string	mode				Mode of the MCP page we are displaying
+		* @var	int		topic_id			The topic ID we are currently reviewing
+		* @var	int		forum_id			The forum ID we are currently in
+		* @var	int		start				Start item of this page
+		* @var	int		current_row_number	Number of the post on this page
+		* @var	array	post_row			Template block array of the current post
+		* @var	array	row					Array with original post and user data
+		* @since 3.1.4-RC1
+		*/
+		$vars = array(
+			'id',
+			'mode',
+			'topic_id',
+			'forum_id',
+			'start',
+			'current_row_number',
+			'post_row',
+			'row',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_topic_review_modify_row', compact($vars)));
+
+		$template->assign_block_vars('postrow', $post_row);
 
 		// Display not already displayed Attachments for this post, we already parsed them. ;)
 		if (!empty($attachments[$row['post_id']]))

@@ -813,8 +813,17 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 
 		$user->add_lang('posting');
 
+		// If there are only shadow topics, we neither need a reason nor softdelete
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+				AND topic_moved_id = 0';
+		$result = $db->sql_query_limit($sql, 1);
+		$only_shadow = !$db->sql_fetchfield('topic_id');
+		$db->sql_freeresult($result);
+
 		$only_softdeleted = false;
-		if ($auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
+		if (!$only_shadow && $auth->acl_get('m_delete', $forum_id) && $auth->acl_get('m_softdelete', $forum_id))
 		{
 			// If there are only soft deleted topics, we display a message why the option is not available
 			$sql = 'SELECT topic_id
@@ -827,6 +836,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		}
 
 		$template->assign_vars(array(
+			'S_SHADOW_TOPICS'		=> $only_shadow,
 			'S_SOFTDELETED'			=> $only_softdeleted,
 			'S_TOPIC_MODE'			=> true,
 			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
@@ -839,7 +849,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 			$l_confirm .= '_PERMANENTLY';
 			$s_hidden_fields['delete_permanent'] = '1';
 		}
-		else if (!$auth->acl_get('m_softdelete', $forum_id))
+		else if ($only_shadow || !$auth->acl_get('m_softdelete', $forum_id))
 		{
 			$s_hidden_fields['delete_permanent'] = '1';
 		}
@@ -1266,6 +1276,7 @@ function mcp_fork_topic($topic_ids)
 
 					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				}
+				$db->sql_freeresult($result);
 			}
 
 			$sql = 'SELECT *
