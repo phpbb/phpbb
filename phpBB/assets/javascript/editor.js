@@ -267,6 +267,80 @@ var editor = {
 				(isSelfClosing ? '[/' + name + ']' : '');
 	},
 
+
+	/**
+	 * @return A javascript object that allows adding parameters and
+	 * @source Based on s9e\TextFormatter\render.js
+	*/
+	xslt: function (xsl){
+		// older IE has its own way of doing it
+		var standardsBrowser = (typeof DOMParser !== 'undefined' && typeof XSLTProcessor !== 'undefined');
+		if (standardsBrowser) {
+			var xslDoc = (new DOMParser).parseFromString(xsl, 'text/xml');
+
+			var processor = new XSLTProcessor();
+			processor.importStylesheet(xslDoc);
+
+			return {
+				'setParameter': function (name, value){
+					if(!value){
+						if(value === ''){
+							value = ' ';
+						}else{
+							value = '';
+						}
+					}
+					processor.setParameter(null, name, value);
+				},
+
+				'transformToFragment' : function (xml, onDocument){
+					var xmlDoc = (new DOMParser).parseFromString(xml, 'text/xml');
+					// NOTE: importNode() is used because of https://code.google.com/p/chromium/issues/detail?id=266305
+					return onDocument.importNode(processor.transformToFragment(xmlDoc, onDocument), true);
+				}
+			};
+		}else{
+			var ieStylesheet = new ActiveXObject('MSXML2.FreeThreadedDOMDocument.6.0');
+			ieStylesheet.async = false;
+			ieStylesheet.validateOnParse = false;
+			ieStylesheet.loadXML(xsl);
+
+			var ieGenerator = new ActiveXObject("MSXML2.XSLTemplate.6.0");
+			ieGenerator.stylesheet = ieStylesheet;
+			var ieTransformer = ieGenerator.createProcessor();
+
+			return {
+				'setParameter' : function (name, value){
+					if(!value){
+						if(value === ''){
+							value = ' ';
+						}else{
+							value = '';
+						}
+					}
+					ieTransformer.addParameter(name, value, '');
+				},
+
+				'transformToFragment' : function (xml, onDocument){
+					var div = onDocument.createElement('div'),
+						fragment = onDocument.createDocumentFragment();
+
+					var ieTargetStylesheet = new ActiveXObject('MSXML2.FreeThreadedDOMDocument.6.0');
+					ieTargetStylesheet.async = false;
+					ieTargetStylesheet.validateOnParse = false;
+					ieTargetStylesheet.loadXML(xml);
+
+					ieTransformer.input = ieTargetStylesheet
+					ieTransformer.transform();
+
+					div.innerHTML = ieTransformer.output;
+					while (div.firstChild){
+						fragment.appendChild(div.removeChild(div.firstChild));
+					}
+
+					return fragment;
+				}
+			};
 		}
 	},
 	}
