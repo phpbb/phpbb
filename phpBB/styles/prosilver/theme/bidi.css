@@ -496,33 +496,6 @@ li.breadcrumbs span:first-child > a {
 	text-align: left;
 }
 
-/* BB Code styles
-----------------------------------------*/
-/* Quote block */
-.rtl blockquote {
-	margin: 0.5em 25px 0 1px;
-	background-position: 99% 8px;
-}
-
-.rtl blockquote blockquote {
-	/* Nested quotes */
-	margin: 0.5em 15px 0 1px;
-}
-
-.rtl blockquote cite {
-	/* Username/source of quoter */
-	margin-right: 20px;
-	margin-left: 0;
-}
-
-.rtl blockquote .codebox {
-	margin-right: 0;
-}
-
-.rtl code {
-	direction: ltr;
-}
-
 /* Attachments
 ----------------------------------------*/
 .rtl .attachbox {

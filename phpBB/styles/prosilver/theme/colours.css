@@ -407,50 +407,6 @@ dl.faq dt {
 	border-top-color:  #CCCCCC;
 }
 
-/* BB Code styles
-----------------------------------------*/
-/* Quote block */
-blockquote {
-	background-color: #EBEADD;
-	background-image: url("./images/quote.gif");
-	border-color:#DBDBCE;
-}
-
-.rtl blockquote {
-	background-image: url("./images/quote_rtl.gif");
-}
-
-blockquote blockquote {
-	/* Nested quotes */
-	background-color:#EFEED9;
-}
-
-blockquote blockquote blockquote {
-	/* Nested quotes */
-	background-color: #EBEADD;
-}
-
-/* Code block */
-.codebox {
-	background-color: #FFFFFF;
-	border-color: #C9D2D8;
-}
-
-.codebox p {
-	border-bottom-color:  #CCCCCC;
-}
-
-.codebox code {
-	color: #2E8B57;
-}
-
-.syntaxbg		{ color: #FFFFFF; }
-.syntaxcomment	{ color: #FF8000; }
-.syntaxdefault	{ color: #0000BB; }
-.syntaxhtml		{ color: #000000; }
-.syntaxkeyword	{ color: #007700; }
-.syntaxstring	{ color: #DD0000; }
-
 /* Attachments
 ----------------------------------------*/
 .attachbox {
