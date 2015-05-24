@@ -60,12 +60,78 @@ var editor = {
 		}
 	}(),
 
+	paramFilters: {
+		filterUrl: function (url){
+			return tokenRegexTranslator.URL.test(url);
+		},
+
+		filterHashmap: function(attrValue, map, strict){
+			if (attrValue in map){
+				return map[attrValue];
+			}
+
+			return (strict) ? false : attrValue;
+		},
+
+		filterIdentifier: function(attrValue){
+			return editor.tokenRegex.IDENTIFIER.test(attrValue) ? attrValue : false;
+		},
+
+		filterInt: function(attrValue){
+			return editor.tokenRegex.INTEGER.test(attrValue) ? attrValue : false;
+		},
+
+		filterUrl: function(attrValue){
+			return editor.tokenRegex.URL.test(attrValue) ? attrValue : false;
+		},
+
+		filterIp: function(attrValue){
+			return filterURL(attrValue);
+		},
+		filterIpv4: function(attrValue){
+			return filterURL(attrValue);
+		},
+		filterIpv6: function(attrValue){
+			return filterURL(attrValue);
+		},
+
+		filterNumber: function(attrValue){
+			return editor.tokenRegex.NUMBER.test(attrValue) ? attrValue : false;
+		},
 
 
+		filterRange: function(attrValue, min, max){
+			if (!editor.tokenRegex.INTEGER.test(attrValue)){
+				return false;
+			}
 
+			attrValue = parseInt(attrValue, 10);
 
+			if (attrValue < min){
+				console.info('Value ' + attrValue + ' out of range. Value raised to ' + min + ' (min value).');
+				return min;
+			}
 
+			if (attrValue > max){
+				console.info('Value ' + attrValue + ' out of range. Value lowered to ' + max + ' (max value).');
+				return max;
+			}
+
+			return attrValue;
+		},
+
+		filterRegexp: function(attrValue, regexp){
+			return regexp.test(attrValue) ? attrValue : false;
+		},
+
+		filterSimpletext: function(attrValue){
+			return /^[-\w+., ]+$/.test(attrValue) ? attrValue : false;
+		},
+
+		filterUint: function(attrValue){
+			return /^(?:0|[1-9]\d*)$/.test(attrValue) ? attrValue : false;
 		}
+	},
 
 
 
