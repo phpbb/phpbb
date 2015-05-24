@@ -44,12 +44,12 @@ class acp_bbcodes
 		switch ($action)
 		{
 			case 'add':
-				$bbcode_match = $bbcode_tpl = $bbcode_helpline = '';
+				$bbcode_match = $bbcode_tpl = $wysiwyg_tpl = $bbcode_helpline = '';
 				$display_on_posting = 0;
 			break;
 
 			case 'edit':
-				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline
+				$sql = 'SELECT bbcode_match, bbcode_tpl, wysiwyg_tpl, display_on_posting, bbcode_helpline
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
@@ -63,6 +63,7 @@ class acp_bbcodes
 
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
+				$wysiwyg_tpl = htmlspecialchars($row['wysiwyg_tpl']);
 				$display_on_posting = $row['display_on_posting'];
 				$bbcode_helpline = $row['bbcode_helpline'];
 			break;
@@ -87,6 +88,7 @@ class acp_bbcodes
 
 				$bbcode_match = $request->variable('bbcode_match', '');
 				$bbcode_tpl = htmlspecialchars_decode($request->variable('bbcode_tpl', '', true));
+				$wysiwyg_tpl = htmlspecialchars_decode($request->variable('wysiwyg_tpl', '', true));
 				$bbcode_helpline = $request->variable('bbcode_helpline', '', true);
 			break;
 		}
@@ -105,6 +107,7 @@ class acp_bbcodes
 					'L_BBCODE_USAGE_EXPLAIN'=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
+					'WYSIWYG_TPL'			=> $wysiwyg_tpl,
 					'BBCODE_HELPLINE'		=> $bbcode_helpline,
 					'DISPLAY_ON_POSTING'	=> $display_on_posting,
 				);
@@ -155,10 +158,12 @@ class acp_bbcodes
 				* @var	bool	display_on_posting	Display bbcode on posting form
 				* @var	string	bbcode_match		The bbcode usage string to match
 				* @var	string	bbcode_tpl			The bbcode HTML replacement string
+				* @var	string	wysiwyg_tpl			The bbcode HTML replacement string for the WYSIWYG editor
 				* @var	string	bbcode_helpline		The bbcode help line string
 				* @var	array	hidden_fields		Array of hidden fields for use when
 				*									submitting form when $warn_text is true
 				* @since 3.1.0-a3
+				* @change 3.2.0-RC1 added wysiwyg_tpl
 				*/
 				$vars = array(
 					'action',
@@ -167,6 +172,7 @@ class acp_bbcodes
 					'display_on_posting',
 					'bbcode_match',
 					'bbcode_tpl',
+					'wysiwyg_tpl',
 					'bbcode_helpline',
 					'hidden_fields',
 				);
@@ -229,6 +235,7 @@ class acp_bbcodes
 						'bbcode_tag'				=> $data['bbcode_tag'],
 						'bbcode_match'				=> $bbcode_match,
 						'bbcode_tpl'				=> $bbcode_tpl,
+						'wysiwyg_tpl'				=> $wysiwyg_tpl,
 						'display_on_posting'		=> $display_on_posting,
 						'bbcode_helpline'			=> $bbcode_helpline,
 						'first_pass_match'			=> $data['first_pass_match'],
@@ -298,6 +305,7 @@ class acp_bbcodes
 						'bbcode'				=> $bbcode_id,
 						'bbcode_match'			=> $bbcode_match,
 						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl),
+						'wysiwyg_tpl'			=> htmlspecialchars($wysiwyg_tpl),
 						'bbcode_helpline'		=> $bbcode_helpline,
 						'display_on_posting'	=> $display_on_posting,
 						)))
