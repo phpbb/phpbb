@@ -21,4 +21,32 @@ class add_wysiwyg extends \phpbb\db\migration\migration
 		return array();
 	}
 
+	public function update_schema()
+	{
+		return array(
+			'add_columns'		=> array(
+				$this->table_prefix . 'users'	=> array(
+					'COLUMNS'			=> array(
+						'user_wysiwyg_editor'			=> array('VCHAR:15', ''),
+						'user_wysiwyg_default_mode'		=> array('TINT:2', 0),
+						'user_wysiwyg_buttons_mode'		=> array('TINT:2', 1),
+						'user_wysiwyg_override_data'	=> array('VCHAR:255', ''),
+					),
+				),
+			),
+		);
+	}
+
+	public function revert_schema()
+	{
+		return array(
+			'drop_columns'		=> array(
+				$this->table_prefix . 'users'	=> array(
+						'user_wysiwyg_editor',
+						'user_wysiwyg_default_mode',
+						'user_wysiwyg_buttons_mode',
+					),
+				),
+		);
+	}
 }
