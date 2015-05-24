@@ -141,9 +141,37 @@ var editor = {
 
 
 		}
+
+	/**
+	* Given a name, an object with the attributes and a content, 
+	* this returns a string with the BBCode definition of the content.
+	* NOTE: No escapes are made to the content. All data is used as-is.
+	*
+	* @param name string The name of the BBCode tag
+	* @param attributes object An object with key-value data for the BBCode attributes
+	* @param string content The content of the BBCode tag
+	* @param boolean isSelfClosing Set to true for not return with a closing tag
+	* @return string The BBCode tag given the above parameters
+	*/
+	revertBackToBBCode: function (name, attributes, content, isSelfClosing){
+		var attributeStr = ' ';
+		if(attributes.defaultattr){
+			attributeStr = '="' + attributes.defaultattr + '" ';
+			delete attributes.defaultattr;
 		}
+
+		for(attributeName in attributes){
+			attributeStr += attributeName + '="' + attributes[attributeName] + '" ';
 		}
+
+		if(attributeStr === ' '){
+			attributeStr = '';
 		}
+
+		return '[' + name + attributeStr + ']' + content + 
+				(isSelfClosing ? '[/' + name + ']' : '');
+	},
+
 		}
 	},
 	}
