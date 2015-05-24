@@ -58,6 +58,15 @@ class add_wysiwyg extends \phpbb\db\migration\migration
 			array('config.add', array('wysiwyg_type', 'sce')),
 			array('config.add', array('wysiwyg_default_default_mode', 0)),
 			array('config.add', array('wysiwyg_default_buttons_mode', 1)),
+
+			//UCP
+			array('module.add', array(
+				'ucp_prefs',
+				0,
+				array(
+					'personal', 'post', 'wysiwyg', 'view',
+				),
+			)),
 		);
 	}
 }
