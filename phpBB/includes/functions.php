@@ -4349,6 +4349,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
 		'T_ASSETS_PATH'			=> "{$web_path}assets",
+		'T_BBCODE_VERSION'		=> $config['bbcode_version'],
 		'T_THEME_PATH'			=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
