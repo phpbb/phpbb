@@ -40,7 +40,25 @@ var editor = {
 		'COLOR': /^(?:#[0-9a-f]{3,6}|rgb\(\d{1,3}, *\d{1,3}, *\d{1,3}\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow)$/i
 	},
 
+	getElementDefaultDisplay: function () {
+		if(window.getComputedStyle){
+			return function (tagName){
+				var tag = document.createElement(tagName);
+				document.body.appendChild(tag);
+				var cStyle = window.getComputedStyle(tag, "").display;
+				document.body.removeChild(tag);
+				return cStyle;
+			}
+		}else{
+			return function (tagName){
+				var tag = document.createElement(tagName);
+				document.body.appendChild(tag);
+				var cStyle = tag.currentStyle.display;
+				document.body.removeChild(tag);
+				return cStyle;
+			}
 		}
+	}(),
 
 
 
