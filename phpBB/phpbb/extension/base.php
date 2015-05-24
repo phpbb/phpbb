@@ -152,7 +152,7 @@ class base implements \phpbb\extension\extension_interface
 				if (class_exists($migration))
 				{
 					$reflector = new \ReflectionClass($migration);
-					if ($reflector->isSubclassOf('\phpbb\db\migration\migration'))
+					if ($reflector->isSubclassOf('\phpbb\db\migration\migration') && $reflector->isInstantiable())
 					{
 						continue;
 					}
