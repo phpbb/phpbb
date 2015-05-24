@@ -8,6 +8,12 @@ function helpline(help) {
 
 
 
+// If there's no console or any of the used console methods, just make them noop as there's nothing I can do
+window.console || (window.console = {});
+console.log || (console.log = function (){});
+console.info || (console.info = console.log);
+console.warn || (console.warn = console.log);
+console.error || (console.error = console.log);
 
 var editorConstants = {
 	'NO_VALUE' 			: -1,
