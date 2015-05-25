@@ -221,6 +221,19 @@ fieldset.submit-buttons input {
 /* Posting page styles
 ----------------------------------------*/
 
+.sceditor-container .sceditor-button-b{
+	font-weight:bold;
+}
+
+.sceditor-container .sceditor-button-i{
+	font-style:italic;
+}
+
+.sceditor-container .sceditor-button-u,
+.sceditor-container .sceditor-button-url{
+	text-decoration: underline;
+}
+
 /* Buttons used in the editor */
 #format-buttons {
 	margin: 15px 0 2px 0;
