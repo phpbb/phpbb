@@ -66,11 +66,31 @@
 	</div>
 
 	<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/jquery.sceditor.phpbb.js -->
+
+	<script>
+	var {JS_BBCODE_VARS_CONTAINER} = {
+		{% for key in JS_BBCODE_VARS %}
+			{% if key|slice(0, 2) === 'L_' %}
+			'{{ key }}': '{{ lang(key[2:]) |e('js') }}',
+			{% else %}
+			'{{ key }}': '{{ attribute(_context, key) |e('js') }}',
+			{% endif -%}
+		{% endfor -%}
+		stylePath: '{T_THEME_PATH}/bbcode.css',
+		emoticons: {
+			<!-- BEGIN smiley -->
+			"{smiley.A_SMILEY_CODE}": '{smiley.SMILEY_IMG}',
+			<!-- END smiley -->
+		},
+		"L_SUBMIT": '{L_SUBMIT}'
+	}
+
+	</script>
+{% endif %}
 	<!-- INCLUDEJS ./posting.php?mode=wysiwyg_definition&amp;bbcode_version={T_BBCODE_VERSION} -->
 	<!-- EVENT posting_editor_message_before -->
 
-	<div id="message-box">
-		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+	<div id="message-box" class="text">
 		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 	</div>
 
