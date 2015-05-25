@@ -947,7 +947,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$message_link = '';
 		}
-		$message_parser->message = $message_link . '[quote=&quot;' . $quote_username . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
+			censor_text(trim($message_parser->message)),
+			array('author' => $quote_username)
+		);
+		$message_parser->message = $message_link . $quote_text . "\n";
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
