@@ -67,7 +67,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$this->assertContains($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 	}
 
-	public function test_quote()
+	public function test_quote_post()
 	{
 		$text     = 'Test post';
 		$expected = '[quote="admin"]' . $text . '[/quote]';
@@ -77,6 +77,19 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$post  = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
 
 		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quotepost&p=' . $post['post_id'] . '&sid=' . $this->sid);
+
+		$this->assertContains($expected, $crawler->filter('textarea#message')->text());
+	}
+
+	public function test_quote_forward()
+	{
+		$text     = 'This is a test private message sent by the testing framework.';
+		$expected = '[quote="admin"]' . $text . '[/quote]';
+
+		$this->login();
+		$message_id = $this->create_private_message('Test', $text, array(2));
+
+		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=forward&f=0&p=' . $message_id . '&sid=' . $this->sid);
 
 		$this->assertContains($expected, $crawler->filter('textarea#message')->text());
 	}
