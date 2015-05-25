@@ -34,11 +34,11 @@
 	<!-- EVENT posting_editor_subject_after -->
 
 	<div id="smiley-box">
-		<!-- EVENT posting_editor_smilies_before -->	
+		<!-- EVENT posting_editor_smilies_before -->
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
-				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+				<img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" />
 			<!-- END smiley -->
 		<!-- ENDIF -->
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->

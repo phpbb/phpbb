@@ -260,6 +260,7 @@ fieldset.submit-buttons input {
 
 #smiley-box img {
 	margin: 3px;
+	cursor: pointer;
 }
 
 /* Input field styles
