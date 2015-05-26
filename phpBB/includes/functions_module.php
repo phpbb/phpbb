@@ -1086,7 +1086,7 @@ class p_master
 			->core_path('language/' . $user->lang_name . '/mods/')
 			->find();
 
-		$lang_files = array_unique(array_merge($user_lang_files, $english_lang_files, $default_lang_files));
+		$lang_files = array_merge($english_lang_files, $default_lang_files, $user_lang_files);
 		foreach ($lang_files as $lang_file => $ext_name)
 		{
 			$user->add_lang_ext($ext_name, $lang_file);
