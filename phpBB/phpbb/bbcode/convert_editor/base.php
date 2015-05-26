@@ -81,16 +81,6 @@ abstract class base
 	protected $template;
 
 	/**
-	 * Dictate the name of the handler.
-	 * The result should only contain alphanumeric characters
-	 *
-	 */
-	protected function get_name()
-	{
-		return '';
-	}
-
-	/**
 	 * Constructor
 	 * 
 	 *
@@ -157,6 +147,14 @@ abstract class base
 
 	abstract protected function get_static_javascript_variables();
 	abstract protected function get_dynamic_javascript_variables();
+
+	/**
+	 * The name of the editor this class corresponds to.
+	 * The result should only contain alphanumeric characters
+	 * NOTE: The lower case of the value is used to identify file names
+	 *
+	 */
+	abstract public function get_name();
 
 	private function calculate_path_key()
 	{
