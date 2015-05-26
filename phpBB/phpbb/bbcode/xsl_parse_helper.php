@@ -166,14 +166,14 @@ class xsl_parse_helper
 		return $top;
 	}
 
-	protected function parse_tag_template_childNode($currentNode){
+	protected function parse_tag_template_childNode($current_node){
 
-		$name = isset($currentNode->localName) ? $currentNode->localName : $currentNode->nodeName;
+		$name = isset($current_node->localName) ? $current_node->localName : $current_node->nodeName;
 
 		$current = array(
-			'xsl' => $currentNode->prefix === 'xsl',
+			'xsl' => $current_node->prefix === 'xsl',
 			'tagName' => $name,
-			'node' => $currentNode,
+			'node' => $current_node,
 			'js' => array(),
 			'children' => array(),
 		);
@@ -188,10 +188,10 @@ class xsl_parse_helper
 					break;
 				case 'if':
 					// "if" is somewhat like choose... Still different, though!
-					return $this->translate_if($currentNode);
+					return $this->translate_if($current_node);
 					break;
 				case 'choose':
-					return $this->translate_case($currentNode);
+					return $this->translate_case($current_node);
 
 					break;
 				case 'for-each':
@@ -208,7 +208,7 @@ class xsl_parse_helper
 				break;
 				default:
 					throw new xsl_parse_helper_exception (
-						'Tag ' . $currentNode->tagName . ' is not recognized to translate for WYSIWYG'
+						'Tag ' . $current_node->tagName . ' is not recognized to translate for WYSIWYG'
 					);
 			}
 
@@ -221,12 +221,12 @@ class xsl_parse_helper
 		// Text nodes cannot have attributes. Not using hasAttributes so that it can warn unpredictability by outputting warnings
 		if ($name !== '#text' || ($current['xsl'] && $name !== 'text'))
 		{
-			$current['vars'] = $this->parse_attributes($currentNode, $xsl_var_match);
+			$current['vars'] = $this->parse_attributes($current_node, $xsl_var_match);
 		}
 
-		if ($currentNode->hasChildNodes())
+		if ($current_node->hasChildNodes())
 		{
-			foreach ($currentNode->childNodes AS $child_node)
+			foreach ($current_node->childNodes AS $child_node)
 			{
 				$nextChild = $this->parse_tag_template_childNode($child_node);
 				if ($nextChild !== null)
@@ -241,7 +241,7 @@ class xsl_parse_helper
 
 
 
-	public function translate_if($currentNode){
+	public function translate_if($current_node){
 		$data = array(
 			'num' => $this->choose_num,
 			'case' => array(),
@@ -259,7 +259,7 @@ class xsl_parse_helper
 		$case = &$data['case'];
 			
 		$when = $this->conditions_document->createElementNS(self::XSLNS, 'xsl:when');
-		$when->setAttribute('test', $currentNode->getAttribute('test'));
+		$when->setAttribute('test', $current_node->getAttribute('test'));
 		// <xsl:when test>$chr</xsl:when>
 		$when->appendChild($this->conditions_document->createTextNode($chr));
 
@@ -283,7 +283,7 @@ class xsl_parse_helper
 		return $data;
 	}
 
-	public function translate_case($currentNode){
+	public function translate_case($current_node){
 		$data = array(
 			'num' => $this->choose_num,
 			'case' => array(),
@@ -300,7 +300,7 @@ class xsl_parse_helper
 
 		$case = &$data['case'];
 
-		foreach ($currentNode->childNodes AS $whenNode){
+		foreach ($current_node->childNodes AS $whenNode){
 			// This can either be a "xsl:when" or "xsl:otherwise".
 			// additionally, for the "xsl:when", I want the exact same @test attr
 			$when = $this->conditions_document->importNode($whenNode->cloneNode(false));
