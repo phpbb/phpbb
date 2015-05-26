@@ -23,6 +23,15 @@ services:
             - %text_formatter.cache.parser.key%
             - %text_formatter.cache.renderer.key%
 
+# ----- WYSIWYG converters -----
+# All converters must contain the wysiwyg.converter tag
+    wysiwyg.converters_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: wysiwyg.converters }
+
     wysiwyg.converters.sce:
         class: phpbb\bbcode\convert_editor\sce
         arguments:
@@ -33,3 +42,5 @@ services:
             - @service_container
             - @request
             - @template
+        tags:
+            - { name: wysiwyg.converters }
