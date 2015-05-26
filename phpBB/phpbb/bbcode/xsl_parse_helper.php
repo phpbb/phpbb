@@ -191,7 +191,7 @@ class xsl_parse_helper
 					return $this->translate_if($currentNode);
 					break;
 				case 'choose':
-					return $this->translateConditions($currentNode);
+					return $this->translate_case($currentNode);
 
 					break;
 				case 'for-each':
@@ -241,7 +241,6 @@ class xsl_parse_helper
 
 
 
-	public function translateConditions($currentNode){
 	public function translate_if($currentNode){
 		$data = array(
 			'num' => $this->choose_num,
@@ -283,6 +282,8 @@ class xsl_parse_helper
 
 		return $data;
 	}
+
+	public function translate_case($currentNode){
 		$data = array(
 			'num' => $this->choose_num,
 			'case' => array(),
