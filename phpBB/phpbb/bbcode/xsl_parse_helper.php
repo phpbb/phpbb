@@ -187,7 +187,8 @@ class xsl_parse_helper
 					// TODO: How to handle a deep copy
 					break;
 				case 'if':
-					// TODO: "if" is somewhat like choose... Still different, though!
+					// "if" is somewhat like choose... Still different, though!
+					return $this->translate_if($currentNode);
 					break;
 				case 'choose':
 					return $this->translateConditions($currentNode);
@@ -241,6 +242,47 @@ class xsl_parse_helper
 
 
 	public function translateConditions($currentNode){
+	public function translate_if($currentNode){
+		$data = array(
+			'num' => $this->choose_num,
+			'case' => array(),
+			'js' => array(),
+		);
+		$this->choose_num++;
+
+		$template = $this->conditions_document->createElementNS(self::XSLNS, 'xsl:template');
+		$template->setAttribute('match', $this->current_bbcode . "[@d='" . $data['num'] . "']");
+
+		$choose = $this->conditions_document->createElementNS(self::XSLNS, 'xsl:choose');
+
+		$chr = 'a';
+
+		$case = &$data['case'];
+			
+		$when = $this->conditions_document->createElementNS(self::XSLNS, 'xsl:when');
+		$when->setAttribute('test', $currentNode->getAttribute('test'));
+		// <xsl:when test>$chr</xsl:when>
+		$when->appendChild($this->conditions_document->createTextNode($chr));
+
+		$case[$chr] = array(
+			'vars' => array(),
+			'js' => array(),
+			'children' => array(),
+		);
+
+		$case[$chr]['vars'] = $this->parse_attributes($when, "%(([@$])((?:([SL])_)?([a-zA-Z_0-9]+)))%");
+
+		foreach ($whenNode->childNodes as $child_node){
+			$case[$chr]['children'][] = $this->parse_tag_template_childNode($child_node);
+		}
+
+		$choose->appendChild($when);
+		$template->appendChild($choose);
+
+		$this->conditions_document->firstChild->appendChild($template);
+
+		return $data;
+	}
 		$data = array(
 			'num' => $this->choose_num,
 			'case' => array(),
