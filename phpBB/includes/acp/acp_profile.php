@@ -672,7 +672,13 @@ class acp_profile
 				$s_one_need_edit = true;
 			}
 
-			$profile_field = $this->type_collection[$row['field_type']];
+			try {
+				$profile_field = $this->type_collection[$row['field_type']];
+			}
+			catch (\Exception $e)
+			{
+				continue;
+			}
 			$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
 				'FIELD_TYPE'		=> $profile_field->get_name(),
