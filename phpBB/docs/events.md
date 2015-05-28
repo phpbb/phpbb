@@ -987,6 +987,13 @@ quickreply_editor_message_before
 * Since: 3.1.0-a4
 * Purpose: Add content before the quick reply textbox
 
+search_body_form_before
+===
+* Locations:
+    + styles/prosilver/template/search_body.htm
+* Since: 3.1.5
+* Purpose: Add content before the search form
+
 search_results_header_after
 ===
 * Locations:
