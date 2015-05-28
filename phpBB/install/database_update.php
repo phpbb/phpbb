@@ -184,9 +184,9 @@ define('IN_DB_UPDATE', true);
 /* @var $migrator \phpbb\db\migrator */
 $migrator = $phpbb_container->get('migrator');
 
-/** @var \phpbb\filesystem\filesystem_interface $filesystem */
-$filesystem = $phpbb_container->get('filesystem');
-$migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log', $filesystem));
+/** @var \phpbb\filesystem\filesystem_interface $phpbb_filesystem */
+$phpbb_filesystem = $phpbb_container->get('filesystem');
+$migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log', $phpbb_filesystem));
 
 $migrator->create_migrations_table();
 
