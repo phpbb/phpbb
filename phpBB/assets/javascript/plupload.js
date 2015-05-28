@@ -12,14 +12,14 @@ phpbb.plupload.ids = [];
  */
 phpbb.plupload.initialize = function() {
 	// Initialize the Plupload uploader.
-	uploader.init();
+	phpbb.plupload.uploader.init();
 
 	// Set attachment data.
 	phpbb.plupload.setData(phpbb.plupload.data);
 	phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 
 	// Only execute if Plupload initialized successfully.
-	uploader.bind('Init', function() {
+	phpbb.plupload.uploader.bind('Init', function() {
 		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
 		phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
 
@@ -29,18 +29,18 @@ phpbb.plupload.initialize = function() {
 		$('#attach-panel-multi').show();
 	});
 
-	uploader.bind('PostInit', function() {
+	phpbb.plupload.uploader.bind('PostInit', function() {
 		// Point out the drag-and-drop zone if it's supported.
-		if (uploader.features.dragdrop) {
+		if (phpbb.plupload.uploader.features.dragdrop) {
 			$('#drag-n-drop-message').show();
 		}
 
 		// Ensure "Add files" button position is correctly calculated.
 		if ($('#attach-panel-multi').is(':visible')) {
-			uploader.refresh();
+			phpbb.plupload.uploader.refresh();
 		}
 		$('[data-subpanel="attach-panel"]').one('click', function() {
-			uploader.refresh();
+			phpbb.plupload.uploader.refresh();
 		});
 	});
 };
@@ -52,13 +52,13 @@ phpbb.plupload.initialize = function() {
  * @return undefined
  */
 phpbb.plupload.clearParams = function() {
-	var obj = uploader.settings.multipart_params;
+	var obj = phpbb.plupload.uploader.settings.multipart_params;
 	for (var key in obj) {
 		if (!obj.hasOwnProperty(key) || key.indexOf('attachment_data[') !== 0) {
 			continue;
 		}
 
-		delete uploader.settings.multipart_params[key];
+		delete phpbb.plupload.uploader.settings.multipart_params[key];
 	}
 };
 
@@ -69,8 +69,8 @@ phpbb.plupload.clearParams = function() {
  * @return undefined
  */
 phpbb.plupload.updateMultipartParams = function(obj) {
-	uploader.settings.multipart_params = $.extend(
-		uploader.settings.multipart_params,
+	phpbb.plupload.uploader.settings.multipart_params = $.extend(
+		phpbb.plupload.uploader.settings.multipart_params,
 		obj
 	);
 };
@@ -238,8 +238,8 @@ phpbb.plupload.updateHiddenData = function(row, attach, index) {
 phpbb.plupload.deleteFile = function(row, attachId) {
 	// If there's no attach id, then the file hasn't been uploaded. Simply delete the row.
 	if (typeof attachId === 'undefined') {
-		var file = uploader.getFile(row.attr('id'));
-		uploader.removeFile(file);
+		var file = phpbb.plupload.uploader.getFile(row.attr('id'));
+		phpbb.plupload.uploader.removeFile(file);
 
 		row.slideUp(100, function() {
 			row.remove();
@@ -267,7 +267,7 @@ phpbb.plupload.deleteFile = function(row, attachId) {
 
 		// trigger_error() was called which likely means a permission error was encountered.
 		if (typeof response.title !== 'undefined') {
-			uploader.trigger('Error', {message: response.message});
+			phpbb.plupload.uploader.trigger('Error', {message: response.message});
 			// We will have to assume that the deletion failed. So leave the file status as uploaded.
 			row.find('.file-status').toggleClass('file-uploaded');
 
@@ -278,15 +278,15 @@ phpbb.plupload.deleteFile = function(row, attachId) {
 		phpbb.plupload.handleMaxFilesReached();
 
 		if (row.attr('id')) {
-			var file = uploader.getFile(row.attr('id'));
-			uploader.removeFile(file);
+			var file = phpbb.plupload.uploader.getFile(row.attr('id'));
+			phpbb.plupload.uploader.removeFile(file);
 		}
 		row.slideUp(100, function() {
 			row.remove();
 			// Hide the file list if it's empty now.
 			phpbb.plupload.hideEmptyList();
 		});
-		uploader.trigger('FilesRemoved');
+		phpbb.plupload.uploader.trigger('FilesRemoved');
 	};
 
 	$.ajax(phpbb.plupload.config.url, {
@@ -374,7 +374,7 @@ phpbb.plupload.updateBbcode = function(action, index) {
 phpbb.plupload.getFilesByStatus = function(status) {
 	var files = [];
 
-	$.each(uploader.files, function(i, file) {
+	$.each(phpbb.plupload.uploader.files, function(i, file) {
 		if (file.status === status) {
 			files.push(file);
 		}
@@ -400,7 +400,7 @@ phpbb.plupload.handleMaxFilesReached = function() {
 		phpbb.plupload.markQueuedFailed(phpbb.plupload.lang.TOO_MANY_ATTACHMENTS);
 		// Disable the uploader.
 		phpbb.plupload.disableUploader();
-		uploader.trigger('Error', {message: phpbb.plupload.lang.TOO_MANY_ATTACHMENTS});
+		phpbb.plupload.uploader.trigger('Error', {message: phpbb.plupload.lang.TOO_MANY_ATTACHMENTS});
 
 		return true;
 	} else if(phpbb.plupload.maxFiles > phpbb.plupload.ids.length) {
@@ -417,7 +417,7 @@ phpbb.plupload.handleMaxFilesReached = function() {
  */
 phpbb.plupload.disableUploader = function() {
 	$('#add_files').addClass('disabled');
-	uploader.disableBrowse();
+	phpbb.plupload.uploader.disableBrowse();
 }
 
 /**
@@ -427,7 +427,7 @@ phpbb.plupload.disableUploader = function() {
  */
 phpbb.plupload.enableUploader = function() {
 	$('#add_files').removeClass('disabled');
-	uploader.disableBrowse(false);
+	phpbb.plupload.uploader.disableBrowse(false);
 }
 
 /**
@@ -464,7 +464,7 @@ phpbb.plupload.fileError = function(file, error) {
 /**
  * Set up the Plupload object and get some basic data.
  */
-var	uploader = new plupload.Uploader(phpbb.plupload.config);
+phpbb.plupload.uploader = new plupload.Uploader(phpbb.plupload.config);
 phpbb.plupload.initialize();
 
 
@@ -503,7 +503,7 @@ $('#file-list').on('click', '.file-error', function(e) {
 /**
  * Fires when an error occurs.
  */
-uploader.bind('Error', function(up, error) {
+phpbb.plupload.uploader.bind('Error', function(up, error) {
 	error.file.name = plupload.xmlEncode(error.file.name);
 
 	// The error message that Plupload provides for these is vague, so we'll be more specific.
@@ -526,7 +526,7 @@ uploader.bind('Error', function(up, error) {
  *
  * @return undefined
  */
-uploader.bind('BeforeUpload', function(up, file) {
+phpbb.plupload.uploader.bind('BeforeUpload', function(up, file) {
 	if (phpbb.plupload.handleMaxFilesReached()) {
 		return;
 	}
@@ -546,7 +546,7 @@ uploader.bind('BeforeUpload', function(up, file) {
  *
  * @return undefined
  */
-uploader.bind('ChunkUploaded', function(up, file, response) {
+phpbb.plupload.uploader.bind('ChunkUploaded', function(up, file, response) {
 	if (response.chunk >= response.chunks - 1) {
 		return;
 	}
@@ -587,7 +587,7 @@ uploader.bind('ChunkUploaded', function(up, file, response) {
  *
  * @return undefined
  */
-uploader.bind('FilesAdded', function(up, files) {
+phpbb.plupload.uploader.bind('FilesAdded', function(up, files) {
 	// Prevent unnecessary requests to the server if the user already uploaded
 	// the maximum number of files allowed.
 	if (phpbb.plupload.handleMaxFilesReached()) {
@@ -634,7 +634,7 @@ uploader.bind('FilesAdded', function(up, files) {
  *
  * @return undefined
  */
-uploader.bind('FileUploaded', function(up, file, response) {
+phpbb.plupload.uploader.bind('FileUploaded', function(up, file, response) {
 	var json = {},
 		row = $('#' + file.id),
 		error;
@@ -680,7 +680,7 @@ uploader.bind('FileUploaded', function(up, file, response) {
  *
  * @return undefined
  */
-uploader.bind('UploadComplete', function(up, files) {
+phpbb.plupload.uploader.bind('UploadComplete', function(up, files) {
 	// Hide the progress bar
 	setTimeout(function() {
 		$('#file-total-progress-bar').fadeOut(500, function() {
