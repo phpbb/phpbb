@@ -20,8 +20,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $cookieJar;
 	static protected $root_url;
 
+	/** @var \phpbb\cache\driver\driver_interface */
 	protected $cache = null;
+
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db = null;
+
+	/** @var \phpbb\extension\manager */
 	protected $extension_manager = null;
 
 	/**
@@ -63,6 +68,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::install_board();
 			self::$already_installed = true;
 		}
+
+		// Purge the cache before each test
+		$cache = new \phpbb\cache\driver\file();
+		self::purge_cache_object($cache);
 	}
 
 	/**
@@ -213,7 +222,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected function purge_cache()
 	{
 		$cache = $this->get_cache_driver();
+		self::purge_cache_object($cache);
+	}
 
+	/**
+	 * @param \phpbb\cache\driver\driver_interface $cache
+	 */
+	static protected function purge_cache_object(\phpbb\cache\driver\driver_interface $cache)
+	{
 		$cache->purge();
 		$cache->unload();
 		$cache->load();
@@ -438,7 +454,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @param string $style_id Style ID
 	* @param string $style_path Style directory
-	* @param string $parent_style_id Parent style id. Default = 1
+	* @param int $parent_style_id Parent style id. Default = 1
 	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
 	*/
 	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
@@ -1191,7 +1207,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* Be sure to login before creating
 	*
 	* @param int $forum_id
-	* @param int $topic_id
+	* @param int $post_id
 	* @return null
 	*/
 	public function delete_post($forum_id, $post_id)
@@ -1272,8 +1288,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @param int $topic_id
 	* @param string $action	Language key for the quickmod action
-	* @param Symfony\Component\DomCrawler\Crawler Optional crawler object to use instead of creating new one.
-	* @return Symfony\Component\DomCrawler\Crawler
+	* @param \Symfony\Component\DomCrawler\Crawler|bool $crawler Optional crawler object to use instead of creating new one.
+	* @return \Symfony\Component\DomCrawler\Crawler
 	*/
 	public function get_quickmod_page($topic_id, $action, $crawler = false)
 	{
