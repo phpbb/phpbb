@@ -182,7 +182,7 @@ class local extends \phpbb\avatar\driver\driver
 					}
 					$cat = ($path == $file_path) ? $user->lang['NO_AVATAR_CATEGORY'] : str_replace("$path/", '', $file_path);
 					$avatar_list[$cat][$image] = array(
-						'file'      => ($cat != $user->lang['NO_AVATAR_CATEGORY']) ? rawurlencode($cat) . '/' . rawurlencode($image) : rawurlencode($image),
+						'file'      => ($cat != $user->lang['NO_AVATAR_CATEGORY']) ? $cat . '/' . rawurlencode($image) : rawurlencode($image),
 						'filename'  => rawurlencode($image),
 						'name'      => ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $image))),
 						'width'     => $dims[0],
