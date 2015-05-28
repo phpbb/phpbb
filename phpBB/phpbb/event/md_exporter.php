@@ -157,20 +157,64 @@ class md_exporter
 			}
 
 			list($file_details, $details) = explode("\n* Since: ", $details, 2);
-			list($since, $description) = explode("\n* Purpose: ", $details, 2);
+
+			$changed_versions = array();
+			if (strpos($details, "\n* Changed: ") !== false)
+			{
+				list($since, $details) = explode("\n* Changed: ", $details, 2);
+				while (strpos($details, "\n* Changed: ") !== false)
+				{
+					list($changed, $details) = explode("\n* Changed: ", $details, 2);
+					$changed_versions[] = $changed;
+				}
+				list($changed, $description) = explode("\n* Purpose: ", $details, 2);
+				$changed_versions[] = $changed;
+			}
+			else
+			{
+				list($since, $description) = explode("\n* Purpose: ", $details, 2);
+				$changed_versions = array();
+			}
 
 			$files = $this->validate_file_list($file_details);
 			$since = $this->validate_since($since);
+			$changes = array();
+			foreach ($changed_versions as $changed)
+			{
+				list($changed_version, $changed_description) = $this->validate_changed($changed);
+
+				if (isset($changes[$changed_version]))
+				{
+					throw new \LogicException("Duplicate change information found for event '{$this->current_event}'");
+				}
+
+				$changes[$changed_version] = $changed_description;
+			}
+			$description = trim($description, "\n") . "\n";
 
 			if (!$this->version_is_filtered($since))
 			{
-				continue;
+				$is_filtered = false;
+				foreach ($changes as $version => $null)
+				{
+					if ($this->version_is_filtered($version))
+					{
+						$is_filtered = true;
+						break;
+					}
+				}
+
+				if (!$is_filtered)
+				{
+					continue;
+				}
 			}
 
 			$this->events[$event_name] = array(
 				'event'			=> $this->current_event,
 				'files'			=> $files,
 				'since'			=> $since,
+				'changed'		=> $changes,
 				'description'	=> $description,
 			);
 		}
@@ -182,6 +226,7 @@ class md_exporter
 	 * The version to check
 	 *
 	 * @param string $version
+	 * @return bool
 	 */
 	protected function version_is_filtered($version)
 	{
@@ -269,12 +314,50 @@ class md_exporter
 	*/
 	public function validate_since($since)
 	{
-		if (!preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?$#', $since))
+		if (!$this->validate_version($since))
 		{
 			throw new \LogicException("Invalid since information found for event '{$this->current_event}'");
 		}
 
 		return $since;
+	}
+
+	/**
+	* Validate "Changed" Information
+	*
+	* @param string $changed
+	* @return string
+	* @throws \LogicException
+	*/
+	public function validate_changed($changed)
+	{
+		if (strpos($changed, ' ') !== false)
+		{
+			list($version, $description) = explode(' ', $changed, 2);
+		}
+		else
+		{
+			$version = $changed;
+			$description = '';
+		}
+
+		if (!$this->validate_version($version))
+		{
+			throw new \LogicException("Invalid changed information found for event '{$this->current_event}'");
+		}
+
+		return array($version, $description);
+	}
+
+	/**
+	* Validate "version" Information
+	*
+	* @param string $version
+	* @return bool True if valid, false otherwise
+	*/
+	public function validate_version($version)
+	{
+		return preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?$#', $version);
 	}
 
 	/**
