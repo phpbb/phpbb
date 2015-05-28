@@ -143,7 +143,6 @@ function html_entity_decode_utf8($string)
 	$string = preg_replace_callback('~&#x([0-9a-f]+);~i', function ($match) {
 		return code2utf8(hexdec($match[1]));
 	}, $string);
-	$string = preg_replace('~&#([0-9]+);~e', 'code2utf8(\\1)', $string);
 	$string = preg_replace_callback('~&#([0-9]+);~', function ($match) {
 		return code2utf8($match[1]);
 	}, $string);
