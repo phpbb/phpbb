@@ -1612,6 +1612,18 @@ phpbb.registerPageDropdowns = function() {
 	});
 };
 
+phpbb.lazyLoadAvatars = function loadAvatars() {
+	$('.avatar[data-src]').each(function () {
+		var $avatar = $(this);
+
+		$avatar
+			.attr('src', $avatar.data('src'))
+			.removeAttr('data-src');
+	});
+};
+
+$(window).load(phpbb.lazyLoadAvatars);
+
 /**
 * Apply code editor to all textarea elements with data-bbcode attribute
 */
