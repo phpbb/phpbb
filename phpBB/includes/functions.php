@@ -4851,7 +4851,8 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 
 	if (!empty($avatar_data['src']))
 	{
-		if ($lazy) {
+		if ($lazy)
+		{
 			// Determine board url - we may need it later
 			$board_url = generate_board_url() . '/';
 			// This path is sent with the base template paths in the assign_vars()
@@ -4865,7 +4866,9 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			$theme = "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme';
 
 			$src = 'src="' . $theme . '/images/no_avatar.gif" data-src="' . $avatar_data['src'] . '"';
-		} else {
+		}
+		else
+		{
 			$src = 'src="' . $avatar_data['src'] . '"';
 		}
 
