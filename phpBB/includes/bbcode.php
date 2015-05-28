@@ -182,6 +182,8 @@ class bbcode
 			$db->sql_freeresult($result);
 		}
 
+		// To perform custom second pass in extension, use $this->bbcode_second_pass_by_extension()
+		// method which accepts variable number of parameters
 		foreach ($bbcode_ids as $bbcode_id)
 		{
 			switch ($bbcode_id)
@@ -612,5 +614,37 @@ class bbcode
 		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');
 
 		return $code;
+	}
+
+	/**
+	* Function to perform custom bbcode second pass by extensions
+	* can be used to assign bbcode pattern replacement
+	* Example: '#\[list=([^\[]+):$uid\]#e'	=> "\$this->bbcode_second_pass_by_extension('\$1')"
+	*
+	* Accepts variable number of parameters
+	*
+	* @return mixed Second pass result
+	*/
+	function bbcode_second_pass_by_extension()
+	{
+		global $phpbb_dispatcher;
+
+		$return = false;
+		$params_array = func_get_args();
+
+		/**
+		* Event to perform bbcode second pass with
+		* the custom validating methods provided by extensions
+		*
+		* @event core.bbcode_second_pass_by_extension
+		* @var array	params_array	Array with the function parameters
+		* @var mixed	return			Second pass result to return
+		*
+		* @since 3.1.5-RC1
+		*/
+		$vars = array('params_array', 'return');
+		extract($phpbb_dispatcher->trigger_event('core.bbcode_second_pass_by_extension', compact($vars)));
+
+		return $return;
 	}
 }
