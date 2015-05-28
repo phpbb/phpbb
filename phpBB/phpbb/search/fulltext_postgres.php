@@ -746,7 +746,7 @@ class fulltext_postgres extends \phpbb\search\base
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**

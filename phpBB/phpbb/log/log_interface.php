@@ -32,8 +32,8 @@ interface log_interface
 	* Disable log
 	*
 	* This function allows disabling the log system or parts of it, for this
-	* page call. When add_log is called and the type is disabled,
-	* the log will not be added to the database.
+	* page call. When add() is called and the type is disabled, the log will
+	* not be added to the database.
 	*
 	* @param	mixed	$type	The log type we want to disable. Empty to
 	*						disable all logs. Can also be an array of types.
@@ -57,12 +57,12 @@ interface log_interface
 	/**
 	* Adds a log entry to the database
 	*
-	* @param	string	$mode				The mode defines which log_type is used and from which log the entry is retrieved
-	* @param	int		$user_id			User ID of the user
-	* @param	string	$log_ip				IP address of the user
-	* @param	string	$log_operation		Name of the operation
-	* @param	int		$log_time			Timestamp when the log entry was added, if empty time() will be used
-	* @param	array	$additional_data	More arguments can be added, depending on the log_type
+	* @param	string		$mode				The mode defines which log_type is used and from which log the entry is retrieved
+	* @param	int			$user_id			User ID of the user
+	* @param	string		$log_ip				IP address of the user
+	* @param	string		$log_operation		Name of the operation
+	* @param	int|bool	$log_time			Timestamp when the log entry was added. If false, time() will be used
+	* @param	array		$additional_data	More arguments can be added, depending on the log_type
 	*
 	* @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
 	*/

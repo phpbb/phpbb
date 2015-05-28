@@ -15,7 +15,6 @@ namespace phpbb\controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
@@ -42,6 +41,12 @@ class helper
 	*/
 	protected $config;
 
+	/**
+	 * phpBB router
+	 * @var \phpbb\routing\router
+	 */
+	protected $router;
+
 	/* @var \phpbb\symfony_request */
 	protected $symfony_request;
 
@@ -49,7 +54,7 @@ class helper
 	protected $request;
 
 	/**
-	* @var \phpbb\filesystem The filesystem object
+	* @var \phpbb\filesystem\filesystem_interface The filesystem object
 	*/
 	protected $filesystem;
 
@@ -71,26 +76,24 @@ class helper
 	* @param \phpbb\template\template $template Template object
 	* @param \phpbb\user $user User object
 	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\controller\provider $provider Path provider
-	* @param \phpbb\extension\manager $manager Extension manager object
+	* @param \phpbb\routing\router $router phpBB router
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\filesystem $filesystem The filesystem object
+	* @param \phpbb\filesystem\filesystem_interface $filesystem The filesystem object
 	* @param string $phpbb_root_path phpBB root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
+		$this->router = $router;
 		$this->symfony_request = $symfony_request;
 		$this->request = $request;
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$provider->find_routing_files($manager->get_finder());
-		$this->route_collection = $provider->find($phpbb_root_path)->get_routes();
 	}
 
 	/**
@@ -169,8 +172,8 @@ class helper
 
 		$context->setBaseUrl($base_url);
 
-		$url_generator = new UrlGenerator($this->route_collection, $context);
-		$route_url = $url_generator->generate($route, $params, $reference_type);
+		$this->router->setContext($context);
+		$route_url = $this->router->generate($route, $params, $reference_type);
 
 		if ($is_amp)
 		{
@@ -238,6 +241,20 @@ class helper
 		));
 
 		return $this->render('message_body.html', $message_title, $code);
+	}
+
+	/**
+	 * Assigns automatic refresh time meta tag in template
+	 *
+	 * @param	int		$time	time in seconds, when redirection should occur
+	 * @param	string	$url	the URL where the user should be redirected
+	 * @return	null
+	 */
+	public function assign_meta_refresh_var($time, $url)
+	{
+		$this->template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />',
+		));
 	}
 
 	/**

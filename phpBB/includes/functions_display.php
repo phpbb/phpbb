@@ -33,7 +33,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$sql_from = '';
 
 	// Mark forums read?
-	$mark_read = request_var('mark', '');
+	$mark_read = $request->variable('mark', '');
 
 	if ($mark_read == 'all')
 	{
@@ -61,9 +61,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
-		if (check_link_hash(request_var('hash', ''), 'global'))
+		if (check_link_hash($request->variable('hash', ''), 'global'))
 		{
-			markread('all', false, false, request_var('mark_time', 0));
+			markread('all', false, false, $request->variable('mark_time', 0));
 
 			if ($request->is_ajax())
 			{
@@ -153,6 +153,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
@@ -333,10 +334,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	if ($mark_read == 'forums')
 	{
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
-		$token = request_var('hash', '');
+		$token = $request->variable('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids, false, request_var('mark_time', 0));
+			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
@@ -1122,33 +1123,14 @@ function display_custom_bbcodes()
 
 /**
 * Display reasons
+*
+* @deprecated 3.2.0-dev
 */
 function display_reasons($reason_id = 0)
 {
-	global $db, $user, $template;
+	global $phpbb_container;
 
-	$sql = 'SELECT *
-		FROM ' . REPORTS_REASONS_TABLE . '
-		ORDER BY reason_order ASC';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-		if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
-		{
-			$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
-			$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
-		}
-
-		$template->assign_block_vars('reason', array(
-			'ID'			=> $row['reason_id'],
-			'TITLE'			=> $row['reason_title'],
-			'DESCRIPTION'	=> $row['reason_description'],
-			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false)
-		);
-	}
-	$db->sql_freeresult($result);
+	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 }
 
 /**
@@ -1182,6 +1164,7 @@ function display_user_activity(&$userdata)
 	$active_f_row = $active_t_row = array();
 	if (!empty($forum_ary))
 	{
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		// Obtain active forum
@@ -1313,8 +1296,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['unwatch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
@@ -1387,8 +1370,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['watch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{

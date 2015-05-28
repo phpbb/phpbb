@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>custom</value>
+			<value></value>
+			<value>1</value>
+			<value>[custom]{TEXT}[/custom]</value>
+			<value>&lt;span style=&quot;color:red&quot;&gt;{TEXT}&lt;/span&gt;</value>
+			<value>!\[custom\](.*?)\[/custom\]!ies</value>
+			<value>'[custom:$uid]'.str_replace(array(&quot;\r\n&quot;, '\&quot;', '\'', '(', ')'), array(&quot;\n&quot;, '&quot;', '&amp;#39;', '&amp;#40;', '&amp;#41;'), trim('${1}')).'[/custom:$uid]'</value>
+			<value>!\[custom:$uid\](.*?)\[/custom:$uid\]!s</value>
+			<value>&lt;span style=&quot;color:red&quot;&gt;${1}&lt;/span&gt;</value>
+		</row>
+		<row>
+			<value>14</value>
+			<value>unsafe</value>
+			<value></value>
+			<value>1</value>
+			<value>[unsafe]{TEXT}[/unsafe]</value>
+			<value>&lt;script&gt;{TEXT}&lt;/script&gt;</value>
+			<value>!\[unsafe\](.*?)\[/unsafe\]!ies</value>
+			<value>'[unsafe:$uid]'.str_replace(array(&quot;\r\n&quot;, '\&quot;', '\'', '(', ')'), array(&quot;\n&quot;, '&quot;', '&amp;#39;', '&amp;#40;', '&amp;#41;'), trim('${1}')).'[/unsafe:$uid]'</value>
+			<value>!\[unsafe:$uid\](.*?)\[/unsafe:$uid\]!s</value>
+			<value>&lt;script&gt;${1}&lt;/script&gt;</value>
+		</row>
+	</table>
+
+	<table name="phpbb_smilies">
+		<column>smiley_id</column>
+		<column>code</column>
+		<column>emotion</column>
+		<column>smiley_url</column>
+		<column>smiley_width</column>
+		<column>smiley_height</column>
+		<column>smiley_order</column>
+		<column>display_on_posting</column>
+		<row>
+			<value>1</value>
+			<value>:D</value>
+			<value>Very Happy</value>
+			<value>icon_e_biggrin.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>2</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>:)</value>
+			<value>Smile</value>
+			<value>icon_e_smile.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>4</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>:(</value>
+			<value>Sad</value>
+			<value>icon_e_sad.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>10</value>
+			<value>1</value>
+		</row>
+	</table>
+
+	<table name="phpbb_styles">
+		<column>style_id</column>
+		<column>style_name</column>
+		<column>style_copyright</column>
+		<column>style_active</column>
+		<column>style_path</column>
+		<column>bbcode_bitfield</column>
+		<column>style_parent_id</column>
+		<column>style_parent_tree</column>
+
+		<row>
+			<value>1</value>
+			<value>prosilver</value>
+			<value>&amp;copy; phpBB Group</value>
+			<value>1</value>
+			<value>prosilver</value>
+			<value>kNg=</value>
+			<value>0</value>
+			<value></value>
+		</row>
+	</table>
+
+	<table name="phpbb_words">
+		<column>word_id</column>
+		<column>word</column>
+		<column>replacement</column>
+
+		<row>
+			<value>1</value>
+			<value>apple</value>
+			<value>banana</value>
+		</row>
+	</table>
+</dataset>

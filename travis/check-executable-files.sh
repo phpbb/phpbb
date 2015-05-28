@@ -15,7 +15,7 @@ TRAVIS_PHP_VERSION=$2
 root="$3"
 path="${root}phpBB/"
 
-if [ "$TRAVIS_PHP_VERSION" == "5.3.3" -a "$DB" == "mysqli" ]
+if [ "$TRAVIS_PHP_VERSION" == "5.3" -a "$DB" == "mysqli" ]
 then
 	# Check the permissions of the files
 

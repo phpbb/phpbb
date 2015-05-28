@@ -16,14 +16,15 @@
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
+define('PHPBB_ENVIRONMENT', 'production');
 /**#@-*/
 
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-if (version_compare(PHP_VERSION, '5.3.3') < 0)
+if (version_compare(PHP_VERSION, '5.3.9') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.3 or higher before trying to install phpBB 3.1');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.3.9 or higher before trying to install phpBB 3.1');
 }
 
 function phpbb_require_updated($path, $optional = false)
@@ -102,7 +103,6 @@ phpbb_require_updated('includes/functions.' . $phpEx);
 phpbb_require_updated('includes/functions_content.' . $phpEx, true);
 
 phpbb_include_updated('includes/functions_admin.' . $phpEx);
-phpbb_include_updated('includes/utf/utf_normalizer.' . $phpEx);
 phpbb_include_updated('includes/utf/utf_tools.' . $phpEx);
 phpbb_require_updated('includes/functions_install.' . $phpEx);
 
@@ -137,16 +137,18 @@ $phpbb_container_builder->set_custom_parameters(array(
 
 $phpbb_container = $phpbb_container_builder->get_container();
 $phpbb_container->register('dbal.conn.driver')->setSynthetic(true);
+$phpbb_container->register('template.twig.environment')->setSynthetic(true);
+$phpbb_container->register('language.loader')->setSynthetic(true);
 $phpbb_container->compile();
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
+/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
 $phpbb_dispatcher = $phpbb_container->get('dispatcher');
-$request	= $phpbb_container->get('request');
 
-// make sure request_var uses this request instance
-request_var('', 0, false, false, $request); // "dependency injection" for a function
+/* @var $request \phpbb\request\request_interface */
+$request	= $phpbb_container->get('request');
 
 // Try and load an appropriate language if required
 $language = basename($request->variable('language', ''));
@@ -240,7 +242,8 @@ $sub = $request->variable('sub', '');
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$user = new \phpbb\user('\phpbb\datetime');
+$lang_service = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+$user = new \phpbb\user($lang_service, '\phpbb\datetime');
 $auth = new \phpbb\auth\auth();
 
 // Add own hook handler, if present. :o
@@ -249,6 +252,7 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
+	/* @var $phpbb_hook_finder \phpbb\hook\finder */
 	$phpbb_hook_finder = $phpbb_container->get('hook_finder');
 	foreach ($phpbb_hook_finder->find() as $hook)
 	{
@@ -265,10 +269,40 @@ $config = new \phpbb\config\config(array(
 	'load_tplcompile'	=> '1'
 ));
 
+/* @var $symfony_request \phpbb\symfony_request */
 $symfony_request = $phpbb_container->get('symfony_request');
+
+/* @var $phpbb_filesystem \phpbb\filesystem\filesystem_interface */
 $phpbb_filesystem = $phpbb_container->get('filesystem');
+
+/* @var $phpbb_path_helper \phpbb\path_helper */
 $phpbb_path_helper = $phpbb_container->get('path_helper');
-$template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context());
+$cache_path = $phpbb_root_path . 'cache/';
+
+$twig_environment = new \phpbb\template\twig\environment(
+	$config,
+	$phpbb_filesystem,
+	$phpbb_path_helper,
+	$phpbb_container,
+	$cache_path,
+	null,
+	$phpbb_container->get('template.twig.loader')
+);
+
+$language_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+$phpbb_container->set('template.twig.environment', $twig_environment);
+$phpbb_container->set('language.loader', $language_loader);
+$twig_context = new \phpbb\template\context();
+$template = new \phpbb\template\twig\twig(
+	$phpbb_path_helper,
+	$config,
+	$twig_context,
+	$twig_environment,
+	$cache_path,
+	$user,
+	array($phpbb_container->get('template.twig.extensions.phpbb'))
+);
+
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style(array(

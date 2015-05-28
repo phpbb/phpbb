@@ -23,6 +23,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	const UPLOAD_MAX_FILESIZE = 1000;
 
 	private $config;
+	private $filesystem;
 	public $path;
 
 	protected function setUp()
@@ -30,7 +31,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		// Global $config required by unique_id
 		// Global $user required by filespec::additional_checks and
 		// filespec::move_file
-		global $config, $user;
+		global $config, $user, $phpbb_filesystem;
 
 		if (!is_array($config))
 		{
@@ -75,6 +76,8 @@ class phpbb_filespec_test extends phpbb_test_case
 		$guessers[2]->set_priority(-2);
 		$guessers[3]->set_priority(-2);
 		$this->mimetype_guesser = new \phpbb\mimetype\guesser($guessers);
+
+		$this->filesystem = $phpbb_filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	private function get_filespec($override = array())
@@ -88,7 +91,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		return new filespec(array_merge($upload_ary, $override), null, $this->mimetype_guesser);
+		return new filespec(array_merge($upload_ary, $override), null, $this->filesystem, $this->mimetype_guesser);
 	}
 
 	protected function tearDown()
@@ -198,7 +201,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$filespec = $this->get_filespec();
 			$filespec->clean_filename('unique', self::PREFIX);
 			$name = $filespec->realname;
-			
+
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX));
 			$this->assertRegExp('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
@@ -286,7 +289,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', false, true),
 			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
 			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
-			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH', true),
+			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH png jpg', true),
 		);
 	}
 

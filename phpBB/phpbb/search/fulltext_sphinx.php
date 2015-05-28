@@ -85,7 +85,7 @@ class fulltext_sphinx
 
 	/**
 	 * Database Tools object
-	 * @var \phpbb\db\tools
+	 * @var \phpbb\db\tools\tools_interface
 	 */
 	protected $db_tools;
 
@@ -135,12 +135,13 @@ class fulltext_sphinx
 		$this->db = $db;
 		$this->auth = $auth;
 
-		// Initialize \phpbb\db\tools object
-		$this->db_tools = new \phpbb\db\tools($this->db);
+		// Initialize \phpbb\db\tools\tools object
+		global $phpbb_container; // TODO inject into object
+		$this->db_tools = $phpbb_container->get('dbal.tools');
 
 		if(!$this->config['fulltext_sphinx_id'])
 		{
-			set_config('fulltext_sphinx_id', unique_id());
+			$this->config->set('fulltext_sphinx_id', unique_id());
 		}
 		$this->id = $this->config['fulltext_sphinx_id'];
 		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
@@ -211,7 +212,7 @@ class fulltext_sphinx
 		}
 
 		// Move delta to main index each hour
-		set_config('search_gc', 3600);
+		$this->config->set('search_gc', 3600);
 
 		return false;
 	}
@@ -454,6 +455,8 @@ class fulltext_sphinx
 	*/
 	public function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
+		global $user, $phpbb_log;
+
 		// No keywords? No posts.
 		if (!strlen($this->search_query) && !sizeof($author_ary))
 		{
@@ -601,7 +604,7 @@ class fulltext_sphinx
 
 		if ($this->sphinx->GetLastError())
 		{
-			add_log('critical', 'LOG_SPHINX_ERROR', $this->sphinx->GetLastError());
+			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
 			if ($this->auth->acl_get('a_'))
 			{
 				trigger_error($this->user->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));
@@ -755,7 +758,7 @@ class fulltext_sphinx
 	*/
 	public function tidy($create = false)
 	{
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**

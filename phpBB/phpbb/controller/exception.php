@@ -16,6 +16,6 @@ namespace phpbb\controller;
 /**
 * Controller exception class
 */
-class exception extends \RuntimeException
+class exception extends \phpbb\exception\runtime_exception
 {
 }
