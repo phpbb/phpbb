@@ -2348,6 +2348,9 @@ class acp_users
 					$error = array();
 				}
 
+				/** @var \phpbb\group\helper $group_helper */
+				$group_helper = $phpbb_container->get('group_helper');
+
 				$sql = 'SELECT ug.*, g.*
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
 					WHERE ug.user_id = $user_id
@@ -2392,7 +2395,7 @@ class acp_users
 						continue;
 					}
 
-					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . $group_helper->get_name($row['group_name']) . '</option>';
 				}
 				$db->sql_freeresult($result);
 

@@ -1436,7 +1436,10 @@ function rebuild_header($check_ary)
 */
 function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 {
-	global $db, $user, $template, $phpbb_root_path, $phpEx;
+	global $db, $user, $template, $phpbb_root_path, $phpEx, $phpbb_container;
+
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
 
 	$addresses = array();
 
@@ -1497,7 +1500,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 				{
 					if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 					{
-						$address[] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+						$address[] = $group_helper->get_name($row['group_name']);
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1517,7 +1520,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 					{
 						if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 						{
-							$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+							$row['group_name'] = $group_helper->get_name($row['group_name']);
 							$address['group'][$row['group_id']] = array('name' => $row['group_name'], 'colour' => $row['group_colour']);
 						}
 					}
@@ -2178,7 +2181,10 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 */
 function get_recipient_strings($pm_by_id)
 {
-	global $db, $phpbb_root_path, $phpEx, $user;
+	global $db, $phpbb_root_path, $phpEx, $user, $phpbb_container;
+
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
 
 	$address_list = $recipient_list = $address = array();
 
@@ -2224,7 +2230,7 @@ function get_recipient_strings($pm_by_id)
 			{
 				if ($ug_type == 'g')
 				{
-					$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+					$row['name'] = $group_helper->get_name($row['name']);
 				}
 
 				$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);

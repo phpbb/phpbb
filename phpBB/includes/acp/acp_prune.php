@@ -230,7 +230,10 @@ class acp_prune
 	function prune_users($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
+
+		/** @var \phpbb\group\helper $group_helper */
+		$group_helper = $phpbb_container->get('group_helper');
 
 		$user->add_lang('memberlist');
 
@@ -342,7 +345,7 @@ class acp_prune
 		$s_group_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
+			$s_group_list .= '<option value="' . $row['group_id'] . '">' . $group_helper->get_name($row['group_name']) . '</option>';
 		}
 		$db->sql_freeresult($result);
 

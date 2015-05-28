@@ -271,6 +271,9 @@ class auth_admin extends \phpbb\auth\auth
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
+		/** @var \phpbb\group\helper $group_helper */
+		$group_helper = $phpbb_container->get('group_helper');
+
 		// Define names for template loops, might be able to be set
 		$tpl_pmask = 'p_mask';
 		$tpl_fmask = 'f_mask';
@@ -302,7 +305,7 @@ class auth_admin extends \phpbb\auth\auth
 		$ug_names_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['ug_name']] : $row['ug_name']);
+			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : $group_helper->get_name($row['ug_name']);
 		}
 		$db->sql_freeresult($result);
 
@@ -410,14 +413,7 @@ class auth_admin extends \phpbb\auth\auth
 			{
 				foreach ($memberships as $row)
 				{
-					if ($groups[$row['group_id']]['group_type'] == GROUP_SPECIAL)
-					{
-						$user_groups_default[$row['user_id']][] = $user->lang['G_' . $groups[$row['group_id']]['group_name']];
-					}
-					else
-					{
-						$user_groups_custom[$row['user_id']][] = $groups[$row['group_id']]['group_name'];
-					}
+					$user_groups_default[$row['user_id']][] = $group_helper->get_name($groups[$row['group_id']]['group_name']);
 				}
 			}
 			unset($memberships, $groups);
@@ -612,11 +608,15 @@ class auth_admin extends \phpbb\auth\auth
 	function display_role_mask(&$hold_ary)
 	{
 		global $db, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $phpbb_container;
 
 		if (!sizeof($hold_ary))
 		{
 			return;
 		}
+
+		/** @var \phpbb\group\helper $group_helper */
+		$group_helper = $phpbb_container->get('group_helper');
 
 		// Get forum names
 		$sql = 'SELECT forum_id, forum_name
@@ -673,7 +673,7 @@ class auth_admin extends \phpbb\auth\auth
 				{
 					$template->assign_block_vars('role_mask.groups', array(
 						'GROUP_ID'		=> $row['group_id'],
-						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
+						'GROUP_NAME'	=> $group_helper->get_name($row['group_name']),
 						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g={$row['group_id']}"))
 					);
 				}

@@ -886,6 +886,7 @@ function get_forum_parents(&$forum_data)
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $config, $template, $db, $phpbb_root_path, $phpEx, $user, $auth;
+	global $phpbb_container;
 
 	$forum_id_ary = array();
 
@@ -921,6 +922,9 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		'WHERE'		=> 'm.display_on_index = 1',
 	);
 
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
+
 	// We query every forum here because for caching we should not have any parameter.
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql, 3600);
@@ -940,7 +944,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		}
 		else
 		{
-			$group_name = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
+			$group_name = $group_helper->get_name($row['group_name']);
 
 			if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
 			{
