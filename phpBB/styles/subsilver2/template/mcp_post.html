@@ -143,7 +143,7 @@
 
 	<!-- IF S_TOPIC_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
 <!-- ELSE -->
-	<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
+	<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER or S_MCP_POST_ADDITIONAL_OPTS -->
 		<br /><a name="mod" class="anchor"></a>
 
 		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
@@ -156,6 +156,9 @@
 				<td class="row2"><form method="post" name="mcp_chgposter" action="{U_POST_ACTION}"><input class="post" type="text" name="username" value="" /> <input class="btnmain" type="submit" value="{L_CONFIRM}" name="action[chgposter]" /><br /><span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span><!-- IF S_USER_SELECT --><br /><select name="u">{S_USER_SELECT}</select> <input type="submit" class="btnmain" name="action[chgposter_ip]" value="{L_CONFIRM}" /><!-- ENDIF -->{S_FORM_TOKEN}</form></td>
 			</tr>
 		<!-- ENDIF -->
+
+		<!-- EVENT mcp_post_additional_options -->
+
 		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
 			<tr>
 				<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
