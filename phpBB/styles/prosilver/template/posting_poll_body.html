@@ -6,13 +6,14 @@
 	<!-- ENDIF -->
 
 	<fieldset class="fields2">
+	<!-- IF S_POLL_DELETE -->
+		<dl>
+			<dt><label for="poll_delete">{L_POLL_DELETE}{L_COLON}</label></dt>
+			<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> </label></dd>
+		</dl>
+	<!-- ENDIF -->
+
 	<!-- IF S_SHOW_POLL_BOX -->
-		<!-- IF S_POLL_DELETE -->
-			<dl>
-				<dt><label for="poll_delete">{L_POLL_DELETE}{L_COLON}</label></dt>
-				<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> </label></dd>
-			</dl>
-		<!-- ENDIF -->
 		<dl>
 			<dt><label for="poll_title">{L_POLL_QUESTION}{L_COLON}</label></dt>
 			<dd><input type="text" name="poll_title" id="poll_title" maxlength="255" value="{POLL_TITLE}" class="inputbox" /></dd>
@@ -44,14 +45,8 @@
 			</dl>
 		<!-- ENDIF -->
 	<!-- ENDIF -->
-	<!-- EVENT posting_poll_body_options_after -->
 
-	<!-- IF S_POLL_DELETE -->
-		<dl class="fields1">
-			<dt><label for="poll_delete">{L_POLL_DELETE}{L_COLON}</label></dt>
-			<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> </label></dd>
-		</dl>
-	<!-- ENDIF -->
+	<!-- EVENT posting_poll_body_options_after -->
 	</fieldset>
 
 	</div>
