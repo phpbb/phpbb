@@ -22,12 +22,22 @@ use \phpbb\bbcode\js_regex_helper;
 abstract class base
 {
 
+	/**
+	 *
+	 * The constants for the get_available_modes() mask
+	 *
+	 */
 	const HAS_BUTTON_MODE_ICON 		= 0x1;
 	const HAS_BUTTON_MODE_TEXT 		= 0x2;
 	const HAS_BUTTON_MODE_ICON_TEXT = 0x4;
-	// Some buttons are icons, others are text. It depends on what it is.
+	// Some buttons are icons, others are text. It depends on what it is. E.g. Default CKE toolbar.
 	const HAS_BUTTON_MODE_MIXED 	= 0x8;
 
+	/**
+	 *
+	 * The constants for the get_available_button_modes() mask
+	 *
+	 */
 	const DEFAULT_WYSIWYG_MODE	= 0x1;
 	const DEFAULT_SOURCE_MODE	= 0x2;
 	const DEFAULT_MIXED_MODE	= 0x4;
@@ -682,6 +692,22 @@ abstract class base
 		return $config;
 	}
 
+	/**
+	 * Used to get which modes the editor has available.
+	 * This is an bitewise OR ("|") of all the possible choices.
+	 * 
+	 * Typically, an editor has only the WYSIWYG and the source modes but it may
+	 * contain a "MIXED" AKA "RTE" mode.
+	 * 
+	 * @return The joint OR mask of all the available modes the editor has.
+	 */
 	abstract public function get_available_modes();
+
+	/**
+	 * Used to get which ways to display buttons the editor has available.
+	 * This is an bitewise OR ("|") of all the possible choices.
+	 * 
+	 * @return The joint OR mask of all the available modes the editor has.
+	 */
 	abstract public function get_available_button_modes();
 }
