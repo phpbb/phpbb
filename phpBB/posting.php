@@ -1249,6 +1249,7 @@ if ($submit || $preview || $refresh)
 	* @var	array	error		Any error strings; a non-empty array aborts form submission.
 	*				NOTE: Should be actual language strings, NOT language keys.
 	* @since 3.1.0-RC5
+	* @change 3.1.5-RC1 Added poll array to the event
 	*/
 	$vars = array(
 		'post_data',
@@ -1848,7 +1849,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
 * @change 3.1.2-RC1 Removed 'delete' var as it does not exist
-* @change 3.1.4-RC1 Added poll variables to the page_data array
+* @change 3.1.5-RC1 Added poll variables to the page_data array
 */
 $vars = array(
 	'post_data',
