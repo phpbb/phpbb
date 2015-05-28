@@ -1233,6 +1233,31 @@ phpbb.applyCodeEditor = function(textarea) {
 };
 
 /**
+ * Show drag and drop animation when textarea is present
+ *
+ * This function will enable the drag and drop animation for a specified
+ * textarea.
+ *
+ * @param {object} textarea Textarea DOM object to apply editor to
+ */
+phpbb.showDragNDrop = function(textarea) {
+	if (textarea == null) {
+		return;
+	}
+
+	$('body').on('dragenter dragover', function () {
+		$(textarea).addClass('drag-n-drop');
+	}).on('dragleave dragout dragend drop', function() {
+		$(textarea).removeClass('drag-n-drop');
+	});
+	$(textarea).on('dragenter dragover', function () {
+		$(textarea).addClass('drag-n-drop-highlight');
+	}).on('dragleave dragout dragend drop', function() {
+		$(textarea).removeClass('drag-n-drop-highlight');
+	});
+};
+
+/**
 * List of classes that toggle dropdown menu,
 * list of classes that contain visible dropdown menu
 *
