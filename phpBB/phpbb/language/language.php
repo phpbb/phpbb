@@ -194,6 +194,36 @@ class language
 	}
 
 	/**
+	 * @param $key array|string		The language key we want to know more about. Can be string or array.
+	 *
+	 * @return bool		Returns whether the language key is set.
+	 */
+	public function is_set($key)
+	{
+		// Load common language files if they not loaded yet
+		if (!$this->common_language_files_loaded)
+		{
+			$this->load_common_language_files();
+		}
+
+		if (is_array($key))
+		{
+			$lang = &$this->lang[array_shift($key)];
+
+			foreach ($key as $_key)
+			{
+				$lang = &$lang[$_key];
+			}
+		}
+		else
+		{
+			$lang = &$this->lang[$key];
+		}
+
+		return isset($lang);
+	}
+
+	/**
 	 * Advanced language substitution
 	 *
 	 * Function to mimic sprintf() with the possibility of using phpBB's language system to substitute nullar/singular/plural forms.
