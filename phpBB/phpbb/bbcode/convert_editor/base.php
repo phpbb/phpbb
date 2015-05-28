@@ -682,4 +682,6 @@ abstract class base
 		return $config;
 	}
 
+	abstract public function get_available_modes();
+	abstract public function get_available_button_modes();
 }
