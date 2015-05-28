@@ -113,6 +113,26 @@ class mcp_reports
 				$report = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
+				/**
+				* Allow changing the data obtained from the user-submitted report.
+				*
+				* @event core.mcp_reports_report_details_query_after
+				* @var	array	sql_ary		The array in the format of the query builder with the query that had been executted
+				* @var	mixed	forum_id	The forum_id, the number in the f GET parameter
+				* @var	int		post_id		The post_id of the report being viewed (if 0, it is meaningless)
+				* @var	int		report_id	The report_id of the report being viewed
+				* @var	int		report		The query's resulting row.
+				* @since 3.1.5-RC1
+				*/
+				$vars = array(
+					'sql_ary',
+					'forum_id',
+					'post_id',
+					'report_id',
+					'report',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_reports_report_details_query_after', compact($vars)));
+
 				if (!$report)
 				{
 					trigger_error('NO_REPORT');
