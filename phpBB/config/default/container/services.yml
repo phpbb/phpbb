@@ -113,6 +113,11 @@ services:
     file_downloader:
         class: phpbb\file_downloader
 
+    group_helper:
+        class: phpbb\group\helper
+        arguments:
+            - @language
+
     log:
         class: phpbb\log\log
         arguments:
