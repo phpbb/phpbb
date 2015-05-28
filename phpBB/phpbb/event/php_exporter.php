@@ -293,6 +293,7 @@ class php_exporter
 	 * The version to check
 	 *
 	 * @param string $version
+	 * @return bool
 	 */
 	protected function version_is_filtered($version)
 	{
