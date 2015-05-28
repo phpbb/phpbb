@@ -990,7 +990,7 @@ quickreply_editor_message_before
 search_body_form_before
 ===
 * Locations:
-    + styles/prosilver/template/search_body.htm
+    + styles/prosilver/template/search_body.html
 * Since: 3.1.5-RC1
 * Purpose: Add content before the search form
 
