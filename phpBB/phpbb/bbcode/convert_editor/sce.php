@@ -407,7 +407,12 @@ class sce extends base
 		return 'SCE';
 	}
 
-	public static function get_available_button_modes()
+	public function get_available_modes()
+	{
+		return parent::DEFAULT_WYSIWYG_MODE | parent::DEFAULT_SOURCE_MODE;
+	}
+
+	public function get_available_button_modes()
 	{
 		return parent::HAS_BUTTON_MODE_ICON | parent::HAS_BUTTON_MODE_TEXT | parent::HAS_BUTTON_MODE_ICON_TEXT;
 	}
