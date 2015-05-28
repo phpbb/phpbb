@@ -977,11 +977,11 @@ fieldset.quick-login input.inputbox {
 	color: #333333;
 }
 
-.drag-n-drop {
+#message-box textarea.drag-n-drop {
 	outline-color: rgba(102, 102, 102, 0.5);
 }
 
-.drag-n-drop-highlight {
+#message-box textarea.drag-n-drop-highlight {
 	outline-color: rgba(17, 163, 234, 0.5);
 }
 
