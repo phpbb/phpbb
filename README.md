@@ -2,6 +2,8 @@
 
 ## ABOUT
 
+HALLO
+
 phpBB is a free bulletin board written in PHP.
 
 ## COMMUNITY
