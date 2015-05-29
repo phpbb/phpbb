@@ -20,9 +20,9 @@ var tooltips = [];
  * Enable tooltip replacements for selects
  * @param {string} id ID tag of select
  * @param {string} headline Text that should appear on top of tooltip
- * @param {string} sub_id Sub ID that should only be using tooltips (optional)
+ * @param {string} subId Sub ID that should only be using tooltips (optional)
 */
-phpbb.enableTooltipsSelect = function (id, headline, sub_id) {
+phpbb.enableTooltipsSelect = function (id, headline, subId) {
 	var $links, hold;
 
 	hold = document.createElement('span');
@@ -31,7 +31,7 @@ phpbb.enableTooltipsSelect = function (id, headline, sub_id) {
 	hold.style.position = 'absolute';
 	$('body').append(hold);
 
-	if (id === null) {
+	if (!id) {
 		$links = $('.roles-options li');
 	} else {
 		$links = $('.roles-options li', '#' + id);
@@ -40,8 +40,8 @@ phpbb.enableTooltipsSelect = function (id, headline, sub_id) {
 	$links.each(function () {
 		var $this = $(this);
 
-		if (sub_id) {
-			if ($this.parent().attr('id').substr(0, sub_id.length) === sub_id) {
+		if (subId) {
+			if ($this.parent().attr('id').substr(0, subId.length) === subId) {
 				phpbb.prepareTooltips($this, headline);
 			}
 		} else {
@@ -54,9 +54,9 @@ phpbb.enableTooltipsSelect = function (id, headline, sub_id) {
  * Prepare elements to replace
  *
  * @param {object} $element Element to prepare for tooltips
- * @param {string} head_text Text heading to display
+ * @param {string} headText Text heading to display
 */
-phpbb.prepareTooltips = function ($element, head_text) {
+phpbb.prepareTooltips = function ($element, headText) {
 	var tooltip, text, desc, title;
 
 	text = $element.attr('data-title');
@@ -66,7 +66,7 @@ phpbb.prepareTooltips = function ($element, head_text) {
 	}
 
 	title = phpbb.createElement('span', 'top');
-	title.appendChild(document.createTextNode(head_text));
+	title.appendChild(document.createTextNode(headText));
 
 	desc = phpbb.createElement('span', 'bottom');
 	desc.innerHTML = text;
@@ -142,18 +142,18 @@ phpbb.prepareRolesDropdown = function () {
 	// Prepare highlighting of select options and settings update
 	$options.each(function () {
 		var $this = $(this);
-		var $roles_options = $this.closest('.roles-options');
+		var $rolesOptions = $this.closest('.roles-options');
 
 		// Correctly show selected option
 		if (typeof $this.attr('data-selected') !== 'undefined') {
 			$this.closest('.roles-options').children('span').text($this.text());
 		}
 
-		$this.on('mouseover', function (e) {
+		$this.on('mouseover', function () {
 			var $this = $(this);
 			$options.removeClass('roles-highlight');
 			$this.addClass('roles-highlight');
-		}).on('click', function (e) {
+		}).on('click', function () {
 			var $this = $(this);
 
 			// Update settings
@@ -161,8 +161,8 @@ phpbb.prepareRolesDropdown = function () {
 			init_colours($this.attr('data-target-id').replace('advanced', ''));
 
 			// Set selected setting
-			$roles_options.children('span').text($this.text());
-			$roles_options.children('input[type=hidden]').val($this.attr('data-id'));
+			$rolesOptions.children('span').text($this.text());
+			$rolesOptions.children('input[type=hidden]').val($this.attr('data-id'));
 
 			// Trigger hiding of selection options
 			$('body').trigger('click');
