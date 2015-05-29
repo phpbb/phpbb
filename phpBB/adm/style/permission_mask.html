@@ -39,7 +39,7 @@
 		</div>
 		<dl class="permissions-simple">
 			<dt style="width: 20%"><label for="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">{L_ROLE}{L_COLON}</label></dt>
-			<!-- IF p_mask.f_mask.S_ROLE_OPTIONS -->
+			{% if role_options %}
 				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 20%">
 					<div class="dropdown-container dropdown-button-control roles-options" data-alt-text="{LA_ROLE_DESCRIPTION}">
 						<span title="Roles" class="button icon-button tools-icon dropdown-trigger dropdown-select">{L_NO_ROLE_ASSIGNED}</span>
@@ -53,9 +53,9 @@
 						<input type="hidden" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" />
 					</div>
 				</dd>
-			<!-- ELSE -->
+			{% else %}
 				<dd>{L_NO_ROLE_AVAILABLE}</dd>
-			<!-- ENDIF -->
+			{% endif %}
 		</dl>
 	<!-- ENDIF -->
 
