@@ -112,6 +112,7 @@ class router implements RouterInterface
 	 */
 	public function __construct(ContainerInterface $container, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path, $php_ext, $environment, manager $extension_manager = null, $routing_files = array())
 	{
+		$this->container			= $container;
 		$this->filesystem			= $filesystem;
 		$this->extension_manager	= $extension_manager;
 		$this->routing_files		= $routing_files;
