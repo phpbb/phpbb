@@ -83,10 +83,7 @@ class language
 		// Set up default information
 		$this->user_language		= false;
 		$this->default_language		= false;
-		$this->lang					= array(
-			// For BC with user::help array
-			'__help' => array(),
-		);
+		$this->lang					= array();
 		$this->loaded_language_sets	= array(
 			'core'	=> array(),
 			'ext'	=> array(),
@@ -154,8 +151,6 @@ class language
 
 	/**
 	 * Add Language Items
-	 *
-	 * Note: $use_help is assigned where needed (only use them to force inclusion).
 	 *
 	 * Examples:
 	 * <code>

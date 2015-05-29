@@ -119,7 +119,7 @@ class acp_contact
 			'S_SMILIES_DISABLE_CHECKED'		=> !$contact_admin_edit['allow_smilies'],
 			'S_MAGIC_URL_DISABLE_CHECKED'	=> !$contact_admin_edit['allow_urls'],
 
-			'BBCODE_STATUS'			=> $user->lang('BBCODE_IS_ON', '<a href="' . $controller_helper->route('phpbb_help_controller', array('mode' => 'bbcode')) . '">', '</a>'),
+			'BBCODE_STATUS'			=> $user->lang('BBCODE_IS_ON', '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 			'SMILIES_STATUS'		=> $user->lang['SMILIES_ARE_ON'],
 			'IMG_STATUS'			=> $user->lang['IMAGES_ARE_ON'],
 			'FLASH_STATUS'			=> $user->lang['FLASH_IS_ON'],

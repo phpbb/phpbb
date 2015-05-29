@@ -154,10 +154,12 @@ class language_file_loader
 	 *
 	 * @return string	Relative path to language file
 	 *
-	 * @throws \phpbb\language\exception\language_file_not_exists	When the path to the file cannot be resolved
+	 * @throws \phpbb\language\exception\language_file_not_found	When the path to the file cannot be resolved
 	 */
 	protected function get_language_file_path($path, $filename, $locales)
 	{
+		$language_file_path = $filename;
+
 		// Language fallback logic
 		foreach ($locales as $locale)
 		{
@@ -191,9 +193,6 @@ class language_file_loader
 	 */
 	protected function load_language_file($path, &$lang)
 	{
-		// BC code for language files with help
-		$help = array();
-
 		// Do not suppress error if in DEBUG mode
 		if (defined('DEBUG'))
 		{
@@ -202,11 +201,6 @@ class language_file_loader
 		else
 		{
 			@include $path;
-		}
-
-		if (!empty($help))
-		{
-			$lang['__help'] = array_merge($lang['__help'], $help);
 		}
 	}
 }

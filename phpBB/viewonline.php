@@ -376,7 +376,7 @@ while ($row = $db->sql_fetchrow($result))
 				$row['session_page'] === 'app.' . $phpEx . '/help/bbcode')
 			{
 				$location = $user->lang['VIEWING_FAQ'];
-				$location_url = $controller_helper->route('phpbb_help_controller', array('mode' => 'faq'));
+				$location_url = $controller_helper->route('phpbb_help_faq_controller');
 			}
 		break;
 	}
