@@ -2435,6 +2435,39 @@ fieldset.permissions .padding {
 	display: none !important;
 }
 
+.roles-options > .dropdown {
+	left: auto;
+	top: 3em;
+	width: 250px;
+}
+
+.roles-options {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	width: 250px;
+}
+
+.roles-options > span {
+	border: 1px solid #DEDEDE;
+	border-radius: 3px;
+	padding: 4px;
+	width: 250px;
+	display: block;
+	background: url('../images/arrow_down.gif') no-repeat 245px .7em;
+}
+
+.roles-options li {
+	list-style: none;
+}
+
+.roles-highlight {
+	background-color: #1e90ff;
+	color: #fff;
+}
+
 
 /* Classes for additional tasks
 ---------------------------------------- */

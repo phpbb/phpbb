@@ -10,7 +10,12 @@ phpBB Development Team:
 	- further adjustements
 */
 
-var head_text, tooltip_mode;
+(function($) { // Avoid conflicts with other libraries
+
+"use strict";
+
+var head_text, tooltip_mode, tooltips;
+tooltips = [];
 
 /**
 * Enable tooltip replacements for links
@@ -54,7 +59,7 @@ function enable_tooltips_link(id, headline, sub_id) {
 * Enable tooltip replacements for selects
 */
 function enable_tooltips_select(id, headline, sub_id) {
-	var links, i, hold;
+	var $links, hold;
 
 	head_text = headline;
 
@@ -66,24 +71,25 @@ function enable_tooltips_select(id, headline, sub_id) {
 	hold.id = '_tooltip_container';
 	hold.setAttribute('id', '_tooltip_container');
 	hold.style.position = 'absolute';
-
-	document.getElementsByTagName('body')[0].appendChild(hold);
+	$('body').append(hold);
 
 	if (id === null) {
-		links = document.getElementsByTagName('option');
+		$links = $('.roles-options li');
 	} else {
-		links = document.getElementById(id).getElementsByTagName('option');
+		$links = $('#' + id + ' .roles-options li');
 	}
 
-	for (i = 0; i < links.length; i++) {
+	$links.each(function () {
+		var $this = $(this);
+
 		if (sub_id) {
-			if (links[i].parentNode.id.substr(0, sub_id.length) === sub_id) {
-				prepare(links[i]);
+			if ($this.parent().attr('id').substr(0, sub_id.length) === sub_id) {
+				prepare($this);
 			}
 		} else {
-			prepare(links[i]);
+			prepare($this);
 		}
-	}
+	});
 
 	tooltip_mode = 'select';
 }
@@ -91,16 +97,15 @@ function enable_tooltips_select(id, headline, sub_id) {
 /**
 * Prepare elements to replace
 */
-function prepare(element) {
+function prepare($element) {
 	var tooltip, text, desc, title;
 
-	text = element.getAttribute('title');
+	text = $element.attr('data-title');;
 
 	if (text === null || text.length === 0) {
 		return;
 	}
 
-	element.removeAttribute('title');
 	tooltip = create_element('span', 'tooltip');
 
 	title = create_element('span', 'top');
@@ -113,12 +118,12 @@ function prepare(element) {
 
 	set_opacity(tooltip);
 
-	element.tooltip = tooltip;
-	element.onmouseover = show_tooltip;
-	element.onmouseout = hide_tooltip;
+	tooltips[$element.attr('data-id')] = tooltip;
+	$element.on('mouseover', show_tooltip);
+	$element.on('mouseout', hide_tooltip);
 
 	if (tooltip_mode === 'link') {
-		element.onmousemove = locate;
+		$element.onmousemove = locate;
 	}
 }
 
@@ -126,8 +131,9 @@ function prepare(element) {
 * Show tooltip
 */
 function show_tooltip(e) {
-	document.getElementById('_tooltip_container').appendChild(this.tooltip);
-	locate(this);
+	var $this = $(e.target);
+	$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
+	locate($this);
 }
 
 /**
@@ -164,52 +170,49 @@ function create_element(tag, c) {
 * Correct positioning of tooltip container
 */
 function locate(e) {
-	var posx = 0;
-	var posy = 0;
+	var offset;
 
-	e = e.parentNode;
-
-	if (e.offsetParent) {
-		for (posx = 0, posy = 0; e.offsetParent; e = e.offsetParent) {
-			posx += e.offsetLeft;
-			posy += e.offsetTop;
-		}
-	} else {
-		posx = e.offsetLeft;
-		posy = e.offsetTop;
-	}
+	e = e.parent();
+	offset = e.offset();
 
 	if (tooltip_mode === 'link') {
-		document.getElementById('_tooltip_container').style.top=(posy+20) + 'px';
-		document.getElementById('_tooltip_container').style.left=(posx-20) + 'px';
+		$('#_tooltip_container').css({
+			top: offset.top + 20,
+			left: offset.left - 20
+		});
 	} else {
-		document.getElementById('_tooltip_container').style.top=(posy+30) + 'px';
-		document.getElementById('_tooltip_container').style.left=(posx-205) + 'px';
+		$('#_tooltip_container').css({
+			top: offset.top + 30,
+			left: offset.left - 205
+		});
 	}
-
-/*
-	if (e == null)
-	{
-		e = window.event;
-	}
-
-	if (e.pageX || e.pageY)
-	{
-		posx = e.pageX;
-		posy = e.pageY;
-	}
-	else if (e.clientX || e.clientY)
-	{
-		if (document.documentElement.scrollTop)
-		{
-			posx = e.clientX+document.documentElement.scrollLeft;
-			posy = e.clientY+document.documentElement.scrollTop;
-		}
-		else
-		{
-			posx = e.clientX+document.body.scrollLeft;
-			posy = e.clientY+document.body.scrollTop;
-		}
-	}
-*/
 }
+
+$(function() {
+	var $options;
+
+	// Enable tooltips
+	enable_tooltips_select('set-permissions', $('#set-permissions').attr('data-role-description'), 'role');
+
+	$options = $('.roles-options li');
+
+	// Prepare highlighting of select options and settings update
+	$options.each(function () {
+		$(this).on('mouseover', function (e) {
+			var $this = $(this);
+			$options.removeClass('roles-highlight');
+			$this.addClass('roles-highlight');
+		}).on('click', function (e) {
+			var $this = $(this);
+
+			// Update settings
+			set_role_settings($this.attr('data-id'), $this.attr('data-target-id'));
+			init_colours($this.attr('data-target-id').replace('advanced', ''));
+
+			// Set selected setting
+			$this.closest('.roles-options').children('span').text($this.text());
+		});
+	});
+});
+
+})(jQuery); // Avoid conflicts with other libraries

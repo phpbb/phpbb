@@ -480,6 +480,12 @@ class auth_admin extends \phpbb\auth\auth
 
 						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
 						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
+						$template->assign_block_vars('role_options', array(
+							'ID'	=> $role_id,
+							'ROLE_NAME'	=> $role_name,
+							'TITLE'		=> $role_description,
+							'SELECTED'	=> $role_id == $current_role_id,
+						));
 					}
 
 					if ($s_role_options)
