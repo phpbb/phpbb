@@ -315,31 +315,28 @@ phpbb.plupload.updateBbcode = function(action, index) {
 		return;
 	}
 
-	// Private function used to replace the bbcode.
-	var updateBbcode = function(match, fileName) {
-		// Remove the bbcode if the file was removed.
-		if (removal && index === i) {
-			return '';
-		}
-		var newIndex = i + ((removal) ? -1 : 1);
-		return '[attachment=' + newIndex +']' + fileName + '[/attachment]';
-	};
-
-	// Private function used to generate search regexp
-	var searchRegexp = function(index) {
-		return new RegExp('\\[attachment=' + index + '\\](.*?)\\[\\/attachment\\]', 'g');
-	};
+	function runUpdate(i) {
+		var regex = new RegExp('\\[attachment=' + i + '\\](.*?)\\[\\/attachment\\]', 'g');
+		text = text.replace(regex, function updateBbcode(_, fileName) {
+			// Remove the bbcode if the file was removed.
+			if (removal && index === i) {
+				return '';
+			}
+			var newIndex = i + ((removal) ? -1 : 1);
+			return '[attachment=' + newIndex +']' + fileName + '[/attachment]';
+		});
+	}
 
 	// Loop forwards when removing and backwards when adding ensures we don't
 	// corrupt the bbcode index.
 	var i;
 	if (removal) {
 		for (i = index; i < phpbb.plupload.ids.length; i++) {
-			text = text.replace(searchRegexp(i), updateBbcode);
+			runUpdate(i);
 		}
 	} else {
 		for (i = phpbb.plupload.ids.length - 1; i >= index; i--) {
-			text = text.replace(searchRegexp(i), updateBbcode);
+			runUpdate(i);
 		}
 	}
 
