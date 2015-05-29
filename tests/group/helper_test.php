@@ -45,15 +45,15 @@ class phpbb_group_helper_test extends phpbb_test_case
 	public function test_get_name()
 	{
 		// They should be totally fine
-		$this->assertEquals('Bots', 'Bots');
-		$this->assertEquals('Some new group', 'new_group');
-		$this->assertEquals('Should work', 'group_with_ümlauts');
+		$this->assertEquals('Bots', $this->group_helper->get_name('Bots'));
+		$this->assertEquals('Some new group', $this->group_helper->get_name('new_group'));
+		$this->assertEquals('Should work', $this->group_helper->get_name('group_with_ümlauts'));
 
 		// This should fail (obviously)
-		$this->assertNotEquals('They key does not contain uppercase letters', 'not_uppercase');
+		$this->assertNotEquals('They key does not contain uppercase letters', $this->group_helper->get_name('not_uppercase'));
 
 		// The key doesn't exist so just return group name...
-		$this->assertEquals('Awesome group', 'Awesome group');
+		$this->assertEquals('Awesome group', $this->group_helper->get_name('Awesome group'));
 	}
 
 	protected function get_test_language_data_set()
