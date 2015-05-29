@@ -329,22 +329,20 @@ phpbb.plupload.updateBbcode = function(action, index) {
 	var searchRegexp = function(index) {
 		return new RegExp('\\[attachment=' + index + '\\](.*?)\\[\\/attachment\\]', 'g');
 	};
-	// The update order of the indices is based on the action taken to ensure that we don't corrupt
-	// the bbcode index by updating it several times as we move through the loop.
-	// Removal loop starts at the removed index and moves to the end of the array.
-	// Addition loop starts at the end of the array and moves to the added index at 0.
-	var searchLoop = function() {
-		if (typeof i === 'undefined') {
-			i = (removal) ? index : phpbb.plupload.ids.length - 1;
-		}
-		return (removal) ? (i < phpbb.plupload.ids.length): (i >= index);
-	};
-	var i;
 
-	while (searchLoop()) {
-		text = text.replace(searchRegexp(i), updateBbcode);
-		i += (removal) ? 1 : -1;
+	// Loop forwards when removing and backwards when adding ensures we don't
+	// corrupt the bbcode index.
+	var i;
+	if (removal) {
+		for (i = index; i < phpbb.plupload.ids.length; i++) {
+			text = text.replace(searchRegexp(i), updateBbcode);
+		}
+	} else {
+		for (i = phpbb.plupload.ids.length - 1; i >= index; i--) {
+			text = text.replace(searchRegexp(i), updateBbcode);
+		}
 	}
+
 	textarea.val(text);
 };
 
