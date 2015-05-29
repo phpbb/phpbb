@@ -12,7 +12,7 @@ phpBB Development Team:
 
 (function($) { // Avoid conflicts with other libraries
 
-"use strict";
+'use strict';
 
 var head_text, tooltip_mode, tooltips;
 tooltips = [];
@@ -56,7 +56,10 @@ function enable_tooltips_link(id, headline, sub_id) {
 }
 
 /**
-* Enable tooltip replacements for selects
+ * Enable tooltip replacements for selects
+ * @param {string} id ID tag of select
+ * @param {string} headline Text that should appear on top of tooltip
+ * @param {string} sub_id Sub ID that should only be using tooltips (optional)
 */
 function enable_tooltips_select(id, headline, sub_id) {
 	var $links, hold;
@@ -76,7 +79,7 @@ function enable_tooltips_select(id, headline, sub_id) {
 	if (id === null) {
 		$links = $('.roles-options li');
 	} else {
-		$links = $('#' + id + ' .roles-options li');
+		$links = $('.roles-options li', '#' + id);
 	}
 
 	$links.each(function () {
@@ -95,7 +98,9 @@ function enable_tooltips_select(id, headline, sub_id) {
 }
 
 /**
-* Prepare elements to replace
+ * Prepare elements to replace
+ *
+ * @param {object} $element Element to prepare for tooltips
 */
 function prepare($element) {
 	var tooltip, text, desc, title;
@@ -128,18 +133,22 @@ function prepare($element) {
 }
 
 /**
-* Show tooltip
+ * Show tooltip
+ *
+ * @param {object} $element Element passed by .on()
 */
-function show_tooltip(e) {
-	var $this = $(e.target);
+function show_tooltip($element) {
+	var $this = $($element.target);
 	$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
 	locate($this);
 }
 
 /**
-* Hide tooltip
+ * Hide tooltip
+ *
+ * @param {object} $element Element passed by .on()
 */
-function hide_tooltip(e) {
+function hide_tooltip($element) {
 	var d = document.getElementById('_tooltip_container');
 	if (d.childNodes.length > 0) {
 		d.removeChild(d.firstChild);
@@ -167,13 +176,15 @@ function create_element(tag, c) {
 }
 
 /**
-* Correct positioning of tooltip container
+ * Correct positioning of tooltip container
+ *
+ * @param {object} $element Tooltip element that should be positioned
 */
-function locate(e) {
+function locate($element) {
 	var offset;
 
-	e = e.parent();
-	offset = e.offset();
+	$element = $element.parent();
+	offset = $element.offset();
 
 	if (tooltip_mode === 'link') {
 		$('#_tooltip_container').css({
