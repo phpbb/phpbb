@@ -530,15 +530,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Get maximum number of allowed recipients
-	$sql = 'SELECT MAX(g.group_max_recipients) as max_recipients
-		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.user_id = ' . $user->data['user_id'] . '
-			AND ug.user_pending = 0
-			AND ug.group_id = g.group_id';
-	$result = $db->sql_query($sql);
-	$max_recipients = (int) $db->sql_fetchfield('max_recipients');
-	$db->sql_freeresult($result);
+	$max_recipients = phpbb_get_max_setting_from_group($db, $user->data['user_id'], 'max_recipients');
 
+	// If it is 0, there is no limit set and we use the maximum value within the config.
 	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
 
 	// If this is a quote/reply "to all"... we may increase the max_recpients to the number of original recipients
