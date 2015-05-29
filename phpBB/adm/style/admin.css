@@ -1858,6 +1858,7 @@ li.pagination ul {
 	color: #000;
 	text-align: center;
 	border: 1px solid #AAA;
+	opacity: .95;
 }
 
 .tooltip span.top {

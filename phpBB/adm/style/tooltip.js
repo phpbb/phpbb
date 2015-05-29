@@ -14,8 +14,7 @@ phpBB Development Team:
 
 'use strict';
 
-var head_text, tooltips;
-tooltips = [];
+var tooltips = [];
 
 /**
  * Enable tooltip replacements for selects
@@ -25,12 +24,6 @@ tooltips = [];
 */
 function enable_tooltips_select(id, headline, sub_id) {
 	var $links, hold;
-
-	head_text = headline;
-
-	if (!document.getElementById || !document.getElementsByTagName) {
-		return;
-	}
 
 	hold = document.createElement('span');
 	hold.id = '_tooltip_container';
@@ -49,10 +42,10 @@ function enable_tooltips_select(id, headline, sub_id) {
 
 		if (sub_id) {
 			if ($this.parent().attr('id').substr(0, sub_id.length) === sub_id) {
-				prepare($this);
+				prepare($this, headline);
 			}
 		} else {
-			prepare($this);
+			prepare($this, headline);
 		}
 	});
 }
@@ -61,8 +54,9 @@ function enable_tooltips_select(id, headline, sub_id) {
  * Prepare elements to replace
  *
  * @param {object} $element Element to prepare for tooltips
+ * @param {string} head_text Text heading to display
 */
-function prepare($element) {
+function prepare($element, head_text) {
 	var tooltip, text, desc, title;
 
 	text = $element.attr('data-title');
@@ -71,17 +65,15 @@ function prepare($element) {
 		return;
 	}
 
-	tooltip = create_element('span', 'tooltip');
-
 	title = create_element('span', 'top');
 	title.appendChild(document.createTextNode(head_text));
-	tooltip.appendChild(title);
 
 	desc = create_element('span', 'bottom');
 	desc.innerHTML = text;
-	tooltip.appendChild(desc);
 
-	set_opacity(tooltip);
+	tooltip = create_element('span', 'tooltip');
+	tooltip.appendChild(title);
+	tooltip.appendChild(desc);
 
 	tooltips[$element.attr('data-id')] = tooltip;
 	$element.on('mouseover', show_tooltip);
@@ -112,17 +104,12 @@ function hide_tooltip($element) {
 }
 
 /**
-* Set opacity on tooltip element
-*/
-function set_opacity(element) {
-	element.style.filter = 'alpha(opacity:95)';
-	element.style.KHTMLOpacity = '0.95';
-	element.style.MozOpacity = '0.95';
-	element.style.opacity = '0.95';
-}
-
-/**
-* Create new element
+ * Create new element
+ *
+ * @param {string} tag HTML tag
+ * @param {string} c Element's class
+ *
+ * @return {object} Created element
 */
 function create_element(tag, c) {
 	var x = document.createElement(tag);
