@@ -42,8 +42,8 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 /** 
 * This callback will mark all topic icons read
 *
-* @param update_topic_links bool Whether "Mark topics read" links should be
-*     updated. Defaults to true.
+* @param {bool} [update_topic_links=true] Whether "Mark topics read" links
+* 	should be updated. Defaults to true.
 */
 phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 	var readTitle = res.NO_UNREAD_POSTS;
