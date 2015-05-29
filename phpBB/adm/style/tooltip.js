@@ -65,7 +65,7 @@ function enable_tooltips_select(id, headline, sub_id) {
 function prepare($element) {
 	var tooltip, text, desc, title;
 
-	text = $element.attr('data-title');;
+	text = $element.attr('data-title');
 
 	if (text === null || text.length === 0) {
 		return;
