@@ -198,7 +198,16 @@ $(function() {
 
 	// Prepare highlighting of select options and settings update
 	$options.each(function () {
-		$(this).on('mouseover', function (e) {
+		var $this = $(this);
+		var $roles_options = $this.closest('.roles-options');
+
+		// Correctly show selected option
+		if (typeof $this.attr('data-selected') !== 'undefined') {
+			$this.closest('.roles-options').children('span').text($this.text());
+			$('')
+		}
+
+		$this.on('mouseover', function (e) {
 			var $this = $(this);
 			$options.removeClass('roles-highlight');
 			$this.addClass('roles-highlight');
@@ -210,7 +219,11 @@ $(function() {
 			init_colours($this.attr('data-target-id').replace('advanced', ''));
 
 			// Set selected setting
-			$this.closest('.roles-options').children('span').text($this.text());
+			$roles_options.children('span').text($this.text());
+			$roles_options.children('input[type=hidden]').val($this.attr('data-id'));
+
+			// Trigger hiding of selection options
+			$('body').trigger('click');
 		});
 	});
 });
