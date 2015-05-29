@@ -315,7 +315,7 @@ class phpbb_test_case_helpers
 	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
-		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $user;
 
 		$cache_dir = __DIR__ . '/../tmp/';
 
