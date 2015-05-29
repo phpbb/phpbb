@@ -14,46 +14,8 @@ phpBB Development Team:
 
 'use strict';
 
-var head_text, tooltip_mode, tooltips;
+var head_text, tooltips;
 tooltips = [];
-
-/**
-* Enable tooltip replacements for links
-*/
-function enable_tooltips_link(id, headline, sub_id) {
-	var links, i, hold;
-
-	head_text = headline;
-
-	if (!document.getElementById || !document.getElementsByTagName) {
-		return;
-	}
-
-	hold = document.createElement('span');
-	hold.id = '_tooltip_container';
-	hold.setAttribute('id', '_tooltip_container');
-	hold.style.position = 'absolute';
-
-	document.getElementsByTagName('body')[0].appendChild(hold);
-
-	if (id === null) {
-		links = document.getElementsByTagName('a');
-	} else {
-		links = document.getElementById(id).getElementsByTagName('a');
-	}
-
-	for (i = 0; i < links.length; i++) {
-		if (sub_id) {
-			if (links[i].id.substr(0, sub_id.length) === sub_id) {
-				prepare(links[i]);
-			}
-		} else {
-			prepare(links[i]);
-		}
-	}
-
-	tooltip_mode = 'link';
-}
 
 /**
  * Enable tooltip replacements for selects
@@ -93,8 +55,6 @@ function enable_tooltips_select(id, headline, sub_id) {
 			prepare($this);
 		}
 	});
-
-	tooltip_mode = 'select';
 }
 
 /**
@@ -126,10 +86,6 @@ function prepare($element) {
 	tooltips[$element.attr('data-id')] = tooltip;
 	$element.on('mouseover', show_tooltip);
 	$element.on('mouseout', hide_tooltip);
-
-	if (tooltip_mode === 'link') {
-		$element.onmousemove = locate;
-	}
 }
 
 /**
@@ -186,17 +142,10 @@ function locate($element) {
 	$element = $element.parent();
 	offset = $element.offset();
 
-	if (tooltip_mode === 'link') {
-		$('#_tooltip_container').css({
-			top: offset.top + 20,
-			left: offset.left - 20
-		});
-	} else {
-		$('#_tooltip_container').css({
-			top: offset.top + 30,
-			left: offset.left - 205
-		});
-	}
+	$('#_tooltip_container').css({
+		top: offset.top + 30,
+		left: offset.left - 205
+	});
 }
 
 $(function() {
