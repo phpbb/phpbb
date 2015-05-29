@@ -109,6 +109,72 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 	}
 
 	/**
+	* @dataProvider get_generate_quote_tests
+	*/
+	public function test_generate_quote($text, $params, $expected)
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$utils     = $container->get('text_formatter.utils');
+
+		$this->assertSame($expected, $utils->generate_quote($text, $params));
+	}
+
+	public function get_generate_quote_tests()
+	{
+		return array(
+			array(
+				'...',
+				array(),
+				'[quote]...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => 'Brian Kibler'),
+				'[quote="Brian Kibler"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => 'Brian "Brian Kibler" Kibler of Brian Kibler Gaming'),
+				'[quote=\'Brian "Brian Kibler" Kibler of Brian Kibler Gaming\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => "Brian Kibler Gaming's Brian Kibler"),
+				'[quote="Brian Kibler Gaming\'s Brian Kibler"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => "\\\"'"),
+				'[quote="\\\\\\"\'"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => 'Lots of doubles """ one single \' one backslash \\'),
+				'[quote=\'Lots of doubles """ one single \\\' one backslash \\\\\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => "Lots of singles ''' one double \" one backslash \\"),
+				'[quote="Lots of singles \'\'\' one double \\" one backslash \\\\"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author' => 'Defaults to doublequotes """\'\'\''),
+				'[quote="Defaults to doublequotes \\"\\"\\"\'\'\'"]...[/quote]',
+			),
+			array(
+				'...',
+				array(
+					'author'  => 'user',
+					'post_id' => 123,
+					'url'     => 'http://example.org'
+				),
+				'[quote="user" post_id="123" url="http://example.org"]...[/quote]',
+			),
+		);
+	}
+
+	/**
 	* @dataProvider get_remove_bbcode_tests
 	*/
 	public function test_remove_bbcode($original, $name, $depth, $expected)

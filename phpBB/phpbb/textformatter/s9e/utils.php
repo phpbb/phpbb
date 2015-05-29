@@ -35,6 +35,44 @@ class utils implements \phpbb\textformatter\utils_interface
 	}
 
 	/**
+	* Return given string between quotes
+	*
+	* Will use either single- or double- quotes depending on whichever requires less escaping.
+	* Quotes and backslashes are escaped with backslashes where necessary
+	*
+	* @param  string $str Original string
+	* @return string      Escaped string within quotes
+	*/
+	protected function enquote($str)
+	{
+		$singleQuoted = "'" . addcslashes($str, "\\'") . "'";
+		$doubleQuoted = '"' . addcslashes($str, '\\"') . '"';
+
+		return (strlen($singleQuoted) < strlen($doubleQuoted)) ? $singleQuoted : $doubleQuoted;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function generate_quote($text, array $attributes = array())
+	{
+		$quote = '[quote';
+		if (isset($attributes['author']))
+		{
+			// Add the author as the BBCode's default attribute
+			$quote .= '=' . $this->enquote($attributes['author']);
+			unset($attributes['author']);
+		}
+		foreach ($attributes as $name => $value)
+		{
+			$quote .= ' ' . $name . '=' . $this->enquote($value);
+		}
+		$quote .= ']' . $text . '[/quote]';
+
+		return $quote;
+	}
+
+	/**
 	* Get a list of quote authors, limited to the outermost quotes
 	*
 	* @param  string   $xml Parsed text
