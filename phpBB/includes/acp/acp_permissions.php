@@ -932,7 +932,7 @@ class acp_permissions
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$group_name = $group_helper->get_name($row['group_name']);
+			$group_name = $group_helper->get_name($row['name']);
 			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . $group_name . '</span>' : $group_name);
 		}
 		$db->sql_freeresult($result);
