@@ -10,9 +10,9 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
-require_once __DIR__ . '/../test_framework/phpbb_database_test_case.php';
+require_once __DIR__ . '/../../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
+require_once __DIR__ . '/../../test_framework/phpbb_database_test_case.php';
 
 class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_case
 {
