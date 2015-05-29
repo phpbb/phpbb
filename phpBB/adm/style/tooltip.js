@@ -20,7 +20,7 @@ var tooltips = [];
  * Enable tooltip replacements for selects
  * @param {string} id ID tag of select
  * @param {string} headline Text that should appear on top of tooltip
- * @param {string} subId Sub ID that should only be using tooltips (optional)
+ * @param {string} [subId] Sub ID that should only be using tooltips (optional)
 */
 phpbb.enableTooltipsSelect = function (id, headline, subId) {
 	var $links, hold;
@@ -53,7 +53,7 @@ phpbb.enableTooltipsSelect = function (id, headline, subId) {
 /**
  * Prepare elements to replace
  *
- * @param {object} $element Element to prepare for tooltips
+ * @param {jQuery} $element Element to prepare for tooltips
  * @param {string} headText Text heading to display
 */
 phpbb.prepareTooltips = function ($element, headText) {
@@ -119,7 +119,7 @@ phpbb.createElement = function (tag, c) {
 /**
  * Correct positioning of tooltip container
  *
- * @param {object} $element Tooltip element that should be positioned
+ * @param {jQuery} $element Tooltip element that should be positioned
 */
 phpbb.positionTooltip = function ($element) {
 	var offset;
