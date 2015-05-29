@@ -116,18 +116,18 @@ $phpbb_class_loader_ext->register();
 
 // Set up container
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container_builder->set_use_extensions(false);
-$phpbb_container_builder->set_dump_container(false);
-$phpbb_container_builder->set_use_custom_pass(false);
-$phpbb_container_builder->set_inject_config(false);
-$phpbb_container_builder->set_compile_container(false);
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+$phpbb_container_builder
+	->without_extensions()
+	->without_cache()
+	->without_compiled_container()
+;
 
 $other_config_path = $phpbb_root_path . 'install/update/new/config/';
 $config_path = file_exists($other_config_path . 'services.yml') ? $other_config_path : $phpbb_root_path . 'config/';
-$phpbb_container_builder->set_config_path($config_path);
+$phpbb_container_builder->with_config_path($config_path);
 
-$phpbb_container_builder->set_custom_parameters(array(
+$phpbb_container_builder->with_custom_parameters(array(
 	'core.root_path'			=> $phpbb_root_path,
 	'core.adm_relative_path'	=> $phpbb_adm_relative_path,
 	'core.php_ext'				=> $phpEx,

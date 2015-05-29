@@ -80,11 +80,13 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Set up container (must be done here because extensions table may not exist)
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container_builder->set_use_extensions(false);
-$phpbb_container_builder->set_use_kernel_pass(false);
-$phpbb_container_builder->set_dump_container(false);
-$phpbb_container = $phpbb_container_builder->get_container();
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+$phpbb_container = $phpbb_container_builder
+	->with_config($phpbb_config_php_file)
+	->without_extensions()
+	->without_cache()
+	->get_container()
+;
 
 // set up caching
 /* @var $cache \phpbb\cache\service */
