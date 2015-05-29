@@ -1555,7 +1555,7 @@ class session
 		* @event core.update_session
 		* @var	array		session_data				Associative array of session keys to be updated
 		* @var	array		session_id				current user's session_id
-		* @since 3.1.4
+		* @since 3.1.5-RC1
 		*/
 		$vars = array('session_data', 'session_id');
 		extract($phpbb_dispatcher->trigger_event('core.update_session', compact($vars)));
