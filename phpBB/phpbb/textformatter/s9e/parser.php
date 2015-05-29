@@ -227,7 +227,13 @@ class parser implements \phpbb\textformatter\parser_interface
 			}
 		}
 
-		return array_unique($errors);
+		// Deduplicate error messages. array_unique() only works on strings so we have to serialize
+		if (!empty($errors))
+		{
+			$errors = array_map('unserialize', array_unique(array_map('serialize', $errors)));
+		}
+
+		return $errors;
 	}
 
 	/**

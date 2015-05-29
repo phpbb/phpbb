@@ -61,6 +61,13 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		     ->method('lang')
 		     ->will($this->returnValueMap($map));
 
+		$user->data = array(
+			'is_bot' => false,
+			'is_registered' => true,
+			'user_id' => 2,
+		);
+		$user->style = array('style_id' => 1);
+
 		$user->lang = array(
 			'NO_POLL_TITLE' => 'You have to enter a poll title.',
 			'POLL_TITLE_TOO_LONG' => 'The poll title must contain fewer than 100 characters.',
@@ -76,7 +83,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 
 		if (isset($setup))
 		{
-			$setup($parser, $phpbb_container, $this);
+			$setup($phpbb_container, $this);
 		}
 
 		$this->get_test_case_helpers()->set_s9e_services($phpbb_container);
@@ -286,7 +293,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[size=200]200[/size]',
 				'<r><SIZE size="200"><s>[size=200]</s>200<e>[/size]</e></SIZE></r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_font_size', 200);
 				}
@@ -295,7 +302,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[size=200]200[/size]',
 				'<r><SIZE size="200"><s>[size=200]</s>200<e>[/size]</e></SIZE></r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_font_size', 0);
 				}
@@ -304,7 +311,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[size=2000]2000[/size]',
 				'<t>[size=2000]2000[/size]</t>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_font_size', 200);
 				},
@@ -314,7 +321,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[size=0]0[/size]',
 				'<t>[size=0]0[/size]</t>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_font_size', 200);
 				}
@@ -323,7 +330,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[size=200]200[/size]',
 				'<r><SIZE size="200"><s>[size=200]</s>200<e>[/size]</e></SIZE></r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_sig_font_size', 200);
 				}
@@ -332,7 +339,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[size=200]200[/size]',
 				'<t>[size=200]200[/size]</t>',
 				array(true, true, true, true, true, true, true, true, 'sig'),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_sig_font_size', 120);
 				},
@@ -342,7 +349,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[img]http://example.org/100x100.png[/img]',
 				'<r>[img]<URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL>[/img]</r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_height', 12);
 				},
@@ -352,7 +359,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[img]http://example.org/100x100.png[/img]',
 				'<r>[img]<URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL>[/img]</r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_width', 34);
 				},
@@ -362,7 +369,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[img]http://example.org/100x100.png[/img]',
 				'<r><IMG src="http://example.org/100x100.png"><s>[img]</s><URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL><e>[/img]</e></IMG></r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_height', 0);
 					$phpbb_container->get('config')->set('max_post_img_width', 0);
@@ -372,7 +379,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[img]http://example.org/100x100.png[/img]',
 				'<r><IMG src="http://example.org/100x100.png"><s>[img]</s><URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL><e>[/img]</e></IMG></r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_height', 100);
 					$phpbb_container->get('config')->set('max_post_img_width', 100);
@@ -382,7 +389,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[img]http://example.org/100x100.png[/img]',
 				'<r><IMG src="http://example.org/100x100.png"><s>[img]</s><URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL><e>[/img]</e></IMG></r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_sig_img_height', 12);
 					$phpbb_container->get('config')->set('max_sig_img_width', 34);
@@ -392,7 +399,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[img]http://example.org/404.png[/img]',
 				'<r>[img]<URL url="http://example.org/404.png">http://example.org/404.png</URL>[/img]</r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_height', 12);
 				},
@@ -402,7 +409,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[flash=999,999]http://example.org/foo.swf[/flash]',
 				'<r>[flash=999,999]<URL url="http://example.org/foo.swf">http://example.org/foo.swf</URL>[/flash]</r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_height', 123);
 				},
@@ -412,7 +419,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'[flash=999,999]http://example.org/foo.swf[/flash]',
 				'<r>[flash=999,999]<URL url="http://example.org/foo.swf">http://example.org/foo.swf</URL>[/flash]</r>',
 				array(true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_img_width', 456);
 				},
@@ -422,7 +429,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				':) :) :)',
 				'<r><E>:)</E> <E>:)</E> <E>:)</E></r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_smilies', 3);
 				}
@@ -431,7 +438,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				':) :) :) :)',
 				'<r><E>:)</E> <E>:)</E> <E>:)</E> :)</r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_smilies', 3);
 				},
@@ -441,7 +448,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				':) :) :) :)',
 				'<r><E>:)</E> <E>:)</E> <E>:)</E> <E>:)</E></r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_smilies', 0);
 				}
@@ -450,7 +457,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				':) :) :) :)',
 				'<r><E>:)</E> <E>:)</E> <E>:)</E> <E>:)</E></r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_sig_smilies', 3);
 				}
@@ -459,7 +466,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				':) :) :) :)',
 				'<r><E>:)</E> <E>:)</E> <E>:)</E> :)</r>',
 				array(true, true, true, true, true, true, true, true, 'sig'),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_sig_smilies', 3);
 				},
@@ -469,7 +476,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'http://example.org http://example.org http://example.org',
 				'<r><URL url="http://example.org">http://example.org</URL> <URL url="http://example.org">http://example.org</URL> http://example.org</r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_urls', 2);
 				},
@@ -479,7 +486,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'http://example.org http://example.org http://example.org',
 				'<r><URL url="http://example.org">http://example.org</URL> <URL url="http://example.org">http://example.org</URL> <URL url="http://example.org">http://example.org</URL></r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_post_urls', 0);
 				}
@@ -488,7 +495,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				'http://example.org http://example.org http://example.org',
 				'<r><URL url="http://example.org">http://example.org</URL> <URL url="http://example.org">http://example.org</URL> <URL url="http://example.org">http://example.org</URL></r>',
 				array(true, true, true, true, true, true, true, true),
-				function ($parser, $phpbb_container)
+				function ($phpbb_container)
 				{
 					$phpbb_container->get('config')->set('max_sig_urls', 2);
 				}
