@@ -15,3 +15,15 @@ services:
 
     ext.manager:
         class: phpbb\extension\manager_mock
+
+    template.twig.environment:
+        class: Exception
+        arguments:
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - []
