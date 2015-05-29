@@ -1,3 +1,5 @@
+/* global bbfontstyle */
+
 var phpbb = {};
 phpbb.alertTime = 100;
 
@@ -197,7 +199,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
  *
  * @argument {string} string The querystring to parse.
  * @returns {object} The object created.
- */{}
+ */
 phpbb.parseQuerystring = function(string) {
 	var params = {}, i, split;
 
@@ -764,7 +766,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 	}
 
 	if ($tzDate.val() !== '') {
-		$timezone.children('optgroup').remove(':not([data-tz-value="' + $('#tz_date').val() + '"])');
+		$timezone.children('optgroup').remove(':not([data-tz-value="' + $tzDate.val() + '"])');
 	}
 
 	if ($tzDate.val() === $tzSelectDateSuggest.attr('data-suggested-tz')) {
@@ -1004,7 +1006,7 @@ phpbb.resizeTextArea = function($items, options) {
 
 	function autoResize(item) {
 		function setHeight(height) {
-			height += parseInt($item.css('height')) - $item.height();
+			height += parseInt($item.css('height'), 10) - $item.height();
 			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
 			configuration.resizeCallback.call(item, $item);
 		}
@@ -1021,7 +1023,7 @@ phpbb.resizeTextArea = function($items, options) {
 				configuration.maxHeight
 			),
 			$item = $(item),
-			height = parseInt($item.height()),
+			height = parseInt($item.height(), 10),
 			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
 		if (height < 0) {
@@ -1213,10 +1215,10 @@ phpbb.applyCodeEditor = function(textarea) {
  * This function will enable the drag and drop animation for a specified
  * textarea.
  *
- * @param {object} textarea Textarea DOM object to apply editor to
+ * @param {HTMLElement} textarea Textarea DOM object to apply editor to
  */
 phpbb.showDragNDrop = function(textarea) {
-	if (textarea == null) {
+	if (!textarea) {
 		return;
 	}
 
@@ -1474,7 +1476,7 @@ phpbb.registerPalette = function(el) {
 		}
 		e.preventDefault();
 	});
-}
+};
 
 /**
 * Set display of page element

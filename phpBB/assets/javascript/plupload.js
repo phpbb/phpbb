@@ -1,9 +1,11 @@
+/* global phpbb, plupload, attachInline */
+
 plupload.addI18n(phpbb.plupload.i18n);
 phpbb.plupload.ids = [];
 
 (function($) {  // Avoid conflicts with other libraries
 
-"use strict";
+'use strict';
 
 /**
  * Set up the uploader.
@@ -18,7 +20,7 @@ phpbb.plupload.initialize = function() {
 
 	// Only execute if Plupload initialized successfully.
 	phpbb.plupload.uploader.bind('Init', function() {
-		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0],
+		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0];
 		phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
 
 		// Hide the basic upload panel and remove the attach row template.
@@ -64,10 +66,8 @@ phpbb.plupload.clearParams = function() {
  * @param {object} obj
  */
 phpbb.plupload.updateMultipartParams = function(obj) {
-	phpbb.plupload.uploader.settings.multipart_params = $.extend(
-		phpbb.plupload.uploader.settings.multipart_params,
-		obj
-	);
+	var settings = phpbb.plupload.uploader.settings;
+	settings.multipart_params = $.extend(settings.multipart_params, obj);
 };
 
 /**
@@ -95,11 +95,11 @@ phpbb.plupload.getSerializedData = function() {
  * Get the index from the phpbb.plupload.data array where the given
  * attachment id appears.
  *
- * @param {int} attach_id The attachment id of the file.
+ * @param {int} attachId The attachment id of the file.
  * @returns {bool|int} Index of the file if exists, otherwise false.
  */
-phpbb.plupload.getIndex = function(attach_id) {
-	var index = $.inArray(Number(attach_id), phpbb.plupload.ids);
+phpbb.plupload.getIndex = function(attachId) {
+	var index = $.inArray(Number(attachId), phpbb.plupload.ids);
 	return (index !== -1) ? index : false;
 };
 
@@ -154,7 +154,7 @@ phpbb.plupload.updateRows = function(downloadUrl) {
  * #file-list based on the attach_order setting.
  * 
  * @param {object} file Plupload file object for the new attachment.
- */{}
+ */
 phpbb.plupload.insertRow = function(file) {
 	var row = $(phpbb.plupload.rowTpl);
 
@@ -182,10 +182,10 @@ phpbb.plupload.updateRow = function(index, downloadUrl) {
 	// Add the link to the file
 	if (typeof downloadUrl !== 'undefined' && typeof downloadUrl[index] !== 'undefined') {
 		var url = downloadUrl[index].replace('&amp;', '&'),
-			link = ${('}<a></a>');
+			link = $('<a></a>');
 
 		link.attr('href', url).html(attach.real_filename);
-		row.find('.file-name').html(link)	
+		row.find('.file-name').html(link);
 	}
 
 	row.find('textarea').attr('name', 'comment_list[' + index + ']');
@@ -203,6 +203,10 @@ phpbb.plupload.updateHiddenData = function(row, attach, index) {
 	row.find('input[type="hidden"]').remove();
 
 	for (var key in attach) {
+		if (!attach.hasOwnProperty(key)) {
+			return;
+		}
+
 		var input = $('<input />')
 			.attr('type', 'hidden')
 			.attr('name', 'attachment_data[' + index + '][' + key +']')
@@ -290,7 +294,7 @@ phpbb.plupload.hideEmptyList = function() {
 	if (!$('#file-list').children().length) {
 		$('#file-list-container').slideUp(100);
 	}
-}
+};
 
 /**
  * Update the indices used in inline attachment bbcodes. This ensures that the bbcodes
@@ -324,7 +328,7 @@ phpbb.plupload.updateBbcode = function(action, index) {
 	// Private function used to generate search regexp
 	var searchRegexp = function(index) {
 		return new RegExp('\\[attachment=' + index + '\\](.*?)\\[\\/attachment\\]', 'g');
-	}
+	};
 	// The update order of the indices is based on the action taken to ensure that we don't corrupt
 	// the bbcode index by updating it several times as we move through the loop.
 	// Removal loop starts at the removed index and moves to the end of the array.
@@ -334,12 +338,12 @@ phpbb.plupload.updateBbcode = function(action, index) {
 			i = (removal) ? index : phpbb.plupload.ids.length - 1;
 		}
 		return (removal) ? (i < phpbb.plupload.ids.length): (i >= index);
-	}
+	};
 	var i;
 
 	while (searchLoop()) {
 		text = text.replace(searchRegexp(i), updateBbcode);
-		(removal) ? i++ : i--;
+		i += (removal) ? 1 : -1;
 	}
 	textarea.val(text);
 };
@@ -361,7 +365,7 @@ phpbb.plupload.getFilesByStatus = function(status) {
 		}
 	});
 	return files;
-}
+};
 
 /**
  * Check whether the user has reached the maximun number of files that he's allowed
@@ -389,7 +393,7 @@ phpbb.plupload.handleMaxFilesReached = function() {
 		phpbb.plupload.enableUploader();
 	}
 	return false;
-}
+};
 
 /**
  * Disable the uploader
@@ -397,7 +401,7 @@ phpbb.plupload.handleMaxFilesReached = function() {
 phpbb.plupload.disableUploader = function() {
 	$('#add_files').addClass('disabled');
 	phpbb.plupload.uploader.disableBrowse();
-}
+};
 
 /**
  * Enable the uploader
@@ -405,7 +409,7 @@ phpbb.plupload.disableUploader = function() {
 phpbb.plupload.enableUploader = function() {
 	$('#add_files').removeClass('disabled');
 	phpbb.plupload.uploader.disableBrowse(false);
-}
+};
 
 /**
  * Mark all queued files as failed.
@@ -419,7 +423,7 @@ phpbb.plupload.markQueuedFailed = function(error) {
 		$('#' + file.id).find('.file-progress').hide();
 		phpbb.plupload.fileError(file, error);
 	});
-}
+};
 
 /**
  * Marks a file as failed and sets the error message for it.
@@ -430,10 +434,13 @@ phpbb.plupload.markQueuedFailed = function(error) {
 phpbb.plupload.fileError = function(file, error) {
 	file.status = plupload.FAILED;
 	file.error = error;
-	$('#' + file.id).find('.file-status').addClass('file-error').attr({'data-error-title': phpbb.plupload.lang.ERROR, 'data-error-message': error});
-}
-
-
+	$('#' + file.id).find('.file-status')
+		.addClass('file-error')
+		.attr({
+			'data-error-title': phpbb.plupload.lang.ERROR,
+			'data-error-message': error
+		});
+};
 
 
 /**
@@ -442,24 +449,23 @@ phpbb.plupload.fileError = function(file, error) {
 phpbb.plupload.uploader = new plupload.Uploader(phpbb.plupload.config);
 phpbb.plupload.initialize();
 
-
-
+var $fileList = $('#file-list');
 
 /**
  * Insert inline attachment bbcode.
  */
- $('#file-list').on('click', '.file-inline-bbcode', function(e) {
+$fileList.on('click', '.file-inline-bbcode', function(e) {
 	var attachId = $(this).parents('.attach-row').attr('data-attach-id'),
 		index = phpbb.plupload.getIndex(attachId);
 
-	attach_inline(index, phpbb.plupload.data[index].real_filename);	
+	attachInline(index, phpbb.plupload.data[index].real_filename);
 	e.preventDefault();
 });
 
 /**
  * Delete a file.
  */
-$('#file-list').on('click', '.file-delete', function(e) {
+$fileList.on('click', '.file-delete', function(e) {
 	var row = $(this).parents('.attach-row'),
 		attachId = row.attr('data-attach-id');
 
@@ -470,7 +476,7 @@ $('#file-list').on('click', '.file-delete', function(e) {
 /**
  * Display the error message for a particular file when the error icon is clicked.
  */
-$('#file-list').on('click', '.file-error', function(e) {
+$fileList.on('click', '.file-error', function(e) {
 	phpbb.alert($(this).attr('data-error-title'), $(this).attr('data-error-message'));
 	e.preventDefault();
 });
@@ -563,13 +569,14 @@ phpbb.plupload.uploader.bind('FilesAdded', function(up, files) {
 	}
 
 	// Switch the active tab if the style supports it
-	if (typeof activateSubPanel == 'function') {
-		activateSubPanel('attach-panel');
+	if (typeof activateSubPanel === 'function') {
+		activateSubPanel('attach-panel'); // jshint ignore: line
 	}
 
 	// Show the file list if there aren't any files currently.
-	if (!$('#file-list-container').is(':visible')) {
-		$('#file-list-container').show(100);
+	var $fileListContainer = $('#file-list-container');
+	if (!$fileListContainer.is(':visible')) {
+		$fileListContainer.show(100);
 	}
 
 	$.each(files, function(i, file) {
@@ -577,7 +584,7 @@ phpbb.plupload.uploader.bind('FilesAdded', function(up, files) {
 	});
 
 	up.bind('UploadProgress', function(up, file) {
-		$('#' + file.id + " .file-progress-bar").css('width', file.percent + '%');
+		$('.file-progress-bar', '#' + file.id).css('width', file.percent + '%');
 		$('#file-total-progress-bar').css('width', up.total.percent + '%');
 	});
 
@@ -609,7 +616,7 @@ phpbb.plupload.uploader.bind('FileUploaded', function(up, file, response) {
 	row.find('.file-progress').hide();
 
 	try {
-		json = $.parseJSON(response.response);
+		json = JSON.parse(response.response);
 	} catch (e) {
 		error = 'Error parsing server response.';
 	}
@@ -628,23 +635,19 @@ phpbb.plupload.uploader.bind('FileUploaded', function(up, file, response) {
 	if (typeof error !== 'undefined') {
 		phpbb.plupload.fileError(file, error);
 	} else if (file.status === plupload.DONE) {
-		file.attachment_data = json['data'][0];
+		file.attachment_data = json.data[0];
 
 		row.attr('data-attach-id', file.attachment_data.attach_id);
 		row.find('.file-inline-bbcode').show();
 		row.find('.file-status').addClass('file-uploaded');
-		phpbb.plupload.update(json['data'], 'addition', 0, [json['download_url']]);
+		phpbb.plupload.update(json.data, 'addition', 0, [json.download_url]);
 	}
 });
 
 /**
  * Fires when the entire queue of files have been uploaded. 
- *
- * @param {object} up	The plupload.Uploader object
- * @param {Array} files	An array of plupload.File objects that have just
- * 	been uploaded as part of a queue
  */
-phpbb.plupload.uploader.bind('UploadComplete', function(up, files) {
+phpbb.plupload.uploader.bind('UploadComplete', function() {
 	// Hide the progress bar
 	setTimeout(function() {
 		$('#file-total-progress-bar').fadeOut(500, function() {

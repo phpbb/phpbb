@@ -221,7 +221,7 @@
 <!-- IF S_INLINE_ATTACHMENT_OPTIONS -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_ATTACHMENTS}{L_COLON}</b></td>
-		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_form = document.forms[form_name].elements['attachments']; attach_inline(attach_form.value, attach_form.options[attach_form.selectedIndex].text);" onmouseover="helpline('a')" onmouseout="helpline('tip')" />
+		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_form = document.forms[form_name].elements['attachments']; attachInline(attach_form.value, attach_form.options[attach_form.selectedIndex].text);" onmouseover="helpline('a')" onmouseout="helpline('tip')" />
 		</td>
 	</tr>
 <!-- ENDIF -->
