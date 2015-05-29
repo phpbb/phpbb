@@ -93,8 +93,6 @@ phpbb.showTooltip = function ($element) {
 
 /**
  * Hide tooltip
- *
- * @param {object} $element Element passed by .on()
 */
 phpbb.hideTooltip = function () {
 	var d = document.getElementById('_tooltip_container');
@@ -142,7 +140,7 @@ phpbb.prepareRolesDropdown = function () {
 	var $options = $('.roles-options li');
 
 	// Prepare highlighting of select options and settings update
-	$options.each(function (element) {
+	$options.each(function () {
 		var $this = $(this);
 		var $roles_options = $this.closest('.roles-options');
 
