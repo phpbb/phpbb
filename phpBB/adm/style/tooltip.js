@@ -22,7 +22,7 @@ var tooltips = [];
  * @param {string} headline Text that should appear on top of tooltip
  * @param {string} sub_id Sub ID that should only be using tooltips (optional)
 */
-function enable_tooltips_select(id, headline, sub_id) {
+phpbb.enableTooltipsSelect = function (id, headline, sub_id) {
 	var $links, hold;
 
 	hold = document.createElement('span');
@@ -42,13 +42,13 @@ function enable_tooltips_select(id, headline, sub_id) {
 
 		if (sub_id) {
 			if ($this.parent().attr('id').substr(0, sub_id.length) === sub_id) {
-				prepare($this, headline);
+				phpbb.prepareTooltips($this, headline);
 			}
 		} else {
-			prepare($this, headline);
+			phpbb.prepareTooltips($this, headline);
 		}
 	});
-}
+};
 
 /**
  * Prepare elements to replace
@@ -56,7 +56,7 @@ function enable_tooltips_select(id, headline, sub_id) {
  * @param {object} $element Element to prepare for tooltips
  * @param {string} head_text Text heading to display
 */
-function prepare($element, head_text) {
+phpbb.prepareTooltips = function ($element, head_text) {
 	var tooltip, text, desc, title;
 
 	text = $element.attr('data-title');
@@ -65,43 +65,43 @@ function prepare($element, head_text) {
 		return;
 	}
 
-	title = create_element('span', 'top');
+	title = phpbb.createElement('span', 'top');
 	title.appendChild(document.createTextNode(head_text));
 
-	desc = create_element('span', 'bottom');
+	desc = phpbb.createElement('span', 'bottom');
 	desc.innerHTML = text;
 
-	tooltip = create_element('span', 'tooltip');
+	tooltip = phpbb.createElement('span', 'tooltip');
 	tooltip.appendChild(title);
 	tooltip.appendChild(desc);
 
 	tooltips[$element.attr('data-id')] = tooltip;
-	$element.on('mouseover', show_tooltip);
-	$element.on('mouseout', hide_tooltip);
-}
+	$element.on('mouseover', phpbb.showTooltip);
+	$element.on('mouseout', phpbb.hideTooltip);
+};
 
 /**
  * Show tooltip
  *
  * @param {object} $element Element passed by .on()
 */
-function show_tooltip($element) {
+phpbb.showTooltip = function ($element) {
 	var $this = $($element.target);
 	$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
-	locate($this);
-}
+	phpbb.positionTooltip($this);
+};
 
 /**
  * Hide tooltip
  *
  * @param {object} $element Element passed by .on()
 */
-function hide_tooltip($element) {
+phpbb.hideTooltip = function () {
 	var d = document.getElementById('_tooltip_container');
 	if (d.childNodes.length > 0) {
 		d.removeChild(d.firstChild);
 	}
-}
+};
 
 /**
  * Create new element
@@ -111,19 +111,19 @@ function hide_tooltip($element) {
  *
  * @return {object} Created element
 */
-function create_element(tag, c) {
+phpbb.createElement = function (tag, c) {
 	var x = document.createElement(tag);
 	x.className = c;
 	x.style.display = 'block';
 	return x;
-}
+};
 
 /**
  * Correct positioning of tooltip container
  *
  * @param {object} $element Tooltip element that should be positioned
 */
-function locate($element) {
+phpbb.positionTooltip = function ($element) {
 	var offset;
 
 	$element = $element.parent();
@@ -133,25 +133,22 @@ function locate($element) {
 		top: offset.top + 30,
 		left: offset.left - 205
 	});
-}
+};
 
-$(function() {
-	var $options;
-
-	// Enable tooltips
-	enable_tooltips_select('set-permissions', $('#set-permissions').attr('data-role-description'), 'role');
-
-	$options = $('.roles-options li');
+/**
+ * Prepare roles drop down select
+ */
+phpbb.prepareRolesDropdown = function () {
+	var $options = $('.roles-options li');
 
 	// Prepare highlighting of select options and settings update
-	$options.each(function () {
+	$options.each(function (element) {
 		var $this = $(this);
 		var $roles_options = $this.closest('.roles-options');
 
 		// Correctly show selected option
 		if (typeof $this.attr('data-selected') !== 'undefined') {
 			$this.closest('.roles-options').children('span').text($this.text());
-			$('')
 		}
 
 		$this.on('mouseover', function (e) {
@@ -173,6 +170,15 @@ $(function() {
 			$('body').trigger('click');
 		});
 	});
+};
+
+// Run onload functions for RolesDropdown and tooltips
+$(function() {
+	// Enable tooltips
+	phpbb.enableTooltipsSelect('set-permissions', $('#set-permissions').attr('data-role-description'), 'role');
+
+	// Prepare dropdown
+	phpbb.prepareRolesDropdown();
 });
 
 })(jQuery); // Avoid conflicts with other libraries
