@@ -50,7 +50,7 @@ var editor = {
 	},
 
 	getElementDefaultDisplay: function () {
-		if(window.getComputedStyle){
+		if (window.getComputedStyle){
 			return function (tagName){
 				var tag = document.createElement(tagName);
 				document.body.appendChild(tag);
@@ -58,7 +58,7 @@ var editor = {
 				document.body.removeChild(tag);
 				return cStyle;
 			}
-		}else{
+		} else {
 			return function (tagName){
 				var tag = document.createElement(tagName);
 				document.body.appendChild(tag);
@@ -259,7 +259,7 @@ var editor = {
 	*/
 	revertBackToBBCode: function (name, attributes, content, isSelfClosing){
 		var attributeStr = ' ';
-		if(attributes.defaultattr){
+		if (attributes.defaultattr){
 			attributeStr = '="' + attributes.defaultattr + '" ';
 			delete attributes.defaultattr;
 		}
@@ -268,7 +268,7 @@ var editor = {
 			attributeStr += attributeName + '="' + attributes[attributeName] + '" ';
 		}
 
-		if(attributeStr === ' '){
+		if (attributeStr === ' '){
 			attributeStr = '';
 		}
 
@@ -292,10 +292,10 @@ var editor = {
 
 			return {
 				'setParameter': function (name, value){
-					if(!value){
-						if(value === ''){
+					if (!value){
+						if (value === ''){
 							value = ' ';
-						}else{
+						} else {
 							value = '';
 						}
 					}
@@ -308,7 +308,7 @@ var editor = {
 					return onDocument.importNode(processor.transformToFragment(xmlDoc, onDocument), true);
 				}
 			};
-		}else{
+		} else {
 			var ieStylesheet = new ActiveXObject('MSXML2.FreeThreadedDOMDocument.6.0');
 			ieStylesheet.async = false;
 			ieStylesheet.validateOnParse = false;
@@ -320,10 +320,10 @@ var editor = {
 
 			return {
 				'setParameter' : function (name, value){
-					if(!value){
-						if(value === ''){
+					if (!value){
+						if (value === ''){
 							value = ' ';
-						}else{
+						} else {
 							value = '';
 						}
 					}
