@@ -175,14 +175,14 @@ abstract class base implements reparser_interface
 	protected function reparse_record(array $record)
 	{
 		$record = $this->add_missing_fields($record);
+		$flags = ($record['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0;
+		$flags |= ($record['enable_smilies']) ? OPTION_FLAG_SMILIES : 0;
+		$flags |= ($record['enable_magic_url']) ? OPTION_FLAG_LINKS : 0;
 		$unparsed = array_merge(
 			$record,
-			generate_text_for_edit(
-				$record['text'],
-				$record['bbcode_uid'],
-				OPTION_FLAG_BBCODE | OPTION_FLAG_SMILIES | OPTION_FLAG_LINKS
-			)
+			generate_text_for_edit($record['text'], $record['bbcode_uid'], $flags)
 		);
+
 		// generate_text_for_edit() and decode_message() actually return the text as HTML. It has to
 		// be decoded to plain text before it can be reparsed
 		$text = html_entity_decode($unparsed['text'], ENT_QUOTES, 'UTF-8');
