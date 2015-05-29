@@ -195,13 +195,12 @@ class router implements RouterInterface
 				$route->setDefault($name, $this->resolve($value));
 			}
 
+			$requirements = $route->getRequirements();
+			unset($requirements['_scheme']);
+			unset($requirements['_method']);
+
 			foreach ($route->getRequirements() as $name => $value)
 			{
-				if ($name === '_scheme' || $name === '_method')
-				{
-					continue; // ignore deprecated requirements to not trigger deprecation warnings
-				}
-
 				$route->setRequirement($name, $this->resolve($value));
 			}
 
