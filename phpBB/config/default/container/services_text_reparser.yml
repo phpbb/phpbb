@@ -1,4 +1,11 @@
 services:
+    text_reparser_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: text_reparser.plugin }
+
     text_reparser.contact_admin_info:
         class: phpbb\textreparser\plugins\contact_admin_info
         arguments:
