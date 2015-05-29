@@ -200,7 +200,7 @@ class router implements RouterInterface
 			unset($requirements['_scheme']);
 			unset($requirements['_method']);
 
-			foreach ($route->getRequirements() as $name => $value)
+			foreach ($requirements as $name => $value)
 			{
 				$route->setRequirement($name, $this->resolve($value));
 			}
