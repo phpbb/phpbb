@@ -262,8 +262,15 @@ phpbb.ajaxify = function(options) {
 				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
 			}
 			phpbb.clearLoadingTimeout();
-			var errorText = false;
-			if (typeof errorThrown === 'string' && errorThrown.length > 0) {
+			var responseText, errorText = false;
+			try {
+				responseText = JSON.parse(jqXHR.responseText);
+				responseText = responseText.message;
+			} catch (e) {}
+			if (typeof responseText === 'string' && responseText.length > 0) {
+				errorText = responseText;
+			}
+			else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
 				errorText = errorThrown;
 			}
 			else {
