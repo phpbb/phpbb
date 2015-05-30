@@ -75,14 +75,14 @@
 
 	<target name="sniff">
 		<exec command="phpBB/vendor/bin/phpcs
-				-s
+				-s -p
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-strict-core.xml
 				--ignore=${project.basedir}/phpBB/phpbb/db/migration/data/v30x/*
 				phpBB/phpbb"
 			dir="." returnProperty="retval-php-strict" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
-				-s
+				-s -p
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-legacy-core.xml
 				--ignore=${project.basedir}/phpBB/cache/*
@@ -98,7 +98,7 @@
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
-				-s
+				-s -p
 				--extensions=php
 				--standard=build/code_sniffer/ruleset-php-extensions.xml
 				--ignore=${project.basedir}/phpBB/ext/*/tests/*

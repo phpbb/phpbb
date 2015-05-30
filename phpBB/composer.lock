@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "d93446768ea0665b7c55c01890153a67",
+    "hash": "17b51553237b78392baf2ec78bfdfbc0",
     "packages": [
         {
             "name": "lusitanian/oauth",
@@ -652,12 +653,12 @@
             "version": "v1.13.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fabpot/Twig.git",
+                "url": "https://github.com/twigphp/Twig.git",
                 "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/6d6a1009427d1f398c9d40904147bf9f723d5755",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/6d6a1009427d1f398c9d40904147bf9f723d5755",
                 "reference": "6d6a1009427d1f398c9d40904147bf9f723d5755",
                 "shasum": ""
             },
@@ -682,14 +683,11 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 },
                 {
                     "name": "Armin Ronacher",
-                    "email": "armin.ronacher@active-4.com",
-                    "role": "Project Founder"
+                    "email": "armin.ronacher@active-4.com"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
@@ -1914,41 +1912,45 @@
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "1.5.2",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/squizlabs/PHP_CodeSniffer.git",
-                "reference": "a76a39b317ce8106abe6264daa505e24e1731860"
+                "reference": "e96d8579fbed0c95ecf2a0501ec4f307a4aa6404"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/a76a39b317ce8106abe6264daa505e24e1731860",
-                "reference": "a76a39b317ce8106abe6264daa505e24e1731860",
+                "url": "https://api.github.com/repos/squizlabs/PHP_CodeSniffer/zipball/e96d8579fbed0c95ecf2a0501ec4f307a4aa6404",
+                "reference": "e96d8579fbed0c95ecf2a0501ec4f307a4aa6404",
                 "shasum": ""
             },
             "require": {
                 "ext-tokenizer": "*",
+                "ext-xmlwriter": "*",
                 "php": ">=5.1.2"
             },
-            "suggest": {
-                "phpunit/php-timer": "dev-master"
-            },
             "bin": [
-                "scripts/phpcs"
+                "scripts/phpcs",
+                "scripts/phpcbf"
             ],
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
                 "classmap": [
                     "CodeSniffer.php",
                     "CodeSniffer/CLI.php",
                     "CodeSniffer/Exception.php",
                     "CodeSniffer/File.php",
+                    "CodeSniffer/Fixer.php",
                     "CodeSniffer/Report.php",
                     "CodeSniffer/Reporting.php",
                     "CodeSniffer/Sniff.php",
                     "CodeSniffer/Tokens.php",
                     "CodeSniffer/Reports/",
-                    "CodeSniffer/CommentParser/",
                     "CodeSniffer/Tokenizers/",
                     "CodeSniffer/DocGenerators/",
                     "CodeSniffer/Standards/AbstractPatternSniff.php",
@@ -1974,13 +1976,13 @@
                     "role": "lead"
                 }
             ],
-            "description": "PHP_CodeSniffer tokenises PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
+            "description": "PHP_CodeSniffer tokenizes PHP, JavaScript and CSS files and detects violations of a defined set of coding standards.",
             "homepage": "http://www.squizlabs.com/php-codesniffer",
             "keywords": [
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-02-04 23:49:58"
+            "time": "2015-04-28 23:28:20"
         },
         {
             "name": "symfony/browser-kit",
@@ -2236,17 +2238,13 @@
             "time": "2014-10-01 05:38:33"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.3"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }

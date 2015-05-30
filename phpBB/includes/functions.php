@@ -1159,7 +1159,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	/**
 	 * This event is used for performing actions directly before marking forums,
 	 * topics or posts as read.
-	 * 
+	 *
 	 * It is also possible to prevent the marking. For that, the $should_markread parameter
 	 * should be set to FALSE.
 	 *

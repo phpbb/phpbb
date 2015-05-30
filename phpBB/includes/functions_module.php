@@ -976,7 +976,7 @@ class p_master
 	*
 	* @param string $class module class (acp/mcp/ucp)
 	* @param string $name module name (class name of the module, or its basename
-    *                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
+	*                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
 	* @param string $mode mode, as passed through to the module
 	*
 	*/
