@@ -196,6 +196,22 @@ $lang = array_merge($lang, array(
 	'SMILIES_LIMIT_EXPLAIN'			=> 'Maximum number of smilies in a post. Set to 0 for unlimited smilies.',
 	'SMILIES_PER_PAGE'				=> 'Smilies per page',
 	'TOPICS_PER_PAGE'				=> 'Topics per page',
+
+	'WYSIWYG_TITLE'							=> 'WYSIWYG editor',
+	'WYSIWYG_TITLE_EXPLAIN'					=> 'Here you can set the default options for all the the WYSIWYG editors and the forum’s default WYSIWYG editor to use. Any user may override this in their UCP.',
+	'WYSIWYG_DEFAULT_EDITOR'				=> 'Default editor',
+	'WYSIWYG_DEFAULT_EDITOR_EXPLAIN'		=> 'Choose the board editor for guests and for who does’t override this in their UCP',
+	'WYSIWYG_DEFAULT_MODE'					=> 'Editor default mode',
+	'WYSIWYG_DEFAULT_MODE_EXPLAIN'			=> '',
+	'WYSIWYG_DEFAULT_BUTTON_MODE'			=> 'Editor default button mode',
+	'WYSIWYG_DEFAULT_BUTTON_MODE_EXPLAIN'	=> 'The editor may allow the buttons to display in different ways; from just text to icons representing their action',
+	'WYSIWYG_MODE_WYSIWYG'					=> 'WYSIWYG',
+	'WYSIWYG_MODE_SOURCE'					=> 'source',
+	'WYSIWYG_MODE_MIXED'					=> 'mixed',
+	'WYSIWYG_BUTTON_MODE_ICON'				=> 'icons',
+	'WYSIWYG_BUTTON_MODE_TEXT'				=> 'text',
+	'WYSIWYG_BUTTON_MODE_ICON_TEXT'			=> 'icons and text',
+	'WYSIWYG_BUTTON_MODE_MIXED'				=> 'mixed',
 ));
 
 // Signature Settings
