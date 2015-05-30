@@ -1130,6 +1130,11 @@ class mcp_queue
 			// Build a list of posts to be disapproved and get the related topics real replies count
 			foreach ($post_info as $post_id => $post_data)
 			{
+				if ($mode === 'unapproved_topics' && $post_data['post_visibility'] == ITEM_APPROVED)
+				{
+					continue;
+				}
+
 				$post_disapprove_list[$post_id] = $post_data['topic_id'];
 				if (!isset($topic_posts_unapproved[$post_data['topic_id']]))
 				{
@@ -1137,6 +1142,12 @@ class mcp_queue
 					$topic_posts_unapproved[$post_data['topic_id']] = 0;
 				}
 				$topic_posts_unapproved[$post_data['topic_id']]++;
+			}
+
+			// Do not try to disapprove if no posts are selected
+			if (empty($post_disapprove_list))
+			{
+				trigger_error('NO_POST_SELECTED');
 			}
 
 			// Now we build the log array
