@@ -14,7 +14,6 @@
 
 namespace phpbb\template\twig\node;
 
-
 class definenode extends \Twig_Node
 {
 	public function __construct($capture, \Twig_NodeInterface $name, \Twig_NodeInterface $value, $lineno, $tag = null)

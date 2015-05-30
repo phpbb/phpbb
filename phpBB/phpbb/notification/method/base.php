@@ -60,7 +60,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 
 	/**
 	* Notification Method Base Constructor
-	* 
+	*
 	* @param \phpbb\user_loader $user_loader
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\driver\driver_interface $cache
@@ -85,7 +85,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 
 	/**
 	* Set notification manager (required)
-	* 
+	*
 	* @param \phpbb\notification\manager $notification_manager
 	*/
 	public function set_notification_manager(\phpbb\notification\manager $notification_manager)
