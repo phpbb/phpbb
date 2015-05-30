@@ -16,6 +16,12 @@ acp_bbcodes_edit_fieldsets_after
 * Since: 3.1.0-a3
 * Purpose: Add settings to BBCode add/edit form
 
+acp_board_extra_wysiwyg_fields'
+===
+* Location: adm/style/acp_board.html
+* Since: 3.2.0-a1
+* Purpose: Include more possible settings to display to the user
+
 acp_email_options_after
 ===
 * Location: adm/style/acp_email.html
