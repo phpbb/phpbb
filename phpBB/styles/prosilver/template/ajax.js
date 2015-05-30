@@ -9,9 +9,9 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
-		'forum_unread': 'forum_read',
-		'forum_unread_subforum': 'forum_read_subforum',
-		'forum_unread_locked': 'forum_read_locked'
+		forum_unread: 'forum_read',
+		forum_unread_subforum: 'forum_read_subforum',
+		forum_unread_locked: 'forum_read_locked'
 	};
 
 	$('li.row').find('dl[class*="forum_unread"]').each(function() {
@@ -39,7 +39,7 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	phpbb.closeDarkenWrapper(3000);
 });
 
-/** 
+/**
 * This callback will mark all topic icons read
 *
 * @param {bool} [update_topic_links=true] Whether "Mark topics read" links
@@ -49,10 +49,10 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 	var readTitle = res.NO_UNREAD_POSTS;
 	var unreadTitle = res.UNREAD_POSTS;
 	var iconsArray = {
-		'global_unread': 'global_read',
-		'announce_unread': 'announce_read',
-		'sticky_unread': 'sticky_read',
-		'topic_unread': 'topic_read'
+		global_unread: 'global_read',
+		announce_unread: 'announce_read',
+		sticky_unread: 'sticky_read',
+		topic_unread: 'topic_read'
 	};
 	var iconsState = ['', '_hot', '_hot_mine', '_locked', '_locked_mine', '_mine'];
 	var unreadClassSelectors;
@@ -223,7 +223,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			// If the user can still vote, simply slide down the results
 			poll.find('.resultbar, .poll_option_percent, .poll_total_votes').show(500);
 		}
-		
+
 		// Get the votes count of the highest poll option
 		poll.find('[data-poll-option-id]').each(function() {
 			var option = $(this);
@@ -252,7 +252,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var newBarClass = (percent === 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
 
 			setTimeout(function () {
-				bar.animate({width: percentRel + '%'}, 500)
+				bar.animate({ width: percentRel + '%' }, 500)
 					.removeClass('pollbar1 pollbar2 pollbar3 pollbar4 pollbar5')
 					.addClass(newBarClass)
 					.html(res.vote_counts[optionId]);
@@ -287,10 +287,10 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var panelHeight = panel.height();
 			var innerHeight = panel.find('.inner').outerHeight();
 
-			if (panelHeight != innerHeight) {
-				panel.css({'min-height': '', 'height': panelHeight})
-					.animate({height: innerHeight}, time, function () {
-						panel.css({'min-height': innerHeight, 'height': ''});
+			if (panelHeight !== innerHeight) {
+				panel.css({ minHeight: '', height: panelHeight })
+					.animate({ height: innerHeight }, time, function () {
+						panel.css({ minHeight: innerHeight, height: '' });
 					});
 			}
 		};
@@ -377,7 +377,8 @@ $('#member_search').click(function () {
 * Automatically resize textarea
 */
 $(function() {
-	phpbb.resizeTextArea($('textarea:not(#message-box textarea, .no-auto-resize)'), {minHeight: 75, maxHeight: 250});
+	var $textarea = $('textarea:not(#message-box textarea, .no-auto-resize)');
+	phpbb.resizeTextArea($textarea, { minHeight: 75, maxHeight: 250 });
 	phpbb.resizeTextArea($('textarea', '#message-box'));
 });
 
