@@ -154,7 +154,7 @@ class language_file_loader
 	 *
 	 * @return string	Relative path to language file
 	 *
-	 * @throws \phpbb\language\exception\language_file_not_found	When the path to the file cannot be resolved
+	 * @throws language_file_not_found	When the path to the file cannot be resolved
 	 */
 	protected function get_language_file_path($path, $filename, $locales)
 	{
