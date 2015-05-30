@@ -1,3 +1,5 @@
+/* global bbfontstyle */
+
 var phpbb = {};
 phpbb.alertTime = 100;
 
@@ -21,7 +23,7 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
 /**
  * Display a loading screen
  *
- * @returns object Returns loadingIndicator.
+ * @returns {object} Returns loadingIndicator.
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator.is(':visible')) {
@@ -54,7 +56,7 @@ phpbb.clearLoadingTimeout = function() {
 /**
 * Close popup alert after a specified delay
 *
-* @param int Delay in ms until darkenwrapper's click event is triggered
+* @param {int} delay Delay in ms until darkenwrapper's click event is triggered
 */
 phpbb.closeDarkenWrapper = function(delay) {
 	phpbbAlertTimer = setTimeout(function() {
@@ -67,14 +69,12 @@ phpbb.closeDarkenWrapper = function(delay) {
  *
  * You can only call one alert or confirm box at any one time.
  *
- * @param string title Title of the message, eg "Information" (HTML).
- * @param string msg Message to display (HTML).
- * @param bool fadedark Remove the dark background when done? Defaults
- *     to yes.
+ * @param {string} title Title of the message, eg "Information" (HTML).
+ * @param {string} msg Message to display (HTML).
  *
- * @returns object Returns the div created.
+ * @returns {object} Returns the div created.
  */
-phpbb.alert = function(title, msg, fadedark) {
+phpbb.alert = function(title, msg) {
 	var $alert = $('#phpbb_alert');
 	$alert.find('.alert_title').html(title);
 	$alert.find('.alert_text').html(msg);
@@ -94,7 +94,7 @@ phpbb.alert = function(title, msg, fadedark) {
 /**
 * Handler for opening an alert box.
 *
-* @param jQuery $alert			jQuery object.
+* @param {jQuery} $alert jQuery object.
 */
 phpbb.alert.open = function($alert) {
 	if (!$dark.is(':visible')) {
@@ -134,8 +134,8 @@ phpbb.alert.open = function($alert) {
 /**
 * Handler for closing an alert box.
 *
-* @param jQuery $alert			jQuery object.
-* @param bool fadedark			Whether to remove dark background.
+* @param {jQuery} $alert jQuery object.
+* @param {bool} fadedark Whether to remove dark background.
 */
 phpbb.alert.close = function($alert, fadedark) {
 	var $fade = (fadedark) ? $dark : $alert;
@@ -153,13 +153,13 @@ phpbb.alert.close = function($alert, fadedark) {
  *
  * You can only call one alert or confirm box at any one time.
  *
- * @param string msg Message to display (HTML).
- * @param function callback Callback. Bool param, whether the user pressed
+ * @param {string} msg Message to display (HTML).
+ * @param {function} callback Callback. Bool param, whether the user pressed
  *     yes or no (or whatever their language is).
- * @param bool fadedark Remove the dark background when done? Defaults
+ * @param {bool} fadedark Remove the dark background when done? Defaults
  *     to yes.
  *
- * @returns object Returns the div created.
+ * @returns {object} Returns the div created.
  */
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
@@ -197,8 +197,8 @@ phpbb.confirm = function(msg, callback, fadedark) {
 /**
  * Turn a querystring into an array.
  *
- * @argument string string The querystring to parse.
- * @returns object The object created.
+ * @argument {string} string The querystring to parse.
+ * @returns {object} The object created.
  */
 phpbb.parseQuerystring = function(string) {
 	var params = {}, i, split;
@@ -223,12 +223,7 @@ phpbb.parseQuerystring = function(string) {
  * For more info, view the following page on the phpBB wiki:
  * http://wiki.phpbb.com/JavaScript_Function.phpbb.ajaxify
  *
- * @param object options Options.
- * @param bool/function refresh If we are sent back a refresh, should it be
- *     acted upon? This can either be true / false / a function.
- * @param function callback Callback to call on completion of event. Has
- *     three parameters: the element that the event was evoked from, the JSON
- *     that was returned and (if it is a form) the form action.
+ * @param {object} options Options.
  */
 phpbb.ajaxify = function(options) {
 	var $elements = $(options.selector),
@@ -290,7 +285,7 @@ phpbb.ajaxify = function(options) {
 		 * It cannot be called from outside this function, and is purely here to
 		 * avoid repetition of code.
 		 *
-		 * @param object res The object sent back by the server.
+		 * @param {object} res The object sent back by the server.
 		 */
 		function returnHandler(res) {
 			var alert;
@@ -436,8 +431,8 @@ phpbb.search = {
 /**
  * Get cached search data. 
  *
- * @param string id		Search ID.
- * @return bool|object.	Cached data object. Returns false if no data exists.
+ * @param {string} id Search ID.
+ * @returns {bool|object} Cached data object. Returns false if no data exists.
  */
 phpbb.search.cache.get = function(id) {
 	if (this.data[id]) {
@@ -449,11 +444,9 @@ phpbb.search.cache.get = function(id) {
 /**
  * Set search cache data value. 
  *
- * @param string id		Search ID.
- * @param string key	Data key.
- * @param string value	Data value.
- *
- * @return undefined
+ * @param {string} id		Search ID.
+ * @param {string} key		Data key.
+ * @param {string} value	Data value.
  */
 phpbb.search.cache.set = function(id, key, value) {
 	if (!this.data[id]) {
@@ -465,21 +458,19 @@ phpbb.search.cache.set = function(id, key, value) {
 /**
  * Cache search result. 
  *
- * @param string id			Search ID.
- * @param string keyword	Keyword.
- * @param array results		Search results.
- *
- * @return undefined
+ * @param {string} id		Search ID.
+ * @param {string} keyword	Keyword.
+ * @param {Array} results	Search results.
  */
-phpbb.search.cache.setResults = function(id, keyword, value) {
-	this.data[id].results[keyword] = value;
+phpbb.search.cache.setResults = function(id, keyword, results) {
+	this.data[id].results[keyword] = results;
 };
 
 /**
  * Trim spaces from keyword and lower its case.
  *
- * @param string keyword	Search keyword to clean.
- * @return string Cleaned string.
+ * @param {string} keyword Search keyword to clean.
+ * @returns {string} Cleaned string.
  */
 phpbb.search.cleanKeyword = function(keyword) {
 	return $.trim(keyword).toLowerCase();
@@ -489,11 +480,11 @@ phpbb.search.cleanKeyword = function(keyword) {
  * Get clean version of search keyword. If textarea supports several keywords
  * (one per line), it fetches the current keyword based on the caret position.
  *
- * @param jQuery $input		Search input|textarea.
- * @param string keyword	Input|textarea value.
- * @param bool multiline	Whether textarea supports multiple search keywords.
+ * @param {jQuery} $input	Search input|textarea.
+ * @param {string} keyword	Input|textarea value.
+ * @param {bool} multiline	Whether textarea supports multiple search keywords.
  *
- * @return string Clean string.
+ * @returns string Clean string.
  */
 phpbb.search.getKeyword = function($input, keyword, multiline) {
 	if (multiline) {
@@ -507,8 +498,8 @@ phpbb.search.getKeyword = function($input, keyword, multiline) {
  * Get the textarea line number on which the keyword resides - for textareas
  * that support multiple keywords (one per line). 
  *
- * @param jQuery $textarea	Search textarea.
- * @return int
+ * @param {jQuery} $textarea Search textarea.
+ * @returns {int} The line number.
  */
 phpbb.search.getKeywordLine = function ($textarea) {
 	var selectionStart = $textarea.get(0).selectionStart;
@@ -519,11 +510,9 @@ phpbb.search.getKeywordLine = function ($textarea) {
  * Set the value on the input|textarea. If textarea supports multiple
  * keywords, only the active keyword is replaced.
  *
- * @param jQuery $input		Search input|textarea.
- * @param string value		Value to set.
- * @param bool multiline	Whether textarea supports multiple search keywords.	
- *
- * @return undefined
+ * @param {jQuery} $input	Search input|textarea.
+ * @param {string} value	Value to set.
+ * @param {bool} multiline	Whether textarea supports multiple search keywords.
  */
 phpbb.search.setValue = function($input, value, multiline) {
 	if (multiline) {
@@ -538,12 +527,10 @@ phpbb.search.setValue = function($input, value, multiline) {
 /**
  * Sets the onclick event to set the value on the input|textarea to the selected search result. 
  *
- * @param jQuery $input		Search input|textarea.
- * @param object value		Result object.
- * @param jQuery $row		Result element.
- * @param jQuery $container	jQuery object for the search container.
- *
- * @return undefined
+ * @param {jQuery} $input		Search input|textarea.
+ * @param {object} value		Result object.
+ * @param {jQuery} $row			Result element.
+ * @param {jQuery} $container	jQuery object for the search container.
  */
 phpbb.search.setValueOnClick = function($input, value, $row, $container) {
 	$row.click(function() {
@@ -558,11 +545,11 @@ phpbb.search.setValueOnClick = function($input, value, $row, $container) {
  * already, those are displayed instead. Executes the AJAX request function
  * itself due to the need to use a timeout to limit the number of requests.
  *
- * @param array data			Data to be sent to the server.
- * @param object event			Onkeyup event object.
- * @param function sendRequest	Function to execute AJAX request.
+ * @param {Array} data				Data to be sent to the server.
+ * @param {object} event			Onkeyup event object.
+ * @param {function} sendRequest	Function to execute AJAX request.
  *
- * @return bool Returns false.
+ * @returns {bool} Returns false.
  */
 phpbb.search.filter = function(data, event, sendRequest) {
 	var $this = $(this),
@@ -616,12 +603,10 @@ phpbb.search.filter = function(data, event, sendRequest) {
 /**
  * Handle search result response. 
  *
- * @param object res		Data received from server.
- * @param jQuery $input		Search input|textarea.
- * @param bool fromCache	Whether the results are from the cache.
- * @param function callback	Optional callback to run when assigning each search result.
- *
- * @return undefined
+ * @param {object} res			Data received from server.
+ * @param {jQuery} $input		Search input|textarea.
+ * @param {bool} fromCache		Whether the results are from the cache.
+ * @param {function} callback	Optional callback to run when assigning each search result.
  */
 phpbb.search.handleResponse = function(res, $input, fromCache, callback) {
 	if (typeof res !== 'object') {
@@ -648,12 +633,10 @@ phpbb.search.handleResponse = function(res, $input, fromCache, callback) {
 /**
  * Show search results.
  *
- * @param array results		Search results.
- * @param jQuery $input		Search input|textarea.
- * @param jQuery $container	Search results container element.
- * @param function callback	Optional callback to run when assigning each search result.
- *
- * @return undefined
+ * @param {Array} results		Search results.
+ * @param {jQuery} $input		Search input|textarea.
+ * @param {jQuery} $container	Search results container element.
+ * @param {function} callback	Optional callback to run when assigning each search result.
  */
 phpbb.search.showResults = function(results, $input, $container, callback) {
 	var $resultContainer = $('.search-results', $container);
@@ -690,8 +673,7 @@ phpbb.search.showResults = function(results, $input, $container, callback) {
 /**
  * Clear search results.
  *
- * @param jQuery $container	Search results container.
- * @return undefined
+ * @param {jQuery} $container Search results container.
  */
 phpbb.search.clearResults = function($container) {
 	$container.children(':not(.search-result-tpl)').remove();
@@ -710,8 +692,8 @@ phpbb.history = {};
 /**
 * Check whether a method in the native history object is supported.
 *
-* @param string fn	Method name.
-* @return bool Returns true if the method is supported.
+* @param {string} fn Method name.
+* @returns {bool} Returns true if the method is supported.
 */
 phpbb.history.isSupported = function(fn) {
 	return !(typeof history === 'undefined' || typeof history[fn] === 'undefined');
@@ -721,12 +703,10 @@ phpbb.history.isSupported = function(fn) {
 * Wrapper for the pushState and replaceState methods of the
 * native history object.
 *
-* @param string mode	Mode. Either push or replace.
-* @param string url	New URL.
-* @param string title Optional page title.
-* @patam object obj	Optional state object.
-*
-* @return undefined
+* @param {string} mode		Mode. Either push or replace.
+* @param {string} url		New URL.
+* @param {string} [title]	Optional page title.
+* @param {object} [obj]		Optional state object.
 */
 phpbb.history.alterUrl = function(mode, url, title, obj) {
 	var fn = mode + 'State';
@@ -747,11 +727,9 @@ phpbb.history.alterUrl = function(mode, url, title, obj) {
 /**
 * Wrapper for the native history.replaceState method.
 *
-* @param string url	New URL.
-* @param string title Optional page title.
-* @patam object obj	Optional state object.
-*
-* @return undefined
+* @param {string} url		New URL.
+* @param {string} [title]	Optional page title.
+* @param {object} [obj]		Optional state object.
 */
 phpbb.history.replaceUrl = function(url, title, obj) {
 	phpbb.history.alterUrl('replace', url, title, obj);
@@ -760,11 +738,9 @@ phpbb.history.replaceUrl = function(url, title, obj) {
 /**
 * Wrapper for the native history.pushState method.
 *
-* @param string url	New URL.
-* @param string title Optional page title.
-* @patam object obj	Optional state object.
-*
-* @return undefined
+* @param {string} url		New URL.
+* @param {string} [title]	Optional page title.
+* @param {object} [obj]		Optional state object.
 */
 phpbb.history.pushUrl = function(url, title, obj) {
 	phpbb.history.alterUrl('push', url, title, obj);
@@ -773,7 +749,8 @@ phpbb.history.pushUrl = function(url, title, obj) {
 /**
 * Hide the optgroups that are not the selected timezone
 *
-* @param	bool	keepSelection		Shall we keep the value selected, or shall the user be forced to repick one.
+* @param {bool} keepSelection Shall we keep the value selected, or shall the
+* 	user be forced to repick one.
 */
 phpbb.timezoneSwitchDate = function(keepSelection) {
 	var $timezoneCopy = $('#timezone_copy');
@@ -796,7 +773,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 	}
 
 	if ($tzDate.val() !== '') {
-		$timezone.children('optgroup').remove(':not([data-tz-value="' + $('#tz_date').val() + '"])');
+		$timezone.children('optgroup').remove(':not([data-tz-value="' + $tzDate.val() + '"])');
 	}
 
 	if ($tzDate.val() === $tzSelectDateSuggest.attr('data-suggested-tz')) {
@@ -831,7 +808,7 @@ phpbb.timezoneEnableDateSelection = function() {
 /**
 * Preselect a date/time or suggest one, if it is not picked.
 *
-* @param	bool	forceSelector		Shall we select the suggestion?
+* @param {bool} forceSelector Shall we select the suggestion?
 */
 phpbb.timezonePreselectSelect = function(forceSelector) {
 
@@ -900,8 +877,8 @@ phpbb.ajaxCallbacks = {};
  *
  * See the phpbb.ajaxify comments for information on stuff like parameters.
  *
- * @param string id The name of the callback.
- * @param function callback The callback to be called.
+ * @param {string} id The name of the callback.
+ * @param {function} callback The callback to be called.
  */
 phpbb.addAjaxCallback = function(id, callback) {
 	if (typeof callback === 'function') {
@@ -992,7 +969,7 @@ phpbb.addAjaxCallback('toggle_link', function() {
 * types text.
 *
 * @param {jQuery} $items jQuery object(s) to resize
-* @param {object} options Optional parameter that adjusts default
+* @param {object} [options] Optional parameter that adjusts default
 * 	configuration. See configuration variable
 *
 * Optional parameters:
@@ -1036,7 +1013,7 @@ phpbb.resizeTextArea = function($items, options) {
 
 	function autoResize(item) {
 		function setHeight(height) {
-			height += parseInt($item.css('height')) - $item.height();
+			height += parseInt($item.css('height'), 10) - $item.height();
 			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
 			configuration.resizeCallback.call(item, $item);
 		}
@@ -1053,7 +1030,7 @@ phpbb.resizeTextArea = function($items, options) {
 				configuration.maxHeight
 			),
 			$item = $(item),
-			height = parseInt($item.height()),
+			height = parseInt($item.height(), 10),
 			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
 		if (height < 0) {
@@ -1092,7 +1069,7 @@ phpbb.resizeTextArea = function($items, options) {
 * @param {Array} endTags List of end tags to look for
 *		For example, Array('[/code]')
 *
-* @return {boolean} True if cursor is in bbcode tag
+* @returns {boolean} True if cursor is in bbcode tag
 */
 phpbb.inBBCodeTag = function(textarea, startTags, endTags) {
 	var start = textarea.selectionStart,
@@ -1164,7 +1141,7 @@ phpbb.applyCodeEditor = function(textarea) {
 	* @param {boolean} stripCodeStart If true, only part of line
 	*		after [code] tag will be returned.
 	*
-	* @return {string} Line of text
+	* @returns {string} Line of text
 	*/
 	function getLastLine(stripCodeStart) {
 		var start = textarea.selectionStart,
@@ -1197,7 +1174,7 @@ phpbb.applyCodeEditor = function(textarea) {
 	/**
 	* Append text at cursor position
 	*
-	* @param {string} Text Text to append
+	* @param {string} text Text to append
 	*/
 	function appendText(text) {
 		var start = textarea.selectionStart,
@@ -1245,10 +1222,10 @@ phpbb.applyCodeEditor = function(textarea) {
  * This function will enable the drag and drop animation for a specified
  * textarea.
  *
- * @param {object} textarea Textarea DOM object to apply editor to
+ * @param {HTMLElement} textarea Textarea DOM object to apply editor to
  */
 phpbb.showDragNDrop = function(textarea) {
-	if (textarea == null) {
+	if (!textarea) {
 		return;
 	}
 
@@ -1423,9 +1400,9 @@ phpbb.registerDropdown = function(toggle, dropdown, options) {
 /**
 * Get the HTML for a color palette table.
 *
-* @param string dir Palette direction - either v or h
-* @param int width Palette cell width.
-* @param int height Palette cell height.
+* @param {string} dir Palette direction - either v or h
+* @param {int} width Palette cell width.
+* @param {int} height Palette cell height.
 */
 phpbb.colorPalette = function(dir, width, height) {
 	var r = 0, 
@@ -1477,7 +1454,7 @@ phpbb.colorPalette = function(dir, width, height) {
 /**
 * Register a color palette.
 *
-* @param object el jQuery object for the palette container.
+* @param {jQuery} el jQuery object for the palette container.
 */
 phpbb.registerPalette = function(el) {
 	var	orientation	= el.attr('data-orientation'),
@@ -1506,15 +1483,15 @@ phpbb.registerPalette = function(el) {
 		}
 		e.preventDefault();
 	});
-}
+};
 
 /**
 * Set display of page element
 *
-* @param string	id	The ID of the element to change
-* @param int	action	Set to 0 if element display should be toggled, -1 for
+* @param {string} id The ID of the element to change
+* @param {int} action Set to 0 if element display should be toggled, -1 for
 *			hiding the element, and 1 for showing it.
-* @param string	type	Display type that should be used, e.g. inline, block or
+* @param {string} type Display type that should be used, e.g. inline, block or
 *			other CSS "display" types
 */
 phpbb.toggleDisplay = function(id, action, type) {
@@ -1535,8 +1512,7 @@ phpbb.toggleDisplay = function(id, action, type) {
 * Toggle additional settings based on the selected
 * option of select element.
 *
-* @param jQuery el jQuery select element object.
-* @return undefined
+* @param {jQuery} el jQuery select element object.
 */
 phpbb.toggleSelectSettings = function(el) {
 	el.children().each(function() {
@@ -1550,8 +1526,8 @@ phpbb.toggleSelectSettings = function(el) {
 * Get function from name.
 * Based on http://stackoverflow.com/a/359910
 *
-* @param string functionName Function to get.
-* @return function
+* @param {string} functionName Function to get.
+* @returns function
 */
 phpbb.getFunctionByName = function (functionName) {
  	var namespaces = functionName.split('.'),
