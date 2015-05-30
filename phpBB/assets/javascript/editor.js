@@ -13,7 +13,7 @@ window.console || (window.console = {});
 console.log || (console.log = function (){});
 console.info || (console.info = console.log);
 console.warn || (console.warn = console.log);
-console.error || (console.error = console.log);
+console.error || (console.error = window.alert);
 
 
 var smilieBox = document.getElementById('smiley-box');
@@ -353,7 +353,7 @@ var editor = {
 	 *
 	 */
 	insertHTML: function (editor, start, end){
-		alert("Misconfigured editor. The editor setup code does not override editor.insertHTML");
+		console.error("Misconfigured editor. The editor setup code does not override editor.insertHTML");
 	},
 	/**
 	 * Insert BBCode in the editor at the selection point
@@ -362,7 +362,7 @@ var editor = {
 	 *
 	 */
 	insertBBCode: function (editor, start, end){
-		alert("Misconfigured editor. The editor setup code does not override editor.insertBBCode");
+		console.error("Misconfigured editor. The editor setup code does not override editor.insertBBCode");
 	},
 	/**
 	 * Insert text in the editor at the selection point.
@@ -370,13 +370,13 @@ var editor = {
 	 *
 	 */
 	insertUnformatted: function (editor, start, end){
-		alert("Misconfigured editor. The editor setup code does not override editor.insertUnformatted");
+		console.error("Misconfigured editor. The editor setup code does not override editor.insertUnformatted");
 	},
 	/**
 	 * Get current text from the editor
 	 * A best-effort is made to make sure all HTML is translated to BBCode. The remaining content is HTML-escaped.
 	 */
 	getValue: function (editor, start, end){
-		alert("Misconfigured editor. The editor setup code does not override editor.getValue");
+		console.error("Misconfigured editor. The editor setup code does not override editor.getValue");
 	}
 };
