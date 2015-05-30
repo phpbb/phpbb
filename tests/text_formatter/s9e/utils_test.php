@@ -181,6 +181,11 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 				array(),
 				'[quote]This is a short quote on its own line[/quote]',
 			),
+			array(
+				"This is a short quote\non two lines",
+				array(),
+				"[quote]\nThis is a short quote\non two lines\n[/quote]",
+			),
 		);
 	}
 

@@ -69,7 +69,7 @@ class utils implements \phpbb\textformatter\utils_interface
 			$quote .= ' ' . $name . '=' . $this->enquote($value);
 		}
 		$quote .= ']';
-		$newline = (strlen($quote . $text . '[/quote]') > 80) ? "\n" : '';
+		$newline = (strlen($quote . $text . '[/quote]') > 80 || strpos($text, "\n") !== false) ? "\n" : '';
 		$quote .= $newline . $text . $newline . '[/quote]';
 
 		return $quote;
