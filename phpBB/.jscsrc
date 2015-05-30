@@ -59,7 +59,7 @@
   "requireLineFeedAtFileEnd": true,
   "maximumLineLength": {
     "value": 120,
-    "tabSize": 2,
+    "tabSize": 4,
     "allowUrlComments": true,
     "allowRegex": true
   },
