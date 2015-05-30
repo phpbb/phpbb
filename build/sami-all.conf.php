@@ -25,6 +25,7 @@ $config['versions'] = Sami\Version\GitVersionCollection::create(__DIR__ . '/../'
 	*/
 	->add('3.0.x')
 	->add('3.1.x')
+	->add('master')
 ;
 
 return new Sami\Sami($iterator, $config);
