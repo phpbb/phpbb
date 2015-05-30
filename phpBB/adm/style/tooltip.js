@@ -25,10 +25,13 @@ var tooltips = [];
 phpbb.enableTooltipsSelect = function (id, headline, subId) {
 	var $links, hold;
 
-	hold = document.createElement('span');
-	hold.id = '_tooltip_container';
-	hold.setAttribute('id', '_tooltip_container');
-	hold.style.position = 'absolute';
+	hold = $('<span />', {
+		id:		'_tooltip_container',
+		css: {
+			position: 'absolute'
+		}
+	});
+
 	$('body').append(hold);
 
 	if (!id) {
@@ -57,7 +60,7 @@ phpbb.enableTooltipsSelect = function (id, headline, subId) {
  * @param {string} headText Text heading to display
 */
 phpbb.prepareTooltips = function ($element, headText) {
-	var tooltip, text, desc, title;
+	var $tooltip, text, $desc, $title;
 
 	text = $element.attr('data-title');
 
@@ -65,17 +68,32 @@ phpbb.prepareTooltips = function ($element, headText) {
 		return;
 	}
 
-	title = phpbb.createElement('span', 'top');
-	title.appendChild(document.createTextNode(headText));
+	$title = $('<span />', {
+		class: 'top',
+		css: {
+			display:	'block'
+		}
+	})
+		.append(document.createTextNode(headText));
 
-	desc = phpbb.createElement('span', 'bottom');
-	desc.innerHTML = text;
+	$desc = $('<span />', {
+		class: 'bottom',
+		html: text,
+		css: {
+			display: 'block'
+		}
+	});
 
-	tooltip = phpbb.createElement('span', 'tooltip');
-	tooltip.appendChild(title);
-	tooltip.appendChild(desc);
+	$tooltip = $('<span />', {
+		class: 'tooltip',
+		css: {
+			display: 'block'
+		}
+	})
+		.append($title)
+		.append($desc);
 
-	tooltips[$element.attr('data-id')] = tooltip;
+	tooltips[$element.attr('data-id')] = $tooltip;
 	$element.on('mouseover', phpbb.showTooltip);
 	$element.on('mouseout', phpbb.hideTooltip);
 };
@@ -99,21 +117,6 @@ phpbb.hideTooltip = function () {
 	if (d.childNodes.length > 0) {
 		d.removeChild(d.firstChild);
 	}
-};
-
-/**
- * Create new element
- *
- * @param {string} tag HTML tag
- * @param {string} c Element's class
- *
- * @return {object} Created element
-*/
-phpbb.createElement = function (tag, c) {
-	var x = document.createElement(tag);
-	x.className = c;
-	x.style.display = 'block';
-	return x;
 };
 
 /**
