@@ -26,8 +26,7 @@ $(smilieBox).on('click', 'img', function (e){
 
 var editorConstants = {
 	NO_VALUE			: -1,
-	VALUE_IN_CONTENT	: -2,
-
+	VALUE_IN_CONTENT	: -2
 };
 
 var editor = {
@@ -57,7 +56,7 @@ var editor = {
 				var cStyle = window.getComputedStyle(tag, "").display;
 				document.body.removeChild(tag);
 				return cStyle;
-			}
+			};
 		} else {
 			return function (tagName){
 				var tag = document.createElement(tagName);
@@ -65,15 +64,11 @@ var editor = {
 				var cStyle = tag.currentStyle.display;
 				document.body.removeChild(tag);
 				return cStyle;
-			}
+			};
 		}
 	}(),
 
 	paramFilters: {
-		filterUrl: function (url){
-			return tokenRegexTranslator.URL.test(url);
-		},
-
 		filterHashmap: function(attrValue, map, strict){
 			if (attrValue in map){
 				return map[attrValue];
@@ -235,7 +230,7 @@ var editor = {
 			return str.replace(
 				/(?:^|\s)[a-z]/g,
 				function(m){
-					return m.toUpperCase()
+					return m.toUpperCase();
 				}
 			);
 		},
@@ -264,7 +259,7 @@ var editor = {
 			delete attributes.defaultattr;
 		}
 
-		for(attributeName in attributes){
+		for(var attributeName in attributes){
 			attributeStr += attributeName + '="' + attributes[attributeName] + '" ';
 		}
 
@@ -285,13 +280,13 @@ var editor = {
 		// older IE has its own way of doing it
 		var standardsBrowser = (typeof DOMParser !== 'undefined' && typeof XSLTProcessor !== 'undefined');
 		if (standardsBrowser) {
-			var xslDoc = (new DOMParser).parseFromString(xsl, 'text/xml');
+			var xslDoc = (new DOMParser()).parseFromString(xsl, 'text/xml');
 
 			var processor = new XSLTProcessor();
 			processor.importStylesheet(xslDoc);
 
 			return {
-			 setParameter : function (name, value){
+				setParameter : function (name, value){
 					if (!value){
 						if (value === ''){
 							value = ' ';
@@ -303,7 +298,7 @@ var editor = {
 				},
 
 				transformToFragment : function (xml, onDocument){
-					var xmlDoc = (new DOMParser).parseFromString(xml, 'text/xml');
+					var xmlDoc = (new DOMParser()).parseFromString(xml, 'text/xml');
 					// NOTE: importNode() is used because of https://code.google.com/p/chromium/issues/detail?id=266305
 					return onDocument.importNode(processor.transformToFragment(xmlDoc, onDocument), true);
 				}
@@ -339,7 +334,7 @@ var editor = {
 					ieTargetStylesheet.validateOnParse = false;
 					ieTargetStylesheet.loadXML(xml);
 
-					ieTransformer.input = ieTargetStylesheet
+					ieTransformer.input = ieTargetStylesheet;
 					ieTransformer.transform();
 
 					div.innerHTML = ieTransformer.output;
@@ -376,7 +371,7 @@ var editor = {
 	 */
 	insertUnformatted: function (editor, start, end){
 		alert("Misconfigured editor. The editor setup code does not override editor.insertUnformatted");
-	}
+	},
 	/**
 	 * Get current text from the editor
 	 * A best-effort is made to make sure all HTML is translated to BBCode. The remaining content is HTML-escaped.
@@ -384,5 +379,4 @@ var editor = {
 	getValue: function (editor, start, end){
 		alert("Misconfigured editor. The editor setup code does not override editor.getValue");
 	}
-}
-
+};
