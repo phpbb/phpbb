@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>red</value>
+			<value></value>
+			<value>1</value>
+			<value>[red]{TEXT}[/red]</value>
+			<value>&lt;span style=&quot;color:red&quot;&gt;{TEXT}&lt;/span&gt;</value>
+			<value>!\[red\](.*?)\[/red\]!ies</value>
+			<value>'[red:$uid]'.str_replace(array(&quot;\r\n&quot;, '\&quot;', '\'', '(', ')'), array(&quot;\n&quot;, '&quot;', '&amp;#39;', '&amp;#40;', '&amp;#41;'), trim('${1}')).'[/red:$uid]'</value>
+			<value>!\[red:$uid\](.*?)\[/red:$uid\]!s</value>
+			<value>&lt;span style=&quot;color:red&quot;&gt;${1}&lt;/span&gt;</value>
+		</row>
+
+		<row>
+			<value>14</value>
+			<value>blue</value>
+			<value></value>
+			<value>1</value>
+			<value>[blue]{TEXT}[/blue]</value>
+			<value>&lt;span style=&quot;color:blue&quot;&gt;{TEXT}&lt;/span&gt;</value>
+			<value>!\[blue\](.*?)\[/blue\]!ies</value>
+			<value>'[blue:$uid]'.str_replace(array(&quot;\r\n&quot;, '\&quot;', '\'', '(', ')'), array(&quot;\n&quot;, '&quot;', '&amp;#39;', '&amp;#40;', '&amp;#41;'), trim('${1}')).'[/blue:$uid]'</value>
+			<value>!\[blue:$uid\](.*?)\[/blue:$uid\]!s</value>
+			<value>&lt;span style=&quot;color:blue&quot;&gt;${1}&lt;/span&gt;</value>
+		</row>
+	</table>
+</dataset>

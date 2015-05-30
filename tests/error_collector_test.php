@@ -15,6 +15,15 @@ require_once dirname(__FILE__) . '/../phpBB/includes/functions.php';
 
 class phpbb_error_collector_test extends phpbb_test_case
 {
+	public function setUp()
+	{
+		parent::setUp();
+
+		global $phpbb_filesystem;
+
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+	}
+
 	public function test_collection()
 	{
 		$collector = new \phpbb\error_collector(E_ALL | E_STRICT); // php set_error_handler() default

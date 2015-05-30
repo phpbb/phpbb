@@ -30,7 +30,8 @@ class schema_generator_test extends phpbb_test_case
 
 		$this->config = new \phpbb\config\config(array());
 		$this->db = new \phpbb\db\driver\sqlite();
-		$this->db_tools = new \phpbb\db\tools($this->db);
+		$factory = new \phpbb\db\tools\factory();
+		$this->db_tools = $factory->get($this->db);
 		$this->table_prefix = 'phpbb_';
 	}
 

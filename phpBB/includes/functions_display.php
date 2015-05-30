@@ -33,7 +33,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$sql_from = '';
 
 	// Mark forums read?
-	$mark_read = request_var('mark', '');
+	$mark_read = $request->variable('mark', '');
 
 	if ($mark_read == 'all')
 	{
@@ -61,9 +61,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
 		meta_refresh(3, $redirect);
 
-		if (check_link_hash(request_var('hash', ''), 'global'))
+		if (check_link_hash($request->variable('hash', ''), 'global'))
 		{
-			markread('all', false, false, request_var('mark_time', 0));
+			markread('all', false, false, $request->variable('mark_time', 0));
 
 			if ($request->is_ajax())
 			{
@@ -153,6 +153,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
@@ -333,10 +334,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	if ($mark_read == 'forums')
 	{
 		$redirect = build_url(array('mark', 'hash', 'mark_time'));
-		$token = request_var('hash', '');
+		$token = $request->variable('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids, false, request_var('mark_time', 0));
+			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			meta_refresh(3, $redirect);
 
@@ -374,6 +375,28 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		get_moderators($forum_moderators, $forum_ids_moderator);
 	}
+
+	/**
+	* Event to perform additional actions before the forum list is being generated
+	*
+	* @event core.display_forums_before
+	* @var	array	active_forum_ary	Array with forum data to display active topics
+	* @var	bool	display_moderators	Flag indicating if we display forum moderators
+	* @var	array	forum_moderators	Array with forum moderators list
+	* @var	array	forum_rows			Data array of all forums we display
+	* @var	bool	return_moderators	Flag indicating if moderators list should be returned
+	* @var	array	root_data			Array with the root forum data
+	* @since 3.1.4-RC1
+	*/
+	$vars = array(
+		'active_forum_ary',
+		'display_moderators',
+		'forum_moderators',
+		'forum_rows',
+		'return_moderators',
+		'root_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_before', compact($vars)));
 
 	// Used to tell whatever we have to create a dummy category or not.
 	$last_catless = true;
@@ -710,12 +733,14 @@ function generate_forum_rules(&$forum_data)
 function generate_forum_nav(&$forum_data)
 {
 	global $db, $user, $template, $auth, $config;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
 	{
 		return;
 	}
+
+	$navlinks = $navlinks_parents = $forum_template_data = array();
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data);
@@ -735,35 +760,59 @@ function generate_forum_nav(&$forum_data)
 				continue;
 			}
 
-			$template->assign_block_vars('navlinks', array(
+			$navlinks_parents[] = array(
 				'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
 				'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
 				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 				'FORUM_NAME'	=> $parent_name,
 				'FORUM_ID'		=> $parent_forum_id,
 				'MICRODATA'		=> $microdata_attr . '="' . $parent_forum_id . '"',
-				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
+				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id),
 			);
 		}
 	}
 
-	$template->assign_block_vars('navlinks', array(
+	$navlinks = array(
 		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
 		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
 		'MICRODATA'		=> $microdata_attr . '="' . $forum_data['forum_id'] . '"',
-		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']))
+		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']),
 	);
 
-	$template->assign_vars(array(
+	$forum_template_data = array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
 
 		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
-	));
+	);
+
+	/**
+	* Event to modify the navlinks text
+	*
+	* @event core.generate_forum_nav
+	* @var	array	forum_data				Array with the forum data
+	* @var	array	forum_template_data		Array with generic forum template data
+	* @var	string	microdata_attr			The microdata attribute
+	* @var	array	navlinks_parents		Array with the forum parents navlinks data
+	* @var	array	navlinks				Array with the forum navlinks data
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'forum_data',
+		'forum_template_data',
+		'microdata_attr',
+		'navlinks_parents',
+		'navlinks',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.generate_forum_nav', compact($vars)));
+
+	$template->assign_block_vars_array('navlinks', $navlinks_parents);
+	$template->assign_block_vars('navlinks', $navlinks);
+	$template->assign_vars($forum_template_data);
 
 	return;
 }
@@ -1074,33 +1123,14 @@ function display_custom_bbcodes()
 
 /**
 * Display reasons
+*
+* @deprecated 3.2.0-dev
 */
 function display_reasons($reason_id = 0)
 {
-	global $db, $user, $template;
+	global $phpbb_container;
 
-	$sql = 'SELECT *
-		FROM ' . REPORTS_REASONS_TABLE . '
-		ORDER BY reason_order ASC';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-		if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
-		{
-			$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
-			$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
-		}
-
-		$template->assign_block_vars('reason', array(
-			'ID'			=> $row['reason_id'],
-			'TITLE'			=> $row['reason_title'],
-			'DESCRIPTION'	=> $row['reason_description'],
-			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false)
-		);
-	}
-	$db->sql_freeresult($result);
+	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 }
 
 /**
@@ -1134,6 +1164,7 @@ function display_user_activity(&$userdata)
 	$active_f_row = $active_t_row = array();
 	if (!empty($forum_ary))
 	{
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		// Obtain active forum
@@ -1265,8 +1296,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['unwatch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{
@@ -1339,8 +1370,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['watch']))
 			{
-				$uid = request_var('uid', 0);
-				$token = request_var('hash', '');
+				$uid = $request->variable('uid', 0);
+				$token = $request->variable('hash', '');
 
 				if ($token && check_link_hash($token, "{$mode}_$match_id") || confirm_box(true))
 				{

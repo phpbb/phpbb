@@ -30,13 +30,13 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $cache, $phpbb_container, $phpbb_dispatcher;
+		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 		$user->add_lang('acp/board');
 
-		$action	= request_var('action', '');
+		$action	= $request->variable('action', '');
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
 
 		$form_key = 'acp_board';
@@ -115,6 +115,7 @@ class acp_board
 			break;
 
 			case 'avatar':
+				/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 				$avatar_drivers = $phpbb_avatar_manager->get_all_drivers();
 
@@ -483,7 +484,7 @@ class acp_board
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -514,7 +515,8 @@ class acp_board
 
 			if ($config_name == 'guest_style')
 			{
-				if (isset($cfg_array[$config_name])) {
+				if (isset($cfg_array[$config_name]))
+				{
 					$this->guest_style_set($cfg_array[$config_name]);
 				}
 				continue;
@@ -531,7 +533,7 @@ class acp_board
 
 			if ($submit)
 			{
-				set_config($config_name, $config_value);
+				$config->set($config_name, $config_value);
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
 				{
@@ -553,6 +555,7 @@ class acp_board
 		if ($mode == 'auth')
 		{
 			// Retrieve a list of auth plugins and check their config values
+			/* @var $auth_providers \phpbb\auth\provider_collection */
 			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
 			$updated_auth_settings = false;
@@ -566,7 +569,7 @@ class acp_board
 					{
 						if (!isset($config[$field]))
 						{
-							set_config($field, '');
+							$config->set($field, '');
 						}
 
 						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
@@ -581,7 +584,7 @@ class acp_board
 						if ($submit)
 						{
 							$updated_auth_settings = true;
-							set_config($field, $config_value);
+							$config->set($field, $config_value);
 						}
 					}
 				}
@@ -598,11 +601,11 @@ class acp_board
 					{
 						foreach ($old_auth_config as $config_name => $config_value)
 						{
-							set_config($config_name, $config_value);
+							$config->set($config_name, $config_value);
 						}
 						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					set_config('auth_method', basename($cfg_array['auth_method']));
+					$config->set('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{
@@ -613,7 +616,7 @@ class acp_board
 
 		if ($submit)
 		{
-			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_' . strtoupper($mode));
 
 			$message = $user->lang('CONFIG_UPDATED');
 			$message_type = E_USER_NOTICE;
@@ -720,8 +723,9 @@ class acp_board
 	{
 		global $phpbb_root_path, $phpEx, $phpbb_container;
 
-		$auth_plugins = array();
+		/* @var $auth_providers \phpbb\auth\provider_collection */
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
+		$auth_plugins = array();
 
 		foreach ($auth_providers as $key => $value)
 		{
@@ -1046,10 +1050,10 @@ class acp_board
 
 	function store_feed_forums($option, $key)
 	{
-		global $db, $cache;
+		global $db, $cache, $request;
 
 		// Get key
-		$values = request_var($key, array(0 => 0));
+		$values = $request->variable($key, array(0 => 0));
 
 		// Empty option bit for all forums
 		$sql = 'UPDATE ' . FORUMS_TABLE . '

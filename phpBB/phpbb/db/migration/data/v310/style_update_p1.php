@@ -136,7 +136,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		if (!sizeof($valid_styles))
 		{
 			// No valid styles: remove everything and add prosilver
-			$this->sql_query('DELETE FROM ' . STYLES_TABLE, $errored, $error_ary);
+			$this->sql_query('DELETE FROM ' . STYLES_TABLE);
 
 			$sql_ary = array(
 				'style_name'		=> 'prosilver',
@@ -157,13 +157,13 @@ class style_update_p1 extends \phpbb\db\migration\migration
 			$this->sql_query($sql);
 
 			$sql = 'SELECT style_id
-				FROM ' . $table . "
+				FROM ' . STYLES_TABLE . "
 				WHERE style_name = 'prosilver'";
 			$result = $this->sql_query($sql);
 			$default_style = $this->db->sql_fetchfield($result);
 			$this->db->sql_freeresult($result);
 
-			set_config('default_style', $default_style);
+			$this->config->set('default_style', $default_style);
 
 			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
 			$this->sql_query($sql);

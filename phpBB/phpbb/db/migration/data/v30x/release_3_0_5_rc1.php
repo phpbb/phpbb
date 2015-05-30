@@ -57,7 +57,9 @@ class release_3_0_5_rc1 extends container_aware_migration
 
 	public function hash_old_passwords()
 	{
+		/* @var $passwords_manager \phpbb\passwords\manager */
 		$passwords_manager = $this->container->get('passwords.manager');
+
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
 				WHERE user_pass_convert = 1';

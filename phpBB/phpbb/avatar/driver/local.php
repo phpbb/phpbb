@@ -23,8 +23,10 @@ class local extends \phpbb\avatar\driver\driver
 	*/
 	public function get_data($row)
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+
 		return array(
-			'src' => $this->path_helper->get_web_root_path() . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
+			'src' => $root_path . $this->config['avatar_gallery_path'] . '/' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
@@ -170,13 +172,15 @@ class local extends \phpbb\avatar\driver\driver
 				// Match all images in the gallery folder
 				if (preg_match('#^[^&\'"<>]+\.(?:' . implode('|', $this->allowed_extensions) . ')$#i', $image) && is_file($file_path . '/' . $image))
 				{
-					if (function_exists('getimagesize'))
+					$dims = $this->imagesize->getImageSize($file_path . '/' . $image);
+
+					if ($dims === false)
 					{
-						$dims = getimagesize($file_path . '/' . $image);
+						$dims = array(0, 0);
 					}
 					else
 					{
-						$dims = array(0, 0);
+						$dims = array($dims['width'], $dims['height']);
 					}
 					$cat = ($path == $file_path) ? $user->lang['NO_AVATAR_CATEGORY'] : str_replace("$path/", '', $file_path);
 					$avatar_list[$cat][$image] = array(

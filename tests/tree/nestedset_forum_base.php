@@ -59,7 +59,6 @@ class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 		global $config;
 
 		$config = $this->config = new \phpbb\config\config(array('nestedset_forum_lock' => 0));
-		set_config(null, null, null, $this->config);
 
 		$this->lock = new \phpbb\lock\db('nestedset_forum_lock', $this->config, $this->db);
 		$this->set = new \phpbb\tree\nestedset_forum($this->db, $this->lock, 'phpbb_forums');

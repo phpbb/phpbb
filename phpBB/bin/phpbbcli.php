@@ -21,6 +21,7 @@ if (php_sapi_name() != 'cli')
 }
 
 define('IN_PHPBB', true);
+
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
@@ -32,32 +33,38 @@ $phpbb_class_loader->register();
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
 
+if (!defined('PHPBB_ENVIRONMENT'))
+{
+	@define('PHPBB_ENVIRONMENT', 'production');
+}
+
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container_builder->set_dump_container(false);
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file);
+
+$phpbb_container_builder->without_cache();
 
 $input = new ArgvInput();
 
 if ($input->hasParameterOption(array('--safe-mode')))
 {
-	$phpbb_container_builder->set_use_extensions(false);
-	$phpbb_container_builder->set_dump_container(false);
+	$phpbb_container_builder->without_extensions();
 }
 else
 {
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
 }
 
 $phpbb_container = $phpbb_container_builder->get_container();
 $phpbb_container->get('request')->enable_super_globals();
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
+/* @var $user \phpbb\user */
 $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
 $user->add_lang('cli');

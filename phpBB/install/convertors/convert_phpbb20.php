@@ -38,7 +38,7 @@ $dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.1.3',
+	'phpbb_version'	=> '3.1.4',
 	'author'		=> '<a href="https://www.phpbb.com/">phpBB Limited</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -233,11 +233,11 @@ if (!$get_info)
 		$user_id = (int) $src_db->sql_fetchfield('max_user_id');
 		$src_db->sql_freeresult($result);
 
-		set_config('increment_user_id', ($user_id + 1), true);
+		$config->set('increment_user_id', ($user_id + 1), false);
 	}
 	else
 	{
-		set_config('increment_user_id', 0, true);
+		$config->set('increment_user_id', 0, false);
 	}
 
 	// Overwrite maximum avatar width/height

@@ -42,8 +42,8 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 /** 
 * This callback will mark all topic icons read
 *
-* @param update_topic_links bool Whether "Mark topics read" links should be
-*     updated. Defaults to true.
+* @param {bool} [update_topic_links=true] Whether "Mark topics read" links
+* 	should be updated. Defaults to true.
 */
 phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 	var readTitle = res.NO_UNREAD_POSTS;
@@ -138,9 +138,9 @@ phpbb.markNotifications = function($popup, unreadCount) {
 	}
 
 	// Update page title
-	$('title').text(
-		(unreadCount ? '(' + unreadCount + ')' : '') + $('title').text().replace(/(\(([0-9])\))/, '')
-	);
+	var $title = $('title');
+	var originalTitle = $title.text().replace(/(\((\d+)\))/, '');
+	$title.text((unreadCount ? '(' + unreadCount + ')' : '') + originalTitle);
 };
 
 // This callback finds the post from the delete link, and removes it.
@@ -205,7 +205,7 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 
 		// Set min-height to prevent the page from jumping when the content changes
 		var updatePanelHeight = function (height) {
-			var height = (typeof height === 'undefined') ? panel.find('.inner').outerHeight() : height;
+			height = (typeof height === 'undefined') ? panel.find('.inner').outerHeight() : height;
 			panel.css('min-height', height);
 		};
 		updatePanelHeight();
@@ -378,7 +378,7 @@ $('#member_search').click(function () {
 */
 $(function() {
 	phpbb.resizeTextArea($('textarea:not(#message-box textarea, .no-auto-resize)'), {minHeight: 75, maxHeight: 250});
-	phpbb.resizeTextArea($('#message-box textarea'));
+	phpbb.resizeTextArea($('textarea', '#message-box'));
 });
 
 

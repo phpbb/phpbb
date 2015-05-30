@@ -7,10 +7,6 @@ ul.topiclist {
 	margin: 0;
 }
 
-ul.forums {
-	background: transparent none repeat-x 0 0;
-}
-
 ul.topiclist li {
 	display: block;
 	list-style-type: none;
@@ -259,7 +255,6 @@ dd.option {
 }
 
 .postbody h3 img {
-	/* Also see tweaks.css */
 	vertical-align: bottom;
 }
 
@@ -510,12 +505,10 @@ blockquote .codebox {
 }
 
 .codebox code {
-	/* Also see tweaks.css */
 	overflow: auto;
 	display: block;
 	height: auto;
 	max-height: 200px;
-	white-space: normal;
 	padding-top: 5px;
 	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
 	line-height: 1.3em;
@@ -693,7 +686,6 @@ fieldset.polls dd div {
 /* Poster profile block
 ----------------------------------------*/
 .postprofile {
-	/* Also see tweaks.css */
 	margin: 5px 0 10px 0;
 	min-height: 80px;
 	border: 1px solid transparent;

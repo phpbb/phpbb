@@ -34,7 +34,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 		$symfony_request = new \phpbb\symfony_request(
 			new phpbb_mock_request()
 		);
-		$phpbb_filesystem = new \phpbb\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
 			$phpbb_filesystem,

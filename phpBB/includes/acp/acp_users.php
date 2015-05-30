@@ -34,15 +34,15 @@ class acp_users
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 		global $phpbb_dispatcher, $request;
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_log;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
 
 		$error		= array();
-		$username	= utf8_normalize_nfc(request_var('username', '', true));
-		$user_id	= request_var('u', 0);
-		$action		= request_var('action', '');
+		$username	= $request->variable('username', '', true);
+		$user_id	= $request->variable('u', 0);
+		$action		= $request->variable('action', '');
 
 		$submit		= (isset($_POST['update']) && !isset($_POST['cancel'])) ? true : false;
 
@@ -57,7 +57,7 @@ class acp_users
 			$this->page_title = 'WHOIS';
 			$this->tpl_name = 'simple_body';
 
-			$user_ip = phpbb_ip_normalise(request_var('user_ip', ''));
+			$user_ip = phpbb_ip_normalise($request->variable('user_ip', ''));
 			$domain = gethostbyaddr($user_ip);
 			$ipwhois = user_ipwhois($user_ip);
 
@@ -169,9 +169,9 @@ class acp_users
 
 				$user->add_lang('acp/ban');
 
-				$delete			= request_var('delete', 0);
-				$delete_type	= request_var('delete_type', '');
-				$ip				= request_var('ip', 'ip');
+				$delete			= $request->variable('delete', 0);
+				$delete_type	= $request->variable('delete_type', '');
+				$ip				= $request->variable('ip', 'ip');
 
 				/**
 				 * Run code at beginning of ACP users overview
@@ -220,7 +220,7 @@ class acp_users
 							{
 								user_delete($delete_type, $user_id, $user_row['username']);
 
-								add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DELETED', false, array($user_row['username']));
 								trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
 							}
 							else
@@ -304,8 +304,8 @@ class acp_users
 								break;
 							}
 
-							$ban_reason = utf8_normalize_nfc(request_var('ban_reason', $user->lang[$reason], true));
-							$ban_give_reason = utf8_normalize_nfc(request_var('ban_give_reason', '', true));
+							$ban_reason = $request->variable('ban_reason', $user->lang[$reason], true);
+							$ban_give_reason = $request->variable('ban_give_reason', '', true);
 
 							// Log not used at the moment, we simply utilize the ban function.
 							$result = user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
@@ -381,8 +381,10 @@ class acp_users
 
 								$messenger->send(NOTIFY_EMAIL);
 
-								add_log('admin', 'LOG_USER_REACTIVATE', $user_row['username']);
-								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE', false, array($user_row['username']));
+								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE_USER', false, array(
+									'reportee_id' => $user_id
+								));
 
 								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
@@ -418,6 +420,7 @@ class acp_users
 							{
 								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 								{
+									/* @var $phpbb_notifications \phpbb\notification\manager */
 									$phpbb_notifications = $phpbb_container->get('notification_manager');
 									$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
@@ -442,8 +445,10 @@ class acp_users
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 
-							add_log('admin', $log, $user_row['username']);
-							add_log('user', $user_id, $log . '_USER');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($user_row['username']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log . '_USER', false, array(
+								'reportee_id' => $user_id
+							));
 
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -466,8 +471,10 @@ class acp_users
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
 
-							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
-							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG', false, array($user_row['username']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_SIG_USER', false, array(
+								'reportee_id' => $user_id
+							));
 
 							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -481,11 +488,14 @@ class acp_users
 							}
 
 							// Delete old avatar if present
+							/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 							$phpbb_avatar_manager->handle_avatar_delete($db, $user, $phpbb_avatar_manager->clean_row($user_row, 'user'), USERS_TABLE, 'user_');
 
-							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
-							add_log('user', $user_id, 'LOG_USER_DEL_AVATAR_USER');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR', false, array($user_row['username']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_AVATAR_USER', false, array(
+								'reportee_id' => $user_id
+							));
 
 							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						break;
@@ -497,7 +507,7 @@ class acp_users
 								// Delete posts, attachments, etc.
 								delete_posts('poster_id', $user_id);
 
-								add_log('admin', 'LOG_USER_DEL_POSTS', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_POSTS', false, array($user_row['username']));
 								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -519,7 +529,7 @@ class acp_users
 							{
 								delete_attachments('user', $user_id);
 
-								add_log('admin', 'LOG_USER_DEL_ATTACH', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_ATTACH', false, array($user_row['username']));
 								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -565,7 +575,7 @@ class acp_users
 
 									delete_pm($user_id, $msg_ids, PRIVMSGS_OUTBOX);
 
-									add_log('admin', 'LOG_USER_DEL_OUTBOX', $user_row['username']);
+									$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_OUTBOX', false, array($user_row['username']));
 
 									$lang = 'EMPTIED';
 								}
@@ -594,7 +604,7 @@ class acp_users
 
 							$user->add_lang('acp/forums');
 
-							$new_forum_id = request_var('new_f', 0);
+							$new_forum_id = $request->variable('new_f', 0);
 
 							if (!$new_forum_id)
 							{
@@ -736,8 +746,11 @@ class acp_users
 								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
-							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
-							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS', false, array($user_row['username'], $forum_info['forum_name']));
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_MOVE_POSTS_USER', false, array(
+								'reportee_id' => $user_id,
+								$forum_info['forum_name']
+							));
 
 							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -749,7 +762,7 @@ class acp_users
 							{
 								remove_newly_registered($user_id, $user_row);
 
-								add_log('admin', 'LOG_USER_REMOVED_NR', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REMOVED_NR', false, array($user_row['username']));
 								trigger_error($user->lang['USER_LIFTED_NR'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -781,9 +794,9 @@ class acp_users
 
 					// Handle registration info updates
 					$data = array(
-						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
-						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
-						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
+						'username'			=> $request->variable('user', $user_row['username'], true),
+						'user_founder'		=> $request->variable('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
+						'email'				=> strtolower($request->variable('user_email', $user_row['user_email'])),
 						'new_password'		=> $request->variable('new_password', '', true),
 						'password_confirm'	=> $request->variable('password_confirm', '', true),
 					);
@@ -831,6 +844,7 @@ class acp_users
 					}
 
 					// Instantiate passwords manager
+					/* @var $passwords_manager \phpbb\passwords\manager */
 					$passwords_manager = $phpbb_container->get('passwords.manager');
 
 					// Which updates do we need to do?
@@ -903,7 +917,11 @@ class acp_users
 							$sql_ary['username'] = $update_username;
 							$sql_ary['username_clean'] = utf8_clean_string($update_username);
 
-							add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_NAME', false, array(
+								'reportee_id' => $user_id,
+								$user_row['username'],
+								$update_username
+							));
 						}
 
 						if ($update_email !== false)
@@ -913,7 +931,12 @@ class acp_users
 								'user_email_hash'	=> phpbb_email_hash($update_email),
 							);
 
-							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_UPDATE_EMAIL', false, array(
+								'reportee_id' => $user_id,
+								$user_row['username'],
+								$user_row['user_email'],
+								$update_email
+							));
 						}
 
 						if ($update_password)
@@ -924,7 +947,11 @@ class acp_users
 							);
 
 							$user->reset_login_keys($user_id);
-							add_log('user', $user_id, 'LOG_USER_NEW_PASSWORD', $user_row['username']);
+
+							$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+								'reportee_id' => $user_id,
+								$user_row['username']
+							));
 						}
 
 						if (sizeof($sql_ary))
@@ -943,7 +970,7 @@ class acp_users
 						// Let the users permissions being updated
 						$auth->acl_clear_prefetch($user_id);
 
-						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_USER_UPDATE', false, array($data['username']));
 
 						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
@@ -1100,17 +1127,19 @@ class acp_users
 				$user->add_lang('mcp');
 
 				// Set up general vars
-				$start		= request_var('start', 0);
+				$start		= $request->variable('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
-				$marked		= request_var('mark', array(0));
-				$message	= utf8_normalize_nfc(request_var('message', '', true));
+				$marked		= $request->variable('mark', array(0));
+				$message	= $request->variable('message', '', true);
+
+				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
 
 				// Sort keys
-				$sort_days	= request_var('st', 0);
-				$sort_key	= request_var('sk', 't');
-				$sort_dir	= request_var('sd', 'd');
+				$sort_days	= $request->variable('st', 0);
+				$sort_key	= $request->variable('sk', 't');
+				$sort_dir	= $request->variable('sd', 'd');
 
 				// Delete entries if requested and able
 				if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -1140,7 +1169,7 @@ class acp_users
 							$where_sql";
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_CLEAR_USER', $user_row['username']);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($user_row['username']));
 					}
 				}
 
@@ -1151,9 +1180,16 @@ class acp_users
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
-					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
-					add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $user_row['username']);
-					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($user_row['username']));
+					$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+						'forum_id' => 0,
+						'topic_id' => 0,
+						$user_row['username']
+					));
+					$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+						'reportee_id' => $user_id,
+						$message
+					));
 
 					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
@@ -1204,17 +1240,17 @@ class acp_users
 				$user->add_lang('mcp');
 
 				// Set up general vars
-				$start		= request_var('start', 0);
+				$start		= $request->variable('start', 0);
 				$deletemark	= (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$confirm	= (isset($_POST['confirm'])) ? true : false;
-				$marked		= request_var('mark', array(0));
-				$message	= utf8_normalize_nfc(request_var('message', '', true));
+				$marked		= $request->variable('mark', array(0));
+				$message	= $request->variable('message', '', true);
 
 				// Sort keys
-				$sort_days	= request_var('st', 0);
-				$sort_key	= request_var('sk', 't');
-				$sort_dir	= request_var('sd', 'd');
+				$sort_days	= $request->variable('st', 0);
+				$sort_key	= $request->variable('sk', 't');
+				$sort_dir	= $request->variable('sd', 'd');
 
 				// Delete entries if requested and able
 				if ($deletemark || $deleteall || $confirm)
@@ -1222,8 +1258,8 @@ class acp_users
 					if (confirm_box(true))
 					{
 						$where_sql = '';
-						$deletemark = request_var('delmarked', 0);
-						$deleteall = request_var('delall', 0);
+						$deletemark = $request->variable('delmarked', 0);
+						$deleteall = $request->variable('delall', 0);
 						if ($deletemark && $marked)
 						{
 							$where_sql = ' AND ' . $db->sql_in_set('warning_id', array_values($marked));
@@ -1254,11 +1290,11 @@ class acp_users
 
 							if ($log_warnings)
 							{
-								add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED', false, array($user_row['username'], $num_warnings));
 							}
 							else
 							{
-								add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_WARNINGS_DELETED_ALL', false, array($user_row['username']));
 							}
 						}
 					}
@@ -1347,6 +1383,7 @@ class acp_users
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
+				/* @var $cp \phpbb\profilefields\manager */
 				$cp = $phpbb_container->get('profilefields.manager');
 
 				$cp_data = $cp_error = array();
@@ -1361,7 +1398,7 @@ class acp_users
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
 				$data = array(
-					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
+					'jabber'		=> $request->variable('jabber', $user_row['user_jabber'], true),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
@@ -1372,9 +1409,9 @@ class acp_users
 					list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user_row['user_birthday']);
 				}
 
-				$data['bday_day']		= request_var('bday_day', $data['bday_day']);
-				$data['bday_month']		= request_var('bday_month', $data['bday_month']);
-				$data['bday_year']		= request_var('bday_year', $data['bday_year']);
+				$data['bday_day']		= $request->variable('bday_day', $data['bday_day']);
+				$data['bday_month']		= $request->variable('bday_month', $data['bday_month']);
+				$data['bday_year']		= $request->variable('bday_year', $data['bday_year']);
 				$data['user_birthday']	= sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
 
 				/**
@@ -1414,6 +1451,18 @@ class acp_users
 						$error[] = 'FORM_INVALID';
 					}
 
+					/**
+					* Validate profile data in ACP before submitting to the database
+					*
+					* @event core.acp_users_profile_validate
+					* @var	bool	submit		Flag indicating if submit button has been pressed
+					* @var	array	data		Array with user profile data
+					* @var	array	error		Array with the form errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('submit', 'data', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_validate', compact($vars)));
+
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
@@ -1429,9 +1478,10 @@ class acp_users
 						* @var	array	data		Array with user profile data
 						* @var	int		user_id		The user id
 						* @var	array	user_row	Array with the full user data
+						* @var	array	sql_ary		Array with sql data
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data', 'user_id', 'user_row');
+						$vars = array('cp_data', 'data', 'user_id', 'user_row', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -1494,36 +1544,36 @@ class acp_users
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$data = array(
-					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
-					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
-					'tz'				=> request_var('tz', $user_row['user_timezone']),
-					'style'				=> request_var('style', $user_row['user_style']),
-					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
-					'massemail'			=> request_var('massemail', $user_row['user_allow_massemail']),
-					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
-					'notifymethod'		=> request_var('notifymethod', $user_row['user_notify_type']),
-					'notifypm'			=> request_var('notifypm', $user_row['user_notify_pm']),
-					'allowpm'			=> request_var('allowpm', $user_row['user_allow_pm']),
+					'dateformat'		=> $request->variable('dateformat', $user_row['user_dateformat'], true),
+					'lang'				=> basename($request->variable('lang', $user_row['user_lang'])),
+					'tz'				=> $request->variable('tz', $user_row['user_timezone']),
+					'style'				=> $request->variable('style', $user_row['user_style']),
+					'viewemail'			=> $request->variable('viewemail', $user_row['user_allow_viewemail']),
+					'massemail'			=> $request->variable('massemail', $user_row['user_allow_massemail']),
+					'hideonline'		=> $request->variable('hideonline', !$user_row['user_allow_viewonline']),
+					'notifymethod'		=> $request->variable('notifymethod', $user_row['user_notify_type']),
+					'notifypm'			=> $request->variable('notifypm', $user_row['user_notify_pm']),
+					'allowpm'			=> $request->variable('allowpm', $user_row['user_allow_pm']),
 
-					'topic_sk'			=> request_var('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
-					'topic_sd'			=> request_var('topic_sd', ($user_row['user_topic_sortby_dir']) ? $user_row['user_topic_sortby_dir'] : 'd'),
-					'topic_st'			=> request_var('topic_st', ($user_row['user_topic_show_days']) ? $user_row['user_topic_show_days'] : 0),
+					'topic_sk'			=> $request->variable('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
+					'topic_sd'			=> $request->variable('topic_sd', ($user_row['user_topic_sortby_dir']) ? $user_row['user_topic_sortby_dir'] : 'd'),
+					'topic_st'			=> $request->variable('topic_st', ($user_row['user_topic_show_days']) ? $user_row['user_topic_show_days'] : 0),
 
-					'post_sk'			=> request_var('post_sk', ($user_row['user_post_sortby_type']) ? $user_row['user_post_sortby_type'] : 't'),
-					'post_sd'			=> request_var('post_sd', ($user_row['user_post_sortby_dir']) ? $user_row['user_post_sortby_dir'] : 'a'),
-					'post_st'			=> request_var('post_st', ($user_row['user_post_show_days']) ? $user_row['user_post_show_days'] : 0),
+					'post_sk'			=> $request->variable('post_sk', ($user_row['user_post_sortby_type']) ? $user_row['user_post_sortby_type'] : 't'),
+					'post_sd'			=> $request->variable('post_sd', ($user_row['user_post_sortby_dir']) ? $user_row['user_post_sortby_dir'] : 'a'),
+					'post_st'			=> $request->variable('post_st', ($user_row['user_post_show_days']) ? $user_row['user_post_show_days'] : 0),
 
-					'view_images'		=> request_var('view_images', $this->optionget($user_row, 'viewimg')),
-					'view_flash'		=> request_var('view_flash', $this->optionget($user_row, 'viewflash')),
-					'view_smilies'		=> request_var('view_smilies', $this->optionget($user_row, 'viewsmilies')),
-					'view_sigs'			=> request_var('view_sigs', $this->optionget($user_row, 'viewsigs')),
-					'view_avatars'		=> request_var('view_avatars', $this->optionget($user_row, 'viewavatars')),
-					'view_wordcensor'	=> request_var('view_wordcensor', $this->optionget($user_row, 'viewcensors')),
+					'view_images'		=> $request->variable('view_images', $this->optionget($user_row, 'viewimg')),
+					'view_flash'		=> $request->variable('view_flash', $this->optionget($user_row, 'viewflash')),
+					'view_smilies'		=> $request->variable('view_smilies', $this->optionget($user_row, 'viewsmilies')),
+					'view_sigs'			=> $request->variable('view_sigs', $this->optionget($user_row, 'viewsigs')),
+					'view_avatars'		=> $request->variable('view_avatars', $this->optionget($user_row, 'viewavatars')),
+					'view_wordcensor'	=> $request->variable('view_wordcensor', $this->optionget($user_row, 'viewcensors')),
 
-					'bbcode'	=> request_var('bbcode', $this->optionget($user_row, 'bbcode')),
-					'smilies'	=> request_var('smilies', $this->optionget($user_row, 'smilies')),
-					'sig'		=> request_var('sig', $this->optionget($user_row, 'attachsig')),
-					'notify'	=> request_var('notify', $user_row['user_notify']),
+					'bbcode'	=> $request->variable('bbcode', $this->optionget($user_row, 'bbcode')),
+					'smilies'	=> $request->variable('smilies', $this->optionget($user_row, 'smilies')),
+					'sig'		=> $request->variable('sig', $this->optionget($user_row, 'attachsig')),
+					'notify'	=> $request->variable('notify', $user_row['user_notify']),
 				);
 
 				/**
@@ -1767,6 +1817,7 @@ class acp_users
 
 				if ($config['allow_avatar'])
 				{
+					/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
@@ -1883,7 +1934,7 @@ class acp_users
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
-					$rank_id = request_var('user_rank', 0);
+					$rank_id = $request->variable('user_rank', 0);
 
 					$sql = 'UPDATE ' . USERS_TABLE . "
 						SET user_rank = $rank_id
@@ -1917,50 +1968,54 @@ class acp_users
 
 			case 'sig':
 
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $this->optionget($user_row, 'sig_bbcode') : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $this->optionget($user_row, 'sig_smilies') : false;
-				$enable_urls	= ($config['allow_sig_links']) ? (bool) $this->optionget($user_row, 'sig_links') : false;
-				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user_row['user_sig'], true));
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? $this->optionget($user_row, 'sig_bbcode') : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? $this->optionget($user_row, 'sig_smilies') : false;
+				$enable_urls	= ($config['allow_sig_links']) ? $this->optionget($user_row, 'sig_links') : false;
 
-				$preview		= (isset($_POST['preview'])) ? true : false;
+				$decoded_message	= generate_text_for_edit($user_row['user_sig'], $user_row['user_sig_bbcode_uid'], $user_row['user_sig_bbcode_bitfield']);
+				$signature			= $request->variable('signature', $decoded_message['text'], true);
+				$signature_preview	= '';
 
-				if ($submit || $preview)
+				if ($submit || $request->is_set_post('preview'))
 				{
-					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
-
-					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
-					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
-					$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
-
-					$message_parser = new parse_message($signature);
-
-					// Allowing Quote BBCode
-					$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
-
-					if (sizeof($message_parser->warn_msg))
-					{
-						$error[] = implode('<br />', $message_parser->warn_msg);
-					}
+					$enable_bbcode	= ($config['allow_sig_bbcode']) ? !$request->variable('disable_bbcode', false) : false;
+					$enable_smilies	= ($config['allow_sig_smilies']) ? !$request->variable('disable_smilies', false) : false;
+					$enable_urls	= ($config['allow_sig_links']) ? !$request->variable('disable_magic_url', false) : false;
 
 					if (!check_form_key($form_name))
 					{
-						$error = 'FORM_INVALID';
+						$error[] = 'FORM_INVALID';
 					}
+				}
 
-					if (!sizeof($error) && $submit)
+				$bbcode_uid = $bbcode_bitfield = $bbcode_flags = '';
+				$warn_msg = generate_text_for_storage($signature, $bbcode_uid, $bbcode_bitfield, $bbcode_flags, $enable_bbcode, $enable_urls, $enable_smilies);
+
+				if (sizeof($warn_msg))
+				{
+					$error += $warn_msg;
+				}
+
+				if (!$submit)
+				{
+					// Parse it for displaying
+					$signature_preview = generate_text_for_display($signature, $bbcode_uid, $bbcode_bitfield, $bbcode_flags);
+				}
+				else
+				{
+					if (!sizeof($error))
 					{
 						$this->optionset($user_row, 'sig_bbcode', $enable_bbcode);
 						$this->optionset($user_row, 'sig_smilies', $enable_smilies);
 						$this->optionset($user_row, 'sig_links', $enable_urls);
 
 						$sql_ary = array(
-							'user_sig'					=> (string) $message_parser->message,
+							'user_sig'					=> $signature,
 							'user_options'				=> $user_row['user_options'],
-							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
-							'user_sig_bbcode_bitfield'	=> (string) $message_parser->bbcode_bitfield
+							'user_sig_bbcode_uid'		=> $bbcode_uid,
+							'user_sig_bbcode_bitfield'	=> $bbcode_bitfield,
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -1970,33 +2025,27 @@ class acp_users
 
 						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
-
-					// Replace "error" strings with their real, localised form
-					$error = array_map(array($user, 'lang'), $error);
 				}
 
-				$signature_preview = '';
+				// Replace "error" strings with their real, localised form
+				$error = array_map(array($user, 'lang'), $error);
 
-				if ($preview)
-				{
-					// Now parse it for displaying
-					$signature_preview = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
-					unset($message_parser);
-				}
+				$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_bitfield);
 
-				decode_message($signature, $user_row['user_sig_bbcode_uid']);
+				/** @var \phpbb\controller\helper $controller_helper */
+				$controller_helper = $phpbb_container->get('controller.helper');
 
 				$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
 
-					'SIGNATURE'			=> $signature,
+					'SIGNATURE'			=> $decoded_message['text'],
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
 					'S_BBCODE_CHECKED'		=> (!$enable_bbcode) ? ' checked="checked"' : '',
 					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? ' checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? ' checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
+					'BBCODE_STATUS'			=> $user->lang(($config['allow_sig_bbcode'] ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
@@ -2017,15 +2066,16 @@ class acp_users
 			break;
 
 			case 'attach':
-
-				$start		= request_var('start', 0);
-				$deletemark = (isset($_POST['delmarked'])) ? true : false;
-				$marked		= request_var('mark', array(0));
+				/* @var $pagination \phpbb\pagination */
 				$pagination = $phpbb_container->get('pagination');
 
+				$start		= $request->variable('start', 0);
+				$deletemark = (isset($_POST['delmarked'])) ? true : false;
+				$marked		= $request->variable('mark', array(0));
+
 				// Sort keys
-				$sort_key	= request_var('sk', 'a');
-				$sort_dir	= request_var('sd', 'd');
+				$sort_key	= $request->variable('sk', 'a');
+				$sort_dir	= $request->variable('sd', 'd');
 
 				if ($deletemark && sizeof($marked))
 				{
@@ -2064,7 +2114,7 @@ class acp_users
 
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode($user->lang['COMMA_SEPARATOR'], $log_attachments));
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACHMENTS_DELETED', false, array(implode($user->lang['COMMA_SEPARATOR'], $log_attachments)));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
@@ -2173,7 +2223,7 @@ class acp_users
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$user->add_lang(array('groups', 'acp/groups'));
-				$group_id = request_var('g', 0);
+				$group_id = $request->variable('g', 0);
 
 				if ($group_id)
 				{
@@ -2393,7 +2443,7 @@ class acp_users
 				$user->add_lang('acp/permissions');
 				add_permission_language();
 
-				$forum_id = request_var('f', 0);
+				$forum_id = $request->variable('f', 0);
 
 				// Global Permissions
 				if (!$forum_id)

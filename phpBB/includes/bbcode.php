@@ -129,13 +129,33 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper, $phpbb_container, $phpbb_filesystem;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			$template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new phpbb\template\context(), $phpbb_extension_manager);
+			$template = new \phpbb\template\twig\twig(
+				$phpbb_container->get('path_helper'),
+				$phpbb_container->get('config'),
+				new \phpbb\template\context(),
+				new \phpbb\template\twig\environment(
+					$phpbb_container->get('config'),
+					$phpbb_container->get('filesystem'),
+					$phpbb_container->get('path_helper'),
+					$phpbb_container,
+					$phpbb_container->getParameter('core.root_path') . 'cache/',
+					$phpbb_container->get('ext.manager'),
+					new \phpbb\template\twig\loader(
+						$phpbb_filesystem
+					)
+				),
+				$phpbb_container->getParameter('core.root_path') . 'cache/',
+				$phpbb_container->get('user'),
+				$phpbb_container->get('template.twig.extensions.collection'),
+				$phpbb_extension_manager
+			);
+
 			$template->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');
@@ -182,6 +202,8 @@ class bbcode
 			$db->sql_freeresult($result);
 		}
 
+		// To perform custom second pass in extension, use $this->bbcode_second_pass_by_extension()
+		// method which accepts variable number of parameters
 		foreach ($bbcode_ids as $bbcode_id)
 		{
 			switch ($bbcode_id)
@@ -612,5 +634,37 @@ class bbcode
 		$code = $this->bbcode_tpl('code_open') . $code . $this->bbcode_tpl('code_close');
 
 		return $code;
+	}
+
+	/**
+	* Function to perform custom bbcode second pass by extensions
+	* can be used to assign bbcode pattern replacement
+	* Example: '#\[list=([^\[]+):$uid\]#e'	=> "\$this->bbcode_second_pass_by_extension('\$1')"
+	*
+	* Accepts variable number of parameters
+	*
+	* @return mixed Second pass result
+	*/
+	function bbcode_second_pass_by_extension()
+	{
+		global $phpbb_dispatcher;
+
+		$return = false;
+		$params_array = func_get_args();
+
+		/**
+		* Event to perform bbcode second pass with
+		* the custom validating methods provided by extensions
+		*
+		* @event core.bbcode_second_pass_by_extension
+		* @var array	params_array	Array with the function parameters
+		* @var mixed	return			Second pass result to return
+		*
+		* @since 3.1.5-RC1
+		*/
+		$vars = array('params_array', 'return');
+		extract($phpbb_dispatcher->trigger_event('core.bbcode_second_pass_by_extension', compact($vars)));
+
+		return $return;
 	}
 }

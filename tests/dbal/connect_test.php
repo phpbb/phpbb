@@ -22,7 +22,9 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 	public function test_failing_connect()
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $phpbb_filesystem;
+
+		$phpbb_filesystem = new phpbb\filesystem\filesystem();
 
 		$config = $this->get_database_config();
 

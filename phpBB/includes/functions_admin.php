@@ -316,7 +316,7 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 */
 function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perms = true, $add_log = true)
 {
-	global $db;
+	global $db, $user, $phpbb_log;
 
 	// Only one forum id specified
 	if (!is_array($dest_forum_ids))
@@ -439,7 +439,7 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 
 	if ($add_log)
 	{
-		add_log('admin', 'LOG_FORUM_COPIED_PERMISSIONS', $src_forum_name, implode(', ', $dest_forum_names));
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_COPIED_PERMISSIONS', false, array($src_forum_name, implode(', ', $dest_forum_names)));
 	}
 
 	$db->sql_transaction('commit');
@@ -618,7 +618,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db, $config, $phpbb_container;
+	global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -672,6 +672,20 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	$table_ary = array(BOOKMARKS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
 
+	/**
+	 * Perform additional actions before topic(s) deletion
+	 *
+	 * @event core.delete_topics_before_query
+	 * @var	array	table_ary	Array of tables from which all rows will be deleted that hold a topic_id occuring in topic_ids
+	 * @var	array	topic_ids	Array of topic ids to delete
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+			'table_ary',
+			'topic_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_topics_before_query', compact($vars)));
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
@@ -679,6 +693,18 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
+
+	/**
+	 * Perform additional actions after topic(s) deletion
+	 *
+	 * @event core.delete_topics_after_query
+	 * @var	array	topic_ids	Array of topic ids that were deleted
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+			'topic_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_topics_after_query', compact($vars)));
 
 	$moved_topic_ids = array();
 
@@ -712,9 +738,10 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($approved_topics)
 	{
-		set_config_count('num_topics', $approved_topics * (-1), true);
+		$config->increment('num_topics', $approved_topics * (-1), false);
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications(array(
@@ -970,7 +997,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	if ($approved_posts && $post_count_sync)
 	{
-		set_config_count('num_posts', $approved_posts * (-1), true);
+		$config->increment('num_posts', $approved_posts * (-1), false);
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
@@ -979,6 +1006,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync, false);
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications($delete_notifications_types, $post_ids);
@@ -1102,8 +1130,8 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	if ($space_removed || $files_removed)
 	{
-		set_config_count('upload_dir_size', $space_removed * (-1), true);
-		set_config_count('num_files', $files_removed * (-1), true);
+		$config->increment('upload_dir_size', $space_removed * (-1), false);
+		$config->increment('num_files', $files_removed * (-1), false);
 	}
 
 	// If we do not resync, we do not need to adjust any message, post, topic or user entries
@@ -2407,7 +2435,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 */
 function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq)
 {
-	global $db;
+	global $db, $user, $phpbb_log;
 
 	$sql = 'SELECT forum_name
 		FROM ' . FORUMS_TABLE . "
@@ -2428,7 +2456,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 			WHERE forum_id = $forum_id";
 		$db->sql_query($sql);
 
-		add_log('admin', 'LOG_AUTO_PRUNE', $row['forum_name']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_AUTO_PRUNE', false, array($row['forum_name']));
 	}
 
 	return;
@@ -2995,25 +3023,6 @@ function get_database_size()
 	return $database_size;
 }
 
-/**
-* Retrieve contents from remotely stored file
-*
-* @deprecated	3.1.2	Use file_downloader instead
-*/
-function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
-{
-	global $phpbb_container;
-
-	// Get file downloader and assign $errstr and $errno
-	$file_downloader = $phpbb_container->get('file_downloader');
-
-	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
-	$errstr = $file_downloader->get_error_string();
-	$errno = $file_downloader->get_error_number();
-
-	return $file_data;
-}
-
 /*
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
@@ -3057,7 +3066,7 @@ function tidy_warnings()
 		$db->sql_transaction('commit');
 	}
 
-	set_config('warnings_last_gc', time(), true);
+	$config->set('warnings_last_gc', time(), false);
 }
 
 /**
@@ -3065,7 +3074,7 @@ function tidy_warnings()
 */
 function tidy_database()
 {
-	global $db;
+	global $config, $db;
 
 	// Here we check permission consistency
 
@@ -3090,7 +3099,7 @@ function tidy_database()
 		WHERE ' . $db->sql_in_set('forum_id', $forum_ids, true);
 	$db->sql_query($sql);
 
-	set_config('database_last_gc', time(), true);
+	$config->set('database_last_gc', time(), false);
 }
 
 /**

@@ -18,7 +18,6 @@ class mcp_warn_info
 		return array(
 			'filename'	=> 'mcp_warn',
 			'title'		=> 'MCP_WARN',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'front'				=> array('title' => 'MCP_WARN_FRONT', 'auth' => 'aclf_m_warn', 'cat' => array('MCP_WARN')),
 				'list'				=> array('title' => 'MCP_WARN_LIST', 'auth' => 'aclf_m_warn', 'cat' => array('MCP_WARN')),

@@ -1,0 +1,1 @@
+[red]red [blue]blue[/blue] red[/red]
