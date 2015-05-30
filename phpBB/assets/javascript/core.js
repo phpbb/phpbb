@@ -1439,9 +1439,9 @@ phpbb.colorPalette = function(dir, width, height) {
 
 			for (b = 0; b < 5; b++) {
 				color = '' + numberList[r] + numberList[g] + numberList[b];
-				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' + height + 'px;">';
-				html += '<a href="#" data-color="' + color + '" style="display: block; width: ' + width + 'px; height: ' +
-					height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
+				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' +
+					height + 'px;"><a href="#" data-color="' + color + '" style="display: block; width: ' +
+					width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
 				html += '</td>';
 			}
 

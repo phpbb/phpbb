@@ -49,7 +49,6 @@
   "requireSpaceAfterBinaryOperators": [
     "=", "+", "+=", "-", "-=", "/", "/=", "*", "*=", "===", "!==", "<", "<=", ">", ">="
   ],
-  "requireCamelCaseOrUpperCaseIdentifiers": true,
   "disallowKeywords": ["with"],
   "disallowMultipleLineStrings": true,
   "disallowMixedSpacesAndTabs": "smart",
