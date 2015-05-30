@@ -926,6 +926,13 @@ overall_header_stylesheets_after
 * Purpose: Add asset calls after stylesheets within the `</head>` tag.
 Note that INCLUDECSS will not work with this event.
 
+posting_editor_add_panel_tab
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.5-RC1
+* Purpose: Add custom panel to post editor
+
 posting_editor_bbcode_status_after
 ===
 * Locations:
@@ -1013,6 +1020,17 @@ posting_editor_subject_before
     + styles/subsilver2/template/posting_body.html
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
+
+posting_layout_include_panel_body
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+<<<<<<< HEAD
+* Since: 3.1.5-RC1
+=======
+* Since: 3.1.5
+>>>>>>> 5e45eb9... [ticket/13843] Add templates events to insert custom panel in posting
+* Purpose: Add include of custom panel template body in posting editor
 
 posting_pm_header_find_username_after
 ===
