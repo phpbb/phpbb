@@ -223,7 +223,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
-	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
 	border-radius: 7px;
@@ -235,7 +234,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 .forabg {
-	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
 	clear: both;
@@ -243,7 +241,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 .forumbg {
-	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
 	clear: both;

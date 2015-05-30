@@ -48,23 +48,29 @@ hr {
 }
 
 .headerbar {
+	color: #FFFFFF;
+}
+
+.headerbar, .forumbg {
 	background-color: #12A3EB;
 	background-image: url("./images/bg_header.gif");
-	color: #FFFFFF;
+	background-image: -webkit-linear-gradient(#6ACEFF 0%, #0076B1 2px, #12A3EB 92px, #12A3EB 100%);
+	background-image: -o-linear-gradient(#6ACEFF 0%, #0076B1 2px, #12A3EB 92px, #12A3EB 100%);
+	background-image: linear-gradient(#6ACEFF 0%, #0076B1 2px, #12A3EB 92px, #12A3EB 100%);
+	background-repeat: repeat-x;
+ }
+
+.forabg {
+	background-color: #0076B1;
+	background-image: url("./images/bg_list.gif");
+	background-image: -webkit-linear-gradient(#6ACEFF 0%, #12A3EB 2px, #0076B1 92px, #0076B1 100%);
+	background-image: -o-linear-gradient(#6ACEFF 0%, #12A3EB 2px, #0076B1 92px, #0076B1 100%);
+	background-image: linear-gradient(#6ACEFF 0%, #12A3EB 2px, #0076B1 92px, #0076B1 100%);
+	background-repeat: repeat-x;
 }
 
 .navbar {
 	background-color: #cadceb;
-}
-
-.forabg {
-	background-color: #0076b1;
-	background-image: url("./images/bg_list.gif");
-}
-
-.forumbg {
-	background-color: #12A3EB;
-	background-image: url("./images/bg_header.gif");
 }
 
 .panel {
@@ -89,15 +95,15 @@ table.zebra-list tr:nth-child(odd) td, ul.zebra-list li:nth-child(odd) {
 }
 
 .bg2 {
-	background-color: #e1ebf2;
+	background-color: #E1EBf2;
 }
 
 table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
-	background-color: #e1ebf2;
+	background-color: #E1EBF2;
 }
 
 .bg3	{
-	background-color: #cadceb;
+	background-color: #CADCEB;
 }
 
 .ucprowbg {
@@ -316,8 +322,11 @@ Colours and backgrounds for content.css
 -------------------------------------------------------------- */
 
 ul.forums {
-	background-color: #eef5f9;
-	background-image: url("./images/gradient.gif");
+	background-color: #EEF5F9;
+	background-image: -webkit-linear-gradient(#D2E0EB 0%, #EEF5F9 100%);
+	background-image: -o-linear-gradient(#D2E0EB 0%, #EEF5F9 100%);
+	background-image: linear-gradient(#D2E0EB 0%, #EEF5F9 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2E0EB', endColorstr='#EEF5F9',GradientType=0 );
 }
 
 ul.topiclist li {
@@ -329,7 +338,7 @@ ul.topiclist dd {
 }
 
 .rtl ul.topiclist dd {
-	border-right-color: #fff;
+	border-right-color: #FFFFFF;
 	border-left-color: transparent;
 }
 
@@ -600,15 +609,13 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 .button {
 	border-color: #C7C3BF;
-	background-color: #FFFFFF;
-	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
-	background-image: -webkit-linear-gradient(top, #FFFFFF, #E9E9E9);
-	background-image: -o-linear-gradient(top, #FFFFFF, #E9E9E9);
-	background-image: linear-gradient(to bottom, #FFFFFF, #E9E9E9);
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='#E9E9E9')";
-	box-shadow: 0 0 0 1px #FFFFFF inset;
-	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
-	color: #D31141;
+	background-color: #E9E9E9;
+	background-image: -webkit-linear-gradient(#FFFFFF 0%, #E9E9E9 100%);
+	background-image: -o-linear-gradient(#FFFFFF 0%, #E9E9E9 100%);
+	background-image: linear-gradient(#FFFFFF 0%, #E9E9E9 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#E9E9E9',GradientType=0 ); /* IE6-9 */
+ 	box-shadow: 0 0 0 1px #FFFFFF inset;
+ 	color: #D31141;
 }
 
 .dropdown-select {
@@ -616,12 +623,12 @@ Colours and backgrounds for buttons.css
 }
 
 .button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
-	border-color: #0a8ed0;
-	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);
+	border-color: #0A8ED0;
+	background-color: #FFFFFF;
 	background-image: -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: -o-linear-gradient(top, #E9E9E9, #FFFFFF);
 	background-image: linear-gradient(to bottom, #E9E9E9, #FFFFFF);
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#E9E9E9', EndColorStr='#FFFFFF')";
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E9E9E9', endColorstr='#FFFFFF',GradientType=0 );
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
@@ -775,12 +782,9 @@ ul.cplist {
 #tabs .activetab > a,
 #tabs .activetab > a:hover {
 	background: #CADCEB;
-	background: -moz-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #E2F2FF), color-stop(100%, #CADCEB));
-	background: -webkit-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: -o-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: -ms-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: linear-gradient(to bottom, #E2F2FF 0%, #CADCEB 100%);
+	background: -webkit-linear-gradient(#E2F2FF 0%, #CADCEB 100%);
+	background: -o-linear-gradient(#E2F2FF 0%, #CADCEB 100%);
+	background: linear-gradient(#E2F2FF 0%, #CADCEB 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E2F2FF', endColorstr='#CADCEB', GradientType=0 );
 	border-color: #CADCEB;
 	box-shadow: 0 1px 1px #F2F9FF inset;
@@ -820,22 +824,16 @@ ul.cplist {
 #navigation a {
 	color: #333;
 	background: #B4C4D1;
-	background: -moz-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
-	background: -webkit-gradient(left top, right top, color-stop(50%, #B4C4D1), color-stop(100%, #CADCEB));
 	background: -webkit-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
 	background: -o-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
-	background: -ms-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
 	background: linear-gradient(to right, #B4C4D1 50%, #CADCEB 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#B4C4D1', endColorstr='#CADCEB', GradientType=1 );
 }
 
 .rtl #navigation a {
 	background: #B4C4D1;
-	background: -moz-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
-	background: -webkit-gradient(left top, right top, color-stop(0%, #CADCEB), color-stop(50%, #B4C4D1));
 	background: -webkit-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
 	background: -o-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
-	background: -ms-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
 	background: linear-gradient(to right, #CADCEB 0%, #B4C4D1 50%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CADCEB', endColorstr='#B4C4D1', GradientType=1 );
 }
@@ -879,7 +877,7 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
-	background-color: #eef5f9;
+	background-color: #EEF5F9;
 }
 
 dl.mini dt {
@@ -1024,8 +1022,11 @@ fieldset.quick-login input.inputbox {
 
 a.button1, input.button1, input.button3, a.button2, input.button2 {
 	color: #000;
-	background-color: #FAFAFA;
-	background-image: url("./images/bg_button.gif");
+	background-color: #EFEFEF;
+	background-image: -webkit-linear-gradient(#D2D2D2 0%, #EFEFEF 100%);
+	background-image: -o-linear-gradient(#D2D2D2 0%, #EFEFEF 100%);
+	background-image: linear-gradient(#D2D2D2 0%, #EFEFEF 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2D2D2', endColorstr='#EFEFEF',GradientType=0 );
 }
 
 a.button1, input.button1 {
@@ -1048,8 +1049,13 @@ a.button1, a.button2 {
 
 /* Hover states */
 a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
-	border-color: #BC2A4D;
-	color: #BC2A4D;
+	border-color: #D31141;
+	color: #D31141;
+	background-color: #D2D2D2;
+	background-image: -webkit-linear-gradient(#EFEFEF 0%, #D2D2D2 100%);
+	background-image: -o-linear-gradient(#EFEFEF 0%, #D2D2D2 100%);
+	background-image: linear-gradient(#EFEFEF 0%, #D2D2D2 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EFEFEF', endColorstr='#D2D2D2',GradientType=0 ); /* IE6-9 */
 }
 
 /* Focus states */
@@ -1105,12 +1111,9 @@ input.disabled {
 
 .dropdown-extended .header {
 	background: #F1F8FF;
-	background: -moz-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F1F8FF), color-stop(100%, #CADCEB));
-	background: -webkit-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: -o-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: -ms-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
+	background: -webkit-linear-gradient(#F1F8FF 0%, #CADCEB 100%);
+	background: -o-linear-gradient(#F1F8FF 0%, #CADCEB 100%);
+	background: linear-gradient(#F1F8FF 0%, #CADCEB 100%);
 }
 
 .dropdown .pointer {
@@ -1134,8 +1137,8 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 }
 
 .dropdown .dropdown-contents {
-	background: #fff;
-	border-color: #b9b9b9;
+	background: #FFF;
+	border-color: #B9B9B9;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
