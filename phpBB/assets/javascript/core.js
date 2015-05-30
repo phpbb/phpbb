@@ -1612,6 +1612,9 @@ phpbb.registerPageDropdowns = function() {
 	});
 };
 
+/**
+ * Handle avatars to be lazy loaded.
+ */
 phpbb.lazyLoadAvatars = function loadAvatars() {
 	$('.avatar[data-src]').each(function () {
 		var $avatar = $(this);
