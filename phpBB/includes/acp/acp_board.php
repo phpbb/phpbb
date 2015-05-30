@@ -1019,7 +1019,7 @@ class acp_board
 				'current_button_modes',
 				'new_button_modes',
 			);
-		extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.acp_board_wysiwyg', compact($vars)));
 
 		if ($submit)
 		{
