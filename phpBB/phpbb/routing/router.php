@@ -225,6 +225,7 @@ class router implements RouterInterface
 			$route->setCondition($this->resolve($route->getCondition()));
 		}
 	}
+
 	/**
 	 * Recursively replaces placeholders with the service container parameters.
 	 *
