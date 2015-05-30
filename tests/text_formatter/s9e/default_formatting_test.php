@@ -221,6 +221,10 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'[quote="http://example.org"]...[/quote]',
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">http://example.org</a> wrote:</cite>...</div></blockquote>'
 			),
+			array(
+				"[quote]\nThis is a long quote that is definitely going to exceed 80 characters\n[/quote]\n\nFollowed by a reply",
+				"<blockquote class=\"uncited\"><div>\nThis is a long quote that is definitely going to exceed 80 characters\n</div></blockquote>\n\nFollowed by a reply"
+			),
 		);
 	}
 }

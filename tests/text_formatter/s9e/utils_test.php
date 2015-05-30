@@ -171,6 +171,16 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 				),
 				'[quote="user" post_id="123" url="http://example.org"]...[/quote]',
 			),
+			array(
+				'This is a long quote that is definitely going to exceed 80 characters',
+				array(),
+				"[quote]\nThis is a long quote that is definitely going to exceed 80 characters\n[/quote]",
+			),
+			array(
+				'  This is a short quote on its own line  ',
+				array(),
+				'[quote]This is a short quote on its own line[/quote]',
+			),
 		);
 	}
 

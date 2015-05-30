@@ -942,10 +942,10 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$message_link = '';
 		}
 		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
-			censor_text(trim($message_parser->message)),
+			censor_text($message_parser->message),
 			array('author' => $quote_username)
 		);
-		$message_parser->message = $message_link . $quote_text . "\n";
+		$message_parser->message = $message_link . $quote_text . "\n\n";
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
@@ -974,7 +974,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode($user->lang['COMMA_SEPARATOR'], $fwd_to_field['to']));
 
 		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
-			censor_text(trim($message_parser->message)),
+			censor_text($message_parser->message),
 			array('author' => $quote_username)
 		);
 		$message_parser->message = implode("\n", $forward_text) . "\n\n" . $quote_text;
