@@ -13,7 +13,6 @@
 
 namespace phpbb\module;
 
-use phpbb\module\exception\module_class_not_defined_exception;
 use phpbb\module\exception\module_exception;
 use phpbb\module\exception\module_not_found_exception;
 
