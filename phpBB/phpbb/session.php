@@ -1081,7 +1081,7 @@ class session
 		* @event core.session_gc
 		* @since 3.1.5-RC1
 		*/
-		$phpbb_dispatcher->trigger_event('core.session_gc');
+		$phpbb_dispatcher->dispatch('core.session_gc');
 
 		return;
 	}
