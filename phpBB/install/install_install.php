@@ -1552,9 +1552,14 @@ class install_install extends module
 			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
-		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
-
-		$_module = new acp_modules();
+		$_module = new \phpbb\module\module_manager(
+			new \phpbb\cache\driver\dummy(),
+			$db,
+			$phpbb_extension_manager,
+			MODULES_TABLE,
+			$phpbb_root_path,
+			$phpEx
+		);
 		$module_classes = array('acp', 'mcp', 'ucp');
 
 		// Add categories
@@ -1585,7 +1590,7 @@ class install_install extends module
 				);
 
 				// Add category
-				$_module->update_module_data($module_data, true);
+				$_module->update_module_data($module_data);
 
 				// Check for last sql error happened
 				if ($db->get_sql_error_triggered())
@@ -1619,7 +1624,7 @@ class install_install extends module
 							'module_auth'		=> '',
 						);
 
-						$_module->update_module_data($module_data, true);
+						$_module->update_module_data($module_data);
 
 						// Check for last sql error happened
 						if ($db->get_sql_error_triggered())
@@ -1659,7 +1664,7 @@ class install_install extends module
 							'module_auth'		=> $row['auth'],
 						);
 
-						$_module->update_module_data($module_data, true);
+						$_module->update_module_data($module_data);
 
 						// Check for last sql error happened
 						if ($db->get_sql_error_triggered())
@@ -1684,7 +1689,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 4);
+				$_module->move_module_by($row, 'acp', 'move_up', 4);
 
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
@@ -1696,7 +1701,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 4);
+				$_module->move_module_by($row, 'acp', 'move_up', 4);
 
 				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
@@ -1708,7 +1713,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 5);
+				$_module->move_module_by($row, 'acp', 'move_up', 5);
 
 				// Move extension management module 1 up...
 				$sql = 'SELECT *
@@ -1721,7 +1726,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 1);
+				$_module->move_module_by($row, 'acp', 'move_up', 1);
 			}
 
 			if ($module_class == 'mcp')
@@ -1736,7 +1741,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 3);
+				$_module->move_module_by($row, 'mcp', 'move_down', 3);
 
 				// Move closed pm reports module 3 down...
 				$sql = 'SELECT *
@@ -1748,7 +1753,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 3);
+				$_module->move_module_by($row, 'mcp', 'move_down', 3);
 
 				// Move open pm reports module 3 down...
 				$sql = 'SELECT *
@@ -1760,7 +1765,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 3);
+				$_module->move_module_by($row, 'mcp', 'move_down', 3);
 			}
 
 			if ($module_class == 'ucp')
@@ -1775,7 +1780,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 4);
+				$_module->move_module_by($row, 'ucp', 'move_down', 4);
 
 				// Move notification options module 4 down...
 				$sql = 'SELECT *
@@ -1787,7 +1792,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 4);
+				$_module->move_module_by($row, 'ucp', 'move_down', 4);
 
 				// Move OAuth module 5 down...
 				$sql = 'SELECT *
@@ -1799,7 +1804,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 5);
+				$_module->move_module_by($row, 'ucp', 'move_down', 5);
 			}
 
 			// And now for the special ones
@@ -1838,7 +1843,7 @@ class install_install extends module
 							'module_auth'		=> $row['module_auth'],
 						);
 
-						$_module->update_module_data($module_data, true);
+						$_module->update_module_data($module_data);
 
 						// Check for last sql error happened
 						if ($db->get_sql_error_triggered())
@@ -1850,7 +1855,7 @@ class install_install extends module
 				}
 			}
 
-			$_module->remove_cache_file();
+			$_module->remove_cache_file($module_class);
 		}
 	}
 
