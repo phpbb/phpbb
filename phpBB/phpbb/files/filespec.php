@@ -33,7 +33,6 @@ class filespec
 	var $destination_path = '';
 
 	var $file_moved = false;
-	var $init_error = false;
 	var $local = false;
 
 	var $error = array();
@@ -61,14 +60,19 @@ class filespec
 	 * File Class
 	 * @access private
 	 */
-	function filespec($upload_ary, $upload_namespace, \phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	function filespec(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
-		if (!isset($upload_ary))
-		{
-			$this->init_error = true;
-			return;
-		}
+		// @todo call this via files
+		//$this->set_upload_ary($upload_ary);
+		//$this->set_upload_namespace($upload_namespace);
 
+		$this->plupload = $plupload;
+		$this->mimetype_guesser = $mimetype_guesser;
+		$this->filesystem = $phpbb_filesystem;
+	}
+
+	public function set_upload_ary($upload_ary)
+	{
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
 		$name = (STRIP) ? stripslashes($upload_ary['name']) : $upload_ary['name'];
@@ -93,10 +97,21 @@ class filespec
 		$this->file_moved = false;
 
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
-		$this->upload = $upload_namespace;
-		$this->plupload = $plupload;
-		$this->mimetype_guesser = $mimetype_guesser;
-		$this->filesystem = $phpbb_filesystem;
+	}
+
+	public function set_upload_namespace($namespace)
+	{
+		$this->upload = $namespace;
+	}
+
+	/**
+	 * Check if class members were not properly initalised yet
+	 *
+	 * @return bool True if there was an init error, false if not
+	 */
+	protected function init_error()
+	{
+		return !isset($upload_ary);
 	}
 
 	/**
@@ -109,7 +124,7 @@ class filespec
 	 */
 	function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
-		if ($this->init_error)
+		if ($this->init_error())
 		{
 			return;
 		}
@@ -154,7 +169,7 @@ class filespec
 	 */
 	function get($property)
 	{
-		if ($this->init_error || !isset($this->$property))
+		if ($this->init_error() || !isset($this->$property))
 		{
 			return false;
 		}

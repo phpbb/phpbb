@@ -4,3 +4,7 @@ services:
 
     files.filespec:
         class: phpbb\files\filespec
+        arguments:
+            - @filesystem
+            - @mimetype.guesser
+            - @plupload
