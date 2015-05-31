@@ -41,7 +41,10 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
-		$this->tool = new \phpbb\db\migration\tool\module($this->db, $this->cache, $this->user, $phpbb_root_path, $phpEx, 'phpbb_modules');
+		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
+		$module_manager = new \phpbb\module\module_manager($cache, $this->db, $phpbb_extension_manager, MODULES_TABLE, $phpbb_root_path, $phpEx);
+
+		$this->tool = new \phpbb\db\migration\tool\module($this->db, $this->cache, $this->user, $module_manager, $phpbb_root_path, $phpEx, 'phpbb_modules');
 	}
 
 	public function exists_data()
