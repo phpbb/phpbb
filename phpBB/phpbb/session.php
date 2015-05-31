@@ -1081,8 +1081,7 @@ class session
 		* @event core.session_gc
 		* @since 3.1.5-RC1
 		*/
-		$vars = array();
-		extract($phpbb_dispatcher->trigger_event('core.session_gc', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.session_gc'));
 
 		return;
 	}
