@@ -264,11 +264,9 @@ phpbb.ajaxify = function(options) {
 			} catch (e) {}
 			if (typeof responseText === 'string' && responseText.length > 0) {
 				errorText = responseText;
-			}
-			else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
+			} else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
 				errorText = errorThrown;
-			}
-			else {
+			} else {
 				errorText = $dark.attr('data-ajax-error-text-' + textStatus);
 				if (typeof errorText !== 'string' || !errorText.length) {
 					errorText = $dark.attr('data-ajax-error-text');
@@ -429,7 +427,7 @@ phpbb.search = {
 };
 
 /**
- * Get cached search data. 
+ * Get cached search data.
  *
  * @param {string} id Search ID.
  * @returns {bool|object} Cached data object. Returns false if no data exists.
@@ -442,7 +440,7 @@ phpbb.search.cache.get = function(id) {
 };
 
 /**
- * Set search cache data value. 
+ * Set search cache data value.
  *
  * @param {string} id		Search ID.
  * @param {string} key		Data key.
@@ -450,13 +448,13 @@ phpbb.search.cache.get = function(id) {
  */
 phpbb.search.cache.set = function(id, key, value) {
 	if (!this.data[id]) {
-		this.data[id] = {results: []};
+		this.data[id] = { results: [] };
 	}
 	this.data[id][key] = value;
 };
 
 /**
- * Cache search result. 
+ * Cache search result.
  *
  * @param {string} id		Search ID.
  * @param {string} keyword	Keyword.
@@ -496,7 +494,7 @@ phpbb.search.getKeyword = function($input, keyword, multiline) {
 
 /**
  * Get the textarea line number on which the keyword resides - for textareas
- * that support multiple keywords (one per line). 
+ * that support multiple keywords (one per line).
  *
  * @param {jQuery} $textarea Search textarea.
  * @returns {int} The line number.
@@ -525,7 +523,8 @@ phpbb.search.setValue = function($input, value, multiline) {
 };
 
 /**
- * Sets the onclick event to set the value on the input|textarea to the selected search result. 
+ * Sets the onclick event to set the value on the input|textarea to the
+ * selected search result.
  *
  * @param {jQuery} $input		Search input|textarea.
  * @param {object} value		Result object.
@@ -554,7 +553,7 @@ phpbb.search.setValueOnClick = function($input, value, $row, $container) {
 phpbb.search.filter = function(data, event, sendRequest) {
 	var $this = $(this),
 		dataName = ($this.attr('data-name') !== undefined) ? $this.attr('data-name') : $this.attr('name'),
-		minLength = parseInt($this.attr('data-min-length')),
+		minLength = parseInt($this.attr('data-min-length'), 10),
 		searchID = $this.attr('data-results'),
 		keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline')),
 		cache = phpbb.search.cache.get(searchID),
@@ -576,7 +575,10 @@ phpbb.search.filter = function(data, event, sendRequest) {
 			} else {
 				// Do we already have results for this?
 				if (cache.results[keyword]) {
-					var response = {keyword: keyword, results: cache.results[keyword]};
+					var response = {
+						keyword: keyword,
+						results: cache.results[keyword]
+					};
 					phpbb.search.handleResponse(response, $this, true);
 					proceed = false;
 				}
@@ -587,8 +589,8 @@ phpbb.search.filter = function(data, event, sendRequest) {
 					phpbb.search.cache.set(searchID, 'lastSearch', keyword);
 					phpbb.search.cache.setResults(searchID, keyword, []);
 					proceed = false;
-				}		
-			}		
+				}
+			}
 		}
 
 		if (proceed) {
@@ -601,7 +603,7 @@ phpbb.search.filter = function(data, event, sendRequest) {
 };
 
 /**
- * Handle search result response. 
+ * Handle search result response.
  *
  * @param {object} res			Data received from server.
  * @param {jQuery} $input		Search input|textarea.
@@ -781,7 +783,7 @@ phpbb.timezoneSwitchDate = function(keepSelection) {
 	} else {
 		$tzSelectDateSuggest.css('display', 'inline');
 	}
-	
+
 	var $tzOptions = $timezone.children('optgroup[data-tz-value="' + $tzDate.val() + '"]').children('option');
 
 	if ($tzOptions.length === 1) {
@@ -1006,7 +1008,9 @@ phpbb.resizeTextArea = function($items, options) {
 	function resetAutoResize(item) {
 		var $item = $(item);
 		if ($item.hasClass('auto-resized')) {
-			$(item).css({height: '', resize: ''}).removeClass('auto-resized');
+			$(item)
+				.css({ height: '', resize: '' })
+				.removeClass('auto-resized');
 			configuration.resetCallback.call(item, $item);
 		}
 	}
@@ -1014,7 +1018,9 @@ phpbb.resizeTextArea = function($items, options) {
 	function autoResize(item) {
 		function setHeight(height) {
 			height += parseInt($item.css('height'), 10) - $item.height();
-			$item.css({height: height + 'px', resize: 'none'}).addClass('auto-resized');
+			$item
+				.css({ height: height + 'px', resize: 'none' })
+				.addClass('auto-resized');
 			configuration.resizeCallback.call(item, $item);
 		}
 
@@ -1039,8 +1045,7 @@ phpbb.resizeTextArea = function($items, options) {
 
 		if (height > maxHeight) {
 			setHeight(maxHeight);
-		}
-		else if (scrollHeight > (height + 5)) {
+		} else if (scrollHeight > (height + 5)) {
 			setHeight(Math.min(maxHeight, scrollHeight));
 		}
 	}
@@ -1157,7 +1162,7 @@ phpbb.applyCodeEditor = function(textarea) {
 					var tagLength = startTags[i].length;
 
 					value = value.substring(index + tagLength);
-					if (startTags[i].lastIndexOf(startTagsEnd) != tagLength) {
+					if (startTags[i].lastIndexOf(startTagsEnd) !== tagLength) {
 						index = value.indexOf(startTagsEnd);
 
 						if (index >= 0) {
@@ -1333,12 +1338,15 @@ phpbb.toggleDropdown = function() {
 					fullFreeSpace = freeSpace + parent.outerWidth();
 
 				options.dropdown.find('.dropdown-contents').each(function() {
-					contentWidth = parseInt($(this).outerWidth());
-					$(this).css({marginLeft: 0, left: 0});
+					contentWidth = parseInt($(this).outerWidth(), 10);
+					$(this).css({ marginLeft: 0, left: 0 });
 				});
 
 				var maxOffset = Math.min(contentWidth, fullFreeSpace) + 'px';
-				options.dropdown.css({'width': maxOffset, 'margin-left': '-' + maxOffset});
+				options.dropdown.css({
+					width: maxOffset,
+					marginLeft: -maxOffset
+				});
 			}
 		} else {
 			options.dropdown.css('margin-right', '-' + (windowWidth + freeSpace) + 'px');
@@ -1405,9 +1413,7 @@ phpbb.registerDropdown = function(toggle, dropdown, options) {
 * @param {int} height Palette cell height.
 */
 phpbb.colorPalette = function(dir, width, height) {
-	var r = 0, 
-		g = 0, 
-		b = 0,
+	var r, g, b,
 		numberList = new Array(6),
 		color = '',
 		html = '';
@@ -1418,32 +1424,33 @@ phpbb.colorPalette = function(dir, width, height) {
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	var tableClass = (dir == 'h') ? 'horizontal-palette' : 'vertical-palette';
+	var tableClass = (dir === 'h') ? 'horizontal-palette' : 'vertical-palette';
 	html += '<table class="not-responsive colour-palette ' + tableClass + '" style="width: auto;">';
 
 	for (r = 0; r < 5; r++) {
-		if (dir == 'h') {
+		if (dir === 'h') {
 			html += '<tr>';
 		}
 
 		for (g = 0; g < 5; g++) {
-			if (dir == 'v') {
+			if (dir === 'v') {
 				html += '<tr>';
 			}
 
 			for (b = 0; b < 5; b++) {
-				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' + height + 'px;">';
-				html += '<a href="#" data-color="' + color + '" style="display: block; width: ' + width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
+				color = '' + numberList[r] + numberList[g] + numberList[b];
+				html += '<td style="background-color: #' + color + '; width: ' + width + 'px; height: ' +
+					height + 'px;"><a href="#" data-color="' + color + '" style="display: block; width: ' +
+					width + 'px; height: ' + height + 'px; " alt="#' + color + '" title="#' + color + '"></a>';
 				html += '</td>';
 			}
 
-			if (dir == 'v') {
+			if (dir === 'v') {
 				html += '</tr>';
 			}
 		}
 
-		if (dir == 'h') {
+		if (dir === 'h') {
 			html += '</tr>';
 		}
 	}
@@ -1530,7 +1537,7 @@ phpbb.toggleSelectSettings = function(el) {
 * @returns function
 */
 phpbb.getFunctionByName = function (functionName) {
- 	var namespaces = functionName.split('.'),
+	var namespaces = functionName.split('.'),
 		func = namespaces.pop(),
 		context = window;
 
