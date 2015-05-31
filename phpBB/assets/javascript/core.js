@@ -15,7 +15,7 @@ var keymap = {
 };
 
 var $dark = $('#darkenwrapper');
-var $loadingIndicator = $('#loading_indicator');
+var $loadingIndicator;
 var phpbbAlertTimer = null;
 
 phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
@@ -26,6 +26,11 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
  * @returns {object} Returns loadingIndicator.
  */
 phpbb.loadingIndicator = function() {
+	if (!$loadingIndicator) {
+		$loadingIndicator = $('<div />', { id: 'loading_indicator' });
+		$loadingIndicator.appendTo('#page-footer');
+	}
+
 	if (!$loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeIn(phpbb.alertTime);
 		// Wait fifteen seconds and display an error if nothing has been returned by then.
