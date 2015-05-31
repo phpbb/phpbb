@@ -435,7 +435,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata, $mimetype_guesser) : $upload->form_upload($form_name, $mimetype_guesser, $plupload);
 
-	if ($file->init_error)
+	if ($file->init_error())
 	{
 		$filedata['post_attach'] = false;
 		return $filedata;

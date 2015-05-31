@@ -60,7 +60,7 @@ class filespec
 	 * File Class
 	 * @access private
 	 */
-	function filespec(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		// @todo call this via files
 		//$this->set_upload_ary($upload_ary);
@@ -109,9 +109,9 @@ class filespec
 	 *
 	 * @return bool True if there was an init error, false if not
 	 */
-	protected function init_error()
+	public function init_error()
 	{
-		return !isset($upload_ary);
+		return !isset($this->filename);
 	}
 
 	/**
@@ -422,7 +422,7 @@ class filespec
 				$this->height = $this->image_info['height'];
 
 				// Check image type
-				$types = fileupload::image_types();
+				$types = \fileupload::image_types();
 
 				if (!isset($types[$this->image_info['type']]) || !in_array($this->extension, $types[$this->image_info['type']]))
 				{

@@ -169,9 +169,11 @@ class fileupload
 			}
 		}
 
-		$file = new filespec($upload, $this, $this->filesystem, $mimetype_guesser, $plupload);
+		$file = new \phpbb\files\filespec($this->filesystem, $mimetype_guesser, $plupload);
+		$file->set_upload_ary($upload);
+		$file->set_upload_namespace($this);
 
-		if ($file->init_error)
+		if ($file->init_error())
 		{
 			$file->error[] = '';
 			return $file;
@@ -250,9 +252,11 @@ class fileupload
 			$upload['type'] = $filedata['type'];
 		}
 
-		$file = new filespec($upload, $this, $this->filesystem, $mimetype_guesser);
+		$file = new \phpbb\files\filespec($this->filesystem, $mimetype_guesser);
+		$file->set_upload_ary($upload);
+		$file->set_upload_namespace($this);
 
-		if ($file->init_error)
+		if ($file->init_error())
 		{
 			$file->error[] = '';
 			return $file;
@@ -488,7 +492,9 @@ class fileupload
 
 		$upload_ary['tmp_name'] = $filename;
 
-		$file = new filespec($upload_ary, $this, $this->filesystem, $mimetype_guesser);
+		$file = new \phpbb\files\filespec($this->filesystem, $mimetype_guesser);
+		$file->set_upload_ary($upload_ary);
+		$file->set_upload_namespace($this);
 		$this->common_checks($file);
 
 		return $file;
