@@ -960,17 +960,19 @@ class acp_board
 
 		if ($submit)
 		{
-			$set_data = $request->variable('wysiwyg', array(), false, \phpbb\request\request_interface::POST);
+			$set_data = array(
+				'default_editor' => $request->variable(array('wysiwyg', 'default_editor'), '', false, \phpbb\request\request_interface::POST),
+				'data' => $request->variable('wysiwyg', array(''=> array('' => '')), false, \phpbb\request\request_interface::POST),
+			);
+			unset($set_data['data']['default_editor']);
 			$editor_new_data = $editor_data;
-
-			var_dump($set_data);
 
 			if (isset($editor_data[$set_data['default_editor']]))
 			{
 				$new_wysiwyg = $set_data['default_editor'];
 			}
 
-			foreach ($set_data as $name => $new_data)
+			foreach ($set_data['data'] as $name => $new_data)
 			{
 				if ($editor_data[$name]['WYSIWYG_MODES_AVAILABLE'] & $new_data['default_mode'])
 				{
@@ -1023,9 +1025,9 @@ class acp_board
 
 		if ($submit)
 		{
-			$config['wysiwyg_type'] = $new_wysiwyg;
-			$config['wysiwyg_default_default_mode'] = serialize($new_default_modes);
-			$config['wysiwyg_default_buttons_mode'] = serialize($new_button_modes);
+			$config->set('wysiwyg_type', $new_wysiwyg);
+			$config->set('wysiwyg_default_default_mode', serialize($new_default_modes));
+			$config->set('wysiwyg_default_buttons_mode', serialize($new_button_modes));
 
 			$editor_data = $editor_new_data;
 		}
