@@ -1640,7 +1640,7 @@ class install_install extends module
 			}
 
 			// Get the modules we want to add... returned sorted by name
-			$module_info = $_module->get_module_infos('', $module_class);
+			$module_info = $_module->get_module_infos($module_class);
 
 			foreach ($module_info as $module_basename => $fileinfo)
 			{

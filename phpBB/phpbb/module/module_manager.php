@@ -102,20 +102,15 @@ class module_manager
 	/**
 	 * Get available module information from module files
 	 *
-	 * @param string	$module				ID of module
 	 * @param string	$module_class		Class of the module (acp, ucp, mcp etc...)
+	 * @param string	$module				ID of module
 	 * @param bool		$use_all_available	Use all available instead of just all
 	 *										enabled extensions
 	 *
 	 * @return array	Array with module information gathered from module info files.
 	 */
-	public function get_module_infos($module = '', $module_class = null, $use_all_available = false)
+	public function get_module_infos($module_class, $module = '', $use_all_available = false)
 	{
-		if ($module_class === null)
-		{
-			throw new module_class_not_defined_exception();
-		}
-
 		$directory = $this->phpbb_root_path . 'includes/' . $module_class . '/info/';
 		$fileinfo = array();
 

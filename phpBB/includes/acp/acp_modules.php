@@ -209,7 +209,7 @@ class acp_modules
 					list($module_basename, $module_mode) = explode('::', $quick_install);
 
 					// Check if module name and mode exist...
-					$fileinfo = $module_manager->get_module_infos($module_basename, $this->module_class);
+					$fileinfo = $module_manager->get_module_infos($this->module_class, $module_basename);
 					$fileinfo = $fileinfo[$module_basename];
 
 					if (isset($fileinfo['modes'][$module_mode]))
@@ -326,7 +326,7 @@ class acp_modules
 					// Adjust auth row
 					if ($module_data['module_basename'] && $module_data['module_mode'])
 					{
-						$fileinfo = $module_manager->get_module_infos($module_data['module_basename'], $this->module_class);
+						$fileinfo = $module_manager->get_module_infos($this->module_class, $module_data['module_basename']);
 						$module_data['module_auth'] = $fileinfo[$module_data['module_basename']]['modes'][$module_data['module_mode']]['auth'];
 					}
 
@@ -358,7 +358,7 @@ class acp_modules
 				$is_cat = (!$module_data['module_basename']) ? true : false;
 
 				// Get module information
-				$module_infos = $module_manager->get_module_infos('', $this->module_class);
+				$module_infos = $module_manager->get_module_infos($this->module_class);
 
 				// Build name options
 				$s_name_options = $s_mode_options = '';
@@ -545,7 +545,7 @@ class acp_modules
 		$db->sql_freeresult($result);
 
 		// Quick adding module
-		$module_infos = $module_manager->get_module_infos('', $this->module_class);
+		$module_infos = $module_manager->get_module_infos($this->module_class);
 
 		// Build quick options
 		$s_install_options = '';

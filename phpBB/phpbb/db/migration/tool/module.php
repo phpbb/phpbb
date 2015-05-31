@@ -461,7 +461,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*/
 	protected function get_module_info($class, $basename)
 	{
-		$module = $this->module_manager->get_module_infos($basename, $class, true);
+		$module = $this->module_manager->get_module_infos($class, $basename, true);
 
 		if (empty($module))
 		{
