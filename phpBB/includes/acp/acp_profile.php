@@ -595,11 +595,18 @@ class acp_profile
 						);
 
 						$field_data = $cp->vars;
-						$profile_field->display_options($template_vars, $field_data);
+						$doptions = $profile_field->display_options($action, $field_data);
 						$cp->vars = $field_data;
 
 						// Build common create options
 						$template->assign_vars($template_vars);
+
+						// Build options based on profile type
+						foreach ($doptions as $num => $option_ary)
+						{
+							$template->assign_block_vars('option', $option_ary);
+						}
+
 					break;
 
 					case 2:

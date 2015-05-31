@@ -200,11 +200,11 @@ interface type_interface
 	/**
 	* Allows assigning of additional template variables
 	*
-	* @param array	$template_vars	Template variables we are going to assign
+	* @param string	$action			Currently performed action (create|edit)
 	* @param array	$field_data		Array with data for this field
-	* @return null
+	* @return array	with the acp options for step 1
 	*/
-	public function display_options(&$template_vars, &$field_data);
+	public function display_options($action, &$field_data);
 
 	/**
 	* Return templated value/field. Possible values for $mode are:

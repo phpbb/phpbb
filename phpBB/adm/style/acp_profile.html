@@ -103,31 +103,13 @@
 			<dt><label for="lang_explain">{L_FIELD_DESCRIPTION}{L_COLON}</label><br /><span>{L_FIELD_DESCRIPTION_EXPLAIN}</span></dt>
 			<dd><textarea id="lang_explain" name="lang_explain" rows="3" cols="80">{LANG_EXPLAIN}</textarea></dd>
 		</dl>
-		<!-- IF S_TEXT or S_STRING -->
+		<!-- BEGIN option -->
 			<dl>
-				<dt><label for="lang_default_value">{L_DEFAULT_VALUE}{L_COLON}</label><br /><span>{L_DEFAULT_VALUE_EXPLAIN}</span></dt>
-				<dd><!-- IF S_STRING --><input class="text medium" type="text" id="lang_default_value" name="lang_default_value" value="{LANG_DEFAULT_VALUE}" /><!-- ELSE --><textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">{LANG_DEFAULT_VALUE}</textarea><!-- ENDIF --></dd>
+				<dt><label>{option.TITLE}{L_COLON}</label><!-- IF option.EXPLAIN --><br /><span>{option.EXPLAIN}</span><!-- ENDIF --></dt>
+				<dd>{option.FIELD}</dd>
 			</dl>
-		<!-- ENDIF -->
-		<!-- IF S_BOOL or S_DROPDOWN -->
-			<dl>
-				<dt><label for="lang_options">{L_ENTRIES}{L_COLON}</label>
-					<!-- IF S_EDIT_MODE and S_DROPDOWN -->
-						<br /><span>{L_EDIT_DROPDOWN_LANG_EXPLAIN}</span>
-					<!-- ELSE -->
-						<br /><span>{L_LANG_OPTIONS_EXPLAIN}</span>
-					<!-- ENDIF -->
-				</dt>
-			<!-- IF S_DROPDOWN -->
-				<dd><textarea id="lang_options" name="lang_options" rows="5" cols="80">{LANG_OPTIONS}</textarea></dd>
-			<!-- ELSE -->
-				<dd><input class="medium" id="lang_options" name="lang_options[0]" value="{FIRST_LANG_OPTION}" /> {L_FIRST_OPTION}</dd>
-				<dd><input class="medium" name="lang_options[1]" value="{SECOND_LANG_OPTION}" /> {L_SECOND_OPTION}</dd>
-			<!-- ENDIF -->
-			</dl>
-		<!-- ENDIF -->
+		<!-- END option -->
 		</fieldset>
-
 		<fieldset class="quick">
 			{S_HIDDEN_FIELDS}
 			{S_FORM_TOKEN}
