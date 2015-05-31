@@ -202,12 +202,12 @@ switch ($mode)
 
 	case 'wysiwyg_definition':
 		$user->setup('posting');
-		$wysiwyg_type = empty($user->data['wysiwyg_type']) ? $config['wysiwyg_type'] : $user->data['wysiwyg_type'];
-		if (!$phpbb_container->has($wysiwyg_type))
+		$wysiwyg_editor = empty($user->data['wysiwyg_editor']) ? $config['wysiwyg_editor'] : $user->data['wysiwyg_editor'];
+		if (!$phpbb_container->has($wysiwyg_editor))
 		{
-			$wysiwyg_type = $config['wysiwyg_type'];
+			$wysiwyg_editor = $config['wysiwyg_editor'];
 		}
-		$wysiwyg = $phpbb_container->get($wysiwyg_type);
+		$wysiwyg = $phpbb_container->get($wysiwyg_editor);
 		$wysiwyg->purge_cache();
 		$result = $wysiwyg->handle_user_request_setup_javascript();
 		if ($result === true)
@@ -1941,12 +1941,12 @@ if ($allowed)
 	$plupload->configure($cache, $template, $s_action, $forum_id, $max_files);
 }
 
-$wysiwyg_type = empty($user->data['wysiwyg_type']) ? $config['wysiwyg_type'] : $user->data['wysiwyg_type'];
-if (!$phpbb_container->has($wysiwyg_type))
+$wysiwyg_editor = empty($user->data['wysiwyg_editor']) ? $config['wysiwyg_editor'] : $user->data['wysiwyg_editor'];
+if (!$phpbb_container->has($wysiwyg_editor))
 {
-	$wysiwyg_type = $config['wysiwyg_type'];
+	$wysiwyg_editor = $config['wysiwyg_editor'];
 }
-$wysiwyg = $phpbb_container->get($wysiwyg_type);
+$wysiwyg = $phpbb_container->get($wysiwyg_editor);
 $wysiwyg->recalculate_editor_setup_javascript();
 $wysiwyg_request_variables = $wysiwyg->get_request_variables();
 

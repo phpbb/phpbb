@@ -55,7 +55,7 @@ class add_wysiwyg extends \phpbb\db\migration\migration
 		return array(
 			array('config.add', array('bbcode_version', 1)),
 			//ACP
-			array('config.add', array('wysiwyg_type', 'wysiwyg.converters.sce')),
+			array('config.add', array('wysiwyg_editor', 'wysiwyg.converters.sce')),
 			array('config.add', array('wysiwyg_default_default_mode', serialize(array('wysiwyg.converters.sce' => 1))),
 			array('config.add', array('wysiwyg_default_buttons_mode', serialize(array('wysiwyg.converters.sce' => 2))))),
 

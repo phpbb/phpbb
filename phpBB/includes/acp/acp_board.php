@@ -934,7 +934,7 @@ class acp_board
 	{
 		global $config, $request, $user, $phpbb_container, $phpbb_dispatcher, $template;
 
-		$new_wysiwyg = $current_wysiwyg = $config['wysiwyg_type'];
+		$new_wysiwyg = $current_wysiwyg = $config['wysiwyg_editor'];
 		$new_default_modes = $current_default_modes = unserialize($config['wysiwyg_default_default_mode']);
 		$new_button_modes = $current_button_modes = unserialize($config['wysiwyg_default_buttons_mode']);
 
@@ -1025,7 +1025,7 @@ class acp_board
 
 		if ($submit)
 		{
-			$config->set('wysiwyg_type', $new_wysiwyg);
+			$config->set('wysiwyg_editor', $new_wysiwyg);
 			$config->set('wysiwyg_default_default_mode', serialize($new_default_modes));
 			$config->set('wysiwyg_default_buttons_mode', serialize($new_button_modes));
 
