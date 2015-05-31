@@ -913,6 +913,19 @@ class session
 				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 
+		/**
+		* Event to send session kill information to extension
+		*
+		* @event core.session_kill
+		* @var	int		user_id				user_id of the session user.
+		* @var	string		session_id				current user's session_id
+		* @since 3.1.5-RC1
+		*/
+		$user_id = (int) $this->data['user_id'];
+		$session_id = $this->session_id;
+		$vars = array('user_id', 'session_id');
+		extract($phpbb_dispatcher->trigger_event('core.session_kill', compact($vars)));
+
 		// Allow connecting logout with external auth method logout
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$provider = $provider_collection->get_provider();
@@ -1047,6 +1060,15 @@ class session
 				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
 			$db->sql_query($sql);
 		}
+
+		/**
+		* Event to trigger extension on session_gc
+		*
+		* @event core.session_gc
+		* @since 3.1.5-RC1
+		*/
+		$vars = array();
+		extract($phpbb_dispatcher->trigger_event('core.session_gc', compact($vars)));
 
 		return;
 	}
@@ -1550,11 +1572,11 @@ class session
 		$db->sql_query($sql);
 
 		/**
-		* Event to send session information to extension
+		* Event to send update session information to extension
 		*
 		* @event core.update_session
 		* @var	array		session_data				Associative array of session keys to be updated
-		* @var	array		session_id				current user's session_id
+		* @var	string		session_id				current user's session_id
 		* @since 3.1.5-RC1
 		*/
 		$vars = array('session_data', 'session_id');
