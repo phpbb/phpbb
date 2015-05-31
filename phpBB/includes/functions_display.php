@@ -150,7 +150,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
-	$forum_tracking_info = array();
+	$forum_tracking_info = $valid_categories = array();
 	$branch_root_id = $root_data['forum_id'];
 
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
@@ -248,6 +248,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			{
 				$active_forum_ary['exclude_forum_id'][] = $forum_id;
 			}
+		}
+
+		// Fill list of categories with forums
+		if (isset($forum_rows[$row['parent_id']]))
+		{
+			$valid_categories[$row['parent_id']] = true;
 		}
 
 		//
@@ -404,6 +410,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Category
 		if ($row['parent_id'] == $root_data['forum_id'] && $row['forum_type'] == FORUM_CAT)
 		{
+			// Do not display categories without any forums to display
+			if (!isset($valid_categories[$row['forum_id']]))
+			{
+				continue;
+			}
+
 			$cat_row = array(
 				'S_IS_CAT'				=> true,
 				'FORUM_ID'				=> $row['forum_id'],
