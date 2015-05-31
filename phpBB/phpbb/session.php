@@ -519,7 +519,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		$this->data = array();
 
@@ -851,6 +851,18 @@ class session
 		$_SID = $this->session_id;
 		$this->data = array_merge($this->data, $sql_ary);
 
+		/**
+		* Event to send new session data to extension
+		*
+		* @event core.session_create
+		* @var	array		session_data				Associative array of session keys to be updated
+		* @since 3.1.5-RC1
+		*/
+		$session_data = $this->data;
+		$vars = array('session_data');
+		extract($phpbb_dispatcher->trigger_event('core.session_create', compact($vars)));
+		unset($session_data);
+
 		if (!$bot)
 		{
 			$cookie_expire = $this->time_now + (($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000);
@@ -906,7 +918,7 @@ class session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -925,6 +937,8 @@ class session
 		$session_id = $this->session_id;
 		$vars = array('user_id', 'session_id');
 		extract($phpbb_dispatcher->trigger_event('core.session_kill', compact($vars)));
+		unset($user_id);
+		unset($session_id);
 
 		// Allow connecting logout with external auth method logout
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
@@ -993,7 +1007,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		$batch_size = 10;
 
