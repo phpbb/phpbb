@@ -930,7 +930,7 @@ class acp_board
 	/**
 	* Default settings for the WYSIWYG editors
 	*/
-	function wysiwyg_converters($submit)
+	public function wysiwyg_converters($submit)
 	{
 		global $config, $request, $user, $phpbb_container, $phpbb_dispatcher, $template;
 
