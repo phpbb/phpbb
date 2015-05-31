@@ -10,7 +10,9 @@ imports:
     - { resource: services_feed.yml }
     - { resource: services_help.yml }
     - { resource: services_language.yml }
+    - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
+    - { resource: services_module.yml }
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
     - { resource: services_profilefield.yml }
