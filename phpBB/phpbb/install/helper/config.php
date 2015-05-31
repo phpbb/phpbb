@@ -147,6 +147,11 @@ class config
 	 */
 	public function get_time_remaining()
 	{
+		if ($this->system_data['max_execution_time'] <= 0)
+		{
+			return 1;
+		}
+
 		return ($this->system_data['start_time'] + $this->system_data['max_execution_time']) - time();
 	}
 
@@ -157,6 +162,11 @@ class config
 	 */
 	public function get_memory_remaining()
 	{
+		if ($this->system_data['memory_limit'] <= 0)
+		{
+			return 1;
+		}
+
 		if (function_exists('memory_get_usage'))
 		{
 			return ($this->system_data['memory_limit'] - memory_get_usage());

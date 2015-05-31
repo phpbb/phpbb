@@ -238,7 +238,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 			$connect_test = $this->database_helper->check_database_connection($dbms, $dbhost, $dbport, $dbuser, $dbpass, $dbname, $table_prefix);
 			if (is_array($connect_test))
 			{
-				foreach ($prefix_valid as $error)
+				foreach ($connect_test as $error)
 				{
 					$this->io_handler->add_error_message(
 						$error['title'],

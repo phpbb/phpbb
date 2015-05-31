@@ -1,4 +1,5 @@
 imports:
+    - { resource: services_install_console.yml }
     - { resource: services_install_controller.yml }
     - { resource: services_install_data.yml }
     - { resource: services_install_database.yml }
@@ -39,6 +40,10 @@ services:
         arguments:
             - @request
             - @template
+
+    installer.helper.iohandler_cli:
+        class: phpbb\install\helper\iohandler\cli_iohandler
+        parent: installer.helper.iohandler_abstract
 
     installer.helper.iohandler:
         class: phpbb\install\helper\iohandler\iohandler_interface

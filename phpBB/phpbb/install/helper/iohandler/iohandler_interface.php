@@ -85,7 +85,7 @@ interface iohandler_interface
 	 *
 	 * @param string|array		$warning_title			Title of the warning message
 	 * @param string|bool|array	$warning_description	Description of the warning (and possibly guidelines to resolve it),
-	 * 													or false if the error description is not available
+	 * 													or false if the warning description is not available
 	 */
 	public function add_warning_message($warning_title, $warning_description = false);
 
@@ -96,10 +96,24 @@ interface iohandler_interface
 	 * resolved as printf($param[0], $param[1], ...).
 	 *
 	 * @param string|array		$log_title			Title of the log message
-	 * @param string|bool|array	$log_description	Description of the log (and possibly guidelines to resolve it),
-	 * 												or false if the error description is not available
+	 * @param string|bool|array	$log_description	Description of the log,
+	 * 												or false if the log description is not available
 	 */
 	public function add_log_message($log_title, $log_description = false);
+
+	/**
+	 * Adds a success message to the rendering queue
+	 *
+	 * Note: When an array is passed into the parameters below, it will be
+	 * resolved as printf($param[0], $param[1], ...).
+	 *
+	 * @param string|array		$success_title			Title of the success message
+	 * @param string|bool|array	$success_description	Description of the success,
+	 * 													or false if the success description is not available
+	 *
+	 * @return null
+	 */
+	public function add_success_message($success_title, $success_description = false);
 
 	/**
 	 * Adds a requested data group to the rendering queue
@@ -142,4 +156,11 @@ interface iohandler_interface
 	 * @param array	$menu_path	Array to the navigation elem
 	 */
 	public function set_finished_stage_menu($menu_path);
+
+	/**
+	 * Finish the progress bar
+	 *
+	 * @param string	$message_lang_key	Language key for the message
+	 */
+	public function finish_progress($message_lang_key);
 }

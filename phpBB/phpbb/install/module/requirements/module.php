@@ -14,6 +14,7 @@
 namespace phpbb\install\module\requirements;
 
 use phpbb\install\exception\user_interaction_required_exception;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 class module extends \phpbb\install\module_base
 {

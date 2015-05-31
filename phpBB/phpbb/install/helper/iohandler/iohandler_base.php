@@ -44,6 +44,13 @@ abstract class iohandler_base implements iohandler_interface
 	protected $logs;
 
 	/**
+	 * Array of success messages
+	 *
+	 * @var array
+	 */
+	protected $success;
+
+	/**
 	 * @var \phpbb\language\language
 	 */
 	protected $language;
@@ -71,6 +78,7 @@ abstract class iohandler_base implements iohandler_interface
 		$this->errors	= array();
 		$this->warnings	= array();
 		$this->logs		= array();
+		$this->success	= array();
 
 		$this->task_progress_count		= 0;
 		$this->current_task_progress	= 0;
@@ -114,6 +122,14 @@ abstract class iohandler_base implements iohandler_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function add_success_message($success_title, $success_description = false)
+	{
+		$this->success[] = $this->translate_message($success_title, $success_description);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function set_task_count($task_count)
 	{
 		$this->task_progress_count = $task_count;
@@ -124,11 +140,27 @@ abstract class iohandler_base implements iohandler_interface
 	 */
 	public function set_progress($task_lang_key, $task_number)
 	{
+		$this->current_task_name = '';
+
 		if (!empty($task_lang_key))
 		{
 			$this->current_task_name = $this->language->lang($task_lang_key);
-			$this->current_task_progress = $task_number;
 		}
+
+		$this->current_task_progress = $task_number;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function finish_progress($message_lang_key)
+	{
+		if (!empty($message_lang_key))
+		{
+			$this->current_task_name = $this->language->lang($message_lang_key);
+		}
+
+		$this->current_task_progress = $this->task_progress_count;
 	}
 
 	/**
