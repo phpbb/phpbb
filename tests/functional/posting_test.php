@@ -166,4 +166,18 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertEquals(1, $crawler->filter('.successbox')->count());
 	}
+
+	public function test_ticket_8420()
+	{
+		$text = '[b][url=http://example.org] :arrow: here[/url][/b]';
+
+		$this->login();
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text
+		));
+		$crawler = self::submit($form);
+		$this->assertEquals($text, $crawler->filter('#message')->text());
+	}
 }
