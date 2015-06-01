@@ -123,7 +123,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		if (!empty($upload_file['name']))
 		{
-			$file = $upload->form_upload('avatar_upload_file', $this->mimetype_guesser);
+			$file = $upload->form_upload('avatar_upload_file');
 		}
 		else if (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
@@ -153,7 +153,7 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			$file = $upload->remote_upload($url, $this->mimetype_guesser);
+			$file = $upload->remote_upload($url);
 		}
 		else
 		{

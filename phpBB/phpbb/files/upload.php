@@ -131,13 +131,12 @@ class upload
 	 * Upload file from users harddisk
 	 *
 	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
-	 * @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	 * @param \phpbb\plupload\plupload $plupload The plupload object
 	 *
 	 * @return object $file Object "filespec" is returned, all further operations can be done with this object
 	 * @access public
 	 */
-	function form_upload($form_name, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
 	{
 		global $user, $request, $phpbb_container;
 
@@ -216,7 +215,7 @@ class upload
 	/**
 	 * Move file from another location to phpBB
 	 */
-	function local_upload($source_file, $filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null)
+	function local_upload($source_file, $filedata = false)
 	{
 		global $user, $request, $phpbb_container;
 
@@ -295,11 +294,10 @@ class upload
 	 * Uploads file from given url
 	 *
 	 * @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
-	 * @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	 * @return object $file Object "filespec" is returned, all further operations can be done with this object
 	 * @access public
 	 */
-	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null)
+	function remote_upload($upload_url)
 	{
 		global $user, $phpbb_root_path, $phpbb_container;
 
