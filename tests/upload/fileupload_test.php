@@ -27,7 +27,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		// Global $config required by unique_id
 		// Global $user required by several functions dealing with translations
 		// Global $request required by form_upload, local_upload and is_valid
-		global $config, $user, $request, $phpbb_filesystem;
+		global $config, $user, $request, $phpbb_filesystem, $phpbb_container;
 
 		if (!is_array($config))
 		{
@@ -43,6 +43,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$request = new phpbb_mock_request();
 
 		$this->filesystem = $phpbb_filesystem = new \phpbb\filesystem\filesystem();
+
+		$phpbb_container = new phpbb_mock_container_builder($this->phpbb_root_path, $this->phpEx);
+		$phpbb_container->set('files.filespec', new \phpbb\files\filespec(
+			$this->filesystem,
+			new \phpbb\mimetype\guesser(array(
+				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
+			))));
 
 		$this->path = __DIR__ . '/fixture/';
 	}
@@ -69,7 +76,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_invalid_extension()
 	{
-		$upload = new fileupload($this->filesystem, '', array('png'), 100);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('png'))
+			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
 		$this->assertEquals('DISALLOWED_EXTENSION', $file->error[0]);
@@ -77,7 +86,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_invalid_filename()
 	{
-		$upload = new fileupload($this->filesystem, '', array('jpg'), 100);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
 		$file->realname = 'invalid?';
 		$upload->common_checks($file);
@@ -86,7 +97,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_too_large()
 	{
-		$upload = new fileupload($this->filesystem, '', array('jpg'), 100);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
 		$file->filesize = 1000;
 		$upload->common_checks($file);
@@ -95,7 +108,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_valid_file()
 	{
-		$upload = new fileupload($this->filesystem, '', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
 		$this->assertEquals(0, sizeof($file->error));
@@ -103,7 +118,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_local_upload()
 	{
-		$upload = new fileupload($this->filesystem, '', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		$file = $upload->local_upload($this->path . 'jpg.jpg');
@@ -113,7 +130,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_move_existent_file()
 	{
-		$upload = new fileupload($this->filesystem, '', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		$file = $upload->local_upload($this->path . 'jpg.jpg');
@@ -125,7 +144,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_move_existent_file_overwrite()
 	{
-		$upload = new fileupload($this->filesystem, '', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		copy($this->path . 'jpg', $this->path . 'copies/jpg.jpg');
@@ -138,7 +159,10 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_valid_dimensions()
 	{
-		$upload = new fileupload($this->filesystem, '', false, false, 1, 1, 100, 100);
+		$upload = new \phpbb\files\upload($this->filesystem);
+		$upload->set_allowed_extensions(false)
+			->set_max_filesize(false)
+			->set_allowed_dimensions(1, 1, 100, 100);
 
 		$file1 = $this->gen_valid_filespec();
 		$file2 = $this->gen_valid_filespec();
