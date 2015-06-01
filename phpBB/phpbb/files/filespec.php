@@ -97,11 +97,15 @@ class filespec
 		$this->file_moved = false;
 
 		$this->local = (isset($upload_ary['local_mode'])) ? true : false;
+
+		return $this;
 	}
 
 	public function set_upload_namespace($namespace)
 	{
 		$this->upload = $namespace;
+
+		return $this;
 	}
 
 	/**

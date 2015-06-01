@@ -155,7 +155,7 @@ class fileupload
 	*/
 	function form_upload($form_name, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
-		global $user, $request;
+		global $user, $request, $phpbb_container;
 
 		$upload = $request->file($form_name);
 		unset($upload['local_mode']);
@@ -169,9 +169,10 @@ class fileupload
 			}
 		}
 
-		$file = new \phpbb\files\filespec($this->filesystem, $mimetype_guesser, $plupload);
-		$file->set_upload_ary($upload);
-		$file->set_upload_namespace($this);
+		/** @var \phpbb\files\filespec $file */
+		$file = $phpbb_container->get('files.filespec')
+			->set_upload_ary($upload)
+			->set_upload_namespace($this);
 
 		if ($file->init_error())
 		{
@@ -233,7 +234,7 @@ class fileupload
 	*/
 	function local_upload($source_file, $filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null)
 	{
-		global $user, $request;
+		global $user, $request, $phpbb_container;
 
 		$upload = array();
 
@@ -252,9 +253,10 @@ class fileupload
 			$upload['type'] = $filedata['type'];
 		}
 
-		$file = new \phpbb\files\filespec($this->filesystem, $mimetype_guesser);
-		$file->set_upload_ary($upload);
-		$file->set_upload_namespace($this);
+		/** @var \phpbb\files\filespec $file */
+		$file = $phpbb_container->get('files.filespec')
+			->set_upload_ary($upload)
+			->set_upload_namespace($this);
 
 		if ($file->init_error())
 		{
@@ -315,7 +317,7 @@ class fileupload
 	*/
 	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null)
 	{
-		global $user, $phpbb_root_path;
+		global $user, $phpbb_root_path, $phpbb_container;
 
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
@@ -492,9 +494,10 @@ class fileupload
 
 		$upload_ary['tmp_name'] = $filename;
 
-		$file = new \phpbb\files\filespec($this->filesystem, $mimetype_guesser);
-		$file->set_upload_ary($upload_ary);
-		$file->set_upload_namespace($this);
+		/** @var \phpbb\files\filespec $file */
+		$file = $phpbb_container->get('files.filespec')
+			->set_upload_ary($upload_ary)
+			->set_upload_namespace($this);
 		$this->common_checks($file);
 
 		return $file;
