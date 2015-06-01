@@ -35,12 +35,14 @@ class factory
 	 *
 	 * @param string $name Service name
 	 *
-	 * @return object|false Requested service or false if service could not be
+	 * @return object|bool Requested service or false if service could not be
 	 *				found by the container
 	 */
 	public function get($name)
 	{
 		$service = false;
+
+		$name = (strpos($name, 'files.') === false) ? 'files.' . $name : $name;
 
 		try
 		{
@@ -52,28 +54,5 @@ class factory
 		}
 
 		return $service;
-	}
-
-	/**
-	 * Magic function for handling get calls, e.g. get_fileupload() or
-	 * get_filespec() and turning them into call for files. services like
-	 * files.fileupload.
-	 *
-	 * @param string $name Name of called function
-	 * @param mixed $arguments Possible supplied arguments
-	 *
-	 * @return object|false Requested service or false if service could not be
-	 *				found by the container
-	 */
-	public function __call($name, $arguments)
-	{
-		if (substr($name, 0, 4) === 'get_')
-		{
-			return $this->get('files.' . substr($name, 4));
-		}
-		else
-		{
-			return false;
-		}
 	}
 }
