@@ -426,7 +426,7 @@ class filespec
 				$this->height = $this->image_info['height'];
 
 				// Check image type
-				$types = \fileupload::image_types();
+				$types = upload::image_types();
 
 				if (!isset($types[$this->image_info['type']]) || !in_array($this->extension, $types[$this->image_info['type']]))
 				{

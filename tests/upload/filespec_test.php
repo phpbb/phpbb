@@ -91,7 +91,8 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		return new filespec(array_merge($upload_ary, $override), null, $this->filesystem, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->mimetype_guesser);
+		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
 	protected function tearDown()
@@ -226,7 +227,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_get_extension($filename, $expected)
 	{
-		$this->assertEquals($expected, filespec::get_extension($filename));
+		$this->assertEquals($expected, \phpbb\files\filespec::get_extension($filename));
 	}
 
 	public function is_image_variables()
