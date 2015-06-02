@@ -19,21 +19,34 @@ namespace phpbb\files;
  */
 class upload
 {
+	/** @var array Allowed file extensions */
 	var $allowed_extensions = array();
+
+	/** @var array Disallowed content */
 	var $disallowed_content = array('body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title');
+
+	/** @var int Maximum filesize */
 	var $max_filesize = 0;
+
+	/** @var int Minimum width of images */
 	var $min_width = 0;
+
+	/** @var int Minimum height of images */
 	var $min_height = 0;
+
+	/** @var int Maximum width of images */
 	var $max_width = 0;
+
+	/** @var int Maximum height of images */
 	var $max_height = 0;
+
+	/** @var string Prefix for language variables of errors */
 	var $error_prefix = '';
 
 	/** @var int Timeout for remote upload */
 	var $upload_timeout = 6;
 
-	/**
-	 * @var \phpbb\filesystem\filesystem_interface
-	 */
+	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
 	/** @var \phpbb\files\factory Files factory */
@@ -44,7 +57,6 @@ class upload
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface $filesystem
 	 * @param \phpbb\files\factory $factory Files factory
-	 *
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, factory $factory)
 	{
@@ -66,6 +78,10 @@ class upload
 
 	/**
 	 * Set allowed extensions
+	 *
+	 * @param array $allowed_extensions Allowed file extensions
+	 *
+	 * @return \phpbb\files\upload This instance of upload
 	 */
 	function set_allowed_extensions($allowed_extensions)
 	{
@@ -79,6 +95,13 @@ class upload
 
 	/**
 	 * Set allowed dimensions
+	 *
+	 * @param int $min_width Minimum image width
+	 * @param int $min_height Minimum image height
+	 * @param int $max_width Maximum image width
+	 * @param int $max_height Maximum image height
+	 *
+	 * @return \phpbb\files\upload This instance of upload
 	 */
 	function set_allowed_dimensions($min_width, $min_height, $max_width, $max_height)
 	{
@@ -91,7 +114,11 @@ class upload
 	}
 
 	/**
-	 * Set maximum allowed filesize
+	 * Set maximum allowed file size
+	 *
+	 * @param int $max_filesize Maximum file size
+	 *
+	 * @return \phpbb\files\upload This instance of upload
 	 */
 	function set_max_filesize($max_filesize)
 	{
@@ -105,6 +132,10 @@ class upload
 
 	/**
 	 * Set disallowed strings
+	 *
+	 * @param array $disallowed_content Disallowed content
+	 *
+	 * @return \phpbb\files\upload This instance of upload
 	 */
 	function set_disallowed_content($disallowed_content)
 	{
@@ -118,6 +149,10 @@ class upload
 
 	/**
 	 * Set error prefix
+	 *
+	 * @param string $error_prefix Prefix for language variables of errors
+	 *
+	 * @return \phpbb\files\upload This instance of upload
 	 */
 	function set_error_prefix($error_prefix)
 	{
@@ -133,7 +168,7 @@ class upload
 	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
 	 * @param \phpbb\plupload\plupload $plupload The plupload object
 	 *
-	 * @return object $file Object "filespec" is returned, all further operations can be done with this object
+	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
 	 * @access public
 	 */
 	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
@@ -152,7 +187,7 @@ class upload
 			}
 		}
 
-		/** @var \phpbb\files\filespec $file */
+		/** @var filespec $file */
 		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload)
 			->set_upload_namespace($this);
@@ -214,6 +249,11 @@ class upload
 
 	/**
 	 * Move file from another location to phpBB
+	 *
+	 * @param string $source_file Filename of source file
+	 * @param array|bool $filedata Array with filedata or false
+	 *
+	 * @return filespec Object "filespec" is returned, all further operations can be done with this object
 	 */
 	function local_upload($source_file, $filedata = false)
 	{
@@ -236,7 +276,7 @@ class upload
 			$upload['type'] = $filedata['type'];
 		}
 
-		/** @var \phpbb\files\filespec $file */
+		/** @var filespec $file */
 		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload)
 			->set_upload_namespace($this);
@@ -294,7 +334,7 @@ class upload
 	 * Uploads file from given url
 	 *
 	 * @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
-	 * @return object $file Object "filespec" is returned, all further operations can be done with this object
+	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
 	 * @access public
 	 */
 	function remote_upload($upload_url)
@@ -467,7 +507,7 @@ class upload
 
 		$upload_ary['tmp_name'] = $filename;
 
-		/** @var \phpbb\files\filespec $file */
+		/** @var filespec $file */
 		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload_ary)
 			->set_upload_namespace($this);
@@ -478,6 +518,10 @@ class upload
 
 	/**
 	 * Assign internal error
+	 *
+	 * @param string $errorcode Error code to assign
+	 *
+	 * @return string Error string
 	 * @access private
 	 */
 	function assign_internal_error($errorcode)
@@ -528,7 +572,9 @@ class upload
 	}
 
 	/**
-	 * Perform common checks
+	 * Perform common file checks
+	 *
+	 * @param filespec $file Instance of filespec class
 	 */
 	function common_checks(&$file)
 	{
@@ -563,6 +609,10 @@ class upload
 
 	/**
 	 * Check for allowed extension
+	 *
+	 * @param filespec $file Instance of filespec class
+	 *
+	 * @return bool True if extension is allowed, false if not
 	 */
 	function valid_extension(&$file)
 	{
@@ -571,6 +621,11 @@ class upload
 
 	/**
 	 * Check for allowed dimension
+	 *
+	 * @param filespec $file Instance of filespec class
+	 *
+	 * @return bool True if dimensions are valid or no constraints set, false
+	 *			if not
 	 */
 	function valid_dimensions(&$file)
 	{
@@ -592,6 +647,10 @@ class upload
 
 	/**
 	 * Check if form upload is valid
+	 *
+	 * @param string $form_name Name of form
+	 *
+	 * @return bool True if form upload is valid, false if not
 	 */
 	function is_valid($form_name)
 	{
@@ -604,6 +663,10 @@ class upload
 
 	/**
 	 * Check for bad content (IE mime-sniffing)
+	 *
+	 * @param filespec $file Instance of filespec class
+	 *
+	 * @return bool True if content is valid, false if not
 	 */
 	function valid_content(&$file)
 	{
