@@ -60,8 +60,6 @@ class installer
 
 	/**
 	 * Run phpBB installer
-	 *
-	 * @return null
 	 */
 	public function run()
 	{

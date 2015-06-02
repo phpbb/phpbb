@@ -62,6 +62,11 @@ class install
 		$this->installer = $installer;
 	}
 
+	/**
+	 * Controller logic
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response|StreamedResponse
+	 */
 	public function handle()
 	{
 		// @todo check that phpBB is not already installed
@@ -82,8 +87,7 @@ class install
 
 		if ($this->request->is_ajax())
 		{
-			$installer = &$this->installer;
-
+			$installer = $this->installer;
 			$response = new StreamedResponse();
 			$response->setCallback(function() use ($installer) {
 				$installer->run();

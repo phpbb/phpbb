@@ -74,8 +74,6 @@ interface iohandler_interface
 	 * @param string|array		$error_title		Title of the error message.
 	 * @param string|bool|array	$error_description	Description of the error (and possibly guidelines to resolve it),
 	 * 												or false if the error description is not available.
-	 *
-	 * @return null
 	 */
 	public function add_error_message($error_title, $error_description = false);
 
@@ -85,11 +83,9 @@ interface iohandler_interface
 	 * Note: When an array is passed into the parameters below, it will be
 	 * resolved as printf($param[0], $param[1], ...).
 	 *
-	 * @param string|array		$warning_title			Title of the error message
-	 * @param string|bool|array	$warning_description	Description of the error (and possibly guidelines to resolve it),
+	 * @param string|array		$warning_title			Title of the warning message
+	 * @param string|bool|array	$warning_description	Description of the warning (and possibly guidelines to resolve it),
 	 * 													or false if the error description is not available
-	 *
-	 * @return null
 	 */
 	public function add_warning_message($warning_title, $warning_description = false);
 
@@ -99,11 +95,9 @@ interface iohandler_interface
 	 * Note: When an array is passed into the parameters below, it will be
 	 * resolved as printf($param[0], $param[1], ...).
 	 *
-	 * @param string|array		$log_title			Title of the error message
-	 * @param string|bool|array	$log_description	Description of the error (and possibly guidelines to resolve it),
+	 * @param string|array		$log_title			Title of the log message
+	 * @param string|bool|array	$log_description	Description of the log (and possibly guidelines to resolve it),
 	 * 												or false if the error description is not available
-	 *
-	 * @return null
 	 */
 	public function add_log_message($log_title, $log_description = false);
 
@@ -112,8 +106,21 @@ interface iohandler_interface
 	 *
 	 * @param string	$title	Language variable with the title of the form
 	 * @param array		$form	An array describing the required data (options etc)
-	 *
-	 * @return null
 	 */
 	public function add_user_form_group($title, $form);
+
+	/**
+	 * Sets the number of tasks belonging to the installer in the current mode.
+	 *
+	 * @param int	$task_count	Number of tasks
+	 */
+	public function set_task_count($task_count);
+
+	/**
+	 * Sets the progress information
+	 *
+	 * @param string	$task_lang_key	Language key for the name of the task
+	 * @param int		$task_number	Position of the current task in the task queue
+	 */
+	public function set_progress($task_lang_key, $task_number);
 }

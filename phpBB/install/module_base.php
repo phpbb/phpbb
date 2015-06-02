@@ -63,8 +63,6 @@ abstract class module_base implements module_interface
 	 * @param \Symfony\Component\DependencyInjection\ContainerInterface	$container
 	 * @param \phpbb\install\helper\config								$config
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface		$iohandler
-	 *
-	 * @return null
 	 */
 	public function setup(\Symfony\Component\DependencyInjection\ContainerInterface $container, \phpbb\install\helper\config $config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler)
 	{

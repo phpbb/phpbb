@@ -71,8 +71,6 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 
 	/**
 	 * Process form data
-	 *
-	 * @return null
 	 */
 	protected function process_form()
 	{

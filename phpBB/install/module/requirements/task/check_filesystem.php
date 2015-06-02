@@ -122,7 +122,6 @@ class check_filesystem extends \phpbb\install\task_base
 	 * Sets $this->tests_passed
 	 *
 	 * @param	bool	$is_passed
-	 * @return null
 	 */
 	protected function set_test_passed($is_passed)
 	{

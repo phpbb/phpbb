@@ -62,8 +62,6 @@ abstract class iohandler_base implements iohandler_interface
 	 * Set language service
 	 *
 	 * @param \phpbb\language\language $language
-	 *
-	 * @return null
 	 */
 	public function set_language(\phpbb\language\language $language)
 	{

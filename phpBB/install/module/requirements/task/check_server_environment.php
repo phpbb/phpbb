@@ -81,7 +81,6 @@ class check_server_environment extends \phpbb\install\task_base
 	 * Sets $this->tests_passed
 	 *
 	 * @param	bool	$is_passed
-	 * @return null
 	 */
 	protected function set_test_passed($is_passed)
 	{
@@ -91,8 +90,6 @@ class check_server_environment extends \phpbb\install\task_base
 
 	/**
 	 * Check if the requirements for PHP version is met
-	 *
-	 * @return null
 	 */
 	protected function check_php_version()
 	{
@@ -111,8 +108,6 @@ class check_server_environment extends \phpbb\install\task_base
 
 	/**
 	 * Checks if the installed PHP has getimagesize() available
-	 *
-	 * @return null
 	 */
 	protected function check_image_size()
 	{
@@ -129,8 +124,6 @@ class check_server_environment extends \phpbb\install\task_base
 
 	/**
 	 * Checks if the installed PHP supports PCRE
-	 *
-	 * @return null
 	 */
 	protected function check_pcre()
 	{
@@ -147,8 +140,6 @@ class check_server_environment extends \phpbb\install\task_base
 
 	/**
 	 * Checks whether PHP's JSON extension is available or not
-	 *
-	 * @return null
 	 */
 	protected function check_json()
 	{
@@ -165,8 +156,6 @@ class check_server_environment extends \phpbb\install\task_base
 
 	/**
 	 * Check if any supported DBMS is available
-	 *
-	 * @return null
 	 */
 	protected function check_available_dbms()
 	{

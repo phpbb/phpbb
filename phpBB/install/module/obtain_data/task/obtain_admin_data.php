@@ -63,8 +63,6 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 
 	/**
 	 * Process form data
-	 *
-	 * @return null
 	 */
 	protected function process_form()
 	{
@@ -92,8 +90,6 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 	 * Request data from the user
 	 *
 	 * @param bool $use_request_data Whether to use submited data
-	 *
-	 * @return null
 	 *
 	 * @throws \phpbb\install\exception\user_interaction_required_exception When the user is required to provide data
 	 */
