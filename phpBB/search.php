@@ -1167,14 +1167,16 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* Modify the title and/or load data for the search results page
 	*
 	* @event core.search_results_modify_search_title
-	* @var	int		author_id		ID of the author to search by
-	* @var	string	l_search_title	The title of the search page
-	* @var	string	search_id		Predefined search type name
-	* @var	string	show_results	Search results output mode - topics or posts
-	* @var	int		start			The starting id of the results
+	* @var	int		author_id			ID of the author to search by
+	* @var	string	l_search_title		The title of the search page
+	* @var	string	search_id			Predefined search type name
+	* @var	string	show_results		Search results output mode - topics or posts
+	* @var	int		start				The starting id of the results
 	* @since 3.1.0-RC4
+	* @var	int		total_match_count	The count of search results
+	* @var	string	keywords			The search keywords
 	*/
-	$vars = array('author_id', 'l_search_title', 'search_id', 'show_results', 'start');
+	$vars = array('author_id', 'l_search_title', 'search_id', 'show_results', 'start', 'total_match_count', 'keywords');
 	extract($phpbb_dispatcher->trigger_event('core.search_results_modify_search_title', compact($vars)));
 
 	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
