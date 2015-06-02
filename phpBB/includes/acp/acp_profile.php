@@ -383,7 +383,16 @@ class acp_profile
 				* @var	array	visibility_ary	Array of fields that are visibility related
 				* @since 3.1.5-a4
 				*/
-				$vars = array('action', 'step', 'submit', 'save', 'field_type', 'field_row', 'exclude', 'visibility_ary');
+				$vars = array(
+					'action',
+					'step',
+					'submit',
+					'save',
+					'field_type',
+					'field_row',
+					'exclude',
+					'visibility_ary',
+				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_init', compact($vars)));
 
 				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
@@ -676,7 +685,16 @@ class acp_profile
 				* @var	array	options			Array of options specific to this step
 				* @since 3.1.5-a4
 				*/
-				$vars = array('action', 'step', 'submit', 'save', 'field_type', 'field_data', 's_hidden_fields', 'options');
+				$vars = array(
+					'action',
+					'step',
+					'submit',
+					'save',
+					'field_type',
+					'field_data',
+					's_hidden_fields',
+					'options',
+				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_after', compact($vars)));
 
 				$template->assign_vars(array(
@@ -898,7 +916,12 @@ class acp_profile
 		* @var	array	profile_fields	Array of fields to be sent to the database
 		* @since 3.1.5-a4
 		*/
-		$vars = array('action', 'field_type', 'field_data', 'profile_fields');
+		$vars = array(
+			'action',
+			'field_type',
+			'field_data',
+			'profile_fields',
+		);
 		extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_before_save', compact($vars)));
 
 		if ($action == 'create')
