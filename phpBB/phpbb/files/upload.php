@@ -63,6 +63,9 @@ class upload
 	/** @var \phpbb\request\request_interface Request class */
 	protected $request;
 
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
 	/**
 	 * Init file upload class.
 	 *
@@ -70,13 +73,15 @@ class upload
 	 * @param \phpbb\files\factory $factory Files factory
 	 * @param \phpbb\language\language $language Language class
 	 * @param \phpbb\request\request_interface $request Request class
+	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, request_interface $request)
+	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, request_interface $request, $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->request = $request;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -350,8 +355,6 @@ class upload
 	 */
 	function remote_upload($upload_url)
 	{
-		global $phpbb_root_path;
-
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
 
@@ -504,7 +507,7 @@ class upload
 			return $this->factory->get('filespec')->set_error($this->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
 
-		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
+		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $this->phpbb_root_path . 'cache';
 		$filename = tempnam($tmp_path, unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
