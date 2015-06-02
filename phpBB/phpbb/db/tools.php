@@ -1535,7 +1535,7 @@ class tools
 
 				if (isset($column_data['after']))
 				{
-				   $return_array['after'] = $column_data['after'];
+					$return_array['after'] = $column_data['after'];
 				}
 
 			break;
