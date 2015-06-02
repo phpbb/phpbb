@@ -40,8 +40,13 @@ interface task_interface
 
 	/**
 	 * Executes the task
-	 *
-	 * @return null
 	 */
 	public function run();
+
+	/**
+	 * Returns the language key of the name of the task
+	 *
+	 * @return string
+	 */
+	public function get_task_lang_name();
 }

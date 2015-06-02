@@ -171,4 +171,12 @@ class check_server_environment extends \phpbb\install\task_base
 
 		$this->set_test_passed(false);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

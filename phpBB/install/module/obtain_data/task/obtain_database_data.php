@@ -252,4 +252,12 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 
 		return $data_valid;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

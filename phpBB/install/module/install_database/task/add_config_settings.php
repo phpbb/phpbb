@@ -322,4 +322,12 @@ class add_config_settings extends \phpbb\install\task_base
 			}
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_ADD_CONFIG_SETTINGS';
+	}
 }

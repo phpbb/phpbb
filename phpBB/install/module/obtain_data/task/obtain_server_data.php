@@ -184,4 +184,12 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 			throw new user_interaction_required_exception();
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

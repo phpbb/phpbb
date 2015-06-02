@@ -51,4 +51,12 @@ class populate_migrations extends \phpbb\install\task_base
 			->get_classes();
 		$this->migrator->populate_migrations($migrations);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_POPULATE_MIGRATIONS';
+	}
 }

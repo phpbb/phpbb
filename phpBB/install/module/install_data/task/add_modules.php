@@ -449,4 +449,12 @@ class add_modules extends \phpbb\install\task_base
 			$this->module_manager->remove_cache_file($module_class);
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_ADD_MODULES';
+	}
 }

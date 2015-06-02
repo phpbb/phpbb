@@ -81,6 +81,8 @@ class config
 			'last_task_module_name'		=> '', // Stores the service name of the latest finished module
 			'last_task_index'			=> 0,
 			'last_task_name'			=> '', // Stores the service name of the latest finished task
+			'max_task_progress'			=> 0,
+			'current_task_progress'		=> 0,
 		);
 
 		$this->install_config_file = $this->phpbb_root_path . 'store/install_config.php';
@@ -108,8 +110,6 @@ class config
 	 *
 	 * @param	string	$param_name	Name of the parameter
 	 * @param	mixed	$value		Values to set the parameter
-	 *
-	 * @return null
 	 */
 	public function set($param_name, $value)
 	{
@@ -161,8 +161,6 @@ class config
 	 *
 	 * @param string	$task_service_name	Name of the installer task service
 	 * @param int		$task_index			Index of the task in the task list array
-	 *
-	 * @return null
 	 */
 	public function set_finished_task($task_service_name, $task_index)
 	{
@@ -175,8 +173,6 @@ class config
 	 *
 	 * @param string	$module_service_name	Name of the installer module service
 	 * @param int		$module_index			Index of the module in the module list array
-	 *
-	 * @return null
 	 */
 	public function set_active_module($module_service_name, $module_index)
 	{
@@ -196,8 +192,6 @@ class config
 
 	/**
 	 * Recovers install configuration from file
-	 *
-	 * @return null
 	 */
 	public function load_config()
 	{
@@ -216,8 +210,6 @@ class config
 
 	/**
 	 * Dumps install configuration to disk
-	 *
-	 * @return null
 	 */
 	public function save_config()
 	{
@@ -239,9 +231,55 @@ class config
 	}
 
 	/**
-	 * Filling up system_data array
+	 * Increments the task progress
+	 */
+	public function increment_current_task_progress()
+	{
+		$this->progress_data['current_task_progress']++;
+	}
+
+	/**
+	 * Sets the task progress to a specific number
 	 *
-	 * @return null
+	 * @param int	$task_progress	The task progress number to be set
+	 */
+	public function set_current_task_progress($task_progress)
+	{
+		$this->progress_data['current_task_progress'] = $task_progress;
+	}
+
+	/**
+	 * Sets the number of tasks belonging to the installer in the current mode.
+	 *
+	 * @param int	$task_progress_count	Number of tasks
+	 */
+	public function set_task_progress_count($task_progress_count)
+	{
+		$this->progress_data['max_task_progress'] = $task_progress_count;
+	}
+
+	/**
+	 * Returns the number of the current task being executed
+	 *
+	 * @return int
+	 */
+	public function get_current_task_progress()
+	{
+		return $this->progress_data['current_task_progress'];
+	}
+
+	/**
+	 * Returns the number of tasks belonging to the installer in the current mode.
+	 *
+	 * @return int
+	 */
+	public function get_task_progress_count()
+	{
+		return $this->progress_data['max_task_progress'];
+	}
+
+	/**
+	 * Filling up system_data array
 	 */
 	protected function setup_system_data()
 	{

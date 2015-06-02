@@ -70,4 +70,12 @@ class obtain_imagick_path extends \phpbb\install\task_base implements \phpbb\ins
 
 		$this->config->set('img_imagick', $img_imagick);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

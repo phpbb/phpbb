@@ -200,4 +200,12 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 
 		return $data_valid;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

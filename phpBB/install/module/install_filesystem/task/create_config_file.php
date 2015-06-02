@@ -216,4 +216,12 @@ class create_config_file extends \phpbb\install\task_base
 
 		return $config_content;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_CREATE_CONFIG_FILE';
+	}
 }

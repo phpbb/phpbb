@@ -102,4 +102,12 @@ class add_languages extends \phpbb\install\task_base
 
 		$insert_buffer->flush();
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_ADD_LANGUAGES';
+	}
 }

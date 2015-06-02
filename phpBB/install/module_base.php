@@ -110,8 +110,15 @@ abstract class module_base implements module_interface
 			/** @var \phpbb\install\task_interface $task */
 			$task = $this->container->get($this->task_collection[$task_index]);
 
+			// Send progress information
+			$this->iohandler->set_progress(
+				$task->get_task_lang_name(),
+				$this->install_config->get_current_task_progress()
+			);
+
 			// Iterate to the next task
 			$task_index++;
+			$this->install_config->increment_current_task_progress();
 
 			// Check if we can run the task
 			if (!$task->is_essential() && !$task->check_requirements())
@@ -121,11 +128,11 @@ abstract class module_base implements module_interface
 
 			$task->run();
 
-			// Increment progress
-			if ($this->get_task_count() !== 0)
-			{
-				//$this->iohandler->increment_progress();
-			}
+			// Send progress info
+			$this->iohandler->set_progress(
+				$task->get_task_lang_name(),
+				$this->install_config->get_current_task_progress()
+			);
 
 			$this->iohandler->send_response();
 

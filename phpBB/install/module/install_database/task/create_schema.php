@@ -195,4 +195,12 @@ class create_schema extends \phpbb\install\task_base
 			);
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_CREATE_DATABASE_SCHEMA';
+	}
 }

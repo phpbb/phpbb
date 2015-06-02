@@ -254,4 +254,12 @@ class check_filesystem extends \phpbb\install\task_base
 			}
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

@@ -148,4 +148,12 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 			throw new user_interaction_required_exception();
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

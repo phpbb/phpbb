@@ -85,8 +85,14 @@ class install
 			$this->iohandler_factory->set_environment('nojs');
 		}
 
+		// Set the appropriate input-output handler
+		//$this->installer->set_iohandler($this->iohandler_factory->get());
+
 		if ($this->request->is_ajax())
 		{
+			// @todo: remove this line, and use the above
+			$this->installer->set_iohandler($this->iohandler_factory->get());
+
 			$installer = $this->installer;
 			$response = new StreamedResponse();
 			$response->setCallback(function() use ($installer) {

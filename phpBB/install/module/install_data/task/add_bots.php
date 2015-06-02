@@ -221,4 +221,12 @@ class add_bots extends \phpbb\install\task_base
 			$this->db->sql_query($sql);
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_ADD_BOTS';
+	}
 }

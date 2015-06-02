@@ -101,7 +101,7 @@ class notify_user extends \phpbb\install\task_base
 			$messenger->anti_abuse_headers($this->config, $this->user);
 			$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($this->install_config->get('admin_name')),
-					'PASSWORD'		=> htmlspecialchars_decode($this->install_config->get('admin_pass1')))
+					'PASSWORD'		=> htmlspecialchars_decode($this->install_config->get('admin_passwd')))
 			);
 			$messenger->send(NOTIFY_EMAIL);
 		}
@@ -109,5 +109,13 @@ class notify_user extends \phpbb\install\task_base
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INSTALL_INSTALLED', false, array($this->config['version']));
 
 		@unlink($this->phpbb_root_path . 'cache/install_lock');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_NOTIFY_USER';
 	}
 }

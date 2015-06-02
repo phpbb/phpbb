@@ -31,6 +31,11 @@ class installer
 	protected $installer_modules;
 
 	/**
+	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 */
+	protected $iohandler;
+
+	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\install\helper\config	$config		Installer config handler
@@ -59,6 +64,16 @@ class installer
 	}
 
 	/**
+	 * Sets input-output handler objects
+	 *
+	 * @param helper\iohandler\iohandler_interface	$iohandler
+	 */
+	public function set_iohandler(\phpbb\install\helper\iohandler\iohandler_interface $iohandler)
+	{
+		$this->iohandler = $iohandler;
+	}
+
+	/**
 	 * Run phpBB installer
 	 */
 	public function run()
@@ -68,6 +83,20 @@ class installer
 
 		// Recover install progress
 		$module_index = $this->recover_progress();
+
+		// Count all tasks in the current installer modules
+		$task_count = 0;
+		foreach ($this->installer_modules as $name)
+		{
+			/** @var \phpbb\install\module_interface $module */
+			$module = $this->container->get($name);
+
+			$task_count += $module->get_task_count();
+		}
+
+		// Set task count
+		$this->install_config->set_task_progress_count($task_count);
+		$this->iohandler->set_task_count($task_count);
 
 		$install_finished = false;
 
@@ -107,11 +136,12 @@ class installer
 
 			if ($install_finished)
 			{
-				die ("install finished");
+				// Send install finished message
+				$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
 			}
 			else
 			{
-				die ("install memory or time limit reached");
+				// @todo: Send refresh request
 			}
 		}
 		catch (\phpbb\install\exception\user_interaction_required_exception $e)

@@ -49,6 +49,21 @@ abstract class iohandler_base implements iohandler_interface
 	protected $language;
 
 	/**
+	 * @var int
+	 */
+	protected $task_progress_count;
+
+	/**
+	 * @var int
+	 */
+	protected $current_task_progress;
+
+	/**
+	 * @var string
+	 */
+	protected $current_task_name;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct()
@@ -56,6 +71,10 @@ abstract class iohandler_base implements iohandler_interface
 		$this->errors	= array();
 		$this->warnings	= array();
 		$this->logs		= array();
+
+		$this->task_progress_count		= 0;
+		$this->current_task_progress	= 0;
+		$this->current_task_name		= '';
 	}
 
 	/**
@@ -90,6 +109,26 @@ abstract class iohandler_base implements iohandler_interface
 	public function add_log_message($log_title, $log_description = false)
 	{
 		$this->logs[] = $this->translate_message($log_title, $log_description);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_task_count($task_count)
+	{
+		$this->task_progress_count = $task_count;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_progress($task_lang_key, $task_number)
+	{
+		if (!empty($task_lang_key))
+		{
+			$this->current_task_name = $this->language->lang($task_lang_key);
+			$this->current_task_progress = $task_number;
+		}
 	}
 
 	/**

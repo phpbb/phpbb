@@ -142,4 +142,12 @@ class add_default_data extends \phpbb\install\task_base
 
 		return '';
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return 'TASK_ADD_DEFAULT_DATA';
+	}
 }

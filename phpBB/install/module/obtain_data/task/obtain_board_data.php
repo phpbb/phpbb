@@ -167,4 +167,12 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 		$this->io_handler->send_response();
 		throw new user_interaction_required_exception;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_task_lang_name()
+	{
+		return '';
+	}
 }

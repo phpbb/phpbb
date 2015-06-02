@@ -226,3 +226,26 @@ $lang = array_merge($lang, array(
 	'MENU_LICENSE'		=> 'License',
 	'MENU_SUPPORT'		=> 'Support',
 ));
+
+// Task names
+$lang = array_merge($lang, array(
+	// Install filesystem
+	'TASK_CREATE_CONFIG_FILE'	=> 'Creating configuration file',
+
+	// Install database
+	'TASK_ADD_CONFIG_SETTINGS'		=> 'Adding configuration settings',
+	'TASK_ADD_DEFAULT_DATA'			=> 'Adding default settings to the database',
+	'TASK_CREATE_DATABASE_SCHEMA'	=> 'Creating database schema',
+
+	// Install data
+	'TASK_ADD_BOTS'			=> 'Registering bots',
+	'TASK_ADD_LANGUAGES'	=> 'Installing available languages',
+	'TASK_ADD_MODULES'		=> 'Installing modules',
+
+	// Install finish tasks
+	'TASK_NOTIFY_USER'			=> 'Sending notification e-mail',
+	'TASK_POPULATE_MIGRATIONS'	=> 'Populating migrations',
+
+	// Installer general progress messages
+	'INSTALLER_FINISHED'	=> 'The installer has finished successfully',
+));
