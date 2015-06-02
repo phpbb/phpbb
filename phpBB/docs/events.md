@@ -133,6 +133,13 @@ acp_posting_buttons_before
 * Since: 3.1.0-b4
 * Purpose: Add content before BBCode posting buttons in the ACP
 
+acp_profile_contact_before
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.1.5-a4
+* Purpose: Add extra options to custom profile field configuration in the ACP
+
 acp_ranks_edit_after
 ===
 * Locations:
