@@ -19,25 +19,50 @@ namespace phpbb\files;
  */
 class filespec
 {
+	/** @var string File name */
 	var $filename = '';
+
+	/** @var string Real name of file */
 	var $realname = '';
+
+	/** @var string Upload name of file */
 	var $uploadname = '';
+
+	/** @var string Mimetype of file */
 	var $mimetype = '';
+
+	/** @var string File extension */
 	var $extension = '';
+
+	/** @var int File size */
 	var $filesize = 0;
+
+	/** @var int Width of file */
 	var $width = 0;
+
+	/** @var int Height of file */
 	var $height = 0;
+
+	/** @var array Image info including type and size */
 	var $image_info = array();
 
+	/** @var string Destination file name */
 	var $destination_file = '';
+
+	/** @var string Destination file path */
 	var $destination_path = '';
 
+	/** @var bool Whether file was moved */
 	var $file_moved = false;
+
+	/** @var bool  Whether file is local */
 	var $local = false;
 
+	/** @var array Error array */
 	var $error = array();
 
-	var $upload = '';
+	/** @var upload Instance of upload class  */
+	var $upload;
 
 	/**
 	 * @var \phpbb\filesystem\filesystem_interface
@@ -57,20 +82,26 @@ class filespec
 	protected $mimetype_guesser;
 
 	/**
-	 * File Class
-	 * @access private
+	 * File upload class
+	 *
+	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem
+	 * @param \phpbb\mimetype\guesser					$mimetype_guesser
+	 * @param \phpbb\plupload\plupload					$plupload
 	 */
 	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
-		// @todo call this via files
-		//$this->set_upload_ary($upload_ary);
-		//$this->set_upload_namespace($upload_namespace);
-
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
 		$this->filesystem = $phpbb_filesystem;
 	}
 
+	/**
+	 * Set upload ary
+	 *
+	 * @param array $upload_ary Upload ary
+	 *
+	 * @return filespec This instance of the filespec class
+	 */
 	public function set_upload_ary($upload_ary)
 	{
 		$this->filename = $upload_ary['tmp_name'];
@@ -101,6 +132,13 @@ class filespec
 		return $this;
 	}
 
+	/**
+	 * Set the upload namespace
+	 *
+	 * @param upload $namespace Instance of upload class
+	 *
+	 * @return filespec This instance of the filespec class
+	 */
 	public function set_upload_namespace($namespace)
 	{
 		$this->upload = $namespace;
@@ -109,7 +147,7 @@ class filespec
 	}
 
 	/**
-	 * Check if class members were not properly initalised yet
+	 * Check if class members were not properly initialised yet
 	 *
 	 * @return bool True if there was an init error, false if not
 	 */
@@ -135,10 +173,13 @@ class filespec
 	/**
 	 * Cleans destination filename
 	 *
-	 * @param real|unique|unique_ext $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
+	 * @param string $mode Either real, unique, or unique_ext. Real creates a
+	 *				realname, filtering some characters, lowering every
+	 *				character. Unique creates a unique filename.
 	 * @param string $prefix Prefix applied to filename
 	 * @param string $user_id The user_id is only needed for when cleaning a user's avatar
-	 * @access public
+	 *
+	 *@access public
 	 */
 	function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
@@ -184,6 +225,10 @@ class filespec
 
 	/**
 	 * Get property from file object
+	 *
+	 * @param string $property Name of property
+	 *
+	 * @return mixed Content of property
 	 */
 	function get($property)
 	{
@@ -196,9 +241,9 @@ class filespec
 	}
 
 	/**
-	 * Check if file is an image (mimetype)
+	 * Check if file is an image (mime type)
 	 *
-	 * @return true if it is an image, false if not
+	 * @return bool true if it is an image, false if not
 	 */
 	function is_image()
 	{
@@ -208,7 +253,7 @@ class filespec
 	/**
 	 * Check if the file got correctly uploaded
 	 *
-	 * @return true if it is a valid upload, false if not
+	 * @return bool true if it is a valid upload, false if not
 	 */
 	function is_uploaded()
 	{
@@ -241,7 +286,8 @@ class filespec
 	/**
 	 * Get file extension
 	 *
-	 * @param string Filename that needs to be checked
+	 * @param string $filename Filename that needs to be checked
+	 *
 	 * @return string Extension of the supplied filename
 	 */
 	static public function get_extension($filename)
@@ -258,10 +304,10 @@ class filespec
 	}
 
 	/**
-	 * Get mimetype
+	 * Get mime type
 	 *
 	 * @param string $filename Filename that needs to be checked
-	 * @return string Mimetype of supplied filename
+	 * @return string Mime type of supplied filename
 	 */
 	function get_mimetype($filename)
 	{
@@ -279,7 +325,11 @@ class filespec
 	}
 
 	/**
-	 * Get filesize
+	 * Get file size
+	 *
+	 * @param string $filename File name of file to check
+	 *
+	 * @return int File size
 	 */
 	function get_filesize($filename)
 	{
@@ -289,6 +339,10 @@ class filespec
 
 	/**
 	 * Check the first 256 bytes for forbidden content
+	 *
+	 * @param array $disallowed_content Array containg disallowed content
+	 *
+	 * @return bool False if disallowed content found, true if not
 	 */
 	function check_content($disallowed_content)
 	{
@@ -321,8 +375,10 @@ class filespec
 	 * @param string $destination Destination path, for example $config['avatar_path']
 	 * @param bool $overwrite If set to true, an already existing file will be overwritten
 	 * @param bool $skip_image_check If set to true, the check for the file to be a valid image is skipped
-	 * @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode defined by {@link phpbb_chmod()}
+	 * @param string|bool $chmod Permission mask for chmodding the file after a successful move.
+	 *				The mode entered here reflects the mode defined by {@link phpbb_chmod()}
 	 *
+	 * @return bool True if file was moved, false if not
 	 * @access public
 	 */
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
@@ -475,6 +531,8 @@ class filespec
 
 	/**
 	 * Performing additional checks
+	 *
+	 * @return bool False if issue was found, true if not
 	 */
 	function additional_checks()
 	{
