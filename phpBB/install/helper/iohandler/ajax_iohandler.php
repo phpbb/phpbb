@@ -177,11 +177,30 @@ class ajax_iohandler extends iohandler_base
 			$this->form = '';
 		}
 
+		// If current task name is set, we push progress message to the client side
+		if (!empty($this->current_task_name))
+		{
+			$json_array['progress'] = array(
+				'task_name'		=> $this->current_task_name,
+				'task_num'		=> $this->current_task_progress,
+				'task_count'	=> $this->task_progress_count,
+			);
+		}
+
 		$this->errors = array();
 		$this->warnings = array();
 		$this->logs = array();
 
 		return $json_array;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_progress($task_lang_key, $task_number)
+	{
+		parent::set_progress($task_lang_key, $task_number);
+		$this->send_response();
 	}
 
 	/**

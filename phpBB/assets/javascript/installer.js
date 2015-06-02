@@ -3,9 +3,12 @@
  */
 
 (function($) { // Avoid conflicts with other libraries
-    // Global variables
+    // Installer variables
     var pollTimer = null;
     var nextReadPosition = 0;
+    var progressBarTriggered = false;
+    var progressTimer = null;
+    var currentProgress = 0;
 
     // Template related variables
     var $contentWrapper = $('.install-body').find('.main');
@@ -56,49 +59,112 @@
         if (responseObject.hasOwnProperty('form')) {
             add_form(responseObject.form);
         }
+
+        if (responseObject.hasOwnProperty('progress')) {
+            set_progress(responseObject.progress);
+        }
     }
 
     function add_message(type, messages) {
         // Get message containers
-        var errorContainer = $('#error-container');
-        var warningContainer = $('#warning-container');
-        var logContainer = $('#log-container');
+        var $errorContainer = $('#error-container');
+        var $warningContainer = $('#warning-container');
+        var $logContainer = $('#log-container');
 
-        var title, description, msgElement, arraySize = messages.length;
+        var $title, $description, $msgElement, arraySize = messages.length;
         for (var i = 0; i < arraySize; i++) {
-            msgElement = $('<div />');
-            title = $(document.createElement('strong'));
-            title.text(messages[i].title);
-            msgElement.append(title);
+            $msgElement = $('<div />');
+            $title = $(document.createElement('strong'));
+            $title.text(messages[i].title);
+            $msgElement.append($title);
 
             if (messages[i].hasOwnProperty('description')) {
-                description = $(document.createElement('p'));
-                description.text(messages[i].description);
-                msgElement.append(description);
+                $description = $(document.createElement('p'));
+                $description.text(messages[i].description);
+                $msgElement.append($description);
             }
 
             switch (type) {
                 case 'error':
-                    msgElement.addClass('errorbox');
-                    errorContainer.append(msgElement);
+                    $msgElement.addClass('errorbox');
+                    $errorContainer.append($msgElement);
                     break;
                 case 'warning':
-                    msgElement.addClass('warningbox');
-                    warningContainer.append(msgElement);
+                    $msgElement.addClass('warningbox');
+                    $warningContainer.append($msgElement);
                     break;
                 case 'log':
-                    msgElement.addClass('log');
-                    logContainer.append(msgElement);
+                    $msgElement.addClass('log');
+                    $logContainer.append($msgElement);
                     break;
             }
         }
     }
 
     function add_form(formHtml) {
-        var formContainer = $('#content-container');
-        formContainer.html(formHtml);
-        var form = $('#install_install');
-        intercept_form_submit(form);
+        var $formContainer = $('#content-container');
+        $formContainer.html(formHtml);
+        var $form = $('#install_install');
+        intercept_form_submit($form);
+    }
+
+    function set_progress(progressObject) {
+        var $statusText, $progressBar, $progressText, $progressFiller;
+
+        if (progressObject.task_name.length) {
+            if (!progressBarTriggered) {
+                // Create progress bar
+                var $contentContainer = $('#content-container');
+
+                // Create progress bar elements
+                $progressBar = $('<div />');
+                $progressBar.attr('id', 'progress-bar');
+                $progressText = $('<p />');
+                $progressText.attr('id', 'progress-bar-text');
+                $progressFiller = $('<span />');
+                $progressFiller.attr('id', 'progress-bar-filler');
+
+                $statusText = $('<p />');
+                $statusText.attr('id', 'progress-status-text');
+
+                $progressBar.append($progressFiller);
+                $progressBar.append($progressText);
+
+                $contentContainer.append($statusText);
+                $contentContainer.append($progressBar);
+
+                progressBarTriggered = true;
+            } else {
+                $statusText = $('#progress-status-text');
+            }
+
+            // Update progress bar
+            $statusText.text(progressObject.task_name + '…');
+            increment_progress_bar(Math.round(progressObject.task_num / progressObject.task_count * 100));
+        }
+    }
+
+    function increment_progress_bar(progressLimit) {
+        var $progressFiller = $('#progress-bar-filler');
+        var $progressText = $('#progress-bar-text');
+        var progressStart = $progressFiller.width() / $progressFiller.offsetParent().width() * 100;
+        currentProgress = Math.floor(progressStart);
+
+        clearInterval(progressTimer);
+        progressTimer = setInterval(function() {
+            incrementFiller($progressText, $progressFiller, progressLimit);
+        }, 10);
+    }
+
+    function incrementFiller($progressText, $progressFiller, progressLimit) {
+        currentProgress++;
+        $progressText.text(currentProgress + '%');
+        $progressFiller.css('width', currentProgress + '%');
+
+        if (currentProgress >= progressLimit || currentProgress >= 100) {
+            console.log("In if; " + progressLimit + "; " + currentProgress);
+            clearInterval(progressTimer);
+        }
     }
 
     function start_polling(xhReq) {
@@ -113,14 +179,14 @@
         nextReadPosition = 0;
     }
 
-    function submit_form(form, submitBtn) {
-        form.css('display', 'none');
+    function submit_form($form, $submitBtn) {
+        $form.css('display', 'none');
 
         var xhReq = create_xhr_object();
-        xhReq.open('POST', form.attr('action'), true);
+        xhReq.open('POST', $form.attr('action'), true);
         xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhReq.send(get_form_fields(form, submitBtn));
+        xhReq.send(get_form_fields($form, $submitBtn));
 
         // Clear content
         setup_ajax_layout();
@@ -130,23 +196,22 @@
     }
 
     // Workaround for submit buttons
-    function get_form_fields(form, submitBtn) {
-        var formData = form.serialize();
-        //var submitBtn = form.find(':submit');
-        formData += ((formData.length) ? '&' : '') + encodeURIComponent(submitBtn.attr('name')) + '=';
-        formData += encodeURIComponent(submitBtn.attr('value'));
+    function get_form_fields($form, $submitBtn) {
+        var formData = $form.serialize();
+        formData += ((formData.length) ? '&' : '') + encodeURIComponent($submitBtn.attr('name')) + '=';
+        formData += encodeURIComponent($submitBtn.attr('value'));
 
         return formData;
     }
 
-    function intercept_form_submit(form) {
-        if (!form.length) {
+    function intercept_form_submit($form) {
+        if (!$form.length) {
             return;
         }
 
-        form.find(':submit').bind('click', function (event) {
+        $form.find(':submit').bind('click', function (event) {
             event.preventDefault();
-            submit_form(form, $(this));
+            submit_form($form, $(this));
         });
 
     }
