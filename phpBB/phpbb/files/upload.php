@@ -306,14 +306,12 @@ class upload
 
 		if (!preg_match('#^(https?://).*?\.(' . implode('|', $this->allowed_extensions) . ')$#i', $upload_url, $match))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
-			return $file;
+			return $this->factory->get('filespec')->set_error($user->lang[$this->error_prefix . 'URL_INVALID']);
 		}
 
 		if (empty($match[2]))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
-			return $file;
+			return $this->factory->get('filespec')->set_error($user->lang[$this->error_prefix . 'URL_INVALID']);e;
 		}
 
 		$url = parse_url($upload_url);
@@ -362,8 +360,7 @@ class upload
 
 		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
-			return $file;
+			return $this->factory->get('filespec')->set_error($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
 		}
 
 		// Make sure $path not beginning with /
@@ -404,8 +401,7 @@ class upload
 				{
 					$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
-					$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
-					return $file;
+					return $this->factory->get('filespec')->set_error(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
 				}
 
 				$data .= $block;
@@ -432,14 +428,12 @@ class upload
 						{
 							$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
-							$file = new fileerror(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
-							return $file;
+							return $this->factory->get('filespec')->set_error(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
 						}
 					}
 					else if (stripos($line, '404 not found') !== false)
 					{
-						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
-						return $file;
+						return $this->factory->get('filespec')->set_error($this->error_prefix . 'URL_NOT_FOUND');
 					}
 				}
 			}
@@ -449,16 +443,14 @@ class upload
 			// Cancel upload if we exceed timeout
 			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
 			{
-				$file = new fileerror($user->lang[$this->error_prefix . 'REMOTE_UPLOAD_TIMEOUT']);
-				return $file;
+				return $this->factory->get('filespec')->set_error($this->error_prefix . 'REMOTE_UPLOAD_TIMEOUT');
 			}
 		}
 		@fclose($fsock);
 
 		if (empty($data))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'EMPTY_REMOTE_DATA']);
-			return $file;
+			return $this->factory->get('filespec')->set_error($this->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
 
 		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
@@ -466,8 +458,7 @@ class upload
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
-			return $file;
+			return $this->factory->get('filespec')->set_error($this->error_prefix . 'NOT_UPLOADED');
 		}
 
 		$upload_ary['size'] = fwrite($fp, $data);

@@ -119,6 +119,20 @@ class filespec
 	}
 
 	/**
+	 * Set error in error array
+	 *
+	 * @param mixed $error Content for error array
+	 *
+	 * @return \phpbb\files\filespec This instance of the filespec class
+	 */
+	public function set_error($error)
+	{
+		$this->error[] = $error;
+
+		return $this;
+	}
+
+	/**
 	 * Cleans destination filename
 	 *
 	 * @param real|unique|unique_ext $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
