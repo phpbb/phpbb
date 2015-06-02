@@ -30,11 +30,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \phpbb\request\request_interface */
+	protected $request;
+
 	protected function setUp()
 	{
 		// Global $config required by unique_id
-		// Global $request required by form_upload, local_upload and is_valid
-		global $config, $request, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx;
 
 		if (!is_array($config))
 		{
@@ -44,7 +46,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$request = new phpbb_mock_request();
+		$this->request = $this->getMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
@@ -83,7 +85,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_invalid_extension()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('png'))
 			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
@@ -93,7 +95,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_invalid_filename()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
@@ -104,7 +106,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_too_large()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
@@ -115,7 +117,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_valid_file()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(1000);
 		$file = $this->gen_valid_filespec();
@@ -125,7 +127,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_local_upload()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(1000);
 
@@ -137,7 +139,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_move_existent_file()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(1000);
 
@@ -151,7 +153,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_move_existent_file_overwrite()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(1000);
 
@@ -166,7 +168,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_valid_dimensions()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request);
 		$upload->set_allowed_extensions(false)
 			->set_max_filesize(false)
 			->set_allowed_dimensions(1, 1, 100, 100);

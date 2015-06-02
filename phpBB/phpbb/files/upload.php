@@ -13,7 +13,10 @@
 
 namespace phpbb\files;
 
+use \phpbb\filesystem\filesystem_interface;
 use \phpbb\language\language;
+use \phpbb\plupload\plupload;
+use \phpbb\request\request_interface;
 
 /**
  * File upload class
@@ -57,18 +60,23 @@ class upload
 	/** @var \phpbb\language\language Language class */
 	protected $language;
 
+	/** @var \phpbb\request\request_interface Request class */
+	protected $request;
+
 	/**
 	 * Init file upload class.
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface $filesystem
 	 * @param \phpbb\files\factory $factory Files factory
 	 * @param \phpbb\language\language $language Language class
+	 * @param \phpbb\request\request_interface $request Request class
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, factory $factory, language $language)
+	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, request_interface $request)
 	{
 		$this->filesystem = $filesystem;
 		$this->factory = $factory;
 		$this->language = $language;
+		$this->request = $request;
 	}
 
 	/**
@@ -178,11 +186,9 @@ class upload
 	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
 	 * @access public
 	 */
-	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
+	function form_upload($form_name, plupload $plupload = null)
 	{
-		global $request;
-
-		$upload = $request->file($form_name);
+		$upload = $this->request->file($form_name);
 		unset($upload['local_mode']);
 
 		if ($plupload)
@@ -264,8 +270,6 @@ class upload
 	 */
 	function local_upload($source_file, $filedata = false)
 	{
-		global $request;
-
 		$upload = array();
 
 		$upload['local_mode'] = true;
@@ -331,7 +335,7 @@ class upload
 		}
 
 		$this->common_checks($file);
-		$request->overwrite('local', $upload, \phpbb\request\request_interface::FILES);
+		$this->request->overwrite('local', $upload, request_interface::FILES);
 
 		return $file;
 	}
@@ -657,8 +661,7 @@ class upload
 	 */
 	function is_valid($form_name)
 	{
-		global $request;
-		$upload = $request->file($form_name);
+		$upload = $this->request->file($form_name);
 
 		return (!empty($upload) && $upload['name'] !== 'none');
 	}
