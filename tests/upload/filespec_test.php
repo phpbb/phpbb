@@ -13,7 +13,6 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_upload.php';
 
 class phpbb_filespec_test extends phpbb_test_case
 {
