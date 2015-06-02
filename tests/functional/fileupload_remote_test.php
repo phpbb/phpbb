@@ -32,8 +32,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		// URL
 
 		// Global $config required by unique_id
-		// Global $user required by fileupload::remote_upload
-		global $config, $user, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx;
 
 		if (!is_array($config))
 		{
@@ -43,16 +42,13 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
 		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		$container = new phpbb_mock_container_builder();
-		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem));
+		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language));
 		$this->factory = new \phpbb\files\factory($container);
 		$container->set('files.factory', $this->factory);
-
-		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 	}
 
 	public function tearDown()

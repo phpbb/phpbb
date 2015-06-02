@@ -12,6 +12,7 @@ services:
         scope: prototype
         arguments:
             - @filesystem
+            - @language
             - @mimetype.guesser
             - @plupload
 

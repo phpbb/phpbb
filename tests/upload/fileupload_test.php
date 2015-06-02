@@ -33,9 +33,8 @@ class phpbb_fileupload_test extends phpbb_test_case
 	protected function setUp()
 	{
 		// Global $config required by unique_id
-		// Global $user required by several functions dealing with translations
 		// Global $request required by form_upload, local_upload and is_valid
-		global $config, $user, $request, $phpbb_filesystem, $phpbb_root_path, $phpEx;
+		global $config, $request, $phpbb_root_path, $phpEx;
 
 		if (!is_array($config))
 		{
@@ -45,22 +44,19 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
-
 		$request = new phpbb_mock_request();
 
-		$this->filesystem = $phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
 		$this->container->set('files.filespec', new \phpbb\files\filespec(
 			$this->filesystem,
+			$this->language,
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
 			))));
 		$this->factory = new \phpbb\files\factory($this->container);
-
-		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		$this->path = __DIR__ . '/fixture/';
 	}

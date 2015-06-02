@@ -13,6 +13,8 @@
 
 namespace phpbb\files;
 
+use \phpbb\language\language;
+
 /**
  * Responsible for holding all file relevant information, as well as doing file-specific operations.
  * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
@@ -81,18 +83,23 @@ class filespec
 	 */
 	protected $mimetype_guesser;
 
+	/** @var \phpbb\language\language Language class */
+	protected $language;
+
 	/**
 	 * File upload class
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem
+	 * @param \phpbb\language\language					$language
 	 * @param \phpbb\mimetype\guesser					$mimetype_guesser
 	 * @param \phpbb\plupload\plupload					$plupload
 	 */
-	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
 		$this->filesystem = $phpbb_filesystem;
+		$this->language = $language;
 	}
 
 	/**
@@ -383,7 +390,7 @@ class filespec
 	 */
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		global $user, $phpbb_root_path;
+		global $phpbb_root_path;
 
 		if (sizeof($this->error))
 		{
@@ -410,7 +417,7 @@ class filespec
 		if (file_exists($this->destination_file) && !$overwrite)
 		{
 			@unlink($this->filename);
-			$this->error[] = $user->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
+			$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
 			$this->file_moved = false;
 			return false;
 		}
@@ -429,7 +436,7 @@ class filespec
 					{
 						if (!@move_uploaded_file($this->filename, $this->destination_file))
 						{
-							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+							$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
 						}
 					}
 
@@ -441,7 +448,7 @@ class filespec
 					{
 						if (!@copy($this->filename, $this->destination_file))
 						{
-							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+							$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
 						}
 					}
 
@@ -451,7 +458,7 @@ class filespec
 
 					if (!@copy($this->filename, $this->destination_file))
 					{
-						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+						$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
 					}
 
 					break;
@@ -502,23 +509,23 @@ class filespec
 				{
 					if (!isset($types[$this->image_info['type']]))
 					{
-						$this->error[] = $user->lang('IMAGE_FILETYPE_INVALID', $this->image_info['type'], $this->mimetype);
+						$this->error[] = $this->language->lang('IMAGE_FILETYPE_INVALID', $this->image_info['type'], $this->mimetype);
 					}
 					else
 					{
-						$this->error[] = $user->lang('IMAGE_FILETYPE_MISMATCH', $types[$this->image_info['type']][0], $this->extension);
+						$this->error[] = $this->language->lang('IMAGE_FILETYPE_MISMATCH', $types[$this->image_info['type']][0], $this->extension);
 					}
 				}
 
 				// Make sure the dimensions match a valid image
 				if (empty($this->width) || empty($this->height))
 				{
-					$this->error[] = $user->lang['ATTACHED_IMAGE_NOT_IMAGE'];
+					$this->error[] = $this->language->lang('ATTACHED_IMAGE_NOT_IMAGE');
 				}
 			}
 			else
 			{
-				$this->error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+				$this->error[] = $this->language->lang('UNABLE_GET_IMAGE_SIZE');
 			}
 		}
 
@@ -536,8 +543,6 @@ class filespec
 	 */
 	function additional_checks()
 	{
-		global $user;
-
 		if (!$this->file_moved)
 		{
 			return false;
@@ -548,20 +553,20 @@ class filespec
 		{
 			$max_filesize = get_formatted_filesize($this->upload->max_filesize, false);
 
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']);
+			$this->error[] = $this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']);
 
 			return false;
 		}
 
 		if (!$this->upload->valid_dimensions($this))
 		{
-			$this->error[] = $user->lang($this->upload->error_prefix . 'WRONG_SIZE',
-				$user->lang('PIXELS', (int) $this->upload->min_width),
-				$user->lang('PIXELS', (int) $this->upload->min_height),
-				$user->lang('PIXELS', (int) $this->upload->max_width),
-				$user->lang('PIXELS', (int) $this->upload->max_height),
-				$user->lang('PIXELS', (int) $this->width),
-				$user->lang('PIXELS', (int) $this->height));
+			$this->error[] = $this->language->lang($this->upload->error_prefix . 'WRONG_SIZE',
+				$this->language->lang('PIXELS', (int) $this->upload->min_width),
+				$this->language->lang('PIXELS', (int) $this->upload->min_height),
+				$this->language->lang('PIXELS', (int) $this->upload->max_width),
+				$this->language->lang('PIXELS', (int) $this->upload->max_height),
+				$this->language->lang('PIXELS', (int) $this->width),
+				$this->language->lang('PIXELS', (int) $this->height));
 
 			return false;
 		}

@@ -25,12 +25,13 @@ class phpbb_filespec_test extends phpbb_test_case
 	private $filesystem;
 	public $path;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	protected function setUp()
 	{
 		// Global $config required by unique_id
-		// Global $user required by filespec::additional_checks and
-		// filespec::move_file
-		global $config, $user, $phpbb_filesystem;
+		global $config, $phpbb_root_path, $phpEx;
 
 		if (!is_array($config))
 		{
@@ -43,9 +44,6 @@ class phpbb_filespec_test extends phpbb_test_case
 		// to this value at install time.
 		// See: phpBB/install/schemas/schema_data.sql
 		$config['mime_triggers'] = 'body|head|html|img|plaintext|a href|pre|script|table|title';
-
-		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
 
 		$this->config = &$config;
 		$this->path = __DIR__ . '/fixture/';
@@ -75,8 +73,9 @@ class phpbb_filespec_test extends phpbb_test_case
 		$guessers[2]->set_priority(-2);
 		$guessers[3]->set_priority(-2);
 		$this->mimetype_guesser = new \phpbb\mimetype\guesser($guessers);
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
-		$this->filesystem = $phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	private function get_filespec($override = array())
@@ -90,15 +89,13 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $this->mimetype_guesser);
 		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
 	protected function tearDown()
 	{
-		global $user;
 		$this->config = array();
-		$user = null;
 
 		$iterator = new DirectoryIterator($this->path . 'copies');
 		foreach ($iterator as $fileinfo)
@@ -289,7 +286,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			array('txt_copy', 'txt_as_img', 'image/jpg', 'txt', false, true),
 			array('txt_copy_2', 'txt_moved', 'text/plain', 'txt', false, true),
 			array('jpg_copy', 'jpg_moved', 'image/png', 'jpg', false, true),
-			array('png_copy', 'png_moved', 'image/png', 'jpg', 'IMAGE_FILETYPE_MISMATCH png jpg', true),
+			array('png_copy', 'png_moved', 'image/png', 'jpg', 'Image file type mismatch: expected extension png but extension jpg given.', true),
 		);
 	}
 
