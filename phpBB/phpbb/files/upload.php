@@ -13,6 +13,8 @@
 
 namespace phpbb\files;
 
+use \phpbb\language\language;
+
 /**
  * File upload class
  * Init class (all parameters optional and able to be set/overwritten separately) - scope is global and valid for all uploads
@@ -52,16 +54,21 @@ class upload
 	/** @var \phpbb\files\factory Files factory */
 	protected $factory;
 
+	/** @var \phpbb\language\language Language class */
+	protected $language;
+
 	/**
 	 * Init file upload class.
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface $filesystem
 	 * @param \phpbb\files\factory $factory Files factory
+	 * @param \phpbb\language\language $language Language class
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, factory $factory)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, factory $factory, language $language)
 	{
 		$this->filesystem = $filesystem;
 		$this->factory = $factory;
+		$this->language = $language;
 	}
 
 	/**
@@ -173,7 +180,7 @@ class upload
 	 */
 	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
 	{
-		global $user, $request;
+		global $request;
 
 		$upload = $request->file($form_name);
 		unset($upload['local_mode']);
@@ -213,7 +220,7 @@ class upload
 		// Check if empty file got uploaded (not catched by is_uploaded_file)
 		if (isset($upload['size']) && $upload['size'] == 0)
 		{
-			$file->error[] = $user->lang[$this->error_prefix . 'EMPTY_FILEUPLOAD'];
+			$file->error[] = $this->language->lang($this->error_prefix . 'EMPTY_FILEUPLOAD');
 			return $file;
 		}
 
@@ -231,14 +238,14 @@ class upload
 				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 			}
 
-			$file->error[] = (empty($max_filesize)) ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], $max_filesize, $user->lang[$unit]);
+			$file->error[] = (empty($max_filesize)) ? $this->language->lang($this->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
 			return $file;
 		}
 
 		// Not correctly uploaded
 		if (!$file->is_uploaded())
 		{
-			$file->error[] = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+			$file->error[] = $this->language->lang($this->error_prefix . 'NOT_UPLOADED');
 			return $file;
 		}
 
@@ -257,7 +264,7 @@ class upload
 	 */
 	function local_upload($source_file, $filedata = false)
 	{
-		global $user, $request;
+		global $request;
 
 		$upload = array();
 
@@ -312,14 +319,14 @@ class upload
 				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 			}
 
-			$file->error[] = (empty($max_filesize)) ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], $max_filesize, $user->lang[$unit]);
+			$file->error[] = (empty($max_filesize)) ?$this->language->lang($this->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
 			return $file;
 		}
 
 		// Not correctly uploaded
 		if (!$file->is_uploaded())
 		{
-			$file->error[] = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+			$file->error[] = $this->language->lang($this->error_prefix . 'NOT_UPLOADED');
 			return $file;
 		}
 
@@ -339,19 +346,19 @@ class upload
 	 */
 	function remote_upload($upload_url)
 	{
-		global $user, $phpbb_root_path;
+		global $phpbb_root_path;
 
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
 
 		if (!preg_match('#^(https?://).*?\.(' . implode('|', $this->allowed_extensions) . ')$#i', $upload_url, $match))
 		{
-			return $this->factory->get('filespec')->set_error($user->lang[$this->error_prefix . 'URL_INVALID']);
+			return $this->factory->get('filespec')->set_error($this->language->lang($this->error_prefix . 'URL_INVALID'));
 		}
 
 		if (empty($match[2]))
 		{
-			return $this->factory->get('filespec')->set_error($user->lang[$this->error_prefix . 'URL_INVALID']);e;
+			return $this->factory->get('filespec')->set_error($this->language->lang($this->error_prefix . 'URL_INVALID'));
 		}
 
 		$url = parse_url($upload_url);
@@ -400,7 +407,7 @@ class upload
 
 		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
 		{
-			return $this->factory->get('filespec')->set_error($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
+			return $this->factory->get('filespec')->set_error($this->language->lang($this->error_prefix . 'NOT_UPLOADED'));
 		}
 
 		// Make sure $path not beginning with /
@@ -441,7 +448,7 @@ class upload
 				{
 					$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
-					return $this->factory->get('filespec')->set_error(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+					return $this->factory->get('filespec')->set_error($this->language->lang($this->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
 				}
 
 				$data .= $block;
@@ -468,7 +475,7 @@ class upload
 						{
 							$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
-							return $this->factory->get('filespec')->set_error(sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']));
+							return $this->factory->get('filespec')->set_error($this->language->lang($this->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
 						}
 					}
 					else if (stripos($line, '404 not found') !== false)
@@ -526,8 +533,6 @@ class upload
 	 */
 	function assign_internal_error($errorcode)
 	{
-		global $user;
-
 		switch ($errorcode)
 		{
 			case 1:
@@ -542,21 +547,21 @@ class upload
 					$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 				}
 
-				$error = (empty($max_filesize)) ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], $max_filesize, $user->lang[$unit]);
+				$error = (empty($max_filesize)) ? $this->language->lang($this->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
 				break;
 
 			case 2:
 				$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
-				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']);
+				$error = $this->language->lang($this->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']);
 				break;
 
 			case 3:
-				$error = $user->lang[$this->error_prefix . 'PARTIAL_UPLOAD'];
+				$error = $this->language->lang($this->error_prefix . 'PARTIAL_UPLOAD');
 				break;
 
 			case 4:
-				$error = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+				$error = $this->language->lang($this->error_prefix . 'NOT_UPLOADED');
 				break;
 
 			case 6:
@@ -578,32 +583,30 @@ class upload
 	 */
 	function common_checks(&$file)
 	{
-		global $user;
-
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
 		{
 			$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize['value'], $max_filesize['unit']);
+			$file->error[] = $this->language->lang($this->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']);
 		}
 
 		// check Filename
 		if (preg_match("#[\\/:*?\"<>|]#i", $file->get('realname')))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'INVALID_FILENAME'], $file->get('realname'));
+			$file->error[] = $this->language->lang($this->error_prefix . 'INVALID_FILENAME', $file->get('realname'));
 		}
 
 		// Invalid Extension
 		if (!$this->valid_extension($file))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_EXTENSION'], $file->get('extension'));
+			$file->error[] = $this->language->lang($this->error_prefix . 'DISALLOWED_EXTENSION', $file->get('extension'));
 		}
 
 		// MIME Sniffing
 		if (!$this->valid_content($file))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_CONTENT']);
+			$file->error[] = $this->language->lang($this->error_prefix . 'DISALLOWED_CONTENT');
 		}
 	}
 

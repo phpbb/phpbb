@@ -21,3 +21,4 @@ services:
         arguments:
             - @filesystem
             - @files.factory
+            - @language
