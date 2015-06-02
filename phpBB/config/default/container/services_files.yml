@@ -13,6 +13,7 @@ services:
         arguments:
             - @filesystem
             - @language
+            - %core.root_path%
             - @mimetype.guesser
             - @plupload
 
@@ -24,3 +25,4 @@ services:
             - @files.factory
             - @language
             - @request
+            - %core.root_path%

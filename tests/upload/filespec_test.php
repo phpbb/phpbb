@@ -28,6 +28,9 @@ class phpbb_filespec_test extends phpbb_test_case
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
 	protected function setUp()
 	{
 		// Global $config required by unique_id
@@ -76,6 +79,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	private function get_filespec($override = array())
@@ -89,7 +93,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $this->phpbb_root_path, $this->mimetype_guesser);
 		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
@@ -297,8 +301,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		// Global $phpbb_root_path and $phpEx are required by phpbb_chmod
 		global $phpbb_root_path, $phpEx;
-		$phpbb_root_path = '';
-		$phpEx = 'php';
+		$this->phpbb_root_path = '';
 
 		$upload = new phpbb_mock_fileupload();
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
@@ -319,7 +322,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$this->assertEquals($error, $filespec->error[0]);
 		}
 
-		$phpEx = '';
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**

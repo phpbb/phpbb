@@ -53,7 +53,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$this->request = $this->getMock('\phpbb\request\request');
 
 		$container = new phpbb_mock_container_builder();
-		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language));
+		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language, $this->phpbb_root_path));
 		$this->factory = new \phpbb\files\factory($container);
 		$container->set('files.factory', $this->factory);
 		$this->phpbb_root_path = $phpbb_root_path;

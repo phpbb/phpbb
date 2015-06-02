@@ -58,6 +58,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$this->container->set('files.filespec', new \phpbb\files\filespec(
 			$this->filesystem,
 			$this->language,
+			$phpbb_root_path,
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
 			))));

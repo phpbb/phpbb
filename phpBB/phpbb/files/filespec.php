@@ -86,20 +86,25 @@ class filespec
 	/** @var \phpbb\language\language Language class */
 	protected $language;
 
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
 	/**
 	 * File upload class
 	 *
-	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem
-	 * @param \phpbb\language\language					$language
-	 * @param \phpbb\mimetype\guesser					$mimetype_guesser
-	 * @param \phpbb\plupload\plupload					$plupload
+	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem Filesystem
+	 * @param \phpbb\language\language					$language Language
+	 * @param string									$phpbb_root_path phpBB root path
+	 * @param \phpbb\mimetype\guesser					$mimetype_guesser Mime type guesser
+	 * @param \phpbb\plupload\plupload					$plupload Plupload
 	 */
-	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
 		$this->filesystem = $phpbb_filesystem;
 		$this->language = $language;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -390,8 +395,6 @@ class filespec
 	 */
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		global $phpbb_root_path;
-
 		if (sizeof($this->error))
 		{
 			return false;
@@ -400,7 +403,7 @@ class filespec
 		$chmod = ($chmod === false) ? CHMOD_READ | CHMOD_WRITE : $chmod;
 
 		// We need to trust the admin in specifying valid upload directories and an attacker not being able to overwrite it...
-		$this->destination_path = $phpbb_root_path . $destination;
+		$this->destination_path = $this->phpbb_root_path . $destination;
 
 		// Check if the destination path exist...
 		if (!file_exists($this->destination_path))
