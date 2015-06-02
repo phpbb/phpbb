@@ -181,7 +181,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->assertEquals($text, $crawler->filter('#message')->text());
 	}
 
-	public function test_ticket_13906()
+	public function test_old_signature_in_preview()
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_sig = '[b:2u8sdcwb]My signature[/b:2u8sdcwb]',
