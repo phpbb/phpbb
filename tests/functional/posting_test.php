@@ -180,4 +180,26 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertEquals($text, $crawler->filter('#message')->text());
 	}
+
+	public function test_ticket_13906()
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_sig = '[b:2u8sdcwb]My signature[/b:2u8sdcwb]',
+				user_sig_bbcode_uid = '2u8sdcwb',
+				user_sig_bbcode_bitfield = 'QA=='
+			WHERE user_id = 2";
+		$this->get_db()->sql_query($sql);
+
+		$this->login();
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => 'My post',
+		));
+		$crawler = self::submit($form);
+		$this->assertContains(
+			'<span style="font-weight: bold">My signature</span>',
+			$crawler->filter('#preview .signature')->html()
+		);
+	}
 }
