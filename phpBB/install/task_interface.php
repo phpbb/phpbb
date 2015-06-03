@@ -15,9 +15,22 @@ namespace phpbb\install;
 
 /**
  * Interface for installer tasks
+ *
+ * Note: The task service ID must match up with the namespace and class name.
+ * For example: if your task is located at \phpbb\install\module\module_name\task\task_name
+ * then the service ID must be installer.module_name.task_name.
  */
 interface task_interface
 {
+	/**
+	 * Returns the number of steps the task contains
+	 *
+	 * This is a helper method to provide a better progress bar for the front-end.
+	 *
+	 * @return int	The number of steps that the task contains
+	 */
+	static public function get_step_count();
+
 	/**
 	 * Checks if the task is essential to install phpBB or it can be skipped
 	 *

@@ -106,6 +106,14 @@ class add_languages extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
+	static public function get_step_count()
+	{
+		return 1;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_task_lang_name()
 	{
 		return 'TASK_ADD_LANGUAGES';

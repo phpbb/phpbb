@@ -56,7 +56,7 @@ class module extends \phpbb\install\module_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_task_count()
+	public function get_step_count()
 	{
 		return 0;
 	}

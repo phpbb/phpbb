@@ -1,5 +1,5 @@
 services:
-    installer.filesystem.create_config:
+    installer.install_filesystem.create_config_file:
         class: phpbb\install\module\install_filesystem\task\create_config_file
         arguments:
             - @filesystem
@@ -13,4 +13,4 @@ services:
         class: phpbb\install\module\install_filesystem\module
         parent: installer.module_base
         arguments:
-            - ["installer.filesystem.create_config"]
+            - ["installer.install_filesystem.create_config_file"]

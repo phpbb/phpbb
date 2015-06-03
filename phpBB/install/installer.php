@@ -91,7 +91,7 @@ class installer
 			/** @var \phpbb\install\module_interface $module */
 			$module = $this->container->get($name);
 
-			$task_count += $module->get_task_count();
+			$task_count += $module->get_step_count();
 		}
 
 		// Set task count

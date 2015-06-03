@@ -52,5 +52,5 @@ interface module_interface
 	 *
 	 * @return int
 	 */
-	public function get_task_count();
+	public function get_step_count();
 }

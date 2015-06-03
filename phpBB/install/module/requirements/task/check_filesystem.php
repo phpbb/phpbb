@@ -258,6 +258,14 @@ class check_filesystem extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
+	static public function get_step_count()
+	{
+		return 0;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_task_lang_name()
 	{
 		return '';

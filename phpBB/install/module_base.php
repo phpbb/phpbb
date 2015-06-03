@@ -173,8 +173,28 @@ abstract class module_base implements module_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_task_count()
+	public function get_step_count()
 	{
-		return sizeof($this->task_collection);
+		$step_count = 0;
+
+		foreach ($this->task_collection as $task_service_name)
+		{
+			$task_service_name_parts = explode('.', $task_service_name);
+
+			if ($task_service_name_parts[0] !== 'installer')
+			{
+				// @todo throw an exception
+			}
+
+			$class_name = '\\phpbb\\install\\module\\' . $task_service_name_parts[1] . '\\task\\' . $task_service_name_parts[2];
+			if (!class_exists($class_name))
+			{
+				// @todo throw an exception
+			}
+
+			$step_count += $class_name::get_step_count();
+		}
+
+		return $step_count;
 	}
 }
