@@ -3,6 +3,9 @@
  */
 
 (function($) { // Avoid conflicts with other libraries
+
+    'use strict';
+
     // Installer variables
     var pollTimer = null;
     var nextReadPosition = 0;
@@ -14,58 +17,37 @@
     var $contentWrapper = $('.install-body').find('.main');
 
     // Intercept form submits
-    intercept_form_submit($('#install_install'));
+    interceptFormSubmit($('#install_install'));
 
-    function poll_content(xhReq) {
-        var messages = xhReq.responseText;
+    /**
+     * Creates an XHR object
+     *
+     * jQuery cannot be used as the response is streamed, and
+     * as of now, jQuery does not provide access to the response until
+     * the connection is not closed.
+     *
+     * @return XMLHttpRequest|ActiveXObject
+     */
+    function createXhrObject() {
+        var xhReq;
 
-        do {
-            var unprocessed = messages.substring(nextReadPosition);
-            var messageEndIndex = unprocessed.indexOf('}\n\n');
-
-            if (messageEndIndex !== -1) {
-                var endOfMessageIndex = messageEndIndex + 3; // 3 is the length of "}\n\n"
-                var message = unprocessed.substring(0, endOfMessageIndex);
-                parse_message(message);
-                nextReadPosition += endOfMessageIndex;
-            }
-        } while (messageEndIndex !== -1);
-
-        if (xhReq.readyState === 4) {
-            $('#loading_indicator').css('display', 'none');
-            reset_polling();
+        if (window.XMLHttpRequest) {
+            xhReq = new XMLHttpRequest();
         }
+        else if (window.ActiveXObject) {
+            xhReq = new ActiveXObject("Msxml2.XMLHTTP");
+        }
+
+        return xhReq;
     }
 
-    function parse_message(messageJSON) {
-        $('#loading_indicator').css('display', 'none');
-
-        messageJSON = messageJSON.trim();
-        var responseObject = JSON.parse(messageJSON);
-
-        // Parse object
-        if (responseObject.hasOwnProperty('errors')) {
-            add_message('error', responseObject.errors)
-        }
-
-        if (responseObject.hasOwnProperty('warnings')) {
-            add_message('warning', responseObject.warnings)
-        }
-
-        if (responseObject.hasOwnProperty('logs')) {
-            add_message('log', responseObject.logs);
-        }
-
-        if (responseObject.hasOwnProperty('form')) {
-            add_form(responseObject.form);
-        }
-
-        if (responseObject.hasOwnProperty('progress')) {
-            set_progress(responseObject.progress);
-        }
-    }
-
-    function add_message(type, messages) {
+    /**
+     * Displays error, warning and log messages
+     *
+     * @param type
+     * @param messages
+     */
+    function addMessage(type, messages) {
         // Get message containers
         var $errorContainer = $('#error-container');
         var $warningContainer = $('#warning-container');
@@ -101,14 +83,24 @@
         }
     }
 
-    function add_form(formHtml) {
+    /**
+     * Displays a form from the response
+     *
+     * @param formHtml
+     */
+    function addForm(formHtml) {
         var $formContainer = $('#content-container');
         $formContainer.html(formHtml);
         var $form = $('#install_install');
-        intercept_form_submit($form);
+        interceptFormSubmit($form);
     }
 
-    function set_progress(progressObject) {
+    /**
+     * Renders progress bar
+     *
+     * @param progressObject
+     */
+    function setProgress(progressObject) {
         var $statusText, $progressBar, $progressText, $progressFiller;
 
         if (progressObject.task_name.length) {
@@ -140,11 +132,93 @@
 
             // Update progress bar
             $statusText.text(progressObject.task_name + '…');
-            increment_progress_bar(Math.round(progressObject.task_num / progressObject.task_count * 100));
+            incrementProgressBar(Math.round(progressObject.task_num / progressObject.task_count * 100));
         }
     }
 
-    function increment_progress_bar(progressLimit) {
+    /**
+     * Parse messages from the response object
+     *
+     * @param messageJSON
+     */
+    function parseMessage(messageJSON) {
+        $('#loading_indicator').css('display', 'none');
+
+        var responseObject = JSON.parse(messageJSON);
+
+        // Parse object
+        if (responseObject.hasOwnProperty('errors')) {
+            addMessage('error', responseObject.errors);
+        }
+
+        if (responseObject.hasOwnProperty('warnings')) {
+            addMessage('warning', responseObject.warnings);
+        }
+
+        if (responseObject.hasOwnProperty('logs')) {
+            addMessage('log', responseObject.logs);
+        }
+
+        if (responseObject.hasOwnProperty('form')) {
+            addForm(responseObject.form);
+        }
+
+        if (responseObject.hasOwnProperty('progress')) {
+            setProgress(responseObject.progress);
+        }
+    }
+
+    /**
+     * Process updates in streamed response
+     *
+     * @param xhReq   XHR object
+     */
+    function pollContent(xhReq) {
+        var messages = xhReq.responseText;
+        var msgSeparator = '}\n\n';
+        var unprocessed, messageEndIndex, endOfMessageIndex, message;
+
+        do {
+            unprocessed = messages.substring(nextReadPosition);
+            messageEndIndex = unprocessed.indexOf(msgSeparator);
+
+            if (messageEndIndex !== -1) {
+                endOfMessageIndex = messageEndIndex + msgSeparator.length;
+                message = unprocessed.substring(0, endOfMessageIndex);
+                parseMessage(message);
+                nextReadPosition += endOfMessageIndex;
+            }
+        } while (messageEndIndex !== -1);
+
+        if (xhReq.readyState === 4) {
+            $('#loading_indicator').css('display', 'none');
+            resetPolling();
+        }
+    }
+
+    /**
+     * Animates the progress bar
+     *
+     * @param $progressText
+     * @param $progressFiller
+     * @param progressLimit
+     */
+    function incrementFiller($progressText, $progressFiller, progressLimit) {
+        currentProgress++;
+        $progressText.text(currentProgress + '%');
+        $progressFiller.css('width', currentProgress + '%');
+
+        if (currentProgress >= progressLimit || currentProgress >= 100) {
+            clearInterval(progressTimer);
+        }
+    }
+
+    /**
+     * Wrapper function for progress bar rendering and animating
+     *
+     * @param progressLimit
+     */
+    function incrementProgressBar(progressLimit) {
         var $progressFiller = $('#progress-bar-filler');
         var $progressText = $('#progress-bar-text');
         var progressStart = $progressFiller.width() / $progressFiller.offsetParent().width() * 100;
@@ -156,85 +230,30 @@
         }, 10);
     }
 
-    function incrementFiller($progressText, $progressFiller, progressLimit) {
-        currentProgress++;
-        $progressText.text(currentProgress + '%');
-        $progressFiller.css('width', currentProgress + '%');
-
-        if (currentProgress >= progressLimit || currentProgress >= 100) {
-            console.log("In if; " + progressLimit + "; " + currentProgress);
-            clearInterval(progressTimer);
-        }
-    }
-
-    function start_polling(xhReq) {
-        reset_polling();
+    /**
+     * Sets up timer for processing the streamed HTTP response
+     *
+     * @param xhReq
+     */
+    function startPolling(xhReq) {
+        resetPolling();
         pollTimer = setInterval(function () {
-            poll_content(xhReq);
+            pollContent(xhReq);
         }, 500);
     }
 
-    function reset_polling() {
+    /**
+     * Resets the polling timer
+     */
+    function resetPolling() {
         clearInterval(pollTimer);
         nextReadPosition = 0;
     }
 
-    function submit_form($form, $submitBtn) {
-        $form.css('display', 'none');
-
-        var xhReq = create_xhr_object();
-        xhReq.open('POST', $form.attr('action'), true);
-        xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhReq.send(get_form_fields($form, $submitBtn));
-
-        // Clear content
-        setup_ajax_layout();
-        $('#loading_indicator').css('display', 'block');
-
-        start_polling(xhReq);
-    }
-
-    // Workaround for submit buttons
-    function get_form_fields($form, $submitBtn) {
-        var formData = $form.serialize();
-        formData += ((formData.length) ? '&' : '') + encodeURIComponent($submitBtn.attr('name')) + '=';
-        formData += encodeURIComponent($submitBtn.attr('value'));
-
-        return formData;
-    }
-
-    function intercept_form_submit($form) {
-        if (!$form.length) {
-            return;
-        }
-
-        $form.find(':submit').bind('click', function (event) {
-            event.preventDefault();
-            submit_form($form, $(this));
-        });
-
-    }
-
     /**
-     * jQuery cannot be used as the response is streamed, and
-     * as of now, jQuery does not provide access to the response until
-     * the connection is not closed.
+     * Renders the AJAX UI layout
      */
-    function create_xhr_object() {
-        var xhReq;
-
-        if (window.XMLHttpRequest) {
-            xhReq = new XMLHttpRequest();
-        }
-        else if (window.ActiveXObject) {
-            xhReq = new ActiveXObject("Msxml2.XMLHTTP");
-        }
-
-        return xhReq;
-    }
-
-    function setup_ajax_layout() {
+    function setupAjaxLayout() {
         // Clear content
         $contentWrapper.html('');
 
@@ -266,5 +285,53 @@
         $spinner.attr('id', 'loading_indicator');
         $spinner.html('&nbsp;');
         $contentWrapper.append($spinner);
+    }
+
+    function submitForm($form, $submitBtn) {
+        $form.css('display', 'none');
+
+        var xhReq = createXhrObject();
+        xhReq.open('POST', $form.attr('action'), true);
+        xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhReq.send(getFormFields($form, $submitBtn));
+
+        // Clear content
+        setupAjaxLayout();
+        $('#loading_indicator').css('display', 'block');
+
+        startPolling(xhReq);
+    }
+
+    /**
+     * Add submit button to the POST information
+     *
+     * @param $form
+     * @param $submitBtn
+     *
+     * @returns {*}
+     */
+    function getFormFields($form, $submitBtn) {
+        var formData = $form.serialize();
+        formData += ((formData.length) ? '&' : '') + encodeURIComponent($submitBtn.attr('name')) + '=';
+        formData += encodeURIComponent($submitBtn.attr('value'));
+
+        return formData;
+    }
+
+    /**
+     * Intercept form submit events and determine the submit button used
+     *
+     * @param $form
+     */
+    function interceptFormSubmit($form) {
+        if (!$form.length) {
+            return;
+        }
+
+        $form.find(':submit').bind('click', function (event) {
+            event.preventDefault();
+            submitForm($form, $(this));
+        });
     }
 })(jQuery); // Avoid conflicts with other libraries
