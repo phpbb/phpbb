@@ -29,7 +29,8 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request;
+		global $config, $db, $user, $auth, $template, $phpbb_dispatcher;
+		global $phpbb_container, $phpbb_root_path, $phpEx, $request;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
@@ -460,6 +461,132 @@ class ucp_prefs
 					'S_SIG'		=> $data['sig'],
 					'S_NOTIFY'	=> $data['notify'])
 				);
+
+			break;
+
+			case 'wysiwyg':
+
+				$data = array(
+					'wysiwyg_editor'	=> $request->variable('wysiwyg_editor', $user->data['user_wysiwyg_editor']),
+				);
+				$selected_editor = $data['wysiwyg_editor'];
+				if (empty($data['wysiwyg_editor']))
+				{
+					// Selected to use default
+					$data['wysiwyg_editor'] = $config['wysiwyg_editor'];
+				}
+				$data['wysiwyg_default_mode'] = $request->variable(array('wysiwyg_default_mode', $data['wysiwyg_editor']), $user->data['user_wysiwyg_default_mode']);
+				$data['wysiwyg_buttons_mode'] = $request->variable(array('wysiwyg_buttons_mode', $data['wysiwyg_editor']), $user->data['user_wysiwyg_buttons_mode']);
+
+				add_form_key('ucp_prefs_wysiwyg');
+
+				$error = $editors_data = array();
+
+				foreach ($phpbb_container->get('wysiwyg.converters_collection') as $name => $converter)
+				{
+					$available_modes = $converter->get_available_modes();
+					$button_modes = $converter->get_available_button_modes();
+
+					$editors_data[$name] = array(
+						'EDITOR_ID' => $name,
+						'EDITOR_TITLE' => $converter->get_name(),
+
+						'WYSIWYG_MODES_AVAILABLE' => $available_modes,
+						'WYSIWYG_BUTTON_MODES_AVAILABLE' => $button_modes,
+
+						'S_WYSIWYG_MODE' => $data['wysiwyg_default_mode'],
+						'S_WYSIWYG_BUTTON_MODE' => $data['wysiwyg_buttons_mode'],
+					);
+				}
+
+				if ($submit)
+				{
+					if (!$phpbb_container->has($data['wysiwyg_editor']))
+					{
+						// Something really wrong happened. Outdated settings page used or hacking
+						$data['wysiwyg_editor'] = $user->data['user_wysiwyg_editor'];
+						$data['wysiwyg_default_mode'] = $user->data['user_wysiwyg_default_mode'];
+						$data['wysiwyg_buttons_mode'] = $user->data['user_wysiwyg_buttons_mode'];
+						$error[] = 'ERROR_NO_SUCH_EDITOR';
+					}
+
+					array_merge($error, validate_data($data, array(
+						'wysiwyg_default_mode'	=> array(
+							// DB max size is small int = 65535
+							array('num', false, 1, 65535),
+						),
+						'wysiwyg_buttons_mode'	=> array(
+							array('num', false, 1, 65535),
+						),
+					)));
+
+					if (!check_form_key('ucp_prefs_wysiwyg'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
+					if (!sizeof($error))
+					{
+						$sql_ary = array(
+							'user_wysiwyg_editor'		=> $selected_editor,
+							'user_wysiwyg_default_mode'	=> $data['wysiwyg_default_mode'],
+							'user_wysiwyg_buttons_mode'	=> $data['wysiwyg_buttons_mode'],
+						);
+
+						/**
+						* Extra information or edit information settings to submit for wysiwyg
+						*
+						* @event core.ucp_prefs_wysiwyg_update_data
+						* @var	array	data		Submitted display options data
+						* @var	array	sql_ary		Display options data we update
+						* @since 3.1.0-a1
+						*/
+						$vars = array('data', 'sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_wysiwyg_update_data', compact($vars)));
+
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
+
+						meta_refresh(3, $this->u_action);
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						trigger_error($message);
+					}
+					$error = array_map(array($user, 'lang'), $error);
+				}
+
+				$template->assign_vars(array(
+					'ERROR' 						=> implode('<br />', $error),
+					'WYSIWYG_DEFAULT_EDITOR_TITLE'	=> $editors_data[$config['wysiwyg_editor']]['EDITOR_TITLE'],
+					'WYSIWYG_EDITOR'				=> $data['wysiwyg_editor'],
+					'WYSIWYG_DEFAULT_MODE'			=> $data['wysiwyg_default_mode'],
+					'WYSIWYG_BUTTONS_MODE'			=> $data['wysiwyg_buttons_mode'],
+				));
+				foreach ($editors_data as $editor_data)
+				{
+					$template->assign_block_vars('wysiwyg', $editor_data);
+				}
+
+				/**
+				* Add UCP edit posting defaults data before they are assigned to the template or submitted
+				*
+				* To assign or replace data in the template, use $template->assign_vars()
+				* To modify the wysiwyg block, use $template->alter_block_array(). The original information
+				* is in the editors_data array.
+				* To get the original request data, use the $request->variable()
+				*
+				* @event core.ucp_prefs_wysiwyg_data
+				* @var	bool	submit			Do we display the form only
+				*								or did the user press submit
+				* @var	array	data			The current data or the data the user submitted
+				* @var	array	editors_data	The relevant data related to the editors
+				* @var	array	error			List of errors that happened
+				* @since 3.1.0-a1
+				*/
+				$vars = array('submit', 'data', 'editors_data');
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_wysiwyg_data', compact($vars)));
+
 			break;
 		}
 
