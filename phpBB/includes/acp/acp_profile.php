@@ -381,7 +381,7 @@ class acp_profile
 				* @var	array	field_row		Array of data about the field
 				* @var	array	exclude			Array of excluded fields by step
 				* @var	array	visibility_ary	Array of fields that are visibility related
-				* @since 3.1.5-a4
+				* @since 3.1.5-RC1
 				*/
 				$vars = array(
 					'action',
@@ -683,7 +683,7 @@ class acp_profile
 				* @var	array	field_data		Array of data about the field
 				* @var	array	s_hidden_fields	Array of hidden fields in case this needs modification
 				* @var	array	options			Array of options specific to this step
-				* @since 3.1.5-a4
+				* @since 3.1.5-RC1
 				*/
 				$vars = array(
 					'action',
@@ -909,12 +909,12 @@ class acp_profile
 		/**
 		* Event to modify profile field configuration data before saving to database
 		*
-		* @event core.acp_profile_create_edit_before_save
+		* @event core.acp_profile_create_edit_save_before
 		* @var	string	action			create|edit
 		* @var	string	field_type		Type of the field we are dealing with
 		* @var	array	field_data		Array of data about the field
 		* @var	array	profile_fields	Array of fields to be sent to the database
-		* @since 3.1.5-a4
+		* @since 3.1.5-RC1
 		*/
 		$vars = array(
 			'action',
@@ -922,7 +922,7 @@ class acp_profile
 			'field_data',
 			'profile_fields',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_before_save', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_save_before', compact($vars)));
 
 		if ($action == 'create')
 		{
