@@ -28,10 +28,12 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user;
+		global $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user, $phpbb_root_path, $phpEx;
 
 		$this->db = $db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$config = new \phpbb\config\config(array(
@@ -39,8 +41,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			'auth_oauth_google_key'	=> 'foo',
 			'auth_oauth_google_secret'	=> 'bar',
 		));
-		set_config_count('foobar', 0, false, $config);
-		$cache = new \phpbb\cache\driver\null();
+		$cache = new \phpbb\cache\driver\dummy();
 		$request = new phpbb_mock_request();
 		$notification_manager = new phpbb_mock_notification_manager();
 		$provider_collection =  new \phpbb\auth\provider_collection($phpbb_container, $config);
