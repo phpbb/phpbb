@@ -153,17 +153,23 @@ class helper
 	 */
 	public function string_compare($string_a, $string_b)
 	{
+		// Return if input variables are not strings or if length does not match
+		if (!is_string($string_a) || !is_string($string_b) || strlen($string_a) != strlen($string_b))
+		{
+			return false;
+		}
+
 		// Use hash_equals() if it's available
 		if (function_exists('hash_equals'))
 		{
 			return hash_equals($string_a, $string_b);
 		}
 
-		$difference = strlen($string_a) != strlen($string_b);
+		$difference = 0;
 
 		for ($i = 0; $i < strlen($string_a) && $i < strlen($string_b); $i++)
 		{
-			$difference |= $string_a[$i] != $string_b[$i];
+			$difference |= ord($string_a[$i]) ^ ord($string_b[$i]);
 		}
 
 		return $difference === 0;
