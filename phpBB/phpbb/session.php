@@ -851,18 +851,6 @@ class session
 		$_SID = $this->session_id;
 		$this->data = array_merge($this->data, $sql_ary);
 
-		/**
-		* Event to send new session data to extension
-		*
-		* @event core.session_create
-		* @var	array		session_data				Associative array of session keys to be updated
-		* @since 3.1.5-RC1
-		*/
-		$session_data = $this->data;
-		$vars = array('session_data');
-		extract($phpbb_dispatcher->trigger_event('core.session_create', compact($vars)));
-		unset($session_data);
-
 		if (!$bot)
 		{
 			$cookie_expire = $this->time_now + (($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000);
@@ -905,6 +893,18 @@ class session
 			$_SID = '';
 		}
 
+		$session_data = $this->data;
+		/**
+		* Event to send new session data to extension
+		*
+		* @event core.session_create_after
+		* @var	array		session_data				Associative array of session keys to be updated
+		* @since 3.1.5-RC1
+		*/
+		$vars = array('session_data');
+		extract($phpbb_dispatcher->trigger_event('core.session_create_after', compact($vars)));
+		unset($session_data);
+
 		return true;
 	}
 
@@ -925,18 +925,18 @@ class session
 				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 
+		$user_id = (int) $this->data['user_id'];
+		$session_id = $this->session_id;
 		/**
 		* Event to send session kill information to extension
 		*
-		* @event core.session_kill
+		* @event core.session_kill_after
 		* @var	int		user_id				user_id of the session user.
 		* @var	string		session_id				current user's session_id
 		* @since 3.1.5-RC1
 		*/
-		$user_id = (int) $this->data['user_id'];
-		$session_id = $this->session_id;
-		$vars = array('user_id', 'session_id');
-		extract($phpbb_dispatcher->trigger_event('core.session_kill', compact($vars)));
+		$vars = array('user_id', 'session_id', 'new_session');
+		extract($phpbb_dispatcher->trigger_event('core.session_kill_after', compact($vars)));
 		unset($user_id);
 		unset($session_id);
 
@@ -1078,10 +1078,10 @@ class session
 		/**
 		* Event to trigger extension on session_gc
 		*
-		* @event core.session_gc
+		* @event core.session_gc_after
 		* @since 3.1.5-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.session_gc');
+		$phpbb_dispatcher->dispatch('core.session_gc_after');
 
 		return;
 	}
