@@ -27,18 +27,88 @@
 			<dl>
 				<dt><label>{L_WYSIWYG_DEFAULT_MODE}{L_COLON}</label></dt>
 				<dd>
-					<label><input type="radio" name="wysiwyg_default_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_WYSIWYG_MODE') }}"{% if wysiwyg.S_WYSIWYG_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_WYSIWYG_MODE') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_WYSIWYG_MODE')) %} disabled{% endif %}/> {L_WYSIWYG_DEFAULT_MODE_WYSIWYG}</label>
-					<label><input type="radio" name="wysiwyg_default_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_MIXED_MODE') }}"{% if wysiwyg.S_WYSIWYG_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_MIXED_MODE') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_MIXED_MODE')) %} disabled{% endif %}/> {L_WYSIWYG_DEFAULT_MODE_RTE}</label>
-					<label><input type="radio" name="wysiwyg_default_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE') }}"{% if wysiwyg.S_WYSIWYG_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE')) %} disabled{% endif %}/> {L_WYSIWYG_DEFAULT_MODE_SOURCE}</label> 
+					<label><input
+						type="radio"
+						name="wysiwyg_default_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_WYSIWYG_MODE') }}"
+						{%- if wysiwyg.S_WYSIWYG_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_WYSIWYG_MODE') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_WYSIWYG_MODE')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_DEFAULT_MODE_WYSIWYG}</label>
+					<label><input
+						type="radio"
+						name="wysiwyg_default_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_MIXED_MODE') }}"
+						{%- if wysiwyg.S_WYSIWYG_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_MIXED_MODE') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_MIXED_MODE')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_DEFAULT_MODE_RTE}</label>
+					<label><input
+						type="radio"
+						name="wysiwyg_default_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE') }}"
+						{%- if wysiwyg.S_WYSIWYG_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_DEFAULT_MODE_SOURCE}</label> 
 				</dd>
 			</dl>
 			<dl>
 				<dt><label>{L_WYSIWYG_BUTTONS_MODE}{L_COLON}</label></dt>
 				<dd>
-					<label><input type="radio" name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON') }}"{% if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON')) %} disabled{% endif %}/> {L_WYSIWYG_BUTTONS_MODE_ICON}</label>
-					<label><input type="radio" name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT') }}"{% if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT')) %} disabled{% endif %}/> {L_WYSIWYG_BUTTONS_MODE_TEXT_ICON}</label>
-					<label><input type="radio" name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_TEXT') }}"{% if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_TEXT') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_TEXT')) %} disabled{% endif %}/> {L_WYSIWYG_BUTTONS_MODE_TEXT}</label>
-					<label><input type="radio" name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]" value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_MIXED') }}"{% if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_MIXED') %} checked{% endif %}{% if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_MIXED')) %} disabled{% endif %}/> {L_WYSIWYG_BUTTONS_MODE_MIXED}</label>
+					<label><input
+						type="radio"
+						name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON') }}"
+						{%- if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_BUTTONS_MODE_ICON}</label>
+					<label><input
+						type="radio"
+						name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT') }}"
+						{%- if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_BUTTONS_MODE_TEXT_ICON}</label>
+					<label><input
+						type="radio"
+						name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_TEXT') }}"
+						{%- if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_TEXT') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_TEXT')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_BUTTONS_MODE_TEXT}</label>
+					<label><input
+						type="radio"
+						name="wysiwyg_buttons_mode[{{ wysiwyg.EDITOR_ID }}]"
+						value="{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_MIXED') }}"
+						{%- if wysiwyg.S_WYSIWYG_BUTTON_MODE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_MIXED') %}
+							checked
+						{%- endif %}
+						{%- if not (wysiwyg.WYSIWYG_BUTTON_MODES_AVAILABLE b-and constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_MIXED')) %}
+							disabled
+						{%- endif %}
+						/> {L_WYSIWYG_BUTTONS_MODE_MIXED}</label>
 				</dd>
 			</dl>
 			<!-- EVENT ucp_prefs_wysiwyg_options_append -->
