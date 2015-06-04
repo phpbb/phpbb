@@ -245,8 +245,13 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 
 	switch ($tpl_type[0])
 	{
-		case 'text':
 		case 'password':
+			if ($new[$config_key] !== '')
+			{
+				// replace passwords with asterixes
+				$new[$config_key] = '********';
+			}
+		case 'text':
 		case 'url':
 		case 'email':
 		case 'color':
