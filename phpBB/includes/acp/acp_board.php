@@ -567,6 +567,7 @@ class acp_board
 			$old_auth_config = array();
 			foreach ($auth_providers as $provider)
 			{
+				/** @var \phpbb\auth\provider\provider_interface $provider */
 				if ($fields = $provider->acp())
 				{
 					// Check if we need to create config fields for this plugin and save config when submit was pressed
@@ -579,6 +580,14 @@ class acp_board
 
 						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
 						{
+							continue;
+						}
+
+						if (substr($field, -9) === '_password' && $cfg_array[$field] === '********')
+						{
+							// Do not update password fields if the content is ********,
+							// because that is the password replacement we use to not
+							// send the password to the output
 							continue;
 						}
 
