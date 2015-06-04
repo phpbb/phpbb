@@ -267,6 +267,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$branch_root_id = $forum_id;
 			}
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
+			$forum_rows[$parent_id]['forum_password_last_post'] = $row['forum_password'];
 			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
@@ -308,6 +309,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
 				$forum_rows[$parent_id]['forum_last_poster_colour'] = $row['forum_last_poster_colour'];
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
+				$forum_rows[$parent_id]['forum_password_last_post'] = $row['forum_password'];
 			}
 		}
 
@@ -522,8 +524,15 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Create last post link information, if appropriate
 		if ($row['forum_last_post_id'])
 		{
-			$last_post_subject = $row['forum_last_post_subject'];
-			$last_post_subject_truncated = truncate_string(censor_text($last_post_subject), 30, 255, false, $user->lang['ELLIPSIS']);
+			if ($row['forum_password_last_post'] === '' && $auth->acl_get('f_read', $row['forum_id_last_post']))
+			{
+				$last_post_subject = censor_text($row['forum_last_post_subject']);
+				$last_post_subject_truncated = truncate_string($last_post_subject, 30, 255, false, $user->lang['ELLIPSIS']);
+			}
+			else
+			{
+				$last_post_subject = $last_post_subject_truncated = '';
+			}
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
@@ -583,7 +592,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
-			'S_DISPLAY_SUBJECT'	=>	($last_post_subject && $config['display_last_subject'] && !$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? true : false,
+			'S_DISPLAY_SUBJECT'	=>	($last_post_subject !== '' && $config['display_last_subject']) ? true : false,
 			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']) && $row['forum_type'] == FORUM_POST) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],
@@ -596,8 +605,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang[$folder_alt] : '',
 			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
-			'LAST_POST_SUBJECT'		=> (!$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? censor_text($last_post_subject) : "",
-			'LAST_POST_SUBJECT_TRUNCATED'	=> (!$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? $last_post_subject_truncated : "",
+			'LAST_POST_SUBJECT'		=> $last_post_subject,
+			'LAST_POST_SUBJECT_TRUNCATED'	=> $last_post_subject_truncated,
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> get_username_string('username', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
