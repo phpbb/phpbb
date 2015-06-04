@@ -500,6 +500,9 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	$num_users_delta = 0;
 
+	// Get auth provider collection in case accounts might need to be unlinked
+	$provider_collection = $phpbb_container->get('auth.provider_collection');
+
 	// Some things need to be done in the loop (if the query changes based
 	// on which user is currently being deleted)
 	$added_guest_posts = 0;
@@ -508,6 +511,38 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == 'avatar.driver.upload')
 		{
 			avatar_delete('user', $user_row);
+		}
+
+		// Unlink accounts
+		foreach ($provider_collection as $provider_name => $auth_provider)
+		{
+			$provider_data = $auth_provider->get_auth_link_data($user_id);
+
+			if ($provider_data !== null)
+			{
+				$link_data = array(
+					'user_id' => $user_id,
+					'link_method' => 'user_delete',
+				);
+
+				// BLOCK_VARS might contain hidden fields necessary for unlinking accounts
+				if (isset($provider_data['BLOCK_VARS']) && is_array($provider_data['BLOCK_VARS']))
+				{
+					foreach ($provider_data['BLOCK_VARS'] as $provider_service)
+					{
+						if (!array_key_exists('HIDDEN_FIELDS', $provider_service))
+						{
+							$provider_service['HIDDEN_FIELDS'] = array();
+						}
+
+						$auth_provider->unlink_account(array_merge($link_data, $provider_service['HIDDEN_FIELDS']));
+					}
+				}
+				else
+				{
+					$auth_provider->unlink_account($link_data);
+				}
+			}
 		}
 
 		// Decrement number of users if this user is active
