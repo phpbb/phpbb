@@ -933,6 +933,7 @@ class session
 		* @event core.session_kill_after
 		* @var	int		user_id				user_id of the session user.
 		* @var	string		session_id				current user's session_id
+		* @var	bool	new_session 	should we create new session for user
 		* @since 3.1.5-RC1
 		*/
 		$vars = array('user_id', 'session_id', 'new_session');
