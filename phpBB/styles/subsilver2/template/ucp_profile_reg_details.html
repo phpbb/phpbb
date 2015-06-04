@@ -21,16 +21,16 @@
 </tr>
 <tr>
 	<td class="row1" width="35%"><b class="genmed">{L_EMAIL_ADDRESS}{L_COLON} </b></td>
-	<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="email" class="post" name="email" size="30" maxlength="100" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
+	<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="email" class="post" name="email" size="30" maxlength="100" value="{EMAIL}" autocomplete="off" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
 </tr>
 <!-- IF S_CHANGE_PASSWORD -->
 	<tr>
 		<td class="row1" width="35%"><b class="genmed">{L_NEW_PASSWORD}{L_COLON} </b><br /><span class="gensmall">{L_CHANGE_PASSWORD_EXPLAIN}</span></td>
-		<td class="row2"><input type="password" class="post" name="new_password" size="30" maxlength="255" value="{NEW_PASSWORD}" /></td>
+		<td class="row2"><input type="password" class="post" name="new_password" size="30" maxlength="255" value="{NEW_PASSWORD}" autocomplete="off" /></td>
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><b class="genmed">{L_CONFIRM_PASSWORD}{L_COLON} </b><br /><span class="gensmall">{L_CONFIRM_PASSWORD_EXPLAIN}</span></td>
-		<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="255" value="{PASSWORD_CONFIRM}" /></td>
+		<td class="row2"><input type="password" class="post" name="password_confirm" size="30" maxlength="255" value="{PASSWORD_CONFIRM}" autocomplete="off" /></td>
 	</tr>
 <!-- ENDIF -->
 <!-- EVENT ucp_profile_register_details_after -->
@@ -39,7 +39,7 @@
 </tr>
 <tr>
 	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_PASSWORD}{L_COLON} </b><br /><span class="gensmall"><!-- IF S_CHANGE_PASSWORD -->{L_CURRENT_CHANGE_PASSWORD_EXPLAIN}<!-- ELSE -->{L_CURRENT_PASSWORD_EXPLAIN}<!-- ENDIF --></span></td>
-	<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="255" value="{CUR_PASSWORD}" /></td>
+	<td class="row2"><input type="password" class="post" name="cur_password" size="30" maxlength="255" value="{CUR_PASSWORD}" autocomplete="off" /></td>
 </tr>
 <tr>
 	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
