@@ -153,6 +153,12 @@ class helper
 	 */
 	public function string_compare($string_a, $string_b)
 	{
+		// Use hash_equals() if it's available
+		if (function_exists('hash_equals'))
+		{
+			return hash_equals($string_a, $string_b);
+		}
+
 		$difference = strlen($string_a) != strlen($string_b);
 
 		for ($i = 0; $i < strlen($string_a) && $i < strlen($string_b); $i++)
