@@ -531,6 +531,14 @@ mcp_front_latest_unapproved_before
 * Since: 3.1.3-RC1
 * Purpose: Add content before latest unapproved posts list
 
+mcp_post_additional_options
+===
+* Locations:
+    + styles/prosilver/template/mcp_post.html
+    + styles/subsilver2/template/mcp_post.html
+* Since: 3.1.5-RC1
+* Purpose: Add content within the list of post moderation actions
+
 memberlist_body_username_append
 ===
 * Locations:
