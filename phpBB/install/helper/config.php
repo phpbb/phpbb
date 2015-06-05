@@ -232,10 +232,17 @@ class config
 
 	/**
 	 * Increments the task progress
+	 *
+	 * @param int	$increment_by	The amount to increment by
 	 */
-	public function increment_current_task_progress()
+	public function increment_current_task_progress($increment_by = 1)
 	{
-		$this->progress_data['current_task_progress']++;
+		$this->progress_data['current_task_progress'] += $increment_by;
+
+		if ($this->progress_data['current_task_progress'] > $this->progress_data['max_task_progress'])
+		{
+			$this->progress_data['current_task_progress'] = $this->progress_data['max_task_progress'];
+		}
 	}
 
 	/**

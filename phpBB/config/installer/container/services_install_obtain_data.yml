@@ -41,3 +41,5 @@ services:
         parent: installer.module_base
         arguments:
             - ["installer.obtain_data.obtain_admin_data", "installer.obtain_data.obtain_database_data", "installer.obtain_data.obtain_server_data", "installer.obtain_data.obtain_email_data", "installer.obtain_data.obtain_board_data", "installer.obtain_data.obtain_imagick_path"]
+            - true
+            - false

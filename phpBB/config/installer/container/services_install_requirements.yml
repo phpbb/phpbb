@@ -18,3 +18,5 @@ services:
         parent: installer.module_base
         arguments:
             - ["installer.requirements.check_filesystem", "installer.requirements.check_server_environment"]
+            - true
+            - false

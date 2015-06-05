@@ -13,23 +13,30 @@
 
 namespace phpbb\install;
 
+use phpbb\install\exception\invalid_service_name_exception;
+use phpbb\install\exception\task_not_found_exception;
+use phpbb\install\helper\iohandler\iohandler_interface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+use phpbb\install\helper\config;
+
 /**
  * Base class for installer module
  */
 abstract class module_base implements module_interface
 {
 	/**
-	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
+	 * @var ContainerInterface
 	 */
 	protected $container;
 
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $install_config;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 
@@ -46,25 +53,32 @@ abstract class module_base implements module_interface
 	protected $task_collection;
 
 	/**
+	 * @var bool
+	 */
+	protected $allow_progress_bar;
+
+	/**
 	 * Installer module constructor
 	 *
-	 * @param array	$tasks		array of installer tasks for installer module
-	 * @param bool	$essential	flag that indicates if module is essential or not
+	 * @param array	$tasks				array of installer tasks for installer module
+	 * @param bool	$essential			flag indicating whether the module is essential or not
+	 * @param bool	$allow_progress_bar	flag indicating whether or not to send progress information from within the module
 	 */
-	public function __construct(array $tasks, $essential = true)
+	public function __construct(array $tasks, $essential = true, $allow_progress_bar = true)
 	{
-		$this->task_collection	= $tasks;
-		$this->is_essential		= $essential;
+		$this->task_collection		= $tasks;
+		$this->is_essential			= $essential;
+		$this->allow_progress_bar	= $allow_progress_bar;
 	}
 
 	/**
 	 * Dependency getter
 	 *
-	 * @param \Symfony\Component\DependencyInjection\ContainerInterface	$container
-	 * @param \phpbb\install\helper\config								$config
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface		$iohandler
+	 * @param ContainerInterface	$container
+	 * @param config								$config
+	 * @param iohandler_interface		$iohandler
 	 */
-	public function setup(\Symfony\Component\DependencyInjection\ContainerInterface $container, \phpbb\install\helper\config $config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler)
+	public function setup(ContainerInterface $container, config $config, iohandler_interface $iohandler)
 	{
 		$this->container		= $container;
 		$this->install_config	= $config;
@@ -107,32 +121,55 @@ abstract class module_base implements module_interface
 			}
 
 			// Recover task to be executed
-			/** @var \phpbb\install\task_interface $task */
-			$task = $this->container->get($this->task_collection[$task_index]);
+			try
+			{
+				/** @var \phpbb\install\task_interface $task */
+				$task = $this->container->get($this->task_collection[$task_index]);
+			}
+			catch (InvalidArgumentException $e)
+			{
+				throw new task_not_found_exception($this->task_collection[$task_index]);
+			}
 
 			// Send progress information
-			$this->iohandler->set_progress(
-				$task->get_task_lang_name(),
-				$this->install_config->get_current_task_progress()
-			);
+			if ($this->allow_progress_bar)
+			{
+				$this->iohandler->set_progress(
+					$task->get_task_lang_name(),
+					$this->install_config->get_current_task_progress()
+				);
+			}
 
 			// Iterate to the next task
 			$task_index++;
-			$this->install_config->increment_current_task_progress();
 
 			// Check if we can run the task
 			if (!$task->is_essential() && !$task->check_requirements())
 			{
+				$this->iohandler->add_log_message(array(
+					'SKIP_TASK',
+					$this->task_collection[$task_index],
+				));
+				$class_name = $this->get_class_from_service_name($this->task_collection[$task_index - 1]);
+				$this->install_config->increment_current_task_progress($class_name::get_step_count());
 				continue;
+			}
+
+			if ($this->allow_progress_bar)
+			{
+				$this->install_config->increment_current_task_progress();
 			}
 
 			$task->run();
 
-			// Send progress info
-			$this->iohandler->set_progress(
-				$task->get_task_lang_name(),
-				$this->install_config->get_current_task_progress()
-			);
+			// Send progress information
+			if ($this->allow_progress_bar)
+			{
+				$this->iohandler->set_progress(
+					$task->get_task_lang_name(),
+					$this->install_config->get_current_task_progress()
+				);
+			}
 
 			$this->iohandler->send_response();
 
@@ -179,22 +216,37 @@ abstract class module_base implements module_interface
 
 		foreach ($this->task_collection as $task_service_name)
 		{
-			$task_service_name_parts = explode('.', $task_service_name);
-
-			if ($task_service_name_parts[0] !== 'installer')
-			{
-				// @todo throw an exception
-			}
-
-			$class_name = '\\phpbb\\install\\module\\' . $task_service_name_parts[1] . '\\task\\' . $task_service_name_parts[2];
-			if (!class_exists($class_name))
-			{
-				// @todo throw an exception
-			}
-
+			$class_name = $this->get_class_from_service_name($task_service_name);
 			$step_count += $class_name::get_step_count();
 		}
 
 		return $step_count;
+	}
+
+	/**
+	 * Returns the name of the class form the service name
+	 *
+	 * @param string	$task_service_name	Name of the service
+	 *
+	 * @return string	Name of the class
+	 *
+	 * @throws invalid_service_name_exception	When the service name does not meet the requirements described in task_interface
+	 */
+	protected function get_class_from_service_name($task_service_name)
+	{
+		$task_service_name_parts = explode('.', $task_service_name);
+
+		if ($task_service_name_parts[0] !== 'installer')
+		{
+			throw new invalid_service_name_exception('TASK_SERVICE_INSTALLER_MISSING');
+		}
+
+		$class_name = '\\phpbb\\install\\module\\' . $task_service_name_parts[1] . '\\task\\' . $task_service_name_parts[2];
+		if (!class_exists($class_name))
+		{
+			throw new invalid_service_name_exception('TASK_CLASS_NOT_FOUND', array($task_service_name, $class_name));
+		}
+
+		return $class_name;
 	}
 }

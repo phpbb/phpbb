@@ -249,3 +249,18 @@ $lang = array_merge($lang, array(
 	// Installer general progress messages
 	'INSTALLER_FINISHED'	=> 'The installer has finished successfully',
 ));
+
+// Installer's general messages
+$lang = array_merge($lang, array(
+	'MODULE_NOT_FOUND'				=> 'Module not found',
+	'MODULE_NOT_FOUND_DESCRIPTION'	=> 'No module is found under the service definition “%s” is not defined.',
+
+	'TASK_NOT_FOUND'				=> 'Task not found',
+	'TASK_NOT_FOUND_DESCRIPTION'	=> 'No task is found under the service definition “%s” is not defined.',
+
+	'SKIP_MODULE'	=> 'Skip “%s” module',
+	'SKIP_TASK'		=> 'Skip “%s” task',
+
+	'TASK_SERVICE_INSTALLER_MISSING'	=> 'All installer task services should start with “installer”',
+	'TASK_CLASS_NOT_FOUND'				=> 'Installer task service definition is invalid. Service name “%1$s” given, the expected class namespace is “%2$s” for that. For more information please see the documentation of task_interface.',
+));

@@ -13,15 +13,24 @@
 
 namespace phpbb\install;
 
+use phpbb\install\exception\invalid_service_name_exception;
+use phpbb\install\exception\module_not_found_exception;
+use phpbb\install\exception\task_not_found_exception;
+use phpbb\install\exception\user_interaction_required_exception;
+use phpbb\install\helper\config;
+use phpbb\install\helper\iohandler\iohandler_interface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
+
 class installer
 {
 	/**
-	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
+	 * @var ContainerInterface
 	 */
 	protected $container;
 
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $install_config;
 
@@ -31,17 +40,24 @@ class installer
 	protected $installer_modules;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 
 	/**
+	 * Stores the number of steps that a given module has
+	 *
+	 * @var array
+	 */
+	protected $module_step_count;
+
+	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\config	$config		Installer config handler
-	 * @param \Symfony\Component\DependencyInjection\ContainerInterface	$container	Dependency injection container
+	 * @param config				$config		Installer config handler
+	 * @param ContainerInterface	$container	Dependency injection container
 	 */
-	public function __construct(\phpbb\install\helper\config $config, \Symfony\Component\DependencyInjection\ContainerInterface $container)
+	public function __construct(config $config, ContainerInterface $container)
 	{
 		$this->install_config		= $config;
 		$this->container			= $container;
@@ -66,9 +82,9 @@ class installer
 	/**
 	 * Sets input-output handler objects
 	 *
-	 * @param helper\iohandler\iohandler_interface	$iohandler
+	 * @param iohandler_interface	$iohandler
 	 */
-	public function set_iohandler(\phpbb\install\helper\iohandler\iohandler_interface $iohandler)
+	public function set_iohandler(iohandler_interface $iohandler)
 	{
 		$this->iohandler = $iohandler;
 	}
@@ -84,24 +100,44 @@ class installer
 		// Recover install progress
 		$module_index = $this->recover_progress();
 
-		// Count all tasks in the current installer modules
-		$task_count = 0;
-		foreach ($this->installer_modules as $name)
-		{
-			/** @var \phpbb\install\module_interface $module */
-			$module = $this->container->get($name);
-
-			$task_count += $module->get_step_count();
-		}
-
-		// Set task count
-		$this->install_config->set_task_progress_count($task_count);
-		$this->iohandler->set_task_count($task_count);
-
+		// Variable used to check if the install process have been finished
 		$install_finished = false;
+
+		// Flag used by exception handling, whether or not we need to flush output buffer once again
+		$flush_messages = false;
 
 		try
 		{
+			if ($this->install_config->get_task_progress_count() === 0)
+			{
+				// Count all tasks in the current installer modules
+				$step_count = 0;
+				foreach ($this->installer_modules as $index => $name)
+				{
+					try
+					{
+						/** @var \phpbb\install\module_interface $module */
+						$module = $this->container->get($name);
+					}
+					catch (InvalidArgumentException $e)
+					{
+						throw new module_not_found_exception($name);
+					}
+
+					$module_step_count = $module->get_step_count();
+					$step_count += $module_step_count;
+					$this->module_step_count[$index] = $module_step_count;
+				}
+
+				// Set task count
+				$this->install_config->set_task_progress_count($step_count);
+			}
+
+			// Set up progress information
+			$this->iohandler->set_task_count(
+				$this->install_config->get_task_progress_count()
+			);
+
 			// Run until there are available resources
 			while ($this->install_config->get_time_remaining() > 0 && $this->install_config->get_memory_remaining() > 0)
 			{
@@ -117,14 +153,26 @@ class installer
 				$this->install_config->set_active_module($module_service_name, $module_index);
 
 				// Get module from container
-				/** @var \phpbb\install\module_interface $module */
-				$module = $this->container->get($module_service_name);
+				try
+				{
+					/** @var \phpbb\install\module_interface $module */
+					$module = $this->container->get($module_service_name);
+				}
+				catch (InvalidArgumentException $e)
+				{
+					throw new module_not_found_exception($module_service_name);
+				}
 
 				$module_index++;
 
 				// Check if module should be executed
 				if (!$module->is_essential() && !$module->check_requirements())
 				{
+					$this->iohandler->add_log_message(array(
+						'SKIP_MODULE',
+						$module_service_name,
+					));
+					$this->install_config->increment_current_task_progress($this->module_step_count[$module_index - 1]);
 					continue;
 				}
 
@@ -144,9 +192,45 @@ class installer
 				// @todo: Send refresh request
 			}
 		}
-		catch (\phpbb\install\exception\user_interaction_required_exception $e)
+		catch (user_interaction_required_exception $e)
 		{
 			// @todo handle exception
+		}
+		catch (module_not_found_exception $e)
+		{
+			$this->iohandler->add_error_message('MODULE_NOT_FOUND', array(
+				'MODULE_NOT_FOUND_DESCRIPTION',
+				$e->get_module_service_name(),
+			));
+			$flush_messages = true;
+		}
+		catch (task_not_found_exception $e)
+		{
+			$this->iohandler->add_error_message('TASK_NOT_FOUND', array(
+				'TASK_NOT_FOUND_DESCRIPTION',
+				$e->get_task_service_name(),
+			));
+			$flush_messages = true;
+		}
+		catch (invalid_service_name_exception $e)
+		{
+			if ($e->has_params())
+			{
+				$msg = $e->get_params();
+				array_unshift($msg, $e->get_error());
+			}
+			else
+			{
+				$msg = $e->get_error();
+			}
+
+			$this->iohandler->add_error_message($msg);
+			$flush_messages = true;
+		}
+
+		if ($flush_messages)
+		{
+			$this->iohandler->send_response();
 		}
 
 		// Save install progress

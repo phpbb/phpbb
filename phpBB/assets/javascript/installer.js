@@ -204,13 +204,14 @@
      * @param progressLimit
      */
     function incrementFiller($progressText, $progressFiller, progressLimit) {
+        if (currentProgress >= progressLimit || currentProgress >= 100) {
+            clearInterval(progressTimer);
+            return;
+        }
+
         currentProgress++;
         $progressText.text(currentProgress + '%');
         $progressFiller.css('width', currentProgress + '%');
-
-        if (currentProgress >= progressLimit || currentProgress >= 100) {
-            clearInterval(progressTimer);
-        }
     }
 
     /**

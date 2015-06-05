@@ -34,8 +34,15 @@ class module extends \phpbb\install\module_base
 			}
 
 			// Recover task to be executed
-			/** @var \phpbb\install\task_interface $task */
-			$task = $this->container->get($this->task_collection[$task_index]);
+			try
+			{
+				/** @var \phpbb\install\task_interface $task */
+				$task = $this->container->get($this->task_collection[$task_index]);
+			}
+			catch (InvalidArgumentException $e)
+			{
+				throw new task_not_found_exception($this->task_collection[$task_index]);
+			}
 
 			// Iterate to the next task
 			$task_index++;
