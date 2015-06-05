@@ -540,7 +540,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	 *
 	 * @event core.move_topics_before_query
 	 * @var	array	table_ary	Array of tables from which forum_id will be updated for all rows that hold the moved topics
-	 * @var	array	topic_ids	Array of the moved topic ids 
+	 * @var	array	topic_ids	Array of the moved topic ids
 	 * @var	string	forum_id	The forum id from where the topics are moved
 	 * @var	array	forum_ids	Array of the forums where the topics are moving (includes also forum_id)
 	 * @var bool	auto_sync	Whether or not to perform auto sync
