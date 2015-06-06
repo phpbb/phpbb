@@ -1372,7 +1372,7 @@ if ($submit || $preview || $refresh)
 			* @var	bool	update_message		Boolean if the post message was changed
 			* @var	bool	update_subject		Boolean if the post subject was changed
 			* @since 3.1.0-RC5
-			* @updated 3.1.5-RC1
+			* @change 3.1.5-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
 			*/
 			$vars = array(
 				'post_data',
@@ -1410,7 +1410,7 @@ if ($submit || $preview || $refresh)
 			* @var	bool	update_subject		Boolean if the post subject was changed
 			* @var	string	redirect_url		URL the user is going to be redirected to
 			* @since 3.1.0-RC5
-			* @updated 3.1.5-RC1
+			* @change 3.1.5-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
 			*/
 			$vars = array(
 				'post_data',
