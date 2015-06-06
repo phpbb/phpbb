@@ -1931,7 +1931,7 @@ class acp_forums
 		$vars = array(
 				'table_ary',
 				'forum_id',
-				'topic_ids'
+				'topic_ids',
 				'post_counts',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.delete_forum_content_before_query', compact($vars)));
