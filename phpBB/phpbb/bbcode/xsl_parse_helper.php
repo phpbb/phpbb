@@ -183,20 +183,19 @@ class xsl_parse_helper
 		if ($current['xsl']){
 
 			switch($current['tagName']){
-				case 'copy-of':
-					// TODO: How to handle a deep copy
-					break;
+				// case 'copy-of':
+					// // TODO: How to handle a deep copy
+					// break;
 				case 'if':
 					// "if" is somewhat like choose... Still different, though!
 					return $this->translate_if($current_node);
 					break;
 				case 'choose':
 					return $this->translate_case($current_node);
-
 					break;
-				case 'for-each':
-
-				break;
+				// case 'for-each':
+					// // TODO: Postponed until examples arrive.
+				// break;
 				case 'apply-templates':
 				case 'text':
 				case 'value-of':
