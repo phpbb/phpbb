@@ -1926,7 +1926,7 @@ class acp_forums
 		 * @var	int		forum_id	the forum id
 		 * @var	array	topic_ids	Array of the topic ids from the forum to be deleted 	
 		 * @var	array	post_counts	Array of counts of posts in the forum, by poster_id
-		 * @since 3.1.5-RC1
+		 * @since 3.1.6-RC1
 		 */
 		$vars = array(
 				'table_ary',
