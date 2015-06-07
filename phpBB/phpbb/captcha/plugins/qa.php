@@ -350,7 +350,7 @@ class qa
 				),
 		);
 
-		foreach($schemas as $table => $schema)
+		foreach ($schemas as $table => $schema)
 		{
 			if (!$db_tool->sql_table_exists($table))
 			{
