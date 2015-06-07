@@ -508,7 +508,7 @@ class acp_prune
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
 					AND ug.user_pending = 0 ' .
-					((!empty($user_ids)) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
+					(!empty($user_ids) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
 					AND u.user_id = ug.user_id';
 			$result = $db->sql_query($sql);
 
@@ -534,7 +534,7 @@ class acp_prune
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE u.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER .
-					((!empty($user_ids)) ? ' AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
+					(!empty($user_ids) ? ' AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
 					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE)) . '
 					AND u.user_id = p.poster_id
 				GROUP BY p.poster_id
