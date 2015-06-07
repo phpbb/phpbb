@@ -45,4 +45,7 @@
  <!-- There MUST NOT be unused use statements. -->
  <rule ref="./phpbb/Sniffs/Namespaces/UnusedUseSniff.php" />
 
+ <!-- There MUST be one space between control structure and opening parenthesis -->
+ <rule ref="./phpbb/Sniffs/ControlStructures/OpeningParenthesisSniff.php" />
+
 </ruleset>
