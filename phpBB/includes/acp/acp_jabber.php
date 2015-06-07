@@ -107,7 +107,10 @@ class acp_jabber
 			$config->set('jab_host', $jab_host);
 			$config->set('jab_port', $jab_port);
 			$config->set('jab_username', $jab_username);
-			$config->set('jab_password', $jab_password);
+			if ($jab_password !== '********')
+			{
+				$config->set('jab_password', $jab_password);
+			}
 			$config->set('jab_package_size', $jab_package_size);
 			$config->set('jab_use_ssl', $jab_use_ssl);
 
@@ -122,7 +125,7 @@ class acp_jabber
 			'JAB_HOST'				=> $jab_host,
 			'JAB_PORT'				=> ($jab_port) ? $jab_port : '',
 			'JAB_USERNAME'			=> $jab_username,
-			'JAB_PASSWORD'			=> $jab_password,
+			'JAB_PASSWORD'			=> $jab_password !== '' ? '********' : '',
 			'JAB_PACKAGE_SIZE'		=> $jab_package_size,
 			'JAB_USE_SSL'			=> $jab_use_ssl,
 			'S_CAN_USE_SSL'			=> jabber::can_use_ssl(),
