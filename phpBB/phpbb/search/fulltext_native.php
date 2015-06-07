@@ -1075,7 +1075,7 @@ class fulltext_native extends \phpbb\search\base
 			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
 			$sql_calc = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
 
-			$this->db->sql_query($sql_calc);
+			$result = $this->db->sql_query($sql_calc);
 			$this->db->sql_freeresult($result);
 
 			$sql_count = 'SELECT FOUND_ROWS() as total_results';
