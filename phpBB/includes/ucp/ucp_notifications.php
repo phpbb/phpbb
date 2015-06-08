@@ -55,11 +55,11 @@ class ucp_notifications
 
 					$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-					foreach($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
+					foreach ($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
 					{
-						foreach($subscription_types as $type => $data)
+						foreach ($subscription_types as $type => $data)
 						{
-							foreach($notification_methods as $method => $method_data)
+							foreach ($notification_methods as $method => $method_data)
 							{
 								if ($request->is_set_post(str_replace('.', '_', $type . '_' . $method_data['id'])) && (!isset($subscriptions[$type]) || !in_array($method_data['id'], $subscriptions[$type])))
 								{
@@ -183,13 +183,13 @@ class ucp_notifications
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-		foreach($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
+		foreach ($phpbb_notifications->get_subscription_types() as $group => $subscription_types)
 		{
 			$template->assign_block_vars($block, array(
 				'GROUP_NAME'	=> $user->lang($group),
 			));
 
-			foreach($subscription_types as $type => $data)
+			foreach ($subscription_types as $type => $data)
 			{
 				$template->assign_block_vars($block, array(
 					'TYPE'				=> $type,
@@ -200,7 +200,7 @@ class ucp_notifications
 					'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
 				));
 
-				foreach($notification_methods as $method => $method_data)
+				foreach ($notification_methods as $method => $method_data)
 				{
 					$template->assign_block_vars($block . '.notification_methods', array(
 						'METHOD'			=> $method_data['id'],
@@ -230,7 +230,7 @@ class ucp_notifications
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-		foreach($notification_methods as $method => $method_data)
+		foreach ($notification_methods as $method => $method_data)
 		{
 			$template->assign_block_vars($block, array(
 				'METHOD'			=> $method_data['id'],
