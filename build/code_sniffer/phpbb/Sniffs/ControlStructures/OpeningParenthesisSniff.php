@@ -50,13 +50,11 @@ class phpbb_Sniffs_ControlStructures_OpeningParenthesisSniff implements PHP_Code
 		{
 			$error = 'There should be exactly one space between the keyword and opening parenthesis';
 			$phpcsFile->addError($error, $stackPtr, 'NoSpaceBeforeOpeningParenthesis');
-			return;
 		}
 		else if ($tokens[$stackPtr + 1]['content'] !== ' ')
 		{
 			$error = 'There should be exactly one space between the keyword and opening parenthesis';
 			$phpcsFile->addError($error, $stackPtr, 'IncorrectSpaceBeforeOpeningParenthesis');
-			return;
 		}
 	}
 }
