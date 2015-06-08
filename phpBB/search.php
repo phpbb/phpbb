@@ -320,9 +320,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	array	ex_fid_ary		Array of excluded forum ids
 	* @var	array	author_id_ary	Array of exclusive author ids
 	* @var	string	search_id		The id of the search request
-	* @since 3.1.3-RC1
 	* @var	array	id_ary			Array of post or topic ids for search result
 	* @var	string	show_results	'posts' or 'topics' type of ids
+	* @since 3.1.3-RC1
 	* @changed 3.1.5-RC1 Added id_ary, show_results 
 	*/
 	$vars = array(
