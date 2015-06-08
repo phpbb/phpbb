@@ -35,7 +35,6 @@ $forum_id	= $request->variable('f', 0);
 $draft_id	= $request->variable('d', 0);
 $lastclick	= $request->variable('lastclick', 0);
 
-$submit		= (isset($_POST['post'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
 $load		= (isset($_POST['load'])) ? true : false;
@@ -43,6 +42,7 @@ $confirm	= $request->is_set_post('confirm');
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
+$submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
