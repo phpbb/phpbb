@@ -896,6 +896,7 @@ class session
 		$session_data = $this->data;
 		/**
 		* Event to send new session data to extension
+		* Read-only event
 		*
 		* @event core.session_create_after
 		* @var	array		session_data				Associative array of session keys to be updated
@@ -929,6 +930,7 @@ class session
 		$session_id = $this->session_id;
 		/**
 		* Event to send session kill information to extension
+		* Read-only event
 		*
 		* @event core.session_kill_after
 		* @var	int		user_id				user_id of the session user.
@@ -1587,6 +1589,7 @@ class session
 
 		/**
 		* Event to send update session information to extension
+		* Read-only event
 		*
 		* @event core.update_session
 		* @var	array		session_data				Associative array of session keys to be updated
