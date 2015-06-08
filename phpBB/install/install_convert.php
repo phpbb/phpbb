@@ -796,7 +796,7 @@ class install_convert extends module
 		}
 
 		$error = false;
-		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $phpbb_dispatcher, $user);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{
