@@ -57,7 +57,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$address_list = array();
 	}
 
-	$submit		= (isset($_POST['post'])) ? true : false;
 	$preview	= (isset($_POST['preview'])) ? true : false;
 	$save		= (isset($_POST['save'])) ? true : false;
 	$load		= (isset($_POST['load'])) ? true : false;
@@ -71,6 +70,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || $save || $load
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
+	$submit = isset($_POST['post']) && !$refresh && !$preview;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
 	$select_single = ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? false : true;
