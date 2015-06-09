@@ -15,6 +15,12 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 {
+	public $group_ids = array(
+		'REGISTERED' => 2,
+		'GLOBAL_MODERATORS' => 4,
+		'ADMINISTRATORS' => 5,
+	);
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator_permission.xml');
@@ -157,5 +163,61 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 		$this->assertFalse($this->tool->exists('global_test', true));
+	}
+
+	public function test_permission_set_data()
+	{
+		return array(
+			array(
+				'ADMINISTRATORS',
+				'a_test',
+				'group',
+				true,
+			),
+			array(
+				'GLOBAL_MODERATORS',
+				'm_test',
+				'group',
+				true,
+			),
+			array(
+				'REGISTERED',
+				'u_test',
+				'group',
+				true,
+			),
+		);
+	}
+
+	/**
+	* @dataProvider test_permission_set_data
+	*/
+	public function test_permission_set($group_name, $auth_option, $type, $has_permission)
+	{
+		$this->tool->permission_set($group_name, $auth_option, $type, $has_permission);
+		$administrators_perm = $this->auth->acl_group_raw_data($this->group_ids['ADMINISTRATORS'], $auth_option);
+		$global_moderators_perm = $this->auth->acl_group_raw_data($this->group_ids['GLOBAL_MODERATORS'], $auth_option);
+		$registered_users_perm = $this->auth->acl_group_raw_data($this->group_ids['REGISTERED'], $auth_option);
+
+		switch($group_name)
+		{
+			case 'GLOBAL_MODERATORS':
+				$this->assertEquals(false, empty($administrators_perm), 'm_test is not empty for Administrators');
+				$this->assertEquals(false, empty($global_moderators_perm), 'm_test is not empty for Global moderators');
+				$this->assertEquals(true, empty($registered_users_perm), 'm_test empty for Registered users');
+			break;
+
+			case 'ADMINISTRATORS':
+				$this->assertEquals(false, empty($administrators_perm), 'a_test is not empty for Administrators');
+				$this->assertEquals(true, empty($global_moderators_perm), 'a_test is empty for Global moderators');
+				$this->assertEquals(true, empty($registered_users_perm), 'a_test is empty for Registered users');
+			break;
+
+			case 'REGISTERED':
+				$this->assertEquals(false, empty($administrators_perm), 'u_test is not empty for Administrators');
+				$this->assertEquals(false, empty($global_moderators_perm), 'u_test is not empty for Global moderators');
+				$this->assertEquals(false, empty($registered_users_perm), 'u_test is not empty for Registered users');
+			break;
+		}
 	}
 }
