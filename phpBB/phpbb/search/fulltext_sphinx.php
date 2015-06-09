@@ -147,7 +147,7 @@ class fulltext_sphinx
 		global $phpbb_container; // TODO inject into object
 		$this->db_tools = $phpbb_container->get('dbal.tools');
 
-		if(!$this->config['fulltext_sphinx_id'])
+		if (!$this->config['fulltext_sphinx_id'])
 		{
 			$this->config->set('fulltext_sphinx_id', unique_id());
 		}

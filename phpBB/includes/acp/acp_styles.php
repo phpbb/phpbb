@@ -1013,7 +1013,7 @@ class acp_styles
 
 		// Assign template variables
 		$this->template->assign_block_vars('styles_list', $row);
-		foreach($actions as $action)
+		foreach ($actions as $action)
 		{
 			$this->template->assign_block_vars('styles_list.actions', $action);
 		}
