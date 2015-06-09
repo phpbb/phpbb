@@ -720,6 +720,68 @@ class fulltext_native extends \phpbb\search\base
 
 		$sql_where[] = $post_visibility;
 
+		$search_query = $this->search_query;
+		$must_exclude_one_ids = $this->must_exclude_one_ids;
+		$must_not_contain_ids = $this->must_not_contain_ids;
+		$must_contain_ids = $this->must_contain_ids;
+
+		/**
+		* Allow changing the query used for counting for posts using fulltext_native
+		*
+		* @event core.search_native_keywords_count_query_before
+		* @var	string	search_query			The parsed keywords used for this search
+		* @var	array	must_not_contain_ids	Ids that cannot be taken into account for the results
+		* @var	array	must_exclude_one_ids	Ids that cannot be on the results
+		* @var	array	must_contain_ids		Ids that must be on the results
+		* @var	int		result_count			The previous result count for the format of the query
+		*										Set to 0 to force a re-count
+		* @var	bool	join_topic				Weather or not TOPICS_TABLE should be CROSS JOIN'ED
+		* @var	array	author_ary				Array of user_id containing the users to filter the results to
+		* @var	string	author_name				An extra username to search on (!empty(author_ary) must be true, to be relevant)
+		* @var	array	ex_fid_ary				Which forums not to search on
+		* @var	int		topic_id				Limit the search to this topic_id only
+		* @var	string	sql_sort_table			Extra tables to include in the SQL query.
+		*										Used in conjunction with sql_sort_join
+		* @var	string	sql_sort_join			SQL conditions to join all the tables used together.
+		*										Used in conjunction with sql_sort_table
+		* @var	int		sort_days				Time, in days, of the oldest possible post to list
+		* @var	string	sql_where				An array of the current WHERE clause conditions
+		* @var	string	sql_match				Which columns to do the search on
+		* @var	string	sql_match_where			Extra conditions to use to properly filter the matching process
+		* @var	string	group_by				Whether or not the SQL query requires a GROUP BY for the elements in the SELECT clause
+		* @var	string	sort_by_sql				The possible predefined sort types
+		* @var	string	sort_key				The sort type used from the possible sort types
+		* @var	string	sort_dir				"a" for ASC or "d" dor DESC for the sort order used
+		* @var	string	sql_sort				The result SQL when processing sort_by_sql + sort_key + sort_dir
+		* @var	int		start					How many posts to skip in the search results (used for pagination)
+		* @since 3.1.5-RC1
+		*/
+		$vars = array(
+			'search_query',
+			'must_not_contain_ids',
+			'must_exclude_one_ids',
+			'must_contain_ids',
+			'result_count',
+			'join_topic',
+			'author_ary',
+			'author_name',
+			'ex_fid_ary',
+			'topic_id',
+			'sql_sort_table',
+			'sql_sort_join',
+			'sort_days',
+			'sql_where',
+			'sql_match',
+			'sql_match_where',
+			'group_by',
+			'sort_by_sql',
+			'sort_key',
+			'sort_dir',
+			'sql_sort',
+			'start',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_keywords_count_query_before', compact($vars)));
+
 		if ($topic_id)
 		{
 			$sql_where[] = 'p.topic_id = ' . $topic_id;
