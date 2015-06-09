@@ -1494,7 +1494,7 @@ class install_install extends module
 	*/
 	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $config, $auth, $user;
+		global $db, $lang, $phpbb_root_path, $phpbb_dispatcher, $phpEx, $config, $auth, $user;
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1525,7 +1525,7 @@ class install_install extends module
 		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$error = false;
-		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;

@@ -56,6 +56,12 @@ class fulltext_postgres extends \phpbb\search\base
 	protected $db;
 
 	/**
+	 * phpBB event dispatcher object
+	 * @var \phpbb\event\dispatcher_interface
+	 */
+	protected $phpbb_dispatcher;
+
+	/**
 	 * User object
 	 * @var \phpbb\user
 	 */
@@ -92,11 +98,13 @@ class fulltext_postgres extends \phpbb\search\base
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\db\driver\driver_interface Database object
 	 * @param \phpbb\user $user User object
+	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 */
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
 	{
 		$this->config = $config;
 		$this->db = $db;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_postgres_min_word_len'], 'max' => $this->config['fulltext_postgres_max_word_len']);
