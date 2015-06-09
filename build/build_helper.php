@@ -18,11 +18,11 @@ class build_package
 	// -r - compare recursive
 	// -N - Treat missing files as empty
 	// -E - Ignore tab expansions
-	//		not used: -b - Ignore space changes.
-	// -w - Ignore all whitespace
+	// -Z - Ignore white space at line end.
+	// -b - Ignore changes in the amount of white space.
 	// -B - Ignore blank lines
 	// -d - Try to find smaller set of changes
-	var $diff_options = '-crNEBwd';
+	var $diff_options = '-crNEBZbd';
 	var $diff_options_long = '-x images -crNEB'; // -x fonts -x imageset //imageset not used here, because it includes the imageset.cfg file. ;)
 
 	var $verbose = false;
