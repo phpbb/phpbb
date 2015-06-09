@@ -50,7 +50,7 @@ class memcache extends \phpbb\cache\driver\memory
 		parent::__construct();
 
 		$this->memcache = new \Memcache;
-		foreach(explode(',', PHPBB_ACM_MEMCACHE) as $u)
+		foreach (explode(',', PHPBB_ACM_MEMCACHE) as $u)
 		{
 			$parts = explode('/', $u);
 			$this->memcache->addServer(trim($parts[0]), trim($parts[1]));

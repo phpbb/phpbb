@@ -1558,7 +1558,7 @@ class mssql_extractor extends base_extractor
 		{
 			$this->write_data_mssql($table_name);
 		}
-		else if($db->get_sql_layer() === 'mssqlnative')
+		else if ($db->get_sql_layer() === 'mssqlnative')
 		{
 			$this->write_data_mssqlnative($table_name);
 		}

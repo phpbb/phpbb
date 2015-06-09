@@ -146,7 +146,7 @@ class fulltext_sphinx
 		// Initialize \phpbb\db\tools object
 		$this->db_tools = new \phpbb\db\tools($this->db);
 
-		if(!$this->config['fulltext_sphinx_id'])
+		if (!$this->config['fulltext_sphinx_id'])
 		{
 			set_config('fulltext_sphinx_id', unique_id());
 		}
