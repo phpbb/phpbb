@@ -94,7 +94,7 @@ if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
 }
 else
 {
-	if(get_magic_quotes_runtime())
+	if (get_magic_quotes_runtime())
 	{
 		// Deactivate
 		@set_magic_quotes_runtime(0);
