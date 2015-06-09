@@ -43,7 +43,7 @@ class fulltext_mysql extends \phpbb\search\base
 	protected $db;
 
 	/**
-	 * PhpBB event dispatcher object
+	 * phpBB event dispatcher object
 	 * @var \phpbb\event\dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
