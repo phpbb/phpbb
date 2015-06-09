@@ -1042,6 +1042,49 @@ class fulltext_native extends \phpbb\search\base
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
 		$is_mysql = false;
 
+		/**
+		* Allow changing the query used to search for posts by author in fulltext_native
+		*
+		* @event core.search_native_author_count_query_before
+		* @var	int		total_results		The previous result count for the format of the query.
+		*									Set to 0 to force a re-count
+		* @var	string	select				SQL SELECT clause for what to get
+		* @var	string	sql_sort_table		CROSS JOIN'ed table to allow doing the sort chosen
+		* @var	string	sql_sort_join		Condition to define how to join the CROSS JOIN'ed table specifyed in sql_sort_table
+		* @var	array	sql_author			SQL WHERE condition for the post author ids
+		* @var	int		topic_id			Limit the search to this topic_id only
+		* @var	string	sort_by_sql			The possible predefined sort types
+		* @var	string	sort_key			The sort type used from the possible sort types
+		* @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
+		* @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
+		* @var	string	sort_days			Time, in days, that the oldest post showing can have
+		* @var	string	sql_time			The SQL to search on the time specifyed by sort_days
+		* @var	bool	firstpost_only		Wether or not to search only on the first post of the topics
+		* @var	array	ex_fid_ary			Forum ids that must not be searched on
+		* @var	array	sql_fora			SQL query for ex_fid_ary
+		* @var	int		start				How many posts to skip in the search results (used for pagination)
+		* @since 3.1.5-RC1
+		*/
+		$vars = array(
+			'total_results',
+			'select',
+			'sql_sort_table',
+			'sql_sort_join',
+			'sql_author',
+			'topic_id',
+			'sort_by_sql',
+			'sort_key',
+			'sort_dir',
+			'sql_sort',
+			'sort_days',
+			'sql_time',
+			'firstpost_only',
+			'ex_fid_ary',
+			'sql_fora',
+			'start',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_author_count_query_before', compact($vars)));
+
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
