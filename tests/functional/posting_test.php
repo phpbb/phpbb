@@ -205,4 +205,45 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			$crawler->filter('#preview .signature')->html()
 		);
 	}
+
+	public function test_allowed_schemes_links()
+	{
+		$text = 'http://example.org/ tcp://localhost:22/ServiceName';
+
+		$this->login();
+		$this->admin_login();
+
+		// Post with default settings
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text,
+		));
+		$crawler = self::submit($form);
+		$this->assertContains(
+			'<a href="http://example.org/" class="postlink">http://example.org/</a> tcp://localhost:22/ServiceName',
+			$crawler->filter('#preview .content')->html()
+		);
+
+		// Update allowed schemes
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
+		$form = $crawler->selectButton('Submit')->form();
+		$values = $form->getValues();
+		$values['config[allowed_schemes_links]'] = 'https,tcp';
+		$form->setValues($values);
+		$crawler = self::submit($form);
+		$this->assertEquals(1, $crawler->filter('.successbox')->count());
+
+		// Post with new settings
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text,
+		));
+		$crawler = self::submit($form);
+		$this->assertContains(
+			'http://example.org/ <a href="tcp://localhost:22/ServiceName" class="postlink">tcp://localhost:22/ServiceName</a>',
+			$crawler->filter('#preview .content')->html()
+		);
+	}
 }
