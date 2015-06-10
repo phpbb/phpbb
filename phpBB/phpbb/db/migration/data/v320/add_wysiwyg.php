@@ -27,9 +27,9 @@ class add_wysiwyg extends \phpbb\db\migration\migration
 			'add_columns'		=> array(
 				$this->table_prefix . 'users'	=> array(
 					'COLUMNS'			=> array(
-						'user_wysiwyg_editor'			=> array('VCHAR:60', 'wysiwyg.converters.sce'),
-						'user_wysiwyg_default_mode'		=> array('USINT:5', 1),
-						'user_wysiwyg_buttons_mode'		=> array('USINT:5', 2),
+						'user_wysiwyg_editor'			=> array('VCHAR:60'),
+						'user_wysiwyg_default_mode'		=> array('USINT:5'),
+						'user_wysiwyg_buttons_mode'		=> array('USINT:5'),
 					),
 				),
 			),
