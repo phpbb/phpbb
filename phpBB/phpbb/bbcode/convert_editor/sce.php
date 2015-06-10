@@ -159,6 +159,14 @@ class sce extends base
 							$parsed_child['children'] = array();
 
 						break;
+						case 'attribute':
+							// Contains multiple nodes to form a string to write into an atribute
+							$js_var_name = $this->make_new_js_var('attributeBuildDoc');
+							$parsed_child['js']['nodeName'] = $js_var_name;
+							$parsed_child['js']['attributeName'] = $parsed_child['node']->getAttribute('name');
+							$parsed_child['js']['type'] = 'ATTRIBUTES_FOR_ELEMENT_DEFINITION';
+
+						break;
 						case 'value-of':
 							// Here it is easier due to how TextFormatter uses this tag
 							$var_data = $parsed_child['vars'][0];

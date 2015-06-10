@@ -65,7 +65,18 @@
 				{{ append_to }}.contentEditable = 'true';
 
 			{% endif %}
-			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, forceValueKeep) }}
+		{% elseif child.js.type == 'ATTRIBUTES_FOR_ELEMENT_DEFINITION' %}
+			var {{ child.js.nodeName }} = document.createElement('div');
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, true) }}
+			for (var i = 0; i < {{ child.js.nodeName }}.attributes.length; i++){
+				{{ append_to }}.setAttribute(
+						{{ child.js.nodeName }}.attributes[i].name,
+						{{ child.js.nodeName }}.attributes[i].value
+					);
+			}
+			{{ append_to }}.setAttribute("{{ child.js.attributeName }}", {{ child.js.nodeName }}.textContent);
+			console.error({{ child.js.nodeName }}.textContent);
 		{% elseif child.js.type == 'CONSTANT_TEXT_NODE_DEFINITION' %}
 			var {{ child.js.nodeName }} = document.createTextNode("{{ child.js.nodeText }}");
 			{{ append_to }}.appendChild({{ child.js.nodeName }});
@@ -76,9 +87,9 @@
 						{{ append_to }}.contentEditable = 'true';
 						{{ append_to }}.innerHTML += content;
 
-			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, forceValueKeep) }}
 		{% elseif child.js.type == 'SWITCH_DEFINITION' %}
-			{{ exec.parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, append_to, child) }}
+			{{ exec.parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, append_to, child, forceValueKeep) }}
 		{% else %}
 			ERROR: Got into else with type "{{ child.js.type }}".
 		{% endif %}
@@ -99,7 +110,7 @@
 	switch(conditionResult[0]){
 	{% for caseVal, caseData in childData.case %}
 		case '{{ caseVal }}':
-			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, attribute(childData.case, caseVal).children) }}
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, attribute(childData.case, caseVal).children, false) }}
 		break;
 	{% endfor %}
 	}
@@ -465,7 +476,7 @@
 
 				var mainContainerFragment = document.createDocumentFragment();
 
-				{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcode.name, 'mainContainerFragment', bbcode.parsedTemplate) }}
+				{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcode.name, 'mainContainerFragment', bbcode.parsedTemplate, false) }}
 
 				if(mainContainerFragment.firstChild.getAttribute('contentEditable') !== 'true'){
 					mainContainerFragment.firstChild.contentEditable = 'false';

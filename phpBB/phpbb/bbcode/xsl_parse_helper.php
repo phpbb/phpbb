@@ -196,6 +196,7 @@ class xsl_parse_helper
 				// case 'for-each':
 					// // TODO: Postponed until examples arrive.
 				// break;
+				case 'attribute':
 				case 'apply-templates':
 				case 'text':
 				case 'value-of':
