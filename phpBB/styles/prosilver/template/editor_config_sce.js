@@ -1,4 +1,4 @@
-{%- macro parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, childData) -%}
+{%- macro parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, childData, forceValueKeep) -%}
 	{%- import _self as exec -%}
 
 	{%- for var, one in childData.caseVars %}
@@ -12,13 +12,13 @@
 	switch(conditionResult[0]){
 	{% for caseVal, caseData in childData.case %}
 		case '{{ caseVal }}':
-			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, attribute(childData.case, caseVal).children) }}
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, attribute(childData.case, caseVal).children, forceValueKeep) }}
 		break;
 	{% endfor %}
 	}
 {%- endmacro -%}
 
-{%- macro parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, append_to, children) -%}
+{%- macro parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, append_to, children, forceValueKeep) -%}
 	{%- import _self as exec -%}
 
 	{%- for child in children -%}
@@ -39,14 +39,18 @@
 					addBBCodeDataToElement(
 						{{ child.js.nodeName }},
 						"{{ child.js.varName }}",
-						editorConstants.VALUE_IN_CONTENT
+						{% if forceValueKeep -%}
+							{{ child.js.nodeName }}.textContent
+						{%- else -%}
+							editorConstants.VALUE_IN_CONTENT
+						{%- endif %}
 					);
 					{{ child.js.nodeName }}.contentEditable = "true";
 
 				{% endif -%}
 			{% endfor %}
 
-			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, forceValueKeep) }}
 		{% elseif child.js.type == 'ATTRIBUTE_TEXT_NODE_DEFINITION' %}
 			{% if child.vars[0].isAttribute %}
 				var {{ child.js.nodeName }} = document.createTextNode(attributes["{{child.vars[0].name}}"]);
@@ -60,7 +64,11 @@
 				addBBCodeDataToElement(
 					{{ append_to }},
 					"{{ child.js.varName }}",
-					editorConstants.VALUE_IN_CONTENT
+					{% if forceValueKeep -%}
+						{{ child.js.nodeName }}.textContent
+					{%- else -%}
+						editorConstants.VALUE_IN_CONTENT
+					{%- endif %}
 				);
 				{{ append_to }}.contentEditable = 'true';
 
