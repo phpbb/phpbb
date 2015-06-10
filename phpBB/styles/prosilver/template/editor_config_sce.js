@@ -313,7 +313,11 @@
 					makeDropdown(button, "{{ bbcode.name }}", attributes, function (data){
 						var attrStr = '';
 						for (var attribute in data){
-							attrStr += ' ' + attribute + '="' + data[attribute] + '"';
+							if (data[attribute].length > 0) {
+								attrStr += ' ' + attribute + '="' + data[attribute] + '"';
+							} else if (data[attribute].required) {
+								attrStr += ' ' + attribute + '=""';
+							}
 						}
 						editor.insert('[{{ bbcode.name }}' + attrStr + ']'
 							{%- if bbcode.data.autoCloseOn is empty and
