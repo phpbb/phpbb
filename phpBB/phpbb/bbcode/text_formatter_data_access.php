@@ -40,7 +40,7 @@ class text_formatter_data_access extends \phpbb\textformatter\data_access
 	*/
 	public function get_bbcodes()
 	{
-		$sql = 'SELECT bbcode_match, wysiwyg_tpl FROM ' . $this->bbcodes_table;
+		$sql = 'SELECT bbcode_match, wysiwyg_tpl AS bbcode_tpl FROM ' . $this->bbcodes_table;
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
