@@ -40,7 +40,7 @@ class sce extends base
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 *
 	 * @param \phpbb\cache\driver\driver_interface $cache Cache object
 	 * @param string $cache_prefix A string to prefix to the cache file name (includes the path)
@@ -66,7 +66,7 @@ class sce extends base
 		return $this->dynamic_variables;
 	}
 
-	
+
 	/**
 	 * @param string original_name A string tried as default value for name (eases readability later).
 	 *								It gets suffixed with an integer if it was already defined.
@@ -126,7 +126,7 @@ class sce extends base
 		foreach ($parsed_template as &$parsed_child)
 		{
 			if (isset($parsed_child['vars']))
-			{				
+			{
 				foreach ($parsed_child['vars'] as $var_data)
 				{
 					if ($var_data['isLanguage'] || $var_data['isSetting'])
@@ -144,7 +144,7 @@ class sce extends base
 				if ($parsed_child['xsl'])
 				{
 					switch ($parsed_child['tagName'])
-					{						
+					{
 						case 'apply-templates':
 
 							$parsed_child['js']['type'] = 'PARSED_CHILDREN_SET';
@@ -170,7 +170,7 @@ class sce extends base
 							$parsed_child['js']['varName'] = $var_data['name'];
 						break;
 
-						
+
 					}
 				}
 				else
@@ -223,11 +223,11 @@ class sce extends base
 											$replacement .= " + '";
 										}
 										return $replacement;
-									}, 
+									},
 									$tag_attributes[$var['attr']]
 								);
 							}
-						}				
+						}
 						$js_var_name = $this->make_new_js_var($parsed_child['tagName'] . 'Tag');
 
 						$parsed_child['js']['tagName'] = $parsed_child['tagName'];
@@ -314,7 +314,7 @@ class sce extends base
 		$this->font_override($template_tree_definition['bbcodes']['size']['data']);
 		$toolbar_buttons = $this->toolbar_override($this->toolbar_default_ordering, $template_tree_definition['bbcodes']);
 
-		
+
 		$this->static_js_vars = array(
 			'XSLT' => $template_tree_definition['xsl'],
 			'BBCODES' => $template_tree_definition['bbcodes'],
@@ -372,7 +372,7 @@ class sce extends base
 		$toolbar_buttons = '';
 
 		foreach ($defined_bbcode as $button_group)
-		{			
+		{
 			foreach ($button_group as $button_name)
 			{
 				$predefined_bbcode_names[$button_name] = true;
