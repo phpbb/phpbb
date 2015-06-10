@@ -65,6 +65,10 @@
 		<!-- ENDIF -->
 	</div>
 
+	<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
+{% set USE_SCE = true %}
+	<!-- EVENT posting_editor_wysiwyg_setup_before  -->
+{% if USE_SCE %}
 	<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/jquery.sceditor.phpbb.js -->
 
 	<script>

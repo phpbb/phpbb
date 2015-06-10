@@ -916,6 +916,13 @@ posting_editor_subject_before
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
 
+posting_editor_wysiwyg_setup_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.0-a1
+* Purpose: Add own setup for a WYSIWYG editor instead of the one thought for SCE
+
 posting_pm_header_find_username_after
 ===
 * Locations:
