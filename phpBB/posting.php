@@ -1947,10 +1947,30 @@ if (!$phpbb_container->has($wysiwyg_editor))
 	$wysiwyg_editor = $config['wysiwyg_editor'];
 }
 $wysiwyg = $phpbb_container->get($wysiwyg_editor);
+
+$default_editor_mode = $user->data['user_wysiwyg_default_mode'];
+if (!($wysiwyg->get_available_modes() & (int) $default_editor_mode))
+{
+	// The option the user had selected is currently invalid
+	$default_editor_mode = unserialize($config['wysiwyg_default_default_mode'])[$wysiwyg_editor];
+}
+
+$buttons_editor_mode = $user->data['user_wysiwyg_buttons_mode'];
+if (!($wysiwyg->get_available_modes() & (int) $default_editor_mode))
+{
+	// The option the user had selected is currently invalid
+	$default_editor_mode = unserialize($config['wysiwyg_default_buttons_mode'])[$wysiwyg_editor];
+}
+
 $wysiwyg->recalculate_editor_setup_javascript();
 $wysiwyg_request_variables = $wysiwyg->get_request_variables();
 
 $template->assign_vars($wysiwyg_request_variables);
+$template->assign_vars(array(
+	'S_EDITOR_MODE' => (int) $default_editor_mode,
+	'S_EDITOR_BUTTONS_MODE' => (int) $buttons_editor_mode,
+));
+
 
 // Attachment entry
 posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
