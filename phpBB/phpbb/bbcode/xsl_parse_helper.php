@@ -270,7 +270,7 @@ class xsl_parse_helper
 
 		$case[$chr]['vars'] = $this->parse_attributes($when, "%(([@$])((?:([SL])_)?([a-zA-Z_0-9]+)))%");
 
-		foreach ($whenNode->childNodes as $child_node){
+		foreach ($current_node->childNodes as $child_node){
 			$case[$chr]['children'][] = $this->parse_tag_template_childNode($child_node);
 		}
 
