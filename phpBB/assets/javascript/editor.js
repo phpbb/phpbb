@@ -69,6 +69,10 @@ var editor = {
 	}(),
 
 	paramFilters: {
+		filterEmail: function(attrValue){
+			return editor.tokenRegex.EMAIL.test(attrValue) ? attrValue : false;
+		},
+		
 		filterHashmap: function(attrValue, map, strict){
 			if (attrValue in map){
 				return map[attrValue];
