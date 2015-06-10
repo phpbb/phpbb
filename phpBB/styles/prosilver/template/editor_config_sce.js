@@ -46,6 +46,7 @@
 				{% endif -%}
 			{% endfor %}
 
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
 		{% elseif child.js.type == 'ATTRIBUTE_TEXT_NODE_DEFINITION' %}
 			{% if child.vars[0].isAttribute %}
 				var {{ child.js.nodeName }} = document.createTextNode(attributes["{{child.vars[0].name}}"]);
@@ -64,6 +65,7 @@
 				{{ append_to }}.contentEditable = 'true';
 
 			{% endif %}
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
 		{% elseif child.js.type == 'CONSTANT_TEXT_NODE_DEFINITION' %}
 			var {{ child.js.nodeName }} = document.createTextNode("{{ child.js.nodeText }}");
 			{{ append_to }}.appendChild({{ child.js.nodeName }});
@@ -74,12 +76,12 @@
 						{{ append_to }}.contentEditable = 'true';
 						{{ append_to }}.innerHTML += content;
 
+			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
 		{% elseif child.js.type == 'SWITCH_DEFINITION' %}
 			{{ exec.parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, append_to, child) }}
 		{% else %}
 			ERROR: Got into else with type "{{ child.js.type }}".
 		{% endif %}
-		{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children) }}
 	{%- endfor -%}
 {%- endmacro -%}
 
