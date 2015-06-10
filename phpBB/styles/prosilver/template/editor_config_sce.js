@@ -461,31 +461,32 @@
 					}
 					{% endfor %}
 				{% endif %}
-				{% for attrName, attrData in bbcode.data.attr %}
-					{% for filter in attrData.filters %}
-						{% if filter.name is defined %}
-					attributes['{{ attrName }}'] =
-						editor.paramFilters['{{ filter.name }}'](attributes['{{ attrName }}']{{ filter.extraVars }});
-						{% else %}
-					attributes['{{ attrName }}'] =
-						({{ filter.inlineFunc }})(attributes['{{ attrName }}']{{ filter.extraVars }});
+				if (typeof attributes['{{ attrName }}'] !== "undefined") {
+					{% for attrName, attrData in bbcode.data.attr %}
+						{% for filter in attrData.filters %}
+							{% if filter.name is defined %}
+						attributes['{{ attrName }}'] =
+							editor.paramFilters['{{ filter.name }}'](attributes['{{ attrName }}']{{ filter.extraVars }});
+							{% else %}
+						attributes['{{ attrName }}'] =
+							({{ filter.inlineFunc }})(attributes['{{ attrName }}']{{ filter.extraVars }});
+							{% endif %}
+						if(attributes['{{ attrName }}'] === false){
+							console.warn("Attribute {{ attrName }} from BBCode {{ bbcode.name }} failed to validate {% if filter.name is defined %}{{ filter.name }}{% else %}{{ filter.inlineFunc|e('js') }}{% endif %}");
+						}
+						{% endfor %}
+						{% if attrData.defaultValue %}
+						if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ''){
+							attributes['{{ attrName }}'] = "{{ attrData.defaultValue }}";
+						}
 						{% endif %}
-					if(attributes['{{ attrName }}'] === false){
-						console.warn("Attribute {{ attrName }} from BBCode {{ bbcode.name }} failed to validate {% if filter.name is defined %}{{ filter.name }}{% else %}{{ filter.inlineFunc|e('js') }}{% endif %}");
-					}
+						{% if attrData.required %}
+						if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ''){
+							return editor.revertBackToBBCode("{{ bbcode.name }}", originalAttributes, originalContent);
+						}
+						{% endif %}
 					{% endfor %}
-					{% if attrData.defaultValue %}
-					if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ''){
-						attributes['{{ attrName }}'] = "{{ attrData.defaultValue }}";
-					}
-					{% endif %}
-					{% if attrData.required %}
-					if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ''){
-						return editor.revertBackToBBCode("{{ bbcode.name }}", originalAttributes, originalContent);
-					}
-					{% endif %}
-				{% endfor %}
-
+				}
 				var mainContainerFragment = document.createDocumentFragment();
 
 				{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcode.name, 'mainContainerFragment', bbcode.parsedTemplate, false) }}
