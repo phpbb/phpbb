@@ -105,7 +105,7 @@
 			<property name="dir" value="build/old_versions/release-${version}" />
 		</phingcall>
 
-		<exec dir="build/old_versions" command="LC_ALL=C diff -crNEBwd release-${version} release-${newversion} >
+		<exec dir="build/old_versions" command="LC_ALL=C diff -crNEBZbd release-${version} release-${newversion} >
 			../new_version/patches/phpBB-${version}_to_${newversion}.patch" escape="false" />
 	</target>
 
@@ -132,13 +132,13 @@
 	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
 		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/language new_version/phpBB3/language >
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/language new_version/phpBB3/language >
 				save/phpbb-${prevversion}_to_${newversion}_language.patch" />
 		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
 				save/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
 		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
 				save/phpbb-${prevversion}_to_${newversion}_subsilver2.patch" />
 
 		<exec dir="build" escape="false"
