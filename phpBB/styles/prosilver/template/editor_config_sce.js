@@ -133,7 +133,7 @@
 
 	var addBBCodeDataToElement = function (element, bbcodeParamName, bbcodeParamValue){
 		previousType = element.getAttribute('data-bbcode-type');
-		attrData = element.getAttribute('data-bbcode-data') || [];
+		attrData = JSON.parse(element.getAttribute('data-bbcode-data')) || [];
 
 		attrData.push({
 			name : bbcodeParamName,
