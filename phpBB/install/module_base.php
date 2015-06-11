@@ -75,8 +75,8 @@ abstract class module_base implements module_interface
 	 * Dependency getter
 	 *
 	 * @param ContainerInterface	$container
-	 * @param config								$config
-	 * @param iohandler_interface		$iohandler
+	 * @param config				$config
+	 * @param iohandler_interface	$iohandler
 	 */
 	public function setup(ContainerInterface $container, config $config, iohandler_interface $iohandler)
 	{

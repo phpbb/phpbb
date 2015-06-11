@@ -18,6 +18,14 @@ class module extends \phpbb\install\module_base
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_navigation_stage_path()
+	{
+		return array('install', 0, 'obtain_data');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_step_count()
 	{
 		return 0;

@@ -15,6 +15,9 @@ namespace phpbb\install\exception;
 
 /**
  * This exception should be thrown when user interaction is inevitable
+ *
+ * Note: Please note that the output should already be setup for the user
+ * 		 when you use throw this exception
  */
 class user_interaction_required_exception extends installer_exception
 {

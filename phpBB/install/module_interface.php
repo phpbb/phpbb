@@ -53,4 +53,11 @@ interface module_interface
 	 * @return int
 	 */
 	public function get_step_count();
+
+	/**
+	 * Returns an array to the correct navigation stage
+	 *
+	 * @return array
+	 */
+	public function get_navigation_stage_path();
 }

@@ -13,6 +13,7 @@ services:
             - @installer.helper.database
             - @installer.helper.iohandler
 
+# Please note, that the name of this module is hard coded in the installer service
     installer.module.requirements_install:
         class: phpbb\install\module\requirements\module
         parent: installer.module_base

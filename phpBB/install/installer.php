@@ -13,6 +13,7 @@
 
 namespace phpbb\install;
 
+use phpbb\install\exception\installer_config_not_writable_exception;
 use phpbb\install\exception\invalid_service_name_exception;
 use phpbb\install\exception\module_not_found_exception;
 use phpbb\install\exception\task_not_found_exception;
@@ -106,6 +107,10 @@ class installer
 		// Flag used by exception handling, whether or not we need to flush output buffer once again
 		$flush_messages = false;
 
+		// We are installing something, so the introduction stage can go now...
+		$this->install_config->set_finished_navigation_stage(array('install', 0, 'introduction'));
+		$this->iohandler->set_finished_stage_menu(array('install', 0, 'introduction'));
+
 		try
 		{
 			if ($this->install_config->get_task_progress_count() === 0)
@@ -168,6 +173,9 @@ class installer
 				// Check if module should be executed
 				if (!$module->is_essential() && !$module->check_requirements())
 				{
+					$this->install_config->set_finished_navigation_stage($module->get_navigation_stage_path());
+					$this->iohandler->set_finished_stage_menu($module->get_navigation_stage_path());
+
 					$this->iohandler->add_log_message(array(
 						'SKIP_MODULE',
 						$module_service_name,
@@ -176,7 +184,14 @@ class installer
 					continue;
 				}
 
+				// Set the correct stage in the navigation bar
+				$this->install_config->set_active_navigation_stage($module->get_navigation_stage_path());
+				$this->iohandler->set_active_stage_menu($module->get_navigation_stage_path());
+
 				$module->run();
+
+				$this->install_config->set_finished_navigation_stage($module->get_navigation_stage_path());
+				$this->iohandler->set_finished_stage_menu($module->get_navigation_stage_path());
 
 				// Clear task progress
 				$this->install_config->set_finished_task('', 0);
@@ -189,12 +204,12 @@ class installer
 			}
 			else
 			{
-				// @todo: Send refresh request
+				$this->iohandler->request_refresh();
 			}
 		}
 		catch (user_interaction_required_exception $e)
 		{
-			// @todo handle exception
+			// Do nothing
 		}
 		catch (module_not_found_exception $e)
 		{
@@ -234,7 +249,20 @@ class installer
 		}
 
 		// Save install progress
-		$this->install_config->save_config();
+		try
+		{
+			$this->install_config->save_config();
+		}
+		catch (installer_config_not_writable_exception $e)
+		{
+			// It is allowed to fail this test during requirements testing
+			$progress_data = $this->install_config->get_progress_data();
+
+			if ($progress_data['last_task_module_name'] !== 'installer.module.requirements_install')
+			{
+				$this->iohandler->add_error_message('INSTALLER_CONFIG_NOT_WRITABLE');
+			}
+		}
 	}
 
 	/**

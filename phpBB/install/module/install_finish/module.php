@@ -18,5 +18,11 @@ namespace phpbb\install\module\install_finish;
  */
 class module extends \phpbb\install\module_base
 {
-
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_navigation_stage_path()
+	{
+		return array('install', 0, 'install');
+	}
 }

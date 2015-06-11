@@ -61,6 +61,15 @@ class module extends \phpbb\install\module_base
 		if (!$tests_passed)
 		{
 			// If requirements are not met, exit form installer
+			// Set up UI for retesting
+			$this->iohandler->add_user_form_group('', array(
+				'install'	=> array(
+					'label'	=> 'RETEST_REQUIREMENTS',
+					'type'	=> 'submit',
+				),
+			));
+
+			// Send the response and quit
 			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
@@ -76,5 +85,13 @@ class module extends \phpbb\install\module_base
 	public function get_step_count()
 	{
 		return 0;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_navigation_stage_path()
+	{
+		return array('install', 0, 'requirements');
 	}
 }

@@ -96,6 +96,45 @@
     }
 
     /**
+     * Handles navigation status updates
+     *
+     * @param navObj
+     */
+    function updateNavbarStatus(navObj) {
+        var navID, $stage, $stageListItem, $active;
+        $active = $('#activemenu');
+
+        if (navObj.hasOwnProperty('finished')) {
+            // This should be an Array
+            var navItems = navObj.finished;
+
+            for (var i = 0; i < navItems.length; i++) {
+                navID = 'installer-stage-' + navItems[i];
+                $stage = $('#' + navID);
+                $stageListItem = $stage.parent();
+
+                if ($active.length && $active.is($stageListItem)) {
+                    $active.removeAttr('id');
+                }
+
+                $stage.addClass('completed');
+            }
+        }
+
+        if (navObj.hasOwnProperty('active')) {
+            navID = 'installer-stage-' + navObj.active;
+            $stage = $('#' + navID);
+            $stageListItem = $stage.parent();
+
+            if ($active.length && !$active.is($stageListItem)) {
+                $active.removeAttr('id');
+            }
+
+            $stageListItem.attr('id', 'activemenu');
+        }
+    }
+
+    /**
      * Renders progress bar
      *
      * @param progressObject
@@ -166,6 +205,10 @@
         if (responseObject.hasOwnProperty('progress')) {
             setProgress(responseObject.progress);
         }
+
+        if (responseObject.hasOwnProperty('nav')) {
+            updateNavbarStatus(responseObject.nav);
+        }
     }
 
     /**
@@ -232,6 +275,14 @@
     }
 
     /**
+     * Resets the polling timer
+     */
+    function resetPolling() {
+        clearInterval(pollTimer);
+        nextReadPosition = 0;
+    }
+
+    /**
      * Sets up timer for processing the streamed HTTP response
      *
      * @param xhReq
@@ -240,15 +291,7 @@
         resetPolling();
         pollTimer = setInterval(function () {
             pollContent(xhReq);
-        }, 500);
-    }
-
-    /**
-     * Resets the polling timer
-     */
-    function resetPolling() {
-        clearInterval(pollTimer);
-        nextReadPosition = 0;
+        }, 250);
     }
 
     /**

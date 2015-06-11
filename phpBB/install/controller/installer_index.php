@@ -13,7 +13,7 @@
 
 namespace phpbb\install\controller;
 
-class install_index
+class installer_index
 {
 	/**
 	 * @var helper

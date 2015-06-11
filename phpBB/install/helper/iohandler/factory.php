@@ -64,6 +64,10 @@ class factory
 			case 'ajax':
 				return $this->container->get('installer.helper.iohandler_ajax');
 			break;
+			case 'nojs':
+				// @todo replace this
+				return $this->container->get('installer.helper.iohandler_ajax');
+			break;
 			default:
 				throw new iohandler_not_implemented_exception();
 			break;

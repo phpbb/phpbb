@@ -34,6 +34,16 @@ class ajax_iohandler extends iohandler_base
 	protected $form;
 
 	/**
+	 * @var bool
+	 */
+	protected $request_client_refresh;
+
+	/**
+	 * @var array
+	 */
+	protected $nav_data;
+
+	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\request\request_interface	$request	HTTP request interface
@@ -44,6 +54,7 @@ class ajax_iohandler extends iohandler_base
 		$this->request	= $request;
 		$this->template	= $template;
 		$this->form		= '';
+		$this->nav_data	= array();
 
 		parent::__construct();
 	}
@@ -88,6 +99,8 @@ class ajax_iohandler extends iohandler_base
 		//
 		// This code is pretty ugly... but works
 		//
+
+		$this->template->assign_var('S_FORM_ELEM_COUNT', sizeof($form));
 
 		$this->template->assign_block_vars('options', array(
 			'LEGEND'	=> $this->language->lang($title),
@@ -187,9 +200,21 @@ class ajax_iohandler extends iohandler_base
 			);
 		}
 
+		if (!empty($this->nav_data))
+		{
+			$json_array['nav'] = $this->nav_data;
+		}
+
 		$this->errors = array();
 		$this->warnings = array();
 		$this->logs = array();
+		$this->nav_data = array();
+
+		if ($this->request_client_refresh)
+		{
+			$json_array['refresh'] = true;
+			$this->request_client_refresh = false;
+		}
 
 		return $json_array;
 	}
@@ -200,6 +225,32 @@ class ajax_iohandler extends iohandler_base
 	public function set_progress($task_lang_key, $task_number)
 	{
 		parent::set_progress($task_lang_key, $task_number);
+		$this->send_response();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function request_refresh()
+	{
+		$this->request_client_refresh = true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_active_stage_menu($menu_path)
+	{
+		$this->nav_data['active'] = $menu_path[sizeof($menu_path) - 1];
+		$this->send_response();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_finished_stage_menu($menu_path)
+	{
+		$this->nav_data['finished'][] = $menu_path[sizeof($menu_path) - 1];
 		$this->send_response();
 	}
 

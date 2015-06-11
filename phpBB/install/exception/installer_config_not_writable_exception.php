@@ -11,18 +11,12 @@
  *
  */
 
-namespace phpbb\install\module\install_database;
+namespace phpbb\install\exception;
 
 /**
- * Installer module for database installation
+ * Exception for the event when installer config is not writable to disk
  */
-class module extends \phpbb\install\module_base
+class installer_config_not_writable_exception extends installer_exception
 {
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_navigation_stage_path()
-	{
-		return array('install', 0, 'install');
-	}
+
 }

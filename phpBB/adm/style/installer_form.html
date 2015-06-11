@@ -1,6 +1,8 @@
 <form id="<!-- IF FORM_ID -->{FORM_ID}<!-- ELSE -->install_install<!-- ENDIF -->" method="POST" action="{U_ACTION}">
 <!-- IF .options -->
+<!-- IF S_FORM_ELEM_COUNT > 1 -->
 <fieldset>
+<!-- ENDIF -->
 
     <!-- BEGIN options -->
         <!-- IF options.S_LEGEND -->
@@ -40,7 +42,9 @@
             </dd>
         </dl>
             <!-- ELSE -->
+<!-- IF S_FORM_ELEM_COUNT > 1 -->
 </fieldset>
+<!-- ENDIF -->
                 <fieldset class="submit-buttons">
                     <legend>{L_SUBMIT}</legend>
                     <input class="button1" type="submit" name="{options.KEY}" value="{options.TITLE}" />

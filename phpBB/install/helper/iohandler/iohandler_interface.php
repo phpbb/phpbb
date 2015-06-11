@@ -123,4 +123,23 @@ interface iohandler_interface
 	 * @param int		$task_number	Position of the current task in the task queue
 	 */
 	public function set_progress($task_lang_key, $task_number);
+
+	/**
+	 * Sends refresh request to the client
+	 */
+	public function request_refresh();
+
+	/**
+	 * Marks stage as active in the navigation bar
+	 *
+	 * @param array	$menu_path	Array to the navigation elem
+	 */
+	public function set_active_stage_menu($menu_path);
+
+	/**
+	 * Marks stage as completed in the navigation bar
+	 *
+	 * @param array	$menu_path	Array to the navigation elem
+	 */
+	public function set_finished_stage_menu($menu_path);
 }

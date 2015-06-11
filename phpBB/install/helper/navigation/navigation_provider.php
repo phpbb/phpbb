@@ -13,6 +13,8 @@
 
 namespace phpbb\install\helper\navigation;
 
+use phpbb\di\service_collection;
+
 /**
  * Installers navigation provider
  */
@@ -26,9 +28,9 @@ class navigation_provider
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\di\service_collection                              $plugins
+	 * @param service_collection		$plugins
 	 */
-	public function __construct(\phpbb\di\service_collection $plugins)
+	public function __construct(service_collection $plugins)
 	{
 		$this->menu_collection	= array();
 
@@ -57,6 +59,27 @@ class navigation_provider
 	{
 		$nav_arry = $navigation->get();
 		$this->merge($nav_arry, $this->menu_collection);
+	}
+
+	/**
+	 * Set a property in the navigation array
+	 *
+	 * @param array	$nav_element	Array to the navigation elem
+	 * @param array	$property_array	Array with the properties to set
+	 */
+	public function set_nav_property($nav_element, $property_array)
+	{
+		$array_pointer = array();
+		$array_root_pointer = &$array_pointer;
+		foreach ($nav_element as $array_path)
+		{
+			$array_pointer[$array_path] = array();
+			$array_pointer = &$array_pointer[$array_path];
+		}
+
+		$array_pointer = $property_array;
+
+		$this->merge($array_root_pointer, $this->menu_collection);
 	}
 
 	/**

@@ -23,7 +23,10 @@ services:
         class: phpbb\install\controller\install
         arguments:
             - @phpbb.installer.controller.helper
+            - @installer.helper.config
             - @installer.helper.iohandler_factory
+            - @installer.navigation.provider
+            - @language
             - @template
             - @request
             - @installer.installer.install

@@ -13,6 +13,8 @@
 
 namespace phpbb\install\helper;
 
+use phpbb\install\exception\installer_config_not_writable_exception;
+
 /**
  * Stores common settings and installation status
  */
@@ -65,6 +67,13 @@ class config
 	protected $system_data;
 
 	/**
+	 * Array containing navigation bar information
+	 *
+	 * @var array
+	 */
+	protected $navigation_data;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \phpbb\php\ini $php_ini, $phpbb_root_path)
@@ -74,6 +83,7 @@ class config
 		$this->phpbb_root_path	= $phpbb_root_path;
 
 		// Set up data arrays
+		$this->navigation_data	= array();
 		$this->installer_config	= array();
 		$this->system_data		= array();
 		$this->progress_data	= array(
@@ -206,6 +216,7 @@ class config
 
 		$this->installer_config = $unserialized_data['installer_config'];
 		$this->progress_data = $unserialized_data['progress_data'];
+		$this->navigation_data = $unserialized_data['navigation_data'];
 	}
 
 	/**
@@ -217,6 +228,7 @@ class config
 		$save_array = array(
 			'installer_config'	=> $this->installer_config,
 			'progress_data'		=> $this->progress_data,
+			'navigation_data'	=> $this->navigation_data,
 		);
 
 		// Create file content
@@ -225,7 +237,12 @@ class config
 		$file_content .= "\n";
 
 		// Dump file_content to disk
-		$fp = fopen($this->install_config_file, 'w');
+		$fp = @fopen($this->install_config_file, 'w');
+		if (!$fp)
+		{
+			throw new installer_config_not_writable_exception();
+		}
+
 		fwrite($fp, $file_content);
 		fclose($fp);
 	}
@@ -283,6 +300,36 @@ class config
 	public function get_task_progress_count()
 	{
 		return $this->progress_data['max_task_progress'];
+	}
+
+	/**
+	 * Marks stage as completed in the navigation bar
+	 *
+	 * @param array	$nav_path	Array to the navigation elem
+	 */
+	public function set_finished_navigation_stage($nav_path)
+	{
+		$this->navigation_data['finished'][] = $nav_path;
+	}
+
+	/**
+	 * Marks stage as active in the navigation bar
+	 *
+	 * @param array	$nav_path	Array to the navigation elem
+	 */
+	public function set_active_navigation_stage($nav_path)
+	{
+		$this->navigation_data['active'] = $nav_path;
+	}
+
+	/**
+	 * Returns navigation data
+	 *
+	 * @return array
+	 */
+	public function get_navigation_data()
+	{
+		return $this->navigation_data;
 	}
 
 	/**

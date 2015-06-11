@@ -13,7 +13,16 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\install\helper\config;
+use phpbb\install\helper\navigation\navigation_provider;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
+use phpbb\install\helper\iohandler\factory;
+use phpbb\install\controller\helper;
+use phpbb\template\template;
+use phpbb\request\request_interface;
+use phpbb\install\installer;
+use phpbb\language\language;
 
 /**
  * Controller for installing phpBB
@@ -21,51 +30,72 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class install
 {
 	/**
-	 * @var \phpbb\install\controller\helper
+	 * @var helper
 	 */
 	protected $controller_helper;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\factory
+	 * @var config
+	 */
+	protected $installer_config;
+
+	/**
+	 * @var factory
 	 */
 	protected $iohandler_factory;
 
 	/**
-	 * @var \phpbb\template\template
+	 * @var navigation_provider
+	 */
+	protected $menu_provider;
+
+	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
+	 * @var template
 	 */
 	protected $template;
 
 	/**
-	 * @var \phpbb\request\request_interface
+	 * @var request_interface
 	 */
 	protected $request;
 
 	/**
-	 * @var \phpbb\install\installer
+	 * @var installer
 	 */
 	protected $installer;
 
 	/**
 	 * Constructor
 	 *
-	 * @param helper $helper
-	 * @param \phpbb\install\helper\iohandler\factory $factory
-	 * @param \phpbb\request\request_interface $request
-	 * @param \phpbb\install\installer $installer
+	 * @param helper 				$helper
+	 * @param config				$install_config
+	 * @param factory 				$factory
+	 * @param navigation_provider	$nav_provider
+	 * @param language				$language
+	 * @param request_interface		$request
+	 * @param installer				$installer
 	 */
-	public function __construct(helper $helper, \phpbb\install\helper\iohandler\factory $factory, \phpbb\template\template $template, \phpbb\request\request_interface $request, \phpbb\install\installer $installer)
+	public function __construct(helper $helper, config $install_config, factory $factory, navigation_provider $nav_provider, language $language, template $template, request_interface $request, installer $installer)
 	{
-		$this->controller_helper = $helper;
-		$this->iohandler_factory = $factory;
-		$this->template = $template;
-		$this->request = $request;
-		$this->installer = $installer;
+		$this->controller_helper	= $helper;
+		$this->installer_config		= $install_config;
+		$this->iohandler_factory	= $factory;
+		$this->menu_provider		= $nav_provider;
+		$this->language				= $language;
+		$this->template				= $template;
+		$this->request				= $request;
+		$this->installer			= $installer;
 	}
 
 	/**
 	 * Controller logic
 	 *
-	 * @return \Symfony\Component\HttpFoundation\Response|StreamedResponse
+	 * @return Response|StreamedResponse
 	 */
 	public function handle()
 	{
@@ -86,13 +116,38 @@ class install
 		}
 
 		// Set the appropriate input-output handler
-		//$this->installer->set_iohandler($this->iohandler_factory->get());
+		$this->installer->set_iohandler($this->iohandler_factory->get());
+
+		// Set up navigation
+		$nav_data = $this->installer_config->get_navigation_data();
+		/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
+		$iohandler = $this->iohandler_factory->get();
+
+		// Set active navigation stage
+		if (isset($nav_data['active']) && is_array($nav_data['active']))
+		{
+			$iohandler->set_active_stage_menu($nav_data['active']);
+			$this->menu_provider->set_nav_property($nav_data['active'], array(
+				'selected'	=> true,
+				'completed'	=> false,
+			));
+		}
+
+		// Set finished navigation stages
+		if (isset($nav_data['finished']) && is_array($nav_data['finished']))
+		{
+			foreach ($nav_data['finished'] as $finished_stage)
+			{
+				$iohandler->set_finished_stage_menu($finished_stage);
+				$this->menu_provider->set_nav_property($finished_stage, array(
+					'selected'	=> false,
+					'completed'	=> true,
+				));
+			}
+		}
 
 		if ($this->request->is_ajax())
 		{
-			// @todo: remove this line, and use the above
-			$this->installer->set_iohandler($this->iohandler_factory->get());
-
 			$installer = $this->installer;
 			$response = new StreamedResponse();
 			$response->setCallback(function() use ($installer) {
@@ -106,9 +161,20 @@ class install
 			// Determine whether the installation was started or not
 			if (true)
 			{
+				// Set active stage
+				$this->menu_provider->set_nav_property(
+					array('install', 0, 'introduction'),
+					array(
+						'selected'	=> true,
+						'completed'	=> false,
+					)
+				);
+
 				// If not, let's render the welcome page
 				$this->template->assign_vars(array(
-					'SHOW_INSTALL_START_FORM' => true,
+					'SHOW_INSTALL_START_FORM'	=> true,
+					'TITLE'						=> $this->language->lang('INSTALL_INTRO'),
+					'CONTENT'					=> $this->language->lang('INSTALL_INTRO_BODY'),
 				));
 				return $this->controller_helper->render('installer_install.html', 'INSTALL');
 			}
