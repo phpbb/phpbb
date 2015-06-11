@@ -31,6 +31,10 @@ class add_wysiwyg extends \phpbb\db\migration\migration
 						'user_wysiwyg_default_mode'		=> array('USINT:5'),
 						'user_wysiwyg_buttons_mode'		=> array('USINT:5'),
 					),
+				$this->table_prefix . 'bbcodes'	=> array(
+					'COLUMNS'			=> array(
+						'wysiwyg_tpl'			=> array('TEXT', '', 'after' => 'bbcode_tpl'),
+					),
 				),
 			),
 		);
