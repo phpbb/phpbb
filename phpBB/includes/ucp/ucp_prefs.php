@@ -584,7 +584,7 @@ class ucp_prefs
 				* @var	array	error			List of errors that happened
 				* @since 3.1.0-a1
 				*/
-				$vars = array('submit', 'data', 'editors_data');
+				$vars = array('submit', 'data', 'editors_data', 'error');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_wysiwyg_data', compact($vars)));
 
 			break;
