@@ -507,9 +507,9 @@ class acp_prune
 				WHERE ug.group_id = ' . (int) $group_id . '
 					AND ug.user_id <> ' . ANONYMOUS . '
 					AND u.user_type <> ' . USER_FOUNDER . '
-					AND ug.user_pending = 0 ' .
-					(!empty($user_ids) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '') . '
-					AND u.user_id = ug.user_id';
+					AND ug.user_pending = 0
+					AND u.user_id = ug.user_id
+					' . (!empty($user_ids) ? ' AND ' . $db->sql_in_set('ug.user_id', $user_ids) : '');
 			$result = $db->sql_query($sql);
 
 			// we're performing an intersection operation, so all the relevant users
@@ -533,10 +533,10 @@ class acp_prune
 			$sql = 'SELECT u.user_id, u.username, COUNT(p.post_id) AS queue_posts
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE u.user_id <> ' . ANONYMOUS . '
-					AND u.user_type <> ' . USER_FOUNDER .
-					(!empty($user_ids) ? ' AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
+					AND u.user_type <> ' . USER_FOUNDER . '
 					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE)) . '
 					AND u.user_id = p.poster_id
+					' . (!empty($user_ids) ? ' AND ' . $db->sql_in_set('p.poster_id', $user_ids) : '') . '
 				GROUP BY p.poster_id
 				HAVING queue_posts ' . $key_match[$queue_select] . ' ' . $posts_on_queue;
 			$result = $db->sql_query($sql);
