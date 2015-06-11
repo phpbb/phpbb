@@ -1006,7 +1006,6 @@ class acp_board
 		* @var	array	new_default_modes		Same as above except it contains the new data.
 		* @var	array	current_button_modes	Contains the default buttons mode for that editor. The editor is identified by its DI identifier
 		* @var	array	new_button_modes		Same as above except it contains the new data.
-		* @var	array	set_data
 		* @since 3.2.0-a1
 		*/
 		$vars = array(
