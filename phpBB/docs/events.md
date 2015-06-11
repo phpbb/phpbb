@@ -1244,6 +1244,46 @@ ucp_prefs_view_select_menu_append
 * Purpose: Add options to the bottom of the drop-down lists block of the Edit
 Display Options screen
 
+ucp_prefs_wysiwyg_editor_option
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Allow adding more editors to the list besides the ones phpBB has
+found.
+
+ucp_prefs_wysiwyg_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Display more options about the WYSIWYG editors besides the default
+ones, before the default ones.
+
+ucp_prefs_wysiwyg_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Display more options about the WYSIWYG editors besides the default
+ones, after the default ones.
+
+ucp_prefs_wysiwyg_options_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Allow adding more options for each WYSIWYG besides the default
+ones, after the default ones.
+
+ucp_prefs_wysiwyg_options_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Allow adding more options for each WYSIWYG besides the default
+ones, before the default ones.
+
 ucp_profile_profile_info_before
 ===
 * Locations:
