@@ -335,7 +335,11 @@
 			},
 
 			name: '{{ bbcode.name }}',
-			tooltip: '[[WIP]]'
+			{% if bbcode.data.tooltip_lang is defined %}
+			tooltip: {{ EDITOR_JS_GLOBAL_OBJ }}['{{ bbcode.data.tooltip_lang }}']
+			{% elseif bbcode.data.tooltip_text is defined %}
+			tooltip: '{{ bbcode.data.tooltip_text|e('js') }}'
+			{% endif %}
 		}
 	);
 

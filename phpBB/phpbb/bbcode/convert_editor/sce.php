@@ -300,6 +300,11 @@ class sce extends base
 			$bbcode_data = &$bbcodes_data[$bbcode_name];
 			$bbcode_definition['data'] = &$bbcode_data;
 
+			if (isset($bbcode_data['tooltip_lang']))
+			{
+				$this->extra_variables[$bbcode_data['tooltip_lang']] = true;
+			}
+
 			$parsed_template = $parsed_templates[$bbcode_name];
 			$bbcode_definition['parsedTemplate'] = &$parsed_template;
 

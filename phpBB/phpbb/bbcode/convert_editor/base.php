@@ -43,6 +43,7 @@ abstract class base
 	const DEFAULT_MIXED_MODE	= 0x4;
 
 	const EDITOR_CONFIG_BASENAME = 'editor_config_';
+	const EDITOR_BBCODE_TOOLTIP_PREPEND = 'L_BBCODE_HELP_';
 
 	const BBCODE_PROCESS_HANDLE = 'wysiwyg.text_formatter.s9e.factory';
 
@@ -65,6 +66,12 @@ abstract class base
 	 * @var \phpbb\config\config
 	 */
 	protected $config;
+
+	/**
+	* Event dispatcher object
+	* @var \phpbb\bbcode\text_formatter_data_access
+	*/
+	protected $data_access;
 
 	/**
 	* Event dispatcher object
@@ -97,19 +104,21 @@ abstract class base
 	 * @param \phpbb\cache\driver\driver_interface $cache Cache object
 	 * @param string $cache_prefix A string to prefix to the cache file name (includes the path)
 	 * @param \phpbb\config\config $config Config object
+	 * @param \phpbb\bbcode\text_formatter_data_access $data_access The one responsible for BBCode DB communication
 	 * @param \phpbb\event\dispatcher_interface $phpbb_dispatcher Where to send events to
 	 * @param \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container 
 	 * @param \phpbb\request\request $request To handle the HTTP cache
 	 * @param \phpbb\template\template $template 
 	 */
 	protected function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_prefix,
-		\phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher,
+		\phpbb\config\config $config, \phpbb\bbcode\text_formatter_data_access $data_access, \phpbb\event\dispatcher_interface $phpbb_dispatcher,
 		\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, 
 		\phpbb\request\request $request, \phpbb\template\template $template)
 	{
 		$this->cache = $cache;
 		$this->cache_prefix = $cache_prefix;
 		$this->config = $config;
+		$this->data_access = $data_access;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->phpbb_container = $phpbb_container;
 		$this->request = $request;
@@ -406,7 +415,21 @@ abstract class base
 
 	}
 
-	
+	protected function add_tooltip_text(&$bbcodes_data, $bbcode_settings)
+	{
+		foreach($bbcodes_data as $bbcode_name => &$bbcode_data)
+		{
+			if (empty($bbcode_settings[$bbcode_name]['bbcode_helpline']))
+			{
+				$bbcode_data['tooltip_lang'] = self::EDITOR_BBCODE_TOOLTIP_PREPEND . strtoupper($bbcode_name);
+			}
+			else
+			{
+				$bbcode_data['tooltip_text'] = $bbcode_settings[$bbcode_name]['bbcode_helpline'];
+			}
+		}
+	}
+
 	protected function get_bbcodes_for_tags($bbcodes)
 	{
 		$tag_to_BBCodes = array();
@@ -501,6 +524,9 @@ abstract class base
 				$bbcodes_data[$bbcode_name] = $this_data;
 			}
 		}
+
+		$bbcode_settings = $this->data_access->get_bbcodes_settings();
+		$this->add_tooltip_text($bbcodes_data, $bbcode_settings);
 
 		return $bbcodes_data;
 

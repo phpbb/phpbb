@@ -38,6 +38,7 @@ services:
             - @cache.driver
             - %wysiwyg.cache.prefix%
             - @config
+            - @wysiwyg.data_access
             - @dispatcher
             - @service_container
             - @request
