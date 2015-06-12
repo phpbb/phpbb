@@ -40,12 +40,8 @@ class sce extends base
 
 	/**
 	 * Constructor
+	 * All variables are passed through to the parent constructor
 	 *
-	 *
-	 * @param \phpbb\cache\driver\driver_interface $cache Cache object
-	 * @param string $cache_prefix A string to prefix to the cache file name (includes the path)
-	 * @param \phpbb\config\config $config Config object
-	 * @param \phpbb\event\dispatcher_interface $phpbb_dispatcher Where to send events to
 	 */
 	public function __construct()
 	{
