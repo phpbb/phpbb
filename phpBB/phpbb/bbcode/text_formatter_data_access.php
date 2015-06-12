@@ -48,4 +48,29 @@ class text_formatter_data_access extends \phpbb\textformatter\data_access
 		return $rows;
 	}
 
+	/**
+	* Returns extra data about BBCodes
+	* Note: This doesn't return the main data about the BBCode
+	* This returns:
+	* bbcode_helpline
+	* display_on_posting
+	*
+	* @return array With the tag as key and the metadata as value
+	*/
+	public function get_bbcodes_settings()
+	{
+		$metadata = array();
+		$sql = 'SELECT bbcode_tag,
+					bbcode_helpline,
+					display_on_posting
+				FROM ' . $this->bbcodes_table;
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$metadata[$row['bbcode_tag']] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $metadata;
+	}
 }
