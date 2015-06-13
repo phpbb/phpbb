@@ -1258,6 +1258,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$forum_id = array($forum_id);
 		}
+		else
+		{
+			$forum_id = array_unique($forum_id);
+		}
 
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
