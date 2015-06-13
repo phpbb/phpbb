@@ -59,7 +59,18 @@ class phpbb_database_test_connection_manager
 			case 'sqlite2':
 			case 'sqlite':	// SQLite3 driver
 				$dsn .= $this->config['dbhost'];
-			break;
+				break;
+			case 'oci':
+				// For oracle the DSN is special: oci:dbname//host:port/db
+				$dsn .= 'dbname=//' . $this->config['dbhost'];
+
+				if ($this->config['dbport'])
+				{
+					$dsn .= ':' . $this->config['dbport'];
+				}
+
+				$dsn .= '/' . $this->config['dbname'];
+				break;
 
 			case 'sqlsrv':
 				// prefix the hostname (or DSN) with Server= so using just (local)\SQLExpress
@@ -200,11 +211,18 @@ class phpbb_database_test_connection_manager
 
 			case 'phpbb\db\driver\oracle':
 				$this->connect();
+
+				global $table_prefix;
+
 				// Drop all of the tables
 				foreach ($this->get_tables() as $table)
 				{
-					$this->pdo->exec('DROP TABLE ' . $table . ' CASCADE CONSTRAINTS');
+					if (strrpos($table, strtoupper($table_prefix)) === 0)
+					{
+						$this->pdo->exec('DROP TABLE ' . $table . ' CASCADE CONSTRAINTS');
+					}
 				}
+
 				$this->purge_extras();
 			break;
 
