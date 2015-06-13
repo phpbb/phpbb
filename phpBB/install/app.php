@@ -26,9 +26,6 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\install\\', "{$phpbb_root_path}install/", $phpEx);
-$phpbb_class_loader->register();
-
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
