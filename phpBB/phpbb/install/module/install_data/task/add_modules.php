@@ -193,7 +193,7 @@ class add_modules extends \phpbb\install\task_base
 					$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
 				}
 
-				$categories[$cat_name]['id'] = (int)$module_data['module_id'];
+				$categories[$cat_name]['id'] = (int) $module_data['module_id'];
 				$categories[$cat_name]['parent_id'] = 0;
 
 				if (is_array($subs))
@@ -207,7 +207,7 @@ class add_modules extends \phpbb\install\task_base
 							'module_basename'	=> $basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
-							'parent_id'			=> (int)$categories[$cat_name]['id'],
+							'parent_id'			=> (int) $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $level2_name,
 							'module_mode'		=> '',
@@ -223,8 +223,8 @@ class add_modules extends \phpbb\install\task_base
 							$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
 						}
 
-						$categories[$level2_name]['id'] = (int)$module_data['module_id'];
-						$categories[$level2_name]['parent_id'] = (int)$categories[$cat_name]['id'];
+						$categories[$level2_name]['id'] = (int) $module_data['module_id'];
+						$categories[$level2_name]['parent_id'] = (int) $categories[$cat_name]['id'];
 					}
 				}
 			}
