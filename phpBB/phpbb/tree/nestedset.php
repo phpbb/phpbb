@@ -837,7 +837,10 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 				' . $this->get_sql_where('AND') . '
 			ORDER BY ' . $this->column_left_id . ', ' . $this->column_item_id . ' ASC';
 		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		foreach ($rows as $row)
 		{
 			// First we update the left_id for this module
 			if ($row[$this->column_left_id] != $new_id)
@@ -862,7 +865,6 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 			}
 			$new_id++;
 		}
-		$this->db->sql_freeresult($result);
 
 		if ($acquired_new_lock)
 		{
