@@ -601,7 +601,7 @@ makeDropdown = makeDropdown(sceInstance);
 var messageBox = document.getElementById('message-box');
 if (messageBox){
 	// For icon mode, it should use none of these classes
-	if ({{ EDITOR_JS_GLOBAL_OBJ }}.S_EDITOR_MODE  &
+	if ({{ EDITOR_JS_GLOBAL_OBJ }}.S_EDITOR_BUTTONS_MODE  &
 		{{ constant('\\phpbb\\bbcode\\convert_editor\\base::HAS_BUTTON_MODE_ICON_TEXT') }}) {
 		messageBox.className += ' icon-text';
 	} else if ({{ EDITOR_JS_GLOBAL_OBJ }}.S_EDITOR_BUTTONS_MODE  &
