@@ -587,6 +587,7 @@ messageTextarea.sceditor({
 				'cut,copy,paste,pastetext|' +
 				'unlink|print,maximize,source',
 {% endif %}
+	startInSourceMode: !!({{ EDITOR_JS_GLOBAL_OBJ }}.S_EDITOR_MODE & {{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE') }}),
 	emoticons: {
 		dropdown: {},
 		more: {},
