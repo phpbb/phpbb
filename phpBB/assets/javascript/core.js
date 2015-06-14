@@ -106,7 +106,7 @@ phpbb.alert.open = function($alert) {
 		$dark.fadeIn(phpbb.alertTime);
 	}
 
-	if ($loadingIndicator.is(':visible')) {
+	if ($loadingIndicator && $loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeOut(phpbb.alertTime, function() {
 			$dark.append($alert);
 			$alert.fadeIn(phpbb.alertTime);
