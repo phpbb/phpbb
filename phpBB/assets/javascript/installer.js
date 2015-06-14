@@ -3,7 +3,6 @@
  */
 
 (function($) { // Avoid conflicts with other libraries
-
     'use strict';
 
     // Installer variables
@@ -26,18 +25,11 @@
      * as of now, jQuery does not provide access to the response until
      * the connection is not closed.
      *
-     * @return XMLHttpRequest|ActiveXObject
+     * @return XMLHttpRequest
      */
     function createXhrObject() {
-        var xhReq;
-
-        if (window.XMLHttpRequest) {
-            xhReq = new XMLHttpRequest();
-        }
-        else if (window.ActiveXObject) {
-            xhReq = new ActiveXObject("Msxml2.XMLHTTP");
-        }
-
+        var xhReq = new XMLHttpRequest();
+        xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         return xhReq;
     }
 
@@ -336,7 +328,6 @@
 
         var xhReq = createXhrObject();
         xhReq.open('POST', $form.attr('action'), true);
-        xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhReq.send(getFormFields($form, $submitBtn));
 
