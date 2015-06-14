@@ -637,7 +637,7 @@ class user extends \phpbb\session
 				$lang_path = $this->lang_path;
 			}
 
-			if (strpos($phpbb_root_path . $filename, $lang_path . $this->lang_name . '/') === 0)
+			if (strpos($phpbb_root_path . $filename, $lang_path) === 0)
 			{
 				$language_filename = $phpbb_root_path . $filename;
 			}
