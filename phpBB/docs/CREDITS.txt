@@ -23,6 +23,7 @@ phpBB Project Manager:   Marshalrusty (Yuriy Rusko)
 phpBB Lead Developer:    naderman (Nils Adermann)
 
 phpBB Developers:        bantu (Andreas Fischer)
+                         CHItA (Máté Bartus)
                          dhruv.goel92 (Dhruv Goel)
                          Elsensee (Oliver Schramm)
                          marc1706 (Marc Alexander)
