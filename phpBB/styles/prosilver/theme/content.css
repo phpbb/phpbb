@@ -383,7 +383,7 @@ dl.faq dt {
 }
 
 .content ul, .content ol {
-	margin: 1em 0 1.2em 3em;
+	margin: 0.8em 0 0.9em 3em;
 }
 
 .posthilit {
@@ -429,7 +429,7 @@ dd .signature {
 }
 
 .signature ul, .signature ol {
-	margin: 1em 0 1.2em 3em;
+	margin: 0.8em 0 0.9em 3em;
 }
 
 /* Post noticies */
