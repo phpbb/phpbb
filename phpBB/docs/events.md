@@ -508,6 +508,34 @@ mcp_post_additional_options
 * Since: 3.1.5-RC1
 * Purpose: Add content within the list of post moderation actions
 
+mcp_warn_post_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning for a post - after add warning field.
+
+mcp_warn_post_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning for a post - before add warning field.
+
+mcp_warn_user_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a user - after add warning field.
+
+mcp_warn_user_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a user - before add warning field.
+
 memberlist_body_username_append
 ===
 * Locations:
@@ -586,34 +614,6 @@ memberlist_view_user_statistics_before
     + styles/prosilver/template/memberlist_view.html
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
-
-mcp_warn_post_add_warning_field_after
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning for a post - after add warning field.
-
-mcp_warn_post_add_warning_field_before
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning for a post - before add warning field.
-
-mcp_warn_user_add_warning_field_after
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning a user - after add warning field.
-
-mcp_warn_user_add_warning_field_before
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning a user - before add warning field.
 
 navbar_header_logged_out_content
 ===
