@@ -100,7 +100,7 @@ class pm extends \phpbb\notification\type\base
 	*/
 	public function get_avatar()
 	{
-		return $this->user_loader->get_avatar($this->get_data('from_user_id'));
+		return $this->user_loader->get_avatar($this->get_data('from_user_id'), false, true);
 	}
 
 	/**
