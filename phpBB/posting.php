@@ -1490,14 +1490,11 @@ if (!sizeof($error) && $preview)
 	// Signature
 	if ($post_data['enable_sig'] && $config['allow_sig'] && $preview_signature && $auth->acl_get('f_sigs', $forum_id))
 	{
-		$parse_sig = new parse_message($preview_signature);
-		$parse_sig->bbcode_uid = $preview_signature_uid;
-		$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
+		$flags = ($config['allow_sig_bbcode']) ? OPTION_FLAG_BBCODE : 0;
+		$flags |= ($config['allow_sig_links']) ? OPTION_FLAG_LINKS : 0;
+		$flags |= ($config['allow_sig_smilies']) ? OPTION_FLAG_SMILIES : 0;
 
-		// Not sure about parameters for bbcode/smilies/urls... in signatures
-		$parse_sig->format_display($config['allow_sig_bbcode'], $config['allow_sig_links'], $config['allow_sig_smilies']);
-		$preview_signature = $parse_sig->message;
-		unset($parse_sig);
+		$preview_signature = generate_text_for_display($preview_signature, $preview_signature_uid, $preview_signature_bitfield, $flags, false);
 	}
 	else
 	{
