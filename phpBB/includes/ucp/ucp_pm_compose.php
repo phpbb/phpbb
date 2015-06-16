@@ -941,9 +941,18 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			$message_link = '';
 		}
+		$quote_attributes = array(
+			'author'  => $quote_username,
+			'time'    => $post['message_time'],
+			'user_id' => $post['author_id'],
+		);
+		if ($action === 'quotepost')
+		{
+			$quote_attributes['post_id'] = $post['msg_id'];
+		}
 		$quote_text = $phpbb_container->get('text_formatter.utils')->generate_quote(
 			censor_text($message_parser->message),
-			array('author' => $quote_username)
+			$quote_attributes
 		);
 		$message_parser->message = $message_link . $quote_text . "\n\n";
 	}

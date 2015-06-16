@@ -476,11 +476,21 @@ class phpbb_test_case_helpers
 		{
 			$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 			$lang = new \phpbb\language\language($lang_loader);
-			$user = new \phpbb\user($lang, '\phpbb\datetime');
+
+			$user = $this->test_case->getMockBuilder('\phpbb\user')
+					->setConstructorArgs(array($lang, '\phpbb\datetime'))
+					->setMethods(array('format_date'))
+					->getMock();
+			$user->expects($this->test_case->any())
+			     ->method('format_date')
+			     ->will($this->test_case->returnCallback(__CLASS__ . '::format_date'));
+
+			$user->date_format = 'Y-m-d H:i:s';
 			$user->optionset('viewcensors', true);
 			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);
 			$user->optionset('viewsmilies', true);
+			$user->timezone = new \DateTimeZone('UTC');
 			$container->set('user', $user);
 		}
 		$user->add_lang('common');
@@ -489,6 +499,14 @@ class phpbb_test_case_helpers
 		{
 			$user->style = array('style_id' => 1);
 		}
+
+		// Create and register a quote_helper
+		$quote_helper = new \phpbb\textformatter\s9e\quote_helper(
+			$container->get('user'),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$container->set('text_formatter.s9e.quote_helper', $quote_helper);
 
 		// Create and register the text_formatter.s9e.parser service and its alias
 		$parser = new \phpbb\textformatter\s9e\parser(
@@ -515,6 +533,7 @@ class phpbb_test_case_helpers
 		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
 
 		// Calls configured in services.yml
+		$renderer->configure_quote_helper($quote_helper);
 		$renderer->configure_smilies_path($config, $container->get('path_helper'));
 		$renderer->configure_user($user, $config, $auth);
 
@@ -527,5 +546,16 @@ class phpbb_test_case_helpers
 		$container->set('text_formatter.s9e.utils', $utils);
 
 		return $container;
+	}
+
+	/**
+	* Mocked replacement for \phpbb\user::format_date()
+	*
+	* @param  integer $gmepoch unix timestamp
+	* @return string
+	*/
+	static public function format_date($gmepoch)
+	{
+		return gmdate('Y-m-d H:i:s', $gmepoch);
 	}
 }

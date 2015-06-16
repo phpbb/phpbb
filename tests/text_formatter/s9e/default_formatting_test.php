@@ -225,6 +225,28 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				"[quote]\nThis is a long quote that is definitely going to exceed 80 characters\n[/quote]\n\nFollowed by a reply",
 				"<blockquote class=\"uncited\"><div>\nThis is a long quote that is definitely going to exceed 80 characters\n</div></blockquote>\n\nFollowed by a reply"
 			),
+			array(
+				'[quote="Username" post_id="123"]...[/quote]',
+				'<blockquote><div><cite>Username wrote: <a href="phpBB/viewtopic.php?p=123#p123" data-post-id="123" onclick="if(document.getElementById(hash.substr(1)))href=hash">↑</a></cite>...</div></blockquote>'
+			),
+			array(
+				// Users are not allowed to submit their own URL for the post
+				'[quote="Username" post_url="http://fake.example.org"]...[/quote]',
+				'<blockquote><div><cite>Username wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				'[quote="Username" time="58705871"]...[/quote]',
+				'<blockquote><div><cite>1971-11-11 11:11:11 Username wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				'[quote="Username" user_id="123"]...[/quote]',
+				'<blockquote><div><cite><a href="phpBB/memberlist.php?mode=viewprofile&amp;u=123">Username</a> wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				// Users are not allowed to submit their own URL for the profile
+				'[quote="Username" profile_url="http://fake.example.org"]...[/quote]',
+				'<blockquote><div><cite>Username wrote:</cite>...</div></blockquote>'
+			),
 		);
 	}
 }

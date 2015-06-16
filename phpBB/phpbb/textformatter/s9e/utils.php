@@ -64,6 +64,7 @@ class utils implements \phpbb\textformatter\utils_interface
 			$quote .= '=' . $this->enquote($attributes['author']);
 			unset($attributes['author']);
 		}
+		ksort($attributes);
 		foreach ($attributes as $name => $value)
 		{
 			$quote .= ' ' . $name . '=' . $this->enquote($value);

@@ -77,7 +77,12 @@ class factory implements \phpbb\textformatter\cache_interface
 		'quote' =>
 			"[QUOTE
 				author={TEXT1;optional}
+				post_id={UINT;optional}
+				post_url={URL;optional;postFilter=#false}
+				profile_url={URL;optional;postFilter=#false}
+				time={UINT;optional}
 				url={URL;optional}
+				user_id={UINT;optional}
 				author={PARSE=/^\\[url=(?'url'.*?)](?'author'.*)\\[\\/url]$/i}
 				author={PARSE=/^\\[url](?'author'(?'url'.*?))\\[\\/url]$/i}
 				author={PARSE=/(?'url'https?:\\/\\/[^[\\]]+)/i}
@@ -471,24 +476,11 @@ class factory implements \phpbb\textformatter\cache_interface
 
 		$templates['li'] = $fragments['listitem'] . '<xsl:apply-templates/>' . $fragments['listitem_close'];
 
-		$fragments['quote_username_open'] = str_replace(
-			'{USERNAME}',
-			'<xsl:choose>
-				<xsl:when test="@url">' . str_replace('{DESCRIPTION}', '{USERNAME}', $fragments['url']) . '</xsl:when>
-				<xsl:otherwise>{USERNAME}</xsl:otherwise>
-			</xsl:choose>',
-			$fragments['quote_username_open']
-		);
-
-		$templates['quote'] =
-			'<xsl:choose>
-				<xsl:when test="@author">
-					' . $fragments['quote_username_open'] . '<xsl:apply-templates/>' . $fragments['quote_close'] . '
-				</xsl:when>
-				<xsl:otherwise>
-					' . $fragments['quote_open'] . '<xsl:apply-templates/>' . $fragments['quote_close'] . '
-				</xsl:otherwise>
-			</xsl:choose>';
+		// Replace the regular quote template with the extended quote template if available
+		if (isset($fragments['quote_extended']))
+		{
+			$templates['quote'] = $fragments['quote_extended'];
+		}
 
 		// The [attachment] BBCode uses the inline_attachment template to output a comment that
 		// is post-processed by parse_attachments()

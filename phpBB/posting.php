@@ -1605,7 +1605,12 @@ if ($generate_quote)
 	{
 		$message_parser->message = $phpbb_container->get('text_formatter.utils')->generate_quote(
 			censor_text($message_parser->message),
-			array('author' => $post_data['quote_username'])
+			array(
+				'author'  => $post_data['quote_username'],
+				'post_id' => $post_data['post_id'],
+				'time'    => $post_data['post_time'],
+				'user_id' => $post_data['poster_id'],
+			)
 		);
 		$message_parser->message .= "\n\n";
 	}
