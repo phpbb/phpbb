@@ -854,15 +854,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function assert_response_html($status_code = 200)
 	{
-		if ($status_code !== false)
-		{
-			self::assert_response_status_code($status_code);
-		}
-
 		// Any output before the doc type means there was an error
 		$content = self::$client->getResponse()->getContent();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
 	}
 
 	/*
@@ -875,15 +875,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function assert_response_xml($status_code = 200)
 	{
-		if ($status_code !== false)
-		{
-			self::assert_response_status_code($status_code);
-		}
-
 		// Any output before the xml opening means there was an error
 		$content = self::$client->getResponse()->getContent();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
+
+		if ($status_code !== false)
+		{
+			self::assert_response_status_code($status_code);
+		}
 	}
 
 	/**
