@@ -179,9 +179,10 @@ class user_loader
 	* @param bool $query Should we query the database if this user has not yet been loaded?
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()
+	* @param bool @lazy If true, will be lazy loaded (requires JS)
 	* @return string
 	*/
-	public function get_avatar($user_id, $query = false)
+	public function get_avatar($user_id, $query = false, $lazy = false)
 	{
 		if (!($user = $this->get_user($user_id, $query)))
 		{
@@ -193,7 +194,7 @@ class user_loader
 			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
 		}
 
-		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height']);
+		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height'], 'USER_AVATAR', false, $lazy);
 	}
 
 	/**
