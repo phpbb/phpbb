@@ -327,10 +327,9 @@ ul.linklist li.responsive-menu {
 ul.linklist li.responsive-menu a.responsive-menu-link {
 	display: inline-block;
 	margin: 0 5px;
-	font-size: 16px;
 	position: relative;
 	width: 16px;
-	line-height: 20px;
+	line-height: 1.2em;
 	text-decoration: none;
 }
 
@@ -799,7 +798,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Action-bars (container for post/reply buttons, pagination, etc.)
 ---------------------------------------- */
 .action-bar {
-	font-size: 11px;
+	font-size: 1.1em;
 	margin: 4px 0;
 }
 
@@ -811,7 +810,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 ---------------------------------------- */
 .pagination {
 	float: right;
-	font-size: 11px;
 	margin-top: 3px;
 	text-align: right;
 	width: auto;
@@ -841,7 +839,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	display: block;
 	font-size: 0.9em;
 	font-weight: normal;
-	line-height: 13px;
+	line-height: 1.4em;
 	min-width: 10px;
 	padding: 3px;
 	text-align: center;
@@ -1156,12 +1154,11 @@ ul.linklist:after,
 .dropdown-extended .header {
 	padding: 0 10px;
 	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 11px;
 	font-weight: bold;
 	text-align: left;
 	text-shadow: 1px 1px 1px white;
 	text-transform: uppercase;
-	line-height: 30px;
+	line-height: 3em;
 	border-bottom: 1px solid;
 	border-radius: 5px 5px 0 0;
 }
@@ -1213,7 +1210,7 @@ ul.linklist:after,
 }
 
 .notification_list p.notification-time {
-	font-size: 10px;
+	font-size: 0.9em;
 	margin: 0;
 	text-align: right;
 }
@@ -1229,7 +1226,7 @@ ul.linklist:after,
 
 .notification_list p.notifications_title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 13px !important;
+	font-size: 1.2em !important;
 }
 
 .notification_list p.notifications_title strong {
@@ -1237,7 +1234,7 @@ ul.linklist:after,
 }
 
 .notification_list p.notifications_time {
-	font-size: 10px !important;
+	font-size: 0.9em !important;
 }
 
 .notification_text {
@@ -1260,7 +1257,7 @@ ul.linklist:after,
 }
 
 #quick-links a.responsive-menu-link:before {
-	font-size: 16px;
+	font-size: 1.6em;
 	line-height: 16.5px;
 }
 
