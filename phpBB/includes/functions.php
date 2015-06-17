@@ -3957,13 +3957,14 @@ function phpbb_build_hidden_fields_for_query_params($request, $exclude = null)
 * @param array $user_row Row from the users table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+* @param bool $lazy If true, will be lazy loaded (requires JS)
 *
 * @return string Avatar html
 */
-function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false)
+function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false, $lazy = false)
 {
 	$row = \phpbb\avatar\manager::clean_row($user_row, 'user');
-	return phpbb_get_avatar($row, $alt, $ignore_config);
+	return phpbb_get_avatar($row, $alt, $ignore_config, $lazy);
 }
 
 /**
@@ -3972,13 +3973,14 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 * @param array $group_row Row from the groups table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
+* @param bool $lazy If true, will be lazy loaded (requires JS)
 *
 * @return string Avatar html
 */
-function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false)
+function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
 {
 	$row = \phpbb\avatar\manager::clean_row($user_row, 'group');
-	return phpbb_get_avatar($row, $alt, $ignore_config);
+	return phpbb_get_avatar($row, $alt, $ignore_config, $lazy);
 }
 
 /**
