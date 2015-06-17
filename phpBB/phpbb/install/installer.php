@@ -229,17 +229,18 @@ class installer
 		}
 		catch (invalid_service_name_exception $e)
 		{
-			if ($e->has_params())
+			$params = $e->get_parameters();
+
+			if (!empty($params))
 			{
-				$msg = $e->get_params();
-				array_unshift($msg, $e->get_error());
+				array_unshift($params, $e->getMessage());
 			}
 			else
 			{
-				$msg = $e->get_error();
+				$params = $e->getMessage();
 			}
 
-			$this->iohandler->add_error_message($msg);
+			$this->iohandler->add_error_message($params);
 			$flush_messages = true;
 		}
 

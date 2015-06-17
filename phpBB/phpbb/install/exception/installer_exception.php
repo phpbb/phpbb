@@ -13,10 +13,12 @@
 
 namespace phpbb\install\exception;
 
+use phpbb\exception\runtime_exception;
+
 /**
  * Installer's base exception
  */
-class installer_exception extends \Exception
+class installer_exception extends runtime_exception
 {
 
 }

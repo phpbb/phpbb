@@ -13,6 +13,13 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\install\helper\navigation\navigation_provider;
+use phpbb\language\language;
+use phpbb\language\language_file_helper;
+use phpbb\path_helper;
+use phpbb\routing\router;
+use phpbb\symfony_request;
+use phpbb\template\template;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -68,7 +75,19 @@ class helper
 	 */
 	protected $phpbb_root_path;
 
-	public function __construct(\phpbb\language\language $language, \phpbb\language\language_file_helper $lang_helper, \phpbb\install\helper\navigation\navigation_provider $nav, \phpbb\template\template $template, \phpbb\path_helper $path_helper, \phpbb\symfony_request $request, \phpbb\routing\router $router, $phpbb_root_path)
+	/**
+	 * Constructor
+	 *
+	 * @param language				$language
+	 * @param language_file_helper	$lang_helper
+	 * @param navigation_provider	$nav
+	 * @param template				$template
+	 * @param path_helper			$path_helper
+	 * @param symfony_request		$request
+	 * @param router				$router
+	 * @param string				$phpbb_root_path
+	 */
+	public function __construct(language $language, language_file_helper $lang_helper, navigation_provider $nav, template $template, path_helper $path_helper, symfony_request $request, router $router, $phpbb_root_path)
 	{
 		$this->language = $language;
 		$this->lang_helper = $lang_helper;
