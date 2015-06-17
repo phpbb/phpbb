@@ -28,9 +28,7 @@
      * @return XMLHttpRequest
      */
     function createXhrObject() {
-        var xhReq = new XMLHttpRequest();
-        xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        return xhReq;
+        return new XMLHttpRequest();
     }
 
     /**
@@ -328,6 +326,7 @@
 
         var xhReq = createXhrObject();
         xhReq.open('POST', $form.attr('action'), true);
+        xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhReq.send(getFormFields($form, $submitBtn));
 
