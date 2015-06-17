@@ -383,8 +383,7 @@ dl.faq dt {
 }
 
 .content ul, .content ol {
-	margin-bottom: 1em;
-	margin-left: 3em;
+	margin: 0.8em 0 0.9em 3em;
 }
 
 .posthilit {
@@ -430,8 +429,7 @@ dd .signature {
 }
 
 .signature ul, .signature ol {
-	margin-bottom: 1em;
-	margin-left: 3em;
+	margin: 0.8em 0 0.9em 3em;
 }
 
 /* Post noticies */
@@ -493,6 +491,7 @@ blockquote.uncited {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
+	margin: 1em 0 1.2em 0;
 }
 
 .codebox p {
