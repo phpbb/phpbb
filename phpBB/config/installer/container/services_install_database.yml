@@ -18,6 +18,7 @@ services:
             - @installer.helper.iohandler
             - @installer.helper.container_factory
             - @language
+            - %core.root_path%
 
     installer.install_database.add_config_settings:
         class: phpbb\install\module\install_database\task\add_config_settings

@@ -44,6 +44,11 @@ class add_default_data extends \phpbb\install\task_base
 	protected $language;
 
 	/**
+	 * @var string
+	 */
+	protected $phpbb_root_path;
+
+	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\install\helper\database						$db_helper	Installer's database helper
@@ -51,26 +56,26 @@ class add_default_data extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler	Installer's input-output handler
 	 * @param \phpbb\install\helper\container_factory				$container	Installer's DI container
 	 * @param \phpbb\language\language								$language	Language service
+	 * @param string												$root_path	Root path of phpBB
 	 */
 	public function __construct(\phpbb\install\helper\database $db_helper,
 								\phpbb\install\helper\config $config,
 								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
 								\phpbb\install\helper\container_factory $container,
-								\phpbb\language\language $language)
+								\phpbb\language\language $language,
+								$root_path)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
 
-		$this->db				= $container->get('dbal.conn'); //new $dbms();
+		$this->db				= $container->get('dbal.conn');
 		$this->database_helper	= $db_helper;
 		$this->config			= $config;
 		$this->iohandler		= $iohandler;
 		$this->language			= $language;
+		$this->phpbb_root_path	= $root_path;
 
 		parent::__construct(true);
-
-		// Connect to DB
-		//$this->db->sql_connect($config->get('dbhost'), $config->get('dbuser'), $config->get('dbpasswd'), $config->get('dbname'), $config->get('dbport'), false, false);
 	}
 
 	/**
@@ -85,7 +90,7 @@ class add_default_data extends \phpbb\install\task_base
 		$dbms_info = $this->database_helper->get_available_dbms($dbms);
 
 		// Get schema data from file
-		$sql_query = @file_get_contents('schemas/schema_data.sql');
+		$sql_query = @file_get_contents($this->phpbb_root_path . 'phpbb/install/schemas/schema_data.sql');
 
 		// Clean up SQL
 		$sql_query = $this->replace_dbms_specific_sql($sql_query);
