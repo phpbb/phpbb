@@ -47,7 +47,6 @@ $phpbb_installer_container_builder = new \phpbb\di\container_builder($phpbb_root
 $phpbb_installer_container = $phpbb_installer_container_builder
 	->with_environment('installer')
 	->without_extensions()
-	->without_cache()
 	->get_container();
 
 // Path to templates
