@@ -1,6 +1,6 @@
 services:
     phpbb.installer.controller.welcome:
-        class: phpbb\install\controller\install_index
+        class: phpbb\install\controller\installer_index
         arguments:
             - @phpbb.installer.controller.helper
             - @language
