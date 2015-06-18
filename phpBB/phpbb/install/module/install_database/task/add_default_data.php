@@ -65,10 +65,7 @@ class add_default_data extends \phpbb\install\task_base
 								\phpbb\language\language $language,
 								$root_path)
 	{
-		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
-		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
-
-		$this->db				= $container->get('dbal.conn');
+		$this->db				= $container->get('dbal.conn.driver');
 		$this->database_helper	= $db_helper;
 		$this->config			= $config;
 		$this->iohandler		= $iohandler;

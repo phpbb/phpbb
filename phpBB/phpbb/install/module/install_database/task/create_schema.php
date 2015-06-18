@@ -119,7 +119,7 @@ class create_schema extends \phpbb\install\task_base
 			}
 		}
 
-		$db_schema_path = $this->phpbb_root_path . 'install/schemas/' . $schema_name . '_schema.sql';
+		$db_schema_path = $this->phpbb_root_path . 'phpbb/install/schemas/' . $schema_name . '_schema.sql';
 
 		// Load database vendor specific code if there is any
 		if ($this->filesystem->exists($db_schema_path))
@@ -144,9 +144,9 @@ class create_schema extends \phpbb\install\task_base
 		$change_prefix = false;
 
 		// Generate database schema
-		if ($this->filesystem->exists($this->phpbb_root_path . 'install/schemas/schema.json'))
+		if ($this->filesystem->exists($this->phpbb_root_path . 'phpbb/install/schemas/schema.json'))
 		{
-			$db_table_schema = @file_get_contents($this->phpbb_root_path . 'install/schemas/schema.json');
+			$db_table_schema = @file_get_contents($this->phpbb_root_path . 'phpbb/install/schemas/schema.json');
 			$db_table_schema = json_decode($db_table_schema, true);
 			$change_prefix = true;
 		}
