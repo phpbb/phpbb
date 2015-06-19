@@ -76,4 +76,15 @@ class service_collection extends \ArrayObject
 	{
 		$this->offsetSet($name, null);
 	}
+
+	/**
+	* Get service names
+	*
+	* @return array	Array of service names in the collection
+	*/
+	public function get_service_names()
+	{
+		$copy_array = $this->getArrayCopy();
+		return array_keys($copy_array);
+	}
 }
