@@ -679,8 +679,7 @@ class acp_profile
 				$s_one_need_edit = true;
 			}
 
-			try
-			{
+			try {
 				$profile_field = $this->type_collection[$row['field_type']];
 			}
 			catch (\Exception $e)
