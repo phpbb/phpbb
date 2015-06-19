@@ -2,7 +2,6 @@ services:
     profilefields.manager:
         class: phpbb\profilefields\manager
         arguments:
-            - @service_container
             - @auth
             - @dbal.conn
             - @dispatcher
