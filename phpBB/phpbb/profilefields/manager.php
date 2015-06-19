@@ -13,19 +13,11 @@
 
 namespace phpbb\profilefields;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
 * Custom Profile Fields
 */
 class manager
 {
-	/**
-	* Container interface
-	* @var ContainerInterface
-	*/
-	protected $container;
-
 	/**
 	* Auth object
 	* @var \phpbb\auth\auth
@@ -37,6 +29,12 @@ class manager
 	* @var \phpbb\db\driver\driver_interface
 	*/
 	protected $db;
+
+	/**
+	* Database tools object
+	* @var \phpbb\db\tools
+	*/
+	protected $db_tools;
 
 	/**
 	* Event dispatcher object
@@ -68,6 +66,12 @@ class manager
 	*/
 	protected $user;
 
+	/**
+	* Config_text object
+	* @var \phpbb\config\db_text
+	*/
+	protected $config_text;
+
 	protected $fields_table;
 
 	protected $fields_language_table;
@@ -76,42 +80,37 @@ class manager
 
 	protected $profile_cache = array();
 
-	protected $config_text;
-
-	protected $db_tools;
-
 	/**
 	* Construct
 	*
-	* @param	ContainerInterface $container A container
 	* @param	\phpbb\auth\auth			$auth		Auth object
 	* @param	\phpbb\db\driver\driver_interface	$db			Database object
+	* @param	\phpbb\db\tools				$db_tools	Database object
 	* @param	\phpbb\event\dispatcher_interface		$dispatcher	Event dispatcher object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
 	* @param	\phpbb\di\service_collection $type_collection
 	* @param	\phpbb\user					$user		User object
+	* @param	\phpbb\config\db_text		$config_text		Config_text object
 	* @param	string				$fields_table
 	* @param	string				$fields_language_table
 	* @param	string				$fields_data_table
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, \phpbb\config\db_text $config_text, $fields_table, $fields_language_table, $fields_data_table)
 	{
-		$this->container = $container;
 		$this->auth = $auth;
 		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->dispatcher = $dispatcher;
 		$this->request = $request;
 		$this->template = $template;
 		$this->type_collection = $type_collection;
 		$this->user = $user;
+		$this->config_text = $config_text;
 
 		$this->fields_table = $fields_table;
 		$this->fields_language_table = $fields_language_table;
 		$this->fields_data_table = $fields_data_table;
-
-		$this->config_text = $this->container->get('config_text');
-		$this->db_tools = $this->container->get('dbal.tools');
 	}
 
 	/**
