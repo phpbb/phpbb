@@ -11,82 +11,42 @@
 *
 */
 
-namespace
+class phpbb_service_collection_test extends \phpbb_test_case
 {
-	class phpbb_service_collection_test extends \phpbb_test_case
+	/**
+	 * @var \phpbb\di\service_collection
+	 */
+	protected $service_collection;
+
+	public function setUp()
 	{
-		/**
-		 * @var \phpbb\di\service_collection
-		 */
-		protected $service_collection;
+		$container = new phpbb_mock_container_builder();
+		$container->set('foo', new StdClass);
+		$container->set('bar', new StdClass);
 
-		public function setUp()
-		{
-			// Set up service container
-			$phpbb_root_path = dirname(__FILE__) . '/';
+		$this->service_collection = new \phpbb\di\service_collection($container);
+		$this->service_collection->add('foo');
+		$this->service_collection->add('bar');
 
-			$filename = $phpbb_root_path . '../tmp/container.php';
-			if (is_file($filename))
-			{
-				unlink($filename);
-			}
-
-			$builder = new phpbb_mock_phpbb_di_container_builder($phpbb_root_path . 'fixtures/', 'php');
-			$builder->with_config_path($phpbb_root_path . 'fixtures/collection_config/');
-			$builder->without_cache();
-			$container = $builder->get_container();
-			$this->service_collection = $container->get('service_collection');
-
-			parent::setUp();
-		}
-
-		public function test_service_collection_get_service_names()
-		{
-			global $service_initialized;
-			$service_initialized = false;
-
-			$service_names = $this->service_collection->get_service_names();
-			$this->assertTrue(in_array('collection_service1', $service_names));
-			$this->assertTrue(in_array('collection_service2', $service_names));
-
-			$this->assertFalse($service_initialized);
-		}
-
-		public function test_service_collection()
-		{
-			$service1_found = $service2_found = false;
-			foreach ($this->service_collection as $name => $instance)
-			{
-				if ($instance instanceof \test_collection_service\collection_test1 && !$instance instanceof \test_collection_service\collection_test2)
-				{
-					$service1_found = true;
-				}
-
-				if ($instance instanceof \test_collection_service\collection_test2)
-				{
-					$service2_found = true;
-				}
-			}
-
-			$this->assertTrue($service1_found);
-			$this->assertTrue($service2_found);
-		}
-	}
-}
-
-namespace test_collection_service
-{
-	class collection_test1
-	{
-		public function __construct()
-		{
-			global $service_initialized;
-			$service_initialized = true;
-		}
+		parent::setUp();
 	}
 
-	class collection_test2 extends collection_test1
+	public function service_collection_get_service_names()
 	{
+		$this->assertSame(array('foo', 'bar'), $this->service_collection->get_service_names());
+	}
 
+	public function test_service_collection()
+	{
+		$service_names = array();
+
+		// Test the iterator
+		foreach ($this->service_collection as $name => $service)
+		{
+			$service_names[] = $name;
+			$this->assertInstanceOf('StdClass', $service);
+		}
+
+		$this->assertSame(array('foo', 'bar'), $service_names);
 	}
 }
