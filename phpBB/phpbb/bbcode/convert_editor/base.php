@@ -133,6 +133,45 @@ abstract class base
 			array('size', 'color'),
 		);
 
+		$this->bbcode_default_settings = array(
+			'b' => array(
+				'display_on_posting' => true,
+			),
+			'i' => array(
+				'display_on_posting' => true,
+			),
+			'u' => array(
+				'display_on_posting' => true,
+			),
+			'quote' => array(
+				'display_on_posting' => true,
+			),
+			'code' => array(
+				'display_on_posting' => true,
+			),
+			'list' => array(
+				'display_on_posting' => true,
+			),
+			'*' => array(
+				'display_on_posting' => true,
+			),
+			'img' => array(
+				'display_on_posting' => true,
+			),
+			'url' => array(
+				'display_on_posting' => true,
+			),
+			'flash' => array(
+				'display_on_posting' => true,
+			),
+			'size' => array(
+				'display_on_posting' => true,
+			),
+			'color' => array(
+				'display_on_posting' => true,
+			),
+		);
+
 	}
 
 	/**
