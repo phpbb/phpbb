@@ -247,6 +247,8 @@
 {% set toolbar = '' %}
 
 {% for bbcode in BBCODES %}
+
+{% if bbcode.data.displayButton %}
 	$.sceditor.command.set('{{ bbcode.name }}',
 		{
 			state: function (parent, blockParent){
@@ -342,6 +344,7 @@
 			{% endif %}
 		}
 	);
+{% endif %}
 
 	$.sceditor.plugins.bbcode.bbcode.set('{{ bbcode.name }}',
 			{

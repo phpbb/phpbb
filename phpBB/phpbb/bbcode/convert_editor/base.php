@@ -453,6 +453,14 @@ abstract class base
 
 	}
 
+	protected function add_display_button_setting(&$bbcodes_data, $bbcode_settings)
+	{
+		foreach($bbcodes_data as $bbcode_name => &$bbcode_data)
+		{
+			$bbcode_data['displayButton'] = !empty($bbcode_settings[$bbcode_name]['display_on_posting']);
+		}
+	}
+
 	protected function add_tooltip_text(&$bbcodes_data, $bbcode_settings)
 	{
 		foreach($bbcodes_data as $bbcode_name => &$bbcode_data)
@@ -564,7 +572,9 @@ abstract class base
 		}
 
 		$bbcode_settings = $this->data_access->get_bbcodes_settings();
+		$bbcode_settings += $this->bbcode_default_settings;
 		$this->add_tooltip_text($bbcodes_data, $bbcode_settings);
+		$this->add_display_button_setting($bbcodes_data, $bbcode_settings);
 
 		return $bbcodes_data;
 
