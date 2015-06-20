@@ -431,7 +431,7 @@ abstract class base
 			if (isset($child_node['case']))
 			{
 				$containers = array();
-				foreach($child_node['case'] as $case)
+				foreach ($child_node['case'] as $case)
 				{
 					$tag = $this->get_container_tags($case['children']);
 					$containers = array_merge($containers, $tag);
@@ -455,7 +455,7 @@ abstract class base
 
 	protected function add_display_button_setting(&$bbcodes_data, $bbcode_settings)
 	{
-		foreach($bbcodes_data as $bbcode_name => &$bbcode_data)
+		foreach ($bbcodes_data as $bbcode_name => &$bbcode_data)
 		{
 			$bbcode_data['displayButton'] = !empty($bbcode_settings[$bbcode_name]['display_on_posting']);
 		}
@@ -463,7 +463,7 @@ abstract class base
 
 	protected function add_tooltip_text(&$bbcodes_data, $bbcode_settings)
 	{
-		foreach($bbcodes_data as $bbcode_name => &$bbcode_data)
+		foreach ($bbcodes_data as $bbcode_name => &$bbcode_data)
 		{
 			if (empty($bbcode_settings[$bbcode_name]['bbcode_helpline']))
 			{
@@ -521,7 +521,7 @@ abstract class base
 
 		if ($low_case_names)
 		{
-			foreach($bbcodes_for_tags as &$bbcodes_for_tag)
+			foreach ($bbcodes_for_tags as &$bbcodes_for_tag)
 			{
 				$bbcodes_for_tag = array_map('strtolower', $bbcodes_for_tag);
 			}
@@ -534,7 +534,7 @@ abstract class base
 			$this_data = $this->normalize_text_parser_data($bbcode, $tags[$bbcode->tagName], $tag_names);
 
 			
-			foreach(array('deniedChildren', 'allowedChildren', 
+			foreach (array('deniedChildren', 'allowedChildren', 
 					'deniedDescendants', 'allowedDecendants') as $key)
 			{
 				$bbcode_list = array();
@@ -696,7 +696,7 @@ abstract class base
 		$config['allowedDecendants'] = array();
 		$config['deniedDescendants'] = array();
 
-		foreach($tag->rules as $rule_name => $rule)
+		foreach ($tag->rules as $rule_name => $rule)
 		{
 			switch($rule_name)
 			{
