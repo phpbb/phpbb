@@ -319,17 +319,14 @@ class sce extends base
 			unset($parsed_template);
 		}
 
-		// size is special... It uses a dropdown...
-		$this->font_override($template_tree_definition['bbcodes']['size']['data']);
-		$toolbar_buttons = $this->toolbar_override($this->toolbar_default_ordering, $template_tree_definition['bbcodes']);
+		$overrides = array();
 
+		$this->setup_default_bbcodes($template_tree_definition['bbcodes'], $overrides);
 
 		$this->static_js_vars = array(
 			'XSLT' => $template_tree_definition['xsl'],
 			'BBCODES' => $template_tree_definition['bbcodes'],
-			'OVERRIDES' => array(
-				'toolbar' => $toolbar_buttons,
-			),
+			'OVERRIDES' => $overrides,
 		);
 
 		$this->dynamic_variables = array(
@@ -339,7 +336,17 @@ class sce extends base
 
 	}
 
-	public function font_override(&$bbcode_data){
+	public function setup_default_bbcodes(&$bbcode_definition, &$overrides)
+	{
+
+		// size is special... It uses a dropdown...
+		$this->size_override($bbcode_definition['size']['data']);
+
+		$overrides['toolbar'] = $this->toolbar_override($this->toolbar_default_ordering, $bbcode_definition);
+	}
+
+	public function size_override(&$bbcode_data)
+	{
 		$this->extra_variables['L_FONT_TINY'] = true;
 		$this->extra_variables['L_FONT_SMALL'] = true;
 		$this->extra_variables['L_FONT_NORMAL'] = true;
