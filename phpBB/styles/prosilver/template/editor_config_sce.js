@@ -272,7 +272,7 @@
 						var editor = this;
 						var attributes = [
 						{% for attrName, attrData in bbcode.data.attr %}
-							{% if bbcode.override.data.attr[attrName] -%}
+							{% if bbcode.override.data.attr[attrName] is defined -%}
 								{{ bbcode.override.data.attr[attrName] }}
 							{% else %}
 							{
