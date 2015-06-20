@@ -124,7 +124,6 @@ abstract class base
 		$this->request = $request;
 		$this->template = $template;
 
-		
 		$this->toolbar_default_ordering = array(
 			array('b', 'i', 'u'),
 			array('quote', 'code'),
