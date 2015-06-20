@@ -20,24 +20,58 @@ namespace phpbb\cron\task\core;
 */
 class tidy_search extends \phpbb\cron\task\base
 {
+	/**
+	* phpBB root path
+	* @var string
+	*/
 	protected $phpbb_root_path;
+
+	/**
+	* PHP file extension
+	* @var string
+	*/
 	protected $php_ext;
+
+	/**
+	* Auth object
+	* @var \phpbb\auth\auth
+	*/
 	protected $auth;
+
+	/**
+	* Config object
+	* @var \phpbb\config\config
+	*/
 	protected $config;
+
+	/**
+	* Database object
+	* @var \phpbb\db\driver\driver_interface
+	*/
 	protected $db;
+
+	/**
+	* User object
+	* @var \phpbb\user
+	*/
 	protected $user;
+
+	/**
+	* Event dispatcher object
+	* @var \phpbb\event\dispatcher_interface
+	*/
 	protected $phpbb_dispatcher;
 
 	/**
 	* Constructor.
 	*
-	* @param string $phpbb_root_path The root path
+	* @param string $phpbb_root_path The phpBB root path
 	* @param string $php_ext The PHP file extension
-	* @param \phpbb\auth\auth $auth The auth
-	* @param \phpbb\config\config $config The config
-	* @param \phpbb\db\driver\driver_interface $db The db connection
-	* @param \phpbb\user $user The user
-	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher The event dispatcher
+	* @param \phpbb\auth\auth $auth The auth object
+	* @param \phpbb\config\config $config The config object
+	* @param \phpbb\db\driver\driver_interface $db The database object
+	* @param \phpbb\user $user The user object
+	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher The event dispatcher object
 	*/
 	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 	{
