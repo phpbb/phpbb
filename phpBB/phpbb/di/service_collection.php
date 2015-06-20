@@ -69,6 +69,8 @@ class service_collection extends \ArrayObject
 	/**
 	* Add a service to the collection
 	*
+	* Note: Calling this method should not initialize the services.
+	*
 	* @param string $name The service name
 	* @return null
 	*/
@@ -79,6 +81,8 @@ class service_collection extends \ArrayObject
 
 	/**
 	* Get service names
+	*
+	* Note: Calling this method should not initialize the services.
 	*
 	* @return array	Array of service names in the collection
 	*/
