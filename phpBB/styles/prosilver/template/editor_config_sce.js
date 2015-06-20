@@ -1,4 +1,5 @@
-{%- macro parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, childData, forceValueKeep) -%}
+/* Note: All single quote strings are generated. Double quote strings are hardcoded. Exceptions apply for strings with enclosed quotes or either kind*/
+{% macro parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, parent, childData, forceValueKeep) -%}
 	{%- import _self as exec -%}
 
 	{%- for var, one in childData.caseVars %}
@@ -24,21 +25,21 @@
 	{%- for child in children -%}
 		{% if child.js.type == 'NODE_DEFINITION' %}
 
-			var {{ child.js.nodeName }} = document.createElement("{{ child.tagName }}")
+			var {{ child.js.nodeName }} = document.createElement('{{ child.tagName }}')
 			{{ append_to }}.appendChild({{ child.js.nodeName }});
 			{% for attrName, attrValue in child.js.attributes %}
-				{{ child.js.nodeName }}.setAttribute("{{ attrName }}", {{ attrValue }});
+				{{ child.js.nodeName }}.setAttribute('{{ attrName }}', {{ attrValue }});
 				{% if attribute(child.js.bbcodeAttributes, attrName) is defined %}
 					addBBCodeDataToElement(
 						{{ child.js.nodeName }},
-						"{{ attribute(child.js.bbcodeAttributes, attrName) }}",
-						attributes["{{ attribute(child.js.bbcodeAttributes, attrName) }}"]
+						'{{ attribute(child.js.bbcodeAttributes, attrName) }}',
+						attributes['{{ attribute(child.js.bbcodeAttributes, attrName) }}']
 					);
 				{% endif %}
 				{% if child.js.parentEditable %}
 					addBBCodeDataToElement(
 						{{ child.js.nodeName }},
-						"{{ child.js.varName }}",
+						'{{ child.js.varName }}',
 						{% if forceValueKeep -%}
 							{{ child.js.nodeName }}.textContent
 						{%- else -%}
@@ -53,7 +54,7 @@
 			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, forceValueKeep) }}
 		{% elseif child.js.type == 'ATTRIBUTE_TEXT_NODE_DEFINITION' %}
 			{% if child.vars[0].isAttribute %}
-				var {{ child.js.nodeName }} = document.createTextNode(attributes["{{child.vars[0].name}}"]);
+				var {{ child.js.nodeName }} = document.createTextNode(attributes['{{child.vars[0].name}}']);
 			{% else %}
 				var {{ child.js.nodeName }} = document.createTextNode({{ EDITOR_JS_GLOBAL_OBJ }}.{{ attribute(child.vars[0], 'prefixedName') }});
 			{% endif %}
@@ -63,14 +64,14 @@
 			{% if child.js.parentEditable %}
 				addBBCodeDataToElement(
 					{{ append_to }},
-					"{{ child.js.varName }}",
+					'{{ child.js.varName }}',
 					{% if forceValueKeep -%}
 						{{ child.js.nodeName }}.textContent
 					{%- else -%}
 						editorConstants.VALUE_IN_CONTENT
 					{%- endif %}
 				);
-				{{ append_to }}.contentEditable = 'true';
+				{{ append_to }}.contentEditable = "true";
 
 			{% endif %}
 			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, forceValueKeep) }}
@@ -83,23 +84,23 @@
 						{{ child.js.nodeName }}.attributes[i].value
 					);
 			}
-			{{ append_to }}.setAttribute("{{ child.js.attributeName }}", {{ child.js.nodeName }}.textContent);
+			{{ append_to }}.setAttribute('{{ child.js.attributeName }}', {{ child.js.nodeName }}.textContent);
 			console.error({{ child.js.nodeName }}.textContent);
 		{% elseif child.js.type == 'CONSTANT_TEXT_NODE_DEFINITION' %}
-			var {{ child.js.nodeName }} = document.createTextNode("{{ child.js.nodeText }}");
+			var {{ child.js.nodeName }} = document.createTextNode('{{ child.js.nodeText }}');
 			{{ append_to }}.appendChild({{ child.js.nodeName }});
 		{% elseif child.js.type == 'PARSED_CHILDREN_SET' %}
-			previousType = {{ append_to }}.getAttribute('data-bbcode-type');
-						{{ append_to }}.setAttribute('data-bbcode-type',
-							(previousType && previousType + '|content')|| 'content');
-						{{ append_to }}.contentEditable = 'true';
+			previousType = {{ append_to }}.getAttribute("data-bbcode-type");
+						{{ append_to }}.setAttribute("data-bbcode-type",
+							(previousType && previousType + "|content")|| "content");
+						{{ append_to }}.contentEditable = "true";
 						{{ append_to }}.innerHTML += content;
 
 			{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcodeName, child.js.nodeName, child.children, forceValueKeep) }}
 		{% elseif child.js.type == 'SWITCH_DEFINITION' %}
 			{{ exec.parse_case(EDITOR_JS_GLOBAL_OBJ, bbcodeName, append_to, child, forceValueKeep) }}
 		{% else %}
-			ERROR: Got into else with type "{{ child.js.type }}".
+			ERROR: Got into else with type '{{ child.js.type }}'.
 		{% endif %}
 	{%- endfor -%}
 {%- endmacro -%}
@@ -132,17 +133,17 @@
 (function($, window, document, undefined) {  // Avoid conflicts with other libraries
 
 	var addBBCodeDataToElement = function (element, bbcodeParamName, bbcodeParamValue){
-		previousType = element.getAttribute('data-bbcode-type');
-		attrData = JSON.parse(element.getAttribute('data-bbcode-data')) || [];
+		previousType = element.getAttribute("data-bbcode-type");
+		attrData = JSON.parse(element.getAttribute("data-bbcode-data")) || [];
 
 		attrData.push({
 			name : bbcodeParamName,
 			value: bbcodeParamValue
 		});
 
-		element.setAttribute('data-bbcode-type',
-			(previousType && previousType + '|attr')|| 'attr');
-		element.setAttribute('data-bbcode-data', JSON.stringify(attrData));
+		element.setAttribute("data-bbcode-type",
+			(previousType && previousType + "|attr")|| "attr");
+		element.setAttribute("data-bbcode-data", JSON.stringify(attrData));
 	}
 
 	var xslt = editor.xslt('{{ XSLT }}');
@@ -151,7 +152,7 @@
 	var makeDropdown = function(editor){
 
 		var makeSelectBox = function (options, selectMultiple, separator, required){
-			var select = document.createElement('select');
+			var select = document.createElement("select");
 			select.multiple = !!selectMultiple;
 			select.required = !!required;
 
@@ -179,10 +180,10 @@
 			return returner;
 		};
 		var makeInput = function (type, isRequired, defaultValue){
-			var input = document.createElement('input');
-			input.type = type || 'text';
+			var input = document.createElement("input");
+			input.type = type || "text";
 			input.required = !!isRequired;
-			input.value = defaultValue || '';
+			input.value = defaultValue || "";
 
 			return {
 				element: input,
@@ -194,8 +195,8 @@
 
 		return function (button, BBCodeName, attributes, oKCallback, errorCallback){
 			var elements = [];
-			var container = document.createElement('form');
-			container.className = 'editorDropdownContainer';
+			var container = document.createElement("form");
+			container.className = "editorDropdownContainer";
 			container.onsubmit = function (e){
 				var data = {};
 				for (var i = 0; i < elements.length; i++){
@@ -207,19 +208,19 @@
 			}
 
 			for (var i = 0; i < attributes.length; i++){
-				var attributeRequestContainer = document.createElement('div');
+				var attributeRequestContainer = document.createElement("div");
 
-				var text = document.createElement('span');
+				var text = document.createElement("span");
 				text.textContent = attributes[i].name;
 				attributeRequestContainer.appendChild(text);
 
 				var dataElement;
 
 				switch(attributes[i].type){
-					case 'chooseMany':
-					case 'choose1':
+					case "chooseMany":
+					case "choose1":
 						dataElement = makeSelectBox(attributes[i].options,
-							attributes[i].type === 'chooseMany',
+							attributes[i].type === "chooseMany",
 							attributes[i].separator,
 							attributes[i].required)
 					break;
@@ -235,12 +236,12 @@
 
 			}
 
-			var confirm = document.createElement('button');
-			confirm.type = 'submit';
+			var confirm = document.createElement("button");
+			confirm.type = "submit";
 			confirm.textContent = {{ EDITOR_JS_GLOBAL_OBJ }}.L_SUBMIT;
 			container.appendChild(confirm);
 
-			editor.createDropDown(button, 'dropdown-' + BBCodeName, container);
+			editor.createDropDown(button, "dropdown-" + BBCodeName, container);
 		};
 	};
 
@@ -253,13 +254,13 @@
 		{
 			state: function (parent, blockParent){
 				parent = $(this.currentNode());
-				return (parent.attr('data-tag-id') === '{{ bbcode.tagId }}' ||
+				return (parent.attr("data-tag-id") === '{{ bbcode.tagId }}' ||
 					parent.closest('[data-tag-id={{ bbcode.tagId }}]', blockParent)[0]) ? 1 : 0;
 			},
 			exec: function(button) {
 				var parent = $(this.currentNode());
 				// TODO: This needs more checking than just this
-				if (parent.attr('data-tag-id') === '{{ bbcode.tagId }}' ||
+				if (parent.attr("data-tag-id") === '{{ bbcode.tagId }}' ||
 					parent.closest('[data-tag-id={{ bbcode.tagId }}]')[0]){
 						this.splitRemoveInSelection('[data-tag-id={{ bbcode.tagId }}]');
 				}else{
@@ -276,18 +277,18 @@
 								{{ bbcode.override.data.attr[attrName] }}
 							{% else %}
 							{
-								{% if attrData.type == 'choose1' or
-									attrData.type == 'chooseMany' -%}
-									'type': "{{ attrData.type }}",
+								{% if attrData.type == "choose1" or
+									attrData.type == "chooseMany" -%}
+									'type': '{{ attrData.type }}',
 									'options': [
 									{% for option in attrData.options %}
 										{
 											text: {% if option.langText is defined -%}
 													{{ EDITOR_JS_GLOBAL_OBJ }}.{{ option.langText }}
 												{%- else -%}
-													"{{ option.text }}"
+													'{{ option.text }}'
 												{%- endif %},
-											value: "{{ option.value }}",
+											value: '{{ option.value }}',
 											selected: {{ option.selected ? 'true' : 'false' }},
 										}
 										{%- if not loop.last -%}
@@ -295,8 +296,8 @@
 										{% endif -%}
 									{% endfor %}
 									],
-									'separator': {% if attrData.separator -%}
-										"{{ attrData.separator }}",
+									"separator": {% if attrData.separator -%}
+										'{{ attrData.separator }}',
 									{% else -%}
 										'',
 									{% endif %}
@@ -316,12 +317,12 @@
 						var attrStr = '';
 						for (var attribute in data){
 							if (data[attribute].length > 0) {
-								attrStr += ' ' + attribute + '="' + data[attribute] + '"';
+								attrStr += " " + attribute + '="' + data[attribute] + '"';
 							} else if (data[attribute].required) {
-								attrStr += ' ' + attribute + '=""';
+								attrStr += " " + attribute + '=""';
 							}
 						}
-						editor.insert('[{{ bbcode.name }}' + attrStr + ']'
+						editor.insert('[{{ bbcode.name }}' + attrStr + "]"
 							{%- if bbcode.data.autoCloseOn is empty and
 								(not bbcode.data.autoClose or bbcode.data.allowedChildren is not empty) %}, '[/{{ bbcode.name }}]'{% endif -%}
 							);
@@ -351,7 +352,7 @@
 				tags: {
 				{% for containerTag in bbcode.containerTags %}
 					'{{ containerTag }}': {
-						'data-tag-id': ["{{ bbcode.tagId }}"]
+						"data-tag-id": ['{{ bbcode.tagId }}']
 					},
 				{% endfor %}
 				},
@@ -360,7 +361,7 @@
 					{%- if bbcode.override.data.isInline is defined -%}
 						{{- bbcode.override.data.isInline ? 'true' : 'false' -}},
 					{%- else -%}
-						{%- for containerTag in bbcode.containerTags %}  editor.getElementDefaultDisplay('{{ containerTag }}') !== 'block' && {% endfor %}true,
+						{%- for containerTag in bbcode.containerTags %}  editor.getElementDefaultDisplay('{{ containerTag }}') !== "block" && {% endfor %}true,
 					{%- endif %}
 
 				{% if bbcode.data.isHtmlInline is defined -%}
@@ -436,23 +437,23 @@
 					content = content.trim();
 				{% endif %}
 				{% if bbcode.data.defaultAttribute %}
-					if(!attributes["{{ bbcode.data.defaultAttribute }}"] &&
-						attributes["{{ bbcode.data.defaultAttribute }}"] !== '' && attributes.defaultattr){
-						attributes["{{ bbcode.data.defaultAttribute }}"] = attributes.defaultattr;
+					if(!attributes['{{ bbcode.data.defaultAttribute }}'] &&
+						attributes['{{ bbcode.data.defaultAttribute }}'] !== "" && attributes.defaultattr){
+						attributes['{{ bbcode.data.defaultAttribute }}'] = attributes.defaultattr;
 					}
 				{% endif %}
 				{% for useContentAttr in bbcode.data.useContent %}
-					if(!attributes["{{ useContentAttr }}"] &&
-						attributes["{{ useContentAttr }}"] !== '' &&
-						(content || content === '')
+					if(!attributes['{{ useContentAttr }}'] &&
+						attributes['{{ useContentAttr }}'] !== "" &&
+						(content || content === "")
 						){
-						attributes["{{ useContentAttr }}"] = content;
-						usedContents.push("{{ useContentAttr }}");
+						attributes['{{ useContentAttr }}'] = content;
+						usedContents.push('{{ useContentAttr }}');
 					}
 				{% endfor %}
 				{% for name, value in bbcode.data.attrPresets %}
-					if(!attributes['{{ name }}'] && attributes['{{ name }}'] !== ''){
-						attributes['{{ name }}'] = "{{ value }}";
+					if(!attributes['{{ name }}'] && attributes['{{ name }}'] !== ""){
+						attributes['{{ name }}'] = '{{ value }}';
 					}
 				{% endfor %}
 				{% if bbcode.data.preProcessors is not empty %}
@@ -461,7 +462,7 @@
 						searchResult = /{{ preProcessor.regexFixed }}/{{ preProcessor.modifiersFixed }}.exec(attributes['{{ preProcessor.sourceAttribute }}']);
 					if(searchResult){
 					{% for num, attr in preProcessor.matchNumVsAttr %}
-						if(!attributes["{{ attr }}"] && attributes["{{ attr }}"] !== ''){
+						if(!attributes['{{ attr }}'] && attributes['{{ attr }}'] !== ""){
 							attributes['{{ attr }}'] = searchResult[{{ num }}];
 						}
 					{% endfor %}
@@ -483,13 +484,13 @@
 						}
 						{% endfor %}
 						{% if attrData.defaultValue %}
-						if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ''){
-							attributes['{{ attrName }}'] = "{{ attrData.defaultValue }}";
+						if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ""){
+							attributes['{{ attrName }}'] = '{{ attrData.defaultValue }}';
 						}
 						{% endif %}
 						{% if attrData.required %}
-						if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ''){
-							return editor.revertBackToBBCode("{{ bbcode.name }}", originalAttributes, originalContent);
+						if(!attributes['{{ attrName }}'] && attributes['{{ attrName }}'] !== ""){
+							return editor.revertBackToBBCode('{{ bbcode.name }}', originalAttributes, originalContent);
 						}
 						{% endif %}
 					{% endfor %}
@@ -498,27 +499,27 @@
 
 				{{ exec.parse_node(EDITOR_JS_GLOBAL_OBJ, bbcode.name, 'mainContainerFragment', bbcode.parsedTemplate, false) }}
 
-				if(mainContainerFragment.firstChild.getAttribute('contentEditable') !== 'true'){
-					mainContainerFragment.firstChild.contentEditable = 'false';
+				if(mainContainerFragment.firstChild.getAttribute("contentEditable") !== "true"){
+					mainContainerFragment.firstChild.contentEditable = "false";
 				}
-				mainContainerFragment.firstChild.setAttribute('data-tag-id', "{{ bbcode.tagId }}");
+				mainContainerFragment.firstChild.setAttribute("data-tag-id", '{{ bbcode.tagId }}');
 				return mainContainerFragment.firstChild.outerHTML;
 			},
 			format: function (element) {
-				var infos = element[0].querySelectorAll('[data-bbcode-type]');
+				var infos = element[0].querySelectorAll("[data-bbcode-type]");
 				var params = [];
-				var content = '';
-				if(element.is('[data-bbcode-type]')){
+				var content = "";
+				if(element.is("[data-bbcode-type]")){
 					infos = Array.prototype.slice.call(infos);
 					infos.push(element[0]);
 				}
 				for(var i = 0; i < infos.length; i++){
 					var current = infos[i];
-					var type = current.getAttribute('data-bbcode-type');
-					var data = current.getAttribute('data-bbcode-data');
+					var type = current.getAttribute("data-bbcode-type");
+					var data = current.getAttribute("data-bbcode-data");
 					if(!type){
-						console.error("To BBCode translation error at BBCode {{ bbcode.name }}.\n"
-									+ 'Unexpected empty data-bbcode-type parameter. Value and node as follows:');
+						console.error('To BBCode translation error at BBCode {{ bbcode.name }}.\n'
+									+ "Unexpected empty data-bbcode-type parameter. Value and node as follows:");
 						console.error(type);
 						console.error(current);
 						return;
@@ -527,13 +528,13 @@
 					var data = JSON.parse(data);
 					var extraOffset = 0;
 					for(var j = 0; j < types.length; j++){
-						if(types[j] === 'content'){
+						if(types[j] === "content"){
 							content = this.elementToBbcode($(current));
 						{% if bbcode.data.trimWhitespace %}
 							content = content.trim();
 						{% endif %}
 							extraOffset--;
-						}else if(types[j] === 'attr'){
+						}else if(types[j] === "attr"){
 							var name = data[j + extraOffset].name;
 							var value = data[j + extraOffset].value;
 							if(value === editorConstants.VALUE_IN_CONTENT){
@@ -543,7 +544,7 @@
 								name + '="' + value + '"'
 							);
 						}else{
-							console.warn("To BBCode translation warning at BBCode {{ bbcode.name }}.\n" +
+							console.warn('To BBCode translation warning at BBCode {{ bbcode.name }}.\n' +
 										 "Unexpected value for data-bbcode-type parameter." +
 										 "Skipping to the next value. Value and node were as follows:");
 							console.warn(types[j]);
@@ -567,9 +568,9 @@
 
 		{% set toolbar = toolbar ~ bbcode.name %}
 		{% if loop.index0 is divisible by(4) %}
-			{% set toolbar = toolbar ~ '|'  %}
+			{% set toolbar = toolbar ~ "|"  %}
 		{% else %}
-			{% set toolbar = toolbar ~ ',' %}
+			{% set toolbar = toolbar ~ "," %}
 		{% endif %}
 
 {% endfor %}
@@ -578,17 +579,17 @@
 // Loadup and start SCE
 var messageTextarea = $("#signature, #message");
 messageTextarea.sceditor({
-	plugins: 'bbcode,undo',
+	plugins: "bbcode,undo",
 	style: {{ EDITOR_JS_GLOBAL_OBJ }}.stylePath,
 
 {% if OVERRIDES.toolbar is defined %}
 	toolbar: '{{ OVERRIDES.toolbar }}|removeformat|' +
-				'cut,copy,paste,pastetext|' +
-				'unlink|print,maximize,source',
+				"cut,copy,paste,pastetext|" +
+				"unlink|print,maximize,source",
 {% else %}
 	toolbar: '{{ toolbar }}|indent,outdent,removeformat|' +
-				'cut,copy,paste,pastetext|' +
-				'unlink|print,maximize,source',
+				"cut,copy,paste,pastetext|" +
+				"unlink|print,maximize,source",
 {% endif %}
 	startInSourceMode: !!({{ EDITOR_JS_GLOBAL_OBJ }}.S_EDITOR_MODE & {{ constant('\\phpbb\\bbcode\\convert_editor\\base::DEFAULT_SOURCE_MODE') }}),
 	emoticons: {
@@ -602,7 +603,7 @@ var sceInstance = messageTextarea.sceditor("instance");
 
 makeDropdown = makeDropdown(sceInstance);
 
-var messageBox = document.getElementById('message-box');
+var messageBox = document.getElementById("message-box");
 if (messageBox){
 	// For icon mode, it should use none of these classes
 	if ({{ EDITOR_JS_GLOBAL_OBJ }}.S_EDITOR_BUTTONS_MODE  &
