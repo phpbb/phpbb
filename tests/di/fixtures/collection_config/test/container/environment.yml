@@ -1,0 +1,40 @@
+services:
+    config.php:
+        synthetic: true
+
+    dbal.conn:
+        class: phpbb\db\driver\factory
+        arguments:
+            - @service_container
+
+    dispatcher:
+        class: phpbb\db\driver\container_mock
+
+    template.twig.environment:
+        class: Exception
+        arguments:
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - []
+
+    service_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: collection }
+
+    collection_service1:
+        class: test_collection_service\collection_test1
+        tags:
+            - { name: collection }
+
+    collection_service2:
+        class: test_collection_service\collection_test2
+        tags:
+            - { name: collection }
