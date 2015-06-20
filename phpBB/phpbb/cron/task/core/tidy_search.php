@@ -26,6 +26,7 @@ class tidy_search extends \phpbb\cron\task\base
 	protected $config;
 	protected $db;
 	protected $user;
+	protected $phpbb_dispatcher;
 
 	/**
 	* Constructor.
@@ -36,8 +37,9 @@ class tidy_search extends \phpbb\cron\task\base
 	* @param \phpbb\config\config $config The config
 	* @param \phpbb\db\driver\driver_interface $db The db connection
 	* @param \phpbb\user $user The user
+	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher The event dispatcher
 	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user)
+	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -45,6 +47,7 @@ class tidy_search extends \phpbb\cron\task\base
 		$this->config = $config;
 		$this->db = $db;
 		$this->user = $user;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 	}
 
 	/**
@@ -58,7 +61,7 @@ class tidy_search extends \phpbb\cron\task\base
 
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error, $this->phpbb_root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user);
+		$search = new $search_type($error, $this->phpbb_root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user, $this->phpbb_dispatcher);
 
 		if (!$error)
 		{
