@@ -167,7 +167,7 @@ function attachInline(index, filename) {
 /**
 * Add quote text to message
 */
-function addquote(post_id, username, l_wrote) {
+function addquote(post_id, username, l_wrote, attributes) {
 	var message_name = 'message_' + post_id;
 	var theSelection = '';
 	var divarea = false;
@@ -213,7 +213,12 @@ function addquote(post_id, username, l_wrote) {
 
 	if (theSelection) {
 		if (bbcodeEnabled) {
-			insert_text('[quote="' + username + '"]' + theSelection + '[/quote]');
+			if (typeof attributes === 'undefined')
+			{
+				attributes = {};
+			}
+			attributes.author = username;
+			insert_text(generate_quote(theSelection, attributes));
 		} else {
 			insert_text(username + ' ' + l_wrote + ':' + '\n');
 			var lines = split_lines(theSelection);
@@ -224,6 +229,55 @@ function addquote(post_id, username, l_wrote) {
 	}
 
 	return;
+}
+
+/**
+* Create a quote block for given text
+*
+* Possible attributes:
+*   - author:  author's name (usually a username)
+*   - post_id: post_id of the post being quoted
+*   - user_id: user_id of the user being quoted
+*   - time:    timestamp of the original message
+*
+* @param  {!string} text       Quote's text
+* @param  {!Object} attributes Quote's attributes
+* @return {!string}            Quote block to be used in a new post/text
+*/
+function generate_quote(text, attributes)
+{
+	var quote = '[quote';
+	if ('author' in attributes)
+	{
+		// Add the author as the BBCode's default attribute
+		quote += '=' + enquote(attributes.author);
+		delete attributes.author;
+	}
+	for (var name in attributes)
+	{
+		var value = attributes[name];
+		quote += ' ' + name + '=' + enquote(String(value));
+	}
+	quote += ']' + text + '[/quote]';
+
+	return quote;
+}
+
+/**
+* Return given string between quotes
+*
+* Will use either single- or double- quotes depending on whichever requires less escaping.
+* Quotes and backslashes are escaped with backslashes where necessary
+*
+* @param  {!string} str Original string
+* @return {!string}     Escaped string within quotes
+*/
+function enquote(str)
+{
+	var singleQuoted = "'" + str.replace(/[\\']/g, '\\$&') + "'",
+		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
+
+	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
 }
 
 function split_lines(text) {
