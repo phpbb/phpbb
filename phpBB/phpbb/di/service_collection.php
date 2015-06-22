@@ -69,11 +69,26 @@ class service_collection extends \ArrayObject
 	/**
 	* Add a service to the collection
 	*
+	* Note: Calling this method should not initialize the services.
+	*
 	* @param string $name The service name
 	* @return null
 	*/
 	public function add($name)
 	{
 		$this->offsetSet($name, null);
+	}
+
+	/**
+	* Get service names
+	*
+	* Note: Calling this method should not initialize the services.
+	*
+	* @return array	Array of service names in the collection
+	*/
+	public function get_service_names()
+	{
+		$copy_array = $this->getArrayCopy();
+		return array_keys($copy_array);
 	}
 }
