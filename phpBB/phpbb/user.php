@@ -229,7 +229,7 @@ class user extends \phpbb\session
 		else
 		{
 			// Set up style
-			$style_id = ($style_id) ? $style_id : ((!$config['override_user_style']) ? $this->data['user_style'] : $config['default_style']);
+			$style_id = ($style_id) ? $style_id : ((!$config['override_user_style']) && isset($this->data['user_style']) ? $this->data['user_style'] : $config['default_style']);
 		}
 
 		$sql = 'SELECT *
@@ -240,7 +240,7 @@ class user extends \phpbb\session
 		$db->sql_freeresult($result);
 
 		// Fallback to user's standard style
-		if (!$this->style && $style_id != $this->data['user_style'])
+		if (!$this->style && isset($this->data['user_style']) && $style_id != $this->data['user_style'])
 		{
 			$style_id = $this->data['user_style'];
 
@@ -253,7 +253,7 @@ class user extends \phpbb\session
 		}
 
 		// User has wrong style
-		if (!$this->style && $style_id == $this->data['user_style'])
+		if (!$this->style && isset($this->data['user_style']) && $style_id == $this->data['user_style'])
 		{
 			$style_id = $this->data['user_style'] = $config['default_style'];
 
