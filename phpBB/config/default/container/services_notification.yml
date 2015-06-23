@@ -20,7 +20,7 @@ services:
 # ----- Notification's types -----
 # Scope MUST be prototype for all the plugins to work.
     notification.type_collection:
-        class: phpbb\di\service_collection
+        class: phpbb\di\service_collection\service_collection
         arguments:
             - @service_container
         tags:
@@ -351,11 +351,11 @@ services:
             - %tables.user_notifications%
         tags:
             - { name: notification.type }
-            
+
 # ----- Notification's methods -----
 # Scope MUST be prototype for all the plugins to work.
     notification.method_collection:
-        class: phpbb\di\service_collection
+        class: phpbb\di\service_collection\service_collection
         arguments:
             - @service_container
         tags:

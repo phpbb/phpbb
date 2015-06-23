@@ -25,7 +25,7 @@ services:
             - @filesystem
 
     template.twig.extensions.collection:
-        class: phpbb\di\service_collection
+        class: phpbb\di\service_collection\service_collection
         arguments:
             - @service_container
         tags:

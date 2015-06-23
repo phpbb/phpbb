@@ -27,7 +27,7 @@ class acp_profile
 	var $lang_defs;
 
 	/**
-	 * @var \phpbb\di\service_collection
+	 * @var \phpbb\di\service_collection\service_collection
 	 */
 	protected $type_collection;
 

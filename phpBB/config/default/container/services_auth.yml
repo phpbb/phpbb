@@ -69,7 +69,7 @@ services:
 
 # ----- OAuth services providers -----
     auth.provider.oauth.service_collection:
-        class: phpbb\di\service_collection
+        class: phpbb\di\service_collection\service_collection
         arguments:
             - @service_container
         tags:

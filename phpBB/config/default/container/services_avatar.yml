@@ -7,7 +7,7 @@ services:
 
 # ----- Avatar drivers -----
     avatar.driver_collection:
-        class: phpbb\di\service_collection
+        class: phpbb\di\service_collection\service_collection
         arguments:
             - @service_container
         tags:

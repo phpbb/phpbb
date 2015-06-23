@@ -19,7 +19,7 @@ services:
 
 # ----- Migrator's tools -----
     migrator.tool_collection:
-        class: phpbb\di\service_collection
+        class: phpbb\di\service_collection\service_collection
         arguments:
             - @service_container
         tags:

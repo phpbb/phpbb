@@ -89,9 +89,9 @@ class application extends \Symfony\Component\Console\Application
 	/**
 	* Register a set of commands from the container
 	*
-	* @param \phpbb\di\service_collection	$command_collection	The console service collection
+	* @param \phpbb\di\service_collection\service_collection	$command_collection	The console service collection
 	*/
-	public function register_container_commands(\phpbb\di\service_collection $command_collection)
+	public function register_container_commands(\phpbb\di\service_collection\service_collection $command_collection)
 	{
 		foreach ($command_collection as $service_command)
 		{
