@@ -624,6 +624,11 @@ if ($mode != 'edit')
 	$post_data['enable_urls']		= true;
 }
 
+if ($mode == 'post')
+{
+	$post_data['topic_status']		= ($request->is_set_post('lock_topic') && $auth->acl_gets('m_lock', 'f_user_lock', $forum_id)) ? ITEM_LOCKED : ITEM_UNLOCKED;
+}
+
 $post_data['enable_magic_url'] = $post_data['drafts'] = false;
 
 // User own some drafts?
@@ -1340,6 +1345,7 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
+				'topic_status'			=> $post_data['topic_status'],
 
 				'topic_visibility'			=> (isset($post_data['topic_visibility'])) ? $post_data['topic_visibility'] : false,
 				'post_visibility'			=> (isset($post_data['post_visibility'])) ? $post_data['post_visibility'] : false,
@@ -1768,7 +1774,7 @@ $page_data = array(
 	'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id']) || !$config['allow_topic_notify'] || !$config['email_enable']) ? false : true,
 	'S_NOTIFY_CHECKED'			=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
+	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote' || $mode == 'post') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
