@@ -111,7 +111,6 @@ function bbfontstyle(bbopen, bbclose) {
 	}
 
 	textarea.focus();
-	return;
 }
 
 /**
@@ -177,6 +176,9 @@ function addquote(post_id, username, l_wrote, attributes) {
 		// Backwards compatibility
 		l_wrote = 'wrote';
 	}
+	if (typeof attributes !== 'object') {
+		attributes = {};
+	}
 
 	if (document.all) {
 		divarea = document.all[message_name];
@@ -213,12 +215,8 @@ function addquote(post_id, username, l_wrote, attributes) {
 
 	if (theSelection) {
 		if (bbcodeEnabled) {
-			if (typeof attributes === 'undefined')
-			{
-				attributes = {};
-			}
 			attributes.author = username;
-			insert_text(generate_quote(theSelection, attributes));
+			insert_text(generateQuote(theSelection, attributes));
 		} else {
 			insert_text(username + ' ' + l_wrote + ':' + '\n');
 			var lines = split_lines(theSelection);
@@ -227,8 +225,6 @@ function addquote(post_id, username, l_wrote, attributes) {
 			}
 		}
 	}
-
-	return;
 }
 
 /**
@@ -244,19 +240,18 @@ function addquote(post_id, username, l_wrote, attributes) {
 * @param  {!Object} attributes Quote's attributes
 * @return {!string}            Quote block to be used in a new post/text
 */
-function generate_quote(text, attributes)
-{
+function generateQuote(text, attributes) {
 	var quote = '[quote';
-	if ('author' in attributes)
-	{
+	if (attributes.author) {
 		// Add the author as the BBCode's default attribute
-		quote += '=' + format_attribute_value(attributes.author);
+		quote += '=' + formatAttributeValue(attributes.author);
 		delete attributes.author;
 	}
-	for (var name in attributes)
-	{
-		var value = attributes[name];
-		quote += ' ' + name + '=' + format_attribute_value(String(value));
+	for (var name in attributes) {
+		if (attributes.hasOwnProperty(name)) {
+			var value = attributes[name];
+			quote += ' ' + name + '=' + formatAttributeValue(value.toString());
+		}
 	}
 	quote += ']' + text + '[/quote]';
 
@@ -273,10 +268,8 @@ function generate_quote(text, attributes)
 * @param  {!string} str Original string
 * @return {!string}     Same string if possible, escaped string within quotes otherwise
 */
-function format_attribute_value(str)
-{
-	if (!/[ "'\\\]]/.test(str))
-	{
+function formatAttributeValue(str) {
+	if (!/[ "'\\\]]/.test(str)) {
 		// Return as-is if it contains none of: space, ' " \ or ]
 		return str;
 	}
