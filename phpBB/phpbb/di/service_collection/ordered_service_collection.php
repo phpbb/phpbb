@@ -46,6 +46,19 @@ class ordered_service_collection extends service_collection
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getIterator()
+	{
+		if (!$this->is_ordered)
+		{
+			$this->sort_services();
+		}
+
+		return new service_collection_iterator($this);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function offsetExists($index)
 	{
 		if (!$this->is_ordered)
