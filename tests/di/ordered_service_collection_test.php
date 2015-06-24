@@ -11,10 +11,10 @@
  *
  */
 
-class phpbb_service_collection_test extends \phpbb_test_case
+class phpbb_ordered_service_collection_test extends \phpbb_test_case
 {
 	/**
-	 * @var \phpbb\di\service_collection\service_collection
+	 * @var \phpbb\di\service_collection\ordered_service_collection
 	 */
 	protected $service_collection;
 
@@ -23,10 +23,14 @@ class phpbb_service_collection_test extends \phpbb_test_case
 		$container = new phpbb_mock_container_builder();
 		$container->set('foo', new StdClass);
 		$container->set('bar', new StdClass);
+		$container->set('foobar', new StdClass);
+		$container->set('barfoo', new StdClass);
 
-		$this->service_collection = new \phpbb\di\service_collection\service_collection($container);
-		$this->service_collection->add('foo');
-		$this->service_collection->add('bar');
+		$this->service_collection = new \phpbb\di\service_collection\ordered_service_collection($container);
+		$this->service_collection->add('foo', 7);
+		$this->service_collection->add('bar', 3);
+		$this->service_collection->add('barfoo', 5);
+		$this->service_collection->add('foobar', 2);
 
 		parent::setUp();
 	}
@@ -42,6 +46,6 @@ class phpbb_service_collection_test extends \phpbb_test_case
 			$this->assertInstanceOf('StdClass', $service);
 		}
 
-		$this->assertSame(array('foo', 'bar'), $service_names);
+		$this->assertSame(array('foobar', 'bar', 'barfoo', 'foo'), $service_names);
 	}
 }
