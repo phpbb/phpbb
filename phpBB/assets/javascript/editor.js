@@ -241,6 +241,7 @@ function addquote(post_id, username, l_wrote, attributes) {
 * @return {!string}            Quote block to be used in a new post/text
 */
 function generateQuote(text, attributes) {
+	text = text.replace(/^\s+/, '').replace(/\s+$/, '');
 	var quote = '[quote';
 	if (attributes.author) {
 		// Add the author as the BBCode's default attribute
@@ -253,7 +254,9 @@ function generateQuote(text, attributes) {
 			quote += ' ' + name + '=' + formatAttributeValue(value.toString());
 		}
 	}
-	quote += ']' + text + '[/quote]';
+	quote += ']';
+	var newline = ((quote + text + '[/quote]').length > 80 || text.indexOf('\n') > -1) ? '\n' : '';
+	quote += newline + text + newline + '[/quote]';
 
 	return quote;
 }
