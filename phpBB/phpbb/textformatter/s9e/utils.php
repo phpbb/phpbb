@@ -56,6 +56,7 @@ class utils implements \phpbb\textformatter\utils_interface
 	*/
 	public function generate_quote($text, array $attributes = array())
 	{
+		$text = trim($text);
 		$quote = '[quote';
 		if (isset($attributes['author']))
 		{
@@ -67,7 +68,9 @@ class utils implements \phpbb\textformatter\utils_interface
 		{
 			$quote .= ' ' . $name . '=' . $this->enquote($value);
 		}
-		$quote .= ']' . $text . '[/quote]';
+		$quote .= ']';
+		$newline = (strlen($quote . $text . '[/quote]') > 80 || strpos($text, "\n") !== false) ? "\n" : '';
+		$quote .= $newline . $text . $newline . '[/quote]';
 
 		return $quote;
 	}
