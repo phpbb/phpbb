@@ -176,6 +176,36 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 				'[quote=user post_id=123 url=http://example.org]...[/quote]',
 			),
 			array(
+				'...',
+				array('author'  => ' '),
+				'[quote=" "]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => 'foo bar'),
+				'[quote="foo bar"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => '\\'),
+				'[quote="\\\\"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => '[quote="foo"]'),
+				'[quote=\'[quote="foo"]\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => '""'),
+				'[quote=\'""\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => "''"),
+				'[quote="\'\'"]...[/quote]',
+			),
+			array(
 				'This is a long quote that is definitely going to exceed 80 characters',
 				array(),
 				"[quote]\nThis is a long quote that is definitely going to exceed 80 characters\n[/quote]",

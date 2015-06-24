@@ -247,6 +247,11 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'[quote=Username profile_url=http://fake.example.org]...[/quote]',
 				'<blockquote><div><cite>Username wrote:</cite>...</div></blockquote>'
 			),
+			array(
+				// From phpbb_textformatter_s9e_utils_test::test_generate_quote()
+				'[quote=\'[quote="foo"]\']...[/quote]',
+				'<blockquote><div><cite>[quote="foo"] wrote:</cite>...</div></blockquote>'
+			),
 		);
 	}
 }
