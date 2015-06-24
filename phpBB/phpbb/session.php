@@ -893,7 +893,7 @@ class session
 			$_SID = '';
 		}
 
-		$session_data = $this->data;
+		$session_data = $sql_ary;
 		/**
 		* Event to send new session data to extension
 		* Read-only event
@@ -1591,12 +1591,12 @@ class session
 		* Event to send update session information to extension
 		* Read-only event
 		*
-		* @event core.update_session
+		* @event core.update_session_after
 		* @var	array		session_data				Associative array of session keys to be updated
 		* @var	string		session_id				current user's session_id
 		* @since 3.1.5-RC1
 		*/
 		$vars = array('session_data', 'session_id');
-		extract($phpbb_dispatcher->trigger_event('core.update_session', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.update_session_after', compact($vars)));
 	}
 }
