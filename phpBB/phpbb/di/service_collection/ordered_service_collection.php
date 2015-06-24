@@ -88,7 +88,7 @@ class ordered_service_collection extends service_collection
 	 * @param string	$service_id
 	 * @param int		$order
 	 */
-	public function add($service_id, $order)
+	public function add($service_id, $order = 0)
 	{
 		if ($this->is_ordered)
 		{
