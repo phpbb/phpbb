@@ -250,13 +250,13 @@ function generate_quote(text, attributes)
 	if ('author' in attributes)
 	{
 		// Add the author as the BBCode's default attribute
-		quote += '=' + enquote(attributes.author);
+		quote += '=' + format_attribute_value(attributes.author);
 		delete attributes.author;
 	}
 	for (var name in attributes)
 	{
 		var value = attributes[name];
-		quote += ' ' + name + '=' + enquote(String(value));
+		quote += ' ' + name + '=' + format_attribute_value(String(value));
 	}
 	quote += ']' + text + '[/quote]';
 
@@ -264,16 +264,22 @@ function generate_quote(text, attributes)
 }
 
 /**
-* Return given string between quotes
+* Format given string to be used as an attribute value
 *
-* Will use either single- or double- quotes depending on whichever requires less escaping.
+* Will return the string as-is if it can be used in a BBCode without quotes. Otherwise,
+* it will use either single- or double- quotes depending on whichever requires less escaping.
 * Quotes and backslashes are escaped with backslashes where necessary
 *
 * @param  {!string} str Original string
-* @return {!string}     Escaped string within quotes
+* @return {!string}     Same string if possible, escaped string within quotes otherwise
 */
-function enquote(str)
+function format_attribute_value(str)
 {
+	if (!/[ "'\\\]]/.test(str))
+	{
+		// Return as-is if it contains none of: space, ' " \ or ]
+		return str;
+	}
 	var singleQuoted = "'" + str.replace(/[\\']/g, '\\$&') + "'",
 		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
 

@@ -98,11 +98,15 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 				array('foo')
 			),
 			array(
-				'[quote="foo"]..[/quote] [quote="bar"]..[/quote]',
+				'[quote=foo]..[/quote] [quote]..[/quote]',
+				array('foo')
+			),
+			array(
+				'[quote=foo]..[/quote] [quote=bar]..[/quote]',
 				array('foo', 'bar')
 			),
 			array(
-				'[quote="foo"].[quote="baz"]..[/quote].[/quote] [quote="bar"]..[/quote]',
+				'[quote=foo].[quote=baz]..[/quote].[/quote] [quote=bar]..[/quote]',
 				array('foo', 'bar')
 			),
 		);
@@ -169,7 +173,7 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 					'post_id' => 123,
 					'url'     => 'http://example.org'
 				),
-				'[quote="user" post_id="123" url="http://example.org"]...[/quote]',
+				'[quote=user post_id=123 url=http://example.org]...[/quote]',
 			),
 			array(
 				'This is a long quote that is definitely going to exceed 80 characters',

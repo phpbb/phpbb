@@ -35,16 +35,22 @@ class utils implements \phpbb\textformatter\utils_interface
 	}
 
 	/**
-	* Return given string between quotes
+	* Format given string to be used as an attribute value
 	*
-	* Will use either single- or double- quotes depending on whichever requires less escaping.
+	* Will return the string as-is if it can be used in a BBCode without quotes. Otherwise,
+	* it will use either single- or double- quotes depending on whichever requires less escaping.
 	* Quotes and backslashes are escaped with backslashes where necessary
 	*
 	* @param  string $str Original string
-	* @return string      Escaped string within quotes
+	* @return string      Same string if possible, escaped string within quotes otherwise
 	*/
-	protected function enquote($str)
+	protected function format_attribute_value($str)
 	{
+		if (!preg_match('/[ "\'\\\\\\]]/', $str))
+		{
+			// Return as-is if it contains none of: space, ' " \ or ]
+			return $str;
+		}
 		$singleQuoted = "'" . addcslashes($str, "\\'") . "'";
 		$doubleQuoted = '"' . addcslashes($str, '\\"') . '"';
 
@@ -61,13 +67,13 @@ class utils implements \phpbb\textformatter\utils_interface
 		if (isset($attributes['author']))
 		{
 			// Add the author as the BBCode's default attribute
-			$quote .= '=' . $this->enquote($attributes['author']);
+			$quote .= '=' . $this->format_attribute_value($attributes['author']);
 			unset($attributes['author']);
 		}
 		ksort($attributes);
 		foreach ($attributes as $name => $value)
 		{
-			$quote .= ' ' . $name . '=' . $this->enquote($value);
+			$quote .= ' ' . $name . '=' . $this->format_attribute_value($value);
 		}
 		$quote .= ']';
 		$newline = (strlen($quote . $text . '[/quote]') > 80 || strpos($text, "\n") !== false) ? "\n" : '';
