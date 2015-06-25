@@ -236,7 +236,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[quote=Username time=58705871]...[/quote]',
-				'<blockquote><div><cite>1971-11-11 11:11:11 Username wrote:</cite>...</div></blockquote>'
+				'<blockquote><div><cite>Username wrote:<div class="responsive-hide">1971-11-11 11:11:11</div></cite>...</div></blockquote>'
 			),
 			array(
 				'[quote=Username user_id=123]...[/quote]',

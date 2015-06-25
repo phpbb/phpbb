@@ -486,6 +486,11 @@ blockquote.uncited {
 	padding-top: 25px;
 }
 
+blockquote cite > div {
+	float: right;
+	font-weight: normal;
+}
+
 /* Code block */
 .codebox {
 	padding: 3px;
