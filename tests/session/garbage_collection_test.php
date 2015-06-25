@@ -30,7 +30,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 
 		global $phpbb_container;
 
-		$plugins = new \phpbb\di\service_collection\service_collection($phpbb_container);
+		$plugins = new \phpbb\di\service_collection($phpbb_container);
 		$plugins->add('core.captcha.plugins.nogd');
 		$phpbb_container->set(
 			'captcha.factory',

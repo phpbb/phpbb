@@ -89,7 +89,7 @@ class manager
 	/**
 	* Fill algorithm type map
 	*
-	* @param \phpbb\di\service_collection\service_collection $hashing_algorithms
+	* @param \phpbb\di\service_collection $hashing_algorithms
 	*/
 	protected function fill_type_map($hashing_algorithms)
 	{

@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\di\service_collection;
+namespace phpbb\di;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

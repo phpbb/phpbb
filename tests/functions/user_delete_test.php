@@ -46,7 +46,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$notification_manager = new phpbb_mock_notification_manager();
 		$provider_collection =  new \phpbb\auth\provider_collection($phpbb_container, $config);
 		$oauth_provider_google = new \phpbb\auth\provider\oauth\service\google($config, $request);
-		$oauth_provider_collection = new \phpbb\di\service_collection\service_collection($phpbb_container);
+		$oauth_provider_collection = new \phpbb\di\service_collection($phpbb_container);
 		$oauth_provider_collection->offsetSet('auth.provider.oauth.service.google', $oauth_provider_google);
 
 		$driver_helper = new \phpbb\passwords\driver\helper($config);

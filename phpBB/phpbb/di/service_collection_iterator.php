@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\di\service_collection;
+namespace phpbb\di;
 
 /**
 * Iterator which loads the services when they are requested
@@ -19,14 +19,14 @@ namespace phpbb\di\service_collection;
 class service_collection_iterator extends \ArrayIterator
 {
 	/**
-	* @var \phpbb\di\service_collection\service_collection
+	* @var \phpbb\di\service_collection
 	*/
 	protected $collection;
 
 	/**
 	* Construct an ArrayIterator for service_collection
 	*
-	* @param \phpbb\di\service_collection\service_collection $collection The collection to iterate over
+	* @param \phpbb\di\service_collection $collection The collection to iterate over
 	* @param int $flags Flags to control the behaviour of the ArrayObject object.
 	* @see ArrayObject::setFlags()
 	*/

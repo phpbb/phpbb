@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
 * Collection of auth providers to be configured at container compile time.
 */
-class provider_collection extends \phpbb\di\service_collection\service_collection
+class provider_collection extends \phpbb\di\service_collection
 {
 	/** @var \phpbb\config\config phpBB Config */
 	protected $config;

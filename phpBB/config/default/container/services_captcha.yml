@@ -8,7 +8,7 @@ services:
 # ----- Captcha plugins -----
 # Scope MUST be prototype for all the plugins to work.
     captcha.plugins.service_collection:
-        class: phpbb\di\service_collection\service_collection
+        class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:

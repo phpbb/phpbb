@@ -14,7 +14,7 @@
 class phpbb_service_collection_test extends \phpbb_test_case
 {
 	/**
-	 * @var \phpbb\di\service_collection\service_collection
+	 * @var \phpbb\di\service_collection
 	 */
 	protected $service_collection;
 
@@ -24,7 +24,7 @@ class phpbb_service_collection_test extends \phpbb_test_case
 		$container->set('foo', new StdClass);
 		$container->set('bar', new StdClass);
 
-		$this->service_collection = new \phpbb\di\service_collection\service_collection($container);
+		$this->service_collection = new \phpbb\di\service_collection($container);
 		$this->service_collection->add('foo');
 		$this->service_collection->add('bar');
 

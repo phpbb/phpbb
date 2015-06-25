@@ -72,7 +72,7 @@ class oauth extends \phpbb\auth\provider\base
 	/**
 	* All OAuth service providers
 	*
-	* @var \phpbb\di\service_collection\service_collection Contains \phpbb\auth\provider\oauth\service_interface
+	* @var \phpbb\di\service_collection Contains \phpbb\auth\provider\oauth\service_interface
 	*/
 	protected $service_providers;
 
@@ -121,13 +121,13 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	\phpbb\user		$user
 	* @param	string			$auth_provider_oauth_token_storage_table
 	* @param	string			$auth_provider_oauth_token_account_assoc
-	* @param	\phpbb\di\service_collection\service_collection	$service_providers Contains \phpbb\auth\provider\oauth\service_interface
+	* @param	\phpbb\di\service_collection	$service_providers Contains \phpbb\auth\provider\oauth\service_interface
 	* @param	string			$users_table
 	* @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
 	* @param	string			$phpbb_root_path
 	* @param	string			$php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;

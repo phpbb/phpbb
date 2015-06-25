@@ -15,7 +15,7 @@ services:
 
 # ----- Cron tasks -----
     cron.task_collection:
-        class: phpbb\di\service_collection\service_collection
+        class: phpbb\di\service_collection
         arguments:
             - @service_container
         tags:

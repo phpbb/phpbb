@@ -14,7 +14,7 @@
 class phpbb_ordered_service_collection_test extends \phpbb_test_case
 {
 	/**
-	 * @var \phpbb\di\service_collection\ordered_service_collection
+	 * @var \phpbb\di\ordered_service_collection
 	 */
 	protected $service_collection;
 
@@ -26,7 +26,7 @@ class phpbb_ordered_service_collection_test extends \phpbb_test_case
 		$container->set('foobar', new StdClass);
 		$container->set('barfoo', new StdClass);
 
-		$this->service_collection = new \phpbb\di\service_collection\ordered_service_collection($container);
+		$this->service_collection = new \phpbb\di\ordered_service_collection($container);
 		$this->service_collection->add('foo', 7);
 		$this->service_collection->add('bar', 3);
 		$this->service_collection->add('barfoo', 5);

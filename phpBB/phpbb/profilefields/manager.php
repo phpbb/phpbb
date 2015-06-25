@@ -50,7 +50,7 @@ class manager
 
 	/**
 	* Service Collection object
-	* @var \phpbb\di\service_collection\service_collection
+	* @var \phpbb\di\service_collection
 	*/
 	protected $type_collection;
 
@@ -76,13 +76,13 @@ class manager
 	* @param	\phpbb\event\dispatcher_interface		$dispatcher	Event dispatcher object
 	* @param	\phpbb\request\request		$request	Request object
 	* @param	\phpbb\template\template	$template	Template object
-	* @param	\phpbb\di\service_collection\service_collection $type_collection
+	* @param	\phpbb\di\service_collection $type_collection
 	* @param	\phpbb\user					$user		User object
 	* @param	string				$fields_table
 	* @param	string				$fields_language_table
 	* @param	string				$fields_data_table
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\di\service_collection $type_collection, \phpbb\user $user, $fields_table, $fields_language_table, $fields_data_table)
 	{
 		$this->auth = $auth;
 		$this->db = $db;
