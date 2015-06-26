@@ -461,7 +461,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
