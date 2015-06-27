@@ -66,7 +66,7 @@ class factory implements \phpbb\textformatter\cache_interface
 	protected $default_definitions = array(
 		'attachment' => '[ATTACHMENT index={NUMBER} filename={TEXT;useContent}]',
 		'b'     => '[B]{TEXT}[/B]',
-		'code'  => '[CODE]{TEXT}[/CODE]',
+		'code'  => '[CODE lang={IDENTIFIER;optional}]{TEXT}[/CODE]',
 		'color' => '[COLOR={COLOR}]{TEXT}[/COLOR]',
 		'email' => '[EMAIL={EMAIL;useContent} subject={TEXT;optional;postFilter=rawurlencode} body={TEXT;optional;postFilter=rawurlencode}]{TEXT}[/EMAIL]',
 		'flash' => '[FLASH={NUMBER1},{NUMBER2} width={NUMBER1;postFilter=#flashwidth} height={NUMBER2;postFilter=#flashheight} url={URL;useContent} /]',
