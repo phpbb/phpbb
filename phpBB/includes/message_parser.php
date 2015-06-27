@@ -1848,7 +1848,7 @@ class parse_message extends bbcode_firstpass
 	public function remove_nested_quotes($max_depth)
 	{
 		// Capture all [quote] and [/quote] tags
-		preg_match_all('(\\[/?quote(?:=[^]]+)?:' . $this->bbcode_uid . '\\])', $this->message, $matches, PREG_OFFSET_CAPTURE);
+		preg_match_all('(\\[/?quote(?:=&quot;(.*?)&quot;)?:' . $this->bbcode_uid . '\\])', $this->message, $matches, PREG_OFFSET_CAPTURE);
 
 		// Iterate over the quote tags to mark the ranges that must be removed
 		$depth = 0;
