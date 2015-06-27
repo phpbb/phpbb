@@ -59,7 +59,7 @@ class factory
 	 */
 	public function get()
 	{
-		if ($this->container->has('installer.helper.iohandler_' . $this->environment))
+		switch ($this->environment)
 		{
 			case 'ajax':
 				return $this->container->get('installer.helper.iohandler_ajax');

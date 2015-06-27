@@ -232,4 +232,25 @@ class cli_iohandler extends iohandler_base
 			$this->progress_bar = null;
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function request_refresh()
+	{
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_active_stage_menu($menu_path)
+	{
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_finished_stage_menu($menu_path)
+	{
+	}
 }
