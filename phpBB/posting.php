@@ -1841,6 +1841,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 * @var	int	post_id		ID of the post
 * @var	int	topic_id	ID of the topic
 * @var	int	forum_id	ID of the forum
+* @var	int	draft_id	ID of the draft
 * @var	bool	submit		Whether or not the form has been submitted
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
@@ -1863,6 +1864,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 *		delete, cancel, refresh, error, page_data, message_parser
 * @change 3.1.2-RC1 Removed 'delete' var as it does not exist
 * @change 3.1.5-RC1 Added poll variables to the page_data array
+* @change 3.1.6-RC1 Added 'draft_id' var
 */
 $vars = array(
 	'post_data',
@@ -1876,6 +1878,7 @@ $vars = array(
 	'post_id',
 	'topic_id',
 	'forum_id',
+	'draft_id',
 	'submit',
 	'preview',
 	'save',
