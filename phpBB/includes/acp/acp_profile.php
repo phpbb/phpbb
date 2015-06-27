@@ -381,7 +381,7 @@ class acp_profile
 				* @var	array	field_row		Array of data about the field
 				* @var	array	exclude			Array of excluded fields by step
 				* @var	array	visibility_ary	Array of fields that are visibility related
-				* @since 3.1.5-RC1
+				* @since 3.1.6-RC1
 				*/
 				$vars = array(
 					'action',
@@ -683,7 +683,7 @@ class acp_profile
 				* @var	array	field_data		Array of data about the field
 				* @var	array	s_hidden_fields	Array of hidden fields in case this needs modification
 				* @var	array	options			Array of options specific to this step
-				* @since 3.1.5-RC1
+				* @since 3.1.6-RC1
 				*/
 				$vars = array(
 					'action',
@@ -914,7 +914,7 @@ class acp_profile
 		* @var	string	field_type		Type of the field we are dealing with
 		* @var	array	field_data		Array of data about the field
 		* @var	array	profile_fields	Array of fields to be sent to the database
-		* @since 3.1.5-RC1
+		* @since 3.1.6-RC1
 		*/
 		$vars = array(
 			'action',
