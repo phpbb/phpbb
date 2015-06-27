@@ -34,7 +34,7 @@ function popup(url, width, height, name) {
 function pageJump(item) {
 	'use strict';
 
-	var page = item.val(),
+	var page = parseInt(item.val(), 10),
 		perPage = item.attr('data-per-page'),
 		baseUrl = item.attr('data-base-url'),
 		startName = item.attr('data-start-name');
