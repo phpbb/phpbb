@@ -90,14 +90,9 @@ class ordered_service_collection extends service_collection
 	 */
 	public function add($service_id, $order = 0)
 	{
-		if ($this->is_ordered)
-		{
-			return;
-		}
-
 		$order = (int) $order;
-
 		$this->service_ids[$order][] = $service_id;
+		$this->is_ordered = false;
 	}
 
 	protected function sort_services()
@@ -107,6 +102,7 @@ class ordered_service_collection extends service_collection
 			return;
 		}
 
+		$this->exchangeArray(array());
 		ksort($this->service_ids);
 		foreach ($this->service_ids as $service_order_group)
 		{
