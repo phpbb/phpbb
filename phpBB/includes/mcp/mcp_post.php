@@ -563,7 +563,7 @@ function change_poster(&$post_info, $userdata)
 	* This event allows you to perform additional tasks after changing a post's poster
 	*
 	* @event core.mcp_change_poster_after
-	* @var	string	userdata	Information on a post's new poster
+	* @var	array	userdata	Information on a post's new poster
 	* @var	array	post_info	Information on the affected post
 	* @since 3.1.6-RC1
 	*/
