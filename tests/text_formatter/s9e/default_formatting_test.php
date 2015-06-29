@@ -15,6 +15,17 @@ require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
 
 class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 {
+	public function test_bbcode_code_lang_is_saved()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$parser    = $container->get('text_formatter.parser');
+
+		$original = '[code]...[/code][code=php]...[/code]';
+		$expected = '<r><CODE><s>[code]</s>...<e>[/code]</e></CODE><CODE lang="php"><s>[code=php]</s>...<e>[/code]</e></CODE></r>';
+
+		$this->assertXmlStringEqualsXmlString($expected, $parser->parse($original));
+	}
+
 	/**
 	* @dataProvider get_default_formatting_tests
 	*/
