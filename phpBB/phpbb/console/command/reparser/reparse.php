@@ -15,6 +15,7 @@ namespace phpbb\console\command\reparser;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class reparse extends \phpbb\console\command\command
@@ -49,6 +50,26 @@ class reparse extends \phpbb\console\command\command
 			->setName('reparser:reparse')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE'))
 			->addArgument('reparser-name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_ARG_1'))
+			->addOption(
+				'range-min',
+				null,
+				InputOption::VALUE_REQUIRED,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_RANGE_MIN'),
+				0
+			)
+			->addOption(
+				'range-max',
+				null,
+				InputOption::VALUE_REQUIRED,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_RANGE_MAX')
+			)
+			->addOption(
+				'range-size',
+				null,
+				InputOption::VALUE_REQUIRED,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_RANGE_SIZE'),
+				100
+			);
 		;
 	}
 
@@ -69,13 +90,13 @@ class reparse extends \phpbb\console\command\command
 			{
 				$name = 'text_reparser.' . $name;
 			}
-			$this->reparse($output, $name);
+			$this->reparse($input, $output, $name);
 		}
 		else
 		{
 			foreach ($this->reparsers as $name => $service)
 			{
-				$this->reparse($output, $name);
+				$this->reparse($input, $output, $name);
 			}
 		}
 
@@ -83,24 +104,28 @@ class reparse extends \phpbb\console\command\command
 	}
 
 	/**
-	* Reparse all text handled by given reparser
+	* Reparse all text handled by given reparser within given range
 	*
+	* @param InputInterface $input
 	* @param OutputInterface $output
 	* @param string $name Reparser name
 	* @return null
 	*/
-	protected function reparse(OutputInterface $output, $name)
+	protected function reparse(InputInterface $input, OutputInterface $output, $name)
 	{
 		$reparser = $this->reparsers[$name];
-		$id = $reparser->get_max_id();
-		$n = 100;
-		while ($id > 0)
+
+		// Start at range-max if specified or at the highest ID otherwise
+		$id   = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
+		$min  = $input->getOption('range-min');
+		$size = $input->getOption('range-size');
+		while ($id > $min)
 		{
-			$start = max(0, $id + 1 - $n);
+			$start = max($min, $id + 1 - $size);
 			$end   = $id;
 			$output->writeln('<info>' . $this->user->lang('CLI_REPARSER_REPARSE_REPARSING', $name, $start, $end) . '</info>');
 			$reparser->reparse_range($start, $end);
-			$id -= $n;
+			$id -= $size;
 		}
 	}
 }
