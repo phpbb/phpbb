@@ -15,7 +15,6 @@ namespace phpbb\console\command\reparser;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class list_all extends \phpbb\console\command\command
 {
@@ -28,13 +27,13 @@ class list_all extends \phpbb\console\command\command
 	* Constructor
 	*
 	* @param \phpbb\user $user
-	* @param ContainerBuilder $container Container used to locate the reparsers
+	* @param \phpbb\di\service_collection $reparsers
 	*/
-	public function __construct(\phpbb\user $user, ContainerBuilder $container)
+	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers)
 	{
 		parent::__construct($user);
 		$this->reparser_names = array();
-		foreach (array_keys($container->findTaggedServiceIds('text_reparser.plugin')) as $name)
+		foreach ($reparsers as $name => $reparser)
 		{
 			// Store the names without the "text_reparser." prefix
 			$this->reparser_names[] = str_replace('text_reparser.', '', $name);

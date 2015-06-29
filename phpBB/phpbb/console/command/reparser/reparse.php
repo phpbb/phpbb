@@ -20,21 +20,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 class reparse extends \phpbb\console\command\command
 {
 	/**
-	* @var \phpbb\textreparser\reparser_collection
+	* @var \phpbb\di\service_collection
 	*/
-	protected $reparser_collection;
+	protected $reparsers;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\user $user
-	* @param \phpbb\textreparser\reparser_collection $reparser_collection
+	* @param \phpbb\di\service_collection $reparser_collection
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\textreparser\reparser_collection $reparser_collection)
+	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers)
 	{
 		require_once __DIR__ . '/../../../../includes/functions_content.php';
 
-		$this->reparser_collection = $reparser_collection;
+		$this->reparsers = $reparsers;
 		parent::__construct($user);
 	}
 
@@ -65,7 +65,7 @@ class reparse extends \phpbb\console\command\command
 		if (isset($name))
 		{
 			// Allow "post_text" to be an alias for "text_reparser.post_text"
-			if (!isset($this->reparser_collection[$name]))
+			if (!isset($this->reparsers[$name]))
 			{
 				$name = 'text_reparser.' . $name;
 			}
@@ -73,7 +73,7 @@ class reparse extends \phpbb\console\command\command
 		}
 		else
 		{
-			foreach ($this->reparser_collection as $name => $service)
+			foreach ($this->reparsers as $name => $service)
 			{
 				$this->reparse($output, $name);
 			}
@@ -91,7 +91,7 @@ class reparse extends \phpbb\console\command\command
 	*/
 	protected function reparse(OutputInterface $output, $name)
 	{
-		$reparser = $this->reparser_collection[$name];
+		$reparser = $this->reparsers[$name];
 		$id = $reparser->get_max_id();
 		$n = 100;
 		while ($id > 0)
