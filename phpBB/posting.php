@@ -1586,13 +1586,12 @@ if (!sizeof($error) && $preview)
 
 // Remove quotes that would become nested too deep before decoding the text
 $generate_quote = ($mode == 'quote' && !$submit && !$preview && !$refresh);
-if ($generate_quote && $config['max_quote_depth'] > 0 && preg_match('#^<[rt][ >]#', $message_parser->message))
+if ($generate_quote && $config['max_quote_depth'] > 0)
 {
-	$message_parser->message = $phpbb_container->get('text_formatter.utils')->remove_bbcode(
-		$message_parser->message,
-		'quote',
-		$config['max_quote_depth'] - 1
-	);
+	$tmp_bbcode_uid = $message_parser->bbcode_uid;
+	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
+	$message_parser->remove_nested_quotes($config['max_quote_depth'] - 1);
+	$message_parser->bbcode_uid = $tmp_bbcode_uid;
 }
 
 // Decode text for message display
