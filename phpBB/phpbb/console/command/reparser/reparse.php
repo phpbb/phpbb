@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\reparser;
 
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -116,16 +117,29 @@ class reparse extends \phpbb\console\command\command
 		$reparser = $this->reparsers[$name];
 
 		// Start at range-max if specified or at the highest ID otherwise
-		$id   = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
+		$max  = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
 		$min  = $input->getOption('range-min');
 		$size = $input->getOption('range-size');
-		while ($id > $min)
+
+		$output->writeLn($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $min, $max) . '</info>');
+
+		$progress = new ProgressBar($output, $max - $min);
+		$progress->start();
+
+		// Start from $max and decrement $current by $size until we reach $min
+		$current = $max;
+		while ($current > $min)
 		{
-			$start = max($min, $id + 1 - $size);
-			$end   = $id;
-			$output->writeln('<info>' . $this->user->lang('CLI_REPARSER_REPARSE_REPARSING', $name, $start, $end) . '</info>');
+			$start = max($min, $current + 1 - $size);
+			$end   = $current;
 			$reparser->reparse_range($start, $end);
-			$id -= $size;
+
+			$current = max($min, $start - 1);
+			$progress->setProgress($max - $current);
 		}
+		$progress->finish();
+
+		// The progress bar does not seem to end with a newline so we add one manually
+		$output->writeLn('');
 	}
 }
