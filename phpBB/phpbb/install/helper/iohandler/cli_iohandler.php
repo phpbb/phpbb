@@ -14,7 +14,6 @@
 namespace phpbb\install\helper\iohandler;
 
 use phpbb\install\exception\installer_exception;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\OutputStyle;
 
@@ -39,7 +38,7 @@ class cli_iohandler extends iohandler_base
 	protected $input_values = array();
 
 	/**
-	 * @var ProgressBar
+	 * @var \Symfony\Component\Console\Helper\ProgressBar
 	 */
 	protected $progress_bar;
 
@@ -65,7 +64,6 @@ class cli_iohandler extends iohandler_base
 		{
 			$result = $this->input_values[$name];
 		}
-
 
 		if ($multibyte)
 		{
@@ -160,7 +158,8 @@ class cli_iohandler extends iohandler_base
 	{
 		if ($this->output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL)
 		{
-			$this->output->writeln(sprintf('[%3d/%-3d] ---- %s', $this->current_task_progress, $this->task_progress_count, $this->translate_message($log_title, $log_description)['title']));
+			$message = $this->translate_message($log_title, $log_description);
+			$this->output->writeln(sprintf('[%3d/%-3d] ---- %s', $this->current_task_progress, $this->task_progress_count, $message['title']));
 		}
 	}
 
@@ -193,11 +192,13 @@ class cli_iohandler extends iohandler_base
 				"             %message%\n");
 			$this->progress_bar->setBarWidth(60);
 
-			if (!defined('PHP_WINDOWS_VERSION_BUILD')) {
+			if (!defined('PHP_WINDOWS_VERSION_BUILD'))
+			{
 				$this->progress_bar->setEmptyBarCharacter('░'); // light shade character \u2591
 				$this->progress_bar->setProgressCharacter('');
 				$this->progress_bar->setBarCharacter('▓'); // dark shade character \u2593
 			}
+
 			$this->progress_bar->setMessage('');
 			$this->io->newLine(2);
 			$this->progress_bar->start();
