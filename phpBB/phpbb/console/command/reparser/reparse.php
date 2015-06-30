@@ -56,7 +56,7 @@ class reparse extends \phpbb\console\command\command
 				null,
 				InputOption::VALUE_REQUIRED,
 				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_RANGE_MIN'),
-				0
+				1
 			)
 			->addOption(
 				'range-max',
@@ -123,19 +123,19 @@ class reparse extends \phpbb\console\command\command
 
 		$output->writeLn($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $min, $max) . '</info>');
 
-		$progress = new ProgressBar($output, $max - $min);
+		$progress = new ProgressBar($output, $max + 1 - $min);
 		$progress->start();
 
 		// Start from $max and decrement $current by $size until we reach $min
 		$current = $max;
-		while ($current > $min)
+		while ($current >= $min)
 		{
 			$start = max($min, $current + 1 - $size);
-			$end   = $current;
+			$end   = max($min, $current);
 			$reparser->reparse_range($start, $end);
 
-			$current = max($min, $start - 1);
-			$progress->setProgress($max - $current);
+			$current = $start - 1;
+			$progress->setProgress($max + 1 - $start);
 		}
 		$progress->finish();
 
