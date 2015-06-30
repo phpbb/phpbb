@@ -122,7 +122,7 @@ if (!isset($config['version_update_from']))
 
 $orig_version = $config['version_update_from'];
 
-$user->add_lang(array('common', 'acp/common', 'install', 'migrator'));
+$user->add_lang(array('common', 'acp/common', 'old_install', 'migrator'));
 
 // Add own hook handler, if present. :o
 if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))

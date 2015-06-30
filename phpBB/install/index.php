@@ -210,7 +210,7 @@ if (!file_exists($phpbb_root_path . 'language/' . $language) || !is_dir($phpbb_r
 }
 
 // And finally, load the relevant language files
-$load_lang_files = array('common', 'acp/common', 'acp/board', 'install', 'posting');
+$load_lang_files = array('common', 'acp/common', 'acp/board', 'old_install', 'posting');
 $new_path = $phpbb_root_path . 'install/update/new/language/' . $language . '/';
 $old_path = $phpbb_root_path . 'language/' . $language . '/';
 
