@@ -13,11 +13,11 @@
 
 namespace phpbb\console\command\reparser;
 
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class reparse extends \phpbb\console\command\command
 {
@@ -25,6 +25,11 @@ class reparse extends \phpbb\console\command\command
 	* @var \phpbb\di\service_collection
 	*/
 	protected $reparsers;
+
+	/**
+	 * @var SymfonyStyle
+	 */
+	protected $io;
 
 	/**
 	* Constructor
@@ -83,6 +88,8 @@ class reparse extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$this->io = new SymfonyStyle($input, $output);
+
 		$name = $input->getArgument('reparser-name');
 		if (isset($name))
 		{
@@ -100,6 +107,8 @@ class reparse extends \phpbb\console\command\command
 				$this->reparse($input, $output, $name);
 			}
 		}
+
+		$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
 
 		return 0;
 	}
@@ -121,9 +130,28 @@ class reparse extends \phpbb\console\command\command
 		$min  = $input->getOption('range-min');
 		$size = $input->getOption('range-size');
 
-		$output->writeLn($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $min, $max) . '</info>');
+		if ($max === 0)
+		{
+			return;
+		}
 
-		$progress = new ProgressBar($output, $max + 1 - $min);
+		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $min, $max));
+		$this->io->newLine(2);
+
+		$progress = $this->io->createProgressBar($max);
+		$progress->setFormat(
+			"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
+			"             %message%\n");
+		$progress->setBarWidth(60);
+		$progress->setMessage('');
+
+		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
+		{
+			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
+			$progress->setProgressCharacter('');
+			$progress->setBarCharacter('▓'); // dark shade character \u2593
+		}
+
 		$progress->start();
 
 		// Start from $max and decrement $current by $size until we reach $min
@@ -132,6 +160,8 @@ class reparse extends \phpbb\console\command\command
 		{
 			$start = max($min, $current + 1 - $size);
 			$end   = max($min, $current);
+
+			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $start, $end));
 			$reparser->reparse_range($start, $end);
 
 			$current = $start - 1;
@@ -139,7 +169,6 @@ class reparse extends \phpbb\console\command\command
 		}
 		$progress->finish();
 
-		// The progress bar does not seem to end with a newline so we add one manually
-		$output->writeLn('');
+		$this->io->newLine(2);
 	}
 }

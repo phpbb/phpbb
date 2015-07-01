@@ -86,4 +86,5 @@ $lang = array_merge($lang, array(
 	'CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'	=> 'Successfully recalculated all email hashes.',
 
 	'CLI_REPARSER_REPARSE_REPARSING'	=> 'Reparsing %1$s (range %2$d..%3$d)',
+	'CLI_REPARSER_REPARSE_SUCCESS'		=> 'Reparsing ended with success',
 ));
