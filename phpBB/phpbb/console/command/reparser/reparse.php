@@ -143,7 +143,7 @@ class reparse extends \phpbb\console\command\command
 			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
 			$progress->setOverwrite(false);
 		}
-		elseif ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
 		{
 			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
 			$progress->setOverwrite(false);
