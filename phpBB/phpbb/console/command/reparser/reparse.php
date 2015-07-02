@@ -27,8 +27,8 @@ class reparse extends \phpbb\console\command\command
 	protected $reparsers;
 
 	/**
-	 * @var SymfonyStyle
-	 */
+	* @var SymfonyStyle
+	*/
 	protected $io;
 
 	/**
@@ -141,7 +141,7 @@ class reparse extends \phpbb\console\command\command
 		$progress = $this->io->createProgressBar($max);
 		$progress->setFormat(
 			"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-			"             %message%\n");
+			"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
 		$progress->setBarWidth(60);
 		$progress->setMessage('');
 
