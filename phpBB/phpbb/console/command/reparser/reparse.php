@@ -136,14 +136,28 @@ class reparse extends \phpbb\console\command\command
 		}
 
 		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $min, $max));
-		$this->io->newLine(2);
 
 		$progress = $this->io->createProgressBar($max);
-		$progress->setFormat(
-			"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-			"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
-		$progress->setBarWidth(60);
-		$progress->setMessage('');
+		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
+		{
+			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
+			$progress->setOverwrite(false);
+		}
+		elseif ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+		{
+			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
+			$progress->setOverwrite(false);
+		}
+		else
+		{
+			$this->io->newLine(2);
+			$progress->setFormat(
+				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
+				"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
+			$progress->setBarWidth(60);
+		}
+
+		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', str_replace('text_reparser.', '', $name)));
 
 		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
 		{
