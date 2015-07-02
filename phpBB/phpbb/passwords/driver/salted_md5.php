@@ -75,7 +75,7 @@ class salted_md5 extends base
 				// happen if pre-determined settings are
 				// directly passed to the driver. The manager
 				// will not do this. Same as the old hashing
-				// implementatio in phpBB 3.0
+				// implementation in phpBB 3.0
 				return md5($password);
 			}
 		}
