@@ -80,6 +80,8 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
+		global $phpbb_dispatcher;
+
 		if (!$this->can_upload())
 		{
 			return false;
@@ -151,13 +153,34 @@ class upload extends \phpbb\avatar\driver\driver
 			$destination = '';
 		}
 
-		// Move file and overwrite any existing image
-		$file->move_file($destination, true);
+		/**
+		* Before overwriting an existing avatar with a newly uploaded avatar
+		*
+		* @event core.avatar_driver_upload_overwrite_before
+		* @var	string	destination			Destination directory where the file is going to be moved
+		* @var	string	prefix				Prefix for the avatar filename
+		* @var	array	row					Array with avatar row data
+		* @var	array	error				Array of errors, if filled in by this event file will not be moved
+		* @since 3.1.6-RC1
+		*/
+		$vars = array(
+			'destination',
+			'prefix',
+			'row',
+			'error',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.avatar_driver_upload_overwrite_before', compact($vars)));
 
-		if (sizeof($file->error))
+		if (!sizeof($error))
+		{
+			// Move file and overwrite any existing image
+			$file->move_file($destination, true);
+		}
+
+		$error = array_merge($error, $file->error);
+		if (sizeof($error))
 		{
 			$file->remove();
-			$error = array_merge($error, $file->error);
 			return false;
 		}
 
@@ -185,10 +208,33 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function delete($row)
 	{
-		$ext = substr(strrchr($row['avatar'], '.'), 1);
-		$filename = $this->phpbb_root_path . $this->config['avatar_path'] . '/' . $this->config['avatar_salt'] . '_' . $row['id'] . '.' . $ext;
+		global $phpbb_dispatcher;
 
-		if (file_exists($filename))
+		$error = array();
+		$destination = $this->config['avatar_path'];
+		$prefix = $this->config['avatar_salt'] . '_';
+		$ext = substr(strrchr($row['avatar'], '.'), 1);
+		$filename = $this->phpbb_root_path . $destination . '/' . $prefix . $row['id'] . '.' . $ext;
+
+		/**
+		* Before deleting an existing avatar
+		*
+		* @event core.avatar_driver_upload_delete_before
+		* @var	string	destination			Destination directory where the file is going to be deleted
+		* @var	string	prefix				Prefix for the avatar filename
+		* @var	array	row					Array with avatar row data
+		* @var	array	error				Array of errors, if filled in by this event file will not be deleted
+		* @since 3.1.6-RC1
+		*/
+		$vars = array(
+			'destination',
+			'prefix',
+			'row',
+			'error',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
+
+		if (!sizeof($error) && file_exists($filename))
 		{
 			@unlink($filename);
 		}
