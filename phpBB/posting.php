@@ -1330,7 +1330,6 @@ if ($submit || $preview || $refresh)
 				'enable_urls'			=> (bool) $post_data['enable_urls'],
 				'enable_indexing'		=> (bool) $post_data['enable_indexing'],
 				'message_md5'			=> (string) $message_md5,
-				'post_time'				=> (isset($post_data['post_time'])) ? (int) $post_data['post_time'] : $current_time,
 				'post_checksum'			=> (isset($post_data['post_checksum'])) ? (string) $post_data['post_checksum'] : '',
 				'post_edit_reason'		=> $post_data['post_edit_reason'],
 				'post_edit_user'		=> ($mode == 'edit') ? $user->data['user_id'] : ((isset($post_data['post_edit_user'])) ? (int) $post_data['post_edit_user'] : 0),
