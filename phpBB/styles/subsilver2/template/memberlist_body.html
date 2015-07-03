@@ -67,7 +67,7 @@
 		<td class="genmed" align="{S_CONTENT_FLOW_BEGIN}"><!-- EVENT memberlist_body_username_prepend -->{memberrow.USERNAME_FULL}<!-- EVENT memberlist_body_username_append --><!-- IF S_SELECT_SINGLE --> [&nbsp;<a href="#" onclick="insert_single('{memberrow.A_USERNAME}'); return false;">{L_SELECT}</a>&nbsp;]<!-- ENDIF --></td>
 		<td class="genmed" align="center" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 		<td class="gen" align="center">{memberrow.POSTS}</td>
-		<td class="gen" align="center"><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --></td>
+		<td class="gen" align="center"><!-- EVENT memberlist_body_rank_prepend --><!-- IF memberrow.RANK_IMG -->{memberrow.RANK_IMG}<!-- ELSE -->{memberrow.RANK_TITLE}<!-- ENDIF --><!-- EVENT memberlist_body_rank_append --></td>
 		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_EMAIL --><a href="{memberrow.U_EMAIL}" class="imageset">{EMAIL_IMG}</a><!-- ENDIF -->&nbsp;</td>
 		<!-- IF memberrow.S_PROFILE_FIELD1 -->
 			<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
