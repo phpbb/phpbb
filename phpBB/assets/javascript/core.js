@@ -394,8 +394,11 @@ phpbb.ajaxify = function(options) {
 				error: errorHandler,
 				cache: false
 			});
+
 			request.always(function() {
-				$loadingIndicator.fadeOut(phpbb.alertTime);
+				if ($loadingIndicator && $loadingIndicator.is(':visible')) {
+					$loadingIndicator.fadeOut(phpbb.alertTime);
+				}
 			});
 		};
 
