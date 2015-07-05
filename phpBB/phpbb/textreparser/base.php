@@ -16,6 +16,11 @@ namespace phpbb\textreparser;
 abstract class base implements reparser_interface
 {
 	/**
+	* @var bool Whether to save changes to the database
+	*/
+	protected $save_changes = true;
+
+	/**
 	* {@inheritdoc}
 	*/
 	abstract public function get_max_id();
@@ -82,6 +87,22 @@ abstract class base implements reparser_interface
 		}
 
 		return $record;
+	}
+
+	/**
+	* Disable saving changes to the database
+	*/
+	public function disable_save()
+	{
+		$this->save_changes = false;
+	}
+
+	/**
+	* Enable saving changes to the database
+	*/
+	public function enable_save()
+	{
+		$this->save_changes = true;
 	}
 
 	/**
@@ -170,21 +191,20 @@ abstract class base implements reparser_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function reparse_range($min_id, $max_id, $dry_run = false)
+	public function reparse_range($min_id, $max_id)
 	{
 		foreach ($this->get_records_by_range($min_id, $max_id) as $record)
 		{
-			$this->reparse_record($record, $dry_run);
+			$this->reparse_record($record);
 		}
 	}
 
 	/**
 	* Reparse given record
 	*
-	* @param array   $record  Associative array containing the record's data
-	* @param integer $dry_run If TRUE, do not save the changes
+	* @param array $record Associative array containing the record's data
 	*/
-	protected function reparse_record(array $record, $dry_run)
+	protected function reparse_record(array $record)
 	{
 		$record = $this->add_missing_fields($record);
 		$flags = ($record['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0;
@@ -214,7 +234,7 @@ abstract class base implements reparser_interface
 		);
 
 		// Save the new text if it has changed and it's not a dry run
-		if ($text !== $record['text'] && !$dry_run)
+		if ($text !== $record['text'] && $this->save_changes)
 		{
 			$record['text'] = $text;
 			$this->save_record($record);

@@ -25,9 +25,8 @@ interface reparser_interface
 	/**
 	* Reparse all records in given range
 	*
-	* @param integer $min_id  Lower bound
-	* @param integer $max_id  Upper bound
-	* @param integer $dry_run If TRUE, do not save the changes
+	* @param integer $min_id Lower bound
+	* @param integer $max_id Upper bound
 	*/
-	public function reparse_range($min_id, $max_id, $dry_run = false);
+	public function reparse_range($min_id, $max_id);
 }

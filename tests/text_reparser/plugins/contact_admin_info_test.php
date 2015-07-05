@@ -62,7 +62,8 @@ class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_cas
 	{
 		$old_rows = $this->get_rows();
 		$reparser = $this->get_reparser();
-		$reparser->reparse_range(1, 1, true);
+		$reparser->disable_save();
+		$reparser->reparse_range(1, 1);
 		$new_rows = $this->get_rows();
 		$this->assertEquals($old_rows, $new_rows);
 	}
@@ -70,6 +71,7 @@ class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_cas
 	public function test_reparse()
 	{
 		$reparser = $this->get_reparser();
+		$reparser->enable_save();
 		$reparser->reparse_range(1, 1);
 		$expected = array(
 			array(

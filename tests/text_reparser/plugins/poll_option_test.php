@@ -62,7 +62,8 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 	{
 		$old_rows = $this->get_rows();
 		$reparser = $this->get_reparser();
-		$reparser->reparse_range(1, 1, true);
+		$reparser->disable_save();
+		$reparser->reparse_range(1, 1);
 		$new_rows = $this->get_rows();
 		$this->assertEquals($old_rows, $new_rows);
 	}
@@ -70,6 +71,7 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 	public function testReparse()
 	{
 		$reparser = $this->get_reparser();
+		$reparser->enable_save();
 		$reparser->reparse_range(2, 13);
 		$expected = array(
 			array(

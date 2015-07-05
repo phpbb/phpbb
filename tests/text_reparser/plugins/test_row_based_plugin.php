@@ -57,7 +57,8 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 	{
 		$old_rows = $this->get_rows(array(1));
 		$reparser = $this->get_reparser();
-		$reparser->reparse_range(1, 1, true);
+		$reparser->disable_save();
+		$reparser->reparse_range(1, 1);
 		$new_rows = $this->get_rows(array(1));
 		$this->assertEquals($old_rows, $new_rows);
 	}

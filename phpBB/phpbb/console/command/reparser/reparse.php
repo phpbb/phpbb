@@ -130,12 +130,19 @@ class reparse extends \phpbb\console\command\command
 	protected function reparse(InputInterface $input, OutputInterface $output, $name)
 	{
 		$reparser = $this->reparsers[$name];
+		if ($input->getOption('dry-run'))
+		{
+			$reparser->disable_save();
+		}
+		else
+		{
+			$reparser->enable_save();
+		}
 
 		// Start at range-max if specified or at the highest ID otherwise
-		$max     = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
-		$min     = $input->getOption('range-min');
-		$size    = $input->getOption('range-size');
-		$dry_run = $input->getOption('dry-run');
+		$max  = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
+		$min  = $input->getOption('range-min');
+		$size = $input->getOption('range-size');
 
 		if ($max === 0)
 		{
@@ -183,7 +190,7 @@ class reparse extends \phpbb\console\command\command
 			$end   = max($min, $current);
 
 			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $start, $end));
-			$reparser->reparse_range($start, $end, $dry_run);
+			$reparser->reparse_range($start, $end);
 
 			$current = $start - 1;
 			$progress->setProgress($max + 1 - $start);
