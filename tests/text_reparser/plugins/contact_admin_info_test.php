@@ -28,6 +28,18 @@ class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_cas
 		return new \phpbb\textreparser\plugins\contact_admin_info(new \phpbb\config\db_text($this->db, CONFIG_TEXT_TABLE));
 	}
 
+	protected function get_rows()
+	{
+		$sql = 'SELECT config_name, config_value
+			FROM ' . CONFIG_TEXT_TABLE . '
+			ORDER BY config_name';
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
 	public function setUp()
 	{
 		global $config;
@@ -46,18 +58,19 @@ class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_cas
 		$this->assertEquals(1, $reparser->get_max_id());
 	}
 
-	public function testReparse()
+	public function test_dry_run()
+	{
+		$old_rows = $this->get_rows();
+		$reparser = $this->get_reparser();
+		$reparser->reparse_range(1, 1, true);
+		$new_rows = $this->get_rows();
+		$this->assertEquals($old_rows, $new_rows);
+	}
+
+	public function test_reparse()
 	{
 		$reparser = $this->get_reparser();
 		$reparser->reparse_range(1, 1);
-
-		$sql = 'SELECT config_name, config_value
-			FROM ' . CONFIG_TEXT_TABLE . '
-			ORDER BY config_name';
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
 		$expected = array(
 			array(
 				'config_name'  => 'contact_admin_info',
@@ -76,6 +89,6 @@ class phpbb_textreparser_contact_admin_info_test extends phpbb_database_test_cas
 				'config_value' => '1a2hbwf5',
 			),
 		);
-		$this->assertEquals($expected, $rows);
+		$this->assertEquals($expected, $this->get_rows());
 	}
 }

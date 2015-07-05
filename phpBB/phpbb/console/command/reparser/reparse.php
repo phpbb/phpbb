@@ -57,6 +57,12 @@ class reparse extends \phpbb\console\command\command
 			->setDescription($this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE'))
 			->addArgument('reparser-name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_ARG_1'))
 			->addOption(
+				'dry-run',
+				null,
+				InputOption::VALUE_NONE,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_DRY_RUN')
+			)
+			->addOption(
 				'range-min',
 				null,
 				InputOption::VALUE_REQUIRED,
@@ -126,9 +132,10 @@ class reparse extends \phpbb\console\command\command
 		$reparser = $this->reparsers[$name];
 
 		// Start at range-max if specified or at the highest ID otherwise
-		$max  = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
-		$min  = $input->getOption('range-min');
-		$size = $input->getOption('range-size');
+		$max     = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
+		$min     = $input->getOption('range-min');
+		$size    = $input->getOption('range-size');
+		$dry_run = $input->getOption('dry-run');
 
 		if ($max === 0)
 		{
@@ -176,7 +183,7 @@ class reparse extends \phpbb\console\command\command
 			$end   = max($min, $current);
 
 			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $start, $end));
-			$reparser->reparse_range($start, $end);
+			$reparser->reparse_range($start, $end, $dry_run);
 
 			$current = $start - 1;
 			$progress->setProgress($max + 1 - $start);

@@ -20,6 +20,21 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 
 	abstract protected function get_reparser();
 
+	protected function get_rows(array $ids)
+	{
+		$reparser = $this->get_reparser();
+		$columns = $reparser->get_columns();
+		$sql = 'SELECT ' . $columns['id'] . ' AS id, ' . $columns['text'] . ' AS text
+			FROM ' . $reparser->get_table_name() . '
+			WHERE ' . $this->db->sql_in_set($columns['id'], $ids) . '
+			ORDER BY id';
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
 	public function setUp()
 	{
 		global $config;
@@ -38,10 +53,19 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 		$this->assertEquals(1000, $reparser->get_max_id());
 	}
 
+	public function test_dry_run()
+	{
+		$old_rows = $this->get_rows(array(1));
+		$reparser = $this->get_reparser();
+		$reparser->reparse_range(1, 1, true);
+		$new_rows = $this->get_rows(array(1));
+		$this->assertEquals($old_rows, $new_rows);
+	}
+
 	/**
-	* @dataProvider getReparseTests
+	* @dataProvider get_reparse_tests
 	*/
-	public function testReparse($min_id, $max_id, $expected)
+	public function test_reparse($min_id, $max_id, $expected)
 	{
 		$reparser = $this->get_reparser();
 		$reparser->reparse_range($min_id, $max_id);
@@ -52,18 +76,10 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 			$ids[] = $row['id'];
 		}
 
-		$columns = $reparser->get_columns();
-		$sql = 'SELECT ' . $columns['id'] . ' AS id, ' . $columns['text'] . ' AS text
-			FROM ' . $reparser->get_table_name() . '
-			WHERE ' . $this->db->sql_in_set($columns['id'], $ids) . '
-			ORDER BY id';
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-		$this->assertEquals($expected, $rows);
+		$this->assertEquals($expected, $this->get_rows($ids));
 	}
 
-	public function getReparseTests()
+	public function get_reparse_tests()
 	{
 		return array(
 			array(

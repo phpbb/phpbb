@@ -170,20 +170,21 @@ abstract class base implements reparser_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function reparse_range($min_id, $max_id)
+	public function reparse_range($min_id, $max_id, $dry_run = false)
 	{
 		foreach ($this->get_records_by_range($min_id, $max_id) as $record)
 		{
-			$this->reparse_record($record);
+			$this->reparse_record($record, $dry_run);
 		}
 	}
 
 	/**
 	* Reparse given record
 	*
-	* @param  array $record Associative array containing the record's data
+	* @param array   $record  Associative array containing the record's data
+	* @param integer $dry_run If TRUE, do not save the changes
 	*/
-	protected function reparse_record(array $record)
+	protected function reparse_record(array $record, $dry_run)
 	{
 		$record = $this->add_missing_fields($record);
 		$flags = ($record['enable_bbcode']) ? OPTION_FLAG_BBCODE : 0;
@@ -212,8 +213,8 @@ abstract class base implements reparser_interface
 			$unparsed['enable_url_bbcode']
 		);
 
-		// Save the new text if it has changed
-		if ($text !== $record['text'])
+		// Save the new text if it has changed and it's not a dry run
+		if ($text !== $record['text'] && !$dry_run)
 		{
 			$record['text'] = $text;
 			$this->save_record($record);
