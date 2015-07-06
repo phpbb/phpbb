@@ -28,19 +28,19 @@
 -->
 
 <!-- IF S_ALLOW_CDN -->
-<script type="text/javascript">
+<script>
 	WebFontConfig = {
-		google: { families: [ 'Open+Sans:600:cyrillic-ext,latin,greek-ext,greek,vietnamese,latin-ext,cyrillic' ] }
+		google: {
+			families: ['Open+Sans:600:cyrillic-ext,latin,greek-ext,greek,vietnamese,latin-ext,cyrillic']
+		}
 	};
-	(function() {
-		var wf = document.createElement('script');
-		wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-			'://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-		wf.type = 'text/javascript';
-		wf.async = 'true';
-		var s = document.getElementsByTagName('script')[0];
+
+	(function(d) {
+		var wf = d.createElement('script'), s = d.scripts[0];
+		wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js';
+		wf.async = true;
 		s.parentNode.insertBefore(wf, s);
-	})();
+	})(document);
 </script>
 <!-- ENDIF -->
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet">
