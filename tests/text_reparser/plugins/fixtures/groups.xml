@@ -38,25 +38,25 @@
 		<row>
 			<value>6</value>
 			<value><![CDATA[[flash=123,345:abcd1234]http&#58;//example&#46;org/flash&#46;swf[/flash:abcd1234]]]></value>
-			<value>7</value>
+			<value>1</value>
 			<value>abcd1234</value>
 		</row>
 		<row>
 			<value>7</value>
 			<value><![CDATA[[flash=123,345]http://example.org/flash.swf[/flash]]]></value>
-			<value>7</value>
+			<value>1</value>
 			<value>abcd1234</value>
 		</row>
 		<row>
 			<value>8</value>
 			<value><![CDATA[[img:abcd1234]http&#58;//example&#46;org/img&#46;png[/img:abcd1234]]]></value>
-			<value>7</value>
+			<value>1</value>
 			<value>abcd1234</value>
 		</row>
 		<row>
 			<value>9</value>
 			<value><![CDATA[[img]http://example.org/img.png[/img]]]></value>
-			<value>7</value>
+			<value>1</value>
 			<value>abcd1234</value>
 		</row>
 		<row>

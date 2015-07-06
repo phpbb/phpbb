@@ -31,7 +31,7 @@ class poll_title extends \phpbb\textreparser\row_based_plugin
 	*/
 	protected function get_records_by_range_query($min_id, $max_id)
 	{
-		$sql = 'SELECT t.topic_id AS id, t.poll_title AS text, p.bbcode_uid
+		$sql = 'SELECT t.topic_id AS id, t.poll_title AS text, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.bbcode_uid
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 			WHERE t.topic_id BETWEEN ' . $min_id . ' AND ' . $max_id .'
 				AND t.poll_max_options > 0

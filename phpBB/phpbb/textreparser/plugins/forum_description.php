@@ -24,6 +24,7 @@ class forum_description extends \phpbb\textreparser\row_based_plugin
 			'id'         => 'forum_id',
 			'text'       => 'forum_desc',
 			'bbcode_uid' => 'forum_desc_uid',
+			'options'    => 'forum_desc_options',
 		);
 	}
 

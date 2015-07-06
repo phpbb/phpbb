@@ -24,6 +24,7 @@ class group_description extends \phpbb\textreparser\row_based_plugin
 			'id'         => 'group_id',
 			'text'       => 'group_desc',
 			'bbcode_uid' => 'group_desc_uid',
+			'options'    => 'group_desc_options',
 		);
 	}
 

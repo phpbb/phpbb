@@ -47,11 +47,22 @@ abstract class base implements reparser_interface
 	{
 		if (!isset($record['enable_bbcode'], $record['enable_smilies'], $record['enable_magic_url']))
 		{
-			$record += array(
-				'enable_bbcode'    => $this->guess_bbcodes($record),
-				'enable_smilies'   => $this->guess_smilies($record),
-				'enable_magic_url' => $this->guess_magic_url($record),
-			);
+			if (isset($record['options']))
+			{
+				$record += array(
+					'enable_bbcode'    => (bool) ($record['options'] & OPTION_FLAG_BBCODE),
+					'enable_smilies'   => (bool) ($record['options'] & OPTION_FLAG_SMILIES),
+					'enable_magic_url' => (bool) ($record['options'] & OPTION_FLAG_LINKS),
+				);
+			}
+			else
+			{
+				$record += array(
+					'enable_bbcode'    => $this->guess_bbcodes($record),
+					'enable_smilies'   => $this->guess_smilies($record),
+					'enable_magic_url' => $this->guess_magic_url($record),
+				);
+			}
 		}
 
 		// Those BBCodes are disabled based on context and user permissions and that value is never
@@ -92,7 +103,7 @@ abstract class base implements reparser_interface
 			}
 		}
 
-		if (substr($record['text'], 0, 2) == '<r')
+		if (substr($record['text'], 0, 2) === '<r')
 		{
 			// Look for the closing tag inside of a e element, in an element of the same name, e.g.
 			// <e>[/url]</e></URL>
@@ -124,7 +135,7 @@ abstract class base implements reparser_interface
 			}
 		}
 
-		if (substr($record['text'], 0, 2) == '<r')
+		if (substr($record['text'], 0, 2) === '<r')
 		{
 			// Look for a closing tag inside of an e element
 			return (bool) preg_match('(<e>\\[/\\w+\\]</e>)', $match);
