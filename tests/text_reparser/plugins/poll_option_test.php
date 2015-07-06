@@ -49,7 +49,7 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 	public function testReparse()
 	{
 		$reparser = $this->get_reparser();
-		$reparser->reparse_range(2, 3);
+		$reparser->reparse_range(2, 13);
 
 		$sql = 'SELECT topic_id, poll_option_id, poll_option_text
 			FROM ' . POLL_OPTIONS_TABLE . '
@@ -83,6 +83,21 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 				'topic_id'         => 2,
 				'poll_option_id'   => 3,
 				'poll_option_text' => '<r><URL url="http://example.org">http://example.org</URL></r>',
+			),
+			array(
+				'topic_id'         => 11,
+				'poll_option_id'   => 1,
+				'poll_option_text' => '<r><B><s>[b]</s>Bold<e>[/b]</e></B> :) http://example.org</r>',
+			),
+			array(
+				'topic_id'         => 12,
+				'poll_option_id'   => 1,
+				'poll_option_text' => '<r>[b]Not bold[/b] <E>:)</E> http://example.org</r>',
+			),
+			array(
+				'topic_id'         => 13,
+				'poll_option_id'   => 1,
+				'poll_option_text' => '<r>[b]Not bold[/b] :) <URL url="http://example.org">http://example.org</URL></r>',
 			),
 			array(
 				'topic_id'         => 123,

@@ -24,6 +24,7 @@ class forum_rules extends \phpbb\textreparser\row_based_plugin
 			'id'         => 'forum_id',
 			'text'       => 'forum_rules',
 			'bbcode_uid' => 'forum_rules_uid',
+			'options'    => 'forum_rules_options',
 		);
 	}
 
