@@ -28,6 +28,18 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 		return new \phpbb\textreparser\plugins\poll_option($this->db);
 	}
 
+	protected function get_rows()
+	{
+		$sql = 'SELECT topic_id, poll_option_id, poll_option_text
+			FROM ' . POLL_OPTIONS_TABLE . '
+			ORDER BY topic_id, poll_option_id';
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
 	public function setUp()
 	{
 		global $config;
@@ -46,18 +58,21 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 		$this->assertEquals(123, $reparser->get_max_id());
 	}
 
+	public function test_dry_run()
+	{
+		$old_rows = $this->get_rows();
+		$reparser = $this->get_reparser();
+		$reparser->disable_save();
+		$reparser->reparse_range(1, 1);
+		$new_rows = $this->get_rows();
+		$this->assertEquals($old_rows, $new_rows);
+	}
+
 	public function testReparse()
 	{
 		$reparser = $this->get_reparser();
+		$reparser->enable_save();
 		$reparser->reparse_range(2, 13);
-
-		$sql = 'SELECT topic_id, poll_option_id, poll_option_text
-			FROM ' . POLL_OPTIONS_TABLE . '
-			ORDER BY topic_id, poll_option_id';
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
 		$expected = array(
 			array(
 				'topic_id'         => 1,
@@ -110,6 +125,6 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 				'poll_option_text' => 'This row should be [b:abcd1234]ignored[/b:abcd1234]',
 			),
 		);
-		$this->assertEquals($expected, $rows);
+		$this->assertEquals($expected, $this->get_rows());
 	}
 }

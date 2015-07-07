@@ -16,6 +16,11 @@ namespace phpbb\textreparser;
 abstract class base implements reparser_interface
 {
 	/**
+	* @var bool Whether to save changes to the database
+	*/
+	protected $save_changes = true;
+
+	/**
 	* {@inheritdoc}
 	*/
 	abstract public function get_max_id();
@@ -82,6 +87,22 @@ abstract class base implements reparser_interface
 		}
 
 		return $record;
+	}
+
+	/**
+	* Disable saving changes to the database
+	*/
+	public function disable_save()
+	{
+		$this->save_changes = false;
+	}
+
+	/**
+	* Enable saving changes to the database
+	*/
+	public function enable_save()
+	{
+		$this->save_changes = true;
 	}
 
 	/**
@@ -181,7 +202,7 @@ abstract class base implements reparser_interface
 	/**
 	* Reparse given record
 	*
-	* @param  array $record Associative array containing the record's data
+	* @param array $record Associative array containing the record's data
 	*/
 	protected function reparse_record(array $record)
 	{
@@ -212,8 +233,8 @@ abstract class base implements reparser_interface
 			$unparsed['enable_url_bbcode']
 		);
 
-		// Save the new text if it has changed
-		if ($text !== $record['text'])
+		// Save the new text if it has changed and it's not a dry run
+		if ($text !== $record['text'] && $this->save_changes)
 		{
 			$record['text'] = $text;
 			$this->save_record($record);

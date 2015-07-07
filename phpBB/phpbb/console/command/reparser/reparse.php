@@ -57,6 +57,12 @@ class reparse extends \phpbb\console\command\command
 			->setDescription($this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE'))
 			->addArgument('reparser-name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_ARG_1'))
 			->addOption(
+				'dry-run',
+				null,
+				InputOption::VALUE_NONE,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_DRY_RUN')
+			)
+			->addOption(
 				'range-min',
 				null,
 				InputOption::VALUE_REQUIRED,
@@ -124,6 +130,14 @@ class reparse extends \phpbb\console\command\command
 	protected function reparse(InputInterface $input, OutputInterface $output, $name)
 	{
 		$reparser = $this->reparsers[$name];
+		if ($input->getOption('dry-run'))
+		{
+			$reparser->disable_save();
+		}
+		else
+		{
+			$reparser->enable_save();
+		}
 
 		// Start at range-max if specified or at the highest ID otherwise
 		$max  = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
