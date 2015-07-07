@@ -26,7 +26,7 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $cache, $user, $auth, $template, $request, $phpbb_log;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher, $phpbb_filesystem;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -352,6 +352,11 @@ class acp_main
 						$config->increment('assets_version', 1);
 						$cache->purge();
 
+						// Remove old renderers from the text_formatter service. Since this
+						// operation is performed after the cache is purged, there is not "current"
+						// renderer and in effect all renderers will be purged
+						$phpbb_container->get('text_formatter.cache')->tidy();
+
 						// Clear permissions
 						$auth->acl_clear_prefetch();
 						phpbb_cache_moderators($db, $cache, $auth);
@@ -633,7 +638,7 @@ class acp_main
 		{
 			$error = false;
 			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 			if (!$search->index_created())
 			{
@@ -644,7 +649,7 @@ class acp_main
 			}
 		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && $phpbb_filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));

@@ -12,3 +12,15 @@ services:
 
     dispatcher:
         class: phpbb\db\driver\container_mock
+
+    template.twig.environment:
+        class: Exception
+        arguments:
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - []

@@ -92,8 +92,8 @@ class session
 		}
 
 		// current directory within the phpBB root (for example: adm)
-		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
-		$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
+		$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
+		$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);
@@ -130,6 +130,10 @@ class session
 		$script_path .= (substr($script_path, -1, 1) == '/') ? '' : '/';
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
+		$forum_id = $request->variable('f', 0);
+		// maximum forum id value is maximum value of mediumint unsigned column
+		$forum_id = ($forum_id > 0 && $forum_id < 16777215) ? $forum_id : 0;
+
 		$page_array += array(
 			'page_name'			=> $page_name,
 			'page_dir'			=> $page_dir,
@@ -139,7 +143,7 @@ class session
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page,
-			'forum'				=> $request->variable('f', 0),
+			'forum'				=> $forum_id,
 		);
 
 		return $page_array;

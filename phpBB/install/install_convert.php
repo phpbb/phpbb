@@ -96,6 +96,9 @@ class install_convert extends module
 	/** @var string */
 	protected $php_ext;
 
+	/** @var  \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
 	/**
 	* Variables used while converting, they are accessible from the global variable $convert
 	*/
@@ -116,6 +119,7 @@ class install_convert extends module
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 
 		if (!$this->check_phpbb_installed())
 		{
@@ -127,8 +131,8 @@ class install_convert extends module
 		// Enable super globals to prevent issues with the new \phpbb\request\request object
 		$request->enable_super_globals();
 		// Create a normal container now
-		$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-		$phpbb_container = $phpbb_container_builder->get_container();
+		$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+		$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 
 		// Create cache
 		/* @var $cache \phpbb\cache\service */
@@ -149,7 +153,7 @@ class install_convert extends module
 				unset($dbpasswd);
 
 				// We need to fill the config to let internal functions correctly work
-				$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+				$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
@@ -388,7 +392,7 @@ class install_convert extends module
 		$this->page_title = $lang['STAGE_SETTINGS'];
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$convertor_tag = $request->variable('tag', '');
 
@@ -621,7 +625,7 @@ class install_convert extends module
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
-		global $request, $phpbb_config_php_file;
+		global $request, $phpbb_config_php_file, $phpbb_dispatcher;
 
 		extract($phpbb_config_php_file->get_all());
 
@@ -635,7 +639,7 @@ class install_convert extends module
 		unset($dbpasswd);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		// Override a couple of config variables for the duration
 		$config['max_quote_depth'] = 0;
@@ -796,7 +800,7 @@ class install_convert extends module
 		}
 
 		$error = false;
-		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{
@@ -859,7 +863,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !phpbb_is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !$this->filesystem->is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{

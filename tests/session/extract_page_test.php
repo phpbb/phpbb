@@ -145,7 +145,7 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 	{
 		global $symfony_request, $request, $phpbb_filesystem;
 
-		$phpbb_filesystem = new \phpbb\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
 		$server['HTTP_HOST']			= 'localhost';
 		$server['SERVER_NAME']			= 'localhost';

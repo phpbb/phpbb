@@ -56,7 +56,7 @@ class manager
 	* @param array $hashing_algorithms Hashing driver
 	*			service collection
 	* @param \phpbb\passwords\helper $helper Passwords helper object
-	* @param string $defaults List of default driver types
+	* @param array $defaults List of default driver types
 	*/
 	public function __construct(\phpbb\config\config $config, $hashing_algorithms, helper $helper, $defaults)
 	{

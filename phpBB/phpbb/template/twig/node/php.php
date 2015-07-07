@@ -13,7 +13,6 @@
 
 namespace phpbb\template\twig\node;
 
-
 class php extends \Twig_Node
 {
 	/** @var \Twig_Environment */

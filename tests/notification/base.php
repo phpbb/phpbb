@@ -56,17 +56,20 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 		));
-		$user = $this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$this->user = $user;
 		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$cache = $this->cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			new \phpbb\cache\driver\dummy(),
 			$this->config,
 			$this->db,
 			$phpbb_root_path,
 			$phpEx
 		);
-		
+
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$phpbb_container = $this->container = new phpbb_mock_container_builder();
@@ -113,7 +116,14 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
+		$instance = new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
+
+		if ($type === 'phpbb\\notification\\type\\quote')
+		{
+			$instance->set_utils(new \phpbb\textformatter\s9e\utils);
+		}
+
+		return $instance;
 	}
 
 	protected function assert_notifications($expected, $options = array())

@@ -28,7 +28,7 @@ class acp_icons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_container;
 
@@ -486,6 +486,7 @@ class acp_icons
 
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
+				$phpbb_container->get('text_formatter.cache')->invalidate();
 
 				$level = ($icons_updated) ? E_USER_NOTICE : E_USER_WARNING;
 				$errormsgs = '';
@@ -661,6 +662,7 @@ class acp_icons
 
 					$cache->destroy('_icons');
 					$cache->destroy('sql', $table);
+					$phpbb_container->get('text_formatter.cache')->invalidate();
 
 					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
 				}
@@ -783,6 +785,7 @@ class acp_icons
 
 					$cache->destroy('_icons');
 					$cache->destroy('sql', $table);
+					$phpbb_container->get('text_formatter.cache')->invalidate();
 
 					if ($request->is_ajax())
 					{
@@ -848,6 +851,7 @@ class acp_icons
 
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
+				$phpbb_container->get('text_formatter.cache')->invalidate();
 
 				if ($request->is_ajax())
 				{

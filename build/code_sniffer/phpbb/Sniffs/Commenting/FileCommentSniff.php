@@ -60,14 +60,14 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 			return;
 		}
 		// Mark as error if this is not a doc comment
-		else if ($start === false || $tokens[$start]['code'] !== T_DOC_COMMENT)
+		else if ($start === false || $tokens[$start]['code'] !== T_DOC_COMMENT_OPEN_TAG)
 		{
 			$phpcsFile->addError('Missing required file doc comment.', $stackPtr);
 			return;
 		}
 
 		// Find comment end token
-		$end = $phpcsFile->findNext(T_DOC_COMMENT, $start + 1, null, true) - 1;
+		$end = $tokens[$start]['comment_closer'];
 
 		// If there is no end, skip processing here
 		if ($end === false)
@@ -75,38 +75,30 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 			return;
 		}
 
-		// List of found comment tags
-		$tags = array();
-
 		// check comment lines without the first(/**) an last(*/) line
-		for ($i = $start + 1, $c = $end - 1; $i <= $c; ++$i)
+		for ($token = $start + 1, $c = $end - 2; $token <= $c; ++$token)
 		{
-			$line = $tokens[$i]['content'];
-
 			// Check that each line starts with a '*'
-			if (substr($line, 0, 1) !== '*' && substr($line, 0, 2) !== ' *')
+			if ($tokens[$token]['column'] === 1 && (($tokens[$token]['content'] !== '*' && $tokens[$token]['content'] !== ' ') || ($tokens[$token]['content'] === ' ' && $tokens[$token + 1]['content'] !== '*')))
 			{
 				$message = 'The file doc comment should not be indented.';
-				$phpcsFile->addWarning($message, $i);
-			}
-			else if (preg_match('/^[ ]?\*\s+@([\w]+)\s+(.*)$/', $line, $match) !== 0)
-			{
-				if (!isset($tags[$match[1]]))
-				{
-					$tags[$match[1]] = array();
-				}
-
-				$tags[$match[1]][] = array($match[2], $i);
+				$phpcsFile->addWarning($message, $token);
 			}
 		}
 
 		// Check that the first and last line is empty
-		if (trim($tokens[$start + 1]['content']) !== '*')
+		// /**T_WHITESPACE
+		// (T_WHITESPACE)*T_WHITESPACE
+		// (T_WHITESPACE)* ...
+		// (T_WHITESPACE)*T_WHITESPACE
+		// T_WHITESPACE*/
+		if (!(($tokens[$start + 2]['content'] !== '*' && $tokens[$start + 4]['content'] !== '*') || ($tokens[$start + 3]['content'] !== '*' && $tokens[$start + 6]['content'] !== '*')))
 		{
 			$message = 'The first file comment line should be empty.';
 			$phpcsFile->addWarning($message, ($start + 1));
 		}
-		if (trim($tokens[$end - 1]['content']) !== '*')
+
+		if ($tokens[$end - 3]['content'] !== '*' && $tokens[$end - 6]['content'] !== '*')
 		{
 			$message = 'The last file comment line should be empty.';
 			$phpcsFile->addWarning($message, $end - 1);
@@ -114,8 +106,8 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 
 		//$this->processPackage($phpcsFile, $start, $tags);
 		//$this->processVersion($phpcsFile, $start, $tags);
-		$this->processCopyright($phpcsFile, $start, $tags);
-		$this->processLicense($phpcsFile, $start, $tags);
+		$this->processCopyright($phpcsFile, $start, $tokens[$start]['comment_tags']);
+		$this->processLicense($phpcsFile, $start, $tokens[$start]['comment_tags']);
 	}
 
 	/**
@@ -176,17 +168,24 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 	protected function processCopyright(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
 	{
 		$copyright = '(c) phpBB Limited <https://www.phpbb.com>';
+		$tokens = $phpcsFile->getTokens();
 
-		if (!isset($tags['copyright']))
+		foreach ($tags as $tag)
 		{
-			$message = 'Missing require @copyright tag in file doc comment.';
-			$phpcsFile->addError($message, $ptr);
+			if ($tokens[$tag]['content'] === '@copyright')
+			{
+				if ($tokens[$tag + 2]['content'] !== $copyright)
+				{
+					$message = 'Invalid content found for the first @copyright tag, use "' . $copyright . '".';
+					$phpcsFile->addError($message, $tags['copyright'][0][1]);
+				}
+
+				return;
+			}
 		}
-		else if ($tags['copyright'][0][0] !== $copyright)
-		{
-			$message = 'Invalid content found for the first @copyright tag, use "' . $copyright . '".';
-			$phpcsFile->addError($message, $tags['copyright'][0][1]);
-		}
+
+		$message = 'Missing require @copyright tag in file doc comment.';
+		$phpcsFile->addError($message, $ptr);
 	}
 
 	/**
@@ -201,22 +200,33 @@ class phpbb_Sniffs_Commenting_FileCommentSniff implements PHP_CodeSniffer_Sniff
 	protected function processLicense(PHP_CodeSniffer_File $phpcsFile, $ptr, $tags)
 	{
 		$license = 'GNU General Public License, version 2 (GPL-2.0)';
+		$tokens = $phpcsFile->getTokens();
 
-		if (!isset($tags['license']))
+		$found = false;
+		foreach ($tags as $tag)
+		{
+			if ($tokens[$tag]['content'] === '@license')
+			{
+				if ($found)
+				{
+					$message = 'It must be only one @license tag in file doc comment.';
+					$phpcsFile->addError($message, $ptr);
+				}
+
+				$found = true;
+
+				if ($tokens[$tag + 2]['content'] !== $license)
+				{
+					$message = 'Invalid content found for @license tag, use "' . $license . '".';
+					$phpcsFile->addError($message, $tags['license'][0][1]);
+				}
+			}
+		}
+
+		if (!$found)
 		{
 			$message = 'Missing require @license tag in file doc comment.';
 			$phpcsFile->addError($message, $ptr);
-		}
-		else if (sizeof($tags['license']) !== 1)
-		{
-			$message = 'It must be only one @license tag in file doc comment.';
-			$phpcsFile->addError($message, $ptr);
-		}
-		else if (trim($tags['license'][0][0]) !== $license)
-		{
-			$message = 'Invalid content found for @license tag, use '
-				. '"' . $license . '".';
-			$phpcsFile->addError($message, $tags['license'][0][1]);
 		}
 	}
 }

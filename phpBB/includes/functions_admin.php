@@ -500,7 +500,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 */
 function move_topics($topic_ids, $forum_id, $auto_sync = true)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (empty($topic_ids))
 	{
@@ -534,6 +534,27 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	}
 
 	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+
+	/**
+	 * Perform additional actions before topics move
+	 *
+	 * @event core.move_topics_before_query
+	 * @var	array	table_ary	Array of tables from which forum_id will be updated for all rows that hold the moved topics
+	 * @var	array	topic_ids	Array of the moved topic ids
+	 * @var	string	forum_id	The forum id from where the topics are moved
+	 * @var	array	forum_ids	Array of the forums where the topics are moving (includes also forum_id)
+	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @since 3.1.5-RC1
+	 */
+	$vars = array(
+			'table_ary',
+			'topic_ids',
+			'forum_id',
+			'forum_ids',
+			'auto_sync',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.move_topics_before_query', compact($vars)));
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "UPDATE $table
@@ -618,7 +639,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db, $config, $phpbb_container;
+	global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -672,6 +693,20 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	$table_ary = array(BOOKMARKS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
 
+	/**
+	 * Perform additional actions before topic(s) deletion
+	 *
+	 * @event core.delete_topics_before_query
+	 * @var	array	table_ary	Array of tables from which all rows will be deleted that hold a topic_id occuring in topic_ids
+	 * @var	array	topic_ids	Array of topic ids to delete
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+			'table_ary',
+			'topic_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_topics_before_query', compact($vars)));
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
@@ -679,6 +714,18 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
+
+	/**
+	 * Perform additional actions after topic(s) deletion
+	 *
+	 * @event core.delete_topics_after_query
+	 * @var	array	topic_ids	Array of topic ids that were deleted
+	 * @since 3.1.4-RC1
+	 */
+	$vars = array(
+			'topic_ids',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_topics_after_query', compact($vars)));
 
 	$moved_topic_ids = array();
 
@@ -895,7 +942,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 	if ($error)
 	{
