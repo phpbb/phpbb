@@ -32,7 +32,10 @@ interface utils_interface
 	* Create a quote block for given text
 	*
 	* Possible attributes:
-	*   - author
+	*   - author:  author's name (usually a username)
+	*   - post_id: post_id of the post being quoted
+	*   - user_id: user_id of the user being quoted
+	*   - time:    timestamp of the original message
 	*
 	* @param  string $text       Quote's text
 	* @param  array  $attributes Quote's attributes

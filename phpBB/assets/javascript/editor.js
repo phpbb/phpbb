@@ -111,7 +111,6 @@ function bbfontstyle(bbopen, bbclose) {
 	}
 
 	textarea.focus();
-	return;
 }
 
 /**
@@ -167,7 +166,7 @@ function attachInline(index, filename) {
 /**
 * Add quote text to message
 */
-function addquote(post_id, username, l_wrote) {
+function addquote(post_id, username, l_wrote, attributes) {
 	var message_name = 'message_' + post_id;
 	var theSelection = '';
 	var divarea = false;
@@ -176,6 +175,9 @@ function addquote(post_id, username, l_wrote) {
 	if (l_wrote === undefined) {
 		// Backwards compatibility
 		l_wrote = 'wrote';
+	}
+	if (typeof attributes !== 'object') {
+		attributes = {};
 	}
 
 	if (document.all) {
@@ -213,7 +215,8 @@ function addquote(post_id, username, l_wrote) {
 
 	if (theSelection) {
 		if (bbcodeEnabled) {
-			insert_text('[quote="' + username + '"]' + theSelection + '[/quote]');
+			attributes.author = username;
+			insert_text(generateQuote(theSelection, attributes));
 		} else {
 			insert_text(username + ' ' + l_wrote + ':' + '\n');
 			var lines = split_lines(theSelection);
@@ -222,8 +225,61 @@ function addquote(post_id, username, l_wrote) {
 			}
 		}
 	}
+}
 
-	return;
+/**
+* Create a quote block for given text
+*
+* Possible attributes:
+*   - author:  author's name (usually a username)
+*   - post_id: post_id of the post being quoted
+*   - user_id: user_id of the user being quoted
+*   - time:    timestamp of the original message
+*
+* @param  {!string} text       Quote's text
+* @param  {!Object} attributes Quote's attributes
+* @return {!string}            Quote block to be used in a new post/text
+*/
+function generateQuote(text, attributes) {
+	text = text.replace(/^\s+/, '').replace(/\s+$/, '');
+	var quote = '[quote';
+	if (attributes.author) {
+		// Add the author as the BBCode's default attribute
+		quote += '=' + formatAttributeValue(attributes.author);
+		delete attributes.author;
+	}
+	for (var name in attributes) {
+		if (attributes.hasOwnProperty(name)) {
+			var value = attributes[name];
+			quote += ' ' + name + '=' + formatAttributeValue(value.toString());
+		}
+	}
+	quote += ']';
+	var newline = ((quote + text + '[/quote]').length > 80 || text.indexOf('\n') > -1) ? '\n' : '';
+	quote += newline + text + newline + '[/quote]';
+
+	return quote;
+}
+
+/**
+* Format given string to be used as an attribute value
+*
+* Will return the string as-is if it can be used in a BBCode without quotes. Otherwise,
+* it will use either single- or double- quotes depending on whichever requires less escaping.
+* Quotes and backslashes are escaped with backslashes where necessary
+*
+* @param  {!string} str Original string
+* @return {!string}     Same string if possible, escaped string within quotes otherwise
+*/
+function formatAttributeValue(str) {
+	if (!/[ "'\\\]]/.test(str)) {
+		// Return as-is if it contains none of: space, ' " \ or ]
+		return str;
+	}
+	var singleQuoted = "'" + str.replace(/[\\']/g, '\\$&') + "'",
+		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
+
+	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
 }
 
 function split_lines(text) {
