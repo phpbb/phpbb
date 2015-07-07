@@ -34,7 +34,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_id($group)
+	static public function get_item_id($group)
 	{
 		return (int) $group['group_id'];
 	}
@@ -42,7 +42,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_parent_id($group)
+	static public function get_item_parent_id($group)
 	{
 		return 0;
 	}

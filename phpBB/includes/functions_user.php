@@ -400,7 +400,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
  */
 function user_delete($mode, $user_ids, $retain_username = true)
 {
-	global $cache, $config, $db, $user, $phpbb_dispatcher;
+	global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container;
 	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
@@ -502,6 +502,9 @@ function user_delete($mode, $user_ids, $retain_username = true)
 
 	$num_users_delta = 0;
 
+	// Get auth provider collection in case accounts might need to be unlinked
+	$provider_collection = $phpbb_container->get('auth.provider_collection');
+
 	// Some things need to be done in the loop (if the query changes based
 	// on which user is currently being deleted)
 	$added_guest_posts = 0;
@@ -510,6 +513,38 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == 'avatar.driver.upload')
 		{
 			avatar_delete('user', $user_row);
+		}
+
+		// Unlink accounts
+		foreach ($provider_collection as $provider_name => $auth_provider)
+		{
+			$provider_data = $auth_provider->get_auth_link_data($user_id);
+
+			if ($provider_data !== null)
+			{
+				$link_data = array(
+					'user_id' => $user_id,
+					'link_method' => 'user_delete',
+				);
+
+				// BLOCK_VARS might contain hidden fields necessary for unlinking accounts
+				if (isset($provider_data['BLOCK_VARS']) && is_array($provider_data['BLOCK_VARS']))
+				{
+					foreach ($provider_data['BLOCK_VARS'] as $provider_service)
+					{
+						if (!array_key_exists('HIDDEN_FIELDS', $provider_service))
+						{
+							$provider_service['HIDDEN_FIELDS'] = array();
+						}
+
+						$auth_provider->unlink_account(array_merge($link_data, $provider_service['HIDDEN_FIELDS']));
+					}
+				}
+				else
+				{
+					$auth_provider->unlink_account($link_data);
+				}
+			}
 		}
 
 		// Decrement number of users if this user is active
@@ -673,6 +708,9 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
 	phpbb_delete_users_pms($user_ids);
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+	$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_ids);
 
 	$db->sql_transaction('commit');
 
@@ -1382,7 +1420,7 @@ function user_ipwhois($ip)
 	$match = array();
 
 	// Test for referrals from $whois_host to other whois databases, roll on rwhois
-	if (preg_match('#ReferralServer: whois://(.+)#im', $ipwhois, $match))
+	if (preg_match('#ReferralServer:[\x20]*whois://(.+)#im', $ipwhois, $match))
 	{
 		if (strpos($match[1], ':') !== false)
 		{
@@ -1644,89 +1682,37 @@ function validate_username($username, $allowed_username = false)
 		return 'INVALID_CHARS';
 	}
 
-	$mbstring = $pcre = false;
-
-	// generic UTF-8 character types supported?
-	if (phpbb_pcre_utf8_support())
-	{
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$mbstring = true;
-	}
-
 	switch ($config['allow_name_chars'])
 	{
 		case 'USERNAME_CHARS_ANY':
-			$pcre = true;
 			$regex = '.+';
 		break;
 
 		case 'USERNAME_ALPHA_ONLY':
-			$pcre = true;
 			$regex = '[A-Za-z0-9]+';
 		break;
 
 		case 'USERNAME_ALPHA_SPACERS':
-			$pcre = true;
 			$regex = '[A-Za-z0-9-[\]_+ ]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM':
-			if ($pcre)
-			{
-				$regex = '[\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[a-zA-Z0-9]+';
-			}
+			$regex = '[\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM_SPACERS':
-			if ($pcre)
-			{
-				$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[-\]_+ \[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[-\]_+ [a-zA-Z0-9]+';
-			}
+			$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_ASCII':
 		default:
-			$pcre = true;
 			$regex = '[\x01-\x7F]+';
 		break;
 	}
 
-	if ($pcre)
+	if (!preg_match('#^' . $regex . '$#u', $username))
 	{
-		if (!preg_match('#^' . $regex . '$#u', $username))
-		{
-			return 'INVALID_CHARS';
-		}
-	}
-	else if ($mbstring)
-	{
-		mb_ereg_search_init($username, '^' . $regex . '$');
-		if (!mb_ereg_search())
-		{
-			return 'INVALID_CHARS';
-		}
+		return 'INVALID_CHARS';
 	}
 
 	$sql = 'SELECT username
@@ -1781,35 +1767,10 @@ function validate_password($password)
 		return false;
 	}
 
-	$pcre = $mbstring = false;
-
-	// generic UTF-8 character types supported?
-	if (phpbb_pcre_utf8_support())
-	{
-		$upp = '\p{Lu}';
-		$low = '\p{Ll}';
-		$num = '\p{N}';
-		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$upp = '[[:upper:]]';
-		$low = '[[:lower:]]';
-		$num = '[[:digit:]]';
-		$sym = '[^[:upper:][:lower:][:digit:]]';
-		$mbstring = true;
-	}
-	else
-	{
-		$upp = '[A-Z]';
-		$low = '[a-z]';
-		$num = '[0-9]';
-		$sym = '[^A-Za-z0-9]';
-		$pcre = true;
-	}
-
+	$upp = '\p{Lu}';
+	$low = '\p{Ll}';
+	$num = '\p{N}';
+	$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 	$chars = array();
 
 	switch ($config['pass_complex'])
@@ -1832,24 +1793,11 @@ function validate_password($password)
 			$chars[] = $upp;
 	}
 
-	if ($pcre)
+	foreach ($chars as $char)
 	{
-		foreach ($chars as $char)
+		if (!preg_match('#' . $char . '#u', $password))
 		{
-			if (!preg_match('#' . $char . '#u', $password))
-			{
-				return 'INVALID_CHARS';
-			}
-		}
-	}
-	else if ($mbstring)
-	{
-		foreach ($chars as $char)
-		{
-			if (mb_ereg($char, $password) === false)
-			{
-				return 'INVALID_CHARS';
-			}
+			return 'INVALID_CHARS';
 		}
 	}
 
@@ -3381,7 +3329,7 @@ function get_group_name($group_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || ($row['group_type'] == GROUP_SPECIAL && empty($user->lang)))
+	if (!$row || ($row['group_type'] == GROUP_SPECIAL && !$user->is_setup()))
 	{
 		return '';
 	}

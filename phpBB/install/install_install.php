@@ -43,9 +43,15 @@ if (!empty($setmodules))
 */
 class install_install extends module
 {
+	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
 	function install_install(&$p_master)
 	{
 		$this->p_master = &$p_master;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	function main($mode, $sub)
@@ -104,8 +110,8 @@ class install_install extends module
 				$request->enable_super_globals();
 
 				// Create a normal container now
-				$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-				$phpbb_container = $phpbb_container_builder->get_container();
+				$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+				$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 
 				// Sets the global variables
 				/* @var $cache \phpbb\cache\service */
@@ -466,13 +472,29 @@ class install_install extends module
 			if (!file_exists($phpbb_root_path . $dir))
 			{
 				@mkdir($phpbb_root_path . $dir, 0777);
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
+
 				$exists = true;
 			}
 
@@ -514,7 +536,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!phpbb_is_writable($phpbb_root_path . $dir))
+				if (!$this->filesystem->is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -892,7 +914,7 @@ class install_install extends module
 		$config_data = phpbb_create_config_file_data($data, $available_dbms[$data['dbms']]['DRIVER']);
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx)) || phpbb_is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && $this->filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx)) || $this->filesystem->is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
@@ -914,7 +936,14 @@ class install_install extends module
 			if ($written)
 			{
 				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
-				phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -1167,12 +1196,10 @@ class install_install extends module
 
 			foreach ($sql_query as $sql)
 			{
-				//$sql = trim(str_replace('|', ';', $sql));
-				if (!$db->sql_query($sql))
-				{
-					$error = $db->sql_error();
-					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
-				}
+				// Ignore errors when the functions or types already exist
+				// to allow installing phpBB twice in the same database with
+				// a different prefix
+				$db->sql_query($sql);
 			}
 			unset($sql_query);
 		}
@@ -1195,7 +1222,7 @@ class install_install extends module
 				include($phpbb_root_path . 'includes/constants.' . $phpEx);
 			}
 
-			$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+			$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
 			$classes = $finder->core_path('phpbb/db/migration/data/')
 				->get_classes();
 
@@ -1467,7 +1494,7 @@ class install_install extends module
 	*/
 	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx, $config, $auth, $user;
+		global $db, $lang, $phpbb_root_path, $phpbb_dispatcher, $phpEx, $config, $auth, $user;
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1495,10 +1522,10 @@ class install_install extends module
 		include_once($phpbb_root_path . 'phpbb/search/fulltext_native.' . $phpEx);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$error = false;
-		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new \phpbb\search\fulltext_native($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE;
@@ -1525,9 +1552,14 @@ class install_install extends module
 			$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 		}
 
-		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
-
-		$_module = new acp_modules();
+		$_module = new \phpbb\module\module_manager(
+			new \phpbb\cache\driver\dummy(),
+			$db,
+			$phpbb_extension_manager,
+			MODULES_TABLE,
+			$phpbb_root_path,
+			$phpEx
+		);
 		$module_classes = array('acp', 'mcp', 'ucp');
 
 		// Add categories
@@ -1558,7 +1590,7 @@ class install_install extends module
 				);
 
 				// Add category
-				$_module->update_module_data($module_data, true);
+				$_module->update_module_data($module_data);
 
 				// Check for last sql error happened
 				if ($db->get_sql_error_triggered())
@@ -1592,7 +1624,7 @@ class install_install extends module
 							'module_auth'		=> '',
 						);
 
-						$_module->update_module_data($module_data, true);
+						$_module->update_module_data($module_data);
 
 						// Check for last sql error happened
 						if ($db->get_sql_error_triggered())
@@ -1608,7 +1640,7 @@ class install_install extends module
 			}
 
 			// Get the modules we want to add... returned sorted by name
-			$module_info = $_module->get_module_infos('', $module_class);
+			$module_info = $_module->get_module_infos($module_class);
 
 			foreach ($module_info as $module_basename => $fileinfo)
 			{
@@ -1632,7 +1664,7 @@ class install_install extends module
 							'module_auth'		=> $row['auth'],
 						);
 
-						$_module->update_module_data($module_data, true);
+						$_module->update_module_data($module_data);
 
 						// Check for last sql error happened
 						if ($db->get_sql_error_triggered())
@@ -1657,7 +1689,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 4);
+				$_module->move_module_by($row, 'acp', 'move_up', 4);
 
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
@@ -1669,7 +1701,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 4);
+				$_module->move_module_by($row, 'acp', 'move_up', 4);
 
 				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
@@ -1681,7 +1713,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 5);
+				$_module->move_module_by($row, 'acp', 'move_up', 5);
 
 				// Move extension management module 1 up...
 				$sql = 'SELECT *
@@ -1694,7 +1726,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_up', 1);
+				$_module->move_module_by($row, 'acp', 'move_up', 1);
 			}
 
 			if ($module_class == 'mcp')
@@ -1709,7 +1741,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 3);
+				$_module->move_module_by($row, 'mcp', 'move_down', 3);
 
 				// Move closed pm reports module 3 down...
 				$sql = 'SELECT *
@@ -1721,7 +1753,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 3);
+				$_module->move_module_by($row, 'mcp', 'move_down', 3);
 
 				// Move open pm reports module 3 down...
 				$sql = 'SELECT *
@@ -1733,7 +1765,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 3);
+				$_module->move_module_by($row, 'mcp', 'move_down', 3);
 			}
 
 			if ($module_class == 'ucp')
@@ -1748,7 +1780,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 4);
+				$_module->move_module_by($row, 'ucp', 'move_down', 4);
 
 				// Move notification options module 4 down...
 				$sql = 'SELECT *
@@ -1760,7 +1792,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 4);
+				$_module->move_module_by($row, 'ucp', 'move_down', 4);
 
 				// Move OAuth module 5 down...
 				$sql = 'SELECT *
@@ -1772,7 +1804,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$_module->move_module_by($row, 'move_down', 5);
+				$_module->move_module_by($row, 'ucp', 'move_down', 5);
 			}
 
 			// And now for the special ones
@@ -1811,7 +1843,7 @@ class install_install extends module
 							'module_auth'		=> $row['module_auth'],
 						);
 
-						$_module->update_module_data($module_data, true);
+						$_module->update_module_data($module_data);
 
 						// Check for last sql error happened
 						if ($db->get_sql_error_triggered())
@@ -1823,7 +1855,7 @@ class install_install extends module
 				}
 			}
 
-			$_module->remove_cache_file();
+			$_module->remove_cache_file($module_class);
 		}
 	}
 
@@ -1910,7 +1942,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -1982,7 +2014,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		$user->session_begin();
 		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);
@@ -2031,7 +2063,7 @@ class install_install extends module
 	{
 		global $config, $phpbb_root_path;
 
-		if (!phpbb_is_writable($phpbb_root_path . 'images/avatars/upload/'))
+		if (!$this->filesystem->is_writable($phpbb_root_path . 'images/avatars/upload/'))
 		{
 			$config->set('allow_avatar', 0);
 			$config->set('allow_avatar_upload', 0);

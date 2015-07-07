@@ -221,6 +221,8 @@ services:
             - %tables.notification_types%
             - %tables.notifications%
             - %tables.user_notifications%
+        calls:
+            - [set_utils, [@text_formatter.utils]]
         tags:
             - { name: notification.type }
 

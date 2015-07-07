@@ -84,6 +84,7 @@ services:
             - @config
             - @cache
             - @log
+            - @filesystem
             - %core.root_path%
         tags:
             - { name: console.command }
@@ -137,5 +138,21 @@ services:
         arguments:
             - @user
             - @dbal.conn
+        tags:
+            - { name: console.command }
+
+    console.command.reparser.list:
+        class: phpbb\console\command\reparser\list_all
+        arguments:
+            - @user
+            - @text_reparser_collection
+        tags:
+            - { name: console.command }
+
+    console.command.reparser.reparse:
+        class: phpbb\console\command\reparser\reparse
+        arguments:
+            - @user
+            - @text_reparser_collection
         tags:
             - { name: console.command }

@@ -407,7 +407,7 @@ class mcp_queue
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_approve as $row)
 				{
-					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . $row['forum_name'] . '</option>';
+					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . truncate_string($row['forum_name'], 30, 255, false, $user->lang['ELLIPSIS']) . '</option>';
 				}
 
 				$sort_days = $total = 0;
@@ -1402,11 +1402,6 @@ class mcp_queue
 		}
 		else
 		{
-			if (!function_exists('display_reasons'))
-			{
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-			}
-
 			$show_notify = false;
 
 			foreach ($post_info as $post_data)
@@ -1426,7 +1421,7 @@ class mcp_queue
 			$confirm_template = 'mcp_approve.html';
 			if ($is_disapproving)
 			{
-				display_reasons($reason_id);
+				$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 			}
 			else
 			{

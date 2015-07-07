@@ -49,8 +49,9 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		$this->phpbb_extension_manager = $this->get_extension_manager();
 		$this->phpbb_extension_manager->enable('foo/bar');
 
-		$modules = new acp_modules();
 		$db = $this->get_db();
+		$cache = $this->get_cache_driver();
+		$modules = new \phpbb\module\module_manager($cache, $db, $this->phpbb_extension_manager, MODULES_TABLE, dirname(__FILE__) . '/../../phpBB/', 'php');
 
 		$sql = 'SELECT module_id
 			FROM ' . MODULES_TABLE . "
@@ -70,7 +71,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 			'module_mode'		=> '',
 			'module_auth'		=> '',
 		);
-		$modules->update_module_data($parent_data, true);
+		$modules->update_module_data($parent_data);
 
 		$module_data = array(
 			'module_basename'	=> 'foo\\bar\\acp\\main_module',
@@ -82,7 +83,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 			'module_mode'		=> 'mode',
 			'module_auth'		=> '',
 		);
-		$modules->update_module_data($module_data, true);
+		$modules->update_module_data($module_data);
 
 		$parent_data = array(
 			'module_basename'	=> '',
@@ -94,7 +95,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 			'module_mode'		=> '',
 			'module_auth'		=> '',
 		);
-		$modules->update_module_data($parent_data, true);
+		$modules->update_module_data($parent_data);
 
 		$module_data = array(
 			'module_basename'	=> 'foo\\bar\\ucp\\main_module',
@@ -106,7 +107,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 			'module_mode'		=> 'mode',
 			'module_auth'		=> '',
 		);
-		$modules->update_module_data($module_data, true);
+		$modules->update_module_data($module_data);
 
 		$this->purge_cache();
 	}

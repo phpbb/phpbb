@@ -553,13 +553,13 @@ class oauth extends \phpbb\auth\provider\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_auth_link_data()
+	public function get_auth_link_data($user_id = 0)
 	{
 		$block_vars = array();
 
 		// Get all external accounts tied to the current user
 		$data = array(
-			'user_id' => (int) $this->user->data['user_id'],
+			'user_id' => ($user_id <= 0) ? (int) $this->user->data['user_id'] : (int) $user_id,
 		);
 		$sql = 'SELECT oauth_provider_id, provider FROM ' . $this->auth_provider_oauth_token_account_assoc . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
@@ -616,10 +616,13 @@ class oauth extends \phpbb\auth\provider\base
 			return 'LOGIN_LINK_MISSING_DATA';
 		}
 
+		// Remove user specified in $link_data if possible
+		$user_id = isset($link_data['user_id']) ? $link_data['user_id'] : $this->user->data['user_id'];
+
 		// Remove the link
 		$sql = 'DELETE FROM ' . $this->auth_provider_oauth_token_account_assoc . "
 			WHERE provider = '" . $this->db->sql_escape($link_data['oauth_service']) . "'
-				AND user_id = " . (int) $this->user->data['user_id'];
+				AND user_id = " . (int) $user_id;
 		$this->db->sql_query($sql);
 
 		// Clear all tokens belonging to the user on this servce

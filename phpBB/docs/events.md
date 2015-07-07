@@ -177,6 +177,27 @@ acp_ranks_list_header_before
 * Purpose: Add content after the last header-column (but before the action column)
 in the ranks list in the ACP
 
+acp_users_profile_before
+===
+* Locations:
+    + adm/style/acp_users_profile.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the profile details when editing a user in the ACP
+
+acp_users_profile_after
+===
+* Locations:
+    + adm/style/acp_users_profile.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the profile details but before the custom profile fields when editing a user in the ACP
+
+acp_users_profile_custom_after
+===
+* Locations:
+    + adm/style/acp_users_profile.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the the custom profile fields when editing a user in the ACP
+
 acp_simple_footer_after
 ===
 * Location: adm/style/simple_footer.html
@@ -269,6 +290,20 @@ forumlist_body_category_header_before
     + styles/prosilver/template/forumlist_body.html
 * Since: 3.1.0-a4
 * Purpose: Add content before the header of the category on the forum list.
+
+forumlist_body_category_header_row_append
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add content after the header row of the category on the forum list.
+
+forumlist_body_category_header_row_prepend
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add content before the header row of the category on the forum list.
 
 forumlist_body_forum_row_after
 ===
@@ -466,6 +501,41 @@ mcp_front_latest_unapproved_before
 * Since: 3.1.3-RC1
 * Purpose: Add content before latest unapproved posts list
 
+mcp_post_additional_options
+===
+* Locations:
+    + styles/prosilver/template/mcp_post.html
+* Since: 3.1.5-RC1
+* Purpose: Add content within the list of post moderation actions
+
+mcp_warn_post_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning for a post - after add warning field.
+
+mcp_warn_post_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning for a post - before add warning field.
+
+mcp_warn_user_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a user - after add warning field.
+
+mcp_warn_user_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a user - before add warning field.
+
 memberlist_body_username_append
 ===
 * Locations:
@@ -544,34 +614,6 @@ memberlist_view_user_statistics_before
     + styles/prosilver/template/memberlist_view.html
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
-
-mcp_warn_post_add_warning_field_after
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning for a post - after add warning field.
-
-mcp_warn_post_add_warning_field_before
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning for a post - before add warning field.
-
-mcp_warn_user_add_warning_field_after
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning a user - after add warning field.
-
-mcp_warn_user_add_warning_field_before
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning a user - before add warning field.
 
 navbar_header_logged_out_content
 ===
@@ -755,6 +797,13 @@ overall_header_head_append
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag
 
+overall_header_navbar_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the navigation bar
+
 overall_header_navigation_append
 ===
 * Locations:
@@ -790,6 +839,13 @@ overall_header_page_body_before
 * Since: 3.1.0-b3
 * Purpose: Add content after the page-header, but before the page-body
 
+overall_header_searchbox_before
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the search box in the header
+
 overall_header_stylesheets_after
 ===
 * Locations:
@@ -797,6 +853,13 @@ overall_header_stylesheets_after
 * Since: 3.1.0-RC3
 * Purpose: Add asset calls after stylesheets within the `</head>` tag.
 Note that INCLUDECSS will not work with this event.
+
+posting_editor_bbcode_status_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after bbcode status
 
 posting_editor_buttons_after
 ===
@@ -840,6 +903,20 @@ posting_editor_options_prepend
 * Since: 3.1.0-a1
 * Purpose: Add posting options on the posting screen
 
+posting_editor_smilies_after
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after smilies
+
+posting_editor_smilies_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the smilies
+
 posting_editor_subject_after
 ===
 * Locations:
@@ -867,6 +944,27 @@ posting_pm_header_find_username_before
     + styles/prosilver/template/posting_pm_header.html
 * Since: 3.1.0-RC4
 * Purpose: Add content before the find username link on composing pm
+
+posting_pm_layout_include_pm_header_after
+===
+* Locations:
+    + styles/prosilver/template/posting_pm_layout.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the include of posting_pm_header.html
+
+posting_pm_layout_include_pm_header_before
+===
+* Locations:
+    + styles/prosilver/template/posting_pm_layout.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the include of posting_pm_header.html
+
+posting_poll_body_options_after
+===
+* Locations:
+    + styles/prosilver/template/posting_poll_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the poll options on creating a poll
 
 quickreply_editor_panel_after
 ===
@@ -896,6 +994,27 @@ quickreply_editor_message_before
 * Since: 3.1.0-a4
 * Purpose: Add content before the quick reply textbox
 
+search_body_form_before
+===
+* Locations:
+    + styles/prosilver/template/search_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add content before the search form
+
+search_results_header_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the header of the search results
+
+search_results_header_before
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the header of the search results.
+
 search_results_post_after
 ===
 * Locations:
@@ -923,6 +1042,13 @@ search_results_postprofile_before
     + styles/prosilver/template/search_results.html
 * Since: 3.1.0-b3
 * Purpose: Add content directly before the post author in search results (posts view mode)
+
+search_results_searchbox_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.4-RC1
+* Purpose: Add content right after the searchbox of the search results.
 
 search_results_topic_after
 ===
@@ -1126,6 +1252,34 @@ ucp_prefs_view_select_menu_append
 * Purpose: Add options to the bottom of the drop-down lists block of the Edit
 Display Options screen
 
+ucp_profile_profile_info_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_profile_info.html
+* Since: 3.1.4-RC1
+* Purpose: Add options in profile page fieldset - before jabber field.
+
+ucp_profile_profile_info_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_profile_info.html
+* Since: 3.1.4-RC1
+* Purpose: Add options in profile page fieldset - after custom profile fields.
+
+ucp_profile_register_details_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_reg_details.html
+* Since: 3.1.4-RC1
+* Purpose: Add options in profile page fieldset - before first field.
+
+ucp_profile_register_details_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_profile_reg_details.html
+* Since: 3.1.4-RC1
+* Purpose: Add options in profile page fieldset - after confirm password field.
+
 ucp_register_credentials_before
 ===
 * Locations:
@@ -1245,12 +1399,33 @@ viewforum_forum_name_prepend
 * Since: 3.1.0-b3
 * Purpose: Add content directly before the forum name link on the View forum screen
 
+viewforum_forum_title_after
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add content directly after the forum title on the View forum screen
+
+viewforum_forum_title_before
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add content directly before the forum title on the View forum screen
+
 viewtopic_print_head_append
 ===
 * Locations:
     + styles/prosilver/template/viewtopic_print.html
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print Topic screen
+
+viewtopic_body_pagination_top_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the pagination at top
 
 viewtopic_body_avatar_after
 ===
@@ -1349,6 +1524,22 @@ viewtopic_body_post_buttons_before
 * Since: 3.1.0-a1
 * Purpose: Add post button to posts (next to edit, quote etc), at the start of
 the list.
+
+viewtopic_body_post_buttons_list_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add post button custom list to posts (next to edit, quote etc),
+after the original list.
+
+viewtopic_body_post_buttons_list_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.5-RC1
+* Purpose: Add post button custom list to posts (next to edit, quote etc),
+before the original list.
 
 viewtopic_body_postrow_custom_fields_after
 ===

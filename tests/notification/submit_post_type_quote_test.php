@@ -51,6 +51,8 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 	*/
 	public function submit_post_data()
 	{
+		$parser = $this->get_test_case_helpers()->set_s9e_services()->get('text_formatter.parser');
+
 		return array(
 			/**
 			* Normal post
@@ -65,15 +67,15 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*/
 			array(
 				array(
-					'message'			=> implode(' ', array(
-						'[quote=&quot;poster&quot;:uid]poster should not be notified[/quote:uid]',
-						'[quote=&quot;test&quot;:uid]test should be notified[/quote:uid]',
-						'[quote=&quot;unauthorized&quot;:uid]unauthorized to read, should not receive a notification[/quote:uid]',
-						'[quote=&quot;notified&quot;:uid]already notified, should not receive a new notification[/quote:uid]',
-						'[quote=&quot;disabled&quot;:uid]option disabled, should not receive a notification[/quote:uid]',
-						'[quote=&quot;default&quot;:uid]option set to default, should receive a notification[/quote:uid]',
-						'[quote=&quot;doesn\'t exist&quot;:uid]user does not exist, should not receive a notification[/quote:uid]',
-					)),
+					'message'			=> $parser->parse(implode(' ', array(
+						'[quote="poster"]poster should not be notified[/quote]',
+						'[quote="test"]test should be notified[/quote]',
+						'[quote="unauthorized"]unauthorized to read, should not receive a notification[/quote]',
+						'[quote="notified"]already notified, should not receive a new notification[/quote]',
+						'[quote="disabled"]option disabled, should not receive a notification[/quote]',
+						'[quote="default"]option set to default, should receive a notification[/quote]',
+						'[quote="doesn\'t exist"]user does not exist, should not receive a notification[/quote]',
+					))),
 					'bbcode_uid'		=> 'uid',
 				),
 				array(
@@ -94,15 +96,15 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*/
 			array(
 				array(
-					'message'			=> implode(' ', array(
-						'[quote=&quot;poster&quot;:uid]poster should not be notified[/quote:uid]',
-						'[quote=&quot;test&quot;:uid]test should be notified[/quote:uid]',
-						'[quote=&quot;unauthorized&quot;:uid]unauthorized to read, should not receive a notification[/quote:uid]',
-						'[quote=&quot;notified&quot;:uid]already notified, should not receive a new notification[/quote:uid]',
-						'[quote=&quot;disabled&quot;:uid]option disabled, should not receive a notification[/quote:uid]',
-						'[quote=&quot;default&quot;:uid]option set to default, should receive a notification[/quote:uid]',
-						'[quote=&quot;doesn\'t exist&quot;:uid]user does not exist, should not receive a notification[/quote:uid]',
-					)),
+					'message'			=> $parser->parse(implode(' ', array(
+						'[quote="poster"]poster should not be notified[/quote]',
+						'[quote="test"]test should be notified[/quote]',
+						'[quote="unauthorized"]unauthorized to read, should not receive a notification[/quote]',
+						'[quote="notified"]already notified, should not receive a new notification[/quote]',
+						'[quote="disabled"]option disabled, should not receive a notification[/quote]',
+						'[quote="default"]option set to default, should receive a notification[/quote]',
+						'[quote="doesn\'t exist"]user does not exist, should not receive a notification[/quote]',
+					))),
 					'bbcode_uid'		=> 'uid',
 					'force_approved_state' => false,
 				),
