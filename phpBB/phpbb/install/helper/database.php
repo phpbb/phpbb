@@ -43,7 +43,8 @@ class database
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
 	{
-		$this->filesystem = $filesystem;
+		$this->filesystem		= $filesystem;
+		$this->phpbb_root_path	= $phpbb_root_path;
 
 		// DBMS supported by phpBB
 		$this->supported_dbms = array(
