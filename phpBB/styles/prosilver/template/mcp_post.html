@@ -144,7 +144,7 @@
 	</div>
 </div>
 
-<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
+<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER or S_MCP_POST_ADDITIONAL_OPTS -->
 	<div class="panel">
 		<div class="inner">
 
@@ -167,6 +167,8 @@
 			</fieldset>
 			</form>
 		<!-- ENDIF -->
+
+		<!-- EVENT mcp_post_additional_options -->
 
 		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
 			<form method="post" id="mcp" action="{U_MCP_ACTION}">

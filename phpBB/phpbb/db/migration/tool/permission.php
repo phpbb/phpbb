@@ -425,13 +425,27 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 				$role_id = (int) $this->db->sql_fetchfield('auth_role_id');
 				if ($role_id)
 				{
-					$sql = 'SELECT role_name
+					$sql = 'SELECT role_name, role_type
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
 					$this->db->sql_query($sql);
-					$role_name = $this->db->sql_fetchfield('role_name');
+					$role_data = $this->db->sql_fetchrow();
+					$role_name = $role_data['role_name'];
+					$role_type = $role_data['role_type'];
 
-					return $this->permission_set($role_name, $auth_option, 'role', $has_permission);
+					// Filter new auth options to match the role type: a_ | f_ | m_ | u_
+					// Set new auth options to the role only if options matching the role type were found
+					$auth_option = array_filter($auth_option,
+						function ($option) use ($role_type)
+						{
+							return strpos($option, $role_type) === 0;
+						}
+					);
+
+					if (sizeof($auth_option))
+					{
+						return $this->permission_set($role_name, $auth_option, 'role', $has_permission);
+					}
 				}
 
 				$sql = 'SELECT auth_option_id, auth_setting

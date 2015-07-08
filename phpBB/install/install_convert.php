@@ -96,6 +96,9 @@ class install_convert extends module
 	/** @var string */
 	protected $php_ext;
 
+	/** @var  \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
 	/**
 	* Variables used while converting, they are accessible from the global variable $convert
 	*/
@@ -116,6 +119,7 @@ class install_convert extends module
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 
 		if (!$this->check_phpbb_installed())
 		{
@@ -127,10 +131,11 @@ class install_convert extends module
 		// Enable super globals to prevent issues with the new \phpbb\request\request object
 		$request->enable_super_globals();
 		// Create a normal container now
-		$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-		$phpbb_container = $phpbb_container_builder->get_container();
+		$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+		$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 
 		// Create cache
+		/* @var $cache \phpbb\cache\service */
 		$cache = $phpbb_container->get('cache');
 
 		switch ($sub)
@@ -148,13 +153,11 @@ class install_convert extends module
 				unset($dbpasswd);
 
 				// We need to fill the config to let internal functions correctly work
-				$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-				set_config(null, null, null, $config);
-				set_config_count(null, null, null, $config);
+				$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
-				$new_conversion = request_var('new_conv', 0);
+				$new_conversion = $request->variable('new_conv', 0);
 
 				if ($new_conversion)
 				{
@@ -389,11 +392,9 @@ class install_convert extends module
 		$this->page_title = $lang['STAGE_SETTINGS'];
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
-		$convertor_tag = request_var('tag', '');
+		$convertor_tag = $request->variable('tag', '');
 
 		if (empty($convertor_tag))
 		{
@@ -418,20 +419,20 @@ class install_convert extends module
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
-		$src_dbms			= request_var('src_dbms', $convertor_data['dbms']);
-		$src_dbhost			= request_var('src_dbhost', $convertor_data['dbhost']);
-		$src_dbport			= request_var('src_dbport', $convertor_data['dbport']);
-		$src_dbuser			= request_var('src_dbuser', $convertor_data['dbuser']);
-		$src_dbpasswd		= request_var('src_dbpasswd', $convertor_data['dbpasswd']);
-		$src_dbname			= request_var('src_dbname', $convertor_data['dbname']);
-		$src_table_prefix	= request_var('src_table_prefix', $convertor_data['table_prefix']);
-		$forum_path			= request_var('forum_path', $convertor_data['forum_path']);
-		$refresh			= request_var('refresh', 1);
+		$src_dbms			= $request->variable('src_dbms', $convertor_data['dbms']);
+		$src_dbhost			= $request->variable('src_dbhost', $convertor_data['dbhost']);
+		$src_dbport			= $request->variable('src_dbport', $convertor_data['dbport']);
+		$src_dbuser			= $request->variable('src_dbuser', $convertor_data['dbuser']);
+		$src_dbpasswd		= $request->variable('src_dbpasswd', $convertor_data['dbpasswd']);
+		$src_dbname			= $request->variable('src_dbname', $convertor_data['dbname']);
+		$src_table_prefix	= $request->variable('src_table_prefix', $convertor_data['table_prefix']);
+		$forum_path			= $request->variable('forum_path', $convertor_data['forum_path']);
+		$refresh			= $request->variable('refresh', 1);
 
 		// Default URL of the old board
 		// @todo Are we going to use this for attempting to convert URL references in posts, or should we remove it?
 		//		-> We should convert old urls to the new relative urls format
-		// $src_url = request_var('src_url', 'Not in use at the moment');
+		// $src_url = $request->variable('src_url', 'Not in use at the moment');
 
 		// strip trailing slash from old forum path
 		$forum_path = (strlen($forum_path) && $forum_path[strlen($forum_path) - 1] == '/') ? substr($forum_path, 0, -1) : $forum_path;
@@ -494,7 +495,9 @@ class install_convert extends module
 				{
 					$prefixes = array();
 
-					$tables_existing = get_tables($src_db);
+					$db_tools_factory = new \phpbb\db\tools\factory();
+					$db_tools = $db_tools_factory->get($src_db);
+					$tables_existing = $db_tools->sql_list_tables();
 					$tables_existing = array_map('strtolower', $tables_existing);
 					foreach ($tables_existing as $table_name)
 					{
@@ -533,24 +536,27 @@ class install_convert extends module
 			if (!sizeof($error))
 			{
 				// Save convertor Status
-				set_config('convert_progress', serialize(array(
+				$config->set('convert_progress', serialize(array(
 					'step'			=> '',
 					'table_prefix'	=> $src_table_prefix,
 					'tag'			=> $convertor_tag,
-				)), true);
-				set_config('convert_db_server', serialize(array(
+				)), false);
+				$config->set('convert_db_server', serialize(array(
 					'dbms'			=> $src_dbms,
 					'dbhost'		=> $src_dbhost,
 					'dbport'		=> $src_dbport,
 					'dbname'		=> $src_dbname,
-				)), true);
-				set_config('convert_db_user', serialize(array(
+				)), false);
+				$config->set('convert_db_user', serialize(array(
 					'dbuser'		=> $src_dbuser,
 					'dbpasswd'		=> $src_dbpasswd,
-				)), true);
+				)), false);
 
 				// Save options
-				set_config('convert_options', serialize(array('forum_path' => './../' . $forum_path, 'refresh' => $refresh)), true);
+				$config->set('convert_options', serialize(array(
+					'forum_path' => './../' . $forum_path,
+					'refresh' => $refresh
+				)), false);
 
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['VERIFY_OPTIONS'],
@@ -619,7 +625,7 @@ class install_convert extends module
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache, $auth;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
-		global $request, $phpbb_config_php_file;
+		global $request, $phpbb_config_php_file, $phpbb_dispatcher;
 
 		extract($phpbb_config_php_file->get_all());
 
@@ -633,9 +639,7 @@ class install_convert extends module
 		unset($dbpasswd);
 
 		// We need to fill the config to let internal functions correctly work
-		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\null, CONFIG_TABLE);
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+		$config = new \phpbb\config\db($db, new \phpbb\cache\driver\dummy, CONFIG_TABLE);
 
 		// Override a couple of config variables for the duration
 		$config['max_quote_depth'] = 0;
@@ -787,7 +791,7 @@ class install_convert extends module
 		if (!class_exists($search_type))
 		{
 			$search_type = '\phpbb\search\fulltext_native';
-			set_config('search_type', $search_type);
+			$config->set('search_type', $search_type);
 		}
 
 		if (!class_exists($search_type))
@@ -796,7 +800,7 @@ class install_convert extends module
 		}
 
 		$error = false;
-		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{
@@ -806,10 +810,10 @@ class install_convert extends module
 		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		$message_parser = new parse_message();
 
-		$jump = request_var('jump', 0);
-		$final_jump = request_var('final_jump', 0);
-		$sync_batch = request_var('sync_batch', -1);
-		$last_statement = request_var('last', 0);
+		$jump = $request->variable('jump', 0);
+		$final_jump = $request->variable('final_jump', 0);
+		$sync_batch = $request->variable('sync_batch', -1);
+		$last_statement = $request->variable('last', 0);
 
 		// We are running sync...
 		if ($sync_batch >= 0)
@@ -830,9 +834,9 @@ class install_convert extends module
 			return;
 		}
 
-		$current_table = request_var('current_table', 0);
+		$current_table = $request->variable('current_table', 0);
 		$old_current_table = min(-1, $current_table - 1);
-		$skip_rows = request_var('skip_rows', 0);
+		$skip_rows = $request->variable('skip_rows', 0);
 
 		if (!$current_table && !$skip_rows)
 		{
@@ -859,7 +863,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !phpbb_is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !$this->filesystem->is_writable($phpbb_root_path . $local_path))
 						{
 							if (!$local_path)
 							{
@@ -1560,26 +1564,26 @@ class install_convert extends module
 	*/
 	function save_convert_progress($step)
 	{
-		global $convert, $language;
+		global $config, $convert, $language;
 
 		// Save convertor Status
-		set_config('convert_progress', serialize(array(
+		$config->set('convert_progress', serialize(array(
 			'step'			=> $step,
 			'table_prefix'	=> $convert->src_table_prefix,
 			'tag'			=> $convert->convertor_tag,
-		)), true);
+		)), false);
 
-		set_config('convert_db_server', serialize(array(
+		$config->set('convert_db_server', serialize(array(
 			'dbms'			=> $convert->src_dbms,
 			'dbhost'		=> $convert->src_dbhost,
 			'dbport'		=> $convert->src_dbport,
 			'dbname'		=> $convert->src_dbname,
-		)), true);
+		)), false);
 
-		set_config('convert_db_user', serialize(array(
+		$config->set('convert_db_user', serialize(array(
 			'dbuser'		=> $convert->src_dbuser,
 			'dbpasswd'		=> $convert->src_dbpasswd,
-		)), true);
+		)), false);
 
 		return $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step&amp;language=$language";
 	}
@@ -1603,8 +1607,7 @@ class install_convert extends module
 		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log
-		$phpbb_log = $phpbb_container->get('log');
-		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INSTALL_CONVERTED', false, array($convert->convertor_data['forum_name'], $config['version']));
 
 		$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final&amp;language=$language";
 
@@ -1759,7 +1762,7 @@ class install_convert extends module
 
 			if (!isset($config['board_startdate']) || ($row['board_startdate'] < $config['board_startdate'] && $row['board_startdate'] > 0))
 			{
-				set_config('board_startdate', $row['board_startdate']);
+				$config->set('board_startdate', $row['board_startdate']);
 				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_regdate = ' . $row['board_startdate'] . ' WHERE user_id = ' . ANONYMOUS);
 			}
 

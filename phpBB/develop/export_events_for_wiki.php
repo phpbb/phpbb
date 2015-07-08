@@ -18,14 +18,18 @@ if (php_sapi_name() != 'cli')
 
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 $phpbb_root_path = __DIR__ . '/../';
+define('IN_PHPBB', true);
 
 function usage()
 {
-	echo "Usage: export_events_for_wiki.php COMMAND [EXTENSION]\n";
+	echo "Usage: export_events_for_wiki.php COMMAND [VERSION] [EXTENSION]\n";
 	echo "\n";
 	echo "COMMAND:\n";
 	echo "    all:\n";
 	echo "        Generate the complete wikipage for https://wiki.phpbb.com/Event_List\n";
+	echo "\n";
+	echo "    diff:\n";
+	echo "        Generate the Event Diff for the release highlights\n";
 	echo "\n";
 	echo "    php:\n";
 	echo "        Generate the PHP event section of Event_List\n";
@@ -35,6 +39,9 @@ function usage()
 	echo "\n";
 	echo "    styles:\n";
 	echo "        Generate the Styles Template event section of Event_List\n";
+	echo "\n";
+	echo "VERSION (diff only):\n";
+	echo "    Filter events (minimum version)\n";
 	echo "\n";
 	echo "EXTENSION (Optional):\n";
 	echo "    If not given, only core events will be exported.\n";
@@ -55,20 +62,32 @@ validate_argument_count($argc, 1);
 
 $action = $argv[1];
 $extension = isset($argv[2]) ? $argv[2] : null;
+$min_version = null;
 require __DIR__ . '/../phpbb/event/php_exporter.' . $phpEx;
 require __DIR__ . '/../phpbb/event/md_exporter.' . $phpEx;
+require __DIR__ . '/../includes/functions.' . $phpEx;
 require __DIR__ . '/../phpbb/event/recursive_event_filter_iterator.' . $phpEx;
 require __DIR__ . '/../phpbb/recursive_dot_prefix_filter_iterator.' . $phpEx;
 
 switch ($action)
 {
+
+	case 'diff':
+		echo '== Event changes ==' . "\n";
+		$min_version = $extension;
+		$extension = isset($argv[3]) ? $argv[3] : null;
+
 	case 'all':
-		echo '__FORCETOC__' . "\n";
+		if ($action === 'all')
+		{
+			echo '__FORCETOC__' . "\n";
+		}
+
 
 	case 'php':
-		$exporter = new \phpbb\event\php_exporter($phpbb_root_path, $extension);
+		$exporter = new \phpbb\event\php_exporter($phpbb_root_path, $extension, $min_version);
 		$exporter->crawl_phpbb_directory_php();
-		echo $exporter->export_events_for_wiki();
+		echo $exporter->export_events_for_wiki($action);
 
 		if ($action === 'php')
 		{
@@ -78,9 +97,16 @@ switch ($action)
 		// no break;
 
 	case 'styles':
-		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension);
-		$exporter->crawl_phpbb_directory_styles('docs/events.md');
-		echo $exporter->export_events_for_wiki();
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension, $min_version);
+		if ($min_version && $action === 'diff')
+		{
+			$exporter->crawl_eventsmd('docs/events.md', 'styles');
+		}
+		else
+		{
+			$exporter->crawl_phpbb_directory_styles('docs/events.md');
+		}
+		echo $exporter->export_events_for_wiki($action);
 
 		if ($action === 'styles')
 		{
@@ -90,9 +116,16 @@ switch ($action)
 		// no break;
 
 	case 'adm':
-		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension);
-		$exporter->crawl_phpbb_directory_adm('docs/events.md');
-		echo $exporter->export_events_for_wiki();
+		$exporter = new \phpbb\event\md_exporter($phpbb_root_path, $extension, $min_version);
+		if ($min_version && $action === 'diff')
+		{
+			$exporter->crawl_eventsmd('docs/events.md', 'adm');
+		}
+		else
+		{
+			$exporter->crawl_phpbb_directory_adm('docs/events.md');
+		}
+		echo $exporter->export_events_for_wiki($action);
 
 		if ($action === 'all')
 		{

@@ -10,19 +10,19 @@
 		<table class="table1">
 			<thead>
 				<tr>
-					<th>{L_LOGIN_KEY}</th>
-					<th>{L_IP}</th>
-					<th>{L_LOGIN_TIME}</th>
-					<th class="mark">{L_MARK}</th>
+					<th class="name">{L_LOGIN_KEY}</th>
+					<th class="center">{L_IP}</th>
+					<th class="center">{L_LOGIN_TIME}</th>
+					<th class="center mark">{L_MARK}</th>
 				</tr>
 			</thead>
 			<tbody>
 			<!-- BEGIN sessions -->
 				<!-- IF sessions.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
 					<td><label for="{sessions.KEY}">{sessions.KEY}</label></td>
-					<td style="text-align: center">{sessions.IP}</td>
-					<td style="text-align: center">{sessions.LOGIN_TIME}</td>
-					<td style="text-align: center" class="mark"><input type="checkbox" name="keys[]" value="{sessions.KEY}" id="{sessions.KEY}" /></td>
+					<td class="center">{sessions.IP}</td>
+					<td class="center">{sessions.LOGIN_TIME}</td>
+					<td class="center mark"><input type="checkbox" name="keys[]" value="{sessions.KEY}" id="{sessions.KEY}" /></td>
 				</tr>
 			<!-- BEGINELSE -->
 				<tr><td colspan="4" class="bg1" style="text-align: center">{L_PROFILE_NO_AUTOLOGIN_KEYS}</td></tr>

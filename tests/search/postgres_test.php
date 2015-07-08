@@ -37,8 +37,9 @@ class phpbb_search_postgres_test extends phpbb_search_common_test_case
 		$config['fulltext_postgres_max_word_len'] = 254;
 
 		$this->db = $this->new_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$error = null;
 		$class = self::get_search_wrapper('\phpbb\search\fulltext_postgres');
-		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
+		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user, $phpbb_dispatcher);
 	}
 }

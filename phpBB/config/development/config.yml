@@ -1,0 +1,10 @@
+imports:
+    - { resource: ../default/config.yml }
+
+core:
+    require_dev_dependencies: true
+
+    twig:
+        debug: true
+        auto_reload: true
+        enable_debug_extension: true

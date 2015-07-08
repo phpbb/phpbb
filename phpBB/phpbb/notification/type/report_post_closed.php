@@ -137,7 +137,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_avatar()
 	{
-		return $this->user_loader->get_avatar($this->get_data('closer_id'));
+		return $this->user_loader->get_avatar($this->get_data('closer_id'), false, true);
 	}
 
 	/**

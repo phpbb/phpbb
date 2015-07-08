@@ -13,7 +13,6 @@
 
 namespace phpbb\template\twig\node;
 
-
 class includenode extends \Twig_Node_Include
 {
 	/**

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_smilies">
+		<column>smiley_id</column>
+		<column>code</column>
+		<column>emotion</column>
+		<column>smiley_url</column>
+		<column>smiley_width</column>
+		<column>smiley_height</column>
+		<column>smiley_order</column>
+		<column>display_on_posting</column>
+		<row>
+			<value>22</value>
+			<value>:lol:</value>
+			<value>Laughing</value>
+			<value>icon_lol.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>22</value>
+			<value>1</value>
+		</row>
+	</table>
+</dataset>

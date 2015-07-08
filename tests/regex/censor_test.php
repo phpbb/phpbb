@@ -37,17 +37,7 @@ class phpbb_regex_censor_test extends phpbb_test_case
 	*/
 	public function test_censor_unicode($pattern, $subject)
 	{
-		$regex = get_censor_preg_expression($pattern, true);
-
-		$this->assertRegExp($regex, $subject);
-	}
-
-	/**
-	* @dataProvider censor_test_data
-	*/
-	public function test_censor_no_unicode($pattern, $subject)
-	{
-		$regex = get_censor_preg_expression($pattern, false);
+		$regex = get_censor_preg_expression($pattern);
 
 		$this->assertRegExp($regex, $subject);
 	}
