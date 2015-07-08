@@ -219,7 +219,7 @@ class ucp_notifications
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-		foreach($notification_methods as $method => $method_data)
+		foreach ($notification_methods as $method => $method_data)
 		{
 			$template->assign_block_vars($block, array(
 				'METHOD'			=> $method_data['id'],

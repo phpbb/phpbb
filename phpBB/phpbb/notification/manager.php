@@ -144,6 +144,21 @@ class manager
 	}
 
 	/**
+	 * Mark notifications read or unread for all available methods
+	 *
+	 * @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
+	 * @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
+	 * @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	 * @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	 *
+	 * @deprecated since 3.2
+	 */
+	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	{
+		$this->mark_notifications($notification_type_name, $item_id, $user_id, $time);
+	}
+
+	/**
 	* Mark notifications read or unread for all available methods
 	*
 	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
@@ -171,6 +186,21 @@ class manager
 		{
 			$method->mark_notifications($notification_type_id, $item_id, $user_id, $time, $mark_read);
 		}
+	}
+
+	/**
+	 * Mark notifications read or unread from a parent identifier for all available methods
+	 *
+	 * @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
+	 * @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
+	 * @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	 * @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	 *
+	 * @deprecated since 3.2
+	 */
+	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	{
+		$this->mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time);
 	}
 
 	/**
