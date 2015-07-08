@@ -47,7 +47,10 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		));
 
 		$this->db = $this->db = $this->new_dbal();
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+				new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+				'\phpbb\datetime')
+		);
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 
