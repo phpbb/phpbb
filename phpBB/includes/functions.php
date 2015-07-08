@@ -4878,7 +4878,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			$src = 'src="' . $avatar_data['src'] . '"';
 		}
 
-		$html = '<img class="avatar" ' . $src .
+		$html = '<img class="avatar" ' . $src . ' ' .
 			($avatar_data['width'] ? ('width="' . $avatar_data['width'] . '" ') : '') .
 			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';

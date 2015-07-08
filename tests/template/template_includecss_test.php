@@ -71,19 +71,19 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			*/
 			array(
 				array('TEST' => 1),
-				'<link href="tests/template/templates/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+				'<link href="tests/template/templates/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
 			),
 			array(
 				array('TEST' => 2),
-				'<link href="tests/template/parent_templates/parent_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+				'<link href="tests/template/parent_templates/parent_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
 			),
 			array(
 				array('TEST' => 3),
-				'<link href="' . $url_base . '/ext/include/css/styles/all/theme/test.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+				'<link href="' . $url_base . '/ext/include/css/styles/all/theme/test.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
 			),
 			array(
 				array('TEST' => 4),
-				'<link href="' . $url_base . '/ext/include/css/styles/all/theme/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen, projection" />',
+				'<link href="' . $url_base . '/ext/include/css/styles/all/theme/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
 			),
 		);
 	}
