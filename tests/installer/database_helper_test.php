@@ -28,10 +28,6 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_root_path = '';
 		$this->database_helper = new \phpbb\install\helper\database($filesystem, $phpbb_root_path);
-
-		// I used oracle because it tolerates the shortest table prefixes
-		// so it's the simplest to write test cases for
-		$this->dbms_mock = $this->getMock('\phpbb\db\driver\oracle');
 	}
 
 	/**
@@ -65,7 +61,7 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	 */
 	public function test_validate_table_prefix($expected, $test_string)
 	{
-		$this->assertEquals($expected, $this->database_helper->validate_table_prefix($this->dbms_mock, $test_string));
+		$this->assertEquals($expected, $this->database_helper->validate_table_prefix('oracle', $test_string));
 	}
 
 	// Data provider for the remove comments function
@@ -100,17 +96,9 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 					'abcd "efgh"' . "\n" . 'qwerty',
 					'SELECT * FROM table',
 				),
-				'abcd "efgh"
-				qwerty;
-				SELECT * FROM table',
-				';',
-			),
-			array(
-				array(
-					'SELECT * FROM table1',
-					'SELECT * FROM table2 WHERE i_am="king"',
-				),
-				'SELECT * FROM table1; SELECT * FROM table2 WHERE i_am="king"',
+				'abcd "efgh"' . "\n" .
+				'qwerty' . "\n" .
+				'SELECT * FROM table',
 				';',
 			),
 		);

@@ -16,14 +16,14 @@ class phpbb_installer_navigation_provider_test extends phpbb_test_case
 	public function test_navigation()
 	{
 		// Mock nav interface
-		$nav_mock = $this->getMockBuilder('\phpbb\install\helper\navigation\navigation_interface')
-			->method('get')
-			->willReturn(array('foo' => 'bar'))
+		$nav_stub = $this->getMockBuilder('\phpbb\install\helper\navigation\navigation_interface')
 			->getMock();
+		$nav_stub->method('get')
+			->willReturn(array('foo' => 'bar'));
 
 		// Set up dependencies
 		$container = new phpbb_mock_container_builder();
-		$container->set('foo', $nav_mock);
+		$container->set('foo', $nav_stub);
 		$nav_collection = new \phpbb\di\service_collection($container);
 		$nav_collection->add('foo');
 

@@ -25,11 +25,11 @@ class phpbb_installer_config_test extends phpbb_test_case
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$filesystem = $this->getMock('\phpbb\filesystem\filesystem');
 		$php_ini = $this->getMockBuilder('\phpbb\php\ini')
-			->method('get_int')
-			->willReturn(-1)
-			->method('get_bytes')
-			->willReturn(-1)
 			->getMock();
+		$php_ini->method('get_int')
+			->willReturn(-1);
+		$php_ini->method('get_bytes')
+			->willReturn(-1);
 
 		$this->config = new config($filesystem, $php_ini, $phpbb_root_path);
 	}
@@ -68,7 +68,8 @@ class phpbb_installer_config_test extends phpbb_test_case
 		$this->config->set_task_progress_count(10);
 		$this->config->increment_current_task_progress();
 
-		$this->assertContains(array('current_task_progress' => 1), $this->config->get_progress_data());
+		$progress_data = $this->config->get_progress_data();
+		$this->assertEquals(1, $progress_data['current_task_progress']);
 
 		$this->config->increment_current_task_progress(2);
 
