@@ -18,11 +18,6 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	 */
 	private $database_helper;
 
-	/**
-	 * @var phpbb\db\driver\driver_interface
-	 */
-	private $dbms_mock;
-
 	public function setUp()
 	{
 		$filesystem = new \phpbb\filesystem\filesystem();
@@ -61,7 +56,7 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	 */
 	public function test_validate_table_prefix($expected, $test_string)
 	{
-		$this->assertEquals($expected, $this->database_helper->validate_table_prefix('oracle', $test_string));
+		$this->assertEquals($expected, $this->database_helper->validate_table_prefix('sqlite3', $test_string));
 	}
 
 	// Data provider for the remove comments function
@@ -97,7 +92,7 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 					'SELECT * FROM table',
 				),
 				'abcd "efgh"' . "\n" .
-				'qwerty' . "\n" .
+				'qwerty;' . "\n" .
 				'SELECT * FROM table',
 				';',
 			),
@@ -130,9 +125,16 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 			),
 			array(
 				array(
-					array('title' => 'INST_ERR_PREFIX_TOO_LONG'),
+					array('title' => array('INST_ERR_PREFIX_TOO_LONG', 200)),
 				),
-				'php_bb_',
+				'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+			),
+			array(
+				array(
+					array('title' => 'INST_ERR_DB_INVALID_PREFIX'),
+					array('title' => array('INST_ERR_PREFIX_TOO_LONG', 200)),
+				),
+				'_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
 			),
 		);
 	}
