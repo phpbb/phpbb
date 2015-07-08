@@ -14,6 +14,7 @@ namespace phpbb\console\command\thumbnail;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class delete extends \phpbb\console\command\command
 {
@@ -68,6 +69,10 @@ class delete extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
+		$io->section($this->user->lang('CLI_THUMBNAIL_DELETING'));
+
 		$sql = 'SELECT COUNT(*) AS nb_missing_thumbnails
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE thumbnail = 1';
@@ -77,7 +82,7 @@ class delete extends \phpbb\console\command\command
 
 		if ($nb_missing_thumbnails === 0)
 		{
-			$output->writeln('<info>' . $this->user->lang('CLI_THUMBNAIL_NOTHING_TO_DELETE') . '</info>');
+			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_DELETE'));
 			return 0;
 		}
 
@@ -86,11 +91,36 @@ class delete extends \phpbb\console\command\command
 			WHERE thumbnail = 1';
 		$result = $this->db->sql_query($sql);
 
-		if (!$input->getOption('verbose'))
+		$progress = $io->createProgressBar($nb_missing_thumbnails);
+		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
 		{
-			$progress = $this->getHelper('progress');
-			$progress->start($output, $nb_missing_thumbnails);
+			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
+			$progress->setOverwrite(false);
 		}
+		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+		{
+			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
+			$progress->setOverwrite(false);
+		}
+		else
+		{
+			$io->newLine(2);
+			$progress->setFormat(
+				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
+				"                         %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
+			$progress->setBarWidth(60);
+		}
+
+		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
+		{
+			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
+			$progress->setProgressCharacter('');
+			$progress->setBarCharacter('▓'); // dark shade character \u2593
+		}
+
+		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_DELETING'));
+
+		$progress->start();
 
 		$thumbnail_deleted = array();
 		$return = 0;
@@ -108,24 +138,15 @@ class delete extends \phpbb\console\command\command
 					$thumbnail_deleted = array();
 				}
 
-				if ($input->getOption('verbose'))
-				{
-					$output->writeln($this->user->lang('CLI_THUMBNAIL_DELETED', $row['real_filename'], $row['physical_filename']));
-				}
+				$progress->setMessage($this->user->lang('CLI_THUMBNAIL_DELETED', $row['real_filename'], $row['physical_filename']));
 			}
 			else
 			{
-				if ($input->getOption('verbose'))
-				{
-					$return = 1;
-					$output->writeln('<error>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
-				}
+				$return = 1;
+				$progress->setMessage('<error>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
 			}
 
-			if (!$input->getOption('verbose'))
-			{
-				$progress->advance();
-			}
+			$progress->advance();
 		}
 		$this->db->sql_freeresult($result);
 
@@ -134,10 +155,10 @@ class delete extends \phpbb\console\command\command
 			$this->commit_changes($thumbnail_deleted);
 		}
 
-		if (!$input->getOption('verbose'))
-		{
-			$progress->finish();
-		}
+		$progress->finish();
+
+		$io->newLine(2);
+		$io->success($this->user->lang('CLI_THUMBNAIL_DELETING_DONE'));
 
 		return $return;
 	}

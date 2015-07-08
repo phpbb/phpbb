@@ -49,12 +49,11 @@ class recreate extends \phpbb\console\command\command
 
 		if ($input->getOption('verbose'))
 		{
-			$parameters['-v'] = true;
+			$parameters['-' . str_repeat('v', $output->getVerbosity() - 1)] = true;
 		}
 
 		$this->getApplication()->setAutoExit(false);
 
-		$output->writeln('<comment>' . $this->user->lang('CLI_THUMBNAIL_DELETING') . '</comment>');
 		$input_delete = new ArrayInput($parameters);
 		$return = $this->getApplication()->run($input_delete, $output);
 
@@ -62,8 +61,6 @@ class recreate extends \phpbb\console\command\command
 		{
 			$parameters['command'] = 'thumbnail:generate';
 
-			$output->writeln('');
-			$output->writeln('<comment>' . $this->user->lang('CLI_THUMBNAIL_GENERATING') . '</comment>');
 			$input_create = new ArrayInput($parameters);
 			$return = $this->getApplication()->run($input_create, $output);
 		}

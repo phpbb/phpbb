@@ -84,20 +84,25 @@ $lang = array_merge($lang, array(
 	'CLI_EXTENSION_PURGE_FAILURE'		=> 'Could not purge extension %s',
 	'CLI_EXTENSION_PURGE_SUCCESS'		=> 'Successfully purged extension %s',
 	'CLI_EXTENSION_NOT_FOUND'			=> 'No extensions were found.',
+	'CLI_EXTENSIONS_AVAILABLE'			=> 'Available',
+	'CLI_EXTENSIONS_DISABLED'			=> 'Disabled',
+	'CLI_EXTENSIONS_ENABLED'			=> 'Enabled',
 
 	'CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'	=> 'Successfully recalculated all email hashes.',
 
 	'CLI_REPARSER_REPARSE_REPARSING'		=> 'Reparsing %1$s (range %2$d..%3$d)',
 	'CLI_REPARSER_REPARSE_REPARSING_START'	=> 'Reparsing %s...',
 	'CLI_REPARSER_REPARSE_SUCCESS'			=> 'Reparsing ended with success',
-	
+
 	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
 	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.
 	'CLI_THUMBNAIL_DELETED'		=> '%1$s (%2$s) deleted.',
-	'CLI_THUMBNAIL_DELETING'	=> 'Deleting thumbnails…',
+	'CLI_THUMBNAIL_DELETING'	=> 'Deleting thumbnails',
 	'CLI_THUMBNAIL_SKIPPED'		=> '%1$s (%2$s) skipped.',
 	'CLI_THUMBNAIL_GENERATED'	=> '%1$s (%2$s) generated.',
-	'CLI_THUMBNAIL_GENERATING'	=> 'Generating thumbnails…',
+	'CLI_THUMBNAIL_GENERATING'	=> 'Generating thumbnails',
+	'CLI_THUMBNAIL_GENERATING_DONE'	=> 'All thumbnails have been regenerated.',
+	'CLI_THUMBNAIL_DELETING_DONE'	=> 'All thumbnails have been deleted.',
 
 	'CLI_THUMBNAIL_NOTHING_TO_GENERATE'	=> 'No thumbnails to generate.',
 	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',

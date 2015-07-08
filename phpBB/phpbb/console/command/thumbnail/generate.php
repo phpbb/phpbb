@@ -10,10 +10,12 @@
 * the docs/CREDITS.txt file.
 *
 */
+
 namespace phpbb\console\command\thumbnail;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class generate extends \phpbb\console\command\command
 {
@@ -84,6 +86,10 @@ class generate extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
+		$io->section($this->user->lang('CLI_THUMBNAIL_GENERATING'));
+
 		$sql = 'SELECT COUNT(*) AS nb_missing_thumbnails
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE thumbnail = 0';
@@ -93,7 +99,7 @@ class generate extends \phpbb\console\command\command
 
 		if ($nb_missing_thumbnails === 0)
 		{
-			$output->writeln('<info>' . $this->user->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE') . '</info>');
+			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE'));
 			return 0;
 		}
 
@@ -109,11 +115,36 @@ class generate extends \phpbb\console\command\command
 			require($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
 
-		if (!$input->getOption('verbose'))
+		$progress = $io->createProgressBar($nb_missing_thumbnails);
+		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
 		{
-			$progress = $this->getHelper('progress');
-			$progress->start($output, $nb_missing_thumbnails);
+			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
+			$progress->setOverwrite(false);
 		}
+		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+		{
+			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
+			$progress->setOverwrite(false);
+		}
+		else
+		{
+			$io->newLine(2);
+			$progress->setFormat(
+				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
+				"                         %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
+			$progress->setBarWidth(60);
+		}
+
+		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
+		{
+			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
+			$progress->setProgressCharacter('');
+			$progress->setBarCharacter('▓'); // dark shade character \u2593
+		}
+
+		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_GENERATING'));
+
+		$progress->start();
 
 		$thumbnail_created = array();
 		while ($row = $this->db->sql_fetchrow($result))
@@ -127,30 +158,21 @@ class generate extends \phpbb\console\command\command
 				{
 					$thumbnail_created[] = (int) $row['attach_id'];
 
-					if (sizeof($thumbnail_created) === 250)
+					if (count($thumbnail_created) === 250)
 					{
 						$this->commit_changes($thumbnail_created);
 						$thumbnail_created = array();
 					}
 
-					if ($input->getOption('verbose'))
-					{
-						$output->writeln($this->user->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
-					}
+					$progress->setMessage($this->user->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
 				}
 				else
 				{
-					if ($input->getOption('verbose'))
-					{
-						$output->writeln('<info>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
-					}
+					$progress->setMessage('<info>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
 				}
 			}
 
-			if (!$input->getOption('verbose'))
-			{
-				$progress->advance();
-			}
+			$progress->advance();
 		}
 		$this->db->sql_freeresult($result);
 
@@ -159,10 +181,10 @@ class generate extends \phpbb\console\command\command
 			$this->commit_changes($thumbnail_created);
 		}
 
-		if (!$input->getOption('verbose'))
-		{
-			$progress->finish();
-		}
+		$progress->finish();
+
+		$io->newLine(2);
+		$io->success($this->user->lang('CLI_THUMBNAIL_GENERATING_DONE'));
 
 		return 0;
 	}

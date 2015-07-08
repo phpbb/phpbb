@@ -11,6 +11,7 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compatibility.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 use Symfony\Component\Console\Application;
@@ -36,7 +37,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 	public function setUp()
 	{
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
 
 		parent::setUp();
 
@@ -47,12 +48,15 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		));
 
 		$this->db = $this->db = $this->new_dbal();
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+				new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+				'\phpbb\datetime')
+		);
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 
 		$this->cache = $this->getMock('\phpbb\cache\service', array(), array(new phpbb_mock_cache(), $this->config, $this->db, $this->phpbb_root_path, $this->phpEx));
-		$this->cache->expects($this->any())->method('obtain_attach_extensions')->will($this->returnValue(array(
+		$this->cache->expects(self::any())->method('obtain_attach_extensions')->will(self::returnValue(array(
 			'png' => array('display_cat' => ATTACHMENT_CATEGORY_IMAGE),
 			'txt' => array('display_cat' => ATTACHMENT_CATEGORY_NONE),
 		)));
@@ -61,44 +65,51 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->phpbb_root_path, $this->phpEx));
 		$this->application->add(new delete($this->user, $this->db, $this->phpbb_root_path));
 		$this->application->add(new recreate($this->user));
-	}
 
-	public function test_thumbnails()
-	{
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/thumb_test_png_2');
 		copy(dirname(__FILE__) . '/fixtures/txt.txt', $this->phpbb_root_path . 'files/test_txt');
+	}
 
-		$command_tester = $this->get_command_tester('thumbnail:generate');
-		$exit_status = $command_tester->execute(array('command' => 'thumbnail:generate'));
-
-		$this->assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
-		$this->assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
-		$this->assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
-		$this->assertSame(0, $exit_status);
-
-		$command_tester = $this->get_command_tester('thumbnail:delete');
-		$exit_status = $command_tester->execute(array('command' => 'thumbnail:delete'));
-
-		$this->assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
-		$this->assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
-		$this->assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
-		$this->assertSame(0, $exit_status);
-
-		$command_tester = $this->get_command_tester('thumbnail:recreate');
-		$exit_status = $command_tester->execute(array('command' => 'thumbnail:recreate'));
-
-		$this->assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
-		$this->assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
-		$this->assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
-		$this->assertSame(0, $exit_status);
+	protected function tearDown()
+	{
+		parent::tearDown();
 
 		unlink($this->phpbb_root_path . 'files/test_png_1');
 		unlink($this->phpbb_root_path . 'files/test_png_2');
 		unlink($this->phpbb_root_path . 'files/test_txt');
 		unlink($this->phpbb_root_path . 'files/thumb_test_png_1');
 		unlink($this->phpbb_root_path . 'files/thumb_test_png_2');
+	}
+
+	public function test_thumbnails()
+	{
+		$command_tester = $this->get_command_tester('thumbnail:generate');
+		$exit_status = $command_tester->execute(array('command' => 'thumbnail:generate'));
+
+		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
+		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
+		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
+		self::assertSame(0, $exit_status);
+
+		$command_tester = $this->get_command_tester('thumbnail:delete');
+		$exit_status = $command_tester->execute(array('command' => 'thumbnail:delete'));
+
+		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
+		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
+		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
+		self::assertSame(0, $exit_status);
+
+		$command_tester = $this->get_command_tester('thumbnail:recreate');
+		$exit_status = $command_tester->execute(array('command' => 'thumbnail:recreate'));
+
+		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
+		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
+		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
+		self::assertSame(0, $exit_status);
 	}
 
 	public function get_command_tester($command_name)
