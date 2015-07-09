@@ -37,8 +37,8 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, ["@user_loader"]]
-            - [set_config, ["@config"]]
+            - [set_user_loader, [@user_loader]]
+            - [set_config, [@config]]
         tags:
             - { name: notification.type }
 
@@ -52,7 +52,7 @@ services:
     notification.type.approve_topic:
         class: phpbb\notification\type\approve_topic
         scope: prototype
-        parent: notification.type.base
+        parent: notification.type.topic
         tags:
             - { name: notification.type }
 
@@ -73,7 +73,7 @@ services:
     notification.type.disapprove_topic:
         class: phpbb\notification\type\disapprove_topic
         scope: prototype
-        parent: notification.type.base
+        parent: notification.type.topic
         tags:
             - { name: notification.type }
 
@@ -82,7 +82,7 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, ["@user_loader"]]
+            - [set_user_loader, [@user_loader]]
         tags:
             - { name: notification.type }
 
@@ -98,8 +98,8 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, ["@user_loader"]]
-            - [set_config, ["@config"]]
+            - [set_user_loader, [@user_loader]]
+            - [set_config, [@config]]
         tags:
             - { name: notification.type }
 
@@ -108,8 +108,8 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, ["@user_loader"]]
-            - [set_config, ["@config"]]
+            - [set_user_loader, [@user_loader]]
+            - [set_config, [@config]]
         tags:
             - { name: notification.type }
 
@@ -162,15 +162,15 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, ["@user_loader"]]
-            - [set_config, ["@config"]]
+            - [set_user_loader, [@user_loader]]
+            - [set_config, [@config]]
         tags:
             - { name: notification.type }
 
     notification.type.topic_in_queue:
         class: phpbb\notification\type\topic_in_queue
         scope: prototype
-        parent: notification.type.base
+        parent: notification.type.topic
         tags:
             - { name: notification.type }
 
