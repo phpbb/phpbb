@@ -55,6 +55,22 @@ class post extends \phpbb\notification\type\base
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
 
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
+
 	/**
 	* Is available
 	*/
@@ -140,6 +156,7 @@ class post extends \phpbb\notification\type\base
 		{
 			unset($notify_users[$user]);
 
+			/** @var post $notification */
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
 			$update_responders = $notification->add_responders($post);
 			if (!empty($update_responders))

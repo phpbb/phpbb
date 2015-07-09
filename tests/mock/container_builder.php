@@ -188,4 +188,9 @@ class phpbb_mock_container_builder implements ContainerInterface
 	public function isScopeActive($name)
 	{
 	}
+
+	public function isFrozen()
+	{
+		return false;
+	}
 }

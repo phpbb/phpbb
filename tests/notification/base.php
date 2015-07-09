@@ -11,6 +11,10 @@
 *
 */
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 require_once dirname(__FILE__) . '/manager_helper.php';
 
 abstract class phpbb_tests_notification_base extends phpbb_database_test_case
@@ -70,8 +74,9 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$this->user = $user;
 		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\dummy(),
+			$cache_driver,
 			$this->config,
 			$this->db,
 			$phpbb_root_path,
@@ -80,36 +85,48 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$phpbb_container = $this->container = new phpbb_mock_container_builder();
+		$phpbb_container = $this->container = new ContainerBuilder();
+		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
+		$loader->load('services_notification.yml');
+		$phpbb_container->set('user_loader', $this->user_loader);
+		$phpbb_container->set('user', $user);
+		$phpbb_container->set('config', $this->config);
+		$phpbb_container->set('dbal.conn', $this->db);
+		$phpbb_container->set('auth', $auth);
+		$phpbb_container->set('cache.driver', $cache_driver);
+		$phpbb_container->set('cache', $cache);
+		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
+		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
+		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+		$phpbb_container->setParameter('core.php_ext', $phpEx);
+		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
+		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
+		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
 
 		$this->notifications = new phpbb_notification_manager_helper(
 			array(),
 			array(),
 			$this->container,
 			$this->user_loader,
-			$this->config,
 			$this->phpbb_dispatcher,
 			$this->db,
 			$this->cache,
 			$this->user,
-			$phpbb_root_path,
-			$phpEx,
 			'phpbb_notification_types',
 			'phpbb_user_notifications'
 		);
 
 		$phpbb_container->set('notification_manager', $this->notifications);
+		$phpbb_container->compile();
 
 		$this->notifications->setDependencies($this->auth, $this->config);
 
 		$types = array();
 		foreach ($this->get_notification_types() as $type)
 		{
-			$type_parts = explode('.', $type);
-			$class = $this->build_type('phpbb\notification\type\\' . array_pop($type_parts));
+			$class = $this->build_type($type);
 
 			$types[$type] = $class;
-			$this->container->set($type, $class);
 		}
 
 		$this->notifications->set_var('notification_types', $types);
@@ -117,11 +134,9 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$methods = array();
 		foreach ($this->get_notification_methods() as $method)
 		{
-			$method_parts = explode('.', $method);
-			$class = $this->build_type('phpbb\notification\method\\' . array_pop($method_parts));
+			$class = $this->container->get($method);
 
 			$methods[$method] = $class;
-			$this->container->set($method, $class);
 		}
 
 		$this->notifications->set_var('notification_methods', $methods);
@@ -133,24 +148,9 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 	protected function build_type($type)
 	{
-		global $phpbb_root_path, $phpEx;
-
-		$instance = new $type($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config, $phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_user_notifications');
-
-		if ($type === 'phpbb\\notification\\type\\quote')
-		{
-			$instance->set_utils(new \phpbb\textformatter\s9e\utils);
-		}
+		$instance = $this->container->get($type);
 
 		return $instance;
-	}
-
-	protected function build_method($method)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		return new $method($this->user_loader, $this->db, $this->cache->get_driver(), $this->user, $this->auth, $this->config,
-			$phpbb_root_path, $phpEx, 'phpbb_notification_types', 'phpbb_notifications', 'phpbb_user_notifications');
 	}
 
 	protected function assert_notifications($expected, $options = array())

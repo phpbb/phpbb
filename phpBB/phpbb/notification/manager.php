@@ -26,7 +26,7 @@ class manager
 	/** @var array */
 	protected $subscription_types;
 
-	/** @var array */
+	/** @var method\method_interface[] */
 	protected $notification_methods;
 
 	/** @var ContainerInterface */
@@ -805,8 +805,10 @@ class manager
 	}
 
 	/**
-	* Helper to get the list of methods enabled by default
-	*/
+	 * Helper to get the list of methods enabled by default
+	 *
+	 * @return method\method_interface[]
+	 */
 	public function get_default_methods()
 	{
 		$default_methods = array();
@@ -823,8 +825,10 @@ class manager
 	}
 
 	/**
-	* Helper to get the notifications item type class and set it up
-	*/
+	 * Helper to get the notifications item type class and set it up
+	 *
+	 * @return type\type_interface
+	 */
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
 		$item = $this->load_object($notification_type_name);
@@ -835,16 +839,20 @@ class manager
 	}
 
 	/**
-	* Helper to get the notifications method class and set it up
-	*/
+	 * Helper to get the notifications method class and set it up
+	 *
+	 * @return method\method_interface
+	 */
 	public function get_method_class($method_name)
 	{
 		return $this->load_object($method_name);
 	}
 
 	/**
-	* Helper to load objects (notification types/methods)
-	*/
+	 * Helper to load objects (notification types/methods)
+	 *
+	 * @return method\method_interface|type\type_interface
+	 */
 	protected function load_object($object_name)
 	{
 		$object = $this->phpbb_container->get($object_name);

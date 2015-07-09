@@ -22,190 +22,110 @@ services:
         tags:
             - { name: service_collection, tag: notification.type }
 
+    notification.type.base:
+        abstract:  true
+        arguments:
+            - @dbal.conn
+            - @user
+            - @auth
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.user_notifications%
+
+    notification.type.admin_activate_user:
+        class: phpbb\notification\type\admin_activate_user
+        scope: prototype
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ["@user_loader"]]
+            - [set_config, ["@config"]]
+        tags:
+            - { name: notification.type }
+
     notification.type.approve_post:
         class: phpbb\notification\type\approve_post
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.approve_topic:
         class: phpbb\notification\type\approve_topic
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.bookmark:
         class: phpbb\notification\type\bookmark
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
+        calls:
+            - [set_config, ["@config"]]
         tags:
             - { name: notification.type }
 
     notification.type.disapprove_post:
         class: phpbb\notification\type\disapprove_post
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.disapprove_topic:
         class: phpbb\notification\type\disapprove_topic
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.group_request:
         class: phpbb\notification\type\group_request
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ["@user_loader"]]
         tags:
             - { name: notification.type }
 
     notification.type.group_request_approved:
         class: phpbb\notification\type\group_request_approved
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.pm:
         class: phpbb\notification\type\pm
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ["@user_loader"]]
+            - [set_config, ["@config"]]
         tags:
             - { name: notification.type }
 
     notification.type.post:
         class: phpbb\notification\type\post
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ["@user_loader"]]
+            - [set_config, ["@config"]]
         tags:
             - { name: notification.type }
 
     notification.type.post_in_queue:
         class: phpbb\notification\type\post_in_queue
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.quote:
         class: phpbb\notification\type\quote
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         calls:
             - [set_utils, [@text_formatter.utils]]
         tags:
@@ -214,119 +134,45 @@ services:
     notification.type.report_pm:
         class: phpbb\notification\type\report_pm
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.report_pm_closed:
         class: phpbb\notification\type\report_pm_closed
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.report_post:
         class: phpbb\notification\type\report_post
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.report_post_closed:
         class: phpbb\notification\type\report_post_closed
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.topic:
         class: phpbb\notification\type\topic
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ["@user_loader"]]
+            - [set_config, ["@config"]]
         tags:
             - { name: notification.type }
 
     notification.type.topic_in_queue:
         class: phpbb\notification\type\topic_in_queue
         scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
-        tags:
-            - { name: notification.type }
-
-    notification.type.admin_activate_user:
-        class: phpbb\notification\type\admin_activate_user
-        scope: prototype
-        arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @auth
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.notification_types%
-            - %tables.user_notifications%
+        parent: notification.type.base
         tags:
             - { name: notification.type }
 

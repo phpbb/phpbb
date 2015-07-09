@@ -81,9 +81,9 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 		);
 
 		$subscriptions = $this->notifications->get_global_subscriptions(2);
-
 		foreach ($expected_subscriptions as $item_type => $methods)
 		{
+			self::assertArrayHasKey($item_type, $subscriptions);
 			$this->assert_array_content_equals($methods, $subscriptions[$item_type]);
 		}
 

@@ -48,6 +48,14 @@ class bookmark extends \phpbb\notification\type\post
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
 	/**
 	* Is available
 	*/
@@ -100,6 +108,7 @@ class bookmark extends \phpbb\notification\type\post
 		{
 			unset($notify_users[$user]);
 
+			/** @var bookmark $notification */
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
 			$update_responders = $notification->add_responders($post);
 			if (!empty($update_responders))

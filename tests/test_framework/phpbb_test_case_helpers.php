@@ -426,23 +426,33 @@ class phpbb_test_case_helpers
 		$cache_key_parser = $prefix . '_parser';
 		$cache_key_renderer = $prefix . '_renderer';
 		$container->set('cache.driver', $cache);
-		$container->setParameter('cache.dir', $cache_dir);
+
+		if (!$container->isFrozen())
+		{
+			$container->setParameter('cache.dir', $cache_dir);
+		}
 
 		// Create a path_helper
-		if (!$container->has('path_helper'))
+		if (!$container->has('path_helper') || $container->getDefinition('path_helper')->isSynthetic())
 		{
+			$path_helper = new \phpbb\path_helper(
+				new \phpbb\symfony_request(
+					new phpbb_mock_request()
+				),
+				new \phpbb\filesystem(),
+				$this->test_case->getMock('\phpbb\request\request'),
+				$phpbb_root_path,
+				$phpEx
+			);
+
 			$container->set(
 				'path_helper',
-				new \phpbb\path_helper(
-					new \phpbb\symfony_request(
-						new phpbb_mock_request()
-					),
-					new \phpbb\filesystem(),
-					$this->test_case->getMock('\phpbb\request\request'),
-					$phpbb_root_path,
-					$phpEx
-				)
+				$path_helper
 			);
+		}
+		else
+		{
+			$path_helper = $container->get('path_helper');
 		}
 
 		// Create an event dispatcher
@@ -534,7 +544,7 @@ class phpbb_test_case_helpers
 
 		// Calls configured in services.yml
 		$renderer->configure_quote_helper($quote_helper);
-		$renderer->configure_smilies_path($config, $container->get('path_helper'));
+		$renderer->configure_smilies_path($config, $path_helper);
 		$renderer->configure_user($user, $config, $auth);
 
 		$container->set('text_formatter.renderer', $renderer);

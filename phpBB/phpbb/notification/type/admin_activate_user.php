@@ -41,6 +41,22 @@ class admin_activate_user extends \phpbb\notification\type\base
 		'group'	=> 'NOTIFICATION_GROUP_ADMINISTRATION',
 	);
 
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
+
 	/**
 	* {@inheritdoc}
 	*/
