@@ -395,7 +395,7 @@ class database
 			switch ($dbms)
 			{
 				case 'mysqli':
-					if (version_compare($db->sql_server_info(), '4.1.3', '<'))
+					if (version_compare($db->sql_server_info(true), '4.1.3', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_MYSQLI',
@@ -403,7 +403,7 @@ class database
 					}
 				break;
 				case 'sqlite':
-					if (version_compare($db->sql_server_info(), '2.8.2', '<'))
+					if (version_compare($db->sql_server_info(true), '2.8.2', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_SQLITE',
@@ -411,7 +411,7 @@ class database
 					}
 				break;
 				case 'sqlite3':
-					if (version_compare($db->sql_server_info(), '3.6.15', '<'))
+					if (version_compare($db->sql_server_info(true), '3.6.15', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_SQLITE3',
