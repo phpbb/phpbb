@@ -1542,7 +1542,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		return false;
 	}
 
-	$current_time = time();
+	if (!empty($data['post_time']))
+	{
+		$current_time = $data['post_time'];
+	}
+	else
+	{
+		$current_time = time();
+	}
 
 	if ($mode == 'post')
 	{
@@ -1738,6 +1745,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : 0,
+				'topic_status'				=> (isset($data['topic_status'])) ? $data['topic_status'] : ITEM_UNLOCKED,
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -2209,7 +2217,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{

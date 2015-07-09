@@ -966,7 +966,7 @@ function get_remote_avatar_dim($src, $axis)
 	$protocol = (isset($url_info['scheme'])) ? $url_info['scheme'] : 'http';
 	if (empty($port))
 	{
-		switch(strtolower($protocol))
+		switch (strtolower($protocol))
 		{
 			case 'ftp':
 				$port = 21;

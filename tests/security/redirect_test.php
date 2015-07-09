@@ -23,9 +23,9 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 	{
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(
-			array('data://x', false, false, 'http://localhost/phpBB'),
+			array('data://x', false, 'INSECURE_REDIRECT', false),
 			array('bad://localhost/phpBB/index.php', false, 'INSECURE_REDIRECT', false),
-			array('http://www.otherdomain.com/somescript.php', false, false, 'http://localhost/phpBB'),
+			array('http://www.otherdomain.com/somescript.php', false, 'INSECURE_REDIRECT', false),
 			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", false, 'INSECURE_REDIRECT', false),
 			array('javascript:test', false, false, 'http://localhost/phpBB/javascript:test'),
 			array('http://localhost/phpBB/index.php;url=', false, 'INSECURE_REDIRECT', false),
@@ -51,6 +51,11 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 			array('../index.php', false, false, 'http://localhost/index.php'),
 			array('../index.php', true, false, 'http://localhost/index.php'),
 			array('./index.php', false, false, 'http://localhost/phpBB/index.php'),
+			array('https://foobar.com\@http://localhost/phpBB', false, 'INSECURE_REDIRECT', false),
+			array('https://foobar.com\@localhost/troll/http://localhost/', false, 'INSECURE_REDIRECT', false),
+			array('http://localhost.foobar.com\@localhost/troll/http://localhost/', false, 'INSECURE_REDIRECT', false),
+			array('http://localhost/phpBB', false, false, 'http://localhost/phpBB'),
+			array('http://localhost/phpBB/', false, false, 'http://localhost/phpBB/'),
 		);
 	}
 
@@ -105,7 +110,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 
 		if ($expected_error !== false)
 		{
-			$this->setExpectedTriggerError(E_USER_ERROR, $expected_error);
+			$this->setExpectedTriggerError(E_USER_ERROR, $user->lang[$expected_error]);
 		}
 
 		$result = redirect($test, true, $disable_cd_check);

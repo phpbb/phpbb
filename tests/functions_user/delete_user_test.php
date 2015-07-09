@@ -38,6 +38,16 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+		$phpbb_container->set(
+			'auth.provider.db',
+			new phpbb_mock_auth_provider()
+		);
+		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
+		$provider_collection->add('auth.provider.db');
+		$phpbb_container->set(
+			'auth.provider_collection',
+			$provider_collection
+		);
 	}
 
 	 public function first_last_post_data()

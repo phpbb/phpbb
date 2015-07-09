@@ -21,6 +21,19 @@ if (!defined('IN_PHPBB'))
 
 if (!class_exists('bbcode'))
 {
+	// The following lines are for extensions which include message_parser.php
+	// while $phpbb_root_path and $phpEx are out of the script scope
+	// which may lead to the 'Undefined variable' and 'failed to open stream' errors
+	if (!isset($phpbb_root_path))
+	{
+		global $phpbb_root_path;
+	}
+
+	if (!isset($phpEx))
+	{
+		global $phpEx;
+	}
+
 	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 }
 
@@ -115,6 +128,9 @@ class bbcode_firstpass extends bbcode
 		// [quote] in second position.
 		// To parse multiline URL we enable dotall option setting only for URL text
 		// but not for link itself, thus [url][/url] is not affected.
+		//
+		// To perform custom validation in extension, use $this->validate_bbcode_by_extension()
+		// method which accepts variable number of parameters
 		$this->bbcodes = array(
 			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#uise' => "\$this->bbcode_code('\$1', '\$2')")),
 			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#uise' => "\$this->bbcode_quote('\$0')")),
@@ -775,28 +791,6 @@ class bbcode_firstpass extends bbcode
 				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m) && substr($out, -1, 1) == '[')
 				{
 					$this->parsed_items['quote']++;
-
-					// the buffer holds a valid opening tag
-					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
-					{
-						if ($config['max_quote_depth'] == 1)
-						{
-							// Depth 1 - no nesting is allowed
-							$error_ary['quote_depth'] = $user->lang('QUOTE_NO_NESTING');
-						}
-						else
-						{
-							// There are too many nested quotes
-							$error_ary['quote_depth'] = $user->lang('QUOTE_DEPTH_EXCEEDED', (int) $config['max_quote_depth']);
-						}
-
-						$out .= $buffer . $tok;
-						$tok = '[]';
-						$buffer = '';
-
-						continue;
-					}
-
 					array_push($close_tags, '/quote:' . $this->bbcode_uid);
 
 					if (isset($m[1]) && $m[1])
@@ -1259,6 +1253,12 @@ class parse_message extends bbcode_firstpass
 			$character_list = implode('<br />', $matches[0]);
 			$this->warn_msg[] = $user->lang('UNSUPPORTED_CHARACTERS_MESSAGE', $character_list);
 			return $update_this_message ? $this->warn_msg : $return_message;
+		}
+
+		// Remove quotes that are nested too deep
+		if ($config['max_quote_depth'] > 0)
+		{
+			$this->remove_nested_quotes($config['max_quote_depth']);
 		}
 
 		// Check for "empty" message. We do not check here for maximum length, because bbcode, smilies, etc. can add to the length.
@@ -1840,6 +1840,50 @@ class parse_message extends bbcode_firstpass
 	}
 
 	/**
+	* Remove nested quotes at given depth in current parsed message
+	*
+	* @param  integer $max_depth Depth limit
+	* @return null
+	*/
+	public function remove_nested_quotes($max_depth)
+	{
+		// Capture all [quote] and [/quote] tags
+		preg_match_all('(\\[/?quote(?:=&quot;(.*?)&quot;)?:' . $this->bbcode_uid . '\\])', $this->message, $matches, PREG_OFFSET_CAPTURE);
+
+		// Iterate over the quote tags to mark the ranges that must be removed
+		$depth = 0;
+		$ranges = array();
+		$start_pos = 0;
+		foreach ($matches[0] as $match)
+		{
+			if ($match[0][1] === '/')
+			{
+				--$depth;
+				if ($depth == $max_depth)
+				{
+					$end_pos = $match[1] + strlen($match[0]);
+					$length = $end_pos - $start_pos;
+					$ranges[] = array($start_pos, $length);
+				}
+			}
+			else
+			{
+				++$depth;
+				if ($depth == $max_depth + 1)
+				{
+					$start_pos = $match[1];
+				}
+			}
+		}
+
+		foreach (array_reverse($ranges) as $range)
+		{
+			list($start_pos, $length) = $range;
+			$this->message = substr_replace($this->message, '', $start_pos, $length);
+		}
+	}
+
+	/**
 	* Setter function for passing the plupload object
 	*
 	* @param \phpbb\plupload\plupload $plupload The plupload object
@@ -1861,5 +1905,37 @@ class parse_message extends bbcode_firstpass
 	public function set_mimetype_guesser(\phpbb\mimetype\guesser $mimetype_guesser)
 	{
 		$this->mimetype_guesser = $mimetype_guesser;
+	}
+
+	/**
+	* Function to perform custom bbcode validation by extensions
+	* can be used in bbcode_init() to assign regexp replacement
+	* Example: 'regexp' => array('#\[b\](.*?)\[/b\]#uise' => "\$this->validate_bbcode_by_extension('\$1')")
+	*
+	* Accepts variable number of parameters
+	*
+	* @return mixed Validation result
+	*/
+	public function validate_bbcode_by_extension()
+	{
+		global $phpbb_dispatcher;
+
+		$return = false;
+		$params_array = func_get_args();
+
+		/**
+		* Event to validate bbcode with the custom validating methods
+		* provided by extensions
+		*
+		* @event core.validate_bbcode_by_extension
+		* @var array	params_array	Array with the function parameters
+		* @var mixed	return			Validation result to return
+		*
+		* @since 3.1.5-RC1
+		*/
+		$vars = array('params_array', 'return');
+		extract($phpbb_dispatcher->trigger_event('core.validate_bbcode_by_extension', compact($vars)));
+
+		return $return;
 	}
 }

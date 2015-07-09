@@ -13,6 +13,7 @@
 
 namespace phpbb\controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -142,6 +143,12 @@ class helper
 
 		$base_url = $context->getBaseUrl();
 
+		// Append page name if base URL does not contain it
+		if (!empty($page_name) && strpos($base_url, '/' . $page_name) === false)
+		{
+			$base_url .= '/' . $page_name;
+		}
+
 		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
 
@@ -206,12 +213,31 @@ class helper
 	public function message($message, array $parameters = array(), $title = 'INFORMATION', $code = 200)
 	{
 		array_unshift($parameters, $message);
+		$message_text = call_user_func_array(array($this->user, 'lang'), $parameters);
+		$message_title = $this->user->lang($title);
+
+		if ($this->request->is_ajax())
+		{
+			global $refresh_data;
+
+			return new JsonResponse(
+				array(
+					'MESSAGE_TITLE'		=> $message_title,
+					'MESSAGE_TEXT'		=> $message_text,
+					'S_USER_WARNING'	=> false,
+					'S_USER_NOTICE'		=> false,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+				),
+				$code
+			);
+		}
+
 		$this->template->assign_vars(array(
-			'MESSAGE_TEXT'	=> call_user_func_array(array($this->user, 'lang'), $parameters),
-			'MESSAGE_TITLE'	=> $this->user->lang($title),
+			'MESSAGE_TEXT'	=> $message_text,
+			'MESSAGE_TITLE'	=> $message_title,
 		));
 
-		return $this->render('message_body.html', $this->user->lang($title), $code);
+		return $this->render('message_body.html', $message_title, $code);
 	}
 
 	/**

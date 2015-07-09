@@ -96,7 +96,7 @@ class group_request extends \phpbb\notification\type\base
 	*/
 	public function get_avatar()
 	{
-		return $this->user_loader->get_avatar($this->item_id);
+		return $this->user_loader->get_avatar($this->item_id, false, true);
 	}
 
 	/**

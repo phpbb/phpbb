@@ -159,7 +159,7 @@ function insert_text(text, spaces, popup) {
 /**
 * Add inline attachment at position
 */
-function attach_inline(index, filename) {
+function attachInline(index, filename) {
 	insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
 	document.forms[form_name].elements[text_name].focus();
 }
@@ -355,6 +355,9 @@ function getCaretPosition(txtarea) {
 		textarea = doc.forms[form_name].elements[text_name];
 
 		phpbb.applyCodeEditor(textarea);
+		if ($('#attach-panel').length) {
+			phpbb.showDragNDrop(textarea);
+		}
 	});
 })(jQuery);
 

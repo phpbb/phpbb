@@ -632,7 +632,7 @@ class acp_main
 		{
 			$error = false;
 			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 			if (!$search->index_created())
 			{

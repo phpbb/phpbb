@@ -171,6 +171,7 @@
 <!-- EVENT posting_editor_subject_after -->
 <tr>
 	<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}{L_COLON}</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}&nbsp;</span><br /><br />
+	<!-- EVENT posting_editor_smilies_before -->
 	<!-- IF S_SMILIES_ALLOWED -->
 		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
 		<tr>
@@ -192,6 +193,7 @@
 
 		</table>
 	<!-- ENDIF -->
+	<!-- EVENT posting_editor_smilies_after -->
 	</td>
 	<td class="row2" valign="top">
 		<script type="text/javascript">
@@ -219,7 +221,7 @@
 <!-- IF S_INLINE_ATTACHMENT_OPTIONS -->
 	<tr>
 		<td class="row1"><b class="genmed">{L_ATTACHMENTS}{L_COLON}</b></td>
-		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_form = document.forms[form_name].elements['attachments']; attach_inline(attach_form.value, attach_form.options[attach_form.selectedIndex].text);" onmouseover="helpline('a')" onmouseout="helpline('tip')" />
+		<td class="row2"><select name="attachments">{S_INLINE_ATTACHMENT_OPTIONS}</select>&nbsp;<input type="button" class="btnbbcode" accesskey="a" value="{L_PLACE_INLINE}" name="attachinline" onclick="attach_form = document.forms[form_name].elements['attachments']; attachInline(attach_form.value, attach_form.options[attach_form.selectedIndex].text);" onmouseover="helpline('a')" onmouseout="helpline('tip')" />
 		</td>
 	</tr>
 <!-- ENDIF -->
@@ -246,6 +248,7 @@
 		</tr>
 		</table>
 	</td>
+	<!-- EVENT posting_editor_bbcode_status_after -->
 	<td class="row2">
 		<table cellpadding="1">
 		<!-- EVENT posting_editor_options_prepend -->

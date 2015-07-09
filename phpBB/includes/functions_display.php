@@ -150,7 +150,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
-	$forum_tracking_info = array();
+	$forum_tracking_info = $valid_categories = array();
 	$branch_root_id = $root_data['forum_id'];
 
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
@@ -250,6 +250,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 		}
 
+		// Fill list of categories with forums
+		if (isset($forum_rows[$row['parent_id']]))
+		{
+			$valid_categories[$row['parent_id']] = true;
+		}
+
 		//
 		if ($row['parent_id'] == $root_data['forum_id'] || $row['parent_id'] == $branch_root_id)
 		{
@@ -267,6 +273,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$branch_root_id = $forum_id;
 			}
 			$forum_rows[$parent_id]['forum_id_last_post'] = $row['forum_id'];
+			$forum_rows[$parent_id]['forum_password_last_post'] = $row['forum_password'];
 			$forum_rows[$parent_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 		}
 		else if ($row['forum_type'] != FORUM_CAT)
@@ -308,6 +315,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
 				$forum_rows[$parent_id]['forum_last_poster_colour'] = $row['forum_last_poster_colour'];
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
+				$forum_rows[$parent_id]['forum_password_last_post'] = $row['forum_password'];
 			}
 		}
 
@@ -404,6 +412,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Category
 		if ($row['parent_id'] == $root_data['forum_id'] && $row['forum_type'] == FORUM_CAT)
 		{
+			// Do not display categories without any forums to display
+			if (!isset($valid_categories[$row['forum_id']]))
+			{
+				continue;
+			}
+
 			$cat_row = array(
 				'S_IS_CAT'				=> true,
 				'FORUM_ID'				=> $row['forum_id'],
@@ -522,8 +536,15 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Create last post link information, if appropriate
 		if ($row['forum_last_post_id'])
 		{
-			$last_post_subject = $row['forum_last_post_subject'];
-			$last_post_subject_truncated = truncate_string(censor_text($last_post_subject), 30, 255, false, $user->lang['ELLIPSIS']);
+			if ($row['forum_password_last_post'] === '' && $auth->acl_get('f_read', $row['forum_id_last_post']))
+			{
+				$last_post_subject = censor_text($row['forum_last_post_subject']);
+				$last_post_subject_truncated = truncate_string($last_post_subject, 30, 255, false, $user->lang['ELLIPSIS']);
+			}
+			else
+			{
+				$last_post_subject = $last_post_subject_truncated = '';
+			}
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
@@ -583,7 +604,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 			'S_LIST_SUBFORUMS'	=> ($row['display_subforum_list']) ? true : false,
 			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
-			'S_DISPLAY_SUBJECT'	=>	($last_post_subject && $config['display_last_subject'] && !$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? true : false,
+			'S_DISPLAY_SUBJECT'	=>	($last_post_subject !== '' && $config['display_last_subject']) ? true : false,
 			'S_FEED_ENABLED'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']) && $row['forum_type'] == FORUM_POST) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],
@@ -596,8 +617,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang[$folder_alt] : '',
 			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
-			'LAST_POST_SUBJECT'		=> (!$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? censor_text($last_post_subject) : "",
-			'LAST_POST_SUBJECT_TRUNCATED'	=> (!$row['forum_password'] && $auth->acl_get('f_read', $row['forum_id'])) ? $last_post_subject_truncated : "",
+			'LAST_POST_SUBJECT'		=> $last_post_subject,
+			'LAST_POST_SUBJECT_TRUNCATED'	=> $last_post_subject_truncated,
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> get_username_string('username', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
@@ -732,12 +753,14 @@ function generate_forum_rules(&$forum_data)
 function generate_forum_nav(&$forum_data)
 {
 	global $db, $user, $template, $auth, $config;
-	global $phpEx, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
 	{
 		return;
 	}
+
+	$navlinks = $navlinks_parents = $forum_template_data = array();
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data);
@@ -757,35 +780,59 @@ function generate_forum_nav(&$forum_data)
 				continue;
 			}
 
-			$template->assign_block_vars('navlinks', array(
+			$navlinks_parents[] = array(
 				'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
 				'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
 				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 				'FORUM_NAME'	=> $parent_name,
 				'FORUM_ID'		=> $parent_forum_id,
 				'MICRODATA'		=> $microdata_attr . '="' . $parent_forum_id . '"',
-				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
+				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id),
 			);
 		}
 	}
 
-	$template->assign_block_vars('navlinks', array(
+	$navlinks = array(
 		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
 		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
 		'MICRODATA'		=> $microdata_attr . '="' . $forum_data['forum_id'] . '"',
-		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']))
+		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']),
 	);
 
-	$template->assign_vars(array(
+	$forum_template_data = array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
 
 		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
-	));
+	);
+
+	/**
+	* Event to modify the navlinks text
+	*
+	* @event core.generate_forum_nav
+	* @var	array	forum_data				Array with the forum data
+	* @var	array	forum_template_data		Array with generic forum template data
+	* @var	string	microdata_attr			The microdata attribute
+	* @var	array	navlinks_parents		Array with the forum parents navlinks data
+	* @var	array	navlinks				Array with the forum navlinks data
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'forum_data',
+		'forum_template_data',
+		'microdata_attr',
+		'navlinks_parents',
+		'navlinks',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.generate_forum_nav', compact($vars)));
+
+	$template->assign_block_vars_array('navlinks', $navlinks_parents);
+	$template->assign_block_vars('navlinks', $navlinks);
+	$template->assign_vars($forum_template_data);
 
 	return;
 }

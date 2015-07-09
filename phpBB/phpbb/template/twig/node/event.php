@@ -13,7 +13,6 @@
 
 namespace phpbb\template\twig\node;
 
-
 class event extends \Twig_Node
 {
 	/**
