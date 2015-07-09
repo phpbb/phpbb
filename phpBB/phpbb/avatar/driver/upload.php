@@ -161,14 +161,11 @@ class upload extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
+		// Delete current avatar if not overwritten
 		$ext = substr(strrchr($row['avatar'], '.'), 1);
 		if ($ext && $ext !== $file->get('extension'))
 		{
-			$filename = $this->phpbb_root_path . $this->config['avatar_path'] . '/' . $this->config['avatar_salt'] . '_' . $row['id'] . '.' . $ext;
-			if (file_exists($filename))
-			{
-				@unlink($filename);
-			}
+			$this->delete($row);
 		}
 
 		return array(
