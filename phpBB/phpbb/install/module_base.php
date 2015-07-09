@@ -18,7 +18,6 @@ use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 /**
  * Base class for installer module

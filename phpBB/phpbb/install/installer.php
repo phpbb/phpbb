@@ -21,7 +21,6 @@ use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 
 class installer
 {
