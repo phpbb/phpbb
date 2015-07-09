@@ -17,7 +17,6 @@ use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Base class for installer module
@@ -78,13 +77,11 @@ abstract class module_base implements module_interface
 	/**
 	 * Dependency getter
 	 *
-	 * @param ContainerInterface	$container
 	 * @param config				$config
 	 * @param iohandler_interface	$iohandler
 	 */
-	public function setup(ContainerInterface $container, config $config, iohandler_interface $iohandler)
+	public function setup(config $config, iohandler_interface $iohandler)
 	{
-		$this->container		= $container;
 		$this->install_config	= $config;
 		$this->iohandler		= $iohandler;
 	}
@@ -196,9 +193,9 @@ abstract class module_base implements module_interface
 	}
 
 	/**
-	 * Returns the next task's index
+	 * Returns the next task's name
 	 *
-	 * @return string	index of the array element of the next task
+	 * @return string	Index of the array element of the next task
 	 */
 	protected function recover_progress()
 	{

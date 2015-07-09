@@ -60,14 +60,13 @@ services:
     installer.module_base:
         abstract: true
         calls:
-            - [setup, [@service_container, @installer.helper.config, @installer.helper.iohandler]]
+            - [setup, [@installer.helper.config, @installer.helper.iohandler]]
 
     installer.installer.abstract:
         class: phpbb\install\installer
         abstract: true
         arguments:
             - @installer.helper.config
-            - @service_container
 
     installer.install.module_collection:
         class: phpbb\di\ordered_service_collection

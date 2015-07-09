@@ -55,12 +55,10 @@ class installer
 	 * Constructor
 	 *
 	 * @param config				$config		Installer config handler
-	 * @param ContainerInterface	$container	Dependency injection container
 	 */
-	public function __construct(config $config, ContainerInterface $container)
+	public function __construct(config $config)
 	{
 		$this->install_config		= $config;
-		$this->container			= $container;
 		$this->installer_modules	= null;
 	}
 
