@@ -6,13 +6,10 @@ services:
             - @notification.method_collection
             - @service_container
             - @user_loader
-            - @config
             - @dispatcher
             - @dbal.conn
             - @cache
             - @user
-            - %core.root_path%
-            - %core.php_ext%
             - %tables.notification_types%
             - %tables.user_notifications%
 
@@ -350,10 +347,7 @@ services:
             - @dbal.conn
             - @cache.driver
             - @user
-            - @auth
             - @config
-            - %core.root_path%
-            - %core.php_ext%
             - %tables.notification_types%
             - %tables.notifications%
         tags:
@@ -364,10 +358,7 @@ services:
         scope: prototype
         arguments:
             - @user_loader
-            - @dbal.conn
-            - @cache.driver
             - @user
-            - @auth
             - @config
             - %core.root_path%
             - %core.php_ext%
@@ -379,10 +370,7 @@ services:
         scope: prototype
         arguments:
             - @user_loader
-            - @dbal.conn
-            - @cache.driver
             - @user
-            - @auth
             - @config
             - %core.root_path%
             - %core.php_ext%

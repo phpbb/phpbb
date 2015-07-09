@@ -21,6 +21,21 @@ namespace phpbb\notification\method;
 */
 class board extends \phpbb\notification\method\base
 {
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
+
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var string */
 	protected $notification_types_table;
 
@@ -34,27 +49,20 @@ class board extends \phpbb\notification\method\base
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\driver\driver_interface $cache
 	* @param \phpbb\user $user
-	* @param \phpbb\auth\auth $auth
 	* @param \phpbb\config\config $config
-	* @param string $phpbb_root_path
-	* @param string $php_ext
 	* @param string $notification_types_table
 	* @param string $notifications_table
-	* @return \phpbb\notification\method\board
 	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table)
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\config\config $config, $notification_types_table, $notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
-		$this->auth = $auth;
 		$this->config = $config;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
-
 		$this->notification_types_table = $notification_types_table;
 		$this->notifications_table = $notifications_table;
+
 	}
 
 	/**

@@ -13,7 +13,7 @@
 
 namespace phpbb\notification;
 
-use \Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
 * Notifications service class
@@ -35,9 +35,6 @@ class manager
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
 	/** @var \phpbb\event\dispatcher_interface */
 	protected $phpbb_dispatcher;
 
@@ -49,12 +46,6 @@ class manager
 
 	/** @var \phpbb\user */
 	protected $user;
-
-	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $php_ext;
 
 	/** @var string */
 	protected $notification_types_table;
@@ -69,33 +60,26 @@ class manager
 	* @param array $notification_methods
 	* @param ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\config\config $config
 	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
-	* @param string $phpbb_root_path
-	* @param string $php_ext
 	* @param string $notification_types_table
 	* @param string $user_notifications_table
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
 		$this->phpbb_container = $phpbb_container;
 
 		$this->user_loader = $user_loader;
-		$this->config = $config;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
-
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 
 		$this->notification_types_table = $notification_types_table;
 		$this->user_notifications_table = $user_notifications_table;
