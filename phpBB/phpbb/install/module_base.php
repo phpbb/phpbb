@@ -13,12 +13,13 @@
 
 namespace phpbb\install;
 
+use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\invalid_service_name_exception;
-use phpbb\install\exception\task_not_found_exception;
+use phpbb\install\exception\resource_limit_reached_exception;
+use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
-use phpbb\install\helper\config;
 
 /**
  * Base class for installer module
@@ -48,7 +49,7 @@ abstract class module_base implements module_interface
 	/**
 	 * Array of tasks for installer module
 	 *
-	 * @var array
+	 * @var ordered_service_collection
 	 */
 	protected $task_collection;
 
@@ -60,11 +61,11 @@ abstract class module_base implements module_interface
 	/**
 	 * Installer module constructor
 	 *
-	 * @param array	$tasks				array of installer tasks for installer module
-	 * @param bool	$essential			flag indicating whether the module is essential or not
-	 * @param bool	$allow_progress_bar	flag indicating whether or not to send progress information from within the module
+	 * @param ordered_service_collection	$tasks				array of installer tasks for installer module
+	 * @param bool							$essential			flag indicating whether the module is essential or not
+	 * @param bool							$allow_progress_bar	flag indicating whether or not to send progress information from within the module
 	 */
-	public function __construct(array $tasks, $essential = true, $allow_progress_bar = true)
+	public function __construct(ordered_service_collection $tasks, $essential = true, $allow_progress_bar = true)
 	{
 		$this->task_collection		= $tasks;
 		$this->is_essential			= $essential;
@@ -109,26 +110,30 @@ abstract class module_base implements module_interface
 	public function run()
 	{
 		// Recover install progress
-		$task_index = $this->recover_progress();
+		$task_name = $this->recover_progress();
+		$name_found = false;
 
-		// Run until there are available resources
-		while ($this->install_config->get_time_remaining() > 0 && $this->install_config->get_memory_remaining() > 0)
+		/**
+		 * @var string							$name	ID of the service
+		 * @var \phpbb\install\task_interface	$task	Task object
+		 */
+		foreach ($this->task_collection as $name => $task)
 		{
-			// Check if task exists
-			if (!isset($this->task_collection[$task_index]))
+			// Run until there are available resources
+			if ($this->install_config->get_time_remaining() <= 0 && $this->install_config->get_memory_remaining() <= 0)
 			{
-				break;
+				throw new resource_limit_reached_exception();
 			}
 
-			// Recover task to be executed
-			try
+			// Skip forward until the next task is reached
+			if (!empty($task_name) && !$name_found)
 			{
-				/** @var \phpbb\install\task_interface $task */
-				$task = $this->container->get($this->task_collection[$task_index]);
-			}
-			catch (InvalidArgumentException $e)
-			{
-				throw new task_not_found_exception($this->task_collection[$task_index]);
+				if ($name === $task_name)
+				{
+					$name_found = true;
+				}
+
+				continue;
 			}
 
 			// Send progress information
@@ -140,17 +145,15 @@ abstract class module_base implements module_interface
 				);
 			}
 
-			// Iterate to the next task
-			$task_index++;
-
 			// Check if we can run the task
 			if (!$task->is_essential() && !$task->check_requirements())
 			{
 				$this->iohandler->add_log_message(array(
 					'SKIP_TASK',
-					$this->task_collection[$task_index],
+					$name,
 				));
-				$class_name = $this->get_class_from_service_name($this->task_collection[$task_index - 1]);
+
+				$class_name = $this->get_class_from_service_name($name);
 				$this->install_config->increment_current_task_progress($class_name::get_step_count());
 				continue;
 			}
@@ -174,9 +177,11 @@ abstract class module_base implements module_interface
 			$this->iohandler->send_response();
 
 			// Log install progress
-			$current_task_index = $task_index - 1;
-			$this->install_config->set_finished_task($this->task_collection[$current_task_index], $current_task_index);
+			$this->install_config->set_finished_task($name);
 		}
+
+		// Module finished, so clear task progress
+		$this->install_config->set_finished_task('');
 	}
 
 	/**
@@ -187,24 +192,7 @@ abstract class module_base implements module_interface
 	protected function recover_progress()
 	{
 		$progress_array = $this->install_config->get_progress_data();
-		$last_finished_task_name = $progress_array['last_task_name'];
-		$last_finished_task_index = $progress_array['last_task_index'];
-
-		// Check if the data is relevant to this module
-		if (isset($this->task_collection[$last_finished_task_index]))
-		{
-			if ($this->task_collection[$last_finished_task_index] === $last_finished_task_name)
-			{
-				// Return the task index of the next task
-				return $last_finished_task_index + 1;
-			}
-		}
-
-		// As of now if the progress has not been resolved we assume that it is because
-		// the task progress belongs to the previous module,
-		// so just default to the first task
-		// @todo make module aware of it's service name that way this can be improved
-		return 0;
+		return $progress_array['last_task_name'];
 	}
 
 	/**
@@ -214,11 +202,13 @@ abstract class module_base implements module_interface
 	{
 		$step_count = 0;
 
+		/** @todo:	Fix this
 		foreach ($this->task_collection as $task_service_name)
 		{
 			$class_name = $this->get_class_from_service_name($task_service_name);
 			$step_count += $class_name::get_step_count();
 		}
+		*/
 
 		return $step_count;
 	}

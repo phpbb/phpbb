@@ -69,7 +69,14 @@ services:
             - @installer.helper.config
             - @service_container
 
+    installer.install.module_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: installer_install_module }
+
     installer.installer.install:
         parent: installer.installer.abstract
         calls:
-            - [set_modules, [["installer.module.requirements_install", "installer.module.obtain_data_install", "installer.module.filesystem_install", "installer.module.database_install", "installer.module.data_install", "installer.module.finish_install"]]]
+            - [set_modules, [@installer.install.module_collection]]

@@ -13,10 +13,10 @@
 
 namespace phpbb\install;
 
+use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\installer_config_not_writable_exception;
 use phpbb\install\exception\invalid_service_name_exception;
-use phpbb\install\exception\module_not_found_exception;
-use phpbb\install\exception\task_not_found_exception;
+use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
@@ -62,7 +62,7 @@ class installer
 	{
 		$this->install_config		= $config;
 		$this->container			= $container;
-		$this->installer_modules	= array();
+		$this->installer_modules	= null;
 	}
 
 	/**
@@ -71,12 +71,10 @@ class installer
 	 * Note: The installer will run modules in the order they are set in
 	 * the array.
 	 *
-	 * @param array	$modules	Array of module service names
+	 * @param ordered_service_collection	$modules	Service collection of module service names
 	 */
-	public function set_modules($modules)
+	public function set_modules(ordered_service_collection $modules)
 	{
-		$modules = (array) $modules;
-
 		$this->installer_modules = $modules;
 	}
 
@@ -99,7 +97,8 @@ class installer
 		$this->install_config->load_config();
 
 		// Recover install progress
-		$module_index = $this->recover_progress();
+		$module_name = $this->recover_progress();
+		$module_found = false;
 
 		// Variable used to check if the install process have been finished
 		$install_finished = false;
@@ -111,64 +110,53 @@ class installer
 		$this->install_config->set_finished_navigation_stage(array('install', 0, 'introduction'));
 		$this->iohandler->set_finished_stage_menu(array('install', 0, 'introduction'));
 
-		try
+		if ($this->install_config->get_task_progress_count() === 0)
 		{
-			if ($this->install_config->get_task_progress_count() === 0)
+			// Count all tasks in the current installer modules
+			$step_count = 0;
+
+			/** @var \phpbb\install\module_interface $module */
+			foreach ($this->installer_modules as $name => $module)
 			{
-				// Count all tasks in the current installer modules
-				$step_count = 0;
-				foreach ($this->installer_modules as $index => $name)
-				{
-					try
-					{
-						/** @var \phpbb\install\module_interface $module */
-						$module = $this->container->get($name);
-					}
-					catch (InvalidArgumentException $e)
-					{
-						throw new module_not_found_exception($name);
-					}
-
-					$module_step_count = $module->get_step_count();
-					$step_count += $module_step_count;
-					$this->module_step_count[$index] = $module_step_count;
-				}
-
-				// Set task count
-				$this->install_config->set_task_progress_count($step_count);
+				$module_step_count = $module->get_step_count();
+				$step_count += $module_step_count;
+				$this->module_step_count[$name] = $module_step_count;
 			}
 
-			// Set up progress information
-			$this->iohandler->set_task_count(
-				$this->install_config->get_task_progress_count()
-			);
+			// Set task count
+			$this->install_config->set_task_progress_count($step_count);
+		}
 
-			// Run until there are available resources
-			while ($this->install_config->get_time_remaining() > 0 && $this->install_config->get_memory_remaining() > 0)
+		// Set up progress information
+		$this->iohandler->set_task_count(
+			$this->install_config->get_task_progress_count()
+		);
+
+		try
+		{
+			foreach ($this->installer_modules as $name => $module)
 			{
-				// Check if module exists, if not the install is completed
-				if (!isset($this->installer_modules[$module_index]))
+				// Skip forward until the current task is reached
+				if (!empty($task_name) && !$module_found)
 				{
-					$install_finished = true;
-					break;
+					if ($module_name === $name)
+					{
+						$module_found = true;
+					}
+					else
+					{
+						continue;
+					}
 				}
 
 				// Log progress
-				$module_service_name = $this->installer_modules[$module_index];
-				$this->install_config->set_active_module($module_service_name, $module_index);
+				$this->install_config->set_active_module($name);
 
-				// Get module from container
-				try
+				// Run until there are available resources
+				if ($this->install_config->get_time_remaining() <= 0 && $this->install_config->get_memory_remaining() <= 0)
 				{
-					/** @var \phpbb\install\module_interface $module */
-					$module = $this->container->get($module_service_name);
+					throw new resource_limit_reached_exception();
 				}
-				catch (InvalidArgumentException $e)
-				{
-					throw new module_not_found_exception($module_service_name);
-				}
-
-				$module_index++;
 
 				// Check if module should be executed
 				if (!$module->is_essential() && !$module->check_requirements())
@@ -178,9 +166,9 @@ class installer
 
 					$this->iohandler->add_log_message(array(
 						'SKIP_MODULE',
-						$module_service_name,
+						$name,
 					));
-					$this->install_config->increment_current_task_progress($this->module_step_count[$module_index - 1]);
+					$this->install_config->increment_current_task_progress($this->module_step_count[$name]);
 					continue;
 				}
 
@@ -192,40 +180,18 @@ class installer
 
 				$this->install_config->set_finished_navigation_stage($module->get_navigation_stage_path());
 				$this->iohandler->set_finished_stage_menu($module->get_navigation_stage_path());
-
-				// Clear task progress
-				$this->install_config->set_finished_task('', 0);
 			}
 
-			if ($install_finished)
-			{
-				// Send install finished message
-				$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
-			}
-			else
-			{
-				$this->iohandler->request_refresh();
-			}
+			// Installation finished
+			$install_finished = true;
 		}
 		catch (user_interaction_required_exception $e)
 		{
 			// Do nothing
 		}
-		catch (module_not_found_exception $e)
+		catch (resource_limit_reached_exception $e)
 		{
-			$this->iohandler->add_error_message('MODULE_NOT_FOUND', array(
-				'MODULE_NOT_FOUND_DESCRIPTION',
-				$e->get_module_service_name(),
-			));
-			$flush_messages = true;
-		}
-		catch (task_not_found_exception $e)
-		{
-			$this->iohandler->add_error_message('TASK_NOT_FOUND', array(
-				'TASK_NOT_FOUND_DESCRIPTION',
-				$e->get_task_service_name(),
-			));
-			$flush_messages = true;
+			// Do nothing
 		}
 		catch (invalid_service_name_exception $e)
 		{
@@ -242,6 +208,16 @@ class installer
 
 			$this->iohandler->add_error_message($params);
 			$flush_messages = true;
+		}
+
+		if ($install_finished)
+		{
+			// Send install finished message
+			$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
+		}
+		else
+		{
+			$this->iohandler->request_refresh();
 		}
 
 		if ($flush_messages)
@@ -274,14 +250,6 @@ class installer
 	protected function recover_progress()
 	{
 		$progress_array = $this->install_config->get_progress_data();
-		$module_service = $progress_array['last_task_module_name'];
-		$module_index = $progress_array['last_task_module_index'];
-
-		if ($this->installer_modules[$module_index] === $module_service)
-		{
-			return $module_index;
-		}
-
-		return 0;
+		return $progress_array['last_task_module_name'];
 	}
 }
