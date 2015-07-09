@@ -139,6 +139,15 @@ class upload extends \phpbb\avatar\driver\driver
 		$prefix = $this->config['avatar_salt'] . '_';
 		$file->clean_filename('avatar', $prefix, $row['id']);
 
+		// If there was an error during upload, then abort operation
+		if (sizeof($file->error))
+		{
+			$file->remove();
+			$error = $file->error;
+			return false;
+		}
+
+		// Calculate new destination
 		$destination = $this->config['avatar_path'];
 
 		// Adjust destination path (no trailing slash)
@@ -177,6 +186,7 @@ class upload extends \phpbb\avatar\driver\driver
 			$file->move_file($destination, true);
 		}
 
+		// If there was an error during move, then clean up leftovers
 		$error = array_merge($error, $file->error);
 		if (sizeof($error))
 		{
