@@ -20,15 +20,9 @@ use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class installer
 {
-	/**
-	 * @var ContainerInterface
-	 */
-	protected $container;
-
 	/**
 	 * @var config
 	 */

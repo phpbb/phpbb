@@ -24,11 +24,6 @@ use phpbb\install\helper\iohandler\iohandler_interface;
 abstract class module_base implements module_interface
 {
 	/**
-	 * @var ContainerInterface
-	 */
-	protected $container;
-
-	/**
 	 * @var config
 	 */
 	protected $install_config;
