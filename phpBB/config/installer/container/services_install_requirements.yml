@@ -22,7 +22,7 @@ services:
         arguments:
             - @service_container
         tags:
-            - { name: service_collection, tag: installer_requirements }
+            - { name: service_collection, tag: installer_requirements, class_name_aware: true }
 
 # Please note, that the name of this module is hard coded in the installer service
     installer.module.requirements_install:

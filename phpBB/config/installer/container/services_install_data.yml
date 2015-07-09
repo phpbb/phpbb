@@ -33,7 +33,7 @@ services:
         arguments:
             - @service_container
         tags:
-            - { name: service_collection, tag: install_data_install }
+            - { name: service_collection, tag: install_data_install, class_name_aware: true }
 
     installer.module.data_install:
         class: phpbb\install\module\install_data\module

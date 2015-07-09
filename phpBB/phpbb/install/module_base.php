@@ -14,7 +14,6 @@
 namespace phpbb\install;
 
 use phpbb\di\ordered_service_collection;
-use phpbb\install\exception\invalid_service_name_exception;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
@@ -52,6 +51,11 @@ abstract class module_base implements module_interface
 	 * @var ordered_service_collection
 	 */
 	protected $task_collection;
+
+	/**
+	 * @var array
+	 */
+	protected $task_step_count;
 
 	/**
 	 * @var bool
@@ -111,7 +115,7 @@ abstract class module_base implements module_interface
 	{
 		// Recover install progress
 		$task_name = $this->recover_progress();
-		$name_found = false;
+		$task_found = false;
 
 		/**
 		 * @var string							$name	ID of the service
@@ -126,14 +130,21 @@ abstract class module_base implements module_interface
 			}
 
 			// Skip forward until the next task is reached
-			if (!empty($task_name) && !$name_found)
+			if (!$task_found)
 			{
-				if ($name === $task_name)
+				if ($name === $task_name || empty($task_name))
 				{
-					$name_found = true;
-				}
+					$task_found = true;
 
-				continue;
+					if ($name === $task_name)
+					{
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
 			}
 
 			// Send progress information
@@ -153,17 +164,21 @@ abstract class module_base implements module_interface
 					$name,
 				));
 
-				$class_name = $this->get_class_from_service_name($name);
-				$this->install_config->increment_current_task_progress($class_name::get_step_count());
+				$this->install_config->increment_current_task_progress($this->task_step_count[$name]);
 				continue;
 			}
 
 			if ($this->allow_progress_bar)
 			{
+				// Only increment progress by one, as if a task has more than one steps
+				// then that should be incremented in the task itself
 				$this->install_config->increment_current_task_progress();
 			}
 
 			$task->run();
+
+			// Log install progress
+			$this->install_config->set_finished_task($name);
 
 			// Send progress information
 			if ($this->allow_progress_bar)
@@ -175,9 +190,6 @@ abstract class module_base implements module_interface
 			}
 
 			$this->iohandler->send_response();
-
-			// Log install progress
-			$this->install_config->set_finished_task($name);
 		}
 
 		// Module finished, so clear task progress
@@ -187,7 +199,7 @@ abstract class module_base implements module_interface
 	/**
 	 * Returns the next task's index
 	 *
-	 * @return int	index of the array element of the next task
+	 * @return string	index of the array element of the next task
 	 */
 	protected function recover_progress()
 	{
@@ -200,43 +212,16 @@ abstract class module_base implements module_interface
 	 */
 	public function get_step_count()
 	{
-		$step_count = 0;
+		$task_step_count = 0;
+		$task_class_names = $this->task_collection->get_service_classes();
 
-		/** @todo:	Fix this
-		foreach ($this->task_collection as $task_service_name)
+		foreach ($task_class_names as $name => $task_class)
 		{
-			$class_name = $this->get_class_from_service_name($task_service_name);
-			$step_count += $class_name::get_step_count();
-		}
-		*/
-
-		return $step_count;
-	}
-
-	/**
-	 * Returns the name of the class form the service name
-	 *
-	 * @param string	$task_service_name	Name of the service
-	 *
-	 * @return string	Name of the class
-	 *
-	 * @throws invalid_service_name_exception	When the service name does not meet the requirements described in task_interface
-	 */
-	protected function get_class_from_service_name($task_service_name)
-	{
-		$task_service_name_parts = explode('.', $task_service_name);
-
-		if ($task_service_name_parts[0] !== 'installer')
-		{
-			throw new invalid_service_name_exception('TASK_SERVICE_INSTALLER_MISSING');
+			$step_count = $task_class::get_step_count();
+			$task_step_count += $step_count;
+			$this->task_step_count[$name] = $step_count;
 		}
 
-		$class_name = '\\phpbb\\install\\module\\' . $task_service_name_parts[1] . '\\task\\' . $task_service_name_parts[2];
-		if (!class_exists($class_name))
-		{
-			throw new invalid_service_name_exception('TASK_CLASS_NOT_FOUND', array($task_service_name, $class_name));
-		}
-
-		return $class_name;
+		return $task_step_count;
 	}
 }

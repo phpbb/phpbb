@@ -137,9 +137,9 @@ class installer
 			foreach ($this->installer_modules as $name => $module)
 			{
 				// Skip forward until the current task is reached
-				if (!empty($task_name) && !$module_found)
+				if (!$module_found)
 				{
-					if ($module_name === $name)
+					if ($module_name === $name || empty($module_name))
 					{
 						$module_found = true;
 					}
@@ -245,7 +245,7 @@ class installer
 	/**
 	 * Recover install progress
 	 *
-	 * @return int	Index of the next installer module to execute
+	 * @return string	Index of the next installer module to execute
 	 */
 	protected function recover_progress()
 	{

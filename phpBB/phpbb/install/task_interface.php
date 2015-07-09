@@ -15,10 +15,6 @@ namespace phpbb\install;
 
 /**
  * Interface for installer tasks
- *
- * Note: The task service ID must match up with the namespace and class name.
- * For example: if your task is located at \phpbb\install\module\module_name\task\task_name
- * then the service ID must be installer.module_name.task_name.
  */
 interface task_interface
 {

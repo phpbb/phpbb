@@ -89,7 +89,7 @@ class service_collection extends \ArrayObject
 	* @param string	$service_id
 	* @param string	$class
 	*/
-	public function add_service_classes($service_id, $class)
+	public function add_service_class($service_id, $class)
 	{
 		$this->service_classes[$service_id] = $class;
 	}

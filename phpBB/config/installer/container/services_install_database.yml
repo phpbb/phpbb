@@ -40,7 +40,7 @@ services:
         arguments:
             - @service_container
         tags:
-            - { name: service_collection, tag: install_database_install }
+            - { name: service_collection, tag: install_database_install, class_name_aware: true }
 
     installer.module.database_install:
         class: phpbb\install\module\install_database\module

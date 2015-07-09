@@ -53,7 +53,7 @@ services:
         arguments:
             - @service_container
         tags:
-            - { name: service_collection, tag: install_obtain_data }
+            - { name: service_collection, tag: install_obtain_data, class_name_aware: true }
 
     installer.module.obtain_data_install:
         class: phpbb\install\module\obtain_data\module
