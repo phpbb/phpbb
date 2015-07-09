@@ -48,14 +48,6 @@ class bookmark extends \phpbb\notification\type\post
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	public function set_config(\phpbb\config\config $config)
-	{
-		$this->config = $config;
-	}
-
 	/**
 	* Is available
 	*/
