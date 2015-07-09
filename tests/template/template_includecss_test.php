@@ -103,11 +103,11 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			),
 			array(
 				array('TEST' => 3),
-				'<link href="tests/template//ext/include/css/styles/all/theme/test.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
+				'<link href="tests/template/ext/include/css/styles/all/theme/test.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
 			),
 			array(
 				array('TEST' => 4),
-				'<link href=tests/template/ext/include/css/styles/all/theme/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
+				'<link href="tests/template/ext/include/css/styles/all/theme/child_only.css?assets_version=1" rel="stylesheet" type="text/css" media="screen" />',
 			),
 		);
 	}
