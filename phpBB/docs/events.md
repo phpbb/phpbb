@@ -1231,6 +1231,22 @@ ucp_agreement_terms_before
 * Since: 3.1.0-b3
 * Purpose: Add content before the terms of agreement text at user registration
 
+ucp_main_front_user_activity_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/subsilver2/template/ucp_main_front.html
+* Since: 3.1.6-RC1
+* Purpose: Add content right after the user activity info viewing UCP front page
+
+ucp_main_front_user_activity_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/subsilver2/template/ucp_main_front.html
+* Since: 3.1.6-RC1
+* Purpose: Add content right before the user activity info viewing UCP front page
+
 ucp_pm_viewmessage_avatar_after
 ===
 * Locations:
