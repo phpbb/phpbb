@@ -900,7 +900,7 @@ class session
 		*
 		* @event core.session_create_after
 		* @var	array		session_data				Associative array of session keys to be updated
-		* @since 3.1.5-RC1
+		* @since 3.1.6-RC1
 		*/
 		$vars = array('session_data');
 		extract($phpbb_dispatcher->trigger_event('core.session_create_after', compact($vars)));
@@ -936,7 +936,7 @@ class session
 		* @var	int		user_id				user_id of the session user.
 		* @var	string		session_id				current user's session_id
 		* @var	bool	new_session 	should we create new session for user
-		* @since 3.1.5-RC1
+		* @since 3.1.6-RC1
 		*/
 		$vars = array('user_id', 'session_id', 'new_session');
 		extract($phpbb_dispatcher->trigger_event('core.session_kill_after', compact($vars)));
@@ -1082,7 +1082,7 @@ class session
 		* Event to trigger extension on session_gc
 		*
 		* @event core.session_gc_after
-		* @since 3.1.5-RC1
+		* @since 3.1.6-RC1
 		*/
 		$phpbb_dispatcher->dispatch('core.session_gc_after');
 
@@ -1594,7 +1594,7 @@ class session
 		* @event core.update_session_after
 		* @var	array		session_data				Associative array of session keys to be updated
 		* @var	string		session_id				current user's session_id
-		* @since 3.1.5-RC1
+		* @since 3.1.6-RC1
 		*/
 		$vars = array('session_data', 'session_id');
 		extract($phpbb_dispatcher->trigger_event('core.update_session_after', compact($vars)));
