@@ -70,6 +70,12 @@ class utils implements \phpbb\textformatter\utils_interface
 			$quote .= '=' . $this->format_attribute_value($attributes['author']);
 			unset($attributes['author']);
 		}
+
+		if (isset($attributes['user_id']) && $attributes['user_id'] == ANONYMOUS)
+		{
+			unset($attributes['user_id']);
+		}
+
 		ksort($attributes);
 		foreach ($attributes as $name => $value)
 		{

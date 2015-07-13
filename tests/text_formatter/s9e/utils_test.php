@@ -177,6 +177,15 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 			),
 			array(
 				'...',
+				array(
+					'author'  => 'user',
+					'post_id' => 123,
+					'user_id' => ANONYMOUS
+				),
+				'[quote=user post_id=123]...[/quote]',
+			),
+			array(
+				'...',
 				array('author'  => ' '),
 				'[quote=" "]...[/quote]',
 			),
