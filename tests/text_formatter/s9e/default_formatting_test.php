@@ -29,13 +29,18 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 	/**
 	* @dataProvider get_default_formatting_tests
 	*/
-	public function test_default_formatting($original, $expected)
+	public function test_default_formatting($original, $expected, $setup = null)
 	{
 		$fixture   = __DIR__ . '/fixtures/default_formatting.xml';
 		$container = $this->get_test_case_helpers()->set_s9e_services(null, $fixture);
 
 		$parser   = $container->get('text_formatter.parser');
 		$renderer = $container->get('text_formatter.renderer');
+
+		if (isset($setup))
+		{
+			call_user_func($setup, $container);
+		}
 
 		$parsed_text = $parser->parse($original);
 
@@ -262,6 +267,18 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				// From phpbb_textformatter_s9e_utils_test::test_generate_quote()
 				'[quote=\'[quote="foo"]\']...[/quote]',
 				'<blockquote><div><cite>[quote="foo"] wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				"Emoji: \xF0\x9F\x98\x80",
+				'Emoji: <img alt="' . "\xF0\x9F\x98\x80" . '" class="smilies" draggable="false" width="18" height="18" src="//twemoji.maxcdn.com/36x36/1f600.png">'
+			),
+			array(
+				"Emoji: \xF0\x9F\x98\x80",
+				"Emoji: \xF0\x9F\x98\x80",
+				function ($container)
+				{
+					$container->get('text_formatter.renderer')->set_viewsmilies(false);
+				}
 			),
 		);
 	}
