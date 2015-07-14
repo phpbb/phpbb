@@ -433,7 +433,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
 	/** @var \phpbb\files\filespec $file */
-	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name, $plupload);
+	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->handle_upload('form', $form_name);
 
 	if ($file->init_error())
 	{

@@ -182,87 +182,21 @@ class upload
 	}
 
 	/**
-	 * Form upload method
-	 * Upload file from users harddisk
+	 * Handle upload based on type
 	 *
-	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
-	 * @param \phpbb\plupload\plupload $plupload The plupload object
+	 * @param string $type Upload type
 	 *
-	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
-	 * @access public
+	 * @return \phpbb\files\filespec|bool A filespec instance if upload was
+	 *		successful, false if there were issues or the type is not supported
 	 */
-	function form_upload($form_name, plupload $plupload = null)
+	public function handle_upload($type)
 	{
-		$upload = $this->request->file($form_name);
-		unset($upload['local_mode']);
+		$args = func_get_args();
+		array_shift($args);
+		$type_class = $this->factory->get('types.' . $type)
+			->set_upload($this);
 
-		if ($plupload)
-		{
-			$result = $plupload->handle_upload($form_name);
-			if (is_array($result))
-			{
-				$upload = array_merge($upload, $result);
-			}
-		}
-
-		/** @var filespec $file */
-		$file = $this->factory->get('filespec')
-			->set_upload_ary($upload)
-			->set_upload_namespace($this);
-
-		if ($file->init_error())
-		{
-			$file->error[] = '';
-			return $file;
-		}
-
-		// Error array filled?
-		if (isset($upload['error']))
-		{
-			$error = $this->assign_internal_error($upload['error']);
-
-			if ($error !== false)
-			{
-				$file->error[] = $error;
-				return $file;
-			}
-		}
-
-		// Check if empty file got uploaded (not catched by is_uploaded_file)
-		if (isset($upload['size']) && $upload['size'] == 0)
-		{
-			$file->error[] = $this->language->lang($this->error_prefix . 'EMPTY_FILEUPLOAD');
-			return $file;
-		}
-
-		// PHP Upload filesize exceeded
-		if ($file->get('filename') == 'none')
-		{
-			$max_filesize = @ini_get('upload_max_filesize');
-			$unit = 'MB';
-
-			if (!empty($max_filesize))
-			{
-				$unit = strtolower(substr($max_filesize, -1, 1));
-				$max_filesize = (int) $max_filesize;
-
-				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
-			}
-
-			$file->error[] = (empty($max_filesize)) ? $this->language->lang($this->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
-			return $file;
-		}
-
-		// Not correctly uploaded
-		if (!$file->is_uploaded())
-		{
-			$file->error[] = $this->language->lang($this->error_prefix . 'NOT_UPLOADED');
-			return $file;
-		}
-
-		$this->common_checks($file);
-
-		return $file;
+		return (is_object($type_class)) ? call_user_func_array(array($type_class, 'upload'), $args) : false;
 	}
 
 	/**
@@ -536,9 +470,9 @@ class upload
 	 * @param string $errorcode Error code to assign
 	 *
 	 * @return string Error string
-	 * @access private
+	 * @access public
 	 */
-	function assign_internal_error($errorcode)
+	public function assign_internal_error($errorcode)
 	{
 		switch ($errorcode)
 		{
