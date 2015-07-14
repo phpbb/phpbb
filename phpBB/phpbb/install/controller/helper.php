@@ -158,8 +158,7 @@ class helper
 	{
 		// Get navigation items
 		$nav_array = $this->navigation_provider->get();
-
-		// @todo Sort navs by order
+		$nav_array = $this->sort_navigation_level($nav_array);
 
 		$active_main_menu = $this->get_active_main_menu($nav_array);
 
@@ -174,7 +173,7 @@ class helper
 
 			if (is_array($entry[0]) && $active_main_menu === $key)
 			{
-				// @todo Sort navs by order
+				$entry[0] = $this->sort_navigation_level($entry[0]);
 
 				foreach ($entry[0] as $name => $sub_entry)
 				{
@@ -220,6 +219,7 @@ class helper
 	protected function render_language_select()
 	{
 		$langs = $this->lang_helper->get_available_languages();
+		// @todo
 	}
 
 	/**
@@ -246,7 +246,7 @@ class helper
 			{
 				foreach ($nav_options[0] as $sub_menus)
 				{
-					if (isset($sub_menus['route']) &&$sub_menus['route'] === $active_route)
+					if (isset($sub_menus['route']) && $sub_menus['route'] === $active_route)
 					{
 						return $current_menu;
 					}
@@ -255,5 +255,32 @@ class helper
 		}
 
 		return false;
+	}
+
+	/**
+	 * Sorts the top level of navigation array
+	 *
+	 * @param array	$nav_array	Navigation array
+	 *
+	 * @return array
+	 */
+	protected function sort_navigation_level($nav_array)
+	{
+		$sorted = array();
+		foreach ($nav_array as $nav)
+		{
+			$order = (isset($nav['order'])) ? $nav['order'] : 0;
+			$sorted[$order][] = $nav;
+		}
+
+		// Linearization of navigation array
+		$nav_array = array();
+		ksort($sorted);
+		foreach ($sorted as $nav)
+		{
+			$nav_array = array_merge($nav_array, $nav);
+		}
+
+		return $nav_array;
 	}
 }
