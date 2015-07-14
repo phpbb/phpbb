@@ -51,7 +51,8 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 	*/
 	public function submit_post_data()
 	{
-		$parser = $this->get_test_case_helpers()->set_s9e_services()->get('text_formatter.parser');
+		// The new mock container is needed because the data providers may be executed before phpunit call setUp()
+		$parser = $this->get_test_case_helpers()->set_s9e_services(new phpbb_mock_container_builder())->get('text_formatter.parser');
 
 		return array(
 			/**

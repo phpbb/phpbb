@@ -624,7 +624,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 			// Mark all topic notifications read for this user
-			$phpbb_notifications->mark_notifications_read(array(
+			$phpbb_notifications->mark_notifications(array(
 				'notification.type.topic',
 				'notification.type.quote',
 				'notification.type.bookmark',
@@ -694,7 +694,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array(
+		$phpbb_notifications->mark_notifications_by_parent(array(
 			'notification.type.topic',
 			'notification.type.approve_topic',
 		), $forum_id, $user->data['user_id'], $post_time);
@@ -711,7 +711,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		$db->sql_freeresult($result);
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array(
+		$phpbb_notifications->mark_notifications_by_parent(array(
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -818,12 +818,12 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		// Mark post notifications read for this user in this topic
-		$phpbb_notifications->mark_notifications_read(array(
+		$phpbb_notifications->mark_notifications(array(
 			'notification.type.topic',
 			'notification.type.approve_topic',
 		), $topic_id, $user->data['user_id'], $post_time);
 
-		$phpbb_notifications->mark_notifications_read_by_parent(array(
+		$phpbb_notifications->mark_notifications_by_parent(array(
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -4254,12 +4254,12 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	// Output the notifications
 	$notifications = false;
-	if ($config['load_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
+	if ($config['load_notifications'] && $config['allow_board_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
 	{
 		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-		$notifications = $phpbb_notifications->load_notifications(array(
+		$notifications = $phpbb_notifications->load_notifications('notification.method.board', array(
 			'all_unread'	=> true,
 			'limit'			=> 5,
 		));
@@ -4296,7 +4296,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
 		'U_MARK_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_list&amp;mark=all&amp;token=' . $notification_mark_hash),
 		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
-		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
+		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'] && $config['allow_board_notifications'],
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],

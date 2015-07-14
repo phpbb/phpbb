@@ -55,6 +55,22 @@ class post extends \phpbb\notification\type\base
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
 
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
+
 	/**
 	* Is available
 	*/
@@ -131,31 +147,27 @@ class post extends \phpbb\notification\type\base
 		}
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
-		$update_notifications = array();
-		$sql = 'SELECT n.*
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_parent_id = ' . (int) self::get_item_parent_id($post) . '
-				AND n.notification_read = 0
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			// Do not create a new notification
-			unset($notify_users[$row['user_id']]);
+		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), array(
+			'item_parent_id'	=> self::get_item_parent_id($post),
+			'read'				=> 0,
+		));
 
-			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
+		foreach ($notified_users as $user => $notification_data)
+		{
+			unset($notify_users[$user]);
+
+			/** @var post $notification */
+			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
 			$update_responders = $notification->add_responders($post);
 			if (!empty($update_responders))
 			{
-				$sql = 'UPDATE ' . $this->notifications_table . '
-					SET ' . $this->db->sql_build_array('UPDATE', $update_responders) . '
-					WHERE notification_id = ' . $row['notification_id'];
-				$this->db->sql_query($sql);
+				$this->notification_manager->update_notification($notification, $update_responders, array(
+					'item_parent_id'	=> self::get_item_parent_id($post),
+					'read'				=> 0,
+					'user_id'			=> $user,
+				));
 			}
 		}
-		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}
@@ -363,13 +375,7 @@ class post extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -394,7 +400,7 @@ class post extends \phpbb\notification\type\base
 			$this->notification_read = true;
 		}
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 
 	/**

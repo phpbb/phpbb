@@ -30,6 +30,14 @@ class group_request extends \phpbb\notification\type\base
 		'lang'	=> 'NOTIFICATION_TYPE_GROUP_REQUEST',
 	);
 
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
+
 	/**
 	* {@inheritdoc}
 	*/
@@ -156,6 +164,6 @@ class group_request extends \phpbb\notification\type\base
 	{
 		$this->set_data('group_name', $group['group_name']);
 
-		return parent::create_insert_array($group, $pre_create_data);
+		parent::create_insert_array($group, $pre_create_data);
 	}
 }

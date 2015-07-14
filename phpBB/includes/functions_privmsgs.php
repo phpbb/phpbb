@@ -884,7 +884,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-	$phpbb_notifications->mark_notifications_read('notification.type.pm', $msg_id, $user_id);
+	$phpbb_notifications->mark_notifications('notification.type.pm', $msg_id, $user_id);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
 		SET pm_unread = 0

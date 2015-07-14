@@ -40,6 +40,22 @@ class pm extends \phpbb\notification\type\base
 		'lang'	=> 'NOTIFICATION_TYPE_PM',
 	);
 
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
+
 	/**
 	* Is available
 	*/
@@ -176,13 +192,7 @@ class pm extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $pm Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($pm, $pre_create_data = array())
 	{
@@ -190,6 +200,6 @@ class pm extends \phpbb\notification\type\base
 
 		$this->set_data('message_subject', $pm['message_subject']);
 
-		return parent::create_insert_array($pm, $pre_create_data);
+		parent::create_insert_array($pm, $pre_create_data);
 	}
 }

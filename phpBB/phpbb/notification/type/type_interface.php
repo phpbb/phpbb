@@ -177,14 +177,18 @@ interface type_interface
 
 	/**
 	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
 	*
 	* @param array $type_data The type specific data
 	* @param array $pre_create_data Data from pre_create_insert_array()
+	*/
+	public function create_insert_array($type_data, $pre_create_data);
+
+	/**
+	* Function for getting the data for insertion in an SQL query
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($type_data, $pre_create_data);
+	public function get_insert_array();
 
 	/**
 	* Function for preparing the data for update in an SQL query

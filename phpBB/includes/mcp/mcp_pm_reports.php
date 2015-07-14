@@ -97,7 +97,7 @@ class mcp_pm_reports
 				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				$phpbb_notifications->mark_notifications_read_by_parent('notification.type.report_pm', $report_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications_by_parent('report_pm', $report_id, $user->data['user_id']);
 
 				$pm_id = $report['pm_id'];
 				$report_id = $report['report_id'];

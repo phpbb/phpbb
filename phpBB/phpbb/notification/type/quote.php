@@ -109,22 +109,12 @@ class quote extends \phpbb\notification\type\post
 	*/
 	public function update_notifications($post)
 	{
-		$old_notifications = array();
-		$sql = 'SELECT n.user_id
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_id = ' . self::get_item_id($post) . '
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$old_notifications[] = $row['user_id'];
-		}
-		$this->db->sql_freeresult($result);
+		$old_notifications = $this->notification_manager->get_notified_users($this->get_type(), array(
+			'item_id'	=> self::get_item_id($post),
+		));
 
 		// Find the new users to notify
-		$notifications = $this->find_users_for_notification($post);
+		$notifications = array_keys($this->find_users_for_notification($post));
 
 		// Find the notifications we must delete
 		$remove_notifications = array_diff($old_notifications, array_keys($notifications));
@@ -142,11 +132,7 @@ class quote extends \phpbb\notification\type\post
 		// Remove the necessary notifications
 		if (!empty($remove_notifications))
 		{
-			$sql = 'DELETE FROM ' . $this->notifications_table . '
-				WHERE notification_type_id = ' . (int) $this->notification_type_id . '
-					AND item_id = ' . self::get_item_id($post) . '
-					AND ' . $this->db->sql_in_set('user_id', $remove_notifications);
-			$this->db->sql_query($sql);
+			$this->notification_manager->delete_notifications($this->get_type(), self::get_item_id($post), false, $remove_notifications);
 		}
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)

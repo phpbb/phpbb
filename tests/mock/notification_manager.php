@@ -32,18 +32,17 @@ class phpbb_mock_notification_manager
 		);
 	}
 
-	public function mark_notifications_read()
+	public function mark_notifications()
 	{
 	}
 
-	public function mark_notifications_read_by_parent()
+	public function mark_notifications_by_parent()
 	{
 	}
 
-	public function mark_notifications_read_by_id()
+	public function mark_notifications_by_id()
 	{
 	}
-
 
 	public function add_notifications()
 	{
