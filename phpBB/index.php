@@ -28,6 +28,14 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
+/**
+* Execute some code on the index page
+*
+* @event core.index_page_after_common
+* @since 3.1.6-RC1
+*/
+$phpbb_dispatcher->dispatch('core.index_page_after_common');
+
 // Mark notifications read
 if (($mark_notification = $request->variable('mark_notification', 0)))
 {
