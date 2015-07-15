@@ -29,7 +29,17 @@ services:
 
     files.types.form:
         class: phpbb\files\types\form
+        scope: prototype
         arguments:
             - @files.factory
+            - @language
             - @plupload
+            - @request
+
+    files.types.local:
+        class: phpbb\files\types\form
+        scope: prototype
+        arguments:
+            - @files.factory
+            - @language
             - @request

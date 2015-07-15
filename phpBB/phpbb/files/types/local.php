@@ -17,19 +17,15 @@ use \phpbb\files\factory;
 use \phpbb\files\filespec;
 use \phpbb\files\upload;
 use \phpbb\language\language;
-use \phpbb\plupload\plupload;
 use \phpbb\request\request_interface;
 
-class form extends base
+class local extends base
 {
 	/** @var factory Files factory */
 	protected $factory;
 
 	/** @var language */
 	protected $language;
-
-	/** @var plupload */
-	protected $plupload;
 
 	/** @var request_interface */
 	protected $request;
@@ -43,11 +39,10 @@ class form extends base
 	 * @param factory           $factory
 	 * @param request_interface $request
 	 */
-	public function __construct(factory $factory, language $language, plupload $plupload, request_interface $request)
+	public function __construct(factory $factory, language $language, request_interface $request)
 	{
 		$this->factory = $factory;
 		$this->language = $language;
-		$this->plupload = $plupload;
 		$this->request = $request;
 	}
 
@@ -57,37 +52,34 @@ class form extends base
 	public function upload()
 	{
 		$args = func_get_args();
-		return $this->form_upload($args[0]);
+		return $this->local_upload($args[0], isset($args[1]) ? $args[1] : false);
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public function set_upload(upload $upload)
-	{
-		$this->upload = $upload;
-
-		return $this;
-	}
-
-	/**
-	 * Form upload method
-	 * Upload file from users harddisk
+	 * Move file from another location to phpBB
 	 *
-	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
+	 * @param string $source_file Filename of source file
+	 * @param array|bool $filedata Array with filedata or false
 	 *
-	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
-	 * @access public
+	 * @return filespec Object "filespec" is returned, all further operations can be done with this object
 	 */
-	protected function form_upload($form_name)
+	protected function local_upload($source_file, $filedata = false)
 	{
-		$upload = $this->request->file($form_name);
-		unset($upload['local_mode']);
+		$upload = array();
 
-		$result = $this->plupload->handle_upload($form_name);
-		if (is_array($result))
+		$upload['local_mode'] = true;
+		$upload['tmp_name'] = $source_file;
+
+		if ($filedata === false)
 		{
-			$upload = array_merge($upload, $result);
+			$upload['name'] = utf8_basename($source_file);
+			$upload['size'] = 0;
+		}
+		else
+		{
+			$upload['name'] = $filedata['realname'];
+			$upload['size'] = $filedata['size'];
+			$upload['type'] = $filedata['type'];
 		}
 
 		/** @var filespec $file */
@@ -101,7 +93,6 @@ class form extends base
 			return $file;
 		}
 
-		// Error array filled?
 		if (isset($upload['error']))
 		{
 			$error = $this->upload->assign_internal_error($upload['error']);
@@ -113,17 +104,21 @@ class form extends base
 			}
 		}
 
-		// Check if empty file got uploaded (not catched by is_uploaded_file)
-		if (isset($upload['size']) && $upload['size'] == 0)
+		// PHP Upload filesize exceeded
+		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = $this->language->lang($this->upload->error_prefix . 'EMPTY_FILEUPLOAD');
-			return $file;
-		}
+			$max_filesize = @ini_get('upload_max_filesize');
+			$unit = 'MB';
 
-		// PHP Upload filesize check
-		$file = $this->check_upload_size($file);
-		if (sizeof($file->error))
-		{
+			if (!empty($max_filesize))
+			{
+				$unit = strtolower(substr($max_filesize, -1, 1));
+				$max_filesize = (int) $max_filesize;
+
+				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
+			}
+
+			$file->error[] = (empty($max_filesize)) ?$this->language->lang($this->upload->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->upload->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
 			return $file;
 		}
 
@@ -135,6 +130,7 @@ class form extends base
 		}
 
 		$this->upload->common_checks($file);
+		$this->request->overwrite('local', $upload, request_interface::FILES);
 
 		return $file;
 	}
