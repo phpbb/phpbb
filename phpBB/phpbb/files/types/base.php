@@ -13,11 +13,9 @@
 
 namespace phpbb\files\types;
 
-use \phpbb\language\language;
-
 abstract class base implements type_interface
 {
-	/** @var language */
+	/** @var \phpbb\language\language */
 	protected $language;
 
 	/** @var \phpbb\files\upload */
