@@ -65,22 +65,7 @@ class local extends base
 	 */
 	protected function local_upload($source_file, $filedata = false)
 	{
-		$upload = array();
-
-		$upload['local_mode'] = true;
-		$upload['tmp_name'] = $source_file;
-
-		if ($filedata === false)
-		{
-			$upload['name'] = utf8_basename($source_file);
-			$upload['size'] = 0;
-		}
-		else
-		{
-			$upload['name'] = $filedata['realname'];
-			$upload['size'] = $filedata['size'];
-			$upload['type'] = $filedata['type'];
-		}
+		$upload = $this->get_upload_ary($source_file, $filedata);
 
 		/** @var filespec $file */
 		$file = $this->factory->get('filespec')
@@ -133,5 +118,35 @@ class local extends base
 		$this->request->overwrite('local', $upload, request_interface::FILES);
 
 		return $file;
+	}
+
+	/**
+	 * Retrieve upload array
+	 *
+	 * @param string $source_file Source file name
+	 * @param array $filedata File data array
+	 *
+	 * @return array Upload array
+	 */
+	protected function get_upload_ary($source_file, $filedata)
+	{
+		$upload = array();
+
+		$upload['local_mode'] = true;
+		$upload['tmp_name'] = $source_file;
+
+		if ($filedata === false)
+		{
+			$upload['name'] = utf8_basename($source_file);
+			$upload['size'] = 0;
+		}
+		else
+		{
+			$upload['name'] = $filedata['realname'];
+			$upload['size'] = $filedata['size'];
+			$upload['type'] = $filedata['type'];
+		}
+
+		return $upload;
 	}
 }
