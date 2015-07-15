@@ -43,3 +43,11 @@ services:
             - @files.factory
             - @language
             - @request
+
+    files.types.remote:
+        class: phpbb\files\types\remote
+        scope: prototype
+        arguments:
+            - @files.factory
+            - @language
+            - @request

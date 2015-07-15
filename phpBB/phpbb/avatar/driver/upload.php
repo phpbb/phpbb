@@ -146,7 +146,7 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			$file = $upload->remote_upload($url);
+			$file = $upload->handle_upload('remote', $url);
 		}
 		else
 		{
