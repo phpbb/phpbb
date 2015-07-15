@@ -51,3 +51,4 @@ services:
             - @files.factory
             - @language
             - @request
+            - %core.root_path%

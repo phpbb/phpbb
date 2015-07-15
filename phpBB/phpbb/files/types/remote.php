@@ -32,17 +32,21 @@ class remote extends base
 	/** @var \phpbb\files\upload */
 	protected $upload;
 
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
 	/**
 	 * Construct a form upload type
 	 *
 	 * @param factory           $factory
 	 * @param request_interface $request
 	 */
-	public function __construct(factory $factory, language $language, request_interface $request)
+	public function __construct(factory $factory, language $language, request_interface $request, $phpbb_root_path)
 	{
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->request = $request;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -93,30 +97,7 @@ class remote extends base
 		$filename = $url['path'];
 		$filesize = 0;
 
-		$remote_max_filesize = $this->upload->max_filesize;
-		if (!$remote_max_filesize)
-		{
-			$max_filesize = @ini_get('upload_max_filesize');
-
-			if (!empty($max_filesize))
-			{
-				$unit = strtolower(substr($max_filesize, -1, 1));
-				$remote_max_filesize = (int) $max_filesize;
-
-				switch ($unit)
-				{
-					case 'g':
-						$remote_max_filesize *= 1024;
-					// no break
-					case 'm':
-						$remote_max_filesize *= 1024;
-					// no break
-					case 'k':
-						$remote_max_filesize *= 1024;
-					// no break
-				}
-			}
-		}
+		$remote_max_filesize = $this->get_max_file_size();
 
 		$errno = 0;
 		$errstr = '';
@@ -237,5 +218,40 @@ class remote extends base
 		$this->upload->common_checks($file);
 
 		return $file;
+	}
+
+	/**
+	 * Get maximum file size for remote uploads
+	 *
+	 * @return int Maximum file size
+	 */
+	protected function get_max_file_size()
+	{
+		$max_file_size = $this->upload->max_filesize;
+		if (!$max_file_size)
+		{
+			$max_file_size = @ini_get('upload_max_filesize');
+
+			if (!empty($max_filesize))
+			{
+				$unit = strtolower(substr($max_file_size, -1, 1));
+				$max_file_size = (int) $max_filesize;
+
+				switch ($unit)
+				{
+					case 'g':
+						$max_file_size *= 1024;
+					// no break
+					case 'm':
+						$max_file_size *= 1024;
+					// no break
+					case 'k':
+						$max_file_size *= 1024;
+					// no break
+				}
+			}
+		}
+
+		return $max_file_size;
 	}
 }
