@@ -52,7 +52,7 @@ class form implements type_interface
 	public function upload()
 	{
 		$args = func_get_args();
-		return $this->form_upload($args[0], (isset($args[1])) ? $args[1] : null);
+		return $this->form_upload($args[0]);
 	}
 
 	/**
@@ -70,19 +70,18 @@ class form implements type_interface
 	 * Upload file from users harddisk
 	 *
 	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
-	 * @param plupload $plupload The plupload object
 	 *
 	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
 	 * @access public
 	 */
-	protected function form_upload($form_name, plupload $plupload = null)
+	protected function form_upload($form_name)
 	{
 		$upload = $this->request->file($form_name);
 		unset($upload['local_mode']);
 
-		if ($plupload)
+		if ($this->plupload)
 		{
-			$result = $plupload->handle_upload($form_name);
+			$result = $this->plupload->handle_upload($form_name);
 			if (is_array($result))
 			{
 				$upload = array_merge($upload, $result);
