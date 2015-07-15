@@ -13,8 +13,6 @@
 
 namespace phpbb\files\types;
 
-use \phpbb\files\filespec;
-use \phpbb\files\upload;
 use \phpbb\language\language;
 
 abstract class base implements type_interface
@@ -22,15 +20,15 @@ abstract class base implements type_interface
 	/** @var language */
 	protected $language;
 
-	/** @var upload */
+	/** @var \phpbb\files\upload */
 	protected $upload;
 
 	/**
 	 * Check if upload exceeds maximum file size
 	 *
-	 * @param filespec $file Filespec object
+	 * @param \phpbb\files\filespec $file Filespec object
 	 *
-	 * @return filespec Returns same filespec instance
+	 * @return \phpbb\files\filespec Returns same filespec instance
 	 */
 	public function check_upload_size($file)
 	{
@@ -57,7 +55,7 @@ abstract class base implements type_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function set_upload(upload $upload)
+	public function set_upload(\phpbb\files\upload $upload)
 	{
 		$this->upload = $upload;
 
