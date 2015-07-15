@@ -22,6 +22,12 @@ acp_email_options_after
 * Since: 3.1.2-RC1
 * Purpose: Add settings to mass email form
 
+acp_forums_custom_settings
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.1.6-RC1
+* Purpose: Add its own box (fieldset) for extension settings
+
 acp_forums_main_settings_append
 ===
 * Location: adm/style/acp_forums.html
