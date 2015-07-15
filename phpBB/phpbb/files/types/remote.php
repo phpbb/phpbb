@@ -234,7 +234,7 @@ class remote extends base
 		/** @var filespec $file */
 		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload_ary)
-			->set_upload_namespace($this);
+			->set_upload_namespace($this->upload);
 		$this->upload->common_checks($file);
 
 		return $file;
