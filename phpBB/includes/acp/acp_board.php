@@ -550,12 +550,6 @@ class acp_board
 			}
 		}
 
-		// Invalidate the text_formatter cache when posting options are changed
-		if ($mode == 'post' && $submit)
-		{
-			$phpbb_container->get('text_formatter.cache')->invalidate();
-		}
-
 		// Store news and exclude ids
 		if ($mode == 'feed' && $submit)
 		{
