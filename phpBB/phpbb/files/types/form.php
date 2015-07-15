@@ -52,7 +52,7 @@ class form implements type_interface
 	public function upload()
 	{
 		$args = func_get_args();
-		return $this->form_upload($args[0], $args[1]);
+		return $this->form_upload($args[0], (isset($args[1])) ? $args[1] : null);
 	}
 
 	/**
