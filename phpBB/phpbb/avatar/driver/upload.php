@@ -168,6 +168,13 @@ class upload extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
+		// Delete current avatar if not overwritten
+		$ext = substr(strrchr($row['avatar'], '.'), 1);
+		if ($ext && $ext !== $file->get('extension'))
+		{
+			$this->delete($row);
+		}
+
 		return array(
 			'avatar' => $row['id'] . '_' . time() . '.' . $file->get('extension'),
 			'avatar_width' => $file->get('width'),
