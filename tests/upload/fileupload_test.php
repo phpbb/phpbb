@@ -119,6 +119,25 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$this->assertEquals('DISALLOWED_EXTENSION', $file->error[0]);
 	}
 
+	public function test_common_checks_disallowed_content()
+	{
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
+		$file = new \phpbb\files\filespec($this->filesystem, $this->language, $this->phpbb_root_path);
+		$file->set_upload_ary(array(
+				'size'	=> 50,
+				'tmp_name'	=> dirname(__FILE__) . '/fixture/disallowed',
+				'name'		=> 'disallowed.jpg',
+				'type'		=> 'image/jpg'
+			))
+			->set_upload_namespace($upload);
+		file_put_contents(dirname(__FILE__) . '/fixture/disallowed', '<body>' . file_get_contents(dirname(__FILE__) . '/fixture/jpg'));
+		$upload->common_checks($file);
+		$this->assertEquals('DISALLOWED_CONTENT', $file->error[0]);
+		unlink(dirname(__FILE__) . '/fixture/disallowed');
+	}
+
 	public function test_common_checks_invalid_filename()
 	{
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);

@@ -93,4 +93,27 @@ class phpbb_files_upload_test extends phpbb_test_case
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
 		$this->assertFalse($upload->is_valid('foobar'));
 	}
+
+	public function data_internal_error()
+	{
+		return array(
+			array(UPLOAD_ERR_INI_SIZE, 'PHP_SIZE_OVERRUN'),
+			array(UPLOAD_ERR_FORM_SIZE, 'WRONG_FILESIZE'),
+			array(UPLOAD_ERR_PARTIAL, 'PARTIAL_UPLOAD'),
+			array(UPLOAD_ERR_NO_FILE, 'NOT_UPLOADED'),
+			array(UPLOAD_ERR_NO_TMP_DIR, 'Temporary folder could not be found. Please check your PHP installation.'),
+			array(UPLOAD_ERR_CANT_WRITE, 'Can’t write to temporary folder.'),
+			array(UPLOAD_ERR_EXTENSION, 'A PHP extension has stopped the file upload.'),
+			array(9, false),
+		);
+	}
+
+	/**
+	 * @dataProvider data_internal_error
+	 */
+	public function test_assign_internal_error($error_code, $expected)
+	{
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$this->assertSame($expected, $upload->assign_internal_error($error_code));
+	}
 }

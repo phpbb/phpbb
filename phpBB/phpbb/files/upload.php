@@ -210,7 +210,7 @@ class upload
 	{
 		switch ($errorcode)
 		{
-			case 1:
+			case UPLOAD_ERR_INI_SIZE:
 				$max_filesize = @ini_get('upload_max_filesize');
 				$unit = 'MB';
 
@@ -223,29 +223,37 @@ class upload
 				}
 
 				$error = (empty($max_filesize)) ? $this->language->lang($this->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
-				break;
+			break;
 
-			case 2:
+			case UPLOAD_ERR_FORM_SIZE:
 				$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
 				$error = $this->language->lang($this->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']);
-				break;
+			break;
 
-			case 3:
+			case UPLOAD_ERR_PARTIAL:
 				$error = $this->language->lang($this->error_prefix . 'PARTIAL_UPLOAD');
-				break;
+			break;
 
-			case 4:
+			case UPLOAD_ERR_NO_FILE:
 				$error = $this->language->lang($this->error_prefix . 'NOT_UPLOADED');
-				break;
+			break;
 
-			case 6:
+			case UPLOAD_ERR_NO_TMP_DIR:
 				$error = 'Temporary folder could not be found. Please check your PHP installation.';
-				break;
+			break;
+
+			case UPLOAD_ERR_CANT_WRITE:
+				$error = 'Can’t write to temporary folder.';
+			break;
+
+			case UPLOAD_ERR_EXTENSION:
+				$error = 'A PHP extension has stopped the file upload.';
+			break;
 
 			default:
 				$error = false;
-				break;
+			break;
 		}
 
 		return $error;
