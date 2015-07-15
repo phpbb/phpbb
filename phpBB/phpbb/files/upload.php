@@ -15,7 +15,6 @@ namespace phpbb\files;
 
 use \phpbb\filesystem\filesystem_interface;
 use \phpbb\language\language;
-use \phpbb\plupload\plupload;
 use \phpbb\request\request_interface;
 
 /**
@@ -51,7 +50,7 @@ class upload
 	/** @var int Timeout for remote upload */
 	var $upload_timeout = 6;
 
-	/** @var \phpbb\filesystem\filesystem_interface */
+	/** @var filesystem_interface */
 	protected $filesystem;
 
 	/** @var \phpbb\files\factory Files factory */
@@ -60,7 +59,7 @@ class upload
 	/** @var \phpbb\language\language Language class */
 	protected $language;
 
-	/** @var \phpbb\request\request_interface Request class */
+	/** @var request_interface Request class */
 	protected $request;
 
 	/** @var string phpBB root path */
@@ -69,10 +68,10 @@ class upload
 	/**
 	 * Init file upload class.
 	 *
-	 * @param \phpbb\filesystem\filesystem_interface $filesystem
-	 * @param \phpbb\files\factory $factory Files factory
-	 * @param \phpbb\language\language $language Language class
-	 * @param \phpbb\request\request_interface $request Request class
+	 * @param filesystem_interface $filesystem
+	 * @param factory $factory Files factory
+	 * @param language $language Language class
+	 * @param request_interface $request Request class
 	 * @param string $phpbb_root_path phpBB root path
 	 */
 	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, request_interface $request, $phpbb_root_path)

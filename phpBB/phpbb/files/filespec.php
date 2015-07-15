@@ -83,7 +83,7 @@ class filespec
 	 */
 	protected $mimetype_guesser;
 
-	/** @var \phpbb\language\language Language class */
+	/** @var language Language class */
 	protected $language;
 
 	/** @var string phpBB root path */
@@ -93,7 +93,7 @@ class filespec
 	 * File upload class
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem Filesystem
-	 * @param \phpbb\language\language					$language Language
+	 * @param language					$language Language
 	 * @param string									$phpbb_root_path phpBB root path
 	 * @param \phpbb\mimetype\guesser					$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload					$plupload Plupload

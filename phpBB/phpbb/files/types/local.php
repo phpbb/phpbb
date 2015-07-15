@@ -15,7 +15,6 @@ namespace phpbb\files\types;
 
 use \phpbb\files\factory;
 use \phpbb\files\filespec;
-use \phpbb\files\upload;
 use \phpbb\language\language;
 use \phpbb\request\request_interface;
 
@@ -30,7 +29,7 @@ class local extends base
 	/** @var request_interface */
 	protected $request;
 
-	/** @var upload */
+	/** @var \phpbb\files\upload */
 	protected $upload;
 
 	/**
