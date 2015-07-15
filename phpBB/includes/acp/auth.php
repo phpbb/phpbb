@@ -1139,6 +1139,11 @@ class auth_admin extends \phpbb\auth\auth
 			@reset($cat_array['permissions']);
 			while (list($permission, $allowed) = each($cat_array['permissions']))
 			{
+				if (!$phpbb_permissions->permission_defined($permission))
+				{
+					continue;
+				}
+
 				if ($s_view)
 				{
 					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
