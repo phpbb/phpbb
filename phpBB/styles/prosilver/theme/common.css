@@ -327,6 +327,7 @@ ul.linklist li.responsive-menu {
 ul.linklist li.responsive-menu a.responsive-menu-link {
 	display: inline-block;
 	margin: 0 5px;
+	font-size: 16px;
 	position: relative;
 	width: 16px;
 	line-height: 1.2em;
@@ -1257,7 +1258,7 @@ ul.linklist:after,
 }
 
 #quick-links a.responsive-menu-link:before {
-	font-size: 1.6em;
+	font-size: 16px;
 	line-height: 16.5px;
 }
 
