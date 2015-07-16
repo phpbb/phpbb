@@ -568,6 +568,22 @@ mcp_post_additional_options
 * Since: 3.1.5-RC1
 * Purpose: Add content within the list of post moderation actions
 
+mcp_topic_options_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+    + styles/subsilver2/template/mcp_topic.html
+* Since: 3.1.6-RC1
+* Purpose: Add some options (field, checkbox, ...) after the subject field when split a subject
+
+mcp_topic_options_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+    + styles/subsilver2/template/mcp_topic.html
+* Since: 3.1.6-RC1
+* Purpose: Add some options (field, checkbox, ...) before the subject field when split a subject
+
 mcp_warn_post_add_warning_field_after
 ===
 * Locations:
