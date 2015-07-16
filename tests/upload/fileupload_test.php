@@ -179,7 +179,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		$file = $upload->handle_upload('local', $this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
-		unlink($this->path . 'jpg.jpg');
+		$this->assertFalse($file->additional_checks());
+		$this->assertTrue($file->move_file('../tests/upload/fixture/copies', true));
+		$file->remove();
 	}
 
 	public function test_move_existent_file()

@@ -112,6 +112,13 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 	}
 
+	public function test_empty_upload_ary()
+	{
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $this->phpbb_root_path, $this->mimetype_guesser);
+		$this->assertInstanceOf('\phpbb\files\filespec', $filespec->set_upload_ary(array()));
+		$this->assertTrue($filespec->init_error());
+	}
+
 	public function additional_checks_variables()
 	{
 		// False here just indicates the file is too large and fails the
@@ -138,6 +145,19 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec->filesize = $filespec->get_filesize($this->path . $filename);
 
 		$this->assertEquals($expected, $filespec->additional_checks());
+	}
+
+	public function test_additional_checks_dimensions()
+	{
+		$upload = new phpbb_mock_fileupload();
+		$filespec = $this->get_filespec();
+		$filespec->set_upload_namespace($upload);
+		$upload->valid_dimensions = false;
+		$filespec->file_moved = true;
+		$upload->max_filesize = 0;
+
+		$this->assertEquals(false, $filespec->additional_checks());
+		$this->assertSame(array('WRONG_SIZE'), $filespec->error);
 	}
 
 	public function check_content_variables()
@@ -387,5 +407,28 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec = $this->get_filespec(array('name'=> $upload_name));
 
 		$this->assertSame(trim(utf8_basename(htmlspecialchars($filename))), $filespec->get('uploadname'));
+	}
+
+	public function test_is_uploaded()
+	{
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $this->phpbb_root_path, null);
+		$reflection_filespec = new ReflectionClass($filespec);
+		$plupload_property = $reflection_filespec->getProperty('plupload');
+		$plupload_property->setAccessible(true);
+		$plupload_mock = $this->getMockBuilder('\phpbb\plupload\plupload')
+			->disableOriginalConstructor()
+			->getMock();
+		$plupload_mock->expects($this->any())
+			->method('is_active')
+			->will($this->returnValue(true));
+		$plupload_property->setValue($filespec, $plupload_mock);
+		$is_uploaded = $reflection_filespec->getMethod('is_uploaded');
+
+		// Plupload is active and file does not exist
+		$this->assertFalse($is_uploaded->invoke($filespec));
+
+		// Plupload is not active and file was not uploaded
+		$plupload_property->setValue($filespec, null);
+		$this->assertFalse($is_uploaded->invoke($filespec));
 	}
 }
