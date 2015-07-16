@@ -98,7 +98,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 			->set_max_filesize(1000);
 		$file = $upload->handle_upload('remote', self::$root_url . 'styles/prosilver/theme/images/forum_read.gif');
 		$this->assertEquals(0, sizeof($file->error));
-		$this->assertTrue(file_exists($file->filename));
+		$this->assertTrue(file_exists($file->get('filename')));
 	}
 
 	public function test_too_large()

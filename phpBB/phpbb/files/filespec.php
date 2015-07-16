@@ -22,49 +22,52 @@ use \phpbb\language\language;
 class filespec
 {
 	/** @var string File name */
-	var $filename = '';
+	protected $filename = '';
 
 	/** @var string Real name of file */
-	var $realname = '';
+	protected $realname = '';
 
 	/** @var string Upload name of file */
-	var $uploadname = '';
+	protected $uploadname = '';
 
 	/** @var string Mimetype of file */
-	var $mimetype = '';
+	protected $mimetype = '';
 
 	/** @var string File extension */
-	var $extension = '';
+	public $extension = '';
 
 	/** @var int File size */
-	var $filesize = 0;
+	public $filesize = 0;
 
 	/** @var int Width of file */
-	var $width = 0;
+	protected $width = 0;
 
 	/** @var int Height of file */
-	var $height = 0;
+	protected $height = 0;
 
 	/** @var array Image info including type and size */
-	var $image_info = array();
+	protected $image_info = array();
 
 	/** @var string Destination file name */
-	var $destination_file = '';
+	protected $destination_file = '';
 
 	/** @var string Destination file path */
-	var $destination_path = '';
+	protected $destination_path = '';
 
 	/** @var bool Whether file was moved */
-	var $file_moved = false;
+	public $file_moved = false;
 
-	/** @var bool  Whether file is local */
-	var $local = false;
+	/** @var bool Whether file is local */
+	public $local = false;
+
+	/** @var bool Class initialization flag */
+	protected $class_initialized = false;
 
 	/** @var array Error array */
-	var $error = array();
+	public $error = array();
 
 	/** @var upload Instance of upload class  */
-	var $upload;
+	public $upload;
 
 	/**
 	 * @var \phpbb\filesystem\filesystem_interface
@@ -98,7 +101,7 @@ class filespec
 	 * @param \phpbb\mimetype\guesser					$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload					$plupload Plupload
 	 */
-	function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
@@ -116,6 +119,12 @@ class filespec
 	 */
 	public function set_upload_ary($upload_ary)
 	{
+		if (!isset($upload_ary) || !sizeof($upload_ary))
+		{
+			return $this;
+		}
+
+		$this->class_initialized = true;
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
 		$name = (STRIP) ? stripslashes($upload_ary['name']) : $upload_ary['name'];
@@ -165,7 +174,7 @@ class filespec
 	 */
 	public function init_error()
 	{
-		return !isset($this->filename);
+		return !$this->class_initialized;
 	}
 
 	/**
@@ -193,7 +202,7 @@ class filespec
 	 *
 	 *@access public
 	 */
-	function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
+	public function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
 		if ($this->init_error())
 		{
@@ -216,22 +225,21 @@ class filespec
 				$this->realname = preg_replace("/%(\w{2})/", '_', $this->realname);
 
 				$this->realname = $prefix . $this->realname . '.' . $this->extension;
-				break;
+			break;
 
 			case 'unique':
 				$this->realname = $prefix . md5(unique_id());
-				break;
+			break;
 
 			case 'avatar':
 				$this->extension = strtolower($this->extension);
 				$this->realname = $prefix . $user_id . '.' . $this->extension;
 
-				break;
+			break;
 
 			case 'unique_ext':
 			default:
 				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;
-				break;
 		}
 	}
 
@@ -242,7 +250,7 @@ class filespec
 	 *
 	 * @return mixed Content of property
 	 */
-	function get($property)
+	public function get($property)
 	{
 		if ($this->init_error() || !isset($this->$property))
 		{
@@ -257,7 +265,7 @@ class filespec
 	 *
 	 * @return bool true if it is an image, false if not
 	 */
-	function is_image()
+	public function is_image()
 	{
 		return (strpos($this->mimetype, 'image/') === 0);
 	}
@@ -267,7 +275,7 @@ class filespec
 	 *
 	 * @return bool true if it is a valid upload, false if not
 	 */
-	function is_uploaded()
+	public function is_uploaded()
 	{
 		$is_plupload = $this->plupload && $this->plupload->is_active();
 
@@ -287,7 +295,7 @@ class filespec
 	/**
 	 * Remove file
 	 */
-	function remove()
+	public function remove()
 	{
 		if ($this->file_moved)
 		{
@@ -321,7 +329,7 @@ class filespec
 	 * @param string $filename Filename that needs to be checked
 	 * @return string Mime type of supplied filename
 	 */
-	function get_mimetype($filename)
+	public function get_mimetype($filename)
 	{
 		if ($this->mimetype_guesser !== null)
 		{
@@ -343,7 +351,7 @@ class filespec
 	 *
 	 * @return int File size
 	 */
-	function get_filesize($filename)
+	public function get_filesize($filename)
 	{
 		return @filesize($filename);
 	}
@@ -356,7 +364,7 @@ class filespec
 	 *
 	 * @return bool False if disallowed content found, true if not
 	 */
-	function check_content($disallowed_content)
+	public function check_content($disallowed_content)
 	{
 		if (empty($disallowed_content))
 		{
@@ -393,7 +401,7 @@ class filespec
 	 * @return bool True if file was moved, false if not
 	 * @access public
 	 */
-	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
+	public function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
 		if (sizeof($this->error))
 		{
@@ -443,7 +451,7 @@ class filespec
 						}
 					}
 
-					break;
+				break;
 
 				case 'move':
 
@@ -455,7 +463,7 @@ class filespec
 						}
 					}
 
-					break;
+				break;
 
 				case 'local':
 
@@ -464,7 +472,7 @@ class filespec
 						$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
 					}
 
-					break;
+				break;
 			}
 
 			// Remove temporary filename
@@ -544,7 +552,7 @@ class filespec
 	 *
 	 * @return bool False if issue was found, true if not
 	 */
-	function additional_checks()
+	public function additional_checks()
 	{
 		if (!$this->file_moved)
 		{

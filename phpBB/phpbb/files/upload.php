@@ -24,31 +24,31 @@ use \phpbb\request\request_interface;
 class upload
 {
 	/** @var array Allowed file extensions */
-	var $allowed_extensions = array();
+	public $allowed_extensions = array();
 
 	/** @var array Disallowed content */
-	var $disallowed_content = array('body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title');
+	protected $disallowed_content = array('body', 'head', 'html', 'img', 'plaintext', 'a href', 'pre', 'script', 'table', 'title');
 
 	/** @var int Maximum filesize */
-	var $max_filesize = 0;
+	public $max_filesize = 0;
 
 	/** @var int Minimum width of images */
-	var $min_width = 0;
+	public $min_width = 0;
 
 	/** @var int Minimum height of images */
-	var $min_height = 0;
+	public $min_height = 0;
 
 	/** @var int Maximum width of images */
-	var $max_width = 0;
+	public $max_width = 0;
 
 	/** @var int Maximum height of images */
-	var $max_height = 0;
+	public $max_height = 0;
 
 	/** @var string Prefix for language variables of errors */
-	var $error_prefix = '';
+	public $error_prefix = '';
 
 	/** @var int Timeout for remote upload */
-	var $upload_timeout = 6;
+	public $upload_timeout = 6;
 
 	/** @var filesystem_interface */
 	protected $filesystem;
@@ -86,7 +86,7 @@ class upload
 	/**
 	 * Reset vars
 	 */
-	function reset_vars()
+	public function reset_vars()
 	{
 		$this->max_filesize = 0;
 		$this->min_width = $this->min_height = $this->max_width = $this->max_height = 0;
@@ -102,7 +102,7 @@ class upload
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
-	function set_allowed_extensions($allowed_extensions)
+	public function set_allowed_extensions($allowed_extensions)
 	{
 		if ($allowed_extensions !== false && is_array($allowed_extensions))
 		{
@@ -122,7 +122,7 @@ class upload
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
-	function set_allowed_dimensions($min_width, $min_height, $max_width, $max_height)
+	public function set_allowed_dimensions($min_width, $min_height, $max_width, $max_height)
 	{
 		$this->min_width = (int) $min_width;
 		$this->min_height = (int) $min_height;
@@ -139,7 +139,7 @@ class upload
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
-	function set_max_filesize($max_filesize)
+	public function set_max_filesize($max_filesize)
 	{
 		if ($max_filesize !== false && (int) $max_filesize)
 		{
@@ -156,7 +156,7 @@ class upload
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
-	function set_disallowed_content($disallowed_content)
+	public function set_disallowed_content($disallowed_content)
 	{
 		if ($disallowed_content !== false && is_array($disallowed_content))
 		{
@@ -173,7 +173,7 @@ class upload
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
-	function set_error_prefix($error_prefix)
+	public function set_error_prefix($error_prefix)
 	{
 		$this->error_prefix = $error_prefix;
 
@@ -264,7 +264,7 @@ class upload
 	 *
 	 * @param filespec $file Instance of filespec class
 	 */
-	function common_checks(&$file)
+	public function common_checks(&$file)
 	{
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
@@ -300,7 +300,7 @@ class upload
 	 *
 	 * @return bool True if extension is allowed, false if not
 	 */
-	function valid_extension(&$file)
+	public function valid_extension(&$file)
 	{
 		return (in_array($file->get('extension'), $this->allowed_extensions)) ? true : false;
 	}
@@ -313,7 +313,7 @@ class upload
 	 * @return bool True if dimensions are valid or no constraints set, false
 	 *			if not
 	 */
-	function valid_dimensions(&$file)
+	public function valid_dimensions(&$file)
 	{
 		if (!$this->max_width && !$this->max_height && !$this->min_width && !$this->min_height)
 		{
@@ -338,7 +338,7 @@ class upload
 	 *
 	 * @return bool True if form upload is valid, false if not
 	 */
-	function is_valid($form_name)
+	public function is_valid($form_name)
 	{
 		$upload = $this->request->file($form_name);
 
@@ -353,7 +353,7 @@ class upload
 	 *
 	 * @return bool True if content is valid, false if not
 	 */
-	function valid_content(&$file)
+	public function valid_content(&$file)
 	{
 		return ($file->check_content($this->disallowed_content));
 	}

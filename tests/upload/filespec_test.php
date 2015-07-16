@@ -133,7 +133,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	{
 		$upload = new phpbb_mock_fileupload();
 		$filespec = $this->get_filespec();
-		$filespec->upload = $upload;
+		$filespec->set_upload_namespace($upload);
 		$filespec->file_moved = true;
 		$filespec->filesize = $filespec->get_filesize($this->path . $filename);
 
@@ -174,6 +174,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			array($chunks[2] . $chunks[9]),
 			array($chunks[3] . $chunks[4]),
 			array($chunks[5] . $chunks[6]),
+			array('foobar.png'),
 		);
 	}
 
@@ -185,7 +186,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
 		$filespec = $this->get_filespec(array('name' => $filename));
 		$filespec->clean_filename('real', self::PREFIX);
-		$name = $filespec->realname;
+		$name = $filespec->get('realname');
 
 		$this->assertEquals(0, preg_match('/%(\w{2})/', $name));
 		foreach ($bad_chars as $char)
@@ -201,13 +202,62 @@ class phpbb_filespec_test extends phpbb_test_case
 		{
 			$filespec = $this->get_filespec();
 			$filespec->clean_filename('unique', self::PREFIX);
-			$name = $filespec->realname;
+			$name = $filespec->get('realname');
 
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX));
 			$this->assertRegExp('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
 			$filenames[$name] = true;
 		}
+	}
+
+	public function test_clean_filename_unique_ext()
+	{
+		$filenames = array();
+		for ($tests = 0; $tests < self::TEST_COUNT; $tests++)
+		{
+			$filespec = $this->get_filespec(array('name' => 'foobar.jpg'));
+			$filespec->clean_filename('unique_ext', self::PREFIX);
+			$name = $filespec->get('realname');
+
+			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX) + strlen('.jpg'));
+			$this->assertRegExp('#^[A-Za-z0-9]+\.jpg$#', substr($name, strlen(self::PREFIX)));
+			$this->assertFalse(isset($filenames[$name]));
+			$filenames[$name] = true;
+		}
+	}
+
+	public function data_clean_filename_avatar()
+	{
+		return array(
+			array(false, false, ''),
+			array('foobar.png', 'u5.png', 'avatar', 'u', 5),
+			array('foobar.png', 'g9.png', 'avatar', 'g', 9),
+
+		);
+	}
+
+	/**
+	 * @dataProvider data_clean_filename_avatar
+	 */
+	public function test_clean_filename_avatar($filename, $expected, $mode, $prefix = '', $user_id = '')
+	{
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $this->phpbb_root_path, $this->mimetype_guesser);
+
+		if ($filename)
+		{
+			$upload_ary = array(
+				'name' => $filename,
+				'type' => '',
+				'size' => '',
+				'tmp_name' => '',
+				'error' => '',
+			);
+			$filespec->set_upload_ary($upload_ary);
+		}
+		$filespec->clean_filename($mode, $prefix, $user_id);
+
+		$this->assertSame($expected, $filespec->get('realname'));
 	}
 
 	public function get_extension_variables()
@@ -312,7 +362,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'type' => $mime_type,
 		));
 		$filespec->extension = $extension;
-		$filespec->upload = $upload;
+		$filespec->set_upload_namespace($upload);
 		$filespec->local = true;
 
 		$this->assertEquals($expected, $filespec->move_file($this->path . 'copies'));
@@ -336,6 +386,6 @@ class phpbb_filespec_test extends phpbb_test_case
 		$type_cast_helper->set_var($upload_name, $filename, 'string', true, true);
 		$filespec = $this->get_filespec(array('name'=> $upload_name));
 
-		$this->assertSame(trim(utf8_basename(htmlspecialchars($filename))), $filespec->uploadname);
+		$this->assertSame(trim(utf8_basename(htmlspecialchars($filename))), $filespec->get('uploadname'));
 	}
 }

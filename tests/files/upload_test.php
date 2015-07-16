@@ -76,16 +76,19 @@ class phpbb_files_upload_test extends phpbb_test_case
 	public function test_set_disallowed_content()
 	{
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$disallowed_content = new ReflectionProperty($upload, 'disallowed_content');
+		$disallowed_content->setAccessible(true);
+
 		$upload->set_disallowed_content(array('foo'));
-		$this->assertEquals(array('foo'), $upload->disallowed_content);
+		$this->assertEquals(array('foo'), $disallowed_content->getValue($upload));
 		$upload->set_disallowed_content(array('foo', 'bar', 'meh'));
-		$this->assertEquals(array('foo', 'bar', 'meh'), $upload->disallowed_content);
+		$this->assertEquals(array('foo', 'bar', 'meh'), $disallowed_content->getValue($upload));
 		$upload->set_disallowed_content('');
-		$this->assertEquals(array('foo', 'bar', 'meh'), $upload->disallowed_content);
+		$this->assertEquals(array('foo', 'bar', 'meh'), $disallowed_content->getValue($upload));
 		$this->assertINstanceOf('\phpbb\files\upload', $upload->set_disallowed_content(array()));
-		$this->assertEquals(array(), $upload->disallowed_content);
+		$this->assertEquals(array(), $disallowed_content->getValue($upload));
 		$upload->reset_vars();
-		$this->assertEquals(array(), $upload->disallowed_content);
+		$this->assertEquals(array(), $disallowed_content->getValue($upload));
 	}
 
 	public function test_is_valid()
