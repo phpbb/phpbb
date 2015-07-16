@@ -26,6 +26,13 @@ interface driver_interface
 	public function get_name();
 
 	/**
+	* Returns the config name of the driver. To be used in accessing the CONFIG variables.
+	*
+	* @return string	Config name of driver.
+	*/
+	public function get_config_name();
+
+	/**
 	* Get the avatar url and dimensions
 	*
 	* @param array	$row User data or group data that has been cleaned with
