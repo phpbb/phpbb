@@ -491,6 +491,22 @@ mcp_ban_unban_before
 * Since: 3.1.0-RC3
 * Purpose: Add additional fields to the unban form in MCP
 
+mcp_forum_display_options_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.6-RC1
+* Purpose: Add some sort options after the dropdown menu
+
+mcp_forum_display_options_prepend
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.6-RC1
+* Purpose: Add some sort options before the dropdown menu
+
 mcp_front_latest_logs_after
 ===
 * Locations:
