@@ -149,7 +149,7 @@ class reparse extends \phpbb\console\command\command
 			return;
 		}
 
-		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $min, $max));
+		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $min, $max));
 
 		$progress = $this->io->createProgressBar($max);
 		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
@@ -171,7 +171,7 @@ class reparse extends \phpbb\console\command\command
 			$progress->setBarWidth(60);
 		}
 
-		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', str_replace('text_reparser.', '', $name)));
+		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', preg_replace('(^text_reparser\\.)', '', $name)));
 
 		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
 		{
@@ -189,7 +189,7 @@ class reparse extends \phpbb\console\command\command
 			$start = max($min, $current + 1 - $size);
 			$end   = max($min, $current);
 
-			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', str_replace('text_reparser.', '', $name), $start, $end));
+			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $start, $end));
 			$reparser->reparse_range($start, $end);
 
 			$current = $start - 1;

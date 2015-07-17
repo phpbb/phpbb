@@ -36,7 +36,7 @@ class list_all extends \phpbb\console\command\command
 		foreach ($reparsers as $name => $reparser)
 		{
 			// Store the names without the "text_reparser." prefix
-			$this->reparser_names[] = str_replace('text_reparser.', '', $name);
+			$this->reparser_names[] = preg_replace('(^text_reparser\\.)', '', $name);
 		}
 	}
 
