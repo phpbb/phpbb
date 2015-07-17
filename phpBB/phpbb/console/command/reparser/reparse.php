@@ -248,7 +248,7 @@ class reparse extends \phpbb\console\command\command
 		$min  = $this->get_option($name, 'range-min');
 		$size = $this->get_option($name, 'range-size');
 
-		if ($max === 0)
+		if ($max < $min)
 		{
 			return;
 		}
