@@ -39,7 +39,7 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\cache\driver\driver_interface $dispatcher, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
