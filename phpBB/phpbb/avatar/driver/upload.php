@@ -24,6 +24,11 @@ class upload extends \phpbb\avatar\driver\driver
 	protected $mimetype_guesser;
 
 	/**
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $dispatcher;
+
+	/**
 	* Construct a driver object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
@@ -31,15 +36,17 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param string $php_ext PHP file extension
 	* @param \phpbb_path_helper $path_helper phpBB path helper
 	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
+	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\cache\driver\driver_interface $dispatcher, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->path_helper = $path_helper;
 		$this->mimetype_guesser = $mimetype_guesser;
+		$this->dispatcher = $dispatcher;
 		$this->cache = $cache;
 	}
 
@@ -80,8 +87,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function process_form($request, $template, $user, $row, &$error)
 	{
-		global $phpbb_dispatcher;
-
 		if (!$this->can_upload())
 		{
 			return false;
@@ -178,7 +183,7 @@ class upload extends \phpbb\avatar\driver\driver
 			'row',
 			'error',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.avatar_driver_upload_overwrite_before', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_overwrite_before', compact($vars)));
 
 		if (!sizeof($error))
 		{
@@ -218,7 +223,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function delete($row)
 	{
-		global $phpbb_dispatcher;
 
 		$error = array();
 		$destination = $this->config['avatar_path'];
@@ -242,7 +246,7 @@ class upload extends \phpbb\avatar\driver\driver
 			'row',
 			'error',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
 
 		if (!sizeof($error) && file_exists($filename))
 		{
