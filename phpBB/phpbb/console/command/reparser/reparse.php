@@ -22,9 +22,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class reparse extends \phpbb\console\command\command
 {
 	/**
-	* @var \phpbb\di\service_collection
+	* @var \phpbb\config\db_text
 	*/
-	protected $reparsers;
+	protected $config_text;
+
+	/**
+	* @var InputInterface
+	*/
+	protected $input;
 
 	/**
 	* @var SymfonyStyle
@@ -32,15 +37,32 @@ class reparse extends \phpbb\console\command\command
 	protected $io;
 
 	/**
+	* @var OutputInterface
+	*/
+	protected $output;
+
+	/**
+	* @var \phpbb\di\service_collection
+	*/
+	protected $reparsers;
+
+	/**
+	* @var array Reparser names as keys, and their last $current ID as values
+	*/
+	protected $resume_data;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\user $user
 	* @param \phpbb\di\service_collection $reparsers
+	* @param \phpbb\config\db_text $config_text
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers)
+	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers, \phpbb\config\db_text $config_text)
 	{
 		require_once __DIR__ . '/../../../../includes/functions_content.php';
 
+		$this->config_text = $config_text;
 		$this->reparsers = $reparsers;
 		parent::__construct($user);
 	}
@@ -61,6 +83,12 @@ class reparse extends \phpbb\console\command\command
 				null,
 				InputOption::VALUE_NONE,
 				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_DRY_RUN')
+			)
+			->addOption(
+				'resume',
+				null,
+				InputOption::VALUE_NONE,
+				$this->user->lang('CLI_DESCRIPTION_REPARSER_REPARSE_OPT_RESUME')
 			)
 			->addOption(
 				'range-min',
@@ -86,78 +114,20 @@ class reparse extends \phpbb\console\command\command
 	}
 
 	/**
-	* Executes the command reparser:reparse
+	* Create a styled progress bar
 	*
-	* @param InputInterface $input
-	* @param OutputInterface $output
-	* @return integer
+	* @param  integer $max Max value for the progress bar
+	* @return \Symfony\Component\Console\Helper\ProgressBar
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function create_progress_bar($max)
 	{
-		$this->io = new SymfonyStyle($input, $output);
-
-		$name = $input->getArgument('reparser-name');
-		if (isset($name))
-		{
-			// Allow "post_text" to be an alias for "text_reparser.post_text"
-			if (!isset($this->reparsers[$name]))
-			{
-				$name = 'text_reparser.' . $name;
-			}
-			$this->reparse($input, $output, $name);
-		}
-		else
-		{
-			foreach ($this->reparsers as $name => $service)
-			{
-				$this->reparse($input, $output, $name);
-			}
-		}
-
-		$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
-
-		return 0;
-	}
-
-	/**
-	* Reparse all text handled by given reparser within given range
-	*
-	* @param InputInterface $input
-	* @param OutputInterface $output
-	* @param string $name Reparser name
-	* @return null
-	*/
-	protected function reparse(InputInterface $input, OutputInterface $output, $name)
-	{
-		$reparser = $this->reparsers[$name];
-		if ($input->getOption('dry-run'))
-		{
-			$reparser->disable_save();
-		}
-		else
-		{
-			$reparser->enable_save();
-		}
-
-		// Start at range-max if specified or at the highest ID otherwise
-		$max  = (is_null($input->getOption('range-max'))) ? $reparser->get_max_id() : $input->getOption('range-max');
-		$min  = $input->getOption('range-min');
-		$size = $input->getOption('range-size');
-
-		if ($max === 0)
-		{
-			return;
-		}
-
-		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $min, $max));
-
 		$progress = $this->io->createProgressBar($max);
-		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
+		if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
 		{
 			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
 			$progress->setOverwrite(false);
 		}
-		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+		else if ($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
 		{
 			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
 			$progress->setOverwrite(false);
@@ -171,8 +141,6 @@ class reparse extends \phpbb\console\command\command
 			$progress->setBarWidth(60);
 		}
 
-		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', preg_replace('(^text_reparser\\.)', '', $name)));
-
 		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
 		{
 			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
@@ -180,6 +148,115 @@ class reparse extends \phpbb\console\command\command
 			$progress->setBarCharacter('▓'); // dark shade character \u2593
 		}
 
+		return $progress;
+	}
+
+	/**
+	* Executes the command reparser:reparse
+	*
+	* @param InputInterface $input
+	* @param OutputInterface $output
+	* @return integer
+	*/
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
+		$this->input = $input;
+		$this->output = $output;
+		$this->io = new SymfonyStyle($input, $output);
+		$this->load_resume_data();
+
+		$name = $input->getArgument('reparser-name');
+		if (isset($name))
+		{
+			// Allow "post_text" to be an alias for "text_reparser.post_text"
+			if (!isset($this->reparsers[$name]))
+			{
+				$name = 'text_reparser.' . $name;
+			}
+			$this->reparse($name);
+		}
+		else
+		{
+			foreach ($this->reparsers as $name => $service)
+			{
+				$this->reparse($name);
+			}
+		}
+
+		$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
+
+		return 0;
+	}
+
+	/**
+	* Get an option value, adjusted for given reparser
+	*
+	* Will use the last saved value if --resume is set and the option was not specified
+	* on the command line
+	*
+	* @param  string  $reparser_name Reparser name
+	* @param  string  $option_name   Option name
+	* @return integer
+	*/
+	protected function get_option($reparser_name, $option_name)
+	{
+		// Return the option from the resume_data if applicable
+		if ($this->input->getOption('resume') && isset($this->resume_data[$reparser_name][$option_name]) && !$this->input->hasParameterOption('--' . $option_name))
+		{
+			return $this->resume_data[$reparser_name][$option_name];
+		}
+
+		$value = $this->input->getOption($option_name);
+
+		// range-max has no default value, it must be computed for each reparser
+		if ($option_name === 'range-max' && $value === null)
+		{
+			$value = $this->reparsers[$reparser_name]->get_max_id();
+		}
+
+		return $value;
+	}
+
+	/**
+	* Load the resume data from the database
+	*/
+	protected function load_resume_data()
+	{
+		$resume_data = $this->config_text->get('reparser_resume');
+		$this->resume_data = (empty($resume_data)) ? array() : unserialize($resume_data);
+	}
+
+	/**
+	* Reparse all text handled by given reparser within given range
+	*
+	* @param string $name Reparser name
+	*/
+	protected function reparse($name)
+	{
+		$reparser = $this->reparsers[$name];
+		if ($this->input->getOption('dry-run'))
+		{
+			$reparser->disable_save();
+		}
+		else
+		{
+			$reparser->enable_save();
+		}
+
+		// Start at range-max if specified or at the highest ID otherwise
+		$max  = $this->get_option($name, 'range-max');
+		$min  = $this->get_option($name, 'range-min');
+		$size = $this->get_option($name, 'range-size');
+
+		if ($max === 0)
+		{
+			return;
+		}
+
+		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $min, $max));
+
+		$progress = $this->create_progress_bar($max);
+		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', preg_replace('(^text_reparser\\.)', '', $name)));
 		$progress->start();
 
 		// Start from $max and decrement $current by $size until we reach $min
@@ -194,9 +271,35 @@ class reparse extends \phpbb\console\command\command
 
 			$current = $start - 1;
 			$progress->setProgress($max + 1 - $start);
+
+			$this->update_resume_data($name, $current);
 		}
 		$progress->finish();
 
 		$this->io->newLine(2);
+	}
+
+	/**
+	* Save the resume data to the database
+	*/
+	protected function save_resume_data()
+	{
+		$this->config_text->set('reparser_resume', serialize($this->resume_data));
+	}
+
+	/**
+	* Save the resume data to the database
+	*
+	* @param string $name    Reparser name
+	* @param string $current Current ID
+	*/
+	protected function update_resume_data($name, $current)
+	{
+		$this->resume_data[$name] = array(
+			'range-min'  => $this->input->getOption('range-min'),
+			'range-max'  => $current,
+			'range-size' => $this->input->getOption('range-size'),
+		);
+		$this->save_resume_data();
 	}
 }
