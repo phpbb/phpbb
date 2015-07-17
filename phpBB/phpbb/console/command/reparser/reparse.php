@@ -35,7 +35,7 @@ class reparse extends \phpbb\console\command\command
 	* Constructor
 	*
 	* @param \phpbb\user $user
-	* @param \phpbb\di\service_collection $reparser_collection
+	* @param \phpbb\di\service_collection $reparsers
 	*/
 	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers)
 	{

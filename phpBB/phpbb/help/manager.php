@@ -49,6 +49,7 @@ class manager
 	 *
 	 * @param string $block_name	Name or language key with the name of the block
 	 * @param bool $switch_column	Switch the column of the menu
+	 * @param array $questions		Array of frequently asked questions
 	 */
 	public function add_block($block_name, $switch_column = false, $questions = array())
 	{
