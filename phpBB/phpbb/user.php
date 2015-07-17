@@ -54,8 +54,8 @@ class user extends \phpbb\session
 	/**
 	* Constructor to set the lang path
 	*
-	* @param string $datetime_class Class name of datetime class
-	* @param \phpbb\language\language	$lang	phpBB's Language loader
+	* @param \phpbb\language\language	$lang			phpBB's Language loader
+	* @param string						$datetime_class	Class name of datetime class
 	*/
 	function __construct(\phpbb\language\language $lang, $datetime_class)
 	{
