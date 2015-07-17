@@ -441,7 +441,7 @@ class phpbb_test_case_helpers
 				->getMock();
 			$path_helper->expects($this->test_case->any())
 				->method('get_web_root_path')
-				->will($this->test_case->returnValue('./'));
+				->will($this->test_case->returnValue('phpBB/'));
 
 			$container->set('path_helper', $path_helper);
 		}
