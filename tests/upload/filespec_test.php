@@ -395,6 +395,14 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
+	public function test_move_file_error()
+	{
+		$filespec = $this->get_filespec();
+		$this->assertFalse($filespec->move_file('foobar'));
+		$filespec->error[] = 'foo';
+		$this->assertFalse($filespec->move_file('foo'));
+	}
+
 	/**
 	* @dataProvider clean_filename_variables
 	*/
