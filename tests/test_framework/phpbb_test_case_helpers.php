@@ -435,20 +435,15 @@ class phpbb_test_case_helpers
 		// Create a path_helper
 		if (!$container->has('path_helper') || $container->getDefinition('path_helper')->isSynthetic())
 		{
-			$path_helper = new \phpbb\path_helper(
-				new \phpbb\symfony_request(
-					new phpbb_mock_request()
-				),
-				new \phpbb\filesystem(),
-				$this->test_case->getMock('\phpbb\request\request'),
-				$phpbb_root_path,
-				$phpEx
-			);
+			$path_helper = $this->test_case->getMockBuilder('phpbb\\path_helper')
+				->disableOriginalConstructor()
+				->setMethods(array('get_web_root_path'))
+				->getMock();
+			$path_helper->expects($this->test_case->any())
+				->method('get_web_root_path')
+				->will($this->test_case->returnValue('./'));
 
-			$container->set(
-				'path_helper',
-				$path_helper
-			);
+			$container->set('path_helper', $path_helper);
 		}
 		else
 		{
