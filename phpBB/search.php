@@ -323,7 +323,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	array	id_ary			Array of post or topic ids for search result
 	* @var	string	show_results	'posts' or 'topics' type of ids
 	* @since 3.1.3-RC1
-	* @changed 3.1.5-RC1 Added id_ary, show_results 
+	* @changed 3.1.6-RC1 Added id_ary, show_results 
 	*/
 	$vars = array(
 		'keywords',
