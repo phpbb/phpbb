@@ -296,9 +296,9 @@ class reparse extends \phpbb\console\command\command
 	protected function update_resume_data($name, $current)
 	{
 		$this->resume_data[$name] = array(
-			'range-min'  => $this->input->getOption('range-min'),
+			'range-min'  => $this->get_option($name, 'range-min'),
 			'range-max'  => $current,
-			'range-size' => $this->input->getOption('range-size'),
+			'range-size' => $this->get_option($name, 'range-size'),
 		);
 		$this->save_resume_data();
 	}
