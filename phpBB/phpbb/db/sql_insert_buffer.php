@@ -107,7 +107,7 @@ class sql_insert_buffer
 	* first building a huge rowset. Or at least sizeof($rows) should be kept
 	* small.
 	*
-	* @param array $rows 
+	* @param array $rows
 	*
 	* @return bool		True when some data was flushed to the database.
 	*					False otherwise.

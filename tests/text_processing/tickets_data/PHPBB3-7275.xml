@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>center</value>
+			<value></value>
+			<value>1</value>
+			<value>[center]{TEXT}[/center]</value>
+			<value><![CDATA[<div align="center">{TEXT}</div>]]></value>
+			<value>!\[center\](.*?)\[/center\]!ies</value>
+			<value><![CDATA['[center:$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${1}')).'[/center:$uid]']]></value>
+			<value>!\[center:$uid\](.*?)\[/center:$uid\]!s</value>
+			<value><![CDATA[<div align="center">${1}</div>]]></value>
+		</row>
+	</table>
+
+	<table name="phpbb_smilies">
+		<column>smiley_id</column>
+		<column>code</column>
+		<column>emotion</column>
+		<column>smiley_url</column>
+		<column>smiley_width</column>
+		<column>smiley_height</column>
+		<column>smiley_order</column>
+		<column>display_on_posting</column>
+		<row>
+			<value>4</value>
+			<value>:)</value>
+			<value>Smile</value>
+			<value>icon_e_smile.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>4</value>
+			<value>1</value>
+		</row>
+	</table>
+</dataset>

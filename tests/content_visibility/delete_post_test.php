@@ -309,7 +309,9 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 			->will($this->returnValueMap(array(
 				array('m_approve', 1, true),
 			)));
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 

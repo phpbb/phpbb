@@ -1451,6 +1451,18 @@ class acp_users
 						$error[] = 'FORM_INVALID';
 					}
 
+					/**
+					* Validate profile data in ACP before submitting to the database
+					*
+					* @event core.acp_users_profile_validate
+					* @var	bool	submit		Flag indicating if submit button has been pressed
+					* @var	array	data		Array with user profile data
+					* @var	array	error		Array with the form errors
+					* @since 3.1.4-RC1
+					*/
+					$vars = array('submit', 'data', 'error');
+					extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_validate', compact($vars)));
+
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
@@ -1466,9 +1478,10 @@ class acp_users
 						* @var	array	data		Array with user profile data
 						* @var	int		user_id		The user id
 						* @var	array	user_row	Array with the full user data
+						* @var	array	sql_ary		Array with sql data
 						* @since 3.1.4-RC1
 						*/
-						$vars = array('cp_data', 'data', 'user_id', 'user_row');
+						$vars = array('cp_data', 'data', 'user_id', 'user_row', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_modify_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -2019,6 +2032,9 @@ class acp_users
 
 				$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_bitfield);
 
+				/** @var \phpbb\controller\helper $controller_helper */
+				$controller_helper = $phpbb_container->get('controller.helper');
+
 				$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
 
@@ -2029,7 +2045,7 @@ class acp_users
 					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? ' checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? ' checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
+					'BBCODE_STATUS'			=> $user->lang(($config['allow_sig_bbcode'] ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],

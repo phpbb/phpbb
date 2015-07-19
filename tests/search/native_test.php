@@ -33,11 +33,12 @@ class phpbb_search_native_test extends phpbb_search_test_case
 		$cache = new phpbb_mock_cache();
 
 		$this->db = $this->new_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$error = null;
 		$class = self::get_search_wrapper('\phpbb\search\fulltext_native');
 		$config['fulltext_native_min_chars'] = 2;
 		$config['fulltext_native_max_chars'] = 14;
-		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user);
+		$this->search = new $class($error, $phpbb_root_path, $phpEx, null, $config, $this->db, $user, $phpbb_dispatcher);
 	}
 
 	public function keywords()

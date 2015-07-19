@@ -17,7 +17,29 @@ class avatars extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return isset($this->config['allow_avatar_gravatar']);
+		// Get current avatar type of guest user
+		$sql = 'SELECT user_avatar_type
+			FROM ' . $this->table_prefix . 'users
+			WHERE user_id = ' . ANONYMOUS;
+		$result = $this->db->sql_query($sql);
+		$backup_type = $this->db->sql_fetchfield('user_avatar_type');
+		$this->db->sql_freeresult($result);
+
+		// Try to set avatar type to string
+		$sql = 'UPDATE ' . $this->table_prefix . "users
+			SET user_avatar_type = 'avatar.driver.upload'
+			WHERE user_id = " . ANONYMOUS;
+		$this->db->sql_return_on_error(true);
+		$effectively_installed = $this->db->sql_query($sql);
+		$this->db->sql_return_on_error();
+
+		// Restore avatar type of guest user to previous state
+		$sql = 'UPDATE ' . $this->table_prefix . "users
+			SET user_avatar_type = '{$backup_type}'
+			WHERE user_id = " . ANONYMOUS;
+		$this->db->sql_query($sql);
+
+		return $effectively_installed !== false;
 	}
 
 	static public function depends_on()

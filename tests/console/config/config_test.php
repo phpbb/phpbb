@@ -22,9 +22,14 @@ class phpbb_console_command_config_test extends phpbb_test_case
 
 	public function setUp()
 	{
+		global $phpbb_root_path, $phpEx;
+
 		$this->config = new \phpbb\config\config(array());
 
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime')
+		);
 		$this->user->method('lang')->will($this->returnArgument(0));
 	}
 

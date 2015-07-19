@@ -125,7 +125,7 @@ class qa
 	*/
 	public function is_available()
 	{
-		global $config, $db, $phpbb_root_path, $phpEx, $user;
+		global $config, $db, $user;
 
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
@@ -263,7 +263,7 @@ class qa
 	*/
 	function garbage_collect($type = 0)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT c.confirm_id
 			FROM ' . $this->table_qa_confirm . ' c
@@ -309,7 +309,6 @@ class qa
 		global $phpbb_container;
 
 		$db_tool = $phpbb_container->get('dbal.tools');
-
 		$schemas = array(
 				$this->table_captcha_questions		=> array (
 					'COLUMNS' => array(
@@ -364,7 +363,7 @@ class qa
 	*/
 	function validate()
 	{
-		global $config, $db, $user;
+		global $user;
 
 		$error = '';
 
@@ -412,7 +411,7 @@ class qa
 
 		if (!sizeof($this->question_ids))
 		{
-			return false;
+			return;
 		}
 		$this->confirm_id = md5(unique_id($user->ip));
 		$this->question = (int) array_rand($this->question_ids);
@@ -438,7 +437,7 @@ class qa
 
 		if (!sizeof($this->question_ids))
 		{
-			return false;
+			return;
 		}
 
 		$this->question = (int) array_rand($this->question_ids);
@@ -611,8 +610,7 @@ class qa
 	*/
 	function acp_page($id, &$module)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $request, $phpbb_log, $template, $user;
 
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
@@ -674,11 +672,7 @@ class qa
 		else
 		{
 			// okay, show the editor
-			$error = false;
-			$input_question = $request->variable('question_text', '', true);
-			$input_answers = $request->variable('answers', '', true);
-			$input_lang = $request->variable('lang_iso', '', true);
-			$input_strict = $request->variable('strict', false);
+			$question_input = $this->acp_get_question_input();
 			$langs = $this->get_languages();
 
 			foreach ($langs as $lang => $entry)
@@ -697,13 +691,11 @@ class qa
 			{
 				if ($question = $this->acp_get_question_data($question_id))
 				{
-					$answers = (isset($input_answers[$lang])) ? $input_answers[$lang] : implode("\n", $question['answers']);
-
 					$template->assign_vars(array(
-						'QUESTION_TEXT'		=> ($input_question) ? $input_question : $question['question_text'],
-						'LANG_ISO'			=> ($input_lang) ? $input_lang : $question['lang_iso'],
-						'STRICT'			=> (isset($_REQUEST['strict'])) ? $input_strict : $question['strict'],
-						'ANSWERS'			=> $answers,
+						'QUESTION_TEXT'		=> ($question_input['question_text']) ? $question_input['question_text'] : $question['question_text'],
+						'LANG_ISO'			=> ($question_input['lang_iso']) ? $question_input['lang_iso'] : $question['lang_iso'],
+						'STRICT'			=> (isset($_REQUEST['strict'])) ? $question_input['strict'] : $question['strict'],
+						'ANSWERS'			=> implode("\n", $question['answers']),
 					));
 				}
 				else
@@ -714,18 +706,16 @@ class qa
 			else
 			{
 				$template->assign_vars(array(
-					'QUESTION_TEXT'		=> $input_question,
-					'LANG_ISO'			=> $input_lang,
-					'STRICT'			=> $input_strict,
-					'ANSWERS'			=> $input_answers,
+					'QUESTION_TEXT'		=> $question_input['question_text'],
+					'LANG_ISO'			=> $question_input['lang_iso'],
+					'STRICT'			=> $question_input['strict'],
+					'ANSWERS'			=> (is_array($question_input['answers'])) ? implode("\n", $question_input['answers']) : '',
 				));
 			}
 
 			if ($submit && check_form_key($form_key))
 			{
-				$data = $this->acp_get_question_input();
-
-				if (!$this->validate_input($data))
+				if (!$this->validate_input($question_input))
 				{
 					$template->assign_vars(array(
 						'S_ERROR'			=> true,
@@ -735,11 +725,11 @@ class qa
 				{
 					if ($question_id)
 					{
-						$this->acp_update_question($data, $question_id);
+						$this->acp_update_question($question_input, $question_id);
 					}
 					else
 					{
-						$this->acp_add_question($data);
+						$this->acp_add_question($question_input);
 					}
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
@@ -819,6 +809,8 @@ class qa
 
 			return $question;
 		}
+
+		return false;
 	}
 
 	/**
@@ -829,13 +821,21 @@ class qa
 		global $request;
 
 		$answers = $request->variable('answers', '', true);
+
+		// Convert answers into array and filter if answers are set
+		if (strlen($answers))
+		{
+			$answers = array_filter(array_map('trim', explode("\n", $answers)), function ($value) {
+				return $value !== '';
+			});
+		}
+
 		$question = array(
 			'question_text'	=> $request->variable('question_text', '', true),
 			'strict'		=> $request->variable('strict', false),
 			'lang_iso'		=> $request->variable('lang_iso', ''),
-			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
+			'answers'		=> $answers,
 		);
-
 		return $question;
 	}
 

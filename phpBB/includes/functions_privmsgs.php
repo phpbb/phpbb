@@ -884,7 +884,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-	$phpbb_notifications->mark_notifications_read('notification.type.pm', $msg_id, $user_id);
+	$phpbb_notifications->mark_notifications('notification.type.pm', $msg_id, $user_id);
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
 		SET pm_unread = 0
@@ -1961,7 +1961,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 */
 function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
 {
-	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth, $bbcode;
+	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth;
 
 	// Select all receipts and the author from the pm we currently view, to only display their pm-history
 	$sql = 'SELECT author_id, user_id
@@ -2013,7 +2013,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	$title = $row['message_subject'];
 
 	$rowset = array();
-	$bbcode_bitfield = '';
 	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
 	do
@@ -2029,7 +2028,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		else
 		{
 			$rowset[$row['msg_id']] = $row;
-			$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 		}
 	}
 	while ($row = $db->sql_fetchrow($result));
@@ -2038,16 +2036,6 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	if (sizeof($rowset) == 1 && !$in_post_mode)
 	{
 		return false;
-	}
-
-	// Instantiate BBCode class
-	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield !== '')
-	{
-		if (!class_exists('bbcode'))
-		{
-			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		}
-		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	$title = censor_text($title);
@@ -2112,6 +2100,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'S_IN_POST_MODE'	=> $in_post_mode,
 
 			'MSG_ID'			=> $row['msg_id'],
+			'MESSAGE_TIME'		=> $row['message_time'],
+			'USER_ID'			=> $row['user_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
@@ -2139,17 +2129,42 @@ function set_user_message_limit()
 {
 	global $user, $db, $config;
 
-	// Get maximum about from user memberships - if it is 0, there is no limit set and we use the maximum value within the config.
-	$sql = 'SELECT MAX(g.group_message_limit) as max_message_limit
+	// Get maximum about from user memberships
+	$message_limit = phpbb_get_max_setting_from_group($db, $user->data['user_id'], 'message_limit');
+
+	// If it is 0, there is no limit set and we use the maximum value within the config.
+	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+}
+
+/**
+ * Get the maximum PM setting for the groups of the user
+ *
+ * @param \phpbb\db\driver\driver_interface $db
+ * @param int $user_id
+ * @param string $setting Only 'max_recipients' and 'message_limit' are supported
+ * @return int The maximum setting for all groups of the user, unless one group has '0'
+ * @throws \InvalidArgumentException If selected group setting is not supported
+ */
+function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db, $user_id, $setting)
+{
+	if ($setting !== 'max_recipients' && $setting !== 'message_limit')
+	{
+		throw new InvalidArgumentException('Setting "' . $setting . '" is not supported');
+	}
+
+	// Get maximum number of allowed recipients
+	$sql = 'SELECT MIN(g.group_' . $setting . ') as min_setting, MAX(g.group_' . $setting . ') as max_setting
 		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.user_id = ' . $user->data['user_id'] . '
+		WHERE ug.user_id = ' . (int) $user_id . '
 			AND ug.user_pending = 0
 			AND ug.group_id = g.group_id';
 	$result = $db->sql_query($sql);
-	$message_limit = (int) $db->sql_fetchfield('max_message_limit');
+	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
+	$max_setting = (int) $row['max_setting'];
+	$min_setting = (int) $row['min_setting'];
 
-	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+	return ($min_setting > 0) ? $max_setting : 0;
 }
 
 /**

@@ -35,7 +35,6 @@ $forum_id	= $request->variable('f', 0);
 $draft_id	= $request->variable('d', 0);
 $lastclick	= $request->variable('lastclick', 0);
 
-$submit		= (isset($_POST['post'])) ? true : false;
 $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
 $load		= (isset($_POST['load'])) ? true : false;
@@ -43,6 +42,7 @@ $confirm	= $request->is_set_post('confirm');
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load || $preview);
+$submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
@@ -331,14 +331,17 @@ switch ($mode)
 		{
 			$is_authed = true;
 		}
-	break;
+
+	// no break;
 
 	case 'soft_delete':
-		if ($user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
+		if (!$is_authed && $user->data['is_registered'] && $phpbb_content_visibility->can_soft_delete($forum_id, $post_data['poster_id'], $post_data['post_edit_locked']))
 		{
+			// Fall back to soft_delete if we have no permissions to delete posts but to soft delete them
 			$is_authed = true;
+			$mode = 'soft_delete';
 		}
-		else
+		else if (!$is_authed)
 		{
 			// Display the same error message for softdelete we use for delete
 			$mode = 'delete';
@@ -623,6 +626,11 @@ if ($mode != 'edit')
 	$post_data['enable_smilies']	= ($config['allow_smilies'] && $user->optionget('smilies')) ? true : false;
 	$post_data['enable_bbcode']		= ($config['allow_bbcode'] && $user->optionget('bbcode')) ? true : false;
 	$post_data['enable_urls']		= true;
+}
+
+if ($mode == 'post')
+{
+	$post_data['topic_status']		= ($request->is_set_post('lock_topic') && $auth->acl_gets('m_lock', 'f_user_lock', $forum_id)) ? ITEM_LOCKED : ITEM_UNLOCKED;
 }
 
 $post_data['enable_magic_url'] = $post_data['drafts'] = false;
@@ -1194,6 +1202,9 @@ if ($submit || $preview || $refresh)
 		switch ($post_data['topic_type'])
 		{
 			case POST_GLOBAL:
+				$auth_option = 'f_announce_global';
+			break;
+
 			case POST_ANNOUNCE:
 				$auth_option = 'f_announce';
 			break;
@@ -1242,6 +1253,7 @@ if ($submit || $preview || $refresh)
 	*
 	* @event core.posting_modify_submission_errors
 	* @var	array	post_data	Array with post data
+	* @var	array	poll		Array with poll data from post (must be used instead of the post_data equivalent)
 	* @var	string	mode		What action to take if the form is submitted
 	*				post|reply|quote|edit|delete|bump|smilies|popup
 	* @var	string	page_title	Title of the mode page
@@ -1252,9 +1264,11 @@ if ($submit || $preview || $refresh)
 	* @var	array	error		Any error strings; a non-empty array aborts form submission.
 	*				NOTE: Should be actual language strings, NOT language keys.
 	* @since 3.1.0-RC5
+	* @change 3.1.5-RC1 Added poll array to the event
 	*/
 	$vars = array(
 		'post_data',
+		'poll',
 		'mode',
 		'page_title',
 		'post_id',
@@ -1327,7 +1341,6 @@ if ($submit || $preview || $refresh)
 				'enable_urls'			=> (bool) $post_data['enable_urls'],
 				'enable_indexing'		=> (bool) $post_data['enable_indexing'],
 				'message_md5'			=> (string) $message_md5,
-				'post_time'				=> (isset($post_data['post_time'])) ? (int) $post_data['post_time'] : $current_time,
 				'post_checksum'			=> (isset($post_data['post_checksum'])) ? (string) $post_data['post_checksum'] : '',
 				'post_edit_reason'		=> $post_data['post_edit_reason'],
 				'post_edit_user'		=> ($mode == 'edit') ? $user->data['user_id'] : ((isset($post_data['post_edit_user'])) ? (int) $post_data['post_edit_user'] : 0),
@@ -1342,6 +1355,7 @@ if ($submit || $preview || $refresh)
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
 				'filename_data'			=> $message_parser->filename_data,
+				'topic_status'			=> $post_data['topic_status'],
 
 				'topic_visibility'			=> (isset($post_data['topic_visibility'])) ? $post_data['topic_visibility'] : false,
 				'post_visibility'			=> (isset($post_data['post_visibility'])) ? $post_data['post_visibility'] : false,
@@ -1484,14 +1498,11 @@ if (!sizeof($error) && $preview)
 	// Signature
 	if ($post_data['enable_sig'] && $config['allow_sig'] && $preview_signature && $auth->acl_get('f_sigs', $forum_id))
 	{
-		$parse_sig = new parse_message($preview_signature);
-		$parse_sig->bbcode_uid = $preview_signature_uid;
-		$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
+		$flags = ($config['allow_sig_bbcode']) ? OPTION_FLAG_BBCODE : 0;
+		$flags |= ($config['allow_sig_links']) ? OPTION_FLAG_LINKS : 0;
+		$flags |= ($config['allow_sig_smilies']) ? OPTION_FLAG_SMILIES : 0;
 
-		// Not sure about parameters for bbcode/smilies/urls... in signatures
-		$parse_sig->format_display($config['allow_sig_bbcode'], $config['allow_sig_links'], $config['allow_sig_smilies']);
-		$preview_signature = $parse_sig->message;
-		unset($parse_sig);
+		$preview_signature = generate_text_for_display($preview_signature, $preview_signature_uid, $preview_signature_bitfield, $flags, false);
 	}
 	else
 	{
@@ -1525,9 +1536,13 @@ if (!sizeof($error) && $preview)
 			'L_MAX_VOTES'		=> $user->lang('MAX_OPTIONS_SELECT', (int) $post_data['poll_max_options']),
 		));
 
-		$parse_poll->message = implode("\n", $post_data['poll_options']);
-		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
-		$preview_poll_options = explode('<br />', $parse_poll->message);
+		$preview_poll_options = array();
+		foreach ($post_data['poll_options'] as $poll_option)
+		{
+			$parse_poll->message = $poll_option;
+			$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
+			$preview_poll_options[] = $parse_poll->message;
+		}
 		unset($parse_poll);
 
 		foreach ($preview_poll_options as $key => $option)
@@ -1571,15 +1586,34 @@ if (!sizeof($error) && $preview)
 	}
 }
 
+// Remove quotes that would become nested too deep before decoding the text
+$generate_quote = ($mode == 'quote' && !$submit && !$preview && !$refresh);
+if ($generate_quote && $config['max_quote_depth'] > 0)
+{
+	$tmp_bbcode_uid = $message_parser->bbcode_uid;
+	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
+	$message_parser->remove_nested_quotes($config['max_quote_depth'] - 1);
+	$message_parser->bbcode_uid = $tmp_bbcode_uid;
+}
+
 // Decode text for message display
 $post_data['bbcode_uid'] = ($mode == 'quote' && !$preview && !$refresh && !sizeof($error)) ? $post_data['bbcode_uid'] : $message_parser->bbcode_uid;
 $message_parser->decode_message($post_data['bbcode_uid']);
 
-if ($mode == 'quote' && !$submit && !$preview && !$refresh)
+if ($generate_quote)
 {
 	if ($config['allow_bbcode'])
 	{
-		$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+		$message_parser->message = $phpbb_container->get('text_formatter.utils')->generate_quote(
+			censor_text($message_parser->message),
+			array(
+				'author'  => $post_data['quote_username'],
+				'post_id' => $post_data['post_id'],
+				'time'    => $post_data['post_time'],
+				'user_id' => $post_data['poster_id'],
+			)
+		);
+		$message_parser->message .= "\n\n";
 	}
 	else
 	{
@@ -1720,6 +1754,8 @@ if (isset($captcha) && $captcha->is_solved() !== false)
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 add_form_key('posting');
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
 
 // Build array of variables for main posting page
 $page_data = array(
@@ -1734,7 +1770,7 @@ $page_data = array(
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
-	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
+	'BBCODE_STATUS'			=> $user->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
@@ -1766,7 +1802,7 @@ $page_data = array(
 	'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id']) || !$config['allow_topic_notify'] || !$config['email_enable']) ? false : true,
 	'S_NOTIFY_CHECKED'			=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
+	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote' || $mode == 'post') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
@@ -1792,6 +1828,30 @@ $page_data = array(
 	'S_IN_POSTING'			=> true,
 );
 
+// Build custom bbcodes array
+display_custom_bbcodes();
+
+// Poll entry
+if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
+	&& $auth->acl_get('f_poll', $forum_id))
+{
+	$page_data = array_merge($page_data, array(
+		'S_SHOW_POLL_BOX'		=> true,
+		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id)),
+		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
+		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
+
+		'L_POLL_OPTIONS_EXPLAIN'	=> $user->lang('POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN', (int) $config['max_poll_options']),
+
+		'VOTE_CHANGE_CHECKED'	=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
+		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
+		'POLL_OPTIONS'			=> (!empty($post_data['poll_options'])) ? implode("\n", $post_data['poll_options']) : '',
+		'POLL_MAX_OPTIONS'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
+		'POLL_LENGTH'			=> $post_data['poll_length'],
+		)
+	);
+}
+
 /**
 * This event allows you to modify template variables for the posting screen
 *
@@ -1809,6 +1869,7 @@ $page_data = array(
 * @var	int	post_id		ID of the post
 * @var	int	topic_id	ID of the topic
 * @var	int	forum_id	ID of the forum
+* @var	int	draft_id	ID of the draft
 * @var	bool	submit		Whether or not the form has been submitted
 * @var	bool	preview		Whether or not the post is being previewed
 * @var	bool	save		Whether or not a draft is being saved
@@ -1830,6 +1891,8 @@ $page_data = array(
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
 * @change 3.1.2-RC1 Removed 'delete' var as it does not exist
+* @change 3.1.5-RC1 Added poll variables to the page_data array
+* @change 3.1.6-RC1 Added 'draft_id' var
 */
 $vars = array(
 	'post_data',
@@ -1843,6 +1906,7 @@ $vars = array(
 	'post_id',
 	'topic_id',
 	'forum_id',
+	'draft_id',
 	'submit',
 	'preview',
 	'save',
@@ -1857,29 +1921,6 @@ extract($phpbb_dispatcher->trigger_event('core.posting_modify_template_vars', co
 
 // Start assigning vars for main posting page ...
 $template->assign_vars($page_data);
-
-// Build custom bbcodes array
-display_custom_bbcodes();
-
-// Poll entry
-if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
-	&& $auth->acl_get('f_poll', $forum_id))
-{
-	$template->assign_vars(array(
-		'S_SHOW_POLL_BOX'		=> true,
-		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id) && $auth->acl_get('f_vote', $forum_id)),
-		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
-		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
-
-		'L_POLL_OPTIONS_EXPLAIN'	=> $user->lang('POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN', (int) $config['max_poll_options']),
-
-		'VOTE_CHANGE_CHECKED'	=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
-		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
-		'POLL_OPTIONS'			=> (!empty($post_data['poll_options'])) ? implode("\n", $post_data['poll_options']) : '',
-		'POLL_MAX_OPTIONS'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
-		'POLL_LENGTH'			=> $post_data['poll_length'])
-	);
-}
 
 // Show attachment box for adding attachments if true
 $allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && $config['allow_attachments'] && $form_enctype);

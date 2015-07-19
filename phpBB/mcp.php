@@ -111,8 +111,8 @@ if (!$auth->acl_getf_global('m_'))
 		'lock'			=> 'f_user_lock',
 		'make_sticky'	=> 'f_sticky',
 		'make_announce'	=> 'f_announce',
-		'make_global'	=> 'f_announce',
-		'make_normal'	=> array('f_announce', 'f_sticky')
+		'make_global'	=> 'f_announce_global',
+		'make_normal'	=> array('f_announce', 'f_announce_global', 'f_sticky')
 	);
 
 	$allow_user = false;

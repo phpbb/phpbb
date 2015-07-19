@@ -92,8 +92,8 @@ class session
 		}
 
 		// current directory within the phpBB root (for example: adm)
-		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
-		$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
+		$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
+		$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);
@@ -130,6 +130,10 @@ class session
 		$script_path .= (substr($script_path, -1, 1) == '/') ? '' : '/';
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
+		$forum_id = $request->variable('f', 0);
+		// maximum forum id value is maximum value of mediumint unsigned column
+		$forum_id = ($forum_id > 0 && $forum_id < 16777215) ? $forum_id : 0;
+
 		$page_array += array(
 			'page_name'			=> $page_name,
 			'page_dir'			=> $page_dir,
@@ -139,7 +143,7 @@ class session
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page,
-			'forum'				=> $request->variable('f', 0),
+			'forum'				=> $forum_id,
 		);
 
 		return $page_array;
@@ -523,7 +527,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		$this->data = array();
 
@@ -898,6 +902,19 @@ class session
 			$_SID = '';
 		}
 
+		$session_data = $sql_ary;
+		/**
+		* Event to send new session data to extension
+		* Read-only event
+		*
+		* @event core.session_create_after
+		* @var	array		session_data				Associative array of session keys to be updated
+		* @since 3.1.6-RC1
+		*/
+		$vars = array('session_data');
+		extract($phpbb_dispatcher->trigger_event('core.session_create_after', compact($vars)));
+		unset($session_data);
+
 		return true;
 	}
 
@@ -911,12 +928,29 @@ class session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
 				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
+
+		$user_id = (int) $this->data['user_id'];
+		$session_id = $this->session_id;
+		/**
+		* Event to send session kill information to extension
+		* Read-only event
+		*
+		* @event core.session_kill_after
+		* @var	int		user_id				user_id of the session user.
+		* @var	string		session_id				current user's session_id
+		* @var	bool	new_session 	should we create new session for user
+		* @since 3.1.6-RC1
+		*/
+		$vars = array('user_id', 'session_id', 'new_session');
+		extract($phpbb_dispatcher->trigger_event('core.session_kill_after', compact($vars)));
+		unset($user_id);
+		unset($session_id);
 
 		// Allow connecting logout with external auth method logout
 		/* @var $provider_collection \phpbb\auth\provider_collection */
@@ -986,7 +1020,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		$batch_size = 10;
 
@@ -1054,6 +1088,14 @@ class session
 				WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
 			$db->sql_query($sql);
 		}
+
+		/**
+		* Event to trigger extension on session_gc
+		*
+		* @event core.session_gc_after
+		* @since 3.1.6-RC1
+		*/
+		$phpbb_dispatcher->dispatch('core.session_gc_after');
 
 		return;
 	}
@@ -1548,12 +1590,24 @@ class session
 	*/
 	public function update_session($session_data, $session_id = null)
 	{
-		global $db;
+		global $db, $phpbb_dispatcher;
 
 		$session_id = ($session_id) ? $session_id : $this->session_id;
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $session_data) . "
 			WHERE session_id = '" . $db->sql_escape($session_id) . "'";
 		$db->sql_query($sql);
+
+		/**
+		* Event to send update session information to extension
+		* Read-only event
+		*
+		* @event core.update_session_after
+		* @var	array		session_data				Associative array of session keys to be updated
+		* @var	string		session_id				current user's session_id
+		* @since 3.1.6-RC1
+		*/
+		$vars = array('session_data', 'session_id');
+		extract($phpbb_dispatcher->trigger_event('core.update_session_after', compact($vars)));
 	}
 }

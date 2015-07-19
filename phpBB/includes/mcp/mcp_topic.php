@@ -149,20 +149,12 @@ function mcp_topic_view($id, $mode, $action)
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = $post_id_list = array();
-	$bbcode_bitfield = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
 		$post_id_list[] = $row['post_id'];
-		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
-
-	if ($bbcode_bitfield !== '')
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-	}
 
 	$topic_tracking_info = array();
 
@@ -269,6 +261,8 @@ function mcp_topic_view($id, $mode, $action)
 		* @var	int		current_row_number	Number of the post on this page
 		* @var	array	post_row			Template block array of the current post
 		* @var	array	row					Array with original post and user data
+		* @var	array	topic_info			Array with topic data
+		* @var	int		total				Total posts count
 		* @since 3.1.4-RC1
 		*/
 		$vars = array(
@@ -280,6 +274,8 @@ function mcp_topic_view($id, $mode, $action)
 			'current_row_number',
 			'post_row',
 			'row',
+			'topic_info',
+			'total',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.mcp_topic_review_modify_row', compact($vars)));
 

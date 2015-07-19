@@ -8,6 +8,7 @@ services:
     user:
         class: phpbb\user
         arguments:
+            - @language
             - %datetime.class%
 
     user_loader:

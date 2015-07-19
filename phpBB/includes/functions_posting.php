@@ -337,18 +337,15 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	$toggle = false;
 
 	$topic_types = array(
-		'sticky'	=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
-		'announce'	=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
-		'global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
+		'sticky'			=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
+		'announce'			=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
+		'announce_global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
 	);
 
 	$topic_type_array = array();
 
 	foreach ($topic_types as $auth_key => $topic_value)
 	{
-		// We do not have a special post global announcement permission
-		$auth_key = ($auth_key == 'global') ? 'announce' : $auth_key;
-
 		if ($auth->acl_get('f_' . $auth_key, $forum_id))
 		{
 			$toggle = true;
@@ -378,8 +375,8 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 
 		$template->assign_vars(array(
 			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)),
-			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)))
-		);
+			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_gets('f_announce', 'f_announce_global', $forum_id)),
+		));
 	}
 
 	return $toggle;
@@ -407,14 +404,14 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_filesystem;
 
 	$filedata = array(
 		'error'	=> array()
 	);
 
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload();
+	$upload = new fileupload($phpbb_filesystem);
 
 	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
 	{
@@ -668,7 +665,7 @@ function get_supported_image_types($type = false)
 */
 function create_thumbnail($source, $destination, $mimetype)
 {
-	global $config;
+	global $config, $phpbb_filesystem;
 
 	$min_filesize = (int) $config['img_min_thumb_filesize'];
 	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
@@ -820,7 +817,14 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+	try
+	{
+		$phpbb_filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+	}
+	catch (\phpbb\filesystem\exception\filesystem_exception $e)
+	{
+		// Do nothing
+	}
 
 	return true;
 }
@@ -1037,7 +1041,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $bbcode, $cache;
+	global $user, $auth, $db, $template, $cache;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
@@ -1096,13 +1100,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
-	$bbcode_bitfield = '';
 	$rowset = array();
 	$has_attachments = false;
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[$row['post_id']] = $row;
-		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 		if ($row['post_attachment'])
 		{
@@ -1110,13 +1112,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		}
 	}
 	$db->sql_freeresult($result);
-
-	// Instantiate BBCode class
-	if (!isset($bbcode) && $bbcode_bitfield !== '')
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-	}
 
 	// Grab extensions
 	$extensions = $attachments = array();
@@ -1195,6 +1190,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'MESSAGE'			=> $message,
 			'DECODED_MESSAGE'	=> $decoded_message,
 			'POST_ID'			=> $row['post_id'],
+			'POST_TIME'			=> $row['post_time'],
+			'USER_ID'			=> $row['user_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
@@ -1554,7 +1551,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		return false;
 	}
 
-	$current_time = time();
+	if (!empty($data['post_time']))
+	{
+		$current_time = $data['post_time'];
+	}
+	else
+	{
+		$current_time = time();
+	}
 
 	if ($mode == 'post')
 	{
@@ -1756,6 +1760,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : 0,
+				'topic_status'				=> (isset($data['topic_status'])) ? $data['topic_status'] : ITEM_UNLOCKED,
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -2228,7 +2233,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{

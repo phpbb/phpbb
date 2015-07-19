@@ -34,7 +34,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_id($group)
+	static public function get_item_id($group)
 	{
 		return (int) $group['group_id'];
 	}
@@ -42,7 +42,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_parent_id($group)
+	static public function get_item_parent_id($group)
 	{
 		return 0;
 	}
@@ -58,7 +58,7 @@ class group_request_approved extends \phpbb\notification\type\base
 
 		foreach ($group['user_ids'] as $user_id)
 		{
-			$users[$user_id] = array('');
+			$users[$user_id] = $this->notification_manager->get_default_methods();
 		}
 
 		return $users;
@@ -87,7 +87,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	{
 		$this->set_data('group_name', $group['group_name']);
 
-		return parent::create_insert_array($group, $pre_create_data);
+		parent::create_insert_array($group, $pre_create_data);
 	}
 
 	/**

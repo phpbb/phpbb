@@ -42,7 +42,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 				),
 			)));
 
-		$phpbb_log = $this->getMock('\phpbb\log\null');
+		$phpbb_log = $this->getMock('\phpbb\log\dummy');
 	}
 
 	/**

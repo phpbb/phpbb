@@ -31,7 +31,9 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		global $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->service_name = 'auth.provider.oauth.service.testing';
 		$this->token_storage_table = 'phpbb_oauth_tokens';
 

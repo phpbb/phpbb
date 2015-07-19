@@ -1,7 +1,9 @@
 services:
+# ----- Migrator -----
     migrator:
         class: phpbb\db\migrator
         arguments:
+            - @service_container
             - @config
             - @dbal.conn
             - @dbal.tools
@@ -15,6 +17,7 @@ services:
     migrator.helper:
         class: phpbb\db\migration\helper
 
+# ----- Migrator's tools -----
     migrator.tool_collection:
         class: phpbb\di\service_collection
         arguments:
@@ -42,6 +45,7 @@ services:
             - @dbal.conn
             - @cache
             - @user
+            - @module.manager
             - %core.root_path%
             - %core.php_ext%
             - %tables.modules%

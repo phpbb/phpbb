@@ -445,7 +445,6 @@ class acp_search
 
 		$search = null;
 		$error = false;
-		$search_options = '';
 		foreach ($search_types as $type)
 		{
 			if ($this->init_search($type, $search, $error) || !method_exists($search, 'index_created'))
@@ -597,7 +596,7 @@ class acp_search
 	*/
 	function init_search($type, &$search, &$error)
 	{
-		global $phpbb_root_path, $phpEx, $user, $auth, $config, $db;
+		global $phpbb_root_path, $phpEx, $user, $auth, $config, $db, $phpbb_dispatcher;
 
 		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{
@@ -606,7 +605,7 @@ class acp_search
 		}
 
 		$error = false;
-		$search = new $type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new $type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		return $error;
 	}

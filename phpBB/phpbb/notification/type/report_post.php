@@ -66,7 +66,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id' and 'lang')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'id'	=> 'notification.type.report',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
@@ -196,7 +196,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	*/
 	public function get_avatar()
 	{
-		return $this->user_loader->get_avatar($this->get_data('reporter_id'));
+		return $this->user_loader->get_avatar($this->get_data('reporter_id'), false, true);
 	}
 
 	/**
@@ -210,13 +210,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -225,6 +219,6 @@ class report_post extends \phpbb\notification\type\post_in_queue
 		$this->set_data('reason_description', $post['reason_description']);
 		$this->set_data('report_text', $post['report_text']);
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

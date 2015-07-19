@@ -86,4 +86,7 @@
  <!-- The ?> closing tag MUST be omitted from files containing only PHP. -->
  <rule ref="Zend.Files.ClosingTag" />
 
+ <!-- There MUST be one space between control structure and opening parenthesis -->
+ <rule ref="./phpbb/Sniffs/ControlStructures/OpeningParenthesisSniff.php" />
+
 </ruleset>
