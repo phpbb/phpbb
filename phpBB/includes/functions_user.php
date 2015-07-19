@@ -3332,7 +3332,7 @@ function get_group_name($group_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || !$user->is_setup())
+	if (!$row)
 	{
 		return '';
 	}
