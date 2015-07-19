@@ -23,6 +23,9 @@ services:
     cache.driver:
         synthetic: true
 
+    group_helper:
+        synthetic: true
+
     path_helper:
         synthetic: true
 
