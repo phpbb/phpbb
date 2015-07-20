@@ -74,6 +74,13 @@ class config
 	protected $navigation_data;
 
 	/**
+	 * Flag indicating that config file should be cleaned up
+	 *
+	 * @var bool
+	 */
+	protected $do_clean_up;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \phpbb\php\ini $php_ini, $phpbb_root_path)
@@ -81,6 +88,7 @@ class config
 		$this->filesystem		= $filesystem;
 		$this->php_ini			= $php_ini;
 		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->do_clean_up		= false;
 
 		// Set up data arrays
 		$this->navigation_data	= array();
@@ -228,6 +236,12 @@ class config
 	 */
 	public function save_config()
 	{
+		if ($this->do_clean_up)
+		{
+			@unlink($this->install_config_file);
+			return;
+		}
+
 		// Create array to save
 		$save_array = array(
 			'installer_config'	=> $this->installer_config,
@@ -334,6 +348,15 @@ class config
 	public function get_navigation_data()
 	{
 		return $this->navigation_data;
+	}
+
+	/**
+	 * Removes install config file
+	 */
+	public function clean_up_config_file()
+	{
+		$this->do_clean_up = true;
+		@unlink($this->install_config_file);
 	}
 
 	/**

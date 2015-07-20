@@ -219,7 +219,14 @@ class installer
 		// Save install progress
 		try
 		{
-			$this->install_config->save_config();
+			if ($install_finished)
+			{
+				$this->install_config->clean_up_config_file();
+			}
+			else
+			{
+				$this->install_config->save_config();
+			}
 		}
 		catch (installer_config_not_writable_exception $e)
 		{
