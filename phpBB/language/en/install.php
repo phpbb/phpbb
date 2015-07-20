@@ -113,7 +113,8 @@ $lang = array_merge($lang, array(
 
 // General error messages
 $lang = array_merge($lang, array(
-	'INST_ERR_MISSING_DATA' => 'You must fill out all fields in this block.',
+	'INST_ERR_MISSING_DATA'		=> 'You must fill out all fields in this block.',
+	'PHPBB_ALREADY_INSTALLED'	=> 'phpBB is already installed.'
 ));
 
 // Data obtaining translations

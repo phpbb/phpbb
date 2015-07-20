@@ -219,7 +219,7 @@ class helper
 	protected function render_language_select()
 	{
 		$langs = $this->lang_helper->get_available_languages();
-		// @todo
+		// @todo Implement language change option
 	}
 
 	/**

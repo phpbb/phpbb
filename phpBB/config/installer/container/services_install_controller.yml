@@ -30,3 +30,4 @@ services:
             - @template
             - @request
             - @installer.installer.install
+            - @installer.helper.install_helper

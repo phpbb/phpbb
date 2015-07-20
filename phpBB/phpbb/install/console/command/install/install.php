@@ -14,6 +14,7 @@
 namespace phpbb\install\console\command\install;
 
 use phpbb\install\exception\installer_exception;
+use phpbb\install\helper\install_helper;
 use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\factory;
 use phpbb\install\installer;
@@ -41,6 +42,11 @@ class install extends \phpbb\console\command\command
 	protected $installer;
 
 	/**
+	 * @var install_helper
+	 */
+	protected $install_helper;
+
+	/**
 	 * @var language
 	 */
 	protected $language;
@@ -48,21 +54,22 @@ class install extends \phpbb\console\command\command
 	/**
 	 * Constructor
 	 *
-	 * @param language $language
-	 * @param factory $factory
-	 * @param installer $installer
+	 * @param language			$language
+	 * @param factory			$factory
+	 * @param installer			$installer
+	 * @param install_helper	$install_helper
 	 */
-	public function __construct(language $language, factory $factory, installer $installer)
+	public function __construct(language $language, factory $factory, installer $installer, install_helper $install_helper)
 	{
 		$this->iohandler_factory = $factory;
 		$this->installer = $installer;
 		$this->language = $language;
+		$this->install_helper = $install_helper;
 
 		parent::__construct(new \phpbb\user($language, 'datetime'));
 	}
 
 	/**
-	 *
 	 * {@inheritdoc}
 	 */
 	protected function configure()
@@ -89,8 +96,6 @@ class install extends \phpbb\console\command\command
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		// @todo check that phpBB is not already installed
-
 		$this->iohandler_factory->set_environment('cli');
 
 		/** @var \phpbb\install\helper\iohandler\cli_iohandler $iohandler */
@@ -101,6 +106,11 @@ class install extends \phpbb\console\command\command
 		$this->installer->set_iohandler($iohandler);
 
 		$config_file = $input->getArgument('config-file');
+
+		if ($this->install_helper->is_phpbb_installed())
+		{
+			$iohandler->add_error_message('PHPBB_ALREADY_INSTALLED');
+		}
 
 		if (!is_file($config_file))
 		{

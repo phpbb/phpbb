@@ -13,7 +13,9 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\exception\http_exception;
 use phpbb\install\helper\config;
+use phpbb\install\helper\install_helper;
 use phpbb\install\helper\navigation\navigation_provider;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,6 +72,11 @@ class install
 	protected $installer;
 
 	/**
+	 * @var install_helper
+	 */
+	protected $install_helper;
+
+	/**
 	 * Constructor
 	 *
 	 * @param helper 				$helper
@@ -80,8 +87,9 @@ class install
 	 * @param template				$template
 	 * @param request_interface		$request
 	 * @param installer				$installer
+	 * @param install_helper		$install_helper
 	 */
-	public function __construct(helper $helper, config $install_config, factory $factory, navigation_provider $nav_provider, language $language, template $template, request_interface $request, installer $installer)
+	public function __construct(helper $helper, config $install_config, factory $factory, navigation_provider $nav_provider, language $language, template $template, request_interface $request, installer $installer, install_helper $install_helper)
 	{
 		$this->controller_helper	= $helper;
 		$this->installer_config		= $install_config;
@@ -91,6 +99,7 @@ class install
 		$this->template				= $template;
 		$this->request				= $request;
 		$this->installer			= $installer;
+		$this->install_helper		= $install_helper;
 	}
 
 	/**
@@ -100,8 +109,6 @@ class install
 	 */
 	public function handle()
 	{
-		// @todo check that phpBB is not already installed
-
 		$this->template->assign_vars(array(
 			'U_ACTION' => $this->controller_helper->route('phpbb_installer_install'),
 		));
@@ -123,6 +130,11 @@ class install
 		$nav_data = $this->installer_config->get_navigation_data();
 		/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
 		$iohandler = $this->iohandler_factory->get();
+
+		if ($this->install_helper->is_phpbb_installed())
+		{
+			throw new http_exception(404, 'PAGE_NOT_FOUND');
+		}
 
 		// Set active navigation stage
 		if (isset($nav_data['active']) && is_array($nav_data['active']))

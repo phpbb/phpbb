@@ -56,6 +56,12 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
+    installer.helper.install_helper:
+        class: phpbb\install\helper\install_helper
+        arguments:
+            - %core.root_path%
+            - %core.php_ext%
+
 # -------- Installer --------------------------------
     installer.module_base:
         abstract: true
