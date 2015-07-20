@@ -45,7 +45,8 @@ class cli_iohandler extends iohandler_base
 	/**
 	 * Set the style and output used to display feedback;
 	 *
-	 * @param OutputStyle $style
+	 * @param OutputStyle 		$style
+	 * @param OutputInterface	$output
 	 */
 	public function set_style(OutputStyle $style, OutputInterface $output)
 	{

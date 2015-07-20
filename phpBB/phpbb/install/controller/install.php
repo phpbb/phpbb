@@ -77,6 +77,7 @@ class install
 	 * @param factory 				$factory
 	 * @param navigation_provider	$nav_provider
 	 * @param language				$language
+	 * @param template				$template
 	 * @param request_interface		$request
 	 * @param installer				$installer
 	 */

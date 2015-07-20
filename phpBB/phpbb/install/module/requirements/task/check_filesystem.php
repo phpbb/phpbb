@@ -47,7 +47,7 @@ class check_filesystem extends \phpbb\install\task_base
 	 * Constructor
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface				$filesystem			filesystem handler
-	 * @parma \phpbb\install\helper\iohandler\iohandler_interface	$response			response helper
+	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$response			response helper
 	 * @param string												$phpbb_root_path	relative path to phpBB's root
 	 * @param string												$php_ext			extension of php files
 	 */

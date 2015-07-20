@@ -85,7 +85,7 @@ class notify_user extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
-		// @todo
+		// @todo Login user after installation has been finished
 		//$this->user->setup('common');
 
 		//$this->user->session_begin();
