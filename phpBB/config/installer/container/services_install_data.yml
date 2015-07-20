@@ -9,7 +9,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
         tags:
-            - { name: install_data_install, order: 2 }
+            - { name: install_data_install, order: 20 }
 
     installer.install_data.add_languages:
         class: phpbb\install\module\install_data\task\add_languages
@@ -18,7 +18,7 @@ services:
             - @installer.helper.container_factory
             - @language.helper.language_file
         tags:
-            - { name: install_data_install, order: 1 }
+            - { name: install_data_install, order: 10 }
 
     installer.install_data.add_modules:
         class: phpbb\install\module\install_data\task\add_modules
@@ -26,7 +26,7 @@ services:
             - @installer.helper.iohandler
             - @installer.helper.container_factory
         tags:
-            - { name: install_data_install, order: 3 }
+            - { name: install_data_install, order: 30 }
 
     installer.module.data_install_collection:
         class: phpbb\di\ordered_service_collection
@@ -41,4 +41,4 @@ services:
         arguments:
             - @installer.module.data_install_collection
         tags:
-            - { name: installer_install_module, order: 5 }
+            - { name: installer_install_module, order: 50 }

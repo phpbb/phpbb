@@ -4,7 +4,7 @@ services:
         arguments:
             - @installer.helper.container_factory
         tags:
-            - { name: install_finish, order: 1 }
+            - { name: install_finish, order: 10 }
 
     installer.install_finish.notify_user:
         class: phpbb\install\module\install_finish\task\notify_user
@@ -15,7 +15,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
         tags:
-            - { name: install_finish, order: 2 }
+            - { name: install_finish, order: 20 }
 
     installer.module.install_finish_collection:
         class: phpbb\di\ordered_service_collection
@@ -30,4 +30,4 @@ services:
         arguments:
             - @installer.module.install_finish_collection
         tags:
-            - { name: installer_install_module, order: 6 }
+            - { name: installer_install_module, order: 60 }

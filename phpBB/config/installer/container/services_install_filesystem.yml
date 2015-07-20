@@ -9,7 +9,7 @@ services:
             - %core.root_path%
             - %core.php_ext%
         tags:
-            - { name: install_filesystem_install, order: 1 }
+            - { name: install_filesystem_install, order: 10 }
 
     installer.module.install_filesystem_collection:
         class: phpbb\di\ordered_service_collection
@@ -24,4 +24,4 @@ services:
         arguments:
             - @installer.module.install_filesystem_collection
         tags:
-            - { name: installer_install_module, order: 3 }
+            - { name: installer_install_module, order: 30 }
