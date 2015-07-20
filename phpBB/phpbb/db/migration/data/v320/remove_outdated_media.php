@@ -33,7 +33,7 @@ class remove_outdated_media extends \phpbb\db\migration\migration
 		// select group ids of outdated media
 		$sql = 'SELECT group_id
 			FROM ' . EXTENSION_GROUPS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('cat_id', $cat_id);
+			WHERE ' . $this->db->sql_in_set('cat_id', $this->cat_id);
 		$result = $this->db->sql_query($sql);
 
 		$group_ids = array();
