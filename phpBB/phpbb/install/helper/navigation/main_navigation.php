@@ -15,6 +15,9 @@ namespace phpbb\install\helper\navigation;
 
 class main_navigation implements navigation_interface
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get()
 	{
 		return array(

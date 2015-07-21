@@ -13,10 +13,35 @@
 
 namespace phpbb\install\helper\navigation;
 
+use phpbb\install\helper\install_helper;
+
 class install_navigation implements navigation_interface
 {
+	/**
+	 * @var install_helper
+	 */
+	private $install_helper;
+
+	/**
+	 * Constructor
+	 *
+	 * @param install_helper	$install_helper
+	 */
+	public function __construct(install_helper $install_helper)
+	{
+		$this->install_helper = $install_helper;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get()
 	{
+		if ($this->install_helper->is_phpbb_installed())
+		{
+			return array();
+		}
+
 		return array(
 			'install'	=> array(
 				'label'	=> 'INSTALL',

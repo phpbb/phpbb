@@ -19,6 +19,8 @@ services:
 
     installer.navigation.install_navigation:
         class: phpbb\install\helper\navigation\install_navigation
+        arguments:
+            - @installer.helper.install_helper
         scope: prototype
         tags:
             - { name: installer.navigation }
