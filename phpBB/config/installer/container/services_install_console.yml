@@ -15,16 +15,6 @@ services:
         tags:
             - { name: console.installer.command }
 
-    console.installer.command.config.default:
-        class: phpbb\install\console\command\install\config\default_config
-        arguments:
-            - @language
-            - @installer.helper.iohandler_factory
-            - @installer.installer.install
-            - @installer.helper.install_helper
-        tags:
-            - { name: console.installer.command }
-
     console.installer.command.config.show:
         class: phpbb\install\console\command\install\config\show
         arguments:
