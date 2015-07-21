@@ -267,10 +267,10 @@ class helper
 	protected function sort_navigation_level($nav_array)
 	{
 		$sorted = array();
-		foreach ($nav_array as $nav)
+		foreach ($nav_array as $key => $nav)
 		{
 			$order = (isset($nav['order'])) ? $nav['order'] : 0;
-			$sorted[$order][] = $nav;
+			$sorted[$order][$key] = $nav;
 		}
 
 		// Linearization of navigation array
