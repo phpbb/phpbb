@@ -19,12 +19,6 @@ namespace phpbb\ban;
 class manager
 {
 	/**
-	 * Cache service
-	 * @var \phpbb\cache\service
-	 */
-	protected $cache;
-
-	/**
 	 * Database object
 	 * @var \phpbb\db\driver\driver_interface
 	 */
@@ -54,9 +48,8 @@ class manager
 	 */
 	protected $user;
 
-	public function __construct($ban_types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\log\log_interface $log, \phpbb\user $user)
+	public function __construct($ban_types, \phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\log\log_interface $log, \phpbb\user $user)
 	{
-		$this->cache = $cache;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
 		$this->log = $log;
@@ -160,8 +153,6 @@ class manager
 			}
 		}
 
-		$this->cache->destroy('sql', $ban_type->get_table());
-
 		return true;
 	}
 
@@ -260,8 +251,6 @@ class manager
 				$this->log->add($log_mode, $this->user->data['user_id'], $this->user->ip, 'LOG_UNBAN_' . strtoupper($ban_type->get_type()), false, $data);
 			}
 		}
-
-		$this->cache->destroy('sql', $ban_type->get_table());
 
 		return true;
 	}
