@@ -1159,7 +1159,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	/**
 	 * This event is used for performing actions directly before marking forums,
 	 * topics or posts as read.
-	 * 
+	 *
 	 * It is also possible to prevent the marking. For that, the $should_markread parameter
 	 * should be set to FALSE.
 	 *
@@ -4805,6 +4805,16 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false)
 			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
 	}
+
+	/**
+	* Event to modify HTML <img> tag of avatar
+	*
+	* @event core.get_avatar_after
+	* @var	string	html		The HTML <img> tag of generated avatar
+	* @since 3.1.6
+	*/
+	$vars = array('html');
+	extract($phpbb_dispatcher->trigger_event('core.get_avatar_after', compact($vars)));
 
 	return $html;
 }
