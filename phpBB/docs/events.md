@@ -1523,6 +1523,20 @@ viewtopic_buttons_top_after
 * Since: 3.1.0-RC5
 * Purpose: Add buttons after Post Reply button on the top of the posts's list
 
+viewtopic_dropdown_bottom_custom
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Create a custom dropdown menu
+
+viewtopic_dropdown_top_custom
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Create a custom dropdown menu
+
 viewforum_forum_name_append
 ===
 * Locations:
