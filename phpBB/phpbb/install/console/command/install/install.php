@@ -110,13 +110,15 @@ class install extends \phpbb\console\command\command
 		if ($this->install_helper->is_phpbb_installed())
 		{
 			$iohandler->add_error_message('PHPBB_ALREADY_INSTALLED');
+
+			return 1;
 		}
 
 		if (!is_file($config_file))
 		{
 			$iohandler->add_error_message(array('MISSING_FILE', array($config_file)));
 
-			return;
+			return 1;
 		}
 
 		try
@@ -127,7 +129,7 @@ class install extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_YAML_FILE');
 
-			return;
+			return 1;
 		}
 
 		$processor = new Processor();
@@ -141,7 +143,7 @@ class install extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_CONFIGURATION', $e->getMessage());
 
-			return;
+			return 1;
 		}
 
 		$this->register_configuration($iohandler, $config);
@@ -153,7 +155,7 @@ class install extends \phpbb\console\command\command
 		catch (installer_exception $e)
 		{
 			$iohandler->add_error_message($e->getMessage());
-			return;
+			return 1;
 		}
 	}
 

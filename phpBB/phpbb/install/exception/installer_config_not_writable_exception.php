@@ -14,7 +14,7 @@
 namespace phpbb\install\exception;
 
 /**
- * Exception for the event when installer config is not writable to disk
+ * Thrown when installer config is not writable to disk
  */
 class installer_config_not_writable_exception extends installer_exception
 {

@@ -93,9 +93,26 @@ class container_factory
 	 * @param string	$param_name
 	 *
 	 * @return mixed
+	 *
+	 * @throws \phpbb\install\exception\cannot_build_container_exception	When container cannot be built
 	 */
 	public function get_parameter($param_name)
 	{
+		// Check if container was built, if not try to build it
+		if ($this->container === null)
+		{
+			// Check whether container can be built
+			// We need config.php for that so let's check if it has been set up yet
+			if (filesize($this->phpbb_root_path . 'config.' . $this->php_ext))
+			{
+				$this->build_container();
+			}
+			else
+			{
+				throw new cannot_build_container_exception();
+			}
+		}
+
 		return $this->container->getParameter($param_name);
 	}
 

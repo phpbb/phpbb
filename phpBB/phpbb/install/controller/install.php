@@ -109,6 +109,11 @@ class install
 	 */
 	public function handle()
 	{
+		if ($this->install_helper->is_phpbb_installed())
+		{
+			throw new http_exception(404, 'PAGE_NOT_FOUND');
+		}
+
 		$this->template->assign_vars(array(
 			'U_ACTION' => $this->controller_helper->route('phpbb_installer_install'),
 		));
@@ -130,11 +135,6 @@ class install
 		$nav_data = $this->installer_config->get_navigation_data();
 		/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
 		$iohandler = $this->iohandler_factory->get();
-
-		if ($this->install_helper->is_phpbb_installed())
-		{
-			throw new http_exception(404, 'PAGE_NOT_FOUND');
-		}
 
 		// Set active navigation stage
 		if (isset($nav_data['active']) && is_array($nav_data['active']))

@@ -14,7 +14,7 @@
 namespace phpbb\install\exception;
 
 /**
- * This exception should be thrown when
+ * Thrown when the container cannot be built
  */
 class cannot_build_container_exception extends installer_exception
 {

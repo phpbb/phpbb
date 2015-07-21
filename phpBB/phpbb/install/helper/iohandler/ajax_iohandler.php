@@ -96,10 +96,6 @@ class ajax_iohandler extends iohandler_base
 	 */
 	public function add_user_form_group($title, $form)
 	{
-		//
-		// This code is pretty ugly... but works
-		//
-
 		$this->template->assign_var('S_FORM_ELEM_COUNT', sizeof($form));
 
 		$this->template->assign_block_vars('options', array(
@@ -166,8 +162,8 @@ class ajax_iohandler extends iohandler_base
 		$json_data = json_encode($json_data_array);
 
 		// Try to push content to the browser
-		print (str_pad(' ', 4096) . "\n");
-		print ($json_data . "\n\n");
+		print(str_pad(' ', 4096) . "\n");
+		print($json_data . "\n\n");
 		flush();
 	}
 

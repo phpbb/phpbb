@@ -13,6 +13,9 @@
 
 namespace phpbb\install\exception;
 
+/**
+ * Thrown when the installer is out of memory or time
+ */
 class resource_limit_reached_exception extends installer_exception
 {
 

@@ -14,7 +14,7 @@
 namespace phpbb\install\exception;
 
 /**
- * This exception should be thrown when
+ * Thrown when an unavailable DBMS has been selected
  */
 class invalid_dbms_exception extends installer_exception
 {

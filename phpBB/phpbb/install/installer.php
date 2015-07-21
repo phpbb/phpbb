@@ -15,7 +15,6 @@ namespace phpbb\install;
 
 use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\installer_config_not_writable_exception;
-use phpbb\install\exception\invalid_service_name_exception;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
@@ -93,9 +92,6 @@ class installer
 
 		// Variable used to check if the install process have been finished
 		$install_finished = false;
-
-		// Flag used by exception handling, whether or not we need to flush output buffer once again
-		$flush_messages = false;
 
 		// We are installing something, so the introduction stage can go now...
 		$this->install_config->set_finished_navigation_stage(array('install', 0, 'introduction'));
@@ -184,22 +180,6 @@ class installer
 		{
 			// Do nothing
 		}
-		catch (invalid_service_name_exception $e)
-		{
-			$params = $e->get_parameters();
-
-			if (!empty($params))
-			{
-				array_unshift($params, $e->getMessage());
-			}
-			else
-			{
-				$params = $e->getMessage();
-			}
-
-			$this->iohandler->add_error_message($params);
-			$flush_messages = true;
-		}
 
 		if ($install_finished)
 		{
@@ -209,11 +189,6 @@ class installer
 		else
 		{
 			$this->iohandler->request_refresh();
-		}
-
-		if ($flush_messages)
-		{
-			$this->iohandler->send_response();
 		}
 
 		// Save install progress
