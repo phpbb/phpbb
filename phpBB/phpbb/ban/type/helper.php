@@ -16,12 +16,6 @@ namespace phpbb\ban\type;
 class helper
 {
 	/**
-	 * Config object
-	 * @var \phpbb\config\config
-	 */
-	protected $config;
-
-	/**
 	 * Database object
 	 * @var \phpbb\db\driver\driver_interface
 	 */
@@ -33,9 +27,8 @@ class helper
 	 * @param \phpbb\config\config				$config	Config object
 	 * @param \phpbb\db\driver\driver_interface $db		Database object
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\db\driver\driver_interface $db)
 	{
-		$this->config = $config;
 		$this->db = $db;
 	}
 
