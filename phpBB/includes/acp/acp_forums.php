@@ -1924,7 +1924,7 @@ class acp_forums
 		 * @event core.delete_forum_content_before_query
 		 * @var	array	table_ary	Array of tables from which all rows will be deleted that hold the forum_id
 		 * @var	int		forum_id	the forum id
-		 * @var	array	topic_ids	Array of the topic ids from the forum to be deleted 	
+		 * @var	array	topic_ids	Array of the topic ids from the forum to be deleted
 		 * @var	array	post_counts	Array of counts of posts in the forum, by poster_id
 		 * @since 3.1.6-RC1
 		 */
