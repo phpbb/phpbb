@@ -4766,7 +4766,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 	global $request;
-	global $phpbb_container;
+	global $phpbb_container, $phpbb_dispatcher;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -4811,7 +4811,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false)
 	*
 	* @event core.get_avatar_after
 	* @var	string	html		The HTML <img> tag of generated avatar
-	* @since 3.1.6
+	* @since 3.1.6-RC1
 	*/
 	$vars = array('html');
 	extract($phpbb_dispatcher->trigger_event('core.get_avatar_after', compact($vars)));
