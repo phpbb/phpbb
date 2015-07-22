@@ -1172,9 +1172,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	string	search_id			Predefined search type name
 	* @var	string	show_results		Search results output mode - topics or posts
 	* @var	int		start				The starting id of the results
-	* @since 3.1.0-RC4
 	* @var	int		total_match_count	The count of search results
 	* @var	string	keywords			The search keywords
+	* @since 3.1.0-RC4
+	* @changed 3.1.6-RC1 Added total_match_count and keywords
 	*/
 	$vars = array('author_id', 'l_search_title', 'search_id', 'show_results', 'start', 'total_match_count', 'keywords');
 	extract($phpbb_dispatcher->trigger_event('core.search_results_modify_search_title', compact($vars)));
