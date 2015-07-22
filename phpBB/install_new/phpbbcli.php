@@ -61,7 +61,7 @@ $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
 
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');
-$language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting', 'cli'));
+$language->add_lang(array('common', 'acp/common', 'acp/board', 'install_new', 'posting', 'cli'));
 
 $application = new \phpbb\console\application('phpBB Installer', PHPBB_VERSION, $language);
 $application->register_container_commands($phpbb_installer_container->get('console.installer.command_collection'));

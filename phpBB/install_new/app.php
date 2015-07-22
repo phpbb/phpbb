@@ -67,7 +67,7 @@ $template->set_custom_style(array(
 
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');
-$language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
+$language->add_lang(array('common', 'acp/common', 'acp/board', 'install_new', 'posting'));
 
 /* @var $http_kernel \Symfony\Component\HttpKernel\HttpKernel */
 $http_kernel = $phpbb_installer_container->get('http_kernel');
