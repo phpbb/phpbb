@@ -26,13 +26,6 @@ interface type_interface
 	public function get_type();
 
 	/**
-	 * Returns the database table for the ban type.
-	 *
-	 * @return string 	Database table.
-	 */
-	public function get_table();
-
-	/**
 	 * Returns the column in the user table this ban type needs to be checked against.
 	 *
 	 * @return string	User column.

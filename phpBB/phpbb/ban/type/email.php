@@ -26,14 +26,6 @@ class email extends base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_table()
-	{
-		return BANLIST_TABLE;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function get_user_column()
 	{
 		return 'user_email';
