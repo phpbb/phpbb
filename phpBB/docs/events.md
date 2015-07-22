@@ -930,7 +930,7 @@ posting_editor_add_panel_tab
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.1.5-RC1
+* Since: 3.1.6-RC1
 * Purpose: Add custom panel to post editor
 
 posting_editor_bbcode_status_after
@@ -1025,11 +1025,7 @@ posting_layout_include_panel_body
 ===
 * Locations:
     + styles/prosilver/template/posting_layout.html
-<<<<<<< HEAD
-* Since: 3.1.5-RC1
-=======
-* Since: 3.1.5
->>>>>>> 5e45eb9... [ticket/13843] Add templates events to insert custom panel in posting
+* Since: 3.1.6-RC1
 * Purpose: Add include of custom panel template body in posting editor
 
 posting_pm_header_find_username_after
