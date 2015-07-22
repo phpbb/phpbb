@@ -189,7 +189,7 @@ class install
 					'TITLE'						=> $this->language->lang('INSTALL_INTRO'),
 					'CONTENT'					=> $this->language->lang('INSTALL_INTRO_BODY'),
 				));
-				return $this->controller_helper->render('installer_install.html', 'INSTALL');
+				return $this->controller_helper->render('installer_install.html', 'INSTALL', true);
 			}
 
 			// @todo: implement no js controller logic

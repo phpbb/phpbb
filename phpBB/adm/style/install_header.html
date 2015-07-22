@@ -15,10 +15,14 @@
 		<h1>{L_INSTALL_PANEL}</h1>
 		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
 		<!-- IF S_LANG_SELECT -->
-		<form method="post" action="#">
+		<form method="post" action="#" id="language_selector">
 			<fieldset class="nobg">
 				<label for="language">{L_SELECT_LANG}{L_COLON}</label>
-				{S_LANG_SELECT}
+				<select  id="language" name="language">
+                    <!-- BEGIN language_select_item -->
+                    <option value="{language_select_item.VALUE}"<!-- IF language_select_item.SELECTED --> selected="selected"<!-- ENDIF -->>{language_select_item.NAME}</option>
+                    <!-- END language_select_item -->
+                </select>
 				<input class="button1" type="submit" id="change_lang" name="change_lang" value="{L_CHANGE}" />
 			</fieldset>
 		</form>

@@ -17,10 +17,13 @@ use phpbb\install\helper\navigation\navigation_provider;
 use phpbb\language\language;
 use phpbb\language\language_file_helper;
 use phpbb\path_helper;
+use phpbb\request\request;
+use phpbb\request\request_interface;
 use phpbb\routing\router;
 use phpbb\symfony_request;
 use phpbb\template\template;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Cookie;
 
 /**
  * A duplicate of \phpbb\controller\helper
@@ -34,6 +37,11 @@ class helper
 	 * @var \phpbb\language\language
 	 */
 	protected $language;
+
+	/**
+	 * @var bool|string
+	 */
+	protected $language_cookie;
 
 	/**
 	 * @var \phpbb\language\language_file_helper
@@ -54,6 +62,11 @@ class helper
 	 * @var \phpbb\path_helper
 	 */
 	protected $path_helper;
+
+	/**
+	 * @var \phpbb\request\request
+	 */
+	protected $phpbb_request;
 
 	/**
 	 * @var \phpbb\symfony_request
@@ -83,120 +96,58 @@ class helper
 	 * @param navigation_provider	$nav
 	 * @param template				$template
 	 * @param path_helper			$path_helper
+	 * @param request				$phpbb_request
 	 * @param symfony_request		$request
 	 * @param router				$router
 	 * @param string				$phpbb_root_path
 	 */
-	public function __construct(language $language, language_file_helper $lang_helper, navigation_provider $nav, template $template, path_helper $path_helper, symfony_request $request, router $router, $phpbb_root_path)
+	public function __construct(language $language, language_file_helper $lang_helper, navigation_provider $nav, template $template, path_helper $path_helper, request $phpbb_request, symfony_request $request, router $router, $phpbb_root_path)
 	{
 		$this->language = $language;
+		$this->language_cookie = false;
 		$this->lang_helper = $lang_helper;
 		$this->navigation_provider = $nav;
 		$this->template = $template;
 		$this->path_helper = $path_helper;
+		$this->phpbb_request = $phpbb_request;
 		$this->request = $request;
 		$this->router = $router;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpbb_admin_path = $phpbb_root_path . 'adm/';
+
+		$this->handle_language_select();
 	}
 
 	/**
 	 * Automate setting up the page and creating the response object.
 	 *
-	 * @param string	$template_file	The template handle to render
-	 * @param string	$page_title		The title of the page to output
-	 * @param int		$status_code	The status code to be sent to the page header
+	 * @param string	$template_file		The template handle to render
+	 * @param string	$page_title			The title of the page to output
+	 * @param bool		$selected_language	True to enable language selector it, false otherwise
+	 * @param int		$status_code		The status code to be sent to the page header
 	 *
 	 * @return Response object containing rendered page
 	 */
-	public function render($template_file, $page_title = '', $status_code = 200)
+	public function render($template_file, $page_title = '', $selected_language = false, $status_code = 200)
 	{
-		$this->page_header($page_title);
+		$this->page_header($page_title, $selected_language);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,
 		));
 
-		return new Response($this->template->assign_display('body'), $status_code);
-	}
+		$response = new Response($this->template->assign_display('body'), $status_code);
 
-	/**
-	 * Set default template variables
-	 *
-	 * @param string	$page_title
-	 */
-	protected function page_header($page_title)
-	{
-		$this->template->assign_vars(array(
-				'L_CHANGE'				=> $this->language->lang('CHANGE'),
-				'L_COLON'				=> $this->language->lang('COLON'),
-				'L_INSTALL_PANEL'		=> $this->language->lang('INSTALL_PANEL'),
-				'L_SELECT_LANG'			=> $this->language->lang('SELECT_LANG'),
-				'L_SKIP'				=> $this->language->lang('SKIP'),
-				'PAGE_TITLE'			=> $this->language->lang($page_title),
-				'T_IMAGE_PATH'			=> htmlspecialchars($this->phpbb_admin_path) . 'images/',
-				'T_JQUERY_LINK'			=> $this->path_helper->get_web_root_path() . 'assets/javascript/jquery.min.js',
-				'T_TEMPLATE_PATH'		=> $this->path_helper->get_web_root_path() . 'adm/style',
-				'T_ASSETS_PATH'			=> $this->path_helper->get_web_root_path() . 'assets/',
-
-				'S_CONTENT_DIRECTION' 	=> $this->language->lang('DIRECTION'),
-				'S_CONTENT_FLOW_BEGIN'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'left' : 'right',
-				'S_CONTENT_FLOW_END'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'right' : 'left',
-				'S_CONTENT_ENCODING' 	=> 'UTF-8',
-
-				'S_USER_LANG'			=> $this->language->lang('USER_LANG'),
-			)
-		);
-
-		$this->render_navigation();
-	}
-
-	/**
-	 * Render navigation
-	 */
-	protected function render_navigation()
-	{
-		// Get navigation items
-		$nav_array = $this->navigation_provider->get();
-		$nav_array = $this->sort_navigation_level($nav_array);
-
-		$active_main_menu = $this->get_active_main_menu($nav_array);
-
-		// Pass navigation to template
-		foreach ($nav_array as $key => $entry)
+		// Set language cookie
+		if ($this->language_cookie !== false)
 		{
-			$this->template->assign_block_vars('t_block1', array(
-				'L_TITLE'		=> $this->language->lang($entry['label']),
-				'S_SELECTED'	=> ($active_main_menu === $key),
-				'U_TITLE'		=> $this->route($entry['route']),
-			));
+			$cookie = new Cookie('lang', $this->language_cookie, time() + 3600);
+			$response->headers->setCookie($cookie);
 
-			if (is_array($entry[0]) && $active_main_menu === $key)
-			{
-				$entry[0] = $this->sort_navigation_level($entry[0]);
-
-				foreach ($entry[0] as $name => $sub_entry)
-				{
-					if (isset($sub_entry['stage']) && $sub_entry['stage'] === true)
-					{
-						$this->template->assign_block_vars('l_block2', array(
-							'L_TITLE'		=> $this->language->lang($sub_entry['label']),
-							'S_SELECTED'	=> (isset($sub_entry['selected']) && $sub_entry['selected'] === true),
-							'S_COMPLETE'	=> (isset($sub_entry['completed']) && $sub_entry['completed'] === true),
-							'STAGE_NAME'	=> $name,
-						));
-					}
-					else
-					{
-						$this->template->assign_block_vars('l_block1', array(
-							'L_TITLE'		=> $this->language->lang($sub_entry['label']),
-							'S_SELECTED'	=> (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->get('_route')),
-							'U_TITLE'		=> $this->route($sub_entry['route']),
-						));
-					}
-				}
-			}
+			$this->language_cookie = false;
 		}
+
+		return $response;
 	}
 
 	/**
@@ -214,12 +165,134 @@ class helper
 	}
 
 	/**
-	 * Render language select form
+	 * Handles language selector form
 	 */
-	protected function render_language_select()
+	protected function handle_language_select()
+	{
+		$lang = null;
+
+		// Check if language form has been submited
+		$submit = $this->phpbb_request->variable('change_lang', '');
+		if (!empty($submit))
+		{
+			$lang = $this->phpbb_request->variable('language', '');
+
+			if (!empty($lang))
+			{
+				$this->language_cookie = $lang;
+			}
+		}
+
+		// Retrive language from cookie
+		$lang_cookie = $this->phpbb_request->variable('lang', '', false, request_interface::COOKIE);
+		if (empty($lang) && !empty($lang_cookie))
+		{
+			$lang = $lang_cookie;
+			$this->language_cookie = $lang;
+		}
+
+		$lang = (!empty($lang)) ? $lang : null;
+		$this->render_language_select($lang);
+
+		if ($lang !== null)
+		{
+			$this->language->set_user_language($lang, true);
+		}
+	}
+
+	/**
+	 * Set default template variables
+	 *
+	 * @param string	$page_title			Title of the page
+	 * @param bool		$selected_language	True to enable language selector it, false otherwise
+	 */
+	protected function page_header($page_title, $selected_language = false)
+	{
+		$this->template->assign_vars(array(
+				'L_CHANGE'				=> $this->language->lang('CHANGE'),
+				'L_COLON'				=> $this->language->lang('COLON'),
+				'L_INSTALL_PANEL'		=> $this->language->lang('INSTALL_PANEL'),
+				'L_SELECT_LANG'			=> $this->language->lang('SELECT_LANG'),
+				'L_SKIP'				=> $this->language->lang('SKIP'),
+				'PAGE_TITLE'			=> $this->language->lang($page_title),
+				'T_IMAGE_PATH'			=> htmlspecialchars($this->phpbb_admin_path) . 'images/',
+				'T_JQUERY_LINK'			=> $this->path_helper->get_web_root_path() . 'assets/javascript/jquery.min.js',
+				'T_TEMPLATE_PATH'		=> $this->path_helper->get_web_root_path() . 'adm/style',
+				'T_ASSETS_PATH'			=> $this->path_helper->get_web_root_path() . 'assets/',
+
+				'S_CONTENT_DIRECTION' 	=> $this->language->lang('DIRECTION'),
+				'S_CONTENT_FLOW_BEGIN'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'left' : 'right',
+				'S_CONTENT_FLOW_END'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'right' : 'left',
+				'S_CONTENT_ENCODING' 	=> 'UTF-8',
+				'S_LANG_SELECT'			=> $selected_language,
+
+				'S_USER_LANG'			=> $this->language->lang('USER_LANG'),
+			)
+		);
+
+		$this->render_navigation();
+	}
+
+
+
+	/**
+	 * Render navigation
+	 */
+	protected function render_navigation()
+	{
+		// Get navigation items
+		$nav_array = $this->navigation_provider->get();
+		$nav_array = $this->sort_navigation_level($nav_array);
+
+		$active_main_menu = $this->get_active_main_menu($nav_array);
+
+		// Pass navigation to template
+		foreach ($nav_array as $key => $entry) {
+			$this->template->assign_block_vars('t_block1', array(
+				'L_TITLE' => $this->language->lang($entry['label']),
+				'S_SELECTED' => ($active_main_menu === $key),
+				'U_TITLE' => $this->route($entry['route']),
+			));
+
+			if (is_array($entry[0]) && $active_main_menu === $key) {
+				$entry[0] = $this->sort_navigation_level($entry[0]);
+
+				foreach ($entry[0] as $name => $sub_entry) {
+					if (isset($sub_entry['stage']) && $sub_entry['stage'] === true) {
+						$this->template->assign_block_vars('l_block2', array(
+							'L_TITLE' => $this->language->lang($sub_entry['label']),
+							'S_SELECTED' => (isset($sub_entry['selected']) && $sub_entry['selected'] === true),
+							'S_COMPLETE' => (isset($sub_entry['completed']) && $sub_entry['completed'] === true),
+							'STAGE_NAME' => $name,
+						));
+					} else {
+						$this->template->assign_block_vars('l_block1', array(
+							'L_TITLE' => $this->language->lang($sub_entry['label']),
+							'S_SELECTED' => (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->get('_route')),
+							'U_TITLE' => $this->route($sub_entry['route']),
+						));
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Render language select form
+	 *
+	 * @param string	$selected_language
+	 */
+	protected function render_language_select($selected_language = null)
 	{
 		$langs = $this->lang_helper->get_available_languages();
-		// @todo Implement language change option
+		foreach ($langs as $lang)
+		{
+			$this->template->assign_block_vars('language_select_item', array(
+				'VALUE' => $lang['iso'],
+				'NAME' => $lang['local_name'],
+				'SELECTED' => ($lang['iso'] === $selected_language),
+			));
+		}
 	}
 
 	/**

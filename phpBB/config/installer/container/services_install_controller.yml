@@ -15,6 +15,7 @@ services:
             - @installer.navigation.provider
             - @template
             - @path_helper
+            - @request
             - @symfony_request
             - @router
             - %core.root_path%

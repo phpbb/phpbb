@@ -330,6 +330,9 @@
         xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhReq.send(getFormFields($form, $submitBtn));
 
+        // Disable language selector
+        $('#language_selector :input, label').css('display', 'none');
+
         // Clear content
         setupAjaxLayout();
         $('#loading_indicator').css('display', 'block');
