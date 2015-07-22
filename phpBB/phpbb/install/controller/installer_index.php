@@ -74,6 +74,6 @@ class installer_index
 			'BODY'	=> $body,
 		));
 
-		return $this->helper->render('install_main.html', $title, true);
+		return $this->helper->render('installer_main.html', $title, true);
 	}
 }

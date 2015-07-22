@@ -15,14 +15,10 @@
 		<h1>{L_INSTALL_PANEL}</h1>
 		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
 		<!-- IF S_LANG_SELECT -->
-		<form method="post" action="#" id="language_selector">
+		<form method="post" action="#">
 			<fieldset class="nobg">
 				<label for="language">{L_SELECT_LANG}{L_COLON}</label>
-				<select  id="language" name="language">
-                    <!-- BEGIN language_select_item -->
-                    <option value="{language_select_item.VALUE}"<!-- IF language_select_item.SELECTED --> selected="selected"<!-- ENDIF -->>{language_select_item.NAME}</option>
-                    <!-- END language_select_item -->
-                </select>
+                {S_LANG_SELECT}
 				<input class="button1" type="submit" id="change_lang" name="change_lang" value="{L_CHANGE}" />
 			</fieldset>
 		</form>
@@ -47,7 +43,7 @@
 							<li<!-- IF l_block1.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.U_TITLE}"><span>{l_block1.L_TITLE}</span></a></li>
 						<!-- END l_block1 -->
 						<!-- BEGIN l_block2 -->
-							<li<!-- IF l_block2.S_SELECTED --> id="activemenu"<!-- ENDIF -->><span<!-- IF l_block2.S_COMPLETE --> class="completed"<!-- ENDIF --> id="installer-stage-{l_block2.STAGE_NAME}">{l_block2.L_TITLE}</span></li>
+                            <li<!-- IF l_block2.S_SELECTED --> id="activemenu"<!-- ENDIF -->><span<!-- IF l_block2.S_COMPLETE --> class="completed"<!-- ENDIF -->>{l_block2.L_TITLE}</span></li>
 						<!-- END l_block2 -->
 						</ul>
 						</div>
