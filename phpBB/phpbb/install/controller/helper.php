@@ -233,8 +233,6 @@ class helper
 		$this->render_navigation();
 	}
 
-
-
 	/**
 	 * Render navigation
 	 */
@@ -247,25 +245,31 @@ class helper
 		$active_main_menu = $this->get_active_main_menu($nav_array);
 
 		// Pass navigation to template
-		foreach ($nav_array as $key => $entry) {
+		foreach ($nav_array as $key => $entry)
+		{
 			$this->template->assign_block_vars('t_block1', array(
 				'L_TITLE' => $this->language->lang($entry['label']),
 				'S_SELECTED' => ($active_main_menu === $key),
 				'U_TITLE' => $this->route($entry['route']),
 			));
 
-			if (is_array($entry[0]) && $active_main_menu === $key) {
+			if (is_array($entry[0]) && $active_main_menu === $key)
+			{
 				$entry[0] = $this->sort_navigation_level($entry[0]);
 
-				foreach ($entry[0] as $name => $sub_entry) {
-					if (isset($sub_entry['stage']) && $sub_entry['stage'] === true) {
+				foreach ($entry[0] as $name => $sub_entry)
+				{
+					if (isset($sub_entry['stage']) && $sub_entry['stage'] === true)
+					{
 						$this->template->assign_block_vars('l_block2', array(
 							'L_TITLE' => $this->language->lang($sub_entry['label']),
 							'S_SELECTED' => (isset($sub_entry['selected']) && $sub_entry['selected'] === true),
 							'S_COMPLETE' => (isset($sub_entry['completed']) && $sub_entry['completed'] === true),
 							'STAGE_NAME' => $name,
 						));
-					} else {
+					}
+					else
+					{
 						$this->template->assign_block_vars('l_block1', array(
 							'L_TITLE' => $this->language->lang($sub_entry['label']),
 							'S_SELECTED' => (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->get('_route')),
