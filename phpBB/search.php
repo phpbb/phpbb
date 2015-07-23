@@ -1177,7 +1177,15 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @since 3.1.0-RC4
 	* @changed 3.1.6-RC1 Added total_match_count and keywords
 	*/
-	$vars = array('author_id', 'l_search_title', 'search_id', 'show_results', 'start', 'total_match_count', 'keywords');
+	$vars = array(
+		'author_id',
+		'l_search_title',
+		'search_id',
+		'show_results',
+		'start',
+		'total_match_count',
+		'keywords',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.search_results_modify_search_title', compact($vars)));
 
 	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
