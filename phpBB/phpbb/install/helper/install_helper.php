@@ -47,14 +47,14 @@ class install_helper
 	 */
 	public function is_phpbb_installed()
 	{
-		$config_path = $this->phpbb_root_path . 'config' . $this->php_ext;
+		$config_path = $this->phpbb_root_path . 'config.' . $this->php_ext;
 		$install_lock_path = $this->phpbb_root_path . 'cache/install_lock';
 
-		if (file_exists($config_path) && !file_exists($install_lock_path))
+		if (file_exists($config_path) && !file_exists($install_lock_path) && filesize($config_path))
 		{
-			include_once $config_path;
+			return true;
 		}
 
-		return defined('PHPBB_INSTALLED');
+		return false;
 	}
 }
