@@ -56,6 +56,8 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		);
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 
+		$dispatcher = new phpbb_mock_event_dispatcher();
+
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $cache));
 		$this->avatar_foobar->expects($this->any())
@@ -76,7 +78,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $dispatcher, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
