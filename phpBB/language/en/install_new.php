@@ -80,6 +80,8 @@ $lang = array_merge($lang, array(
 	</ul>
 
 	<p>Only those databases supported on your server will be displayed.',
+
+	'ACP_LINK'	=> 'Take me to <a href="%1$s">the ACP</a>',
 ));
 
 // Requirements translation

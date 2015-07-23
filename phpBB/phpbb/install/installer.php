@@ -18,6 +18,7 @@ use phpbb\install\exception\installer_config_not_writable_exception;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
+use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\iohandler_interface;
 
 class installer
@@ -171,6 +172,34 @@ class installer
 
 			// Installation finished
 			$install_finished = true;
+
+			if ($this->iohandler instanceof cli_iohandler)
+			{
+				$this->iohandler->add_success_message('INSTALLER_FINISHED');
+			}
+			else
+			{
+				global $SID;
+
+				// Construct ACP url
+				$acp_url = $protocol = $this->install_config->get('server_protocol');
+				$acp_url .= $this->install_config->get('server_name');
+				$port = $this->install_config->get('server_port');
+
+				if (!((strpos($protocol, 'https:') === 0 && $port === 443)
+					|| (strpos($protocol, 'http:') === 0 && $port === 80)))
+				{
+					$acp_url .= ':' . $port;
+				}
+
+				$acp_url .= $this->install_config->get('script_path');
+				$acp_url .= '/adm/index.php' . $SID;
+
+				$this->iohandler->add_success_message('INSTALLER_FINISHED', array(
+					'ACP_LINK',
+					$acp_url,
+				));
+			}
 		}
 		catch (user_interaction_required_exception $e)
 		{

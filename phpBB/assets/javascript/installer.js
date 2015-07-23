@@ -52,7 +52,7 @@
 
             if (messages[i].hasOwnProperty('description')) {
                 $description = $(document.createElement('p'));
-                $description.text(messages[i].description);
+                $description.html(messages[i].description);
                 $msgElement.append($description);
             }
 
@@ -68,6 +68,10 @@
                 case 'log':
                     $msgElement.addClass('log');
                     $logContainer.append($msgElement);
+                    break;
+                case 'success':
+                    $msgElement.addClass('successbox');
+                    $errorContainer.prepend($msgElement);
                     break;
             }
         }
@@ -199,6 +203,10 @@
 
         if (responseObject.hasOwnProperty('logs')) {
             addMessage('log', responseObject.logs);
+        }
+
+        if (responseObject.hasOwnProperty('success')) {
+            addMessage('success', responseObject.success);
         }
 
         if (responseObject.hasOwnProperty('form')) {
