@@ -73,7 +73,7 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 		}
 
 		$script_path = str_replace(array('\\', '//'), '/', $script_path);
-		$script_path = trim(dirname(dirname($script_path)));
+		$script_path = trim(dirname(dirname(dirname($script_path)))); // Because we are in install/app.php/route_name
 
 		// Server data
 		$cookie_secure		= $this->io_handler->get_input('cookie_secure', $cookie_secure);
