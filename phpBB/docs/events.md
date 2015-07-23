@@ -1287,7 +1287,6 @@ ucp_pm_viewmessage_rank_before
 * Purpose: Add data before the rank on the user profile when viewing
 a private message
 
-
 ucp_prefs_personal_prepend
 ===
 * Locations:
@@ -1717,7 +1716,6 @@ viewtopic_body_postrow_rank_before
 * Since: 3.1.6-RC1
 * Purpose: Add data before the rank on the user profile when viewing
 a post
-
 
 viewtopic_body_topic_actions_before
 ===
