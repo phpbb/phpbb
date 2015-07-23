@@ -224,11 +224,19 @@ class config
 
 		$file_content = @file_get_contents($this->install_config_file);
 		$serialized_data = trim(substr($file_content, 8));
-		$unserialized_data = unserialize($serialized_data);
 
-		$this->installer_config = $unserialized_data['installer_config'];
-		$this->progress_data = $unserialized_data['progress_data'];
-		$this->navigation_data = $unserialized_data['navigation_data'];
+		$this->installer_config = array();
+		$this->progress_data = array();
+		$this->navigation_data = array();
+
+		if (!empty($serialized_data))
+		{
+			$unserialized_data = unserialize($serialized_data);
+
+			$this->installer_config = (is_array($unserialized_data['installer_config'])) ? $unserialized_data['installer_config'] : array();
+			$this->progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
+			$this->navigation_data = (is_array($unserialized_data['navigation_data'])) ? $unserialized_data['navigation_data'] : array();
+		}
 	}
 
 	/**
