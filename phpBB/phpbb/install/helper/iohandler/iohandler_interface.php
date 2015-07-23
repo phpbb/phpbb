@@ -163,4 +163,12 @@ interface iohandler_interface
 	 * @param string	$message_lang_key	Language key for the message
 	 */
 	public function finish_progress($message_lang_key);
+
+	/**
+	 * Sends and sets cookies
+	 *
+	 * @param string	$cookie_name	Name of the cookie to set
+	 * @param string	$cookie_value	Value of the cookie to set
+	 */
+	public function set_cookie($cookie_name, $cookie_value);
 }

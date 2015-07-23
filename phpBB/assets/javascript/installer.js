@@ -165,6 +165,19 @@
         }
     }
 
+    // Set cookies
+    function setCookies(cookies) {
+        var cookie;
+
+        for (var i = 0; i < cookies.length; i++) {
+            // Set cookie name and value
+            cookie = encodeURIComponent(cookies[i].name) + '=' + encodeURIComponent(cookies[i].value);
+            // Set path
+            cookie += '; path=/';
+            document.cookie = cookie;
+        }
+    }
+
     /**
      * Parse messages from the response object
      *
@@ -198,6 +211,10 @@
 
         if (responseObject.hasOwnProperty('nav')) {
             updateNavbarStatus(responseObject.nav);
+        }
+
+        if (responseObject.hasOwnProperty('cookies')) {
+            setCookies(responseObject.cookies);
         }
     }
 
@@ -321,6 +338,7 @@
         $contentWrapper.append($spinner);
     }
 
+    // Submits a form
     function submitForm($form, $submitBtn) {
         $form.css('display', 'none');
 

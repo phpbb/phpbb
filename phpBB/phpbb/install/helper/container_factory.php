@@ -13,6 +13,7 @@
 
 namespace phpbb\install\helper;
 
+use phpbb\cache\driver\dummy;
 use phpbb\install\exception\cannot_build_container_exception;
 
 class container_factory
@@ -152,6 +153,10 @@ class container_factory
 		// this container
 		$this->container->register('request')->setSynthetic(true);
 		$this->container->set('request', $this->request);
+
+		// Replace cache service, as config gets cached, and we don't want that
+		$this->container->register('cache.driver')->setSynthetic(true);
+		$this->container->set('cache.driver', new dummy());
 		$this->container->compile();
 
 		// Restore super globals to previous state

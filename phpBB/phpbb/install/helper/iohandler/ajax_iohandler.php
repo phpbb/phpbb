@@ -44,6 +44,11 @@ class ajax_iohandler extends iohandler_base
 	protected $nav_data;
 
 	/**
+	 * @var array
+	 */
+	protected $cookies;
+
+	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\request\request_interface	$request	HTTP request interface
@@ -55,6 +60,7 @@ class ajax_iohandler extends iohandler_base
 		$this->template	= $template;
 		$this->form		= '';
 		$this->nav_data	= array();
+		$this->cookies	= array();
 
 		parent::__construct();
 	}
@@ -214,6 +220,12 @@ class ajax_iohandler extends iohandler_base
 			$this->request_client_refresh = false;
 		}
 
+		if (!empty($this->cookies))
+		{
+			$json_array['cookies'] = $this->cookies;
+			$this->cookies = array();
+		}
+
 		return $json_array;
 	}
 
@@ -250,6 +262,17 @@ class ajax_iohandler extends iohandler_base
 	{
 		$this->nav_data['finished'][] = $menu_path[sizeof($menu_path) - 1];
 		$this->send_response();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_cookie($cookie_name, $cookie_value)
+	{
+		$this->cookies[] = array(
+			'name' => $cookie_name,
+			'value' => $cookie_value
+		);
 	}
 
 	/**

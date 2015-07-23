@@ -12,6 +12,7 @@
  */
 
 namespace phpbb\install\module\install_finish\task;
+use phpbb\config\db;
 
 /**
  * Logs installation and sends an email to the admin
@@ -73,11 +74,17 @@ class notify_user extends \phpbb\install\task_base
 		$this->iohandler		= $iohandler;
 
 		$this->auth				= $container->get('auth');
-		$this->config			= $container->get('config');
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
+
+		// We need to reload config for cases when it doesn't have all values
+		$this->config = new db(
+			$container->get('dbal.conn'),
+			$container->get('cache.driver'),
+			$container->get_parameter('tables.config')
+		);
 	}
 
 	/**
@@ -85,11 +92,8 @@ class notify_user extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
-		// @todo Login user after installation has been finished
-		//$this->user->setup('common');
-
-		//$this->user->session_begin();
-		//$this->auth->login($this->install_config->get('admin_name'), $this->install_config->get('admin_pass1'), false, true, true);
+		$this->user->session_begin();
+		$this->user->setup('common');
 
 		if ($this->config['email_enable'])
 		{
@@ -106,8 +110,31 @@ class notify_user extends \phpbb\install\task_base
 			$messenger->send(NOTIFY_EMAIL);
 		}
 
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_INSTALL_INSTALLED', false, array($this->config['version']));
+		// Login admin
+		// Ugly but works
+		$this->auth->login(
+			$this->install_config->get('admin_name'),
+			$this->install_config->get('admin_passwd'),
+			false,
+			true,
+			true
+		);
 
+		$this->iohandler->set_cookie($this->config['cookie_name'] . '_sid', $this->user->session_id);
+		$this->iohandler->set_cookie($this->config['cookie_name'] . '_u', $this->user->cookie_data['u']);
+		$this->iohandler->set_cookie($this->config['cookie_name'] . '_k', $this->user->cookie_data['k']);
+
+		// Create log
+		$this->log->add(
+			'admin',
+			$this->user->data['user_id'],
+			$this->user->ip,
+			'LOG_INSTALL_INSTALLED',
+			false,
+			array($this->config['version'])
+		);
+
+		// Remove install_lock
 		@unlink($this->phpbb_root_path . 'cache/install_lock');
 	}
 
