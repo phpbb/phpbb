@@ -578,6 +578,24 @@ mcp_warn_user_add_warning_field_before
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning a user - before add warning field.
 
+memberlist_body_rank_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+    + styles/subsilver2/template/memberlist_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist. Works in
+all display modes (leader, group and normal memberlist).
+
+memberlist_body_rank_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+    + styles/subsilver2/template/memberlist_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add information before rank in memberlist. Works in
+all display modes (leader, group and normal memberlist).
+
 memberlist_body_username_append
 ===
 * Locations:
@@ -651,6 +669,48 @@ memberlist_view_content_prepend
     + styles/subsilver2/template/memberlist_view.html
 * Since: 3.1.0-b3
 * Purpose: Add custom content to the user profile view before the main content
+
+memberlist_view_rank_after
+===
+* Locations:
+    + styles/subsilver2/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist
+
+memberlist_view_rank_avatar_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist (with avatar)
+
+memberlist_view_rank_avatar_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information before rank in memberlist (with avatar)
+
+memberlist_view_rank_before
+===
+* Locations:
+    + styles/subsilver2/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist
+
+memberlist_view_rank_no_avatar_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist (without avatar)
+
+memberlist_view_rank_no_avatar_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information before rank in memberlist (without avatar)
 
 memberlist_view_user_statistics_after
 ===
@@ -1340,6 +1400,23 @@ ucp_pm_viewmessage_print_head_append
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
 
+ucp_pm_viewmessage_rank_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.6-RC1
+* Purpose: Add data after the rank on the user profile when viewing
+a private message
+
+ucp_pm_viewmessage_rank_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.6-RC1
+* Purpose: Add data before the rank on the user profile when viewing
+a private message
+
+
 ucp_prefs_personal_prepend
 ===
 * Locations:
@@ -1807,6 +1884,25 @@ viewtopic_body_postrow_post_notices_before
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-b2
 * Purpose: Add posts specific custom notices at the notices top.
+
+viewtopic_body_postrow_rank_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add data after the rank on the user profile when viewing
+a post
+
+viewtopic_body_postrow_rank_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add data before the rank on the user profile when viewing
+a post
+
 
 viewtopic_body_topic_actions_before
 ===

@@ -26,6 +26,7 @@
 			<tr>
 				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: {USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_BAN --><span class="genmed"> [ <a href="{U_USER_BAN}">{L_USER_BAN}</a> ]</span><!-- ENDIF --><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
 			</tr>
+			<!-- EVENT memberlist_view_rank_before -->
 			<!-- IF RANK_TITLE -->
 				<tr>
 					<td class="postdetails" align="center">{RANK_TITLE}</td>
@@ -36,6 +37,7 @@
 					<td align="center">{RANK_IMG}</td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- EVENT memberlist_view_rank_after -->
 			<!-- IF AVATAR_IMG -->
 				<tr>
 					<td align="center">{AVATAR_IMG}</td>
