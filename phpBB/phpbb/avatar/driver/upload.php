@@ -168,9 +168,9 @@ class upload extends \phpbb\avatar\driver\driver
 		}
 
 		/**
-		* Before overwriting an existing avatar with a newly uploaded avatar
+		* Before moving new file in place (and eventually overwriting the existing avatar with the newly uploaded avatar)
 		*
-		* @event core.avatar_driver_upload_overwrite_before
+		* @event core.avatar_driver_upload_move_file_before
 		* @var	string	destination			Destination directory where the file is going to be moved
 		* @var	string	prefix				Prefix for the avatar filename
 		* @var	array	row					Array with avatar row data
@@ -183,7 +183,7 @@ class upload extends \phpbb\avatar\driver\driver
 			'row',
 			'error',
 		);
-		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_overwrite_before', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_move_file_before', compact($vars)));
 
 		if (!sizeof($error))
 		{
