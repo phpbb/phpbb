@@ -68,7 +68,8 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
 $user->add_lang('cli');
+$lang = $phpbb_container->get('language');
 
-$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $user);
+$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $lang);
 $application->register_container_commands($phpbb_container->get('console.command_collection'));
 $application->run($input);
