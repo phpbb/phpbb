@@ -13,7 +13,6 @@
 
 namespace phpbb\install\controller;
 
-use phpbb\exception\http_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\navigation\navigation_provider;

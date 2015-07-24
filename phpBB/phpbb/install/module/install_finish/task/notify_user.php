@@ -12,6 +12,7 @@
  */
 
 namespace phpbb\install\module\install_finish\task;
+
 use phpbb\config\db;
 
 /**
