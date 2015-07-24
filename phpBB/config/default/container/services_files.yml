@@ -1,7 +1,4 @@
 services:
-    filesystem:
-        class: phpbb\filesystem\filesystem
-
     files.factory:
         class: phpbb\files\factory
         arguments:

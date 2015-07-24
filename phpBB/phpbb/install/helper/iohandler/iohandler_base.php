@@ -80,6 +80,7 @@ abstract class iohandler_base implements iohandler_interface
 		$this->logs		= array();
 		$this->success	= array();
 
+		$this->restart_progress_bar		= false;
 		$this->task_progress_count		= 0;
 		$this->current_task_progress	= 0;
 		$this->current_task_name		= '';
@@ -130,9 +131,10 @@ abstract class iohandler_base implements iohandler_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function set_task_count($task_count)
+	public function set_task_count($task_count, $restart = false)
 	{
 		$this->task_progress_count = $task_count;
+		$this->restart_progress_bar = $restart;
 	}
 
 	/**

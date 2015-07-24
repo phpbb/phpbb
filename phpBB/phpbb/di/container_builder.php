@@ -355,6 +355,7 @@ class container_builder
 				->without_cache()
 				->without_extensions()
 				->with_config($this->config_php_file)
+				->with_config_path($this->get_config_path())
 				->with_environment('production')
 				->without_compiled_container()
 				->get_container()

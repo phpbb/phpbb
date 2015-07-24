@@ -15,8 +15,12 @@ namespace phpbb\install\module\requirements;
 
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
+use phpbb\install\module_base;
 
-class module extends \phpbb\install\module_base
+/**
+ * Base class for requirements installer module
+ */
+abstract class abstract_requirements_module extends module_base
 {
 	public function run()
 	{
@@ -33,7 +37,7 @@ class module extends \phpbb\install\module_base
 		foreach ($this->task_collection as $name => $task)
 		{
 			// Run until there are available resources
-			if ($this->install_config->get_time_remaining() <= 0 && $this->install_config->get_memory_remaining() <= 0)
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
 			{
 				throw new resource_limit_reached_exception();
 			}
@@ -98,13 +102,5 @@ class module extends \phpbb\install\module_base
 	public function get_step_count()
 	{
 		return 0;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_navigation_stage_path()
-	{
-		return array('install', 0, 'requirements');
 	}
 }

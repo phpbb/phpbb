@@ -56,7 +56,7 @@ services:
             - { name: service_collection, tag: install_obtain_data, class_name_aware: true }
 
     installer.module.obtain_data_install:
-        class: phpbb\install\module\obtain_data\module
+        class: phpbb\install\module\obtain_data\install_module
         parent: installer.module_base
         arguments:
             - @installer.module.install_obtain_data_collection

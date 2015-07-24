@@ -1836,8 +1836,29 @@ li.pagination ul {
 	font-weight: bold;
 }
 
+#log-container {
+	max-height: 300px;
+	padding: 8px;
+	margin: 10px 0;
+	clear: both;
+	overflow-y: auto;
+	background-color: #FFFFFF;
+}
+
+#log-container.show_border {
+	border: 1px solid #DBD7D1;
+}
+
+.log {
+	font-size: 0.8em;
+}
+
 .notice {
 	background-color: #62A5CC;
+}
+
+.download-box {
+	margin: 10px 0 10px 0;
 }
 
 /* Special cases for the error page */

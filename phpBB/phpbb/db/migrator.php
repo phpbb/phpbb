@@ -13,6 +13,8 @@
 
 namespace phpbb\db;
 
+use phpbb\db\output_handler\migrator_output_handler_interface;
+use phpbb\db\output_handler\null_migrator_output_handler;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -122,7 +124,7 @@ class migrator
 	/**
 	 * Set the output handler.
 	 *
-	 * @param migrator_output_handler $handler The output handler
+	 * @param migrator_output_handler_interface $handler The output handler
 	 */
 	public function set_output_handler(migrator_output_handler_interface $handler)
 	{

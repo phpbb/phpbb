@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\install\module\obtain_data;
+namespace phpbb\install\module\update_filesystem;
 
 class module extends \phpbb\install\module_base
 {
@@ -20,7 +20,7 @@ class module extends \phpbb\install\module_base
 	 */
 	public function get_navigation_stage_path()
 	{
-		return array('install', 0, 'obtain_data');
+		return array('update', 0, 'update_files');
 	}
 
 	/**

@@ -62,13 +62,18 @@ class phpbb_installer_config_test extends phpbb_test_case
 
 		$this->config->increment_current_task_progress(2);
 
-		$this->assertEquals(array(
-				'last_task_module_name'		=> 'bar',
-				'last_task_name'			=> 'foo',
-				'max_task_progress'			=> 10,
-				'current_task_progress'		=> 3,
-			),
-			$this->config->get_progress_data()
+		// We only want to check these values
+		$result = $this->config->get_progress_data();
+		$expected_result = array(
+			'last_task_module_name'		=> 'bar',
+			'last_task_name'			=> 'foo',
+			'max_task_progress'			=> 10,
+			'current_task_progress'		=> 3,
 		);
+
+		foreach ($expected_result as $key => $value)
+		{
+			$this->assertEquals($value, $result[$key]);
+		}
 	}
 }

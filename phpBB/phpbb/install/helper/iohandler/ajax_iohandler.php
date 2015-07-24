@@ -13,11 +13,19 @@
 
 namespace phpbb\install\helper\iohandler;
 
+use phpbb\path_helper;
+use phpbb\routing\router;
+
 /**
  * Input-Output handler for the AJAX frontend
  */
 class ajax_iohandler extends iohandler_base
 {
+	/**
+	 * @var path_helper
+	 */
+	protected $path_helper;
+
 	/**
 	 * @var \phpbb\request\request_interface
 	 */
@@ -27,6 +35,16 @@ class ajax_iohandler extends iohandler_base
 	 * @var \phpbb\template\template
 	 */
 	protected $template;
+
+	/**
+	 * @var router
+	 */
+	protected $router;
+
+	/**
+	 * @var string
+	 */
+	protected $file_status;
 
 	/**
 	 * @var string
@@ -49,18 +67,29 @@ class ajax_iohandler extends iohandler_base
 	protected $cookies;
 
 	/**
+	 * @var array
+	 */
+	protected $download;
+
+	/**
 	 * Constructor
 	 *
+	 * @param path_helper						$path_helper
 	 * @param \phpbb\request\request_interface	$request	HTTP request interface
 	 * @param \phpbb\template\template			$template	Template engine
+	 * @param router 							$router		Router
 	 */
-	public function __construct(\phpbb\request\request_interface $request, \phpbb\template\template $template)
+	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router)
 	{
+		$this->path_helper = $path_helper;
 		$this->request	= $request;
+		$this->router	= $router;
 		$this->template	= $template;
 		$this->form		= '';
 		$this->nav_data	= array();
 		$this->cookies	= array();
+		$this->download	= array();
+		$this->file_status = '';
 
 		parent::__construct();
 	}
@@ -102,12 +131,12 @@ class ajax_iohandler extends iohandler_base
 	 */
 	public function add_user_form_group($title, $form)
 	{
-		$this->template->assign_var('S_FORM_ELEM_COUNT', sizeof($form));
-
 		$this->template->assign_block_vars('options', array(
 			'LEGEND'	=> $this->language->lang($title),
 			'S_LEGEND'	=> true,
 		));
+
+		$not_button_form = false;
 
 		foreach ($form as $input_name => $input_options)
 		{
@@ -117,6 +146,7 @@ class ajax_iohandler extends iohandler_base
 			}
 
 			$tpl_ary = array();
+			$not_button_form = ($input_options['type'] !== 'submit' || $not_button_form);
 
 			$tpl_ary['TYPE'] = $input_options['type'];
 			$tpl_ary['TITLE'] = $this->language->lang($input_options['label']);
@@ -136,7 +166,7 @@ class ajax_iohandler extends iohandler_base
 				$tpl_ary['S_EXPLAIN'] = true;
 			}
 
-			if (in_array($input_options['type'], array('select', 'radio')))
+			if (in_array($input_options['type'], array('select', 'radio'), true))
 			{
 				for ($i = 0, $total = sizeof($input_options['options']); $i < $total; $i++)
 				{
@@ -149,8 +179,11 @@ class ajax_iohandler extends iohandler_base
 				$tpl_ary['OPTIONS'] = $input_options['options'];
 			}
 
-			$this->template->assign_block_vars('options', $tpl_ary);
+			$block_name = ($input_options['type'] === 'submit') ? 'submit_buttons' : 'options';
+			$this->template->assign_block_vars($block_name, $tpl_ary);
 		}
+
+		$this->template->assign_var('S_NOT_ONLY_BUTTON_FORM', $not_button_form);
 
 		$this->template->set_filenames(array(
 			'form_install' => 'installer_form.html',
@@ -185,12 +218,25 @@ class ajax_iohandler extends iohandler_base
 			'warnings' => $this->warnings,
 			'logs' => $this->logs,
 			'success' => $this->success,
+			'download' => $this->download,
 		);
+
+		$this->errors = array();
+		$this->warnings = array();
+		$this->logs = array();
+		$this->success = array();
+		$this->download = array();
 
 		if (!empty($this->form))
 		{
 			$json_array['form'] = $this->form;
 			$this->form = '';
+		}
+
+		if (!empty($this->file_status))
+		{
+			$json_array['file_status'] = $this->file_status;
+			$this->file_status = '';
 		}
 
 		// If current task name is set, we push progress message to the client side
@@ -201,18 +247,19 @@ class ajax_iohandler extends iohandler_base
 				'task_num'		=> $this->current_task_progress,
 				'task_count'	=> $this->task_progress_count,
 			);
+
+			if ($this->restart_progress_bar)
+			{
+				$json_array['progress']['restart'] = 1;
+				$this->restart_progress_bar = false;
+			}
 		}
 
 		if (!empty($this->nav_data))
 		{
 			$json_array['nav'] = $this->nav_data;
+			$this->nav_data = array();
 		}
-
-		$this->errors = array();
-		$this->warnings = array();
-		$this->logs = array();
-		$this->success = array();
-		$this->nav_data = array();
 
 		if ($this->request_client_refresh)
 		{
@@ -273,6 +320,56 @@ class ajax_iohandler extends iohandler_base
 			'name' => $cookie_name,
 			'value' => $cookie_value
 		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function add_download_link($route, $title, $msg = null)
+	{
+		$link_properties = array(
+			'href'	=> $this->router->generate($route),
+			'title'	=> $this->language->lang($title),
+			'download' => $this->language->lang('DOWNLOAD'),
+		);
+
+		if ($msg !== null)
+		{
+			$link_properties['msg'] = htmlspecialchars_decode($this->language->lang($msg));
+		}
+
+		$this->download[] = $link_properties;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function render_update_file_status($status_array)
+	{
+		$this->template->assign_vars(array(
+			'T_IMAGE_PATH'	=> $this->path_helper->get_web_root_path() . 'adm/images/',
+		));
+
+		foreach ($status_array as $block => $list)
+		{
+			foreach ($list as $filename)
+			{
+				$dirname = dirname($filename);
+
+				$this->template->assign_block_vars($block, array(
+					'STATUS'			=> $block,
+					'FILENAME'			=> $filename,
+					'DIR_PART'			=> (!empty($dirname) && $dirname !== '.') ? dirname($filename) . '/' : false,
+					'FILE_PART'			=> basename($filename),
+				));
+			}
+		}
+
+		$this->template->set_filenames(array(
+			'file_status' => 'installer_update_file_status.html',
+		));
+
+		$this->file_status = $this->template->assign_display('file_status');
 	}
 
 	/**

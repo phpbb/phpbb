@@ -27,32 +27,9 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 //
 // Let's do the common.php logic
 //
-require($phpbb_root_path . 'includes/startup.' . $phpEx);
-require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
-
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-$phpbb_class_loader->register();
-
-// In case $phpbb_adm_relative_path is not set (in case of an update), use the default.
-$phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relative_path : 'adm/';
-$phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
-
-// Include files
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-
-// Set PHP error handler to ours
-set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
-
-$phpbb_installer_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
-$phpbb_installer_container = $phpbb_installer_container_builder
-	->with_environment('installer')
-	->without_extensions()
-	->without_cache()
-	->get_container();
+$startup_new_path = $phpbb_root_path . 'install/update/update/new/install_new/startup.' . $phpEx;
+$startup_path = (file_exists($startup_new_path)) ? $startup_new_path : $phpbb_root_path . 'install_new/startup.' . $phpEx;
+require($startup_path);
 
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_installer_container->get('filesystem');

@@ -11,6 +11,7 @@
 	var progressBarTriggered = false;
 	var progressTimer = null;
 	var currentProgress = 0;
+	var refreshRequested = false;
 
 	// Template related variables
 	var $contentWrapper = $('.install-body').find('.main');
@@ -67,7 +68,8 @@
 					break;
 				case 'log':
 					$msgElement.addClass('log');
-					$logContainer.append($msgElement);
+					$logContainer.prepend($msgElement);
+					$logContainer.addClass('show_border');
 					break;
 				case 'success':
 					$msgElement.addClass('successbox');
@@ -78,12 +80,53 @@
 	}
 
 	/**
+	 * Render a download box
+	 */
+	function addDownloadBox(downloadArray)
+	{
+		var $downloadContainer = $('#download-wrapper');
+		var $downloadBox, $title, $content, $link;
+
+		for (var i = 0; i < downloadArray.length; i++) {
+			$downloadBox = $('<div />');
+			$downloadBox.addClass('download-box');
+
+			$title = $('<strong />');
+			$title.text(downloadArray[i].title);
+			$downloadBox.append($title);
+
+			if (downloadArray[i].hasOwnProperty('msg')) {
+				$content = $('<p />');
+				$content.text(downloadArray[i].msg);
+				$downloadBox.append($content);
+			}
+
+			$link = $('<a />');
+			$link.addClass('button1');
+			$link.attr('href', downloadArray[i].href);
+			$link.text(downloadArray[i].download);
+			$downloadBox.append($link);
+
+			$downloadContainer.append($downloadBox);
+		}
+	}
+
+	/**
+	 * Render update files' status
+	 */
+	function addUpdateFileStatus(fileStatus)
+	{
+		var $statusContainer = $('#file-status-wrapper');
+		$statusContainer.html(fileStatus);
+	}
+
+	/**
 	 * Displays a form from the response
 	 *
 	 * @param formHtml
 	 */
 	function addForm(formHtml) {
-		var $formContainer = $('#content-container');
+		var $formContainer = $('#form-wrapper');
 		$formContainer.html(formHtml);
 		var $form = $('#install_install');
 		interceptFormSubmit($form);
@@ -139,7 +182,7 @@
 		if (progressObject.task_name.length) {
 			if (!progressBarTriggered) {
 				// Create progress bar
-				var $contentContainer = $('#content-container');
+				var $progressBarWrapper = $('#progress-bar-container');
 
 				// Create progress bar elements
 				$progressBar = $('<div />');
@@ -155,10 +198,21 @@
 				$progressBar.append($progressFiller);
 				$progressBar.append($progressText);
 
-				$contentContainer.append($statusText);
-				$contentContainer.append($progressBar);
+				$progressBarWrapper.append($statusText);
+				$progressBarWrapper.append($progressBar);
 
 				progressBarTriggered = true;
+			} else if (progressObject.hasOwnProperty('restart')) {
+				clearInterval(progressTimer);
+
+				$progressFiller = $('#progress-bar-filler');
+				$progressText = $('#progress-bar-text');
+				$statusText = $('#progress-status-text');
+
+				$progressText.text('0%');
+				$progressFiller.css('width', '0%');
+
+				currentProgress = 0;
 			} else {
 				$statusText = $('#progress-status-text');
 			}
@@ -217,12 +271,24 @@
 			setProgress(responseObject.progress);
 		}
 
+		if (responseObject.hasOwnProperty('download')) {
+			addDownloadBox(responseObject.download);
+		}
+
+		if (responseObject.hasOwnProperty('file_status')) {
+			addUpdateFileStatus(responseObject.file_status);
+		}
+
 		if (responseObject.hasOwnProperty('nav')) {
 			updateNavbarStatus(responseObject.nav);
 		}
 
 		if (responseObject.hasOwnProperty('cookies')) {
 			setCookies(responseObject.cookies);
+		}
+
+		if (responseObject.hasOwnProperty('refresh')) {
+			refreshRequested = true;
 		}
 	}
 
@@ -243,7 +309,7 @@
 			if (messageEndIndex !== -1) {
 				endOfMessageIndex = messageEndIndex + msgSeparator.length;
 				message = unprocessed.substring(0, endOfMessageIndex);
-				parseMessage(message);
+				parseMessage($.trim(message));
 				nextReadPosition += endOfMessageIndex;
 			}
 		} while (messageEndIndex !== -1);
@@ -251,6 +317,11 @@
 		if (xhReq.readyState === 4) {
 			$('#loading_indicator').css('display', 'none');
 			resetPolling();
+
+			if (refreshRequested) {
+				refreshRequested = false;
+				doRefresh();
+			}
 		}
 	}
 
@@ -310,9 +381,25 @@
 	}
 
 	/**
+	 * Refresh page
+	 */
+	function doRefresh() {
+		resetPolling();
+
+		var xhReq = createXhrObject();
+		xhReq.open('GET', $(location).attr('pathname'), true);
+		xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		xhReq.send();
+
+		startPolling(xhReq);
+	}
+
+	/**
 	 * Renders the AJAX UI layout
 	 */
 	function setupAjaxLayout() {
+		progressBarTriggered = false;
+
 		// Clear content
 		$contentWrapper.html('');
 
@@ -332,13 +419,29 @@
 		$warningContainer.attr('id', 'warning-container');
 		$contentWrapper.append($warningContainer);
 
-		var $installerContentWrapper = $('<div />');
-		$installerContentWrapper.attr('id', 'content-container');
-		$contentWrapper.append($installerContentWrapper);
+		var $progressContainer = $('<div />');
+		$progressContainer.attr('id', 'progress-bar-container');
+		$contentWrapper.append($progressContainer);
 
 		var $logContainer = $('<div />');
 		$logContainer.attr('id', 'log-container');
 		$contentWrapper.append($logContainer);
+
+		var $installerContentWrapper = $('<div />');
+		$installerContentWrapper.attr('id', 'content-container');
+		$contentWrapper.append($installerContentWrapper);
+
+		var $installerDownloadWrapper = $('<div />');
+		$installerDownloadWrapper.attr('id', 'download-wrapper');
+		$installerContentWrapper.append($installerDownloadWrapper);
+
+		var $updaterFileStatusWrapper = $('<div />');
+		$updaterFileStatusWrapper.attr('id', 'file-status-wrapper');
+		$installerContentWrapper.append($updaterFileStatusWrapper);
+
+		var $formWrapper = $('<div />');
+		$formWrapper.attr('id', 'form-wrapper');
+		$installerContentWrapper.append($formWrapper);
 
 		var $spinner = $('<div />');
 		$spinner.attr('id', 'loading_indicator');

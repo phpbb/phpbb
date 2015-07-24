@@ -181,9 +181,12 @@ class cli_iohandler extends iohandler_base
 		}
 	}
 
-	public function set_task_count($task_count)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_task_count($task_count, $restart = false)
 	{
-		parent::set_task_count($task_count);
+		parent::set_task_count($task_count, $restart);
 
 		if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_NORMAL)
 		{
@@ -206,6 +209,9 @@ class cli_iohandler extends iohandler_base
 		}
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function set_progress($task_lang_key, $task_number)
 	{
 		parent::set_progress($task_lang_key, $task_number);
@@ -260,6 +266,20 @@ class cli_iohandler extends iohandler_base
 	 * {@inheritdoc}
 	 */
 	public function set_cookie($cookie_name, $cookie_value)
+	{
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function add_download_link($route, $title, $msg = null)
+	{
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function render_update_file_status($status_array)
 	{
 	}
 }

@@ -111,6 +111,9 @@ $db			= $phpbb_container->get('dbal.conn');
 /* @var $phpbb_log \phpbb\log\log_interface */
 $phpbb_log	= $phpbb_container->get('log');
 
+/** @var \phpbb\language\language $language */
+$language = $phpbb_container->get('language');
+
 // Grab global variables, re-cache if necessary
 /* @var $config \phpbb\config\config */
 $config = $phpbb_container->get('config');
@@ -188,7 +191,7 @@ $migrator = $phpbb_container->get('migrator');
 
 /** @var \phpbb\filesystem\filesystem_interface $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_container->get('filesystem');
-$migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log', $phpbb_filesystem));
+$migrator->set_output_handler(new \phpbb\db\output_handler\log_wrapper_migrator_output_handler($language, new \phpbb\db\output_handler\html_migrator_output_handler($language), $phpbb_root_path . 'store/migrations_' . time() . '.log', $phpbb_filesystem));
 
 $migrator->create_migrations_table();
 

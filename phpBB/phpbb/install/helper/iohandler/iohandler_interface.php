@@ -127,8 +127,9 @@ interface iohandler_interface
 	 * Sets the number of tasks belonging to the installer in the current mode.
 	 *
 	 * @param int	$task_count	Number of tasks
+	 * @param bool	$restart	Whether or not to restart the progress bar, false by default
 	 */
-	public function set_task_count($task_count);
+	public function set_task_count($task_count, $restart = false);
 
 	/**
 	 * Sets the progress information
@@ -163,6 +164,22 @@ interface iohandler_interface
 	 * @param string	$message_lang_key	Language key for the message
 	 */
 	public function finish_progress($message_lang_key);
+
+	/**
+	 * Adds a download link
+	 *
+	 * @param string			$route	Route for the link
+	 * @param string			$title	Language key for the title
+	 * @param string|null|array	$msg	Language key for the message
+	 */
+	public function add_download_link($route, $title, $msg = null);
+
+	/**
+	 * Renders the status of update files
+	 *
+	 * @param array	$status_array	Array containing files in groups to render
+	 */
+	public function render_update_file_status($status_array);
 
 	/**
 	 * Sends and sets cookies

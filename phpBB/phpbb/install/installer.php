@@ -15,6 +15,7 @@ namespace phpbb\install;
 
 use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\installer_config_not_writable_exception;
+use phpbb\install\exception\jump_to_restart_point_exception;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
@@ -94,6 +95,7 @@ class installer
 		// Variable used to check if the install process have been finished
 		$install_finished	= false;
 		$fail_cleanup		= false;
+		$send_refresh		= false;
 
 		// We are installing something, so the introduction stage can go now...
 		$this->install_config->set_finished_navigation_stage(array('install', 0, 'introduction'));
@@ -142,7 +144,7 @@ class installer
 				$this->install_config->set_active_module($name);
 
 				// Run until there are available resources
-				if ($this->install_config->get_time_remaining() <= 0 && $this->install_config->get_memory_remaining() <= 0)
+				if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
 				{
 					throw new resource_limit_reached_exception();
 				}
@@ -208,7 +210,12 @@ class installer
 		}
 		catch (resource_limit_reached_exception $e)
 		{
-			// Do nothing
+			$send_refresh = true;
+		}
+		catch (jump_to_restart_point_exception $e)
+		{
+			$this->install_config->jump_to_restart_point($e->get_restart_point_name());
+			$send_refresh = true;
 		}
 		catch (\Exception $e)
 		{
@@ -222,9 +229,10 @@ class installer
 			// Send install finished message
 			$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
 		}
-		else if (!$fail_cleanup)
+		else if ($send_refresh)
 		{
 			$this->iohandler->request_refresh();
+			$this->iohandler->send_response();
 		}
 
 		// Save install progress

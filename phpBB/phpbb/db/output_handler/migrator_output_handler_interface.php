@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db;
+namespace phpbb\db\output_handler;
 
 interface migrator_output_handler_interface
 {

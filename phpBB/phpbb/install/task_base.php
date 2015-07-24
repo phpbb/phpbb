@@ -44,7 +44,7 @@ abstract class task_base implements task_interface
 	/**
 	 * {@inheritdoc}
 	 *
-	 * Overwrite this method if your task is non-essential!
+	 * Note: Overwrite this method if your task is non-essential!
 	 */
 	public function check_requirements()
 	{

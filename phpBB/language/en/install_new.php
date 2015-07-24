@@ -308,8 +308,104 @@ $lang = array_merge($lang, array(
 
 // CLI messages
 $lang = array_merge($lang, array(
-	'CLI_INSTALL_BOARD'			=> 'Install phpBB',
+	'CLI_INSTALL_BOARD'				=> 'Install phpBB',
 	'CLI_INSTALL_SHOW_CONFIG'		=> 'Show the configuration which will be used',
 	'CLI_INSTALL_VALIDATE_CONFIG'	=> 'Validate a configuration file',
 	'CLI_CONFIG_FILE'				=> 'Config file to use',
+));
+
+// Common updater messages
+$lang = array_merge($lang, array(
+	'UPDATE_INSTALLATION'			=> 'Update phpBB installation',
+	'UPDATE_INSTALLATION_EXPLAIN'	=> 'With this option, it is possible to update your phpBB installation to the latest version.<br />During the process all of your files will be checked for their integrity. You are able to review all differences and files before the update.<br /><br />The file update itself can be done in two different ways.</p><h2>Manual Update</h2><p>With this update you only download your personal set of changed files to make sure you do not lose your file modifications you may have done. After you downloaded this package you need to manually upload the files to their correct position under your phpBB root directory. Once done, you are able to do the file check stage again to see if you moved the files to their correct location.</p><h2>Automatic Update with FTP</h2><p>This method is similar to the first one but without the need to download the changed files and uploading them on your own. This will be done for you. In order to use this method you need to know your FTP login details since you will be asked for them. Once finished you will be redirected to the file check again to make sure everything got updated correctly.<br /><br />',
+));
+
+// Updater forms
+$lang = array_merge($lang, array(
+	// Updater types
+	'UPDATE_TYPE'			=> 'Type of update to run',
+
+	'UPDATE_TYPE_ALL'		=> 'Update filesystem and database',
+	'UPDATE_TYPE_DB_ONLY'	=> 'Update database only',
+
+	// File updater methods
+	'UPDATE_FILE_METHOD_TITLE'		=> 'File updater methods',
+
+	'UPDATE_FILE_METHOD'			=> 'File updater method',
+	'UPDATE_FILE_METHOD_DOWNLOAD'	=> 'Download modified files in an archive',
+	'UPDATE_FILE_METHOD_FTP'		=> 'Update files via FTP (Automatic)',
+	'UPDATE_FILE_METHOD_FILESYSTEM'	=> 'Update files via file commands (Automatic)',
+
+	// File updater archives
+	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download archive format',
+
+	// FTP settings
+	'FTP_SETTINGS'			=> 'FTP settings',
+));
+
+// Requirements messages
+$lang = array_merge($lang, array(
+	'UPDATE_FILES_NOT_FOUND'	=> 'No valid update directory was found, please make sure you uploaded the relevant files.',
+
+	'NO_UPDATE_FILES_UP_TO_DATE'	=> 'Your version is up to date. There is no need to run the update tool. If you want to make an integrity check on your files make sure you uploaded the correct update files.',
+	'OLD_UPDATE_FILES'				=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
+	'INCOMPATIBLE_UPDATE_FILES'		=> 'The update files found are incompatible with your installed version. Your installed version is %1$s and the update file is for updating phpBB %2$s to %3$s.',
+));
+
+// Update files
+$lang = array_merge($lang, array(
+	'STAGE_UPDATE_FILES'		=> 'Update files',
+
+	// Check files
+	'UPDATE_CHECK_FILES'	=> 'Check files to update',
+
+	// Update file differ
+	'FILE_DIFFER_ERROR_FILE_CANNOT_BE_READ'	=> 'The file differ failed to open %s.',
+
+	'UPDATE_FILE_DIFF'		=> 'Diffing changed files',
+	'ALL_FILES_DIFFED'		=> 'All modified files has been diffed.',
+
+	// File status
+	'UPDATE_CONTINUE_FILE_UPDATE'	=> 'Update files',
+
+	'DOWNLOAD'							=> 'Download',
+	'DOWNLOAD_CONFLICTS'				=> 'Download merge conflicts archive',
+	'DOWNLOAD_CONFLICTS_EXPLAIN'		=> 'Search for &lt;&lt;&lt; to spot conflicts',
+	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
+	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, you may continue with the update process.',
+
+	'FILE_ALREADY_UP_TO_DATE'		=> 'File is already up to date.',
+	'FILE_DIFF_NOT_ALLOWED'			=> 'File not allowed to be diffed.',
+	'FILE_USED'						=> 'Information used from',			// Single file
+	'FILES_CONFLICT'				=> 'Conflict files',
+	'FILES_CONFLICT_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. phpBB determined that these files create conflicts if they are tried to be merged. Please investigate the conflicts and try to manually resolve them or continue the update choosing the preferred merging method. If you resolve the conflicts manually check the files again after you modified them. You are also able to choose between the preferred merge method for every file. The first one will result in a file where the conflicting lines from your old file will be lost, the other one will result in losing the changes from the newer file.',
+	'FILES_DELETED'					=> 'Deleted files',
+	'FILES_DELETED_EXPLAIN'			=> 'The following files do not exist in the new version. These files have to be deleted from your installation.',
+	'FILES_MODIFIED'				=> 'Modified files',
+	'FILES_MODIFIED_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. The updated file will be a merge between your modifications and the new file.',
+	'FILES_NEW'						=> 'New files',
+	'FILES_NEW_EXPLAIN'				=> 'The following files currently do not exist within your installation. These files will be added to your installation.',
+	'FILES_NEW_CONFLICT'			=> 'New conflicting files',
+	'FILES_NEW_CONFLICT_EXPLAIN'	=> 'The following files are new within the latest version but it has been determined that there is already a file with the same name within the same position. This file will be overwritten by the new file.',
+	'FILES_NOT_MODIFIED'			=> 'Not modified files',
+	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files are not modified and represent the original phpBB files from the version you want to update from.',
+	'FILES_UP_TO_DATE'				=> 'Already updated files',
+	'FILES_UP_TO_DATE_EXPLAIN'		=> 'The following files are already up to date and do not need to be updated.',
+	'TOGGLE_DISPLAY'				=> 'View/Hide file list',
+
+	// File updater
+	'UPDATE_UPDATING_FILES'	=> 'Updating files',
+
+	'UPDATE_FILE_UPDATER_HAS_FAILED'	=> 'File updater “%1$s“ has failed. The installer will try to fallback to “%2$s“.',
+	'UPDATE_FILE_UPDATERS_HAVE_FAILED'	=> 'The file updater failed. No further fallback methods are available.',
+
+	'UPDATE_CONTINUE_UPDATE_PROCESS'	=> 'Continue update process',
+	'UPDATE_RECHECK_UPDATE_FILES'		=> 'Check files again',
+));
+
+// Update database
+$lang = array_merge($lang, array(
+	'STAGE_UPDATE_DATABASE'		=> 'Update database',
+
+	'INLINE_UPDATE_SUCCESSFUL'		=> 'The database update was successful.',
 ));

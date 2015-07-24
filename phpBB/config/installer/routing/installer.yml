@@ -20,3 +20,18 @@ phpbb_installer_install:
     path: /install
     defaults:
         _controller: phpbb.installer.controller.install:handle
+
+phpbb_installer_update:
+    path: /update
+    defaults:
+        _controller: phpbb.installer.controller.update:handle
+
+phpbb_installer_update_file_download:
+    path: /download/updated
+    defaults:
+        _controller: phpbb.installer.controller.file_downloader:update_archive
+
+phpbb_installer_update_conflict_download:
+    path: /download/conflict
+    defaults:
+        _controller: phpbb.installer.controller.file_downloader:conflict_archive

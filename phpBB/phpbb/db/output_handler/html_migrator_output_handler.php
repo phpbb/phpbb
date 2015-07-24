@@ -11,27 +11,25 @@
 *
 */
 
-namespace phpbb\db;
-
-use phpbb\user;
+namespace phpbb\db\output_handler;
 
 class html_migrator_output_handler implements migrator_output_handler_interface
 {
 	/**
-	 * User object.
+	 * Language object.
 	 *
-	 * @var user
+	 * @var \phpbb\language\language
 	 */
-	private $user;
+	private $language;
 
 	/**
 	 * Constructor
 	 *
-	 * @param user $user	User object
+	 * @param \phpbb\language\language	$language	Language object
 	 */
-	public function __construct(user $user)
+	public function __construct(\phpbb\language\language $language)
 	{
-		$this->user = $user;
+		$this->language = $language;
 	}
 
 	/**
@@ -41,7 +39,7 @@ class html_migrator_output_handler implements migrator_output_handler_interface
 	{
 		if ($verbosity <= migrator_output_handler_interface::VERBOSITY_VERBOSE)
 		{
-			$final_message = call_user_func_array(array($this->user, 'lang'), $message);
+			$final_message = $this->language->lang_array($message);
 			echo $final_message . "<br />\n";
 		}
 	}

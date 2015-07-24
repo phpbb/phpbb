@@ -134,8 +134,13 @@ class container_factory
 			$this->request->enable_super_globals();
 		}
 
-		$this->container = $phpbb_container = $phpbb_container_builder
+		$other_config_path = $this->phpbb_root_path . 'install/update/new/config';
+		$config_path = (is_dir($other_config_path)) ? $other_config_path : $this->phpbb_root_path . 'config';
+
+		$this->container = $phpbb_container_builder
+			->with_environment('production')
 			->with_config($phpbb_config_php_file)
+			->with_config_path($config_path)
 			->without_cache()
 			->without_compiled_container()
 			->get_container();
@@ -145,10 +150,16 @@ class container_factory
 		$this->container->register('request')->setSynthetic(true);
 		$this->container->set('request', $this->request);
 
-		// Replace cache service, as config gets cached, and we don't want that
-		$this->container->register('cache.driver')->setSynthetic(true);
-		$this->container->set('cache.driver', new dummy());
+		// Replace cache service, as config gets cached, and we don't want that when we are installing
+		if (!is_dir($other_config_path))
+		{
+			$this->container->register('cache.driver')->setSynthetic(true);
+			$this->container->set('cache.driver', new dummy());
+		}
+
 		$this->container->compile();
+
+		$phpbb_container = $this->container;
 
 		// Restore super globals to previous state
 		if ($disable_super_globals)
