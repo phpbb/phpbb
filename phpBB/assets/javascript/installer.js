@@ -46,12 +46,12 @@
 		var $title, $description, $msgElement, arraySize = messages.length;
 		for (var i = 0; i < arraySize; i++) {
 			$msgElement = $('<div />');
-			$title = $(document.createElement('strong'));
+			$title = $('<strong />');
 			$title.text(messages[i].title);
 			$msgElement.append($title);
 
 			if (messages[i].hasOwnProperty('description')) {
-				$description = $(document.createElement('p'));
+				$description = $('<p />');
 				$description.html(messages[i].description);
 				$msgElement.append($description);
 			}
