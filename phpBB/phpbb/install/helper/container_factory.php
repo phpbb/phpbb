@@ -115,11 +115,7 @@ class container_factory
 
 		// Check whether container can be built
 		// We need config.php for that so let's check if it has been set up yet
-		if (filesize($this->phpbb_root_path . 'config.' . $this->php_ext))
-		{
-			$this->build_container();
-		}
-		else
+		if (!filesize($this->phpbb_root_path . 'config.' . $this->php_ext))
 		{
 			throw new cannot_build_container_exception();
 		}
