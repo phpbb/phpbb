@@ -683,5 +683,89 @@ editor.getValue = function (){
 	return editor.val();
 }.bind(editor, sceInstance);
 
+resetBlocks = function (){
+	var container = document.querySelector('#message-box iframe').contentDocument.body;
+
+	var testAreSameAttributes = function (elem1, elem2){
+		if (elem1.nodeType !== elem2.nodeType ||
+			elem1.nodeType !== Node.ELEMENT_NODE
+			){
+			return false;
+		}
+		var attrs1 = elem1.attributes;
+		var attrs2 = elem2.attributes;
+		if (attrs1.length != attrs2.length){
+			return false;
+		}
+
+		for (var i = 0; i < attrs1.length; i++){
+			var attr1 = attrs1[i];
+			var attr2 = attrs2[attr1.name];
+			if (!attr2 || attr2.value != attr1.value){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	var killCloneSiblings = function (siblingToKeep, siblingToKill){
+		if (!siblingToKill){
+			return;
+		}
+		while (siblingToKill.firstChild) {
+			siblingToKeep.appendChild(siblingToKill.firstChild);
+		}
+
+		siblingToKill.parentNode.removeChild(siblingToKill);
+	}
+
+	var locateAndKillCloneSiblings = function (parent){
+		var children = parent.children;
+		if (children.length === 0){
+			return;
+		}
+		var previous = children[0];
+		var current;
+		locateAndKillCloneSiblings(previous);
+
+		while ((current = previous.nextSibling)){
+			if (testAreSameAttributes(previous, current)){
+				killCloneSiblings(previous, current);
+			} else {
+				previous = current;
+			}
+		}
+
+	}
+
+	var removeMeaninglessChildren = function (parent){
+		var changed = true;
+
+		var elems = parent.querySelectorAll('[data-tag-id="1"] > [data-tag-id="1"]');
+
+		while(changed && elems.length > 0){
+			changed = false;
+			for (var i = 0; i < elems.length; i++){
+				if (elems[i].parentNode && elems[i].parentNode.getAttribute('data-tag-id') == 1) {
+					changed = true;
+					var current = elems[i].firstChild;
+					while (current){
+						elems[i].parentNode.insertBefore(current, elems[i]);
+						current = elems[i].firstChild;
+					}
+					elems[i].parentNode.removeChild(elems[i]);
+				}
+			}
+		}
+	}
+
+
+	removeMeaninglessChildren(container);
+	locateAndKillCloneSiblings(container);
+
+}
+
 })(jQuery, window, document); // Avoid conflicts with other libraries
 
+var resetBlocks;
