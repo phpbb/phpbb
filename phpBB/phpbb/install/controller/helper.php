@@ -183,7 +183,7 @@ class helper
 			}
 		}
 
-		// Retrive language from cookie
+		// Retrieve language from cookie
 		$lang_cookie = $this->phpbb_request->variable('lang', '', false, request_interface::COOKIE);
 		if (empty($lang) && !empty($lang_cookie))
 		{
