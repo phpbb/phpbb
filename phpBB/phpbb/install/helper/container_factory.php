@@ -73,16 +73,7 @@ class container_factory
 		// Check if container was built, if not try to build it
 		if ($this->container === null)
 		{
-			// Check whether container can be built
-			// We need config.php for that so let's check if it has been set up yet
-			if (filesize($this->phpbb_root_path . 'config.' . $this->php_ext))
-			{
-				$this->build_container();
-			}
-			else
-			{
-				throw new cannot_build_container_exception();
-			}
+			$this->build_container();
 		}
 
 		return ($service_name === null) ? $this->container : $this->container->get($service_name);
@@ -102,16 +93,7 @@ class container_factory
 		// Check if container was built, if not try to build it
 		if ($this->container === null)
 		{
-			// Check whether container can be built
-			// We need config.php for that so let's check if it has been set up yet
-			if (filesize($this->phpbb_root_path . 'config.' . $this->php_ext))
-			{
-				$this->build_container();
-			}
-			else
-			{
-				throw new cannot_build_container_exception();
-			}
+			$this->build_container();
 		}
 
 		return $this->container->getParameter($param_name);
@@ -119,6 +101,8 @@ class container_factory
 
 	/**
 	 * Build dependency injection container
+	 *
+	 * @throws \phpbb\install\exception\cannot_build_container_exception	When container cannot be built
 	 */
 	protected function build_container()
 	{
@@ -127,6 +111,17 @@ class container_factory
 		if ($this->container instanceof \Symfony\Component\DependencyInjection\ContainerInterface)
 		{
 			return;
+		}
+
+		// Check whether container can be built
+		// We need config.php for that so let's check if it has been set up yet
+		if (filesize($this->phpbb_root_path . 'config.' . $this->php_ext))
+		{
+			$this->build_container();
+		}
+		else
+		{
+			throw new cannot_build_container_exception();
 		}
 
 		$phpbb_config_php_file = new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
