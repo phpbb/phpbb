@@ -231,7 +231,7 @@ class config
 
 		if (!empty($serialized_data))
 		{
-			$unserialized_data = unserialize($serialized_data);
+			$unserialized_data = json_decode($serialized_data, true);
 
 			$this->installer_config = (is_array($unserialized_data['installer_config'])) ? $unserialized_data['installer_config'] : array();
 			$this->progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
@@ -259,7 +259,7 @@ class config
 
 		// Create file content
 		$file_content = '<?php // ';
-		$file_content .= serialize($save_array);
+		$file_content .= json_encode($save_array);
 		$file_content .= "\n";
 
 		// Dump file_content to disk
