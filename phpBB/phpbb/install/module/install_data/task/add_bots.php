@@ -16,9 +16,91 @@ namespace phpbb\install\module\install_data\task;
 class add_bots extends \phpbb\install\task_base
 {
 	/**
+	 * A list of the web-crawlers/bots we recognise by default
+	 *
+	 * Candidates but not included:
+	 * 'Accoona [Bot]'				'Accoona-AI-Agent/'
+	 * 'ASPseek [Crawler]'			'ASPseek/'
+	 * 'Boitho [Crawler]'			'boitho.com-dc/'
+	 * 'Bunnybot [Bot]'				'powered by www.buncat.de'
+	 * 'Cosmix [Bot]'				'cfetch/'
+	 * 'Crawler Search [Crawler]'	'.Crawler-Search.de'
+	 * 'Findexa [Crawler]'			'Findexa Crawler ('
+	 * 'GBSpider [Spider]'			'GBSpider v'
+	 * 'genie [Bot]'				'genieBot ('
+	 * 'Hogsearch [Bot]'			'oegp v. 1.3.0'
+	 * 'Insuranco [Bot]'			'InsurancoBot'
+	 * 'IRLbot [Bot]'				'http://irl.cs.tamu.edu/crawler'
+	 * 'ISC Systems [Bot]'			'ISC Systems iRc Search'
+	 * 'Jyxobot [Bot]'				'Jyxobot/'
+	 * 'Kraehe [Metasuche]'			'-DIE-KRAEHE- META-SEARCH-ENGINE/'
+	 * 'LinkWalker'					'LinkWalker'
+	 * 'MMSBot [Bot]'				'http://www.mmsweb.at/bot.html'
+	 * 'Naver [Bot]'				'nhnbot@naver.com)'
+	 * 'NetResearchServer'			'NetResearchServer/'
+	 * 'Nimble [Crawler]'			'NimbleCrawler'
+	 * 'Ocelli [Bot]'				'Ocelli/'
+	 * 'Onsearch [Bot]'				'onCHECK-Robot'
+	 * 'Orange [Spider]'			'OrangeSpider'
+	 * 'Sproose [Bot]'				'http://www.sproose.com/bot'
+	 * 'Susie [Sync]'				'!Susie (http://www.sync2it.com/susie)'
+	 * 'Tbot [Bot]'					'Tbot/'
+	 * 'Thumbshots [Capture]'		'thumbshots-de-Bot'
+	 * 'Vagabondo [Crawler]'		'http://webagent.wise-guys.nl/'
+	 * 'Walhello [Bot]'				'appie 1.1 (www.walhello.com)'
+	 * 'WissenOnline [Bot]'			'WissenOnline-Bot'
+	 * 'WWWeasel [Bot]'				'WWWeasel Robot v'
+	 * 'Xaldon [Spider]'			'Xaldon WebSpider'
+	 *
 	 * @var array
 	 */
-	protected $bot_list;
+	protected $bot_list = array(
+		'AdsBot [Google]'			=> array('AdsBot-Google', ''),
+		'Alexa [Bot]'				=> array('ia_archiver', ''),
+		'Alta Vista [Bot]'			=> array('Scooter/', ''),
+		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
+		'Baidu [Spider]'			=> array('Baiduspider', ''),
+		'Bing [Bot]'				=> array('bingbot/', ''),
+		'Exabot [Bot]'				=> array('Exabot', ''),
+		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
+		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
+		'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
+		'Gigabot [Bot]'				=> array('Gigabot/', ''),
+		'Google Adsense [Bot]'		=> array('Mediapartners-Google', ''),
+		'Google Desktop'			=> array('Google Desktop', ''),
+		'Google Feedfetcher'		=> array('Feedfetcher-Google', ''),
+		'Google [Bot]'				=> array('Googlebot', ''),
+		'Heise IT-Markt [Crawler]'	=> array('heise-IT-Markt-Crawler', ''),
+		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
+		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
+		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
+		'ichiro [Crawler]'			=> array('ichiro/', ''),
+		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
+		'Metager [Bot]'				=> array('MetagerBot/', ''),
+		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
+		'MSN [Bot]'					=> array('msnbot/', ''),
+		'MSNbot Media'				=> array('msnbot-media/', ''),
+		'Nutch [Bot]'				=> array('http://lucene.apache.org/nutch/', ''),
+		'Online link [Validator]'	=> array('online link validator', ''),
+		'psbot [Picsearch]'			=> array('psbot/0', ''),
+		'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
+		'SEO Crawler'				=> array('SEO search Crawler/', ''),
+		'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
+		'SEOSearch [Crawler]'		=> array('SEOsearch/', ''),
+		'Snappy [Bot]'				=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
+		'Steeler [Crawler]'			=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
+		'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
+		'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
+		'Voyager [Bot]'				=> array('voyager/', ''),
+		'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
+		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
+		'W3C [Validator]'			=> array('W3C_Validator', ''),
+		'YaCy [Bot]'				=> array('yacybot', ''),
+		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
+		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
+		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
+		'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
+	);
 
 	/**
 	 * @var \phpbb\db\driver\driver_interface
@@ -75,91 +157,6 @@ class add_bots extends \phpbb\install\task_base
 		$this->language			= $language;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
-
-		/**
-		 * A list of the web-crawlers/bots we recognise by default
-		 *
-		 * Candidates but not included:
-		 * 'Accoona [Bot]'				'Accoona-AI-Agent/'
-		 * 'ASPseek [Crawler]'			'ASPseek/'
-		 * 'Boitho [Crawler]'			'boitho.com-dc/'
-		 * 'Bunnybot [Bot]'				'powered by www.buncat.de'
-		 * 'Cosmix [Bot]'				'cfetch/'
-		 * 'Crawler Search [Crawler]'	'.Crawler-Search.de'
-		 * 'Findexa [Crawler]'			'Findexa Crawler ('
-		 * 'GBSpider [Spider]'			'GBSpider v'
-		 * 'genie [Bot]'				'genieBot ('
-		 * 'Hogsearch [Bot]'			'oegp v. 1.3.0'
-		 * 'Insuranco [Bot]'			'InsurancoBot'
-		 * 'IRLbot [Bot]'				'http://irl.cs.tamu.edu/crawler'
-		 * 'ISC Systems [Bot]'			'ISC Systems iRc Search'
-		 * 'Jyxobot [Bot]'				'Jyxobot/'
-		 * 'Kraehe [Metasuche]'			'-DIE-KRAEHE- META-SEARCH-ENGINE/'
-		 * 'LinkWalker'					'LinkWalker'
-		 * 'MMSBot [Bot]'				'http://www.mmsweb.at/bot.html'
-		 * 'Naver [Bot]'				'nhnbot@naver.com)'
-		 * 'NetResearchServer'			'NetResearchServer/'
-		 * 'Nimble [Crawler]'			'NimbleCrawler'
-		 * 'Ocelli [Bot]'				'Ocelli/'
-		 * 'Onsearch [Bot]'				'onCHECK-Robot'
-		 * 'Orange [Spider]'			'OrangeSpider'
-		 * 'Sproose [Bot]'				'http://www.sproose.com/bot'
-		 * 'Susie [Sync]'				'!Susie (http://www.sync2it.com/susie)'
-		 * 'Tbot [Bot]'					'Tbot/'
-		 * 'Thumbshots [Capture]'		'thumbshots-de-Bot'
-		 * 'Vagabondo [Crawler]'		'http://webagent.wise-guys.nl/'
-		 * 'Walhello [Bot]'				'appie 1.1 (www.walhello.com)'
-		 * 'WissenOnline [Bot]'			'WissenOnline-Bot'
-		 * 'WWWeasel [Bot]'				'WWWeasel Robot v'
-		 * 'Xaldon [Spider]'			'Xaldon WebSpider'
-		 */
-		$this->bot_list = array(
-			'AdsBot [Google]'			=> array('AdsBot-Google', ''),
-			'Alexa [Bot]'				=> array('ia_archiver', ''),
-			'Alta Vista [Bot]'			=> array('Scooter/', ''),
-			'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
-			'Baidu [Spider]'			=> array('Baiduspider', ''),
-			'Bing [Bot]'				=> array('bingbot/', ''),
-			'Exabot [Bot]'				=> array('Exabot', ''),
-			'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
-			'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
-			'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
-			'Gigabot [Bot]'				=> array('Gigabot/', ''),
-			'Google Adsense [Bot]'		=> array('Mediapartners-Google', ''),
-			'Google Desktop'			=> array('Google Desktop', ''),
-			'Google Feedfetcher'		=> array('Feedfetcher-Google', ''),
-			'Google [Bot]'				=> array('Googlebot', ''),
-			'Heise IT-Markt [Crawler]'	=> array('heise-IT-Markt-Crawler', ''),
-			'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
-			'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
-			'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
-			'ichiro [Crawler]'			=> array('ichiro/', ''),
-			'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
-			'Metager [Bot]'				=> array('MetagerBot/', ''),
-			'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
-			'MSN [Bot]'					=> array('msnbot/', ''),
-			'MSNbot Media'				=> array('msnbot-media/', ''),
-			'Nutch [Bot]'				=> array('http://lucene.apache.org/nutch/', ''),
-			'Online link [Validator]'	=> array('online link validator', ''),
-			'psbot [Picsearch]'			=> array('psbot/0', ''),
-			'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
-			'SEO Crawler'				=> array('SEO search Crawler/', ''),
-			'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
-			'SEOSearch [Crawler]'		=> array('SEOsearch/', ''),
-			'Snappy [Bot]'				=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
-			'Steeler [Crawler]'			=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
-			'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
-			'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
-			'Voyager [Bot]'				=> array('voyager/', ''),
-			'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
-			'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
-			'W3C [Validator]'			=> array('W3C_Validator', ''),
-			'YaCy [Bot]'				=> array('yacybot', ''),
-			'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
-			'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
-			'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
-			'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
-		);
 	}
 
 	/**

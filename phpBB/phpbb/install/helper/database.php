@@ -33,7 +33,91 @@ class database
 	/**
 	 * @var array
 	 */
-	protected $supported_dbms;
+	protected $supported_dbms = array(
+		// Note: php 5.5 alpha 2 deprecated mysql.
+		// Keep mysqli before mysql in this list.
+		'mysqli'	=> array(
+			'LABEL'			=> 'MySQL with MySQLi Extension',
+			'SCHEMA'		=> 'mysql_41',
+			'MODULE'		=> 'mysqli',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'phpbb\db\driver\mysqli',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
+		),
+		'mysql'		=> array(
+			'LABEL'			=> 'MySQL',
+			'SCHEMA'		=> 'mysql',
+			'MODULE'		=> 'mysql',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'phpbb\db\driver\mysql',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
+		),
+		'mssql'		=> array(
+			'LABEL'			=> 'MS SQL Server 2000+',
+			'SCHEMA'		=> 'mssql',
+			'MODULE'		=> 'mssql',
+			'DELIM'			=> 'GO',
+			'DRIVER'		=> 'phpbb\db\driver\mssql',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
+		),
+		'mssql_odbc'=>	array(
+			'LABEL'			=> 'MS SQL Server [ ODBC ]',
+			'SCHEMA'		=> 'mssql',
+			'MODULE'		=> 'odbc',
+			'DELIM'			=> 'GO',
+			'DRIVER'		=> 'phpbb\db\driver\mssql_odbc',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
+		),
+		'mssqlnative'		=> array(
+			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
+			'SCHEMA'		=> 'mssql',
+			'MODULE'		=> 'sqlsrv',
+			'DELIM'			=> 'GO',
+			'DRIVER'		=> 'phpbb\db\driver\mssqlnative',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),
+		'oracle'	=>	array(
+			'LABEL'			=> 'Oracle',
+			'SCHEMA'		=> 'oracle',
+			'MODULE'		=> 'oci8',
+			'DELIM'			=> '/',
+			'DRIVER'		=> 'phpbb\db\driver\oracle',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),
+		'postgres' => array(
+			'LABEL'			=> 'PostgreSQL 8.3+',
+			'SCHEMA'		=> 'postgres',
+			'MODULE'		=> 'pgsql',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'phpbb\db\driver\postgres',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
+		),
+		'sqlite'		=> array(
+			'LABEL'			=> 'SQLite',
+			'SCHEMA'		=> 'sqlite',
+			'MODULE'		=> 'sqlite',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'phpbb\db\driver\sqlite',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),
+		'sqlite3'		=> array(
+			'LABEL'			=> 'SQLite3',
+			'SCHEMA'		=> 'sqlite',
+			'MODULE'		=> 'sqlite3',
+			'DELIM'			=> ';',
+			'DRIVER'		=> 'phpbb\db\driver\sqlite3',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),
+	);
 
 	/**
 	 * Constructor
@@ -45,93 +129,6 @@ class database
 	{
 		$this->filesystem		= $filesystem;
 		$this->phpbb_root_path	= $phpbb_root_path;
-
-		// DBMS supported by phpBB
-		$this->supported_dbms = array(
-			// Note: php 5.5 alpha 2 deprecated mysql.
-			// Keep mysqli before mysql in this list.
-			'mysqli'	=> array(
-				'LABEL'			=> 'MySQL with MySQLi Extension',
-				'SCHEMA'		=> 'mysql_41',
-				'MODULE'		=> 'mysqli',
-				'DELIM'			=> ';',
-				'DRIVER'		=> 'phpbb\db\driver\mysqli',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> true,
-			),
-			'mysql'		=> array(
-				'LABEL'			=> 'MySQL',
-				'SCHEMA'		=> 'mysql',
-				'MODULE'		=> 'mysql',
-				'DELIM'			=> ';',
-				'DRIVER'		=> 'phpbb\db\driver\mysql',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> true,
-			),
-			'mssql'		=> array(
-				'LABEL'			=> 'MS SQL Server 2000+',
-				'SCHEMA'		=> 'mssql',
-				'MODULE'		=> 'mssql',
-				'DELIM'			=> 'GO',
-				'DRIVER'		=> 'phpbb\db\driver\mssql',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> true,
-			),
-			'mssql_odbc'=>	array(
-				'LABEL'			=> 'MS SQL Server [ ODBC ]',
-				'SCHEMA'		=> 'mssql',
-				'MODULE'		=> 'odbc',
-				'DELIM'			=> 'GO',
-				'DRIVER'		=> 'phpbb\db\driver\mssql_odbc',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> true,
-			),
-			'mssqlnative'		=> array(
-				'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
-				'SCHEMA'		=> 'mssql',
-				'MODULE'		=> 'sqlsrv',
-				'DELIM'			=> 'GO',
-				'DRIVER'		=> 'phpbb\db\driver\mssqlnative',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> false,
-			),
-			'oracle'	=>	array(
-				'LABEL'			=> 'Oracle',
-				'SCHEMA'		=> 'oracle',
-				'MODULE'		=> 'oci8',
-				'DELIM'			=> '/',
-				'DRIVER'		=> 'phpbb\db\driver\oracle',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> false,
-			),
-			'postgres' => array(
-				'LABEL'			=> 'PostgreSQL 8.3+',
-				'SCHEMA'		=> 'postgres',
-				'MODULE'		=> 'pgsql',
-				'DELIM'			=> ';',
-				'DRIVER'		=> 'phpbb\db\driver\postgres',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> true,
-			),
-			'sqlite'		=> array(
-				'LABEL'			=> 'SQLite',
-				'SCHEMA'		=> 'sqlite',
-				'MODULE'		=> 'sqlite',
-				'DELIM'			=> ';',
-				'DRIVER'		=> 'phpbb\db\driver\sqlite',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> false,
-			),
-			'sqlite3'		=> array(
-				'LABEL'			=> 'SQLite3',
-				'SCHEMA'		=> 'sqlite',
-				'MODULE'		=> 'sqlite3',
-				'DELIM'			=> ';',
-				'DRIVER'		=> 'phpbb\db\driver\sqlite3',
-				'AVAILABLE'		=> true,
-				'2.0.x'			=> false,
-			),
-		);
 	}
 
 	/**

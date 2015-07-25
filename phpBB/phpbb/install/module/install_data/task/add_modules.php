@@ -41,17 +41,97 @@ class add_modules extends \phpbb\install\task_base
 	 *
 	 * @var array
 	 */
-	protected $module_categories;
+	protected $module_categories = array(
+		'acp' => array(
+			'ACP_CAT_GENERAL' => array(
+				'ACP_QUICK_ACCESS',
+				'ACP_BOARD_CONFIGURATION',
+				'ACP_CLIENT_COMMUNICATION',
+				'ACP_SERVER_CONFIGURATION',
+			),
+			'ACP_CAT_FORUMS' => array(
+				'ACP_MANAGE_FORUMS',
+				'ACP_FORUM_BASED_PERMISSIONS',
+			),
+			'ACP_CAT_POSTING' => array(
+				'ACP_MESSAGES',
+				'ACP_ATTACHMENTS',
+			),
+			'ACP_CAT_USERGROUP' => array(
+				'ACP_CAT_USERS',
+				'ACP_GROUPS',
+				'ACP_USER_SECURITY',
+			),
+			'ACP_CAT_PERMISSIONS' => array(
+				'ACP_GLOBAL_PERMISSIONS',
+				'ACP_FORUM_BASED_PERMISSIONS',
+				'ACP_PERMISSION_ROLES',
+				'ACP_PERMISSION_MASKS',
+			),
+			'ACP_CAT_CUSTOMISE' => array(
+				'ACP_STYLE_MANAGEMENT',
+				'ACP_EXTENSION_MANAGEMENT',
+				'ACP_LANGUAGE',
+			),
+			'ACP_CAT_MAINTENANCE' => array(
+				'ACP_FORUM_LOGS',
+				'ACP_CAT_DATABASE',
+			),
+			'ACP_CAT_SYSTEM' => array(
+				'ACP_AUTOMATION',
+				'ACP_GENERAL_TASKS',
+				'ACP_MODULE_MANAGEMENT',
+			),
+			'ACP_CAT_DOT_MODS' => null,
+		),
+		'mcp' => array(
+			'MCP_MAIN'		=> null,
+			'MCP_QUEUE'		=> null,
+			'MCP_REPORTS'	=> null,
+			'MCP_NOTES'		=> null,
+			'MCP_WARN'		=> null,
+			'MCP_LOGS'		=> null,
+			'MCP_BAN'		=> null,
+		),
+		'ucp' => array(
+			'UCP_MAIN'			=> null,
+			'UCP_PROFILE'		=> null,
+			'UCP_PREFS'			=> null,
+			'UCP_PM'			=> null,
+			'UCP_USERGROUPS'	=> null,
+			'UCP_ZEBRA'			=> null,
+		),
+	);
 
 	/**
 	 * @var array
 	 */
-	protected $module_categories_basenames;
+	protected $module_categories_basenames = array(
+		'UCP_PM' => 'ucp_pm',
+	);
 
 	/**
 	 * @var array
 	 */
-	protected $module_extras;
+	protected $module_extras = array(
+		'acp'	=> array(
+			'ACP_QUICK_ACCESS' => array(
+				'ACP_MANAGE_USERS',
+				'ACP_GROUPS_MANAGE',
+				'ACP_MANAGE_FORUMS',
+				'ACP_MOD_LOGS',
+				'ACP_BOTS',
+				'ACP_PHP_INFO',
+			),
+			'ACP_FORUM_BASED_PERMISSIONS' => array(
+				'ACP_FORUM_PERMISSIONS',
+				'ACP_FORUM_PERMISSIONS_COPY',
+				'ACP_FORUM_MODERATORS',
+				'ACP_USERS_FORUM_PERMISSIONS',
+				'ACP_GROUPS_FORUM_PERMISSIONS',
+			),
+		),
+	);
 
 	/**
 	 * Constructor
@@ -68,92 +148,6 @@ class add_modules extends \phpbb\install\task_base
 		$this->module_manager		= $container->get('module.manager');
 
 		parent::__construct(true);
-
-		$this->module_categories = array(
-			'acp' => array(
-				'ACP_CAT_GENERAL' => array(
-					'ACP_QUICK_ACCESS',
-					'ACP_BOARD_CONFIGURATION',
-					'ACP_CLIENT_COMMUNICATION',
-					'ACP_SERVER_CONFIGURATION',
-				),
-				'ACP_CAT_FORUMS' => array(
-					'ACP_MANAGE_FORUMS',
-					'ACP_FORUM_BASED_PERMISSIONS',
-				),
-				'ACP_CAT_POSTING' => array(
-					'ACP_MESSAGES',
-					'ACP_ATTACHMENTS',
-				),
-				'ACP_CAT_USERGROUP' => array(
-					'ACP_CAT_USERS',
-					'ACP_GROUPS',
-					'ACP_USER_SECURITY',
-				),
-				'ACP_CAT_PERMISSIONS' => array(
-					'ACP_GLOBAL_PERMISSIONS',
-					'ACP_FORUM_BASED_PERMISSIONS',
-					'ACP_PERMISSION_ROLES',
-					'ACP_PERMISSION_MASKS',
-				),
-				'ACP_CAT_CUSTOMISE' => array(
-					'ACP_STYLE_MANAGEMENT',
-					'ACP_EXTENSION_MANAGEMENT',
-					'ACP_LANGUAGE',
-				),
-				'ACP_CAT_MAINTENANCE' => array(
-					'ACP_FORUM_LOGS',
-					'ACP_CAT_DATABASE',
-				),
-				'ACP_CAT_SYSTEM' => array(
-					'ACP_AUTOMATION',
-					'ACP_GENERAL_TASKS',
-					'ACP_MODULE_MANAGEMENT',
-				),
-				'ACP_CAT_DOT_MODS' => null,
-			),
-			'mcp' => array(
-				'MCP_MAIN'		=> null,
-				'MCP_QUEUE'		=> null,
-				'MCP_REPORTS'	=> null,
-				'MCP_NOTES'		=> null,
-				'MCP_WARN'		=> null,
-				'MCP_LOGS'		=> null,
-				'MCP_BAN'		=> null,
-			),
-			'ucp' => array(
-				'UCP_MAIN'			=> null,
-				'UCP_PROFILE'		=> null,
-				'UCP_PREFS'			=> null,
-				'UCP_PM'			=> null,
-				'UCP_USERGROUPS'	=> null,
-				'UCP_ZEBRA'			=> null,
-			),
-		);
-
-		$this->module_categories_basenames = array(
-			'UCP_PM' => 'ucp_pm',
-		);
-
-		$this->module_extras = array(
-			'acp'	=> array(
-				'ACP_QUICK_ACCESS' => array(
-					'ACP_MANAGE_USERS',
-					'ACP_GROUPS_MANAGE',
-					'ACP_MANAGE_FORUMS',
-					'ACP_MOD_LOGS',
-					'ACP_BOTS',
-					'ACP_PHP_INFO',
-				),
-				'ACP_FORUM_BASED_PERMISSIONS' => array(
-					'ACP_FORUM_PERMISSIONS',
-					'ACP_FORUM_PERMISSIONS_COPY',
-					'ACP_FORUM_MODERATORS',
-					'ACP_USERS_FORUM_PERMISSIONS',
-					'ACP_GROUPS_FORUM_PERMISSIONS',
-				),
-			),
-		);
 	}
 
 	/**
