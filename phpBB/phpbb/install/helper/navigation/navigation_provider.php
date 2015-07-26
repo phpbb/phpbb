@@ -58,7 +58,7 @@ class navigation_provider
 	public function register(navigation_interface $navigation)
 	{
 		$nav_arry = $navigation->get();
-		$this->merge($nav_arry, $this->menu_collection);
+		$this->menu_collection = $this->merge($nav_arry, $this->menu_collection);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class navigation_provider
 
 		$array_pointer = $property_array;
 
-		$this->merge($array_root_pointer, $this->menu_collection);
+		$this->menu_collection = $this->merge($array_root_pointer, $this->menu_collection);
 	}
 
 	/**
@@ -90,26 +90,32 @@ class navigation_provider
 	 *
 	 * @param array	$array_to_merge
 	 * @param array	$array_to_merge_into
+	 *
+	 * @return array	Merged array
 	 */
-	private function merge(&$array_to_merge, &$array_to_merge_into)
+	private function merge($array_to_merge, $array_to_merge_into)
 	{
+		$merged_array = $array_to_merge_into;
+
 		foreach ($array_to_merge as $key => $value)
 		{
 			if (isset($array_to_merge_into[$key]))
 			{
 				if (is_array($array_to_merge_into[$key]) && is_array($value))
 				{
-					$this->merge($value, $array_to_merge_into[$key]);
+					$merged_array[$key] = $this->merge($value, $array_to_merge_into[$key]);
 				}
 				else
 				{
-					$array_to_merge_into[$key] = $value;
+					$merged_array[$key] = $value;
 				}
 			}
 			else
 			{
-				$array_to_merge_into[$key] = $value;
+				$merged_array[$key] = $value;
 			}
 		}
+
+		return $merged_array;
 	}
 }
