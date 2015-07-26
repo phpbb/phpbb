@@ -115,8 +115,8 @@ class sce extends base
 
 	protected function parse_node($bbcode, &$parsed_template)
 	{
-		// This assumes that there are no text nodes simblings of each other
-		// That not being true, however, it has only minor performance impact
+		// This assumes that there are no text nodes siblings of each other
+		// That not being true, however, has only minor performance impact
 		$strings = array();
 
 		foreach ($parsed_template as &$parsed_child)
