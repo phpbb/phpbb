@@ -64,6 +64,7 @@ $f_permissions = array(
 	'f_vote'	=> array(1, 0),
 	'f_votechg'	=> array(1, 0),
 	'f_announce'=> array(1, 0),
+	'f_announce_global'	=> array(1, 0),
 	'f_sticky'	=> array(1, 0),
 	'f_attach'	=> array(1, 0),
 	'f_download'=> array(1, 0),

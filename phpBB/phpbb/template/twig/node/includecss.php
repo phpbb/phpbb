@@ -31,7 +31,7 @@ class includecss extends \phpbb\template\twig\node\includeasset
 		$compiler
 			->raw("<link href=\"' . ")
 			->raw("\$asset_file . '\"")
-			->raw(' rel="stylesheet" type="text/css" media="screen, projection" />')
+			->raw(' rel="stylesheet" type="text/css" media="screen" />')
 		;
 	}
 }

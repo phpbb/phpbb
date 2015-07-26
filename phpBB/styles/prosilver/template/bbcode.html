@@ -12,6 +12,42 @@
 <!-- BEGIN quote_open --><blockquote class="uncited"><div data-sce-onParentRemove="unwrap"><div data-sce-onParentRemove="unwrap"><!-- END quote_open -->
 <!-- BEGIN quote_close --></div></div></blockquote><!-- END quote_close -->
 
+<!-- BEGIN quote_extended -->
+<blockquote>
+	<xsl:if test="not(@author)">
+		<xsl:attribute name="class">uncited</xsl:attribute>
+	</xsl:if>
+	<div data-sce-onParentRemove="unwrap">
+		<xsl:if test="@author">
+			<cite data-sce-keepOnCut="" data-sce-onParentRemove="remove">
+				<xsl:choose>
+					<xsl:when test="@url">
+						<a href="{@url}" class="postlink"><xsl:value-of select="@author"/></a>
+					</xsl:when>
+					<xsl:when test="@profile_url">
+						<a href="{@profile_url}"><xsl:value-of select="@author"/></a>
+					</xsl:when>
+					<xsl:otherwise>
+						<span><xsl:value-of select="@author"/></span>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$L_WROTE"/>
+				<xsl:value-of select="$L_COLON"/>
+				<xsl:if test="@post_url">
+					<xsl:text> </xsl:text>
+					<a href="{@post_url}" data-post-id="{@post_id}" onclick="if(document.getElementById(hash.substr(1)))href=hash">&#8593;</a>
+				</xsl:if>
+				<xsl:if test="@date">
+					<div class="responsive-hide"><xsl:value-of select="@date"/></div>
+				</xsl:if>
+			</cite>
+		</xsl:if>
+		<div data-sce-onParentRemove="unwrap"><xsl:apply-templates/></div>
+	</div>
+</blockquote>
+<!-- END quote_extended -->
+
 <!-- BEGIN code_open --><div class="codebox"><p>{L_CODE}{L_COLON} <a href="#" onclick="selectCode(this); return false;">{L_SELECT_ALL_CODE}</a></p><pre><code><!-- END code_open -->
 <!-- BEGIN code_close --></code></pre></div><!-- END code_close -->
 

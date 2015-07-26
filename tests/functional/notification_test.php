@@ -11,6 +11,8 @@
 *
 */
 
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+
 /**
 * @group functional
 */
@@ -21,15 +23,15 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		return array(
 			// Rows inserted by phpBB/install/schemas/schema_data.sql
 			// Also see PHPBB3-11460
-			array('notification.type.post_notification', true),
-			array('notification.type.topic_notification', true),
+			array('notification.type.post_notification.method.board', true),
+			array('notification.type.topic_notification.method.board', true),
 			array('notification.type.post_notification.method.email', true),
 			array('notification.type.topic_notification.method.email', true),
 
 			// Default behaviour for in-board notifications:
 			// If user did not opt-out, in-board notifications are on.
-			array('notification.type.bookmark_notification', true),
-			array('notification.type.quote_notification', true),
+			array('notification.type.bookmark_notification.method.board', true),
+			array('notification.type.quote_notification.method.board', true),
 
 			// Default behaviour for email notifications:
 			// If user did not opt-in, email notifications are off.

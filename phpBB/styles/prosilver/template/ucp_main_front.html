@@ -53,6 +53,7 @@
 
 	<h3>{L_YOUR_DETAILS}</h3>
 
+<!-- EVENT ucp_main_front_user_activity_before -->
 	<dl class="details">
 		<dt>{L_JOINED}{L_COLON}</dt> <dd>{JOINED}</dd>
 		<dt>{L_LAST_ACTIVE}{L_COLON}</dt> <dd>{LAST_VISIT_YOU}</dd>
@@ -61,6 +62,7 @@
 		<!-- IF ACTIVE_TOPIC != '' --><dt>{L_ACTIVE_IN_TOPIC}{L_COLON}</dt> <dd><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})</dd><!-- ENDIF -->
 		<!-- IF WARNINGS --><dt>{L_YOUR_WARNINGS}{L_COLON}</dt> <dd class="error">{WARNING_IMG} [{WARNINGS}]</dd><!-- ENDIF -->
 	</dl>
+<!-- EVENT ucp_main_front_user_activity_after -->
 
 	</div>
 </div>

@@ -29,6 +29,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	protected $dispatcher;
 
 	/**
+	* @var quote_helper
+	*/
+	protected $quote_helper;
+
+	/**
 	* @var \s9e\TextFormatter\Renderer
 	*/
 	protected $renderer;
@@ -110,6 +115,16 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		*/
 		$vars = array('renderer');
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_renderer_setup', compact($vars)));
+	}
+
+	/**
+	* Configure the quote_helper object used to display extended information in quotes
+	*
+	* @param  quote_helper $quote_helper
+	*/
+	public function configure_quote_helper(quote_helper $quote_helper)
+	{
+		$this->quote_helper = $quote_helper;
 	}
 
 	/**
@@ -214,6 +229,10 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*/
 	public function render($xml)
 	{
+		if (isset($this->quote_helper))
+		{
+			$xml = $this->quote_helper->inject_metadata($xml);
+		}
 		$renderer = $this;
 
 		/**

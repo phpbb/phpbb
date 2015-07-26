@@ -15,16 +15,32 @@ require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
 
 class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 {
+	public function test_bbcode_code_lang_is_saved()
+	{
+		$container = $this->get_test_case_helpers()->set_s9e_services();
+		$parser    = $container->get('text_formatter.parser');
+
+		$original = '[code]...[/code][code=php]...[/code]';
+		$expected = '<r><CODE><s>[code]</s>...<e>[/code]</e></CODE><CODE lang="php"><s>[code=php]</s>...<e>[/code]</e></CODE></r>';
+
+		$this->assertXmlStringEqualsXmlString($expected, $parser->parse($original));
+	}
+
 	/**
 	* @dataProvider get_default_formatting_tests
 	*/
-	public function test_default_formatting($original, $expected)
+	public function test_default_formatting($original, $expected, $setup = null)
 	{
 		$fixture   = __DIR__ . '/fixtures/default_formatting.xml';
 		$container = $this->get_test_case_helpers()->set_s9e_services(null, $fixture);
 
 		$parser   = $container->get('text_formatter.parser');
 		$renderer = $container->get('text_formatter.renderer');
+
+		if (isset($setup))
+		{
+			call_user_func($setup, $container);
+		}
 
 		$parsed_text = $parser->parse($original);
 
@@ -218,8 +234,51 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">http://example.org</a> wrote:</cite>...</div></blockquote>'
 			),
 			array(
-				'[quote="http://example.org"]...[/quote]',
+				'[quote=http://example.org]...[/quote]',
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">http://example.org</a> wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				"[quote]\nThis is a long quote that is definitely going to exceed 80 characters\n[/quote]\n\nFollowed by a reply",
+				"<blockquote class=\"uncited\"><div>\nThis is a long quote that is definitely going to exceed 80 characters\n</div></blockquote>\n\nFollowed by a reply"
+			),
+			array(
+				'[quote=Username post_id=123]...[/quote]',
+				'<blockquote><div><cite>Username wrote: <a href="phpBB/viewtopic.php?p=123#p123" data-post-id="123" onclick="if(document.getElementById(hash.substr(1)))href=hash">↑</a></cite>...</div></blockquote>'
+			),
+			array(
+				// Users are not allowed to submit their own URL for the post
+				'[quote="Username" post_url="http://fake.example.org"]...[/quote]',
+				'<blockquote><div><cite>Username wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				'[quote=Username time=58705871]...[/quote]',
+				'<blockquote><div><cite>Username wrote:<div class="responsive-hide">1971-11-11 11:11:11</div></cite>...</div></blockquote>'
+			),
+			array(
+				'[quote=Username user_id=123]...[/quote]',
+				'<blockquote><div><cite><a href="phpBB/memberlist.php?mode=viewprofile&amp;u=123">Username</a> wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				// Users are not allowed to submit their own URL for the profile
+				'[quote=Username profile_url=http://fake.example.org]...[/quote]',
+				'<blockquote><div><cite>Username wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				// From phpbb_textformatter_s9e_utils_test::test_generate_quote()
+				'[quote=\'[quote="foo"]\']...[/quote]',
+				'<blockquote><div><cite>[quote="foo"] wrote:</cite>...</div></blockquote>'
+			),
+			array(
+				"Emoji: \xF0\x9F\x98\x80",
+				'Emoji: <img alt="' . "\xF0\x9F\x98\x80" . '" class="smilies" draggable="false" width="18" height="18" src="//twemoji.maxcdn.com/36x36/1f600.png">'
+			),
+			array(
+				"Emoji: \xF0\x9F\x98\x80",
+				"Emoji: \xF0\x9F\x98\x80",
+				function ($container)
+				{
+					$container->get('text_formatter.renderer')->set_viewsmilies(false);
+				}
 			),
 		);
 	}

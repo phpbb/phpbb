@@ -98,11 +98,15 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 				array('foo')
 			),
 			array(
-				'[quote="foo"]..[/quote] [quote="bar"]..[/quote]',
+				'[quote=foo]..[/quote] [quote]..[/quote]',
+				array('foo')
+			),
+			array(
+				'[quote=foo]..[/quote] [quote=bar]..[/quote]',
 				array('foo', 'bar')
 			),
 			array(
-				'[quote="foo"].[quote="baz"]..[/quote].[/quote] [quote="bar"]..[/quote]',
+				'[quote=foo].[quote=baz]..[/quote].[/quote] [quote=bar]..[/quote]',
 				array('foo', 'bar')
 			),
 		);
@@ -169,7 +173,61 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 					'post_id' => 123,
 					'url'     => 'http://example.org'
 				),
-				'[quote="user" post_id="123" url="http://example.org"]...[/quote]',
+				'[quote=user post_id=123 url=http://example.org]...[/quote]',
+			),
+			array(
+				'...',
+				array(
+					'author'  => 'user',
+					'post_id' => 123,
+					'user_id' => ANONYMOUS
+				),
+				'[quote=user post_id=123]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => ' '),
+				'[quote=" "]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => 'foo bar'),
+				'[quote="foo bar"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => '\\'),
+				'[quote="\\\\"]...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => '[quote="foo"]'),
+				'[quote=\'[quote="foo"]\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => '""'),
+				'[quote=\'""\']...[/quote]',
+			),
+			array(
+				'...',
+				array('author'  => "''"),
+				'[quote="\'\'"]...[/quote]',
+			),
+			array(
+				'This is a long quote that is definitely going to exceed 80 characters',
+				array(),
+				"[quote]\nThis is a long quote that is definitely going to exceed 80 characters\n[/quote]",
+			),
+			array(
+				'  This is a short quote on its own line  ',
+				array(),
+				'[quote]This is a short quote on its own line[/quote]',
+			),
+			array(
+				"This is a short quote\non two lines",
+				array(),
+				"[quote]\nThis is a short quote\non two lines\n[/quote]",
 			),
 		);
 	}

@@ -64,7 +64,7 @@ interface filesystem_interface
 	 * or the user can specify octal values (or any integer if it makes sense). All directories will have
 	 * an execution bit appended, if the user group (owner, group or other) has any bit specified.
 	 *
-	 * @param string|array|\Traversable	$file				The file/directory to be chmodded
+	 * @param string|array|\Traversable	$files				The file/directory to be chmodded
 	 * @param int						$perms				Permissions to set
 	 * @param bool						$recursive			If the permissions should be changed recursively
 	 * @param bool						$force_chmod_link	Try to apply permissions to symlinks as well

@@ -58,11 +58,17 @@ blockquote.uncited {
 	padding-top: 25px;
 }
 
+blockquote cite > div {
+	float: right;
+	font-weight: normal;
+}
+
 /* Code block */
 .codebox {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
+	margin: 1em 0 1.2em 0;
 }
 
 .codebox p {

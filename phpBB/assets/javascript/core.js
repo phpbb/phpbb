@@ -106,7 +106,7 @@ phpbb.alert.open = function($alert) {
 		$dark.fadeIn(phpbb.alertTime);
 	}
 
-	if ($loadingIndicator.is(':visible')) {
+	if ($loadingIndicator && $loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeOut(phpbb.alertTime, function() {
 			$dark.append($alert);
 			$alert.fadeIn(phpbb.alertTime);
@@ -394,8 +394,11 @@ phpbb.ajaxify = function(options) {
 				error: errorHandler,
 				cache: false
 			});
+
 			request.always(function() {
-				$loadingIndicator.fadeOut(phpbb.alertTime);
+				if ($loadingIndicator && $loadingIndicator.is(':visible')) {
+					$loadingIndicator.fadeOut(phpbb.alertTime);
+				}
 			});
 		};
 
@@ -1606,6 +1609,21 @@ phpbb.registerPageDropdowns = function() {
 		}
 	});
 };
+
+/**
+ * Handle avatars to be lazy loaded.
+ */
+phpbb.lazyLoadAvatars = function loadAvatars() {
+	$('.avatar[data-src]').each(function () {
+		var $avatar = $(this);
+
+		$avatar
+			.attr('src', $avatar.data('src'))
+			.removeAttr('data-src');
+	});
+};
+
+$(window).load(phpbb.lazyLoadAvatars);
 
 /**
 * Apply code editor to all textarea elements with data-bbcode attribute

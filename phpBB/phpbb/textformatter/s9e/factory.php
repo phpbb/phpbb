@@ -66,7 +66,7 @@ class factory implements \phpbb\textformatter\cache_interface
 	protected $default_definitions = array(
 		'attachment' => '[ATTACHMENT index={NUMBER} filename={TEXT;useContent}]',
 		'b'     => '[B]{TEXT}[/B]',
-		'code'  => '[CODE]{TEXT}[/CODE]',
+		'code'  => '[CODE lang={IDENTIFIER;optional}]{TEXT}[/CODE]',
 		'color' => '[COLOR={COLOR}]{TEXT}[/COLOR]',
 		'email' => '[EMAIL={EMAIL;useContent} subject={TEXT;optional;postFilter=rawurlencode} body={TEXT;optional;postFilter=rawurlencode}]{TEXT}[/EMAIL]',
 		'flash' => '[FLASH={NUMBER1},{NUMBER2} width={NUMBER1;postFilter=#flashwidth} height={NUMBER2;postFilter=#flashheight} url={URL;useContent} /]',
@@ -77,7 +77,12 @@ class factory implements \phpbb\textformatter\cache_interface
 		'quote' =>
 			"[QUOTE
 				author={TEXT1;optional}
+				post_id={UINT;optional}
+				post_url={URL;optional;postFilter=#false}
+				profile_url={URL;optional;postFilter=#false}
+				time={UINT;optional}
 				url={URL;optional}
+				user_id={UINT;optional}
 				author={PARSE=/^\\[url=(?'url'.*?)](?'author'.*)\\[\\/url]$/i}
 				author={PARSE=/^\\[url](?'author'(?'url'.*?))\\[\\/url]$/i}
 				author={PARSE=/(?'url'https?:\\/\\/[^[\\]]+)/i}
@@ -319,6 +324,11 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->registeredVars['max_img_height'] = 0;
 		$configurator->registeredVars['max_img_width'] = 0;
 
+		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
+		$configurator->Emoji->setImageSize(18);
+		$tag = $configurator->Emoji->getTag();
+		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
+
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set
 		*
@@ -471,24 +481,11 @@ class factory implements \phpbb\textformatter\cache_interface
 
 		$templates['li'] = $fragments['listitem'] . '<xsl:apply-templates/>' . $fragments['listitem_close'];
 
-		$fragments['quote_username_open'] = str_replace(
-			'{USERNAME}',
-			'<xsl:choose>
-				<xsl:when test="@url">' . str_replace('{DESCRIPTION}', '{USERNAME}', $fragments['url']) . '</xsl:when>
-				<xsl:otherwise>{USERNAME}</xsl:otherwise>
-			</xsl:choose>',
-			$fragments['quote_username_open']
-		);
-
-		$templates['quote'] =
-			'<xsl:choose>
-				<xsl:when test="@author">
-					' . $fragments['quote_username_open'] . '<xsl:apply-templates/>' . $fragments['quote_close'] . '
-				</xsl:when>
-				<xsl:otherwise>
-					' . $fragments['quote_open'] . '<xsl:apply-templates/>' . $fragments['quote_close'] . '
-				</xsl:otherwise>
-			</xsl:choose>';
+		// Replace the regular quote template with the extended quote template if available
+		if (isset($fragments['quote_extended']))
+		{
+			$templates['quote'] = $fragments['quote_extended'];
+		}
 
 		// The [attachment] BBCode uses the inline_attachment template to output a comment that
 		// is post-processed by parse_attachments()

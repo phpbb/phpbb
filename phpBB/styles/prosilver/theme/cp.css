@@ -114,7 +114,7 @@ ul.cplist {
 	float: left;
 	font-size: 1em;
 	font-weight: bold;
-	line-height: 14px;
+	line-height: 1.4em;
 }
 
 #tabs .tab > a, #minitabs .tab > a {
@@ -172,10 +172,10 @@ ul.cplist {
 
 .responsive-tab > a.responsive-tab-link {
 	display: block;
-	font-size: 16px;
+	font-size: 1.6em;
 	position: relative;
 	width: 16px;
-	line-height: 14px;
+	line-height: 0.9em;
 	text-decoration: none;
 }
 

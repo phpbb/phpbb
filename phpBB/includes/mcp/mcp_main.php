@@ -362,7 +362,7 @@ function change_topic_type($action, $topic_ids)
 
 		case 'make_global':
 			$new_topic_type = POST_GLOBAL;
-			$check_acl = 'f_announce';
+			$check_acl = 'f_announce_global';
 			$l_new_type = (sizeof($topic_ids) == 1) ? 'MCP_MAKE_GLOBAL' : 'MCP_MAKE_GLOBALS';
 		break;
 

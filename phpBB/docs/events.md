@@ -139,6 +139,13 @@ acp_posting_buttons_before
 * Since: 3.1.0-b4
 * Purpose: Add content before BBCode posting buttons in the ACP
 
+acp_profile_contact_before
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.1.6-RC1
+* Purpose: Add extra options to custom profile field configuration in the ACP
+
 acp_ranks_edit_after
 ===
 * Locations:
@@ -514,6 +521,50 @@ mcp_post_additional_options
 * Since: 3.1.5-RC1
 * Purpose: Add content within the list of post moderation actions
 
+mcp_warn_post_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning for a post - after add warning field.
+
+mcp_warn_post_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning for a post - before add warning field.
+
+mcp_warn_user_add_warning_field_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a user - after add warning field.
+
+mcp_warn_user_add_warning_field_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.1.0-RC4
+* Purpose: Add content during warning a user - before add warning field.
+
+memberlist_body_rank_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist. Works in
+all display modes (leader, group and normal memberlist).
+
+memberlist_body_rank_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add information before rank in memberlist. Works in
+all display modes (leader, group and normal memberlist).
+
 memberlist_body_username_append
 ===
 * Locations:
@@ -579,6 +630,34 @@ memberlist_view_content_prepend
 * Since: 3.1.0-b3
 * Purpose: Add custom content to the user profile view before the main content
 
+memberlist_view_rank_avatar_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist (with avatar)
+
+memberlist_view_rank_avatar_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information before rank in memberlist (with avatar)
+
+memberlist_view_rank_no_avatar_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information after rank in memberlist (without avatar)
+
+memberlist_view_rank_no_avatar_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.6-RC1
+* Purpose: Add information before rank in memberlist (without avatar)
+
 memberlist_view_user_statistics_after
 ===
 * Locations:
@@ -592,34 +671,6 @@ memberlist_view_user_statistics_before
     + styles/prosilver/template/memberlist_view.html
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
-
-mcp_warn_post_add_warning_field_after
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning for a post - after add warning field.
-
-mcp_warn_post_add_warning_field_before
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning for a post - before add warning field.
-
-mcp_warn_user_add_warning_field_after
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning a user - after add warning field.
-
-mcp_warn_user_add_warning_field_before
-===
-* Locations:
-    + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.1.0-RC4
-* Purpose: Add content during warning a user - before add warning field.
 
 navbar_header_logged_out_content
 ===
@@ -860,6 +911,13 @@ overall_header_stylesheets_after
 * Purpose: Add asset calls after stylesheets within the `</head>` tag.
 Note that INCLUDECSS will not work with this event.
 
+posting_editor_add_panel_tab
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.6-RC1
+* Purpose: Add custom panel to post editor
+
 posting_editor_bbcode_status_after
 ===
 * Locations:
@@ -922,6 +980,13 @@ posting_editor_wysiwyg_setup_before
     + styles/prosilver/template/posting_editor.html
 * Since: 3.2.0-a1
 * Purpose: Add own setup for a WYSIWYG editor instead of the one thought for SCE
+
+posting_layout_include_panel_body
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+* Since: 3.1.6-RC1
+* Purpose: Add include of custom panel template body in posting editor
 
 posting_pm_header_find_username_after
 ===
@@ -1115,6 +1180,20 @@ ucp_agreement_terms_before
 * Since: 3.1.0-b3
 * Purpose: Add content before the terms of agreement text at user registration
 
+ucp_main_front_user_activity_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+* Since: 3.1.6-RC1
+* Purpose: Add content right after the user activity info viewing UCP front page
+
+ucp_main_front_user_activity_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+* Since: 3.1.6-RC1
+* Purpose: Add content right before the user activity info viewing UCP front page
+
 ucp_pm_viewmessage_avatar_after
 ===
 * Locations:
@@ -1183,6 +1262,22 @@ ucp_pm_viewmessage_print_head_append
     + styles/prosilver/template/ucp_pm_viewmessage_print.html
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag of the Print PM screen
+
+ucp_pm_viewmessage_rank_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.6-RC1
+* Purpose: Add data after the rank on the user profile when viewing
+a private message
+
+ucp_pm_viewmessage_rank_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.6-RC1
+* Purpose: Add data before the rank on the user profile when viewing
+a private message
 
 ucp_prefs_personal_prepend
 ===
@@ -1637,6 +1732,22 @@ viewtopic_body_postrow_post_notices_before
     + styles/prosilver/template/viewtopic_body.html
 * Since: 3.1.0-b2
 * Purpose: Add posts specific custom notices at the notices top.
+
+viewtopic_body_postrow_rank_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add data after the rank on the user profile when viewing
+a post
+
+viewtopic_body_postrow_rank_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add data before the rank on the user profile when viewing
+a post
 
 viewtopic_body_topic_actions_before
 ===
