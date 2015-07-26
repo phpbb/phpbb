@@ -176,6 +176,8 @@ class install
 			// Determine whether the installation was started or not
 			if (true)
 			{
+				$this->controller_helper->handle_language_select();
+
 				// Set active stage
 				$this->menu_provider->set_nav_property(
 					array('install', 0, 'introduction'),

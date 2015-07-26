@@ -53,6 +53,8 @@ class installer_index
 
 	public function handle($mode)
 	{
+		$this->helper->handle_language_select();
+
 		switch ($mode)
 		{
 			case "intro":

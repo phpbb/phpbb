@@ -114,8 +114,6 @@ class helper
 		$this->router = $router;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpbb_admin_path = $phpbb_root_path . 'adm/';
-
-		$this->handle_language_select();
 	}
 
 	/**
@@ -167,7 +165,7 @@ class helper
 	/**
 	 * Handles language selector form
 	 */
-	protected function handle_language_select()
+	public function handle_language_select()
 	{
 		$lang = null;
 
