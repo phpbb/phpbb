@@ -145,9 +145,19 @@ abstract class base
 			),
 			'quote' => array(
 				'display_on_posting' => true,
+				'override' => array(
+					'data' => array(
+						'forceNewLineAfter' => true,
+					),
+				),
 			),
 			'code' => array(
 				'display_on_posting' => true,
+				'override' => array(
+					'data' => array(
+						'forceNewLineAfter' => true,
+					),
+				),
 			),
 			'list' => array(
 				'display_on_posting' => true,
@@ -453,6 +463,17 @@ abstract class base
 
 	}
 
+	protected function add_overrides(&$bbcodes_data, $bbcode_settings)
+	{
+		foreach ($bbcode_settings as $bbcode_name => &$bbcode_data)
+		{
+			if (isset($bbcode_settings[$bbcode_name]['override']))
+			{
+				$bbcodes_data[$bbcode_name]['override'] = $bbcode_settings[$bbcode_name]['override'];
+			}
+		}
+	}
+
 	protected function add_display_button_setting(&$bbcodes_data, $bbcode_settings)
 	{
 		foreach ($bbcodes_data as $bbcode_name => &$bbcode_data)
@@ -575,6 +596,7 @@ abstract class base
 		$bbcode_settings += $this->bbcode_default_settings;
 		$this->add_tooltip_text($bbcodes_data, $bbcode_settings);
 		$this->add_display_button_setting($bbcodes_data, $bbcode_settings);
+		$this->add_overrides($bbcodes_data, $bbcode_settings);
 
 		return $bbcodes_data;
 

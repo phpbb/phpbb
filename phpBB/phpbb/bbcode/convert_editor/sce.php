@@ -295,6 +295,10 @@ class sce extends base
 
 			$bbcode_data = &$bbcodes_data[$bbcode_name];
 			$bbcode_definition['data'] = &$bbcode_data;
+			if (isset($bbcode_data['override']))
+			{
+				$bbcode_definition['override'] = $bbcode_data['override'];
+			}
 
 			if (isset($bbcode_data['tooltip_lang']))
 			{
