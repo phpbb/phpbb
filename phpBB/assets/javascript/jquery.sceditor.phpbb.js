@@ -2263,14 +2263,34 @@
 			 *
 			 *
 			 * @param {String} elementSelector
+			 * @param {String | Node | jQuery | Boolean} howDeep
 			 * @return {this}
 			 * @function
-			 * @name splitElement
+			 * @name splitRemoveInSelection
 			 * @memberOf RangeHelper.prototype
 			 * @author brunoais
 			 */
-			base.splitRemoveInSelection = function (elementSelector) {
-				base.getRangeHelper().splitAtSelection(elementSelector);
+			base.splitRemoveInSelection = function (elementSelector, howDeep, isSplittingBlock) {
+				if(typeof howDeep === 'string'){
+					howDeep = $(howDeep);
+				}
+				if(howDeep instanceof Node){
+					rangeHelper.splitAtSelection(elementSelector, howDeep);
+				} else if(howDeep instanceof jQuery){
+					if(howDeep.length > 0){
+						rangeHelper.splitAtSelection(elementSelector, howDeep[0]);
+					} else {
+						rangeHelper.splitAtSelection(elementSelector, $wysiwygBody[0]);
+					}
+				} else if(howDeep){
+					rangeHelper.splitAtSelection(elementSelector, $wysiwygBody[0]);
+				} else {
+					rangeHelper.splitAtSelection(elementSelector, false);
+				}
+
+				if (isSplittingBlock) {
+					insertEditableLine(elementSelector);
+				}
 				triggerValueChanged();
 				return base;
 			};
