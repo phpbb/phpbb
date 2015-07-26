@@ -6261,6 +6261,86 @@
 				}
 			};
 
+			base.userSelectionFix = function () {
+				var range = base.selectedRange();
+				if(!range){
+					return range;
+				}
+
+				var rangeInfo = {
+					'collapsed': range.collapsed,
+					'startContainer': range.startContainer,
+					'startOffset': range.startOffset,
+					'endContainer': range.endContainer,
+					'endOffset': range.endOffset,
+					'commonAncestorContainer': range.commonAncestorContainer
+				}
+				if(!range.collapsed){
+					if(range.startOffset > 0 && range.startContainer.nodeValue.length === range.startOffset){
+						var newStart = range.startContainer;
+
+						do {
+							if (newStart.nextSibling){
+								newStart = newStart.nextSibling;
+							}else{
+								newStart = newStart.parentNode;
+								newStart = newStart.nextSibling;
+							}
+						} while (
+							newStart.nodeType === Node.TEXT_NODE &&
+							newStart.nodeValue.length === 0
+						);
+
+						while(newStart.firstChild){
+							newStart = newStart.firstChild;
+						}
+
+						rangeInfo.startContainer = newStart;
+						rangeInfo.startOffset = 0;
+					}
+
+					if(range.endOffset == 0){
+						var newEnd = range.endContainer;
+
+						do {
+							if (newEnd.previousSibling){
+								newEnd = newEnd.previousSibling;
+							} else {
+								newEnd = newEnd.parentNode;
+								newEnd = newEnd.previousSibling;
+							}
+						} while (
+							newEnd.nodeType === Node.TEXT_NODE &&
+							newEnd.nodeValue.length === 0
+						);
+
+						while (newEnd.firstChild){
+							newEnd = newEnd.firstChild;
+						}
+
+						if	(newEnd.nodeType === Node.TEXT_NODE){
+							rangeInfo.endContainer = newEnd;
+							rangeInfo.endOffset = newEnd.nodeValue.length;
+						} else {
+							rangeInfo.endContainer = newEnd;
+							rangeInfo.endOffset = 0;
+						}
+					}
+
+					if ((range.startOffset > 0 &&
+							range.startContainer.nodeValue.length ===
+								range.startOffset) ||
+						range.endOffset == 0){
+
+						rangeInfo.commonAncestorContainer = dom.findCommonAncestor(
+							rangeInfo.startContainer,
+							rangeInfo.endContainer
+						);
+					}
+				}
+				return Object.freeze(rangeInfo);
+			}
+
 			/**
 			 * <p>Gets the selected Range</p>
 			 *
