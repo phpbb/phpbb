@@ -6481,9 +6481,14 @@
 			 * @memberOf RangeHelper.prototype
 			 * @author brunoais
 			 */
-			base.splitAtSelection = function (removeElementSelector) {
+			base.splitAtSelection = function (removeElementSelector, howDeep) {
 
-				var commonParent = base.getFirstBlockParent();
+				var commonParent;
+				if (howDeep){
+					commonParent = howDeep;
+				} else {
+					commonParent = base.getFirstBlockParent();
+				}
 
 				base.insertMarkers();
 
@@ -6499,6 +6504,13 @@
 					return;
 				}
 
+				// if the start is before the end marker, swap them
+				if ($(endMarkerElement).nextAll('#' + startMarkerElement.id).length > 0){
+					var swap = endMarkerElement;
+					endMarkerElement = startMarkerElement;
+					startMarkerElement = swap;
+				}
+
 				var parentOfRemoval = $(startMarkerElement).next()[0];
 
 				while (parentOfRemoval && parentOfRemoval.id !== endMarker) {
@@ -6506,17 +6518,34 @@
 					var removalElement = ($(parentOfRemoval).
 						is(removeElementSelector) && parentOfRemoval) || null;
 
-					var removalElements = $(removeElementSelector, parentOfRemoval);
+					var removalElements = $("[data-sce-onParentRemove]", parentOfRemoval);
 
+					removalElements.each(function(i, elem){
+						console.log(elem);
+						var action = elem.getAttribute('data-sce-onParentRemove');
+						switch(action){
+							case 'unwrap':
+								if(elem.firstChild){
+									$(elem.firstChild).unwrap();
+									return;
+								}
+								/* NO BREAK */
+							case 'remove':
+								$(elem).remove();
+								return;
+							case 'ignore':
+							/* NOOP */
+								return;
+						}
+					});
 					// This has to be after querySelectorAll to allow specifying a
 					// selector for multiple HTML tags forming the removal
 					if (removalElement) {
-						$(removalElement).replaceWith(removalElement.childNodes);
-					}
-
-					for (var i = 0; i < removalElements.length; i++) {
-						$(removalElement[i]).
-							replaceWith(removalElements[i].childNodes);
+						if(removalElement.firstChild){
+							$(removalElement.firstChild).unwrap();
+						} else {
+							$(removalElement).remove();
+						}
 					}
 
 					parentOfRemoval = $(parentOfRemoval).next()[0];
