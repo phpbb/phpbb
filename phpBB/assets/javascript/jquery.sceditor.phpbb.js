@@ -6832,27 +6832,8 @@
 					range.moveEnd(CHARACTER, 0);
 				} else {
 					range = doc.createRange();
-					if (isCollapsed) {
-						var startOn;
-						var startAtLength;
-						if (end.nextSibling) {
-							startOn = end.nextSibling;
-							startAtLength = 0;
-						} else {
-							startOn = start.previousSibling;
-							// If it is an element, go as deep as possible to
-							// a text node
-							while (startOn.lastChild) {
-								startOn = startOn.lastChild;
-							}
-							startAtLength = startOn.nodeValue.length - 1;
-						}
-						range.setStart(startOn, startAtLength);
-						range.setEnd(startOn, startAtLength);
-					} else {
-						range.setStartBefore(start);
-						range.setEndAfter(end);
-					}
+					range.setStartBefore(start);
+					range.setEndAfter(end);
 				}
 
 				if (isCollapsed) {
