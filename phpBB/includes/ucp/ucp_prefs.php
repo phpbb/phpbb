@@ -466,6 +466,14 @@ class ucp_prefs
 
 			case 'wysiwyg':
 
+				if($user->data['user_wysiwyg_default_mode'] === NULL){
+					$user->data['user_wysiwyg_default_mode'] = -2;
+				}
+
+				if($user->data['user_wysiwyg_buttons_mode'] === NULL){
+					$user->data['user_wysiwyg_buttons_mode'] = -2;
+				}
+
 				$data = array(
 					'wysiwyg_editor'	=> $request->variable('wysiwyg_editor', $user->data['user_wysiwyg_editor']),
 				);
