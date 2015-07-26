@@ -2944,7 +2944,7 @@
 				}
 
 				if (!isSource) {
-					parent     = e ? e.newNode : rangeHelper.parentNode();
+					parent     = e && e.newNode ? e.newNode : rangeHelper.parentNode();
 					firstBlock = rangeHelper.getFirstBlockParent(parent);
 				}
 
