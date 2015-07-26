@@ -294,6 +294,10 @@ class acp_bbcodes
 						$log_action = 'LOG_BBCODE_EDIT';
 					}
 
+					// Select which WYSIWYG editor to use
+					$wysiwyg = $phpbb_container->get('wysiwyg.converters.' . $config['wysiwyg_type']);
+					$wysiwyg->recalculate_editor_setup_javascript($phpbb_container->get('wysiwyg.text_formatter.s9e.factory'));
+
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_action, false, array($data['bbcode_tag']));
 
 					trigger_error($user->lang[$lang] . adm_back_link($this->u_action));
@@ -330,6 +334,10 @@ class acp_bbcodes
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
 						$phpbb_container->get('text_formatter.cache')->invalidate();
+
+						$wysiwyg = $phpbb_container->get('wysiwyg.converters.' . $config['wysiwyg_type']);
+						$wysiwyg->purge_cache();
+
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($row['bbcode_tag']));
 
 						if ($request->is_ajax())
