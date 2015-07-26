@@ -7380,11 +7380,26 @@
 			 */
 			splitElement: function (commonParent, cutElement) {
 				var grandparent;
+
 				for (var parent = cutElement.parentNode; commonParent !==
 						parent; parent = grandparent) {
 					var right = parent.cloneNode(false);
+					var extra = cutElement;
+
+
+					while ((extra = extra.previousSibling)) {
+						if(extra.hasAttribute && extra.hasAttribute('data-sce-keepOnCut')){
+							right.insertBefore(extra.cloneNode(true), right.firstChild);
+						}
+					}
 
 					while (cutElement.nextSibling) {
+						if(
+							cutElement.nextSibling.hasAttribute &&
+							cutElement.nextSibling.hasAttribute('data-sce-keepOnCut')
+						) {
+							parent.insertBefore(cutElement, cutElement.nextSibling.cloneNode(true));
+						}
 						right.appendChild(cutElement.nextSibling);
 					}
 
