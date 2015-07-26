@@ -428,6 +428,7 @@
 				updateToolBar,
 				updateActiveButtons,
 				sourceEditorSelectedText,
+				insertEditableLine,
 				appendNewLine,
 				checkSelectionChanged,
 				checkNodeChanged,
@@ -3038,6 +3039,27 @@
 
 					return false;
 				}
+			};
+
+			/**
+			 * Makes sure that if there are two siblings of the specified
+			 * selector, an empty new line will exist between them to
+			 * allow editing
+			 *
+			 * If there wasn't a new line between the blocks,you wouldn't
+			 * be able to enter any text in that space
+			 * @return {void}
+			 * @private
+			 */
+			insertEditableLine = function (tagSelector) {
+				var selectorParts = tagSelector.split(/[ >]|>>/g);
+				var selectorLastPart = selectorParts[selectorParts.length - 1];
+
+				var $requiresSeparation = $wysiwygBody.find(tagSelector + ' + ' + selectorLastPart);
+
+				console.log("locateToSeparate:", tagSelector + ' + ' + selectorLastPart, $requiresSeparation);
+
+				$requiresSeparation.before('<div class="sceditor-nlf"><br></div>');
 			};
 
 			/**
