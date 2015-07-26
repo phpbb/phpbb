@@ -2948,6 +2948,8 @@
 					firstBlock = rangeHelper.getFirstBlockParent(parent);
 				}
 
+				var rangeInfo = rangeHelper.userSelectionFix();
+
 				for (var i = 0; i < btnStateHandlers.length; i++) {
 					var state      = 0;
 					var $btn       = toolbarButtons[btnStateHandlers[i].name];
@@ -2967,7 +2969,7 @@
 							} catch (ex) {}
 						}
 					} else if (!isDisabled) {
-						state = stateFn.call(base, parent, firstBlock);
+						state = stateFn.call(base, parent, firstBlock, rangeInfo);
 					}
 
 					$btn
