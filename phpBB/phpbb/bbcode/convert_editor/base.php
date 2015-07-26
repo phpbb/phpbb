@@ -17,7 +17,7 @@ use \phpbb\request\request_interface;
 use \phpbb\bbcode\js_regex_helper;
 
 /**
-* 
+*
 */
 abstract class base
 {
@@ -99,20 +99,20 @@ abstract class base
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 *
 	 * @param \phpbb\cache\driver\driver_interface $cache Cache object
 	 * @param string $cache_prefix A string to prefix to the cache file name (includes the path)
 	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\bbcode\text_formatter_data_access $data_access The one responsible for BBCode DB communication
 	 * @param \phpbb\event\dispatcher_interface $phpbb_dispatcher Where to send events to
-	 * @param \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container 
+	 * @param \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container
 	 * @param \phpbb\request\request $request To handle the HTTP cache
-	 * @param \phpbb\template\template $template 
+	 * @param \phpbb\template\template $template
 	 */
 	protected function __construct(\phpbb\cache\driver\driver_interface $cache, $cache_prefix,
 		\phpbb\config\config $config, \phpbb\bbcode\text_formatter_data_access $data_access, \phpbb\event\dispatcher_interface $phpbb_dispatcher,
-		\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, 
+		\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container,
 		\phpbb\request\request $request, \phpbb\template\template $template)
 	{
 		$this->cache = $cache;
@@ -199,7 +199,7 @@ abstract class base
 									// 'wbr'	=> 1,
 								// );
 
-	
+
 	abstract protected function generate_editor_setup_javascript($text_formatter_factory);
 
 	abstract protected function get_static_javascript_variables();
@@ -221,7 +221,7 @@ abstract class base
 				'bbcode' => 'bbcode.html',
 			));
 
-		return md5($this->template->get_source_file_for_handle('editor_config') . 
+		return md5($this->template->get_source_file_for_handle('editor_config') .
 						$this->template->get_source_file_for_handle('bbcode'));
 	}
 
@@ -265,12 +265,12 @@ abstract class base
 			->assign_display('editor_config');
 
 		// md4 would probably be a better option for performance reasons but this works fine
-		$path_key = md5($this->template->get_source_file_for_handle('editor_config') . 
+		$path_key = md5($this->template->get_source_file_for_handle('editor_config') .
 						$this->template->get_source_file_for_handle('bbcode'));
 
 		$gzip_setup_javascript = gzencode($setup_javascript, 9);
 
-		
+
 		$etag = sha1($setup_javascript);
 		$uncompressed_etag = $cache_name . '|'. $path_key .'|normal|' . $etag;
 		$compressed_etag = $cache_name . '|'. $path_key .'|gzip|'. $etag;
@@ -321,7 +321,7 @@ abstract class base
 
 		$read_js = file_get_contents($file_name);
 
-		
+
 		return $read_js;
 	}
 
@@ -480,7 +480,7 @@ abstract class base
 	{
 		$tag_to_BBCodes = array();
 
-		foreach($bbcodes as $bbcode_name => $bbcode)
+		foreach ($bbcodes as $bbcode_name => $bbcode)
 		{
 			$tag_to_BBCodes[$bbcode->tagName][] = $bbcode_name;
 		}
@@ -527,14 +527,14 @@ abstract class base
 			}
 		}
 
-		
+
 		$tag_names = $this->get_all_tag_names($tags);
 
 		foreach ($bbcodes as $bbcode_name => $bbcode){
 			$this_data = $this->normalize_text_parser_data($bbcode, $tags[$bbcode->tagName], $tag_names);
 
-			
-			foreach (array('deniedChildren', 'allowedChildren', 
+
+			foreach (array('deniedChildren', 'allowedChildren',
 					'deniedDescendants', 'allowedDecendants') as $key)
 			{
 				$bbcode_list = array();
@@ -756,23 +756,23 @@ abstract class base
 			}
 		}
 
-		
+
 		$config['deniedChildren'] = array_unique($config['deniedChildren']);
 		$config['allowedChildren'] = array_unique($config['allowedChildren']);
 		$config['deniedDescendants'] = array_unique($config['deniedDescendants']);
 		$config['allowedDecendants'] = array_unique($config['allowedDecendants']);
 
-		
+
 		return $config;
 	}
 
 	/**
 	 * Used to get which modes the editor has available.
 	 * This is an bitewise OR ("|") of all the possible choices.
-	 * 
+	 *
 	 * Typically, an editor has only the WYSIWYG and the source modes but it may
 	 * contain a "MIXED" AKA "RTE" mode.
-	 * 
+	 *
 	 * @return The joint OR mask of all the available modes the editor has.
 	 */
 	abstract public function get_available_modes();
@@ -780,7 +780,7 @@ abstract class base
 	/**
 	 * Used to get which ways to display buttons the editor has available.
 	 * This is an bitewise OR ("|") of all the possible choices.
-	 * 
+	 *
 	 * @return The joint OR mask of all the available modes the editor has.
 	 */
 	abstract public function get_available_button_modes();
