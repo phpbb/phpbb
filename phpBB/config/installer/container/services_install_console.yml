@@ -12,6 +12,7 @@ services:
             - @language
             - @installer.helper.iohandler_factory
             - @installer.installer.install
+            - @installer.helper.install_helper
         tags:
             - { name: console.installer.command }
 

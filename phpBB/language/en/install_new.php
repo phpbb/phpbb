@@ -305,3 +305,11 @@ $lang = array_merge($lang, array(
 
 	'INSTALLER_CONFIG_NOT_WRITABLE'	=> 'The installer config file is not writable.',
 ));
+
+// CLI messages
+$lang = array_merge($lang, array(
+	'CLI_INSTALL_BOARD'			=> 'Install phpBB',
+	'CLI_INSTALL_SHOW_CONFIG'		=> 'Show the configuration which will be used',
+	'CLI_INSTALL_VALIDATE_CONFIG'	=> 'Validate a configuration file',
+	'CLI_CONFIG_FILE'				=> 'Config file to use',
+));
