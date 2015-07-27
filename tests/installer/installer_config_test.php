@@ -34,10 +34,6 @@ class phpbb_installer_config_test extends phpbb_test_case
 		$this->config = new config($filesystem, $php_ini, $phpbb_root_path);
 	}
 
-	/**
-	 * @covers config::set
-	 * @covers config::get
-	 */
 	public function test_set_get_var()
 	{
 		$this->config->set('foo', 'bar');
@@ -54,13 +50,6 @@ class phpbb_installer_config_test extends phpbb_test_case
 		$this->assertGreaterThan(0, $this->config->get_memory_remaining());
 	}
 
-	/**
-	 * @covers config::set_finished_task
-	 * @covers config::set_active_module
-	 * @covers config::set_task_progress_count
-	 * @covers config::increment_current_task_progress
-	 * @covers config::get_progress_data
-	 */
 	public function test_progress_tracking()
 	{
 		$this->config->set_finished_task('foo');
