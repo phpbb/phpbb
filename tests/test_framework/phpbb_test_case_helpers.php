@@ -567,7 +567,7 @@ class phpbb_test_case_helpers
 		// Calls configured in services.yml
 		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
 		$renderer->configure_quote_helper($quote_helper);
-		$renderer->configure_smilies_path($config, $path_helper);
+		$renderer->configure_smilies_path($path_helper);
 		$renderer->configure_user($user, $config, $auth);
 
 		$container->set('text_formatter.renderer', $renderer);
