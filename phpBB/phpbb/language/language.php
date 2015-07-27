@@ -109,25 +109,27 @@ class language
 	/**
 	 * Function to set user's language to display.
 	 *
-	 * @param string	$user_lang_iso	ISO code of the User's language
+	 * @param string	$user_lang_iso		ISO code of the User's language
+	 * @param bool		$reload				Whether or not to reload language files
 	 */
-	public function set_user_language($user_lang_iso)
+	public function set_user_language($user_lang_iso, $reload = false)
 	{
 		$this->user_language = $user_lang_iso;
 
-		$this->set_fallback_array();
+		$this->set_fallback_array($reload);
 	}
 
 	/**
 	 * Function to set the board's default language to display.
 	 *
 	 * @param string	$default_lang_iso	ISO code of the board's default language
+	 * @param bool		$reload				Whether or not to reload language files
 	 */
-	public function set_default_language($default_lang_iso)
+	public function set_default_language($default_lang_iso, $reload = false)
 	{
 		$this->default_language = $default_lang_iso;
 
-		$this->set_fallback_array();
+		$this->set_fallback_array($reload);
 	}
 
 	/**
@@ -508,9 +510,11 @@ class language
 	/**
 	 * Returns language fallback data
 	 *
+	 * @param bool	$reload	Whether or not to reload language files
+	 *
 	 * @return array
 	 */
-	protected function set_fallback_array()
+	protected function set_fallback_array($reload = false)
 	{
 		$fallback_array = array();
 
@@ -527,6 +531,11 @@ class language
 		$fallback_array[] = self::FALLBACK_LANGUAGE;
 
 		$this->language_fallback = $fallback_array;
+
+		if ($reload)
+		{
+			$this->reload_language_files();
+		}
 	}
 
 	/**
@@ -562,5 +571,32 @@ class language
 
 		$this->loader->load_extension($extension_name, $component, $this->language_fallback, $this->lang);
 		$this->loaded_language_sets['ext'][$extension_name][$component] = true;
+	}
+
+	/**
+	 * Reload language files
+	 */
+	protected function reload_language_files()
+	{
+		$loaded_files = $this->loaded_language_sets;
+		$this->loaded_language_sets	= array(
+			'core'	=> array(),
+			'ext'	=> array(),
+		);
+
+		// Reload core files
+		foreach ($loaded_files['core'] as $component => $value)
+		{
+			$this->load_core_file($component);
+		}
+
+		// Reload extension files
+		foreach ($loaded_files['ext'] as $ext_name => $ext_info)
+		{
+			foreach ($ext_info as $ext_component => $value)
+			{
+				$this->load_extension($ext_name, $ext_component);
+			}
+		}
 	}
 }

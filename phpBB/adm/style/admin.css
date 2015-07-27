@@ -1776,7 +1776,7 @@ li.pagination ul {
 
 /* Action Highlighting
 ---------------------------------------- */
-.successbox, .errorbox {
+.successbox, .errorbox, .warningbox {
 	padding: 8px;
 	margin: 10px 0;
 	color: #FFFFFF;
@@ -1798,6 +1798,10 @@ li.pagination ul {
 
 .errorbox {
 	background-color: #BC2A4D;
+}
+
+.warningbox {
+	background-color: #fca600;
 }
 
 .successbox h3, .errorbox h3 {
@@ -2516,4 +2520,31 @@ fieldset.permissions .padding {
 	content: '';
 	clear: both;
 	display: block;
+}
+
+#progress-bar {
+	position: relative;
+	width: 90%;
+	height: 25px;
+	margin: 20px auto;
+	border: 1px solid #cecece;
+}
+
+#progress-bar #progress-bar-text {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	text-align: center;
+	line-height: 25px;
+	font-weight: bold;
+}
+
+#progress-bar #progress-bar-filler {
+	display: block;
+	position: relative;
+	top: 0;
+	left: 0;
+	background-color: #3c84ad;
+	width: 0;
+	height: 25px;
 }

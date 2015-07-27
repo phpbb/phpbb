@@ -26,18 +26,18 @@ class application extends \Symfony\Component\Console\Application
 	protected $in_shell = false;
 
 	/**
-	* @var \phpbb\user User object
+	* @var \phpbb\language\language User object
 	*/
-	protected $user;
+	protected $language;
 
 	/**
-	* @param string			$name		The name of the application
-	* @param string			$version	The version of the application
-	* @param \phpbb\user	$user		The user which runs the application (used for translation)
+	* @param string						$name		The name of the application
+	* @param string						$version	The version of the application
+	* @param \phpbb\language\language	$language	The user which runs the application (used for translation)
 	*/
-	public function __construct($name, $version, \phpbb\user $user)
+	public function __construct($name, $version, \phpbb\language\language $language)
 	{
-		$this->user = $user;
+		$this->language = $language;
 
 		parent::__construct($name, $version);
 	}
@@ -53,7 +53,7 @@ class application extends \Symfony\Component\Console\Application
 			'safe-mode',
 			null,
 			InputOption::VALUE_NONE,
-			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
+			$this->language->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
 		));
 
 		return $input_definition;
@@ -80,7 +80,7 @@ class application extends \Symfony\Component\Console\Application
 			'--shell',
 			'-s',
 			InputOption::VALUE_NONE,
-			$this->user->lang('CLI_DESCRIPTION_OPTION_SHELL')
+			$this->language->lang('CLI_DESCRIPTION_OPTION_SHELL')
 		));
 
 		return parent::getHelp();

@@ -1,0 +1,34 @@
+services:
+    phpbb.installer.controller.welcome:
+        class: phpbb\install\controller\installer_index
+        arguments:
+            - @phpbb.installer.controller.helper
+            - @language
+            - @template
+            - %core.root_path%
+
+    phpbb.installer.controller.helper:
+        class: phpbb\install\controller\helper
+        arguments:
+            - @language
+            - @language.helper.language_file
+            - @installer.navigation.provider
+            - @template
+            - @path_helper
+            - @request
+            - @symfony_request
+            - @router
+            - %core.root_path%
+
+    phpbb.installer.controller.install:
+        class: phpbb\install\controller\install
+        arguments:
+            - @phpbb.installer.controller.helper
+            - @installer.helper.config
+            - @installer.helper.iohandler_factory
+            - @installer.navigation.provider
+            - @language
+            - @template
+            - @request
+            - @installer.installer.install
+            - @installer.helper.install_helper
