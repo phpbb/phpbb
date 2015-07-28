@@ -1910,6 +1910,20 @@ viewtopic_body_topic_actions_before
 * Since: 3.1.0-a4
 * Purpose: Add data before the topic actions buttons (after the posts sorting options)
 
+viewtopic_topic_containers_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add some options containers on the right of the Quick-mod tools container
+
+viewtopic_topic_containers_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add some options containers on the left of the topic tools container
+
 viewtopic_topic_title_append
 ===
 * Locations:
