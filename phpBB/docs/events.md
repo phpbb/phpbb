@@ -1281,10 +1281,10 @@ topiclist_row_prepend
 * Locations:
     + styles/prosilver/template/search_results.html
     + styles/prosilver/template/viewforum_body.html
-	+ styles/prosilver/template/mcp_forum.html
+    + styles/prosilver/template/mcp_forum.html
     + styles/subsilver2/template/search_results.html
     + styles/subsilver2/template/viewforum_body.html
-	+ styles/subsilver2/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
@@ -1294,10 +1294,10 @@ topiclist_row_append
 * Locations:
     + styles/prosilver/template/search_results.html
     + styles/prosilver/template/viewforum_body.html
-	+ styles/prosilver/template/mcp_forum.html
+    + styles/prosilver/template/mcp_forum.html
     + styles/subsilver2/template/search_results.html
     + styles/subsilver2/template/viewforum_body.html
-	+ styles/subsilver2/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
