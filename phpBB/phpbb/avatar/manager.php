@@ -280,6 +280,18 @@ class manager
 	}
 
 	/**
+	* Get the template name of an avatar driver
+	*
+	* @param object $driver Avatar driver object
+	*
+	* @return string Avatar driver template name
+	*/
+	public function get_driver_template_name($driver)
+	{
+		return $driver->get_acp_template_name();
+	}
+
+	/**
 	* Replace "error" strings with their real, localized form
 	*
 	* @param \phpbb\user phpBB User object
