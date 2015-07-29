@@ -87,7 +87,7 @@ class add_default_data extends \phpbb\install\task_base
 		$dbms_info = $this->database_helper->get_available_dbms($dbms);
 
 		// Get schema data from file
-		$sql_query = @file_get_contents($this->phpbb_root_path . 'phpbb/install/schemas/schema_data.sql');
+		$sql_query = @file_get_contents($this->phpbb_root_path . 'install/schemas/schema_data.sql');
 
 		// Clean up SQL
 		$sql_query = $this->replace_dbms_specific_sql($sql_query);

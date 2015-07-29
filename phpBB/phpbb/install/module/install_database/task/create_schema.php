@@ -144,9 +144,9 @@ class create_schema extends \phpbb\install\task_base
 		$change_prefix = false;
 
 		// Generate database schema
-		if ($this->filesystem->exists($this->phpbb_root_path . 'phpbb/install/schemas/schema.json'))
+		if ($this->filesystem->exists($this->phpbb_root_path . 'install/schemas/schema.json'))
 		{
-			$db_table_schema = @file_get_contents($this->phpbb_root_path . 'phpbb/install/schemas/schema.json');
+			$db_table_schema = @file_get_contents($this->phpbb_root_path . 'install/schemas/schema.json');
 			$db_table_schema = json_decode($db_table_schema, true);
 			$change_prefix = true;
 		}
