@@ -158,50 +158,54 @@ class manager
 
 	public function check($mode = 'all', $data = false)
 	{
-		// Okay.. if we should check all then we require a full user data array as second parameter
+		$ban_result = false;
+
 		if ($mode == 'all')
 		{
+			// Okay.. if we should check all then we require a full user data array as second parameter
 			if (!is_array($data))
 			{
 				$data = $this->user->data;
 			}
 
-			$ban_result = false;
-
 			/** @var \phpbb\ban\type\type_interface $type */
 			foreach ($this->type_map as $type)
 			{
-				$ban_result = $type->check_ban($data[$type->get_user_column()]);
+				if ($ban_result === false || $type->exclude_possible())
+				{
+					$ban_result = $type->check_ban($data[$type->get_user_column()]);
+				}
 
 				if ($ban_result == 'exclude')
 				{
 					return false;
 				}
 			}
-
-			return $ban_result;
 		}
-
-		if (!isset($this->type_map[$mode]))
+		else
 		{
-			// @TODO: maybe throw exception...
-			return false;
+			if (!isset($this->type_map[$mode]))
+			{
+				// @TODO: maybe throw exception...
+				return false;
+			}
+
+			/** @var \phpbb\ban\type\type_interface $type */
+			$type = $this->type_map[$mode];
+
+			if (empty($data))
+			{
+				$data = $this->user->data[$type->get_user_column()];
+			}
+
+			$ban_result = $type->check_ban($data);
+
+			if ($ban_result == 'exclude')
+			{
+				return false;
+			}
 		}
 
-		/** @var \phpbb\ban\type\type_interface $type */
-		$type = $this->type_map[$mode];
-
-		if ($data === false)
-		{
-			$data = $this->user->data[$type->get_user_column()];
-		}
-
-		$ban_result = $type->check_ban($data);
-
-		if ($ban_result == 'exclude')
-		{
-			return false;
-		}
 		return $ban_result;
 	}
 

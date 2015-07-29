@@ -19,6 +19,13 @@ namespace phpbb\ban\type;
 interface type_interface
 {
 	/**
+	 * Returns if excludes are possible
+	 *
+	 * @return bool		True if there could be excludes, false if not
+	 */
+	public function exclude_possible();
+
+	/**
 	 * Returns the ban type
 	 *
 	 * @return string	Ban type
@@ -50,7 +57,7 @@ interface type_interface
 	 *
 	 * @param string	$ban	The entity to check for.
 	 *
-	 * @return bool	True if banned.
+	 * @return mixed	Array with ban data if banned, 'exclude' if excluded ban or false if not banned
 	 */
 	public function check_ban($ban);
 

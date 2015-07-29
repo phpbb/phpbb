@@ -18,6 +18,14 @@ class user extends base
 	/**
 	 * {@inheritdoc}
 	 */
+	public function exclude_possible()
+	{
+		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_type()
 	{
 		return 'user';
