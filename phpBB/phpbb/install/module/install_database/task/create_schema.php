@@ -119,7 +119,7 @@ class create_schema extends \phpbb\install\task_base
 			}
 		}
 
-		$db_schema_path = $this->phpbb_root_path . 'phpbb/install/schemas/' . $schema_name . '_schema.sql';
+		$db_schema_path = $this->phpbb_root_path . 'install/schemas/' . $schema_name . '_schema.sql';
 
 		// Load database vendor specific code if there is any
 		if ($this->filesystem->exists($db_schema_path))
