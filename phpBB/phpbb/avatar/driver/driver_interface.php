@@ -117,4 +117,11 @@ interface driver_interface
 	* @return string Avatar driver's template name
 	*/
 	public function get_template_name();
+
+	/**
+	* Get the avatar driver's template name (ACP)
+	*
+	* @return string Avatar driver's template name
+	*/
+	public function get_acp_template_name();
 }
