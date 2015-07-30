@@ -91,9 +91,9 @@
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
 			<p class="post-notice deleted">
-				<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" /> &nbsp;
+				<!-- IF S_CAN_DELETE_POST --><input class="button2" type="submit" value="{L_DELETE}" name="action[delete]" /> &nbsp;<!-- ENDIF -->
 				<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
-				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
+				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="deleted_posts" /><!-- ENDIF -->
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 				{S_FORM_TOKEN}
 			</p>
