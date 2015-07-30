@@ -1878,9 +1878,8 @@ class acp_users
 						$driver = $phpbb_avatar_manager->get_driver($current_driver);
 
 						$avatars_enabled = true;
-						$template_name = $phpbb_avatar_manager->get_driver_template_name($driver);
 						$template->set_filenames(array(
-							'avatar' => $template_name,
+							'avatar' => $driver->get_acp_template_name(),
 						));
 
 						if ($driver->prepare_form($request, $template, $user, $avatar_data, $error))
