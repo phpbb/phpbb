@@ -295,6 +295,10 @@ class ip extends base
 					$swap = true;
 					break;
 				}
+				else if ($bytes_start_ip[$i] < $bytes_end_ip[$i])
+				{
+					break;
+				}
 			}
 			if ($swap)
 			{
@@ -391,6 +395,10 @@ class ip extends base
 				if ($blocks_start_ip[$i] > $blocks_end_ip[$i])
 				{
 					$swap = true;
+					break;
+				}
+				else if ($blocks_start_ip[$i] < $blocks_end_ip[$i])
+				{
 					break;
 				}
 			}
@@ -524,6 +532,10 @@ class ip extends base
 				$swap = true;
 				break;
 			}
+			else if ($bytes_ip1[$i] < $bytes_ip2[$i])
+			{
+				break;
+			}
 		}
 		if ($swap)
 		{
@@ -539,8 +551,9 @@ class ip extends base
 
 		for ($i = 8; $i >= 1; $i--)
 		{
-			$diff = $bytes_ip2[$i] - $bytes_ip1{$i} - $carry;
-			$carry = ($diff < 0) ? 1 : 0;
+			$diff = $bytes_ip2[$i] - $bytes_ip1[$i] - $carry;
+			// We would have a strange result for 0xFFFF - 0x0000 - (-1)
+			$carry = ($diff === 0x10000) ? -1 : (($diff < 0) ? 1 : 0);
 			// Add 2^16 and modulo 2^16 because 2^16 is as high as we can get.
 			$diff_blocks[$i] = ($diff + 0x10000) % 0x10000;
 		}

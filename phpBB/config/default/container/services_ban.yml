@@ -33,6 +33,17 @@ services:
         tags:
             - { name: ban.type }
 
+    ban.type.ip:
+        class: \phpbb\ban\type\ip
+        arguments:
+            - @cache
+            - @dbal.conn
+            - @ban.type_helper
+            - @log
+            - @user
+        tags:
+            - { name: ban.type }
+
     ban.type.user:
         class: \phpbb\ban\type\user
         arguments:
