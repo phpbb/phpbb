@@ -351,10 +351,24 @@ class ip extends base
 
 		// Find out which powers of two fit between the start and end ip.
 		$number_ips = $this->ip_count($start_ip_blocks, $end_ip_blocks);
-		$number_ips_bin = '';
+		$subnets = array();
 		for ($i = 1; $i <= $size; $i++)
 		{
-			$number_ips_bin .= str_pad(decbin($number_ips[$i]), 16, '0', STR_PAD_LEFT);
+			$number_block_bin = decbin($number_ips[$i]);
+			for ($j = 0, $bits = strlen($number_block_bin); $j < $bits; $j++)
+			{
+				if ($number_block_bin[$j])
+				{
+					// (current block - 1) * 16 bits + missing bits + $j'th bit + 1 (because we don't include the subnet /0)
+					$subnets[] = ($i - 1) * 16 + (16 - $bits) + $j + 1;
+				}
+			}
+		}
+
+		// We're handling ranges within the same block - reverse array to work from smallest to biggest subnet
+		if ($first_block_equals)
+		{
+			$subnets = array_reverse($subnets);
 		}
 
 		// We add 1 (smallest subnet) to the end address so we can check if we reached the goal because
@@ -363,40 +377,15 @@ class ip extends base
 
 		$cidr_ranges = array();
 
-		if ($first_block_equals)
+		foreach ($subnets as $subnet)
 		{
-			// We have to begin with the smallest subnet here
-			for ($i = $max_subnet; $i >= 1; $i--)
-			{
-				if ($number_ips_bin[$i - 1])
-				{
-					$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $start_ip_blocks));
-					$cidr_ranges[] = $ip . '/' . $i;
-					$start_ip_blocks = $this->ip_add_subnet($start_ip_blocks, $i);
+			$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $start_ip_blocks));
+			$cidr_ranges[] = $ip . '/' . $subnet;
+			$start_ip_blocks = $this->ip_add_subnet($start_ip_blocks, $subnet);
 
-					if ($ip == $end_ip_check)
-					{
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			// And here we start with the biggest subnet, except 0
-			for ($i = 1; $i <= $max_subnet; $i++)
+			if ($ip === $end_ip_check)
 			{
-				if ($number_ips_bin[$i - 1])
-				{
-					$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $start_ip_blocks));
-					$cidr_ranges[] = $ip . '/' . $i;
-					$start_ip_blocks = $this->ip_add_subnet($start_ip_blocks, $i);
-
-					if ($ip == $end_ip_check)
-					{
-						break;
-					}
-				}
+				break;
 			}
 		}
 
