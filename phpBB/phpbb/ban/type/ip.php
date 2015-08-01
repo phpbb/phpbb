@@ -187,61 +187,63 @@ class ip extends base
 		// @TODO
 	}
 
+	/**
+	 * Normalises a CIDR notation so 127.244.200.4/8 will get 127.0.0.0/8
+	 *
+	 * @param string	$cidr_range		The CIDR notation to be normalised
+	 *
+	 * @return string	The normalised CIDR notation
+	 */
 	protected function normalise_cidr($cidr_range)
 	{
 		if (stripos($cidr_range, '/') === false)
 		{
-			// @TODO: throw ex
-			return false;
+			$cidr_range .= '/' . (stripos($cidr_range, ':') !== false) ? 128 : 32;
 		}
 
 		list($ip, $subnet) = array_map('trim', explode('/', $cidr_range, 2));
+		$ip_in_addr = phpbb_inet_pton($ip);
 
-		if ($subnet < 0 || (stripos($ip, ':') !== false && $subnet > 128) || (stripos($ip, '.') !== false && $subnet > 32))
+		if ($ip_in_addr === false)
+		{
+			// @TODO: throw ex, malformed ip address
+			return false;
+		}
+
+		$ip_blocks = unpack('n*', $ip_in_addr);
+		$size = sizeof($ip_blocks);
+		// 16 bits per array element
+		$max_subnet = $size * 16;
+
+		if ($subnet < 0 || $subnet > $max_subnet)
 		{
 			// @TODO: throw ex
 			return false;
 		}
 
-		if (stripos($ip, ':') !== false && $subnet < 128)
+		// If it's /32 for IPv4 or /128 for IPv6 we don't have anything to do here
+		if ($subnet < $max_subnet)
 		{
-			$ip = short_ipv6(phpbb_ip_normalise($ip), 8);
-			$blocks = explode(':', $ip);
-			if (sizeof($blocks) !== 8)
+			$start_block = (int) ceil($subnet / 16);
+			$position = ($max_subnet - $subnet) % 16;
+
+			// Indicies start at 1
+			if ($start_block > 0)
 			{
-				// @TODO: throw ex
-				return false;
+				// Clear last $position bits, the simple way
+				$ip_blocks[$start_block] >>= $position;
+				$ip_blocks[$start_block] <<= $position;
 			}
 
-			$start_block = (int) ($subnet / 16);
-			$start_position = $subnet % 16;
-
-			$start_block_bin = str_pad(base_convert($blocks[$start_block], 16, 2), 16, '0', STR_PAD_LEFT);
-			$start_block_bin = substr($start_block_bin, 0, $start_position) . str_repeat('0', 16 - $start_position);
-			$blocks[$start_block] = base_convert($start_block_bin, 2, 16);
-
-			for ($i = 0; $i < 8; $i++)
+			// Clear the other blocks as well
+			for ($i = $start_block + 1; $i <= $size; $i++)
 			{
-				if ($i > $start_block)
-				{
-					$blocks[$i] = '0';
-				}
-				else
-				{
-					$blocks[$i] = (int) $blocks[$i];
-				}
+				$ip_blocks[$i] = 0;
 			}
-
-			$ip = implode(':', $blocks);
-		}
-		else if (stripos($ip, '.') !== false && $subnet < 32)
-		{
-			$ip_long = sprintf('%u', ip2long($ip));
-			$ip_bin = str_pad(decbin($ip_long), 32, '0', STR_PAD_LEFT);
-			$ip = long2ip(bindec(substr($ip_bin, 0, $subnet) . str_repeat('0', 32 - $subnet)));
 		}
 
-		return phpbb_ip_normalise($ip) . '/' . $subnet;
+		// We have to convert it back to an IP like this because pack doesn't want an array as a result
+		return phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $ip_blocks)) . '/' . $subnet;
 	}
 
 	/**
@@ -254,252 +256,187 @@ class ip extends base
 	 */
 	protected function range_to_cidr($start_ip, $end_ip)
 	{
-		$start_ip = phpbb_ip_normalise($start_ip);
-		$end_ip = phpbb_ip_normalise($end_ip);
+		$start_ip_in_addr = phpbb_inet_pton($start_ip);
+		$end_ip_in_addr = phpbb_inet_pton($end_ip);
 
-		if ($start_ip === false || $end_ip === false)
+		if ($start_ip_in_addr === false || $end_ip_in_addr === false)
 		{
-			//@TODO: throw ex
+			//@TODO: throw ex, malformed ip address
 			return false;
 		}
 
-		$cidr_ranges = array();
+		$start_ip_blocks = unpack('n*', $start_ip_in_addr);
+		$end_ip_blocks = unpack('n*', $end_ip_in_addr);
 
-		if (stripos($start_ip, ':') !== false && stripos($end_ip, ':') !== false)
+		$size = sizeof($start_ip_blocks);
+		if ($size !== sizeof($end_ip_blocks))
 		{
-			if (!preg_match(get_preg_expression('ipv6'), $start_ip) || !preg_match(get_preg_expression('ipv6'), $end_ip))
+			//@TODO: throw ex, range covers IPv4 and IPv6 addresses at the same time
+			return false;
+		}
+		// 16 bits in an array element
+		$max_subnet = $size * 16;
+
+		// We're already done
+		if ($start_ip_in_addr === $end_ip_in_addr)
+		{
+			return array(phpbb_inet_ntop($start_ip_in_addr) . '/' . $max_subnet);
+		}
+		else if ($this->ip_compare_blocks($start_ip_blocks, 0) && $this->ip_compare_blocks($end_ip_blocks, 0xFFFF))
+		{
+			return array(phpbb_inet_ntop($start_ip_in_addr) . '/0');
+		}
+
+		$swap = false;
+		// Indicies start at 1 for whatever reason
+		for ($i = 1; $i <= $size; $i++)
+		{
+			if ($start_ip_blocks[$i] > $end_ip_blocks[$i])
 			{
-				// @TODO: throw ex
-				return false;
+				$swap = true;
+				break;
 			}
-
-			// We're already done
-			if ($start_ip === '::' && $end_ip === 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff')
+			else if ($start_ip_blocks[$i] < $end_ip_blocks[$i])
 			{
-				return array('::/0');
-			}
-			else if ($start_ip === $end_ip)
-			{
-				return array($start_ip . '/128');
-			}
-
-			$bytes_start_ip = unpack('n*', phpbb_inet_pton($start_ip));
-			$bytes_end_ip = unpack('n*', phpbb_inet_pton($end_ip));
-
-			$swap = false;
-			// Indicies start at 1 for whatever reason
-			for ($i = 1; $i <= 8; $i++)
-			{
-				if ($bytes_start_ip[$i] > $bytes_end_ip[$i])
-				{
-					$swap = true;
-					break;
-				}
-				else if ($bytes_start_ip[$i] < $bytes_end_ip[$i])
-				{
-					break;
-				}
-			}
-			if ($swap)
-			{
-				$temp = $start_ip;
-				$start_ip = $end_ip;
-				$end_ip = $temp;
-
-				$temp = $bytes_start_ip;
-				$bytes_start_ip = $bytes_end_ip;
-				$bytes_end_ip = $temp;
-			}
-
-			// Split the range into two parts because it wouldn't work out otherwise
-			if ($bytes_start_ip[1] !== $bytes_end_ip[1] && !preg_match('#^[0-9a-f]{0,4}::$#i', $start_ip))
-			{
-				$new_end_ip = dechex($bytes_start_ip[1]) . ':ffff:ffff:ffff:ffff:ffff:ffff:ffff';
-				$new_start_ip = dechex($bytes_start_ip[1] + 1) . '::';
-
-				return array_merge($this->range_to_cidr($start_ip, $new_end_ip), $this->range_to_cidr($new_start_ip, $end_ip));
-			}
-
-			// Find out which powers of two fit between the start and end ip.
-			$number_ips = $this->ipv6_count_ips($bytes_start_ip, $bytes_end_ip);
-			$number_ips_bin = '';
-			for ($i = 1; $i <= 8; $i++)
-			{
-				$number_ips_bin .= str_pad(decbin($number_ips[$i]), 16, '0', STR_PAD_LEFT);
-			}
-
-			// We add 1 (/128 is one address) to the end address so we can check if we reached the goal because
-			// $bytes_start_ip will always contain the next start_ip, not the end of the current range
-			$end_ip_check = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $this->ipv6_add_subnet($bytes_end_ip, 128)));
-
-			if ($bytes_start_ip[1] === $bytes_end_ip[1])
-			{
-				// We have to begin with the smallest subnet here
-				for ($i = strlen($number_ips_bin); $i > 0; $i--)
-				{
-					if ($number_ips_bin[$i - 1])
-					{
-						$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $bytes_start_ip));
-						$cidr_ranges[] = $ip . '/' . $i;
-						$bytes_start_ip = $this->ipv6_add_subnet($bytes_start_ip, $i);
-
-						if ($ip === $end_ip_check)
-						{
-							break;
-						}
-					}
-				}
-			}
-			else
-			{
-				// And here we start with the biggest subnet, except 0
-				for ($i = 1, $size = strlen($number_ips_bin); $i <= $size; $i++)
-				{
-					if ($number_ips_bin[$i - 1])
-					{
-						$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $bytes_start_ip));
-						$cidr_ranges[] = $ip . '/' . $i;
-						$bytes_start_ip = $this->ipv6_add_subnet($bytes_start_ip, $i);
-
-						if ($ip === $end_ip_check)
-						{
-							break;
-						}
-					}
-				}
+				break;
 			}
 		}
-		else if (stripos($start_ip, '.') !== false && stripos($end_ip, '.') !== false)
+		if ($swap)
 		{
-			if (!preg_match(get_preg_expression('ipv4'), $start_ip) || !preg_match(get_preg_expression('ipv4'), $end_ip))
+			$temp = $start_ip;
+			$start_ip = $end_ip;
+			$end_ip = $temp;
+
+			$temp = $start_ip_blocks;
+			$start_ip_blocks = $end_ip_blocks;
+			$end_ip_blocks = $temp;
+		}
+
+		// Have to seperate IPv4 and IPv6 here
+		$first_block_equals = ($size === 2) ? (($start_ip_blocks[1] & 0xFF00) === ($end_ip_blocks[1] & 0xFF00)) : ($start_ip_blocks[1] === $end_ip_blocks[1]);
+
+		// Split the range into two parts because it wouldn't work out otherwise
+		if (!$first_block_equals && !$this->ip_compare_blocks($start_ip_blocks, 0, 2))
+		{
+			$new_end_ip_blocks = $new_start_ip_blocks = $start_ip_blocks;
+
+			// Increment first block to get next /16 range (in IPv6)
+			$new_start_ip_blocks[1]++;
+
+			// Handling IPv4 here
+			if ($size === 2)
 			{
-				// @TODO: throw ex
-				return false;
+				// Second octet should be 255
+				$new_end_ip_blocks[1] |= 0xFF;
+
+				// Clear second octet and add 1 to first octet
+				$new_start_ip_blocks[1] >>= 8;
+				$new_start_ip_blocks[1]++;
+				$new_start_ip_blocks[1] <<= 8;
+				// We don't have to handle an overflow or something like that, because we made sure that $start_ip
+				// hasn't 255 as its first block. ($end_ip would have to have 256 because they must not be the same)
 			}
 
-			if ($start_ip === '0.0.0.0' && $end_ip === '255.255.255.255')
+			for ($i = 2; $i <= $size; $i++)
 			{
-				return array('0.0.0.0/0');
-			}
-			else if ($start_ip === $end_ip)
-			{
-				return array($start_ip . '/32');
+				$new_end_ip_blocks[$i] = 0xFFFF;
+				$new_start_ip_blocks[$i] = 0;
 			}
 
-			$blocks_start_ip = explode('.', $start_ip);
-			$blocks_end_ip = explode('.', $end_ip);
+			$new_end_ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $new_end_ip_blocks));
+			$new_start_ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $new_start_ip_blocks));
 
-			$swap = false;
-			for ($i = 0; $i < 4; $i++)
+			return array_merge($this->range_to_cidr($start_ip, $new_end_ip), $this->range_to_cidr($new_start_ip, $end_ip));
+		}
+
+		// Find out which powers of two fit between the start and end ip.
+		$number_ips = $this->ip_count($start_ip_blocks, $end_ip_blocks);
+		$number_ips_bin = '';
+		for ($i = 1; $i <= $size; $i++)
+		{
+			$number_ips_bin .= str_pad(decbin($number_ips[$i]), 16, '0', STR_PAD_LEFT);
+		}
+
+		// We add 1 (smallest subnet) to the end address so we can check if we reached the goal because
+		// $bytes_start_ip will always contain the next start_ip, not the end of the current range
+		$end_ip_check = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $this->ip_add_subnet($end_ip_blocks, $max_subnet)));
+
+		$cidr_ranges = array();
+
+		if ($first_block_equals)
+		{
+			// We have to begin with the smallest subnet here
+			for ($i = $max_subnet; $i >= 1; $i--)
 			{
-				if ($blocks_start_ip[$i] > $blocks_end_ip[$i])
+				if ($number_ips_bin[$i - 1])
 				{
-					$swap = true;
-					break;
-				}
-				else if ($blocks_start_ip[$i] < $blocks_end_ip[$i])
-				{
-					break;
-				}
-			}
-			if ($swap)
-			{
-				$temp = $start_ip;
-				$start_ip = $end_ip;
-				$end_ip = $temp;
+					$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $start_ip_blocks));
+					$cidr_ranges[] = $ip . '/' . $i;
+					$start_ip_blocks = $this->ip_add_subnet($start_ip_blocks, $i);
 
-				$temp = $blocks_start_ip;
-				$blocks_start_ip = $blocks_end_ip;
-				$blocks_end_ip = $temp;
-			}
-
-			// Split the range into two parts because it wouldn't work out otherwise
-			if ($blocks_start_ip[0] !== $blocks_end_ip[0] && !preg_match('#\d{1,3}\.0\.0\.0#', $start_ip))
-			{
-				$new_end_ip = $blocks_start_ip[0] . '.255.255.255';
-				$new_start_ip = ($blocks_start_ip[0] + 1) . '.0.0.0';
-
-				return array_merge($this->range_to_cidr($start_ip, $new_end_ip), $this->range_to_cidr($new_start_ip, $end_ip));
-			}
-
-			$start_ip_long = ip2long($start_ip);
-			$end_ip_long = ip2long($end_ip) + 1;
-
-			$number_ips = $end_ip_long - $start_ip_long + 1;
-			$number_ips_bin = str_pad(decbin($number_ips), 32, '0', STR_PAD_LEFT);
-
-			if ($blocks_start_ip[0] === $blocks_end_ip[0])
-			{
-				for ($i = strlen($number_ips_bin); $i > 0; $i--)
-				{
-					if ($number_ips_bin[$i - 1])
+					if ($ip == $end_ip_check)
 					{
-						$cidr_ranges[] = long2ip($start_ip_long) . '/' . $i;
-						$start_ip_long += (1 << 32 - $i);
-
-						if ($start_ip_long === $end_ip_long + 1)
-						{
-							break;
-						}
-					}
-				}
-			}
-			else
-			{
-				for ($i = 1, $size = strlen($number_ips_bin); $i <= $size; $i++)
-				{
-					if ($number_ips_bin[$i - 1])
-					{
-						$cidr_ranges[] = long2ip($start_ip_long) . '/' . $i;
-						$start_ip_long += (1 << 32 - $i);
-
-						if ($start_ip_long === $end_ip_long + 1)
-						{
-							break;
-						}
+						break;
 					}
 				}
 			}
 		}
 		else
 		{
-			// @TODO: throw ex
-			return false;
+			// And here we start with the biggest subnet, except 0
+			for ($i = 1; $i <= $max_subnet; $i++)
+			{
+				if ($number_ips_bin[$i - 1])
+				{
+					$ip = phpbb_inet_ntop(call_user_func_array('pack', array('n*') + $start_ip_blocks));
+					$cidr_ranges[] = $ip . '/' . $i;
+					$start_ip_blocks = $this->ip_add_subnet($start_ip_blocks, $i);
+
+					if ($ip == $end_ip_check)
+					{
+						break;
+					}
+				}
+			}
 		}
 
 		return $cidr_ranges;
 	}
 
 	/**
-	 * Adds a subnet to an IPv6 address in its unpacked form
+	 * Adds a subnet to an IP address in its unpacked form
 	 *
-	 * @param array		$bytes_ip	The IPv6 address in its unpackd form (format: n*)
+	 * @param array		$bytes_ip	The IP address in its unpacked form (format: n*)
 	 * @param int		$subnet		The subnet which should be added
 	 *
-	 * @return array	Returns the IPv6 address with the added subnet in its unpacked form
+	 * @return array	Returns the IP address with the added subnet in its unpacked form
 	 */
-	protected function ipv6_add_subnet(array $bytes_ip, $subnet)
+	protected function ip_add_subnet(array $bytes_ip, $subnet)
 	{
 		if (empty($bytes_ip))
 		{
 			// @TODO: throw ex
 			return false;
 		}
-		if ($subnet < 1 || $subnet > 128)
+
+		// 16 bits per array element
+		$max_subnet = sizeof($bytes_ip) * 16;
+
+		if ($subnet < 1 || $subnet > $max_subnet)
 		{
 			// @TODO: throw ex
 			return false;
 		}
 
 		$block = (int) ceil($subnet / 16);
-		$position = (128 - $subnet) % 16;
+		$position = ($max_subnet - $subnet) % 16;
 
 		$bytes_ip[$block] += 1 << $position;
 		// If we got a carry after adding 2^x to the block, we remove it and add one to the next block
 		if (($bytes_ip[$block] & 0x10000) === 0x10000)
 		{
 			$bytes_ip[$block] &= 0xFFFF;
-			for ($i = $block - 1; $i >= 0; $i--)
+			for ($i = $block - 1; $i >= 1; $i--)
 			{
 				$bytes_ip[$i] += 1;
 				// ... and so on...
@@ -515,17 +452,52 @@ class ip extends base
 	}
 
 	/**
-	 * Gets the number of IPs between two IPv6 addresses in their unpacked form (format: n*)
+	 * Compares every block of the IP address in its unpacked form with $value, beginning at $start
 	 *
-	 * @param array 	$bytes_ip1	The first IPv6 address
-	 * @param array 	$bytes_ip2	The second IPv6 address
+	 * @param array		$bytes_ip	The IP address in its unpacked form (format: n*)
+	 * @param int		$value		The value to check with
+	 * @param int		$start		The block index to start at (note: indicies start at 1)
+	 *
+	 * @return bool		Returns true if all blocks have the same value as $value
+	 */
+	protected function ip_compare_blocks(array $bytes_ip, $value, $start = 1)
+	{
+		if (empty($bytes_ip))
+		{
+			// @TODO: throw ex
+			return false;
+		}
+
+		for ($i = $start, $size = sizeof($bytes_ip); $i <= $size; $i++)
+		{
+			if ($bytes_ip[$i] !== $value)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Gets the number of IPs between two IP addresses in their unpacked form (format: n*)
+	 *
+	 * @param array 	$bytes_ip1	The first IP address
+	 * @param array 	$bytes_ip2	The second IP address
 	 *
 	 * @return array	The difference in the same format
 	 */
-	protected function ipv6_count_ips(array $bytes_ip1, array $bytes_ip2)
+	protected function ip_count(array $bytes_ip1, array $bytes_ip2)
 	{
+		$size = sizeof($bytes_ip1);
+		if ($size !== sizeof($bytes_ip2))
+		{
+			// @TODO: throw ex
+			return false;
+		}
+
 		$swap = false;
-		for ($i = 1; $i <= 8; $i++)
+		for ($i = 1; $i <= $size; $i++)
 		{
 			if ($bytes_ip1[$i] > $bytes_ip2[$i])
 			{
@@ -544,20 +516,20 @@ class ip extends base
 			$bytes_ip2 = $temp;
 		}
 
-		// We will overwrite all blocks anyway, we just need to keep the order
-		$diff_blocks = $bytes_ip1;
+		$diff_blocks = array();
 		// Set carry to -1 to add 1 to the overall result
 		$carry = -1;
 
-		for ($i = 8; $i >= 1; $i--)
+		for ($i = $size; $i >= 1; $i--)
 		{
 			$diff = $bytes_ip2[$i] - $bytes_ip1[$i] - $carry;
 			// We would have a strange result for 0xFFFF - 0x0000 - (-1)
 			$carry = ($diff === 0x10000) ? -1 : (($diff < 0) ? 1 : 0);
-			// Add 2^16 and modulo 2^16 because 2^16 is as high as we can get.
+			// Add 2^16 and modulo 2^16 because 2^16 is as high as we can get per element
 			$diff_blocks[$i] = ($diff + 0x10000) % 0x10000;
 		}
 
-		return $diff_blocks;
+		// Restore the correct order
+		return array_reverse($diff_blocks, true);
 	}
 }
