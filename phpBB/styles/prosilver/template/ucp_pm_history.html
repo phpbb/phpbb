@@ -4,6 +4,7 @@
 	{L_MESSAGE_HISTORY}{L_COLON}
 </h3>
 
+<!-- EVENT ucp_pm_history_review_before -->
 <div id="topicreview">
 	<script type="text/javascript">
 	// <![CDATA[
@@ -17,15 +18,22 @@
 		<div class="postbody" id="pr{history_row.MSG_ID}">
 			<h3><a href="{history_row.U_VIEW_MESSAGE}" <!-- IF history_row.S_CURRENT_MSG -->class="current"<!-- ENDIF -->>{history_row.SUBJECT}</a></h3>
 
-			<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
+			<!-- DEFINE $SHOW_PM_HISTORY_POST_BUTTONS = (history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE) -->
+			<!-- EVENT ucp_pm_history_post_buttons_list_before -->
+			<!-- IF $SHOW_PM_HISTORY_POST_BUTTONS -->
 			<ul class="post-buttons">
+				<!-- EVENT ucp_pm_history_post_buttons_before -->
+				<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
 				<li>
 					<a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}');"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}" class="button icon-button quote-icon">
 						<span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
 					</a>
 				</li>
+				<!-- ENDIF -->
+				<!-- EVENT ucp_pm_history_post_buttons_after -->
 			</ul>
 			<!-- ENDIF -->
+			<!-- EVENT ucp_pm_history_post_buttons_list_after -->
 
 			<p class="author">{history_row.MINI_POST_IMG} {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong><br />
 				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}</p>
@@ -37,6 +45,7 @@
 	</div>
 	<!-- END history_row -->
 </div>
+<!-- EVENT ucp_pm_history_review_after -->
 
 <hr />
 <p><a href="#cp-main" class="top2">{L_BACK_TO_TOP}</a></p>

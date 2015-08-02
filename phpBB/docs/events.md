@@ -1328,6 +1328,56 @@ ucp_main_front_user_activity_before
 * Since: 3.1.6-RC1
 * Purpose: Add content right before the user activity info viewing UCP front page
 
+ucp_pm_history_post_buttons_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+    + styles/subsilver2/template/ucp_pm_history.html
+* Since: 3.1.6-RC1
+* Purpose: Add post button to private messages in history review (next to quote etc), at
+the end of the list.
+
+ucp_pm_history_post_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+    + styles/subsilver2/template/ucp_pm_history.html
+* Since: 3.1.6-RC1
+* Purpose: Add post button to private messages in history review (next to quote etc), at
+the start of the list.
+
+ucp_pm_history_post_buttons_list_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+* Since: 3.1.6-RC1
+* Purpose: Add post button custom list to private messages in history review (next to quote etc),
+after the original list.
+
+ucp_pm_history_post_buttons_list_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+* Since: 3.1.6-RC1
+* Purpose: Add post button custom list to private messages in history review (next to quote etc),
+before the original list.
+
+ucp_pm_history_review_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+    + styles/subsilver2/template/ucp_pm_history.html
+* Since: 3.1.6-RC1
+* Purpose: Add content after the private messages history review.
+
+ucp_pm_history_review_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_history.html
+    + styles/subsilver2/template/ucp_pm_history.html
+* Since: 3.1.6-RC1
+* Purpose: Add content before the private messages history review.
+
 ucp_pm_viewmessage_avatar_after
 ===
 * Locations:
