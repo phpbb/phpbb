@@ -1,9 +1,11 @@
+<!-- EVENT attachment_file_before -->
 
 <!-- BEGIN _file -->
 
 	<!-- IF _file.S_DENIED -->
 		<span class="genmed">[{_file.DENIED_MESSAGE}]</span><br />
 	<!-- ELSE -->
+		<!-- EVENT attachment_file_prepend -->
 
 		<!-- IF _file.COMMENT -->
 			<span class="gensmall"><b>{L_FILE_COMMENT}{L_COLON}</b> {_file.COMMENT}</span><br />
@@ -115,7 +117,9 @@
 			<span class="gensmall"><a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
+		<!-- EVENT attachment_file_append -->
 		<br />
 	<!-- ENDIF -->
 
 <!-- END _file -->
+<!-- EVENT attachment_file_after -->

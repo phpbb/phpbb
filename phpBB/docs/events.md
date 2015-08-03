@@ -284,6 +284,38 @@ acp_users_prefs_view_prepend
 * Since: 3.1.0-b3
 * Purpose: Add user options fieldset to the top of ACP users view prefs settings
 
+attachment_file_after
+===
+* Locations:
+    + styles/prosilver/template/attachment.html
+    + styles/subsilver2/template/attachment.html
+* Since: 3.1.6-RC1
+* Purpose: Add content after the attachment.
+
+attachment_file_append
+===
+* Locations:
+    + styles/prosilver/template/attachment.html
+    + styles/subsilver2/template/attachment.html
+* Since: 3.1.6-RC1
+* Purpose: Add custom attachment types displaying to the bottom of attachment block.
+
+attachment_file_before
+===
+* Locations:
+    + styles/prosilver/template/attachment.html
+    + styles/subsilver2/template/attachment.html
+* Since: 3.1.6-RC1
+* Purpose: Add content before the attachment.
+
+attachment_file_prepend
+===
+* Locations:
+    + styles/prosilver/template/attachment.html
+    + styles/subsilver2/template/attachment.html
+* Since: 3.1.6-RC1
+* Purpose: Add custom attachment types displaying to the top of attachment block.
+
 forumlist_body_category_header_after
 ===
 * Locations:
