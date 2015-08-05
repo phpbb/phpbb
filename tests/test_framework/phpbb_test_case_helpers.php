@@ -468,8 +468,30 @@ class phpbb_test_case_helpers
 			$phpbb_dispatcher = $dispatcher;
 		}
 
+		// Set up the a minimum config
+		if ($container->has('config'))
+		{
+			$config = $container->get('config');
+		}
+		else
+		{
+			$config = new \phpbb\config\config(array());
+		}
+		$default_config = array(
+			'allow_nocensors' => false,
+			'allowed_schemes_links' => 'http,https,ftp',
+			'smilies_path' => 'images/smilies',
+		);
+		foreach ($default_config as $config_name => $config_value)
+		{
+			if (!isset($config[$config_name]))
+			{
+				$config[$config_name] = $config_value;
+			}
+		}
+
 		// Create and register the text_formatter.s9e.factory service
-		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, $cache_dir, $cache_key_parser, $cache_key_renderer);
 		$container->set('text_formatter.s9e.factory', $factory);
 
 		// Create a user if none was provided, and add the common lang strings
@@ -532,12 +554,8 @@ class phpbb_test_case_helpers
 			$dispatcher
 		);
 
-		$config = ($container->has('config'))
-		        ? $container->get('config')
-		        : new \phpbb\config\config(array('smilies_path' => 'images/smilies', 'allow_nocensors' => false));
-		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
-
 		// Calls configured in services.yml
+		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
 		$renderer->configure_quote_helper($quote_helper);
 		$renderer->configure_smilies_path($config, $path_helper);
 		$renderer->configure_user($user, $config, $auth);

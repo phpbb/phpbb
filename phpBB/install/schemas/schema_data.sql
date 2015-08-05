@@ -41,6 +41,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_smilies', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_smilies', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_topic_notify', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allowed_schemes_links', 'http,https,ftp');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('assets_version', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '1');

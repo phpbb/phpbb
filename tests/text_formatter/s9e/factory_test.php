@@ -49,6 +49,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			$dal,
 			$this->cache,
 			$this->dispatcher,
+			new \phpbb\config\config(array('allowed_schemes_links' => 'http,https,ftp')),
 			$this->get_cache_dir(),
 			'_foo_parser',
 			'_foo_renderer'

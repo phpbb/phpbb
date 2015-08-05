@@ -43,6 +43,11 @@ class factory implements \phpbb\textformatter\cache_interface
 	protected $cache_key_renderer;
 
 	/**
+	* @var \phpbb\config\config
+	*/
+	protected $config;
+
+	/**
 	* @var array Custom tokens used in bbcode.html and their corresponding token from the definition
 	*/
 	protected $custom_tokens = array(
@@ -127,16 +132,18 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @param \phpbb\textformatter\data_access $data_access
 	* @param \phpbb\cache\driver\driver_interface $cache
 	* @param \phpbb\event\dispatcher_interface $dispatcher
+	* @param \phpbb\config\config $config
 	* @param string $cache_dir          Path to the cache dir
 	* @param string $cache_key_parser   Cache key used for the parser
 	* @param string $cache_key_renderer Cache key used for the renderer
 	*/
-	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, $cache_dir, $cache_key_parser, $cache_key_renderer)
+	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, $cache_dir, $cache_key_parser, $cache_key_renderer)
 	{
 		$this->cache = $cache;
 		$this->cache_dir = $cache_dir;
 		$this->cache_key_parser = $cache_key_parser;
 		$this->cache_key_renderer = $cache_key_renderer;
+		$this->config = $config;
 		$this->data_access = $data_access;
 		$this->dispatcher = $dispatcher;
 	}
@@ -189,6 +196,16 @@ class factory implements \phpbb\textformatter\cache_interface
 		*/
 		$vars = array('configurator');
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_before', compact($vars)));
+
+		// Reset the list of allowed schemes
+		foreach ($configurator->urlConfig->getAllowedSchemes() as $scheme)
+		{
+			$configurator->urlConfig->disallowScheme($scheme);
+		}
+		foreach (explode(',', $this->config['allowed_schemes_links']) as $scheme)
+		{
+			$configurator->urlConfig->allowScheme(trim($scheme));
+		}
 
 		// Convert newlines to br elements by default
 		$configurator->rootRules->enableAutoLineBreaks();
