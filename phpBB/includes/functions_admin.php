@@ -576,7 +576,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 */
 function move_posts($post_ids, $topic_id, $auto_sync = true)
 {
-	global $db;
+	global $db, $phpbb_dispatcher;
 
 	if (!is_array($post_ids))
 	{
@@ -610,6 +610,28 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		trigger_error('NO_TOPIC');
 	}
 
+	/**
+	 * Perform additional actions before moving posts 
+	 *
+	 * @event core.move_posts_before
+	 * @var	array	post_ids	Array of post ids to move
+	 * @var	string	topic_id	The topic id the posts are moved to
+	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
+	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
+	 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
+	 * @since 3.1.7-RC1
+	 */
+	$vars = array(
+			'post_ids',
+			'topic_id',
+			'auto_sync',
+			'forum_ids',
+			'topic_ids',
+			'forum_row',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.move_posts_before', compact($vars)));
+
 	$sql = 'UPDATE ' . POSTS_TABLE . '
 		SET forum_id = ' . (int) $forum_row['forum_id'] . ", topic_id = $topic_id
 		WHERE " . $db->sql_in_set('post_id', $post_ids);
@@ -619,6 +641,28 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		SET topic_id = $topic_id, in_message = 0
 		WHERE " . $db->sql_in_set('post_msg_id', $post_ids);
 	$db->sql_query($sql);
+
+	/**
+	 * Perform additional actions after moving posts 
+	 *
+	 * @event core.move_posts_after
+	 * @var	array	post_ids	Array of the moved post ids
+	 * @var	string	topic_id	The topic id the posts are moved to
+	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
+	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
+	 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
+	 * @since 3.1.7-RC1
+	 */
+	$vars = array(
+			'post_ids',
+			'topic_id',
+			'auto_sync',
+			'forum_ids',
+			'topic_ids',
+			'forum_row',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.move_posts_after', compact($vars)));
 
 	if ($auto_sync)
 	{
@@ -886,6 +930,32 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$table_ary = array(POSTS_TABLE, REPORTS_TABLE);
 
+	/**
+	* Perform additional actions during post(s) deletion before running the queries
+	*
+	* @event core.delete_posts_in_transaction_before
+	* @var	array	post_ids					Array with deleted posts' ids
+	* @var	array	poster_ids					Array with deleted posts' author ids
+	* @var	array	topic_ids					Array with deleted posts' topic ids
+	* @var	array	forum_ids					Array with deleted posts' forum ids
+	* @var	string	where_type					Variable containing posts deletion mode
+	* @var	mixed	where_ids					Array or comma separated list of post ids to delete
+	* @var	array	delete_notifications_types	Array with notifications types to delete
+	* @var	array	table_ary					Array with table names to delete data from
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'post_ids',
+		'poster_ids',
+		'topic_ids',
+		'forum_ids',
+		'where_type',
+		'where_ids',
+		'delete_notifications_types',
+		'table_ary',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_posts_in_transaction_before', compact($vars)));
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
@@ -1042,7 +1112,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 */
 function delete_attachments($mode, $ids, $resync = true)
 {
-	global $db, $config;
+	global $db, $config, $phpbb_dispatcher;
 
 	// 0 is as bad as an empty array
 	if (empty($ids))
@@ -1087,6 +1157,24 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	$post_ids = $message_ids = $topic_ids = $physical = array();
 
+	/**
+	* Perform additional actions before collecting data for attachment(s) deletion
+	*
+	* @event core.delete_attachments_collect_data_before
+	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
+	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
+	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
+	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'mode',
+		'ids',
+		'resync',
+		'sql_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_collect_data_before', compact($vars)));
+
 	// Collect post and topic ids for later use if we need to touch remaining entries (if resync is enabled)
 	$sql = 'SELECT post_msg_id, topic_id, in_message, physical_filename, thumbnail, filesize, is_orphan
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -1116,6 +1204,32 @@ function delete_attachments($mode, $ids, $resync = true)
 	}
 	$db->sql_freeresult($result);
 
+	/**
+	* Perform additional actions before attachment(s) deletion
+	*
+	* @event core.delete_attachments_before
+	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
+	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
+	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
+	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
+	* @var	array	post_ids		Array with post ids for deleted attachment(s)
+	* @var	array	topic_ids		Array with topic ids for deleted attachment(s)
+	* @var	array	message_ids		Array with private message ids for deleted attachment(s)
+	* @var	array	physical		Array with deleted attachment(s) physical file(s) data
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'mode',
+		'ids',
+		'resync',
+		'sql_id',
+		'post_ids',
+		'topic_ids',
+		'message_ids',
+		'physical',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_before', compact($vars)));
+
 	// Delete attachments
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_id, $ids);
@@ -1124,6 +1238,34 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	$db->sql_query($sql);
 	$num_deleted = $db->sql_affectedrows();
+
+	/**
+	* Perform additional actions after attachment(s) deletion from the database
+	*
+	* @event core.delete_attachments_from_database_after
+	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
+	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
+	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
+	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
+	* @var	array	post_ids		Array with post ids for deleted attachment(s)
+	* @var	array	topic_ids		Array with topic ids for deleted attachment(s)
+	* @var	array	message_ids		Array with private message ids for deleted attachment(s)
+	* @var	array	physical		Array with deleted attachment(s) physical file(s) data
+	* @var	int		num_deleted		The number of deleted attachment(s) from the database
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'mode',
+		'ids',
+		'resync',
+		'sql_id',
+		'post_ids',
+		'topic_ids',
+		'message_ids',
+		'physical',
+		'num_deleted',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_from_database_after', compact($vars)));
 
 	if (!$num_deleted)
 	{
@@ -1146,6 +1288,38 @@ function delete_attachments($mode, $ids, $resync = true)
 			phpbb_unlink($file_ary['filename'], 'thumbnail', true);
 		}
 	}
+
+	/**
+	* Perform additional actions after attachment(s) deletion from the filesystem
+	*
+	* @event core.delete_attachments_from_filesystem_after
+	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
+	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
+	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
+	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
+	* @var	array	post_ids		Array with post ids for deleted attachment(s)
+	* @var	array	topic_ids		Array with topic ids for deleted attachment(s)
+	* @var	array	message_ids		Array with private message ids for deleted attachment(s)
+	* @var	array	physical		Array with deleted attachment(s) physical file(s) data
+	* @var	int		num_deleted		The number of deleted attachment(s) from the database
+	* @var	int		space_removed	The size of deleted files(s) from the filesystem
+	* @var	int		files_removed	The number of deleted file(s) from the filesystem
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'mode',
+		'ids',
+		'resync',
+		'sql_id',
+		'post_ids',
+		'topic_ids',
+		'message_ids',
+		'physical',
+		'num_deleted',
+		'space_removed',
+		'files_removed',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_from_filesystem_after', compact($vars)));
 
 	if ($space_removed || $files_removed)
 	{
