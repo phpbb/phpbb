@@ -91,7 +91,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 
 			$user = $this->user_loader->get_user($notification->user_id);
 
-			if ($user['user_type'] == USER_IGNORE || in_array($notification->user_id, $banned_users))
+			if ($user['user_type'] == USER_IGNORE || ($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL) || in_array($notification->user_id, $banned_users))
 			{
 				continue;
 			}
