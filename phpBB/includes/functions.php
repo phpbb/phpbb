@@ -4839,6 +4839,11 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 	$driver = $phpbb_avatar_manager->get_driver($row['avatar_type'], $ignore_config);
 	$html = '';
+	
+	if (!($phpbb_avatar_manager->is_enabled($driver) || $ignore_config))
+	{
+		return '';
+	}
 
 	if ($driver)
 	{
