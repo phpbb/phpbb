@@ -1906,6 +1906,22 @@ viewtopic_body_footer_before
 and quick reply, directly before the jumpbox in Prosilver, breadcrumbs in
 Subsilver2.
 
+viewtopic_body_poll_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add content after the poll panel.
+
+viewtopic_body_poll_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add content before the poll panel.
+
 viewtopic_body_poll_option_after
 ===
 * Locations:
