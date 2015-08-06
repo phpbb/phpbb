@@ -229,6 +229,7 @@ $lang = array_merge($lang, array(
 	'FACEBOOK'				=> 'Facebook',
 	'FAQ'					=> 'FAQ',
 	'FAQ_EXPLAIN'			=> 'Frequently Asked Questions',
+	'FEATURE_NOT_AVAILABLE' => 'The requested feature is not available on this board.',
 	'FILENAME'				=> 'Filename',
 	'FILESIZE'				=> 'File size',
 	'FILEDATE'				=> 'File date',

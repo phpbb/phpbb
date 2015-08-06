@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
@@ -19,22 +19,22 @@ use phpbb\feed\exception\unauthorized_forum_exception;
 use phpbb\feed\exception\unauthorized_topic_exception;
 
 /**
-* Topic feed for a specific topic
-*
-* This will give you the last {$this->num_items} posts made within this topic.
-*/
-class topic extends \phpbb\feed\post_base
+ * Topic feed for a specific topic
+ *
+ * This will give you the last {$this->num_items} posts made within this topic.
+ */
+class topic extends post_base
 {
-	var $topic_id		= 0;
-	var $forum_id		= 0;
-	var $topic_data		= array();
+	protected $topic_id		= 0;
+	protected $forum_id		= 0;
+	protected $topic_data	= array();
 
 	/**
-	* Set the Topic ID
-	*
-	* @param int	$topic_id			Topic ID
-	* @return	\phpbb\feed\topic
-	*/
+	 * Set the Topic ID
+	 *
+	 * @param int	$topic_id			Topic ID
+	 * @return	\phpbb\feed\topic
+	 */
 	public function set_topic_id($topic_id)
 	{
 		$this->topic_id = (int) $topic_id;
@@ -42,7 +42,10 @@ class topic extends \phpbb\feed\post_base
 		return $this;
 	}
 
-	function open()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function open()
 	{
 		$sql = 'SELECT f.forum_options, f.forum_password, t.topic_id, t.forum_id, t.topic_visibility, t.topic_title, t.topic_time, t.topic_views, t.topic_posts_approved, t.topic_type
 			FROM ' . TOPICS_TABLE . ' t
@@ -94,11 +97,14 @@ class topic extends \phpbb\feed\post_base
 		parent::open();
 	}
 
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
-							'u.username, u.user_id',
+				'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
@@ -112,14 +118,20 @@ class topic extends \phpbb\feed\post_base
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		parent::adjust_item($item_row, $row);
 
 		$item_row['forum_id'] = $this->forum_id;
 	}
 
-	function get_item()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_item()
 	{
 		return ($row = parent::get_item()) ? array_merge($this->topic_data, $row) : $row;
 	}

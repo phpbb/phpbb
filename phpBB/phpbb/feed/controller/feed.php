@@ -17,7 +17,7 @@ use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
-use phpbb\feed\base;
+use phpbb\feed\feed_interface;
 use phpbb\feed\exception\feed_unavailable_exception;
 use phpbb\feed\exception\unauthorized_exception;
 use phpbb\feed\helper as feed_helper;
@@ -252,11 +252,11 @@ class feed
 	/**
 	 * Display a given feed
 	 *
-	 * @param base $feed
+	 * @param feed_interface $feed
 	 *
 	 * @return Response
 	 */
-	protected function send_feed(base $feed)
+	protected function send_feed(feed_interface $feed)
 	{
 		try
 		{
@@ -275,13 +275,13 @@ class feed
 	/**
 	 * Really send the feed
 	 *
-	 * @param base $feed
+	 * @param feed_interface $feed
 	 *
 	 * @return Response
 	 *
 	 * @throw exception\feed_exception
 	 */
-	protected function send_feed_do(base $feed)
+	protected function send_feed_do(feed_interface $feed)
 	{
 		$feed_updated_time = 0;
 		$item_vars = array();

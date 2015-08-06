@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
@@ -18,22 +18,22 @@ use phpbb\feed\exception\no_forum_exception;
 use phpbb\feed\exception\unauthorized_forum_exception;
 
 /**
-* Forum feed
-*
-* This will give you the last {$this->num_items} posts made
-* within a specific forum.
-*/
-class forum extends \phpbb\feed\post_base
+ * Forum feed
+ *
+ * This will give you the last {$this->num_items} posts made
+ * within a specific forum.
+ */
+class forum extends post_base
 {
-	var $forum_id		= 0;
-	var $forum_data		= array();
+	protected $forum_id		= 0;
+	protected $forum_data	= array();
 
 	/**
-	* Set the Forum ID
-	*
-	* @param int	$forum_id			Forum ID
-	* @return	\phpbb\feed\forum
-	*/
+	 * Set the Forum ID
+	 *
+	 * @param int	$forum_id			Forum ID
+	 * @return	\phpbb\feed\forum
+	 */
 	public function set_forum_id($forum_id)
 	{
 		$this->forum_id = (int) $forum_id;
@@ -41,7 +41,10 @@ class forum extends \phpbb\feed\post_base
 		return $this;
 	}
 
-	function open()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function open()
 	{
 		// Check if forum exists
 		$sql = 'SELECT forum_id, forum_name, forum_password, forum_type, forum_options
@@ -90,7 +93,10 @@ class forum extends \phpbb\feed\post_base
 		parent::open();
 	}
 
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
@@ -118,7 +124,7 @@ class forum extends \phpbb\feed\post_base
 
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
-							'u.username, u.user_id',
+				'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
@@ -133,7 +139,10 @@ class forum extends \phpbb\feed\post_base
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		parent::adjust_item($item_row, $row);
 
@@ -141,7 +150,10 @@ class forum extends \phpbb\feed\post_base
 		$item_row['forum_id'] = $this->forum_id;
 	}
 
-	function get_item()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_item()
 	{
 		return ($row = parent::get_item()) ? array_merge($this->forum_data, $row) : $row;
 	}
