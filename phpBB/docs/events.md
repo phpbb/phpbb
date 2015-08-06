@@ -1052,6 +1052,14 @@ posting_poll_body_options_after
 * Since: 3.1.4-RC1
 * Purpose: Add content after the poll options on creating a poll
 
+posting_preview_poll_after
+===
+* Locations:
+    + styles/prosilver/template/posting_preview.html
+    + styles/subsilver2/template/posting_preview.html
+* Since: 3.1.6-RC1
+* Purpose: Add content after the poll preview block
+
 quickreply_editor_panel_after
 ===
 * Locations:
