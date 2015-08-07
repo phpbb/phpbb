@@ -157,3 +157,30 @@ services:
             - @config_text
         tags:
             - { name: console.command }
+
+    console.command.thumbnail.delete:
+        class: phpbb\console\command\thumbnail\delete
+        arguments:
+            - @user
+            - @dbal.conn
+            - %core.root_path%
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.generate:
+        class: phpbb\console\command\thumbnail\generate
+        arguments:
+            - @user
+            - @dbal.conn
+            - @cache
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.recreate:
+        class: phpbb\console\command\thumbnail\recreate
+        arguments:
+            - @user
+        tags:
+            - { name: console.command }
