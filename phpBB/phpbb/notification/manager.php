@@ -589,6 +589,7 @@ class manager
 		$user_id = $user_id ?: $this->user->data['user_id'];
 
 		$subscriptions = array();
+		$default_methods = $this->get_default_methods();
 
 		$user_notifications = $this->get_user_notifications($user_id);
 
@@ -596,11 +597,8 @@ class manager
 		{
 			foreach ($types as $id => $type)
 			{
-				if (empty($user_notifications[$id]))
-				{
-					$subscriptions[$id] = $this->get_default_methods();
-				}
-				else
+				$subscriptions[$id] = array();
+				if (!empty($user_notifications[$id]))
 				{
 					foreach ($user_notifications[$id] as $user_notification)
 					{
@@ -617,6 +615,8 @@ class manager
 						$subscriptions[$id][] = $user_notification['method'];
 					}
 				}
+
+				$subscriptions[$id] = array_merge($subscriptions[$id], $default_methods);
 			}
 		}
 
