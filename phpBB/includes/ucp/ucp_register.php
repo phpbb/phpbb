@@ -176,6 +176,16 @@ class ucp_register
 			}
 			unset($lang_row);
 
+			/**
+			* Allows to modify the agreements.
+			*
+			* To assign data to the template, use $template->assign_vars()
+			*
+			* @event core.ucp_register_agreement
+			* @since 3.1.6-RC1
+			*/
+			$phpbb_dispatcher->dispatch('core.ucp_register_agreement');
+
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
