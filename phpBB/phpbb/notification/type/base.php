@@ -503,7 +503,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 		}
 		else
 		{
-			$this->notification_manager->mark_notifications($this->get_type(), (int) $this->item_id, (int) $this->user_id, $this->notification_read);
+			$this->notification_manager->mark_notifications($this->get_type(), (int) $this->item_id, (int) $this->user_id, false, $this->notification_read);
 		}
 	}
 
