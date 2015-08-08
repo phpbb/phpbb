@@ -64,6 +64,7 @@ services:
             - @filesystem
             - @path_helper
             - @mimetype.guesser
+            - @dispatcher
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.upload]]
