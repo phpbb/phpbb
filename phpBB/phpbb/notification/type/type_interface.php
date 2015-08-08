@@ -206,7 +206,7 @@ interface type_interface
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
 	* @return string
 	*/
-	public function mark_read($return);
+	public function mark_read($return = false);
 
 	/**
 	* Mark this item unread
@@ -214,5 +214,5 @@ interface type_interface
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
 	* @return string
 	*/
-	public function mark_unread($return);
+	public function mark_unread($return = false);
 }

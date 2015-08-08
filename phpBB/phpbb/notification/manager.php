@@ -166,6 +166,7 @@ class manager
 			$notification_type_id = false;
 		}
 
+		/** @var method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->mark_notifications($notification_type_id, $item_id, $user_id, $time, $mark_read);
@@ -597,26 +598,32 @@ class manager
 		{
 			foreach ($types as $id => $type)
 			{
-				$subscriptions[$id] = array();
+				$type_subscriptions = $default_methods;
 				if (!empty($user_notifications[$id]))
 				{
 					foreach ($user_notifications[$id] as $user_notification)
 					{
+						$key = array_search($user_notification['method'], $type_subscriptions, true);
 						if (!$user_notification['notify'])
 						{
+							if ($key !== false)
+							{
+								unset($type_subscriptions[$key]);
+							}
+
 							continue;
 						}
-
-						if (!isset($subscriptions[$id]))
+						else if ($key === false)
 						{
-							$subscriptions[$id] = array();
+							$type_subscriptions[] = $user_notification['method'];
 						}
-
-						$subscriptions[$id][] = $user_notification['method'];
 					}
 				}
 
-				$subscriptions[$id] = array_merge($subscriptions[$id], $default_methods);
+				if (!empty($type_subscriptions))
+				{
+					$subscriptions[$id] = $type_subscriptions;
+				}
 			}
 		}
 
