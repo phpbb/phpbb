@@ -1270,6 +1270,22 @@ ucp_pm_viewmessage_post_buttons_before
 * Purpose: Add post button to private messages (next to edit, quote etc), at
 the start of the list.
 
+ucp_pm_viewmessage_post_buttons_list_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.6-RC1
+* Purpose: Add post button custom list to private messages (next to edit, quote etc),
+after the original list.
+
+ucp_pm_viewmessage_post_buttons_list_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.6-RC1
+* Purpose: Add post button custom list to private messages (next to edit, quote etc),
+before the original list.
+
 ucp_pm_viewmessage_print_head_append
 ===
 * Locations:

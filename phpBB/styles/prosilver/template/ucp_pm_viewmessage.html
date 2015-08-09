@@ -75,7 +75,9 @@
 	<div class="postbody">
 		<h3 class="first">{SUBJECT}</h3>
 
-		<!-- IF U_DELETE or U_EDIT or U_QUOTE or U_REPORT -->
+		<!-- DEFINE $SHOW_PM_POST_BUTTONS = (U_EDIT or U_DELETE or U_REPORT or U_QUOTE) -->
+		<!-- EVENT ucp_pm_viewmessage_post_buttons_list_before -->
+		<!-- IF $SHOW_PM_POST_BUTTONS -->
 		<ul class="post-buttons">
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_before -->
 			<!-- IF U_EDIT -->
@@ -101,6 +103,7 @@
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_after -->
 		</ul>
 		<!-- ENDIF -->
+		<!-- EVENT ucp_pm_viewmessage_post_buttons_list_after -->
 
 		<p class="author">
 			<strong>{L_SENT_AT}{L_COLON}</strong> {SENT_DATE}
