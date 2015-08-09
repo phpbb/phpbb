@@ -4823,7 +4823,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 {
 	global $user, $config, $cache, $phpbb_root_path, $phpEx;
 	global $request;
-	global $phpbb_container;
+	global $phpbb_container, $phpbb_dispatcher;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
 	{
@@ -4883,6 +4883,20 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			($avatar_data['height'] ? ('height="' . $avatar_data['height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
 	}
+
+	/**
+	* Event to modify HTML <img> tag of avatar
+	*
+	* @event core.get_avatar_after
+	* @var	array	row				Row cleaned by \phpbb\avatar\manager::clean_row
+	* @var	string	alt				Optional language string for alt tag within image, can be a language key or text
+	* @var	bool	ignore_config	Ignores the config-setting, to be still able to view the avatar in the UCP
+	* @var	array	avatar_data		The HTML attributes for avatar <img> tag
+	* @var	string	html			The HTML <img> tag of generated avatar
+	* @since 3.1.6-RC1
+	*/
+	$vars = array('row', 'alt', 'ignore_config', 'avatar_data', 'html');
+	extract($phpbb_dispatcher->trigger_event('core.get_avatar_after', compact($vars)));
 
 	return $html;
 }
