@@ -568,6 +568,22 @@ mcp_post_additional_options
 * Since: 3.1.5-RC1
 * Purpose: Add content within the list of post moderation actions
 
+mcp_topic_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+    + styles/subsilver2/template/mcp_topic.html
+* Since: 3.1.6-RC1
+* Purpose: Add some information after the topic title
+
+mcp_topic_topic_title_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+    + styles/subsilver2/template/mcp_topic.html
+* Since: 3.1.6-RC1
+* Purpose: Add some information before the topic title
+
 mcp_warn_post_add_warning_field_after
 ===
 * Locations:
