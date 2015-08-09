@@ -1235,6 +1235,14 @@ posting_poll_body_options_after
 * Since: 3.1.4-RC1
 * Purpose: Add content after the poll options on creating a poll
 
+posting_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.6-RC1
+* Purpose: Allows to add some information after the topic title in the posting form
+
 posting_topic_title_before
 ===
 * Locations:
