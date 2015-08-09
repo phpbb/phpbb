@@ -29,7 +29,7 @@
 			<!-- IF topicrow.S_SELECT_TOPIC -->
 				<span class="genmed">[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT_MERGE}</a> ]&nbsp;</span>
 			<!-- ENDIF -->
-			<p class="topictitle">{NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>
+			<p class="topictitle">{NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <!-- EVENT mcp_forum_topic_title_before --><a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a><!-- EVENT mcp_forum_topic_title_after -->
 			<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 				<a href="{topicrow.U_MCP_QUEUE}" class="imageset">{topicrow.UNAPPROVED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
