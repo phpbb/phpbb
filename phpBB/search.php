@@ -483,6 +483,24 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 	}
 
+	/**
+	* Event to modify data after pre-made searches
+	*
+	* @event core.search_modify_param_after
+	* @var	string	l_search_title	The title of the search page
+	* @var	string	search_id		Predefined search type name
+	* @var	string	show_results	Display topics or posts
+	* @var	string	sql				SQL query corresponding to the pre-made search id
+	* @since 3.1.6-RC1
+	*/
+	$vars = array(
+		'l_search_title',
+		'search_id',
+		'show_results',
+		'sql',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.search_modify_param_after', compact($vars)));
+
 	// show_results should not change after this
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
 	$total_match_count = 0;
@@ -594,6 +612,20 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
+	/**
+	* Event to add or modify search URL parameters
+	*
+	* @event core.search_modify_url_parameters
+	* @var	string	u_search		Search URL parameters string
+	* @var	string	search_id		Predefined search type name
+	* @since 3.1.6-RC1
+	*/
+	$vars = array(
+		'u_search',
+		'search_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.search_modify_url_parameters', compact($vars)));
+
 	if ($sql_where)
 	{
 		if ($show_results == 'posts')
@@ -704,6 +736,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
+			$sql_order_by = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
 			/**
 			* Event to modify the SQL query before the topic data is retrieved
 			*
@@ -712,16 +746,30 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	sql_from		The SQL FROM string used by search to get topic data
 			* @var	string	sql_where		The SQL WHERE string used by search to get topic data
 			* @var	int		total_match_count	The total number of search matches
+			* @var	array	sort_by_sql		Array of SQL sorting instructions
+			* @var	string	sort_dir		The sorting direction
+			* @var	string	sort_key		The sorting key
+			* @var	string	sql_order_by	The SQL ORDER BY string used by search to get topic data
 			* @since 3.1.0-a1
 			* @changed 3.1.0-RC5 Added total_match_count
+			* @changed 3.1.6-RC1 Added sort_by_sql, sort_dir, sort_key, sql_order_by
 			*/
-			$vars = array('sql_select', 'sql_from', 'sql_where', 'total_match_count');
+			$vars = array(
+				'sql_select',
+				'sql_from',
+				'sql_where',
+				'total_match_count',
+				'sort_by_sql',
+				'sort_dir',
+				'sort_key',
+				'sql_order_by',
+			);
 			extract($phpbb_dispatcher->trigger_event('core.search_get_topic_data', compact($vars)));
 
 			$sql = "SELECT $sql_select
 				FROM $sql_from
-				WHERE $sql_where";
-			$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+				WHERE $sql_where
+				ORDER BY $sql_order_by";
 		}
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
