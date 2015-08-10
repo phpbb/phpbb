@@ -83,7 +83,8 @@ class feed
 	/**
 	 * Constructor
 	 *
-	 * @param symfony_request $request;
+	 * @param \Twig_Environment $twig
+	 * @param symfony_request $request
 	 * @param controller_helper $controller_helper
 	 * @param config $config
 	 * @param driver_interface $db
@@ -91,6 +92,7 @@ class feed
 	 * @param feed_helper $feed_helper
 	 * @param user $user
 	 * @param auth $auth
+	 * @param string $php_ext
 	 */
 	public function __construct(\Twig_Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, $php_ext)
 	{
