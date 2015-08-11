@@ -504,6 +504,22 @@ mcp_ban_unban_before
 * Since: 3.1.0-RC3
 * Purpose: Add additional fields to the unban form in MCP
 
+mcp_forum_topic_title_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.6-RC1
+* Purpose: Add some information before the topic title
+
+mcp_forum_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.6-RC1
+* Purpose: Add some information after the topic title
+
 mcp_front_latest_logs_after
 ===
 * Locations:
