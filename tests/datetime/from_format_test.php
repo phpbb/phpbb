@@ -113,6 +113,10 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
+		// This magically fixes the segmentation fault error on PHP7 tests
+		// while date_default_timezone_set('UTC') does not
+		date_default_timezone_set('Europe/Paris');
+
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
