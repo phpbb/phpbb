@@ -1,0 +1,47 @@
+parameters:
+    wysiwyg.cache.dir: %core.root_path%cache/%core.environment%/
+    wysiwyg.cache.prefix: %wysiwyg.cache.dir%wysiwyg_javascript
+
+services:
+    wysiwyg.data_access:
+        class: phpbb\bbcode\text_formatter_data_access
+        arguments:
+            - @dbal.conn
+            - %tables.bbcodes%
+            - %tables.smilies%
+            - %tables.styles%
+            - %tables.words%
+            - %core.root_path%styles/
+
+    wysiwyg.text_formatter.s9e.factory:
+        class: phpbb\textformatter\s9e\factory
+        arguments:
+            - @wysiwyg.data_access
+            - @cache.driver
+            - @dispatcher
+            - %text_formatter.cache.dir%
+            - %text_formatter.cache.parser.key%
+            - %text_formatter.cache.renderer.key%
+
+# ----- WYSIWYG converters -----
+# All converters must contain the wysiwyg.converter tag
+    wysiwyg.converters_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: wysiwyg.converters }
+
+    wysiwyg.converters.sce:
+        class: phpbb\bbcode\convert_editor\sce
+        arguments:
+            - @cache.driver
+            - %wysiwyg.cache.prefix%
+            - @config
+            - @wysiwyg.data_access
+            - @dispatcher
+            - @service_container
+            - @request
+            - @template
+        tags:
+            - { name: wysiwyg.converters }

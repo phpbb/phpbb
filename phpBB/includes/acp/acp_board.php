@@ -187,6 +187,9 @@ class acp_board
 			break;
 
 			case 'post':
+
+				$this->wysiwyg_converters($submit);
+
 				$display_vars = array(
 					'title'	=> 'ACP_POST_SETTINGS',
 					'vars'	=> array(
@@ -923,6 +926,120 @@ class acp_board
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
+	}
+
+	/**
+	* Default settings for the WYSIWYG editors
+	*/
+	public function wysiwyg_converters($submit)
+	{
+		global $config, $request, $user, $phpbb_container, $phpbb_dispatcher, $template;
+
+		$new_wysiwyg = $current_wysiwyg = $config['wysiwyg_editor'];
+		$new_default_modes = $current_default_modes = unserialize($config['wysiwyg_default_default_mode']);
+		$new_button_modes = $current_button_modes = unserialize($config['wysiwyg_default_buttons_mode']);
+
+		$editor_data = array();
+
+		foreach ($phpbb_container->get('wysiwyg.converters_collection') as $name => $converter)
+		{
+			$available_modes = $converter->get_available_modes();
+			$button_modes = $converter->get_available_button_modes();
+
+			$editor_data[$name] = array(
+				'EDITOR_ID' => $name,
+				'EDITOR_TITLE' => $converter->get_name(),
+
+				'WYSIWYG_MODES_AVAILABLE' => $available_modes,
+				'WYSIWYG_BUTTON_MODES_AVAILABLE' => $button_modes,
+
+				'S_WYSIWYG_MODE' => $current_default_modes[$name],
+				'S_WYSIWYG_BUTTON_MODE' => $current_button_modes[$name],
+			);
+
+		}
+
+		if ($submit)
+		{
+			$set_data = array(
+				'default_editor' => $request->variable(array('wysiwyg', 'default_editor'), '', false, \phpbb\request\request_interface::POST),
+				'data' => $request->variable('wysiwyg', array(''=> array('' => '')), false, \phpbb\request\request_interface::POST),
+			);
+			unset($set_data['data']['default_editor']);
+			$editor_new_data = $editor_data;
+
+			if (isset($editor_data[$set_data['default_editor']]))
+			{
+				$new_wysiwyg = $set_data['default_editor'];
+			}
+
+			foreach ($set_data['data'] as $name => $new_data)
+			{
+				if ($editor_data[$name]['WYSIWYG_MODES_AVAILABLE'] & $new_data['default_mode'])
+				{
+					$new_default_modes[$name]							= $new_data['default_mode'];
+					$editor_new_data[$name]['S_WYSIWYG_MODE']			= $new_data['default_mode'];
+				}
+				if ($editor_data[$name]['WYSIWYG_BUTTON_MODES_AVAILABLE'] & $new_data['default_button_mode'])
+				{
+					$new_button_modes[$name]							= $new_data['default_button_mode'];
+					$editor_new_data[$name]['S_WYSIWYG_BUTTON_MODE']	= $new_data['default_button_mode'];
+				}
+			}
+		}
+
+		/**
+		* Allow manipulating the ACP data for the WYSIWYG editor defaults
+		*
+		* NOTE: The variables starting with "new_" and editor_new_data only make sense if submit is true
+		* NOTE2: The variables with new data only differ from the set_data if they contain invalid data.
+		*
+		* Below, "DI" stands for Dependency Injection(or)
+		*
+		* @event core.acp_board_wysiwyg
+		* @var	bool	submit					Is this a submission?
+		* @var	array	set_data				The data resulting from the form submission
+		* @var	array	editor_data				The current configuration data.
+		* @var	array	editor_new_data			The new configuration data to apply
+		* @var	array	current_wysiwyg			The current default WYSIWYG identified by its DI identifier
+		* @var	array	new_wysiwyg				The new default WYSIWYG identified by its DI identifier
+		* @var	array	current_default_modes	Contains the default mode for that editor. The editor is identified by its DI identifier
+		* @var	array	new_default_modes		Same as above except it contains the new data.
+		* @var	array	current_button_modes	Contains the default buttons mode for that editor. The editor is identified by its DI identifier
+		* @var	array	new_button_modes		Same as above except it contains the new data.
+		* @since 3.2.0-a1
+		*/
+		$vars = array(
+				'submit',
+				'set_data',
+				'editor_data',
+				'editor_new_data',
+				'current_wysiwyg',
+				'new_wysiwyg',
+				'current_default_modes',
+				'new_default_modes',
+				'current_button_modes',
+				'new_button_modes',
+			);
+		extract($phpbb_dispatcher->trigger_event('core.acp_board_wysiwyg', compact($vars)));
+
+		if ($submit)
+		{
+			$config->set('wysiwyg_editor', $new_wysiwyg);
+			$config->set('wysiwyg_default_default_mode', serialize($new_default_modes));
+			$config->set('wysiwyg_default_buttons_mode', serialize($new_button_modes));
+
+			$editor_data = $editor_new_data;
+		}
+
+		$template->assign_vars(array(
+			'CURRENT_WYSIWYG' => $new_wysiwyg,
+		));
+
+		foreach ($editor_data as $data)
+		{
+			$template->assign_block_vars('wysiwyg', $data);
+		}
 	}
 
 	/**

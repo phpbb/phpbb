@@ -71,6 +71,10 @@ $lang = array_merge($lang, array(
 	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color: {COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family: {SIMPLETEXT1};"&gt;{SIMPLETEXT2}&lt;/span&gt;',
 	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement. Do not forget to put back tokens you used above!',
 
+	'WYSIWYG_HTML_REPLACEMENT'				=> 'HTML replacement for the WYSIWYG editor',
+	'WYSIWYG_HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color: {COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family: {SIMPLETEXT1};"&gt;{SIMPLETEXT2}&lt;/span&gt;',
+	'WYSIWYG_HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the HTML replacement. For the WYSIWYG editor. You may copy the above HTML to keep it WYSIWYG or you may make it just an RTE.<br>Leave blank for the editor in WYSIWYG mode to ignore it',
+
 	'TOKEN'					=> 'Token',
 	'TOKENS'				=> 'Tokens',
 	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {TEXT1}, {TEXT2}.<br /><br />Within the HTML replacement you can also use any language string present in your language/ directory like this: {L_<em>&lt;STRINGNAME&gt;</em>} where <em>&lt;STRINGNAME&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as “wrote” or its translation according to user’s locale.<br /><br /><strong>Please note that only tokens listed below are able to be used within custom BBCodes.</strong>',

@@ -16,6 +16,12 @@ acp_bbcodes_edit_fieldsets_after
 * Since: 3.1.0-a3
 * Purpose: Add settings to BBCode add/edit form
 
+acp_board_extra_wysiwyg_fields
+===
+* Location: adm/style/acp_board.html
+* Since: 3.2.0-a1
+* Purpose: Include more possible settings to display to the user
+
 acp_email_options_after
 ===
 * Location: adm/style/acp_email.html
@@ -939,27 +945,6 @@ posting_editor_bbcode_status_after
 * Since: 3.1.4-RC1
 * Purpose: Add content after bbcode status
 
-posting_editor_buttons_after
-===
-* Locations:
-    + styles/prosilver/template/posting_buttons.html
-* Since: 3.1.0-a3
-* Purpose: Add content after the BBCode posting buttons
-
-posting_editor_buttons_before
-===
-* Locations:
-    + styles/prosilver/template/posting_buttons.html
-* Since: 3.1.0-a3
-* Purpose: Add content before the BBCode posting buttons
-
-posting_editor_buttons_custom_tags_before
-===
-* Locations:
-    + styles/prosilver/template/posting_buttons.html
-* Since: 3.1.2-RC1
-* Purpose: Add content inside the BBCode posting buttons and before the customs BBCode
-
 posting_editor_message_after
 ===
 * Locations:
@@ -1008,6 +993,13 @@ posting_editor_subject_before
     + styles/prosilver/template/posting_editor.html
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
+
+posting_editor_wysiwyg_setup_before
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.2.0-a1
+* Purpose: Add own setup for a WYSIWYG editor instead of the one thought for SCE
 
 posting_layout_include_panel_body
 ===
@@ -1389,6 +1381,46 @@ ucp_prefs_view_select_menu_append
 * Since: 3.1.0-a1
 * Purpose: Add options to the bottom of the drop-down lists block of the Edit
 Display Options screen
+
+ucp_prefs_wysiwyg_editor_option
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Allow adding more editors to the list besides the ones phpBB has
+found.
+
+ucp_prefs_wysiwyg_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Display more options about the WYSIWYG editors besides the default
+ones, before the default ones.
+
+ucp_prefs_wysiwyg_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Display more options about the WYSIWYG editors besides the default
+ones, after the default ones.
+
+ucp_prefs_wysiwyg_options_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Allow adding more options for each WYSIWYG besides the default
+ones, after the default ones.
+
+ucp_prefs_wysiwyg_options_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_prefs_wysiwyg.html
+* Since: 3.2.0-a1
+* Purpose: Allow adding more options for each WYSIWYG besides the default
+ones, before the default ones.
 
 ucp_profile_profile_info_before
 ===

@@ -1,21 +1,3 @@
-/**
-* bbCode control by subBlue design [ www.subBlue.com ]
-* Includes unixsafe colour palette selector by SHS`
-*/
-
-// Startup variables
-var imageTag = false;
-var theSelection = false;
-var bbcodeEnabled = true;
-
-// Check for Browser & Platform for PC & IE specific bits
-// More details from: http://www.mozilla.org/docs/web-developer/sniffer/browser_type.html
-var clientPC = navigator.userAgent.toLowerCase(); // Get client info
-var clientVer = parseInt(navigator.appVersion, 10); // Get browser version
-
-var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
-var is_win = ((clientPC.indexOf('win') !== -1) || (clientPC.indexOf('16bit') !== -1));
-var baseHeight;
 
 /**
 * Shows the help messages in the helpline window
@@ -24,396 +6,381 @@ function helpline(help) {
 	document.forms[form_name].helpbox.value = help_line[help];
 }
 
-/**
-* Fix a bug involving the TextRange object. From
-* http://www.frostjedi.com/terra/scripts/demo/caretBug.html
-*/ 
-function initInsertions() {
-	var doc;
 
-	if (document.forms[form_name]) {
-		doc = document;
-	} else {
-		doc = opener.document;
-	}
 
-	var textarea = doc.forms[form_name].elements[text_name];
+// If there's no console or any of the used console methods, just make them noop as there's nothing I can do
+window.console || (window.console = {});
+console.log || (console.log = function (){});
+console.info || (console.info = console.log);
+console.warn || (console.warn = console.log);
+console.error || (console.error = window.alert);
 
-	if (is_ie && typeof(baseHeight) !== 'number') {
-		textarea.focus();
-		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
 
-		if (!document.forms[form_name]) {
-			document.body.focus();
-		}
-	}
-}
+var smilieBox = document.getElementById('smiley-box');
 
-/**
-* bbstyle
-*/
-function bbstyle(bbnumber) {
-	if (bbnumber !== -1) {
-		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
-	} else {
-		insert_text('[*]');
-		document.forms[form_name].elements[text_name].focus();
-	}
-}
+$(smilieBox).on('click', 'img', function (e){
+	editor.insertBBCode(e.target.alt);
+	e.preventDefault();
+});
 
-/**
-* Apply bbcodes
-*/
-function bbfontstyle(bbopen, bbclose) {
-	theSelection = false;
 
-	var textarea = document.forms[form_name].elements[text_name];
+var editorConstants = {
+	NO_VALUE			: -1,
+	VALUE_IN_CONTENT	: -2
+};
 
-	textarea.focus();
+var editor = {
 
-	if ((clientVer >= 4) && is_ie && is_win) {
-		// Get text selection
-		theSelection = document.selection.createRange().text;
+	tokenRegex: {
+		ALPHANUM	: /^[0-9A-Za-z]+$/,
+		SIMPLETEXT	: /^[a-z0-9,.\-+_]+$/i,
+		IDENTIFIER	: /^[a-z0-9-_]+$/i,
+		INTTEXT		: /^[a-zA-Z\u00C0-\u017F]+,\s[a-zA-Z\u00C0-\u017F]+$/,
+		NUMBER		: /^[0-9]+$/,
+		INTEGER		: /^(?:0|-?[1-9]\d*)$/,
 
-		if (theSelection) {
-			// Add tags around selection
-			document.selection.createRange().text = bbopen + theSelection + bbclose;
-			textarea.focus();
-			theSelection = '';
-			return;
-		}
-	} else if (textarea.selectionEnd && (textarea.selectionEnd - textarea.selectionStart > 0)) {
-		mozWrap(textarea, bbopen, bbclose);
-		textarea.focus();
-		theSelection = '';
-		return;
-	}
+		EMAIL		: /[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2}|com|org|net|edu|gov|mil|me|biz|info|mobi|name|aero|asia|jobs|museum)\b/,
 
-	//The new position for the cursor after adding the bbcode
-	var caret_pos = getCaretPosition(textarea).start;
-	var new_pos = caret_pos + bbopen.length;
+		URL			: /^(?:(?:https?|ftps?):\/\/)?(?:(?:[a-z]+@)?(([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})|((?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4})|((?:[A-F0-9]{1,4}:){1,4}:(?:[A-F0-9]{1,4}:){0,4}[A-F0-9]{1,4})|(?:(?:(?:[a-z0-9-]|%\d\d)+\.)+[a-z]{2,7})|localhost))?(?:\/([a-z0-9-\/.]*))?(?:\?((?:[^=]+=[^&]+&)*(?:[^=]+=[^#]+)?))?(?:#.*)?$/im,
+		LOCAL_URL	: /^(?:\/([a-z0-9-\/.]*))?(?:\?((?:[^=]+=[^&]+&)*(?:[^=]+=[^#$]+)?))?(?:#[^$]*)?$/,
+		RELATIVE_URL: /^(?:\/([a-z0-9-\/.]*))?(?:\?((?:[^=]+=[^&]+&)*(?:[^=]+=[^#$]+)?))?(?:#[^$]*)?$/,
 
-	// Open tag
-	insert_text(bbopen + bbclose);
+		COLOR		: /^(?:#[0-9a-f]{3,6}|rgb\(\d{1,3}, *\d{1,3}, *\d{1,3}\)|aqua|black|blue|fuchsia|gray|green|lime|maroon|navy|olive|orange|purple|red|silver|teal|white|yellow)$/i
+	},
 
-	// Center the cursor when we don't have a selection
-	// Gecko and proper browsers
-	if (!isNaN(textarea.selectionStart)) {
-		textarea.selectionStart = new_pos;
-		textarea.selectionEnd = new_pos;
-	}
-	// IE
-	else if (document.selection) {
-		var range = textarea.createTextRange(); 
-		range.move("character", new_pos); 
-		range.select();
-		storeCaret(textarea);
-	}
-
-	textarea.focus();
-}
-
-/**
-* Insert text at position
-*/
-function insert_text(text, spaces, popup) {
-	var textarea;
-
-	if (!popup) {
-		textarea = document.forms[form_name].elements[text_name];
-	} else {
-		textarea = opener.document.forms[form_name].elements[text_name];
-	}
-
-	if (spaces) {
-		text = ' ' + text + ' ';
-	}
-
-	// Since IE9, IE also has textarea.selectionStart, but it still needs to be treated the old way.
-	// Therefore we simply add a !is_ie here until IE fixes the text-selection completely.
-	if (!isNaN(textarea.selectionStart) && !is_ie) {
-		var sel_start = textarea.selectionStart;
-		var sel_end = textarea.selectionEnd;
-
-		mozWrap(textarea, text, '');
-		textarea.selectionStart = sel_start + text.length;
-		textarea.selectionEnd = sel_end + text.length;
-	} else if (textarea.createTextRange && textarea.caretPos) {
-		if (baseHeight !== textarea.caretPos.boundingHeight) {
-			textarea.focus();
-			storeCaret(textarea);
-		}
-
-		var caret_pos = textarea.caretPos;
-		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) === ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
-	} else {
-		textarea.value = textarea.value + text;
-	}
-
-	if (!popup) {
-		textarea.focus();
-	}
-}
-
-/**
-* Add inline attachment at position
-*/
-function attachInline(index, filename) {
-	insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
-	document.forms[form_name].elements[text_name].focus();
-}
-
-/**
-* Add quote text to message
-*/
-function addquote(post_id, username, l_wrote, attributes) {
-	var message_name = 'message_' + post_id;
-	var theSelection = '';
-	var divarea = false;
-	var i;
-
-	if (l_wrote === undefined) {
-		// Backwards compatibility
-		l_wrote = 'wrote';
-	}
-	if (typeof attributes !== 'object') {
-		attributes = {};
-	}
-
-	if (document.all) {
-		divarea = document.all[message_name];
-	} else {
-		divarea = document.getElementById(message_name);
-	}
-
-	// Get text selection - not only the post content :(
-	// IE9 must use the document.selection method but has the *.getSelection so we just force no IE
-	if (window.getSelection && !is_ie && !window.opera) {
-		theSelection = window.getSelection().toString();
-	} else if (document.getSelection && !is_ie) {
-		theSelection = document.getSelection();
-	} else if (document.selection) {
-		theSelection = document.selection.createRange().text;
-	}
-
-	if (theSelection === '' || typeof theSelection === 'undefined' || theSelection === null) {
-		if (divarea.innerHTML) {
-			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
-			theSelection = theSelection.replace(/<br\/>/ig, '\n');
-			theSelection = theSelection.replace(/&lt\;/ig, '<');
-			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');
-			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
-		} else if (document.all) {
-			theSelection = divarea.innerText;
-		} else if (divarea.textContent) {
-			theSelection = divarea.textContent;
-		} else if (divarea.firstChild.nodeValue) {
-			theSelection = divarea.firstChild.nodeValue;
-		}
-	}
-
-	if (theSelection) {
-		if (bbcodeEnabled) {
-			attributes.author = username;
-			insert_text(generateQuote(theSelection, attributes));
+	getElementDefaultDisplay: function () {
+		if (window.getComputedStyle){
+			return function (tagName){
+				var tag = document.createElement(tagName);
+				document.body.appendChild(tag);
+				var cStyle = window.getComputedStyle(tag, "").display;
+				document.body.removeChild(tag);
+				return cStyle;
+			};
 		} else {
-			insert_text(username + ' ' + l_wrote + ':' + '\n');
-			var lines = split_lines(theSelection);
-			for (i = 0; i < lines.length; i++) {
-				insert_text('> ' + lines[i] + '\n');
+			return function (tagName){
+				var tag = document.createElement(tagName);
+				document.body.appendChild(tag);
+				var cStyle = tag.currentStyle.display;
+				document.body.removeChild(tag);
+				return cStyle;
+			};
+		}
+	}(),
+
+	paramFilters: {
+		filterEmail: function(attrValue){
+			return editor.tokenRegex.EMAIL.test(attrValue) ? attrValue : false;
+		},
+		
+		filterHashmap: function(attrValue, map, strict){
+			if (attrValue in map){
+				return map[attrValue];
 			}
+
+			return (strict) ? false : attrValue;
+		},
+
+		filterIdentifier: function(attrValue){
+			return editor.tokenRegex.IDENTIFIER.test(attrValue) ? attrValue : false;
+		},
+
+		filterInt: function(attrValue){
+			return editor.tokenRegex.INTEGER.test(attrValue) ? attrValue : false;
+		},
+
+		filterUrl: function(attrValue){
+			return editor.tokenRegex.URL.test(attrValue) ? attrValue : false;
+		},
+
+		filterIp: function(attrValue){
+			return filterURL(attrValue);
+		},
+		filterIpv4: function(attrValue){
+			return filterURL(attrValue);
+		},
+		filterIpv6: function(attrValue){
+			return filterURL(attrValue);
+		},
+
+		filterNumber: function(attrValue){
+			return editor.tokenRegex.NUMBER.test(attrValue) ? attrValue : false;
+		},
+
+
+		filterRange: function(attrValue, min, max){
+			if (!editor.tokenRegex.INTEGER.test(attrValue)){
+				return false;
+			}
+
+			attrValue = parseInt(attrValue, 10);
+
+			if (attrValue < min){
+				console.info('Value ' + attrValue + ' out of range. Value raised to ' + min + ' (min value).');
+				return min;
+			}
+
+			if (attrValue > max){
+				console.info('Value ' + attrValue + ' out of range. Value lowered to ' + max + ' (max value).');
+				return max;
+			}
+
+			return attrValue;
+		},
+
+		filterRegexp: function(attrValue, regexp){
+			return regexp.test(attrValue) ? attrValue : false;
+		},
+
+		filterSimpletext: function(attrValue){
+			return /^[-\w+., ]+$/.test(attrValue) ? attrValue : false;
+		},
+
+		filterUint: function(attrValue){
+			return /^(?:0|[1-9]\d*)$/.test(attrValue) ? attrValue : false;
 		}
-	}
-}
+	},
 
-/**
-* Create a quote block for given text
-*
-* Possible attributes:
-*   - author:  author's name (usually a username)
-*   - post_id: post_id of the post being quoted
-*   - user_id: user_id of the user being quoted
-*   - time:    timestamp of the original message
-*
-* @param  {!string} text       Quote's text
-* @param  {!Object} attributes Quote's attributes
-* @return {!string}            Quote block to be used in a new post/text
-*/
-function generateQuote(text, attributes) {
-	text = text.replace(/^\s+/, '').replace(/\s+$/, '');
-	var quote = '[quote';
-	if (attributes.author) {
-		// Add the author as the BBCode's default attribute
-		quote += '=' + formatAttributeValue(attributes.author);
-		delete attributes.author;
-	}
-	for (var name in attributes) {
-		if (attributes.hasOwnProperty(name)) {
-			var value = attributes[name];
-			quote += ' ' + name + '=' + formatAttributeValue(value.toString());
-		}
-	}
-	quote += ']';
-	var newline = ((quote + text + '[/quote]').length > 80 || text.indexOf('\n') > -1) ? '\n' : '';
-	quote += newline + text + newline + '[/quote]';
+	/*
+	 * A port in javascript of the PHP functions textFormatter allows.
+	 *
+	 * @source s9e/TextFormatter/src/Configurator/JavaScript/functions
+	 */
+	phpFuncFilters: {
+		addslashes: function(str){
+			return str.replace(/["'\\]/g, '\\$&').replace(/\u0000/g, '\\0');
+		},
 
-	return quote;
-}
+		dechex: function(str){
+			return parseInt(str).toString(16);
+		},
 
-/**
-* Format given string to be used as an attribute value
-*
-* Will return the string as-is if it can be used in a BBCode without quotes. Otherwise,
-* it will use either single- or double- quotes depending on whichever requires less escaping.
-* Quotes and backslashes are escaped with backslashes where necessary
-*
-* @param  {!string} str Original string
-* @return {!string}     Same string if possible, escaped string within quotes otherwise
-*/
-function formatAttributeValue(str) {
-	if (!/[ "'\\\]]/.test(str)) {
-		// Return as-is if it contains none of: space, ' " \ or ]
-		return str;
-	}
-	var singleQuoted = "'" + str.replace(/[\\']/g, '\\$&') + "'",
-		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
+		intval: function(str){
+			return parseInt(str) || 0;
+		},
 
-	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
-}
+		ltrim: function(str){
+			return str.replace(/^[ \n\r\t\0\x0B]+/g, '');
+		},
 
-function split_lines(text) {
-	var lines = text.split('\n');
-	var splitLines = new Array();
-	var j = 0;
-	var i;
+		mb_strtolower: function(str){
+			return str.toLowerCase();
+		},
 
-	for(i = 0; i < lines.length; i++) {
-		if (lines[i].length <= 80) {
-			splitLines[j] = lines[i];
-			j++;
-		} else {
-			var line = lines[i];
-			var splitAt;
-			do {
-				splitAt = line.indexOf(' ', 80);
+		mb_strtoupper: function(str){
+			return str.toUpperCase();
+		},
 
-				if (splitAt === -1) {
-					splitLines[j] = line;
-					j++;
-				} else {
-					splitLines[j] = line.substring(0, splitAt);
-					line = line.substring(splitAt);
-					j++;
+		mt_rand: function(min, max){
+			return (min + Math.floor(Math.random() * (max + 1 - min)));
+		},
+
+		rawurlencode: function(str){
+			return encodeURIComponent(str).replace(
+				/[!'()*]/g,
+				/**
+				* @param {!string} c
+				*/
+				function(c){
+					return '%' + c.charCodeAt(0).toString(16).toUpperCase();
 				}
-			}
-			while(splitAt !== -1);
-		}
-	}
-	return splitLines;
-}
+			);
+		},
 
-/**
-* From http://www.massless.org/mozedit/
-*/
-function mozWrap(txtarea, open, close) {
-	var selLength = (typeof(txtarea.textLength) === 'undefined') ? txtarea.value.length : txtarea.textLength;
-	var selStart = txtarea.selectionStart;
-	var selEnd = txtarea.selectionEnd;
-	var scrollTop = txtarea.scrollTop;
+		rtrim: function(str){
+			return str.replace(/[ \n\r\t\0\x0B]+$/g, '');
+		},
 
-	var s1 = (txtarea.value).substring(0,selStart);
-	var s2 = (txtarea.value).substring(selStart, selEnd);
-	var s3 = (txtarea.value).substring(selEnd, selLength);
+		str_rot13: function(str){
+			return str.replace(
+				/[a-z]/gi,
+				function(c){
+					return String.fromCharCode(c.charCodeAt(0) + ((c.toLowerCase() < 'n') ? 13 : -13));
+				}
+			);
+		},
 
-	txtarea.value = s1 + open + s2 + close + s3;
-	txtarea.selectionStart = selStart + open.length;
-	txtarea.selectionEnd = selEnd + open.length;
-	txtarea.focus();
-	txtarea.scrollTop = scrollTop;
+		stripslashes: function(str){
+			// NOTE: this will not correctly transform \0 into a NULL byte. I consider this a feature
+			//       rather than a bug. There's no reason to use NULL bytes in a text.
+			return str.replace(/\\([\s\S]?)/g, '\\1');
+		},
 
-	return;
-}
+		strrev: function(str){
+			return str.split('').reverse().join('');
+		},
 
-/**
-* Insert at Caret position. Code from
-* http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
-*/
-function storeCaret(textEl) {
-	if (textEl.createTextRange && document.selection) {
-		textEl.caretPos = document.selection.createRange().duplicate();
-	}
-}
+		strtolower: function(str){
+			return str.toLowerCase();
+		},
 
-/**
-* Caret Position object
-*/
-function caretPosition() {
-	var start = null;
-	var end = null;
-}
+		strtotime: function(str){
+			return Date.parse(str) / 1000;
+		},
 
-/**
-* Get the caret position in an textarea
-*/
-function getCaretPosition(txtarea) {
-	var caretPos = new caretPosition();
+		strtoupper: function(str){
+			return str.toUpperCase();
+		},
 
-	// simple Gecko/Opera way
-	if (txtarea.selectionStart || txtarea.selectionStart === 0) {
-		caretPos.start = txtarea.selectionStart;
-		caretPos.end = txtarea.selectionEnd;
-	}
-	// dirty and slow IE way
-	else if (document.selection) {
-		// get current selection
-		var range = document.selection.createRange();
+		trim: function(str){
+			return str.replace(/^[ \n\r\t\0\x0B]+/g, '').replace(/[ \n\r\t\0\x0B]+$/g, '');
+		},
 
-		// a new selection of the whole textarea
-		var range_all = document.body.createTextRange();
-		range_all.moveToElementText(txtarea);
+		ucfirst: function(str){
+			return str.charAt(0).toUpperCase() + str.substr(1);
+		},
 
-		// calculate selection start point by moving beginning of range_all to beginning of range
-		var sel_start;
-		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++) {
-			range_all.moveStart('character', 1);
+		ucwords: function(str){
+			return str.replace(
+				/(?:^|\s)[a-z]/g,
+				function(m){
+					return m.toUpperCase();
+				}
+			);
+		},
+
+		urlencode: function(str){
+			return encodeURIComponent(str);
 		}
 
-		txtarea.sel_start = sel_start;
+	},
 
-		// we ignore the end value for IE, this is already dirty enough and we don't need it
-		caretPos.start = txtarea.sel_start;
-		caretPos.end = txtarea.sel_start;
-	}
+	/**
+	* Given a name, an object with the attributes and a content, 
+	* this returns a string with the BBCode definition of the content.
+	* NOTE: No escapes are made to the content. All data is used as-is.
+	*
+	* @param name string The name of the BBCode tag
+	* @param attributes object An object with key-value data for the BBCode attributes
+	* @param string content The content of the BBCode tag
+	* @param boolean isSelfClosing Set to true for not return with a closing tag
+	* @return string The BBCode tag given the above parameters
+	*/
+	revertBackToBBCode: function (name, attributes, content, isSelfClosing){
+		var attributeStr = ' ';
+		if (attributes.defaultattr){
+			attributeStr = '="' + attributes.defaultattr + '" ';
+			delete attributes.defaultattr;
+		}
 
-	return caretPos;
-}
+		for(var attributeName in attributes){
+			attributeStr += attributeName + '="' + attributes[attributeName] + '" ';
+		}
 
-/**
-* Allow to use tab character when typing code
-* Keep indentation of last line of code when typing code
-*/
-(function($) {
-	$(document).ready(function() {
-		var doc, textarea;
+		if (attributeStr === ' '){
+			attributeStr = '';
+		}
 
-		// find textarea, make sure browser supports necessary functions
-		if (document.forms[form_name]) {
-			doc = document;
+		return '[' + name + attributeStr + ']' + content + 
+				(isSelfClosing ? '[/' + name + ']' : '');
+	},
+
+
+	/**
+	 * @return A javascript object that allows adding parameters and
+	 * @source Based on s9e\TextFormatter\render.js
+	*/
+	xslt: function (xsl){
+		// older IE has its own way of doing it
+		var standardsBrowser = (typeof DOMParser !== 'undefined' && typeof XSLTProcessor !== 'undefined');
+		if (standardsBrowser) {
+			var xslDoc = (new DOMParser()).parseFromString(xsl, 'text/xml');
+
+			var processor = new XSLTProcessor();
+			processor.importStylesheet(xslDoc);
+
+			return {
+				setParameter : function (name, value){
+					if (!value){
+						if (value === ''){
+							value = ' ';
+						} else {
+							value = '';
+						}
+					}
+					processor.setParameter(null, name, value);
+				},
+
+				transformToFragment : function (xml, onDocument){
+					var xmlDoc = (new DOMParser()).parseFromString(xml, 'text/xml');
+					// NOTE: importNode() is used because of https://code.google.com/p/chromium/issues/detail?id=266305
+					return onDocument.importNode(processor.transformToFragment(xmlDoc, onDocument), true);
+				}
+			};
 		} else {
-			doc = opener.document;
+			var ieStylesheet = new ActiveXObject('MSXML2.FreeThreadedDOMDocument.6.0');
+			ieStylesheet.async = false;
+			ieStylesheet.validateOnParse = false;
+			ieStylesheet.loadXML(xsl);
+
+			var ieGenerator = new ActiveXObject("MSXML2.XSLTemplate.6.0");
+			ieGenerator.stylesheet = ieStylesheet;
+			var ieTransformer = ieGenerator.createProcessor();
+
+			return {
+				setParameter : function (name, value){
+					if (!value){
+						if (value === ''){
+							value = ' ';
+						} else {
+							value = '';
+						}
+					}
+					ieTransformer.addParameter(name, value, '');
+				},
+
+				transformToFragment : function (xml, onDocument){
+					var div = onDocument.createElement('div'),
+						fragment = onDocument.createDocumentFragment();
+
+					var ieTargetStylesheet = new ActiveXObject('MSXML2.FreeThreadedDOMDocument.6.0');
+					ieTargetStylesheet.async = false;
+					ieTargetStylesheet.validateOnParse = false;
+					ieTargetStylesheet.loadXML(xml);
+
+					ieTransformer.input = ieTargetStylesheet;
+					ieTransformer.transform();
+
+					div.innerHTML = ieTransformer.output;
+					while (div.firstChild){
+						fragment.appendChild(div.removeChild(div.firstChild));
+					}
+
+					return fragment;
+				}
+			};
 		}
+	},
 
-		if (!doc.forms[form_name]) {
-			return;
-		}
-
-		textarea = doc.forms[form_name].elements[text_name];
-
-		phpbb.applyCodeEditor(textarea);
-		if ($('#attach-panel').length) {
-			phpbb.showDragNDrop(textarea);
-		}
-	});
-})(jQuery);
-
+	/**
+	 * Insert HTML in the editor at the selection point
+	 *
+	 */
+	insertHTML: function (editor, start, end){
+		console.error("Misconfigured editor. The editor setup code does not override editor.insertHTML");
+	},
+	/**
+	 * Insert BBCode in the editor at the selection point
+	 * all HTML is considered literal.
+	 * This is the preferred way of adding text to the editor from an external source.
+	 *
+	 */
+	insertBBCode: function (editor, start, end){
+		console.error("Misconfigured editor. The editor setup code does not override editor.insertBBCode");
+	},
+	/**
+	 * Insert text in the editor at the selection point.
+	 * A best-effort is made to make sure all text has no meaning but all BBCode may be translated to HTML in the server.
+	 *
+	 */
+	insertUnformatted: function (editor, start, end){
+		console.error("Misconfigured editor. The editor setup code does not override editor.insertUnformatted");
+	},
+	/**
+	 * Get current text from the editor
+	 * A best-effort is made to make sure all HTML is translated to BBCode. The remaining content is HTML-escaped.
+	 */
+	getValue: function (editor, start, end){
+		console.error("Misconfigured editor. The editor setup code does not override editor.getValue");
+	}
+};

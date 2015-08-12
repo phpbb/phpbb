@@ -33,14 +33,12 @@
 
 	<!-- EVENT posting_editor_subject_after -->
 
-	<!-- INCLUDE posting_buttons.html -->
-
 	<div id="smiley-box">
-		<!-- EVENT posting_editor_smilies_before -->	
+		<!-- EVENT posting_editor_smilies_before -->
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
-				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+				<img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" />
 			<!-- END smiley -->
 		<!-- ENDIF -->
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
@@ -67,10 +65,39 @@
 		<!-- ENDIF -->
 	</div>
 
+	<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
+{% set USE_SCE = true %}
+	<!-- EVENT posting_editor_wysiwyg_setup_before  -->
+{% if USE_SCE %}
+	<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/jquery.sceditor.phpbb.js -->
+
+	<script>
+	var {JS_BBCODE_VARS_CONTAINER} = {
+		{% for key in JS_BBCODE_VARS %}
+			{% if key|slice(0, 2) === 'L_' %}
+			'{{ key }}': '{{ lang(key[2:]) |e('js') }}',
+			{% else %}
+			'{{ key }}': '{{ attribute(_context, key) |e('js') }}',
+			{% endif -%}
+		{% endfor -%}
+		stylePath: '{T_THEME_PATH}/bbcode.css',
+		emoticons: {
+			<!-- BEGIN smiley -->
+			'{smiley.A_SMILEY_CODE}': '{smiley.SMILEY_IMG}',
+			<!-- END smiley -->
+		},
+		S_EDITOR_MODE: {S_EDITOR_MODE},
+		S_EDITOR_BUTTONS_MODE: {S_EDITOR_BUTTONS_MODE},
+		L_SUBMIT: '{L_SUBMIT}'
+	};
+
+	</script>
+{% endif %}
+	<!-- INCLUDEJS ./posting.php?mode=wysiwyg_definition&amp;bbcode_version={T_BBCODE_VERSION} -->
 	<!-- EVENT posting_editor_message_before -->
 
 	<div id="message-box">
-		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 	</div>
 
 	<!-- EVENT posting_editor_message_after -->

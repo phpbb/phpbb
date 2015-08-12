@@ -8,17 +8,18 @@
 <!-- BEGIN listitem --><li><!-- END listitem -->
 <!-- BEGIN listitem_close --></li><!-- END listitem_close -->
 
-<!-- BEGIN quote_username_open --><blockquote><div><cite>{USERNAME} {L_WROTE}{L_COLON}</cite><!-- END quote_username_open -->
-<!-- BEGIN quote_open --><blockquote class="uncited"><div><!-- END quote_open -->
-<!-- BEGIN quote_close --></div></blockquote><!-- END quote_close -->
+<!-- BEGIN quote_username_open --><blockquote><div data-sce-onParentRemove="unwrap"><cite data-sce-keepOnCut="" data-sce-onParentRemove="remove"><span data-sce-onParentRemove="unwrap">{USERNAME}</span> {L_WROTE}{L_COLON}</cite><div data-sce-onParentRemove="unwrap"><!-- END quote_username_open -->
+<!-- BEGIN quote_open --><blockquote class="uncited"><div data-sce-onParentRemove="unwrap"><div data-sce-onParentRemove="unwrap"><!-- END quote_open -->
+<!-- BEGIN quote_close --></div></div></blockquote><!-- END quote_close -->
+
 <!-- BEGIN quote_extended -->
 <blockquote>
 	<xsl:if test="not(@author)">
 		<xsl:attribute name="class">uncited</xsl:attribute>
 	</xsl:if>
-	<div>
+	<div data-sce-onParentRemove="unwrap">
 		<xsl:if test="@author">
-			<cite>
+			<cite data-sce-keepOnCut="" data-sce-onParentRemove="remove">
 				<xsl:choose>
 					<xsl:when test="@url">
 						<a href="{@url}" class="postlink"><xsl:value-of select="@author"/></a>
@@ -27,7 +28,7 @@
 						<a href="{@profile_url}"><xsl:value-of select="@author"/></a>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:value-of select="@author"/>
+						<span><xsl:value-of select="@author"/></span>
 					</xsl:otherwise>
 				</xsl:choose>
 				<xsl:text> </xsl:text>
@@ -42,7 +43,7 @@
 				</xsl:if>
 			</cite>
 		</xsl:if>
-		<xsl:apply-templates/>
+		<div data-sce-onParentRemove="unwrap"><xsl:apply-templates/></div>
 	</div>
 </blockquote>
 <!-- END quote_extended -->
