@@ -152,6 +152,13 @@ class asset
 	*/
 	public function set_path($path, $urlencode = false)
 	{
+		// Since 1.7.0 Twig returns the real path of the file. We need it to be relative to the working directory.
+		$real_root_path = realpath('.') . DIRECTORY_SEPARATOR;
+		if ($real_root_path && substr($path . DIRECTORY_SEPARATOR, 0, strlen($real_root_path)) === $real_root_path)
+		{
+			$path = str_replace('\\', '/', substr($path, strlen($real_root_path)));
+		}
+
 		if ($urlencode)
 		{
 			$paths = explode('/', $path);
@@ -161,6 +168,7 @@ class asset
 			}
 			$path = implode('/', $paths);
 		}
+
 		$this->components['path'] = $path;
 	}
 
