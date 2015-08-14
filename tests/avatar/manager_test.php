@@ -83,7 +83,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $dispatcher, $files_factory, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')

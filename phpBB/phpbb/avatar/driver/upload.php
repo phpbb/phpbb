@@ -19,11 +19,16 @@ namespace phpbb\avatar\driver;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* @var \phpbb\event\dispatcher_interface
 	*/
 	protected $dispatcher;
 
-	/**sts
+	/**
 	 * @var \phpbb\files\factory
 	 */
 	protected $files_factory;
@@ -34,16 +39,18 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
+	* @param \phpbb\filesystem\filesystem_interface $filesystem phpBB filesystem helper
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
 	* @param \phpbb\files\factory $files_factory File classes factory
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->filesystem = $filesystem;
 		$this->path_helper = $path_helper;
 		$this->dispatcher = $dispatcher;
 		$this->files_factory = $files_factory;
