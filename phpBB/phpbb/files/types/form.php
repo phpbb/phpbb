@@ -40,8 +40,10 @@ class form extends base
 	/**
 	 * Construct a form upload type
 	 *
-	 * @param factory           $factory
-	 * @param request_interface $request
+	 * @param factory			$factory	Files factory
+	 * @param language			$language	Language class
+	 * @param plupload			$plupload	Plupload
+	 * @param request_interface	$request	Request object
 	 */
 	public function __construct(factory $factory, language $language, plupload $plupload, request_interface $request)
 	{

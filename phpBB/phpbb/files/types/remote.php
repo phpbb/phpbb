@@ -38,8 +38,10 @@ class remote extends base
 	/**
 	 * Construct a form upload type
 	 *
-	 * @param factory           $factory
-	 * @param request_interface $request
+	 * @param factory $factory Files factory
+	 * @param language $language Language class
+	 * @param request_interface $request Request object
+	 * @param string $phpbb_root_path phpBB root path
 	 */
 	public function __construct(factory $factory, language $language, request_interface $request, $phpbb_root_path)
 	{
