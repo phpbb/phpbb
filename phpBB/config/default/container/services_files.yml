@@ -1,3 +1,6 @@
 services:
     filesystem:
         class: phpbb\filesystem\filesystem
+
+    files.filespec:
+        class: phpbb\files\filespec
