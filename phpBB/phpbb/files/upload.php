@@ -36,20 +36,20 @@ class upload
 	 */
 	protected $filesystem;
 
+	/** @var \phpbb\files\factory Files factory */
+	protected $factory;
+
 	/**
 	 * Init file upload class.
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface $filesystem
+	 * @param \phpbb\files\factory $factory Files factory
 	 *
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, factory $factory)
 	{
-//		$this->set_allowed_extensions($allowed_extensions);
-//		$this->set_max_filesize($max_filesize);
-//		$this->set_allowed_dimensions($min_width, $min_height, $max_width, $max_height);
-//		$this->set_error_prefix($error_prefix);
-//		$this->set_disallowed_content($disallowed_content);
 		$this->filesystem = $filesystem;
+		$this->factory = $factory;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class upload
 	 */
 	function form_upload($form_name, \phpbb\plupload\plupload $plupload = null)
 	{
-		global $user, $request, $phpbb_container;
+		global $user, $request;
 
 		$upload = $request->file($form_name);
 		unset($upload['local_mode']);
@@ -153,7 +153,7 @@ class upload
 		}
 
 		/** @var \phpbb\files\filespec $file */
-		$file = $phpbb_container->get('files.filespec')
+		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload)
 			->set_upload_namespace($this);
 
@@ -217,7 +217,7 @@ class upload
 	 */
 	function local_upload($source_file, $filedata = false)
 	{
-		global $user, $request, $phpbb_container;
+		global $user, $request;
 
 		$upload = array();
 
@@ -237,7 +237,7 @@ class upload
 		}
 
 		/** @var \phpbb\files\filespec $file */
-		$file = $phpbb_container->get('files.filespec')
+		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload)
 			->set_upload_namespace($this);
 
@@ -299,7 +299,7 @@ class upload
 	 */
 	function remote_upload($upload_url)
 	{
-		global $user, $phpbb_root_path, $phpbb_container;
+		global $user, $phpbb_root_path;
 
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
@@ -477,7 +477,7 @@ class upload
 		$upload_ary['tmp_name'] = $filename;
 
 		/** @var \phpbb\files\filespec $file */
-		$file = $phpbb_container->get('files.filespec')
+		$file = $this->factory->get('filespec')
 			->set_upload_ary($upload_ary)
 			->set_upload_namespace($this);
 		$this->common_checks($file);

@@ -2,6 +2,11 @@ services:
     filesystem:
         class: phpbb\filesystem\filesystem
 
+    files.factory:
+        class: phpbb\files\factory
+        arguments:
+            - @service_container
+
     files.filespec:
         class: phpbb\files\filespec
         scope: prototype
@@ -15,3 +20,4 @@ services:
         scope: prototype
         arguments:
             - @filesystem
+            - @files.factory
