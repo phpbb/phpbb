@@ -73,6 +73,8 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->will($this->returnValue('avatar.driver.barfoo'));
 		$avatar_drivers = array($this->avatar_foobar, $this->avatar_barfoo);
 
+		$files_factory = new \phpbb\files\factory($phpbb_container);
+
 		foreach ($this->avatar_drivers() as $driver)
 		{
 			if ($driver !== 'upload')
@@ -81,7 +83,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $guesser, $dispatcher, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $dispatcher, $files_factory, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
