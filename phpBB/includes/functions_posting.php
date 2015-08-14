@@ -404,14 +404,14 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_filesystem;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
 
 	$filedata = array(
 		'error'	=> array()
 	);
 
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload($phpbb_filesystem);
+	$upload = $phpbb_container->get('files.upload');
 
 	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
 	{
@@ -433,6 +433,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
+	/** @var \phpbb\files\filespec $file */
 	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata, $mimetype_guesser) : $upload->form_upload($form_name, $mimetype_guesser, $plupload);
 
 	if ($file->init_error())

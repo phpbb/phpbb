@@ -40,24 +40,15 @@ class upload
 	 * Init file upload class.
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface $filesystem
-	 * @param string $error_prefix Used error messages will get prefixed by this string
-	 * @param array $allowed_extensions Array of allowed extensions, for example array('jpg', 'jpeg', 'gif', 'png')
-	 * @param int $max_filesize Maximum filesize
-	 * @param int $min_width Minimum image width (only checked for images)
-	 * @param int $min_height Minimum image height (only checked for images)
-	 * @param int $max_width Maximum image width (only checked for images)
-	 * @param int $max_height Maximum image height (only checked for images)
-	 * @param bool|array $disallowed_content If enabled, the first 256 bytes of the file must not
-	 *										contain any of its values. Defaults to false.
 	 *
 	 */
-	function fileupload(\phpbb\filesystem\filesystem_interface $filesystem, $error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false, $disallowed_content = false)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem)
 	{
-		$this->set_allowed_extensions($allowed_extensions);
-		$this->set_max_filesize($max_filesize);
-		$this->set_allowed_dimensions($min_width, $min_height, $max_width, $max_height);
-		$this->set_error_prefix($error_prefix);
-		$this->set_disallowed_content($disallowed_content);
+//		$this->set_allowed_extensions($allowed_extensions);
+//		$this->set_max_filesize($max_filesize);
+//		$this->set_allowed_dimensions($min_width, $min_height, $max_width, $max_height);
+//		$this->set_error_prefix($error_prefix);
+//		$this->set_disallowed_content($disallowed_content);
 		$this->filesystem = $filesystem;
 	}
 
@@ -82,6 +73,8 @@ class upload
 		{
 			$this->allowed_extensions = $allowed_extensions;
 		}
+
+		return $this;
 	}
 
 	/**
@@ -93,6 +86,8 @@ class upload
 		$this->min_height = (int) $min_height;
 		$this->max_width = (int) $max_width;
 		$this->max_height = (int) $max_height;
+
+		return $this;
 	}
 
 	/**
@@ -104,6 +99,8 @@ class upload
 		{
 			$this->max_filesize = (int) $max_filesize;
 		}
+
+		return $this;
 	}
 
 	/**
@@ -115,6 +112,8 @@ class upload
 		{
 			$this->disallowed_content = array_diff($disallowed_content, array(''));
 		}
+
+		return $this;
 	}
 
 	/**
@@ -123,6 +122,8 @@ class upload
 	function set_error_prefix($error_prefix)
 	{
 		$this->error_prefix = $error_prefix;
+
+		return $this;
 	}
 
 	/**

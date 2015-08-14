@@ -303,7 +303,7 @@ class plupload
 			$this->temporary_directory,
 			$this->config['plupload_salt'],
 			md5($file_name),
-			\filespec::get_extension($file_name)
+			\phpbb\files\filespec::get_extension($file_name)
 		);
 	}
 

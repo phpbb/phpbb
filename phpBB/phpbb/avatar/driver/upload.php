@@ -34,6 +34,11 @@ class upload extends \phpbb\avatar\driver\driver
 	protected $dispatcher;
 
 	/**
+	 * @var \phpbb\files\factory
+	 */
+	protected $files_factory;
+
+	/**
 	* Construct a driver object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
@@ -43,9 +48,10 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
 	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
+	* @param \phpbb\files\factory $files_factory File classes factory
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -54,6 +60,7 @@ class upload extends \phpbb\avatar\driver\driver
 		$this->path_helper = $path_helper;
 		$this->mimetype_guesser = $mimetype_guesser;
 		$this->dispatcher = $dispatcher;
+		$this->files_factory = $files_factory;
 		$this->cache = $cache;
 	}
 
@@ -99,12 +106,17 @@ class upload extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		if (!class_exists('fileupload'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
-		}
-
-		$upload = new \fileupload($this->filesystem, 'AVATAR_', $this->allowed_extensions, $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
+		/** @var \phpbb\files\upload $upload */
+		$upload = $this->files_factory->get('upload')
+			->set_error_prefix('AVATAR_')
+			->set_allowed_extensions($this->allowed_extensions)
+			->set_max_filesize($this->config['avatar_filesize'])
+			->set_allowed_dimensions(
+				$this->config['avatar_min_width'],
+				$this->config['avatar_min_height'],
+				$this->config['avatar_max_width'],
+				$this->config['avatar_max_height'])
+			->set_disallowed_content((isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
 		$url = $request->variable('avatar_upload_url', '');
 		$upload_file = $request->file('avatar_upload_file');

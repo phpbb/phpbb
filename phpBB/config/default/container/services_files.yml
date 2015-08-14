@@ -9,3 +9,9 @@ services:
             - @filesystem
             - @mimetype.guesser
             - @plupload
+
+    files.upload:
+        class: phpbb\files\upload
+        scope: prototype
+        arguments:
+            - @filesystem
