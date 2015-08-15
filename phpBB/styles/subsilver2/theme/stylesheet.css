@@ -15,6 +15,10 @@
 	padding: 0;
 }
 
+abbr {
+	text-decoration: none;
+}
+
 html {
 	font-size: 100%;
 }
