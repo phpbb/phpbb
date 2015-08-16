@@ -36,6 +36,7 @@
 	<!-- INCLUDE posting_buttons.html -->
 
 	<div id="smiley-box">
+		<!-- EVENT posting_editor_smilies_before -->	
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
 			<!-- BEGIN smiley -->
@@ -45,7 +46,7 @@
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 750, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
-
+		<!-- EVENT posting_editor_smilies_after -->
 		<!-- IF BBCODE_STATUS -->
 		<div class="bbcode-status">
 			<!-- IF .smiley --><hr /><!-- ENDIF -->
@@ -58,6 +59,7 @@
 			{SMILIES_STATUS}
 		</div>
 		<!-- ENDIF -->
+		<!-- EVENT posting_editor_bbcode_status_after -->
 		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
 			<!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->
 			<!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
@@ -87,6 +89,7 @@
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
+			<!-- EVENT posting_editor_submit_buttons -->
 			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="8" name="load" value="{L_LOAD_DRAFT}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->
 			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="7" name="save" value="{L_SAVE_DRAFT}" class="button2" />&nbsp; <!-- ENDIF -->
 			<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
@@ -114,6 +117,7 @@
 						<a href="#tabs" data-subpanel="poll-panel" role="tab" aria-controls="poll-panel">{L_ADD_POLL}</a>
 					</li>
 				<!-- ENDIF -->
+				<!-- EVENT posting_editor_add_panel_tab -->
 			</ul>
 		</div>
 	<!-- ENDIF -->

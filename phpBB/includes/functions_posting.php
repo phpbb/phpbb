@@ -24,12 +24,13 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $db, $user, $config, $template, $phpbb_dispatcher;
+	global $db, $user, $config, $template, $phpbb_dispatcher, $request;
 	global $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_path_helper;
 
-	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
+	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
-	$start = request_var('start', 0);
+	$base_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id);
+	$start = $request->variable('start', 0);
 
 	if ($mode == 'window')
 	{
@@ -336,18 +337,15 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	$toggle = false;
 
 	$topic_types = array(
-		'sticky'	=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
-		'announce'	=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
-		'global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
+		'sticky'			=> array('const' => POST_STICKY, 'lang' => 'POST_STICKY'),
+		'announce'			=> array('const' => POST_ANNOUNCE, 'lang' => 'POST_ANNOUNCEMENT'),
+		'announce_global'	=> array('const' => POST_GLOBAL, 'lang' => 'POST_GLOBAL')
 	);
 
 	$topic_type_array = array();
 
 	foreach ($topic_types as $auth_key => $topic_value)
 	{
-		// We do not have a special post global announcement permission
-		$auth_key = ($auth_key == 'global') ? 'announce' : $auth_key;
-
 		if ($auth->acl_get('f_' . $auth_key, $forum_id))
 		{
 			$toggle = true;
@@ -377,8 +375,8 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 
 		$template->assign_vars(array(
 			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)),
-			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)))
-		);
+			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_gets('f_announce', 'f_announce_global', $forum_id)),
+		));
 	}
 
 	return $toggle;
@@ -406,14 +404,14 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 {
 	global $auth, $user, $config, $db, $cache;
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_filesystem;
 
 	$filedata = array(
 		'error'	=> array()
 	);
 
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload();
+	$upload = new fileupload($phpbb_filesystem);
 
 	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
 	{
@@ -667,7 +665,7 @@ function get_supported_image_types($type = false)
 */
 function create_thumbnail($source, $destination, $mimetype)
 {
-	global $config;
+	global $config, $phpbb_filesystem;
 
 	$min_filesize = (int) $config['img_min_thumb_filesize'];
 	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
@@ -819,7 +817,14 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+	try
+	{
+		$phpbb_filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
+	}
+	catch (\phpbb\filesystem\exception\filesystem_exception $e)
+	{
+		// Do nothing
+	}
 
 	return true;
 }
@@ -1036,9 +1041,10 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $bbcode, $cache;
+	global $user, $auth, $db, $template, $cache;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 	$sql_sort = ($mode == 'post_review') ? 'ASC' : 'DESC';
 
@@ -1094,13 +1100,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
-	$bbcode_bitfield = '';
 	$rowset = array();
 	$has_attachments = false;
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[$row['post_id']] = $row;
-		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 		if ($row['post_attachment'])
 		{
@@ -1108,13 +1112,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		}
 	}
 	$db->sql_freeresult($result);
-
-	// Instantiate BBCode class
-	if (!isset($bbcode) && $bbcode_bitfield !== '')
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-	}
 
 	// Grab extensions
 	$extensions = $attachments = array();
@@ -1193,6 +1190,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'MESSAGE'			=> $message,
 			'DECODED_MESSAGE'	=> $decoded_message,
 			'POST_ID'			=> $row['post_id'],
+			'POST_TIME'			=> $row['post_time'],
+			'USER_ID'			=> $row['user_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
@@ -1304,6 +1303,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		$db->sql_freeresult($result);
 	}
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	// (Soft) delete the post
@@ -1517,7 +1517,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
+	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
 	/**
 	* Modify the data for post submitting
@@ -1551,7 +1551,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		return false;
 	}
 
-	$current_time = time();
+	if (!empty($data['post_time']))
+	{
+		$current_time = $data['post_time'];
+	}
+	else
+	{
+		$current_time = time();
+	}
 
 	if ($mode == 'post')
 	{
@@ -1690,7 +1697,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($user->data['user_id'] != $poster_id)
 			{
 				$log_subject = ($subject) ? $subject : $data['topic_title'];
-				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, (!empty($username)) ? $username : $user->lang['GUEST'], $data['post_edit_reason']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_POST_EDITED', false, array(
+					'forum_id' => $data['forum_id'],
+					'topic_id' => $data['topic_id'],
+					$log_subject,
+					(!empty($username)) ? $username : $user->lang['GUEST'],
+					$data['post_edit_reason']
+				));
 			}
 
 			if (!isset($sql_data[POSTS_TABLE]['sql']))
@@ -1747,6 +1760,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : 0,
+				'topic_status'				=> (isset($data['topic_status'])) ? $data['topic_status'] : ITEM_UNLOCKED,
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1928,9 +1942,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			if ($post_mode == 'post')
 			{
-				set_config_count('num_topics', 1, true);
+				$config->increment('num_topics', 1, false);
 			}
-			set_config_count('num_posts', 1, true);
+			$config->increment('num_posts', 1, false);
 
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data['post_id'];
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
@@ -2103,8 +2117,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		if ($space_taken && $files_added)
 		{
-			set_config_count('upload_dir_size', $space_taken, true);
-			set_config_count('num_files', $files_added, true);
+			$config->increment('upload_dir_size', $space_taken, false);
+			$config->increment('num_files', $files_added, false);
 		}
 	}
 
@@ -2122,6 +2136,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$is_starter = ($post_mode == 'edit_first_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 		$is_latest = ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || $data['post_visibility'] != ITEM_APPROVED);
 
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
 		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 		$phpbb_content_visibility->set_post_visibility($post_visibility, $data['post_id'], $data['topic_id'], $data['forum_id'], $user->data['user_id'], time(), '', $is_starter, $is_latest);
 	}
@@ -2197,7 +2212,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$db->sql_transaction('commit');
 
 	// Delete draft if post was loaded...
-	$draft_id = request_var('draft_loaded', 0);
+	$draft_id = $request->variable('draft_loaded', 0);
 	if ($draft_id)
 	{
 		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
@@ -2218,7 +2233,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if ($error)
 		{
@@ -2300,6 +2315,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'post_subject'		=> $subject,
 	));
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	if ($post_visibility == ITEM_APPROVED)
@@ -2478,7 +2494,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 */
 function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 {
-	global $config, $db, $user, $phpEx, $phpbb_root_path;
+	global $config, $db, $user, $phpEx, $phpbb_root_path, $phpbb_log;
 
 	if ($bump_time === false)
 	{
@@ -2557,7 +2573,11 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 		update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time, false);
 	}
 
-	add_log('mod', $forum_id, $topic_id, 'LOG_BUMP_TOPIC', $post_data['topic_title']);
+	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_BUMP_TOPIC', false, array(
+		'forum_id' => $forum_id,
+		'topic_id' => $topic_id,
+		$post_data['topic_title']
+	));
 
 	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 
@@ -2595,7 +2615,7 @@ function phpbb_upload_popup($forum_style = 0)
 function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {
 	global $user, $auth, $config, $request;
-	global $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx, $phpbb_log;
 
 	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
 
@@ -2630,14 +2650,26 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 
 			if ($next_post_id === false)
 			{
-				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), $post_data['topic_title'], $post_username, $delete_reason);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, (($is_soft) ? 'LOG_SOFTDELETE_TOPIC' : 'LOG_DELETE_TOPIC'), false, array(
+					'forum_id' => $forum_id,
+					'topic_id' => $topic_id,
+					$post_data['topic_title'],
+					$post_username,
+					$delete_reason
+				));
 
 				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 				$message = $user->lang['POST_DELETED'];
 			}
 			else
 			{
-				add_log('mod', $forum_id, $topic_id, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), $post_data['post_subject'], $post_username, $delete_reason);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), false, array(
+					'forum_id' => $forum_id,
+					'topic_id' => $topic_id,
+					$post_data['post_subject'],
+					$post_username,
+					$delete_reason
+				));
 
 				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
 				$message = $user->lang['POST_DELETED'];

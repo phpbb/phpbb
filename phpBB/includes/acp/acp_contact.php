@@ -48,6 +48,7 @@ class acp_contact
 			include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 		}
 
+		/* @var $config_text \phpbb\config\db_text */
 		$config_text = $phpbb_container->get('config_text');
 
 		$contact_admin_data			= $config_text->get_array(array(
@@ -104,6 +105,9 @@ class acp_contact
 
 		$contact_admin_edit = generate_text_for_edit($contact_admin_info, $contact_admin_info_uid, $contact_admin_info_flags);
 
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
+
 		$template->assign_vars(array(
 			'ERRORS'			=> $error,
 			'CONTACT_ENABLED'	=> $config['contact_admin_form_enable'],
@@ -115,7 +119,7 @@ class acp_contact
 			'S_SMILIES_DISABLE_CHECKED'		=> !$contact_admin_edit['allow_smilies'],
 			'S_MAGIC_URL_DISABLE_CHECKED'	=> !$contact_admin_edit['allow_urls'],
 
-			'BBCODE_STATUS'			=> $user->lang('BBCODE_IS_ON', '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
+			'BBCODE_STATUS'			=> $user->lang('BBCODE_IS_ON', '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 			'SMILIES_STATUS'		=> $user->lang['SMILIES_ARE_ON'],
 			'IMG_STATUS'			=> $user->lang['IMAGES_ARE_ON'],
 			'FLASH_STATUS'			=> $user->lang['FLASH_IS_ON'],

@@ -50,7 +50,7 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -104,8 +104,8 @@ class acp_search
 		unset($search);
 		unset($error);
 
-		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : array();
-		$updated = request_var('updated', false);
+		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => ''), true) : array();
+		$updated = $request->variable('updated', false);
 
 		foreach ($settings as $config_name => $var_type)
 		{
@@ -133,7 +133,7 @@ class acp_search
 			// only change config if anything was actually changed
 			if ($submit && ($config[$config_name] != $config_value))
 			{
-				set_config($config_name, $config_value);
+				$config->set($config_name, $config_value);
 				$updated = true;
 			}
 		}
@@ -143,7 +143,7 @@ class acp_search
 			$extra_message = '';
 			if ($updated)
 			{
-				add_log('admin', 'LOG_CONFIG_SEARCH');
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 			}
 
 			if (isset($cfg_array['search_type']) && in_array($cfg_array['search_type'], $search_types, true) && ($cfg_array['search_type'] != $config['search_type']))
@@ -157,11 +157,11 @@ class acp_search
 					{
 						if (!method_exists($search, 'init') || !($error = $search->init()))
 						{
-							set_config('search_type', $cfg_array['search_type']);
+							$config->set('search_type', $cfg_array['search_type']);
 
 							if (!$updated)
 							{
-								add_log('admin', 'LOG_CONFIG_SEARCH');
+								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_SEARCH');
 							}
 							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
 						}
@@ -232,10 +232,10 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);
 
 		if (isset($_POST['cancel']))
@@ -250,7 +250,7 @@ class acp_search
 			switch ($action)
 			{
 				case 'progress_bar':
-					$type = request_var('type', '');
+					$type = $request->variable('type', '');
 					$this->display_progress_bar($type);
 				break;
 
@@ -269,7 +269,7 @@ class acp_search
 
 			if (empty($this->state[0]))
 			{
-				$this->state[0] = request_var('search_type', '');
+				$this->state[0] = $request->variable('search_type', '');
 			}
 
 			$this->search = null;
@@ -303,8 +303,7 @@ class acp_search
 					}
 					else
 					{
-						$starttime = explode(' ', microtime());
-						$starttime = $starttime[1] + $starttime[0];
+						$starttime = microtime(true);
 						$row_count = 0;
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
@@ -336,8 +335,7 @@ class acp_search
 
 						if ($post_counter <= $this->max_post_id)
 						{
-							$mtime = explode(' ', microtime());
-							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
 							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter, $rows_per_second));
@@ -349,7 +347,7 @@ class acp_search
 					$this->state = array('');
 					$this->save_state();
 
-					add_log('admin', 'LOG_SEARCH_INDEX_REMOVED', $name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
 					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 
@@ -376,8 +374,7 @@ class acp_search
 						}
 						$db->sql_freeresult($result);
 
-						$starttime = explode(' ', microtime());
-						$starttime = $starttime[1] + $starttime[0];
+						$starttime = microtime(true);
 						$row_count = 0;
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
@@ -426,8 +423,7 @@ class acp_search
 
 						if ($post_counter <= $this->max_post_id)
 						{
-							$mtime = explode(' ', microtime());
-							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
 							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
@@ -439,7 +435,7 @@ class acp_search
 					$this->state = array('');
 					$this->save_state();
 
-					add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($name));
 					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 			}
@@ -449,7 +445,6 @@ class acp_search
 
 		$search = null;
 		$error = false;
-		$search_options = '';
 		foreach ($search_types as $type)
 		{
 			if ($this->init_search($type, $search, $error) || !method_exists($search, 'index_created'))
@@ -582,6 +577,8 @@ class acp_search
 
 	function save_state($state = false)
 	{
+		global $config;
+
 		if ($state)
 		{
 			$this->state = $state;
@@ -589,7 +586,7 @@ class acp_search
 
 		ksort($this->state);
 
-		set_config('search_indexing_state', implode(',', $this->state), true);
+		$config->set('search_indexing_state', implode(',', $this->state), true);
 	}
 
 	/**
@@ -599,7 +596,7 @@ class acp_search
 	*/
 	function init_search($type, &$search, &$error)
 	{
-		global $phpbb_root_path, $phpEx, $user, $auth, $config, $db;
+		global $phpbb_root_path, $phpEx, $user, $auth, $config, $db, $phpbb_dispatcher;
 
 		if (!class_exists($type) || !method_exists($type, 'keyword_search'))
 		{
@@ -608,7 +605,7 @@ class acp_search
 		}
 
 		$error = false;
-		$search = new $type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+		$search = new $type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		return $error;
 	}

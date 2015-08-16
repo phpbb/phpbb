@@ -22,6 +22,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 {
 	protected $extension_manager;
 	protected $finder;
+	protected $module_manager;
 
 	public function setUp()
 	{
@@ -43,7 +44,14 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			));
 		$phpbb_extension_manager = $this->extension_manager;
 
-		$this->acp_modules = new acp_modules();
+		$this->module_manager = new \phpbb\module\module_manager(
+			new \phpbb\cache\driver\dummy(),
+			$this->getMock('\phpbb\db\driver\driver_interface'),
+			$this->extension_manager,
+			MODULES_TABLE,
+			dirname(__FILE__) . '/',
+			'php'
+		);
 	}
 
 	public function test_get_module_infos()
@@ -56,13 +64,11 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		$phpbb_root_path = dirname(__FILE__) . '/';
 
 		// Find acp module info files
-		$this->acp_modules->module_class = 'acp';
-		$acp_modules = $this->acp_modules->get_module_infos();
+		$acp_modules = $this->module_manager->get_module_infos('acp');
 		$this->assertEquals(array(
 				'vendor2\\foo\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\acp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => 'ext_vendor2/foo', 'cat' => array('ACP_MODS')),
 					),
@@ -70,7 +76,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'acp_foobar' => array(
 					'filename'	=> 'acp_foobar',
 					'title'		=> 'ACP Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 					),
@@ -78,13 +83,11 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 
 		// Find mcp module info files
-		$this->acp_modules->module_class = 'mcp';
-		$acp_modules = $this->acp_modules->get_module_infos();
+		$acp_modules = $this->module_manager->get_module_infos('mcp');
 		$this->assertEquals(array(
 				'vendor2\\foo\\mcp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
 					),
@@ -92,27 +95,11 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 
 		// Find a specific module info file (mcp_a_module)
-		$this->acp_modules->module_class = 'mcp';
-		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_module');
+		$acp_modules = $this->module_manager->get_module_infos('mcp', 'mcp_a_module');
 		$this->assertEquals(array(
 				'vendor2\\foo\\mcp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\mcp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
-					'modes'		=> array(
-						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
-					),
-				),
-			), $acp_modules);
-
-		// Find a specific module info file (mcp_a_module) with passing the module_class
-		$this->acp_modules->module_class = '';
-		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_module', 'mcp');
-		$this->assertEquals(array(
-				'vendor2\\foo\\mcp\\a_module' => array(
-					'filename'	=> 'vendor2\\foo\\mcp\\a_module',
-					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('MCP_MAIN')),
 					),
@@ -120,23 +107,19 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 
 		// The mcp module info file we're looking for shouldn't exist
-		$this->acp_modules->module_class = 'mcp';
-		$acp_modules = $this->acp_modules->get_module_infos('mcp_a_fail');
+		$acp_modules = $this->module_manager->get_module_infos('mcp', 'mcp_a_fail');
 		$this->assertEquals(array(), $acp_modules);
 
 		// As there are no ucp modules we shouldn't find any
-		$this->acp_modules->module_class = 'ucp';
-		$acp_modules = $this->acp_modules->get_module_infos();
+		$acp_modules = $this->module_manager->get_module_infos('ucp');
 		$this->assertEquals(array(), $acp_modules);
 
 		// Get module info of specified extension module
-		$this->acp_modules->module_class = 'acp';
-		$acp_modules = $this->acp_modules->get_module_infos('foo_acp_a_module');
+		$acp_modules = $this->module_manager->get_module_infos('acp', 'foo_acp_a_module');
 		$this->assertEquals(array(
 				'vendor2\\foo\\acp\\a_module' => array (
 					'filename' => 'vendor2\\foo\\acp\\a_module',
 					'title' => 'Foobar',
-					'version' => '3.1.0-dev',
 					'modes' => array (
 						'config'		=> array ('title' => 'Config', 'auth' => 'ext_vendor2/foo', 'cat' => array ('ACP_MODS')),
 					),
@@ -144,23 +127,20 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 
 		// No specific module and module class set to an incorrect name
-		$acp_modules = $this->acp_modules->get_module_infos('', 'wcp', true);
+		$acp_modules = $this->module_manager->get_module_infos('wcp', '', true);
 		$this->assertEquals(array(), $acp_modules);
 
 		// No specific module, no module_class set in the function parameter, and an incorrect module class
-		$this->acp_modules->module_class = 'wcp';
-		$acp_modules = $this->acp_modules->get_module_infos();
+		$acp_modules = $this->module_manager->get_module_infos('wcp');
 		$this->assertEquals(array(), $acp_modules);
 
 		// No specific module, module class set to false (will default to the above acp)
 		// Setting $use_all_available will cause get_module_infos() to also load not enabled extensions (vendor2/bar)
-		$this->acp_modules->module_class = 'acp';
-		$acp_modules = $this->acp_modules->get_module_infos('', false, true);
+		$acp_modules = $this->module_manager->get_module_infos('acp', '', true);
 		$this->assertEquals(array(
 				'vendor2\\foo\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\foo\\acp\\a_module',
 					'title'		=> 'Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => 'ext_vendor2/foo', 'cat' => array('ACP_MODS')),
 					),
@@ -168,7 +148,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'acp_foobar' => array(
 					'filename'	=> 'acp_foobar',
 					'title'		=> 'ACP Foobar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 					),
@@ -176,7 +155,6 @@ class phpbb_extension_modules_test extends phpbb_test_case
 				'vendor2\\bar\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\bar\\acp\\a_module',
 					'title'		=> 'Bar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
 					),
@@ -184,12 +162,11 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 
 		// Specific module set to disabled extension
-		$acp_modules = $this->acp_modules->get_module_infos('vendor2_bar_acp_a_module', 'acp', true);
+		$acp_modules = $this->module_manager->get_module_infos('acp', 'vendor2_bar_acp_a_module', true);
 		$this->assertEquals(array(
 				'vendor2\\bar\\acp\\a_module' => array(
 					'filename'	=> 'vendor2\\bar\\acp\\a_module',
 					'title'		=> 'Bar',
-					'version'	=> '3.1.0-dev',
 					'modes'		=> array(
 						'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
 					),

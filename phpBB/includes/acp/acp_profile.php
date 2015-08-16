@@ -25,13 +25,17 @@ class acp_profile
 
 	var $edit_lang_id;
 	var $lang_defs;
+
+	/**
+	 * @var \phpbb\di\service_collection
+	 */
 	protected $type_collection;
 
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -41,7 +45,7 @@ class acp_profile
 		$this->page_title = 'ACP_CUSTOM_PROFILE_FIELDS';
 
 		$field_id = $request->variable('field_id', 0);
-		$action = (isset($_POST['create'])) ? 'create' : request_var('action', '');
+		$action = (isset($_POST['create'])) ? 'create' : $request->variable('action', '');
 
 		$error = array();
 		$s_hidden_fields = '';
@@ -51,6 +55,7 @@ class acp_profile
 			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		/* @var $cp \phpbb\profilefields\manager */
 		$cp = $phpbb_container->get('profilefields.manager');
 		$this->type_collection = $phpbb_container->get('profilefields.type_collection');
 
@@ -112,6 +117,7 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
+					/* @var $db_tools \phpbb\db\tools\tools_interface */
 					$db_tools = $phpbb_container->get('dbal.tools');
 					$db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_' . $field_ident);
 
@@ -137,7 +143,7 @@ class acp_profile
 
 					$db->sql_transaction('commit');
 
-					add_log('admin', 'LOG_PROFILE_FIELD_REMOVED', $field_ident);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_REMOVED', false, array($field_ident));
 					trigger_error($user->lang['REMOVED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 				}
 				else
@@ -178,7 +184,7 @@ class acp_profile
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
-				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_ACTIVATE', false, array($field_ident));
 
 				if ($request->is_ajax())
 				{
@@ -214,7 +220,7 @@ class acp_profile
 					));
 				}
 
-				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_DEACTIVATE', false, array($field_ident));
 
 				trigger_error($user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
 
@@ -255,7 +261,7 @@ class acp_profile
 			case 'create':
 			case 'edit':
 
-				$step = request_var('step', 1);
+				$step = $request->variable('step', 1);
 
 				$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
 				$save = (isset($_REQUEST['save'])) ? true : false;
@@ -319,7 +325,7 @@ class acp_profile
 					// We are adding a new field, define basic params
 					$lang_options = $field_row = array();
 
-					$field_type = request_var('field_type', '');
+					$field_type = $request->variable('field_type', '');
 
 					if (!isset($this->type_collection[$field_type]))
 					{
@@ -328,7 +334,7 @@ class acp_profile
 
 					$profile_field = $this->type_collection[$field_type];
 					$field_row = array_merge($profile_field->get_default_option_values(), array(
-						'field_ident'		=> str_replace(' ', '_', utf8_clean_string(request_var('field_ident', '', true))),
+						'field_ident'		=> str_replace(' ', '_', utf8_clean_string($request->variable('field_ident', '', true))),
 						'field_required'	=> 0,
 						'field_show_novalue'=> 0,
 						'field_hide'		=> 0,
@@ -341,7 +347,7 @@ class acp_profile
 						'field_is_contact'	=> 0,
 						'field_contact_desc'=> '',
 						'field_contact_url'	=> '',
-						'lang_name'			=> utf8_normalize_nfc(request_var('field_ident', '', true)),
+						'lang_name'			=> $request->variable('field_ident', '', true),
 						'lang_explain'		=> '',
 						'lang_default_value'=> '')
 					);
@@ -369,9 +375,35 @@ class acp_profile
 					'field_is_contact',
 				);
 
+				/**
+				* Event to add initialization for new profile field table fields
+				*
+				* @event core.acp_profile_create_edit_init
+				* @var	string	action			create|edit
+				* @var	int		step			Configuration step (1|2|3)
+				* @var	bool	submit			Form has been submitted
+				* @var	bool	save			Configuration should be saved
+				* @var	string	field_type		Type of the field we are dealing with
+				* @var	array	field_row		Array of data about the field
+				* @var	array	exclude			Array of excluded fields by step
+				* @var	array	visibility_ary	Array of fields that are visibility related
+				* @since 3.1.6-RC1
+				*/
+				$vars = array(
+					'action',
+					'step',
+					'submit',
+					'save',
+					'field_type',
+					'field_row',
+					'exclude',
+					'visibility_ary',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_init', compact($vars)));
+
 				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
 
-				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string(request_var('field_ident', $field_row['field_ident'], true)) : request_var('field_ident', $field_row['field_ident']);
+				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string($request->variable('field_ident', $field_row['field_ident'], true)) : $request->variable('field_ident', $field_row['field_ident']);
 				$cp->vars['lang_name']			= $request->variable('lang_name', $field_row['lang_name'], true);
 				$cp->vars['lang_explain']		= $request->variable('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= $request->variable('lang_default_value', $field_row['lang_default_value'], true);
@@ -410,7 +442,7 @@ class acp_profile
 				// step 2
 				foreach ($exclude[2] as $key)
 				{
-					$var = utf8_normalize_nfc(request_var($key, $field_row[$key], true));
+					$var = $request->variable($key, $field_row[$key], true);
 
 					$field_data = $cp->vars;
 					$var = $profile_field->get_excluded_options($key, $action, $var, $field_data, 2);
@@ -456,7 +488,7 @@ class acp_profile
 
 				foreach ($exclude[3] as $key)
 				{
-					$cp->vars[$key] = utf8_normalize_nfc(request_var($key, array(0 => ''), true));
+					$cp->vars[$key] = $request->variable($key, array(0 => ''), true);
 
 					if (!$cp->vars[$key] && $action == 'edit')
 					{
@@ -644,6 +676,33 @@ class acp_profile
 					break;
 				}
 
+				$field_data = $cp->vars;
+				/**
+				* Event to add template variables for new profile field table fields
+				*
+				* @event core.acp_profile_create_edit_after
+				* @var	string	action			create|edit
+				* @var	int		step			Configuration step (1|2|3)
+				* @var	bool	submit			Form has been submitted
+				* @var	bool	save			Configuration should be saved
+				* @var	string	field_type		Type of the field we are dealing with
+				* @var	array	field_data		Array of data about the field
+				* @var	array	s_hidden_fields	Array of hidden fields in case this needs modification
+				* @var	array	options			Array of options specific to this step
+				* @since 3.1.6-RC1
+				*/
+				$vars = array(
+					'action',
+					'step',
+					'submit',
+					'save',
+					'field_type',
+					'field_data',
+					's_hidden_fields',
+					'options',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_after', compact($vars)));
+
 				$template->assign_vars(array(
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
 				);
@@ -713,7 +772,7 @@ class acp_profile
 	*/
 	function build_language_options(&$cp, $field_type, $action = 'create')
 	{
-		global $user, $config, $db, $phpbb_container;
+		global $user, $config, $db, $phpbb_container, $request;
 
 		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
 
@@ -754,7 +813,7 @@ class acp_profile
 			$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 			foreach ($options as $field => $field_type)
 			{
-				$value = ($action == 'create') ? utf8_normalize_nfc(request_var('l_' . $field, array(0 => ''), true)) : $cp->vars['l_' . $field];
+				$value = ($action == 'create') ? $request->variable('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
 				if ($field == 'lang_options')
 				{
 					$var = (!isset($cp->vars['l_lang_options'][$lang_id]) || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['l_lang_options'][$lang_id];
@@ -810,9 +869,9 @@ class acp_profile
 	*/
 	function save_profile_field(&$cp, $field_type, $action = 'create')
 	{
-		global $db, $config, $user, $phpbb_container;
+		global $db, $config, $user, $phpbb_container, $phpbb_log, $request, $phpbb_dispatcher;
 
-		$field_id = request_var('field_id', 0);
+		$field_id = $request->variable('field_id', 0);
 
 		// Collect all information, if something is going wrong, abort the operation
 		$profile_sql = $profile_lang = $empty_lang = $profile_lang_fields = array();
@@ -852,6 +911,25 @@ class acp_profile
 			'field_contact_url'		=> $cp->vars['field_contact_url'],
 		);
 
+		$field_data = $cp->vars;
+		/**
+		* Event to modify profile field configuration data before saving to database
+		*
+		* @event core.acp_profile_create_edit_save_before
+		* @var	string	action			create|edit
+		* @var	string	field_type		Type of the field we are dealing with
+		* @var	array	field_data		Array of data about the field
+		* @var	array	profile_fields	Array of fields to be sent to the database
+		* @since 3.1.6-RC1
+		*/
+		$vars = array(
+			'action',
+			'field_type',
+			'field_data',
+			'profile_fields',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_save_before', compact($vars)));
+
 		if ($action == 'create')
 		{
 			$profile_fields += array(
@@ -880,7 +958,7 @@ class acp_profile
 		if ($action == 'create')
 		{
 			$field_ident = 'pf_' . $field_ident;
-
+			/* @var $db_tools \phpbb\db\tools\tools_interface */
 			$db_tools = $phpbb_container->get('dbal.tools');
 			$db_tools->sql_column_add(PROFILE_FIELDS_DATA_TABLE, $field_ident, array($profile_field->get_database_column_type(), null));
 		}
@@ -1079,12 +1157,12 @@ class acp_profile
 
 		if ($action == 'edit')
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_EDIT', $cp->vars['field_ident'] . ':' . $cp->vars['lang_name']);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_EDIT', false, array($cp->vars['field_ident'] . ':' . $cp->vars['lang_name']));
 			trigger_error($user->lang['CHANGED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 		else
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 3) . ':' . $cp->vars['lang_name']);
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PROFILE_FIELD_CREATE', false, array(substr($field_ident, 3) . ':' . $cp->vars['lang_name']));
 			trigger_error($user->lang['ADDED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 	}

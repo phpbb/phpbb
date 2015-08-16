@@ -73,4 +73,6 @@ $lang = array_merge($lang, array(
 	'THOSE_MISSING_LANG_VARIABLES'		=> 'The following language variables are missing from the “%s” language pack',
 
 	'UNINSTALLED_LANGUAGE_PACKS'	=> 'Uninstalled language packs',
+
+	'BROWSE_LANGUAGE_PACKS_DATABASE'	=> 'Browse language packs database',
 ));

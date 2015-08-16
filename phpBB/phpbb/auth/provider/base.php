@@ -61,7 +61,7 @@ abstract class base implements \phpbb\auth\provider\provider_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_auth_link_data()
+	public function get_auth_link_data($user_id = 0)
 	{
 		return;
 	}

@@ -251,6 +251,7 @@ class permissions
 		'f_post'		=> array('lang' => 'ACL_F_POST', 'cat' => 'post'),
 		'f_sticky'		=> array('lang' => 'ACL_F_STICKY', 'cat' => 'post'),
 		'f_announce'	=> array('lang' => 'ACL_F_ANNOUNCE', 'cat' => 'post'),
+		'f_announce_global'	=> array('lang' => 'ACL_F_ANNOUNCE_GLOBAL', 'cat' => 'post'),
 		'f_reply'		=> array('lang' => 'ACL_F_REPLY', 'cat' => 'post'),
 		'f_edit'		=> array('lang' => 'ACL_F_EDIT', 'cat' => 'post'),
 		'f_delete'		=> array('lang' => 'ACL_F_DELETE', 'cat' => 'post'),
@@ -277,13 +278,14 @@ class permissions
 		'm_approve'		=> array('lang' => 'ACL_M_APPROVE', 'cat' => 'post_actions'),
 		'm_report'		=> array('lang' => 'ACL_M_REPORT', 'cat' => 'post_actions'),
 		'm_chgposter'	=> array('lang' => 'ACL_M_CHGPOSTER', 'cat' => 'post_actions'),
+		'm_info'		=> array('lang' => 'ACL_M_INFO', 'cat' => 'post_actions'),
+		'm_softdelete'	=> array('lang' => 'ACL_M_SOFTDELETE', 'cat' => 'post_actions'),
 
 		'm_move'	=> array('lang' => 'ACL_M_MOVE', 'cat' => 'topic_actions'),
 		'm_lock'	=> array('lang' => 'ACL_M_LOCK', 'cat' => 'topic_actions'),
 		'm_split'	=> array('lang' => 'ACL_M_SPLIT', 'cat' => 'topic_actions'),
 		'm_merge'	=> array('lang' => 'ACL_M_MERGE', 'cat' => 'topic_actions'),
 
-		'm_info'	=> array('lang' => 'ACL_M_INFO', 'cat' => 'misc'),
 		'm_warn'	=> array('lang' => 'ACL_M_WARN', 'cat' => 'misc'),
 		'm_ban'		=> array('lang' => 'ACL_M_BAN', 'cat' => 'misc'),
 

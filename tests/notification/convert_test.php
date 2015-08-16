@@ -28,11 +28,12 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
+		$factory = new \phpbb\db\tools\factory();
 
 		$this->migration = new \phpbb\db\migration\data\v310\notification_options_reconvert(
 			new \phpbb\config\config(array()),
 			$this->db,
-			new \phpbb\db\tools($this->db),
+			$factory->get($this->db),
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_'

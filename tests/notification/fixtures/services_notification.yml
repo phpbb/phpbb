@@ -1,0 +1,70 @@
+imports:
+    - { resource: ../../../phpBB/config/default/container/services_notification.yml }
+
+services:
+    notification_manager:
+        synthetic: true
+
+    user_loader:
+        synthetic: true
+
+    user:
+        synthetic: true
+
+    config:
+        synthetic: true
+
+    dbal.conn:
+        synthetic: true
+
+    auth:
+        synthetic: true
+
+    cache.driver:
+        synthetic: true
+
+    path_helper:
+        synthetic: true
+
+    groupposition.legend:
+        synthetic: true
+
+    groupposition.teampage:
+        synthetic: true
+
+    groupposition.teampage:
+        synthetic: true
+
+    text_formatter.s9e.factory:
+        synthetic: true
+
+    text_formatter.s9e.quote_helper:
+        synthetic: true
+
+    text_formatter.parser:
+        synthetic: true
+
+    text_formatter.s9e.parser:
+        synthetic: true
+
+    text_formatter.renderer:
+        synthetic: true
+
+    text_formatter.s9e.renderer:
+        synthetic: true
+
+    text_formatter.utils:
+        synthetic: true
+
+    text_formatter.s9e.utils:
+        synthetic: true
+
+    text_formatter.data_access:
+        synthetic: true
+
+    test:
+        class: phpbb\notification\type\test
+        scope: prototype
+        parent: notification.type.base
+        tags:
+            - { name: notification.type }

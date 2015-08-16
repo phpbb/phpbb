@@ -1,0 +1,22 @@
+phpbb_installer_index:
+    path: /
+    defaults:
+        _controller: phpbb.installer.controller.welcome:handle
+        mode: "intro"
+
+phpbb_installer_license:
+    path: /license
+    defaults:
+        _controller: phpbb.installer.controller.welcome:handle
+        mode: "license"
+
+phpbb_installer_support:
+    path: /support
+    defaults:
+        _controller: phpbb.installer.controller.welcome:handle
+        mode: "support"
+
+phpbb_installer_install:
+    path: /install
+    defaults:
+        _controller: phpbb.installer.controller.install:handle
