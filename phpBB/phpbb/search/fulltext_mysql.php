@@ -944,6 +944,7 @@ class fulltext_mysql extends \phpbb\search\base
 		if (isset($this->stats['post_content']))
 		{
 			$alter[] = 'DROP INDEX post_content';
+			$alter[] = 'DROP INDEX post_text';
 		}
 
 		if (sizeof($alter))
