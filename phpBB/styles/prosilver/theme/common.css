@@ -841,9 +841,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	border: 1px solid transparent;
 	border-radius: 2px;
 	display: block;
-	font-size: 0.9em;
+	font-size: 10px;
 	font-weight: normal;
-	line-height: 1.4em;
+	line-height: 14px;
 	min-width: 10px;
 	padding: 3px;
 	text-align: center;
@@ -862,7 +862,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
 	background-repeat: no-repeat;
 	font-size: 0;
-	height: 13px;
+	height: 14px;
 	width: 11px;
 }
 
@@ -880,15 +880,15 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
-.pagination li.next a:hover { background-position: -50px -18px; }
-.pagination li.previous a:hover { background-position: -30px -18px; }
+.pagination li.next a:hover { background-position: -48px -16px; }
+.pagination li.previous a:hover { background-position: -29px -16px; }
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
 	margin-top: 0;
 	padding: 1px 0 1px 15px;
-	font-size: 0.9em;
+	font-size: 10px;
 	background: none 0 50% no-repeat;
 }
 
