@@ -4,7 +4,6 @@
 .button {
 	cursor: pointer;
 	display: inline-block;
-	height: 18px;
 	font-size: 1.2em;
 	white-space: nowrap;
 	border: 1px solid transparent;
@@ -28,7 +27,6 @@
 	display: inline-block;
 	float: right;
 	height: 12px;
-	margin: 3px 0 0 2px;
 	width: 12px;
 }
 
@@ -53,6 +51,10 @@
 
 .buttons, .buttons .button {
 	float: left;
+}
+
+.buttons .button:before {
+	margin: 3px 0 0 2px;
 }
 
 .buttons .button, .dropdown-select {
@@ -194,7 +196,7 @@ ul.linklist.bulletin > li.small-icon:before {
 }
 
 .post-buttons .icon-button {
-	padding: 0 5px;
+	padding: 5px;
 }
 
 .hastouch .post-buttons .icon-button {
