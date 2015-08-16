@@ -116,7 +116,11 @@
 
 .rtl .dropdown-extended .header .header_settings, .rtl .dropdown-container-right {
 	float: left;
-}rtl .notification_list ul li img {
+}
+
+/* Notifications
+-----------------------------------------*/
+rtl .notification_list ul li img {
 	float: right;
 	margin-left: 5px;
 	margin-right: 0;
