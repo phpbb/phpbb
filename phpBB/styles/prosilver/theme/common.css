@@ -342,7 +342,7 @@ ul.linklist li.responsive-menu a.responsive-menu-link:before {
 	position: absolute;
 	left: 0;
 	top: 7px;
-	height: .125em;
+	height: 2px;
 	width: 14px;
 	border-bottom: 0.125em solid transparent;
 	border-top: 0.375em double transparent;
