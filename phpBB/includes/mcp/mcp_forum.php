@@ -35,15 +35,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	// merge_topic is the quickmod action, merge_topics is the mcp_forum action, and merge_select is the mcp_topic action
 	$merge_select = ($action == 'merge_select' || $action == 'merge_topic' || $action == 'merge_topics') ? true : false;
 
-	if ($merge_select)
-	{
-		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
-		$request->overwrite('sk', null);
-		$request->overwrite('sd', null);
-		$request->overwrite('sk', null, \phpbb\request\request_interface::POST);
-		$request->overwrite('sd', null, \phpbb\request\request_interface::POST);
-	}
-
 	$forum_id			= $forum_info['forum_id'];
 	$start				= request_var('start', 0);
 	$topic_id_list		= request_var('topic_id_list', array(0));
