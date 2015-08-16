@@ -907,6 +907,8 @@ class fulltext_mysql extends \phpbb\search\base
 
 			$alter[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
 			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+
+			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT post_text (post_text)');
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
