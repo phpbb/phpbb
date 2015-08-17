@@ -105,6 +105,11 @@ hr {
 	height: 1px;
 }
 
+abbr[title] {
+	text-decoration: none;
+	border-bottom: dotted 1px;
+}
+
 .centered-text {
 	text-align: center;
 }

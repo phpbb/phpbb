@@ -129,6 +129,11 @@ h4 {
 	font-weight: bold;
 }
 
+abbr[title] {
+	text-decoration: none;
+	border-bottom: dotted 1px;
+}
+
 p {
 	font-size: 1.1em;
 }

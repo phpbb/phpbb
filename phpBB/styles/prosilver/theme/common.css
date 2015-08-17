@@ -129,6 +129,11 @@ hr.divider {
 	display: none;
 }
 
+abbr[title] {
+	text-decoration: none;
+	border-bottom: dotted 1px;
+}
+
 p.right {
 	text-align: right;
 }
