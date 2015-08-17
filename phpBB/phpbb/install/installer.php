@@ -212,7 +212,6 @@ class installer
 		}
 		catch (\Exception $e)
 		{
-			// Most likely there were a PHP failure, so let's die like a gentleman
 			$this->iohandler->add_error_message($e->getMessage());
 			$this->iohandler->send_response();
 			$fail_cleanup = true;
@@ -223,7 +222,7 @@ class installer
 			// Send install finished message
 			$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
 		}
-		else
+		else if (!$fail_cleanup)
 		{
 			$this->iohandler->request_refresh();
 		}
