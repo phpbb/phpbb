@@ -156,7 +156,11 @@ function selectCode(a) {
 		// Safari and Chrome
 		if (s.setBaseAndExtent) {
 			var l = (e.innerText.length > 1) ? e.innerText.length - 1 : 1;
-			s.setBaseAndExtent(e, 0, e, l);
+			try {
+				s.setBaseAndExtent(e, 0, e, l);
+			} catch (error) {
+				s.setBaseAndExtent(e, 0, e, 1);
+			}
 		}
 		// Firefox and Opera
 		else {
