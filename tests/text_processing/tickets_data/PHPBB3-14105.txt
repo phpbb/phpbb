@@ -1,0 +1,2 @@
+[url=http://localhost/index.php?sid=01234567890123456789012345678901]...[/url]
+[url=http://localhost/index.php?sid=01234567890123456789012345678901&foo=1]...[/url]

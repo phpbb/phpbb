@@ -393,4 +393,24 @@ class parser implements \phpbb\textformatter\parser_interface
 
 		return $url;
 	}
+
+	/**
+	* Filter a valid URL
+	*
+	* @see message_parser::validate_url()
+	*
+	* @param  string $url Original URL
+	* @return string      Same URL minus any sid= parameter
+	*/
+	static public function filter_url($url)
+	{
+		if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
+		{
+			$url = preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $url);
+			$url = preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', $url);
+			$url = append_sid($url);
+		}
+
+		return $url;
+	}
 }
