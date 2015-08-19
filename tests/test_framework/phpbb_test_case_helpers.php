@@ -315,7 +315,7 @@ class phpbb_test_case_helpers
 	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
-		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
+		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $user;
 
 		$cache_dir = __DIR__ . '/../tmp/';
 
@@ -467,13 +467,6 @@ class phpbb_test_case_helpers
 		{
 			$phpbb_dispatcher = $dispatcher;
 		}
-
-		// Create mock request if necessary
-		if (!$container->has('request'))
-		{
-			$container->set('request', new phpbb_mock_request);
-		}
-		$request = $container->get('request');
 
 		// Set up the a minimum config
 		if ($container->has('config'))

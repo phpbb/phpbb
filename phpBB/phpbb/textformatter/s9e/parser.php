@@ -404,11 +404,10 @@ class parser implements \phpbb\textformatter\parser_interface
 	*/
 	static public function filter_url($url)
 	{
-		if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
+		if (strpos($url, 'sid=') !== false)
 		{
 			$url = preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $url);
 			$url = preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', $url);
-			$url = append_sid($url);
 		}
 
 		return $url;
