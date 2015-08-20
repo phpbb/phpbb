@@ -284,6 +284,7 @@ class manager
 		}
 
 		$profile_cache = $this->profile_cache;
+
 		/**
 		* Event to modify template headlines of the generated profile fields
 		*
@@ -299,6 +300,7 @@ class manager
 			'profile_cache',
 		);
 		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_headlines', compact($vars)));
+		unset($profile_cache);
 
 		return $tpl_fields;
 	}
