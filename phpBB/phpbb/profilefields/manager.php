@@ -276,11 +276,29 @@ class manager
 			$profile_field = $this->type_collection[$field_data['field_type']];
 
 			$tpl_fields[] = array(
+				'PROFILE_FIELD_IDENT'	=> $field_ident,
 				'PROFILE_FIELD_TYPE'	=> $field_data['field_type'],
 				'PROFILE_FIELD_NAME'	=> $profile_field->get_field_name($field_data['lang_name']),
 				'PROFILE_FIELD_EXPLAIN'	=> $this->user->lang($field_data['lang_explain']),
 			);
 		}
+
+		$profile_cache = $this->profile_cache;
+		/**
+		* Event to modify template headlines of the generated profile fields
+		*
+		* @event core.generate_profile_fields_template_headlines
+		* @var	string	restrict_option	Restrict the published fields to a certain profile field option
+		* @var	array	tpl_fields		Array with template data fields
+		* @var	array	profile_cache	A copy of the profile cache to make additional checks
+		* @since 3.1.6-RC1
+		*/
+		$vars = array(
+			'restrict_option',
+			'tpl_fields',
+			'profile_cache',
+		);
+		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_headlines', compact($vars)));
 
 		return $tpl_fields;
 	}
