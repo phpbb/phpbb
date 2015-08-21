@@ -169,6 +169,14 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
 }
 
+.fa { 
+	font-size: 14px;
+	padding-right: 2px;
+}
+
+.button .fa {
+	padding-right: 0;
+}
 
 /* Main blocks
 ---------------------------------------- */
