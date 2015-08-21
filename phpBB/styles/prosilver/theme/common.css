@@ -281,6 +281,11 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 ----------------------------------------*/
 .navbar ul.linklist {
 	padding: 2px 0;
+	list-style-type: none;
+}
+
+.navbar .linklist > li {
+	display: inline-block;
 }
 
 ul.linklist {
@@ -539,7 +544,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
-	min-width: 40px;
 	max-height: 300px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -559,8 +563,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	font-size: 1em !important;
 	list-style: none;
 	margin: 0;
-	padding-top: 4px;
-	padding-bottom: 4px;
 	white-space: nowrap;
 	text-align: left;
 }
