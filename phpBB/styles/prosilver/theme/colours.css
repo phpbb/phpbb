@@ -32,8 +32,10 @@ hr {
 .search-box .inputbox,
 .search-box .inputbox:hover,
 .search-box .inputbox:focus,
+.search-box .button:focus,
 .search-box .button:hover {
 	border-color: #C7C3BF;
+	color: #1878cb;
 }
 
 .search-header {

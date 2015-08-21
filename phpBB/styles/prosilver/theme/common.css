@@ -799,7 +799,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Action-bars (container for post/reply buttons, pagination, etc.)
 ---------------------------------------- */
 .action-bar {
-	font-size: 1.1em;
+	font-size: 11px;
 	margin: 4px 0;
 }
 
