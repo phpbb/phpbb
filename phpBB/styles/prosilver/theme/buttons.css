@@ -110,17 +110,8 @@
 	background-image: none;
 }
 
-.small-icon > a {
-	display: inline-block;
-	padding: 0 0 0 18px;
-}
-
 ul.linklist.bulletin > li.small-icon:before {
 	display: none;
-}
-
-.dropdown .small-icon > a {
-	display: block;
 }
 
 /* Poster contact icons
