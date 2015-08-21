@@ -32,7 +32,7 @@ class service_collection_iterator extends \ArrayIterator
 	*/
 	public function __construct(service_collection $collection, $flags = 0)
 	{
-		parent::__construct($collection, $flags);
+		parent::__construct($collection->getArrayCopy(), $flags);
 		$this->collection = $collection;
 	}
 

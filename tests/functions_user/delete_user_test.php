@@ -32,12 +32,20 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			'load_online_time'	=> 5,
 			'search_type'		=> '\phpbb\search\fulltext_mysql',
 		));
-		set_config(false, false, false, $config);
-		set_config_count(false, false, false, $config);
 		$cache = new phpbb_mock_null_cache();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+		$phpbb_container->set(
+			'auth.provider.db',
+			new phpbb_mock_auth_provider()
+		);
+		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
+		$provider_collection->add('auth.provider.db');
+		$phpbb_container->set(
+			'auth.provider_collection',
+			$provider_collection
+		);
 	}
 
 	 public function first_last_post_data()

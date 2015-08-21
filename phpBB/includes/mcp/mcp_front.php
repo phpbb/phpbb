@@ -26,7 +26,7 @@ function mcp_front_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth, $module;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $request;
 
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
@@ -35,16 +35,33 @@ function mcp_front_view($id, $mode, $action)
 		$post_list = array();
 		$forum_names = array();
 
-		$forum_id = request_var('f', 0);
+		$forum_id = $request->variable('f', 0);
 
 		$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
 
 		if (!empty($forum_list))
 		{
-			$sql = 'SELECT COUNT(post_id) AS total
-				FROM ' . POSTS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
-					AND ' . $db->sql_in_set('post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE));
+			$sql_ary = array(
+				'SELECT' => 'COUNT(post_id) AS total',
+				'FROM' => array(
+						POSTS_TABLE => 'p',
+					),
+				'WHERE' => $db->sql_in_set('p.forum_id', $forum_list) . '
+					AND ' . $db->sql_in_set('p.post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE))
+			);
+
+			/**
+			* Allow altering the query to get the number of unapproved posts
+			*
+			* @event core.mcp_front_queue_unapproved_total_before
+			* @var	int		sql_ary						Query to get the total number of unapproved posts
+			* @var	array	forum_list					List of forums to look for unapproved posts
+			* @since 3.1.5-RC1
+			*/
+			$vars = array('sql_ary', 'forum_list');
+			extract($phpbb_dispatcher->trigger_event('core.mcp_front_queue_unapproved_total_before', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_ary);
 			$result = $db->sql_query($sql);
 			$total = (int) $db->sql_fetchfield('total');
 			$db->sql_freeresult($result);
@@ -157,6 +174,18 @@ function mcp_front_view($id, $mode, $action)
 					AND r.pm_id = 0
 					AND r.report_closed = 0
 					AND ' . $db->sql_in_set('p.forum_id', $forum_list);
+
+			/**
+			* Alter sql query to count the number of reported posts
+			*
+			* @event core.mcp_front_reports_count_query_before
+			* @var	int		sql				The query string used to get the number of reports that exist
+			* @var	array	forum_list		List of forums that contain the posts
+			* @since 3.1.5-RC1
+			*/
+			$vars = array('sql', 'forum_list');
+			extract($phpbb_dispatcher->trigger_event('core.mcp_front_reports_count_query_before', compact($vars)));
+
 			$result = $db->sql_query($sql);
 			$total = (int) $db->sql_fetchfield('total');
 			$db->sql_freeresult($result);

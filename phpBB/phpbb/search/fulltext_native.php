@@ -18,6 +18,13 @@ namespace phpbb\search;
 */
 class fulltext_native extends \phpbb\search\base
 {
+	const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
+	const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
+	const UTF8_CJK_FIRST = "\xE4\xB8\x80";
+	const UTF8_CJK_LAST = "\xE9\xBE\xBB";
+	const UTF8_CJK_B_FIRST = "\xF0\xA0\x80\x80";
+	const UTF8_CJK_B_LAST = "\xF0\xAA\x9B\x96";
+
 	/**
 	 * Associative array holding index stats
 	 * @var array
@@ -87,22 +94,30 @@ class fulltext_native extends \phpbb\search\base
 	protected $db;
 
 	/**
+	 * phpBB event dispatcher object
+	 * @var \phpbb\event\dispatcher_interface
+	 */
+	protected $phpbb_dispatcher;
+
+	/**
 	 * User object
 	 * @var \phpbb\user
 	 */
 	protected $user;
 
 	/**
-	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded
+	* Initialises the fulltext_native search backend with min/max word length
 	*
 	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure
+	* @param	\phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
-	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user)
+	public function __construct(&$error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 		$this->config = $config;
 		$this->db = $db;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
 		$this->word_length = array('min' => $this->config['fulltext_native_min_chars'], 'max' => $this->config['fulltext_native_max_chars']);
@@ -110,10 +125,6 @@ class fulltext_native extends \phpbb\search\base
 		/**
 		* Load the UTF tools
 		*/
-		if (!class_exists('utf_normalizer'))
-		{
-			include($this->phpbb_root_path . 'includes/utf/utf_normalizer.' . $this->php_ext);
-		}
 		if (!function_exists('utf8_decode_ncr'))
 		{
 			include($this->phpbb_root_path . 'includes/utf/utf_tools.' . $this->php_ext);
@@ -712,6 +723,70 @@ class fulltext_native extends \phpbb\search\base
 
 		$sql_where[] = $post_visibility;
 
+		$search_query = $this->search_query;
+		$must_exclude_one_ids = $this->must_exclude_one_ids;
+		$must_not_contain_ids = $this->must_not_contain_ids;
+		$must_contain_ids = $this->must_contain_ids;
+
+		/**
+		* Allow changing the query used for counting for posts using fulltext_native
+		*
+		* @event core.search_native_keywords_count_query_before
+		* @var	string	search_query			The parsed keywords used for this search
+		* @var	array	must_not_contain_ids	Ids that cannot be taken into account for the results
+		* @var	array	must_exclude_one_ids	Ids that cannot be on the results
+		* @var	array	must_contain_ids		Ids that must be on the results
+		* @var	int		total_results			The previous result count for the format of the query
+		*										Set to 0 to force a re-count
+		* @var	array	sql_array				The data on how to search in the DB at this point
+		* @var	bool	left_join_topics		Whether or not TOPICS_TABLE should be CROSS JOIN'ED
+		* @var	array	author_ary				Array of user_id containing the users to filter the results to
+		* @var	string	author_name				An extra username to search on (!empty(author_ary) must be true, to be relevant)
+		* @var	array	ex_fid_ary				Which forums not to search on
+		* @var	int		topic_id				Limit the search to this topic_id only
+		* @var	string	sql_sort_table			Extra tables to include in the SQL query.
+		*										Used in conjunction with sql_sort_join
+		* @var	string	sql_sort_join			SQL conditions to join all the tables used together.
+		*										Used in conjunction with sql_sort_table
+		* @var	int		sort_days				Time, in days, of the oldest possible post to list
+		* @var	string	sql_where				An array of the current WHERE clause conditions
+		* @var	string	sql_match				Which columns to do the search on
+		* @var	string	sql_match_where			Extra conditions to use to properly filter the matching process
+		* @var	bool	group_by				Whether or not the SQL query requires a GROUP BY for the elements in the SELECT clause
+		* @var	string	sort_by_sql				The possible predefined sort types
+		* @var	string	sort_key				The sort type used from the possible sort types
+		* @var	string	sort_dir				"a" for ASC or "d" dor DESC for the sort order used
+		* @var	string	sql_sort				The result SQL when processing sort_by_sql + sort_key + sort_dir
+		* @var	int		start					How many posts to skip in the search results (used for pagination)
+		* @since 3.1.5-RC1
+		*/
+		$vars = array(
+			'search_query',
+			'must_not_contain_ids',
+			'must_exclude_one_ids',
+			'must_contain_ids',
+			'total_results',
+			'sql_array',
+			'left_join_topics',
+			'author_ary',
+			'author_name',
+			'ex_fid_ary',
+			'topic_id',
+			'sql_sort_table',
+			'sql_sort_join',
+			'sort_days',
+			'sql_where',
+			'sql_match',
+			'sql_match_where',
+			'group_by',
+			'sort_by_sql',
+			'sort_key',
+			'sort_dir',
+			'sql_sort',
+			'start',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_keywords_count_query_before', compact($vars)));
+
 		if ($topic_id)
 		{
 			$sql_where[] = 'p.topic_id = ' . $topic_id;
@@ -823,6 +898,13 @@ class fulltext_native extends \phpbb\search\base
 			);
 		}
 
+		// if using mysql and the total result count is not calculated yet, get it from the db
+		if (!$total_results && $is_mysql)
+		{
+			// Also count rows for the query as if there was not LIMIT. Add SQL_CALC_FOUND_ROWS to SQL
+			$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+		}
+
 		$sql_array['WHERE'] = implode(' AND ', $sql_where);
 		$sql_array['GROUP_BY'] = ($group_by) ? (($type == 'posts') ? 'p.post_id' : 'p.topic_id') . ', ' . $sort_by_sql[$sort_key] : '';
 		$sql_array['ORDER_BY'] = $sql_sort;
@@ -838,19 +920,9 @@ class fulltext_native extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
-		// if we use mysql and the total result count is not cached yet, retrieve it from the db
 		if (!$total_results && $is_mysql)
 		{
-			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it
-			$sql_array_copy = $sql_array;
-			$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
-
-			$sql_calc = $this->db->sql_build_query('SELECT', $sql_array_copy);
-			unset($sql_array_copy);
-
-			$this->db->sql_query($sql_calc);
-			$this->db->sql_freeresult($result);
-
+			// Get the number of results as calculated by MySQL
 			$sql_count = 'SELECT FOUND_ROWS() as total_results';
 			$result = $this->db->sql_query($sql_count);
 			$total_results = (int) $this->db->sql_fetchfield('total_results');
@@ -975,6 +1047,49 @@ class fulltext_native extends \phpbb\search\base
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
 		$is_mysql = false;
 
+		/**
+		* Allow changing the query used to search for posts by author in fulltext_native
+		*
+		* @event core.search_native_author_count_query_before
+		* @var	int		total_results		The previous result count for the format of the query.
+		*									Set to 0 to force a re-count
+		* @var	string	select				SQL SELECT clause for what to get
+		* @var	string	sql_sort_table		CROSS JOIN'ed table to allow doing the sort chosen
+		* @var	string	sql_sort_join		Condition to define how to join the CROSS JOIN'ed table specifyed in sql_sort_table
+		* @var	array	sql_author			SQL WHERE condition for the post author ids
+		* @var	int		topic_id			Limit the search to this topic_id only
+		* @var	string	sort_by_sql			The possible predefined sort types
+		* @var	string	sort_key			The sort type used from the possible sort types
+		* @var	string	sort_dir			"a" for ASC or "d" dor DESC for the sort order used
+		* @var	string	sql_sort			The result SQL when processing sort_by_sql + sort_key + sort_dir
+		* @var	string	sort_days			Time, in days, that the oldest post showing can have
+		* @var	string	sql_time			The SQL to search on the time specifyed by sort_days
+		* @var	bool	firstpost_only		Wether or not to search only on the first post of the topics
+		* @var	array	ex_fid_ary			Forum ids that must not be searched on
+		* @var	array	sql_fora			SQL query for ex_fid_ary
+		* @var	int		start				How many posts to skip in the search results (used for pagination)
+		* @since 3.1.5-RC1
+		*/
+		$vars = array(
+			'total_results',
+			'select',
+			'sql_sort_table',
+			'sql_sort_join',
+			'sql_author',
+			'topic_id',
+			'sort_by_sql',
+			'sort_key',
+			'sort_dir',
+			'sql_sort',
+			'sort_days',
+			'sql_time',
+			'firstpost_only',
+			'ex_fid_ary',
+			'sql_fora',
+			'start',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_author_count_query_before', compact($vars)));
+
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
@@ -1078,7 +1193,7 @@ class fulltext_native extends \phpbb\search\base
 			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
 			$sql_calc = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
 
-			$this->db->sql_query($sql_calc);
+			$result = $this->db->sql_query($sql_calc);
 			$this->db->sql_freeresult($result);
 
 			$sql_count = 'SELECT FOUND_ROWS() as total_results';
@@ -1175,9 +1290,9 @@ class fulltext_native extends \phpbb\search\base
 				* Note: this could be optimized. If the codepoint is lower than Hangul's range
 				* we know that it will also be lower than CJK ranges
 				*/
-				if ((strncmp($word, UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, UTF8_HANGUL_LAST, 3) > 0)
-					&& (strncmp($word, UTF8_CJK_FIRST, 3) < 0 || strncmp($word, UTF8_CJK_LAST, 3) > 0)
-					&& (strncmp($word, UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, UTF8_CJK_B_LAST, 4) > 0))
+				if ((strncmp($word, self::UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, self::UTF8_HANGUL_LAST, 3) > 0)
+					&& (strncmp($word, self::UTF8_CJK_FIRST, 3) < 0 || strncmp($word, self::UTF8_CJK_LAST, 3) > 0)
+					&& (strncmp($word, self::UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, self::UTF8_CJK_B_LAST, 4) > 0))
 				{
 					$word = strtok(' ');
 					continue;
@@ -1422,7 +1537,7 @@ class fulltext_native extends \phpbb\search\base
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
 		if (!$this->config['fulltext_native_load_upd'])
 		{
-			set_config('search_last_gc', time(), true);
+			$this->config->set('search_last_gc', time(), false);
 			return;
 		}
 
@@ -1457,7 +1572,7 @@ class fulltext_native extends \phpbb\search\base
 
 				// by setting search_last_gc to the new time here we make sure that if a user reloads because the
 				// following query takes too long, he won't run into it again
-				set_config('search_last_gc', time(), true);
+				$this->config->set('search_last_gc', time(), false);
 
 				// Delete the matches
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
@@ -1473,7 +1588,7 @@ class fulltext_native extends \phpbb\search\base
 			$this->destroy_cache(array_unique($destroy_cache_words));
 		}
 
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**
@@ -1544,8 +1659,6 @@ class fulltext_native extends \phpbb\search\base
 	* @param	string	$allowed_chars	String of special chars to allow
 	* @param	string	$encoding		Text encoding
 	* @return	string					Cleaned up text, only alphanumeric chars are left
-	*
-	* @todo \normalizer::cleanup being able to be used?
 	*/
 	protected function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
@@ -1572,12 +1685,9 @@ class fulltext_native extends \phpbb\search\base
 		$text = htmlspecialchars_decode(utf8_decode_ncr($text), ENT_QUOTES);
 
 		/**
-		* Load the UTF-8 normalizer
-		*
-		* If we use it more widely, an instance of that class should be held in a
-		* a global variable instead
+		* Normalize to NFC
 		*/
-		\utf_normalizer::nfc($text);
+		$text = \Normalizer::normalize($text);
 
 		/**
 		* The first thing we do is:
@@ -1670,9 +1780,9 @@ class fulltext_native extends \phpbb\search\base
 			$utf_char = substr($text, $pos, $utf_len);
 			$pos += $utf_len;
 
-			if (($utf_char >= UTF8_HANGUL_FIRST && $utf_char <= UTF8_HANGUL_LAST)
-				|| ($utf_char >= UTF8_CJK_FIRST && $utf_char <= UTF8_CJK_LAST)
-				|| ($utf_char >= UTF8_CJK_B_FIRST && $utf_char <= UTF8_CJK_B_LAST))
+			if (($utf_char >= self::UTF8_HANGUL_FIRST && $utf_char <= self::UTF8_HANGUL_LAST)
+				|| ($utf_char >= self::UTF8_CJK_FIRST && $utf_char <= self::UTF8_CJK_LAST)
+				|| ($utf_char >= self::UTF8_CJK_B_FIRST && $utf_char <= self::UTF8_CJK_B_LAST))
 			{
 				/**
 				* All characters within these ranges are valid

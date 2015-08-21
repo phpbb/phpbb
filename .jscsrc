@@ -1,0 +1,78 @@
+
+{
+  "excludeFiles": ["node_modules/**", "**/build/**"],
+  "requireCurlyBraces": [
+    "if", "else", "for", "while", "do", "try", "catch"
+  ],
+  "requireSpaceBeforeKeywords": [
+    "else", "while", "catch"
+  ],
+  "requireSpaceAfterKeywords": [
+    "do", "for", "if", "else", "switch", "case", "try", "catch", "while", "return", "typeof"
+  ],
+  "requireSpaceBeforeBlockStatements": true,
+  "requireParenthesesAroundIIFE": true,
+  "requireSpacesInConditionalExpression": {
+    "afterTest": true,
+    "beforeConsequent": true,
+    "afterConsequent": true,
+    "beforeAlternate": true
+  },
+  "requireSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInNamedFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "requireSpacesInFunction": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInCallExpression": true,
+  "requireBlocksOnNewline": true,
+  "requirePaddingNewlinesBeforeKeywords": ["case"],
+  "disallowEmptyBlocks": true,
+  "disallowSpacesInsideArrayBrackets": "nested",
+  "disallowSpacesInsideParentheses": true,
+  "requireSpacesInsideObjectBrackets": "all",
+  "disallowQuotedKeysInObjects": "allButReserved",
+  "disallowSpaceAfterObjectKeys": true,
+  "requireSpaceBeforeObjectValues": true,
+  "requireCommaBeforeLineBreak": true,
+  "requireOperatorBeforeLineBreak": [
+    "?", "=", "+", "-", "/", "*", "===", "!==", ">", ">=", "<", "<="
+  ],
+  "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-", "~", "!"],
+  "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+  "requireSpaceBeforeBinaryOperators": [
+    "=", "+", "+=", "-", "-=", "/", "/=", "*", "*=", "===", "!==", "<", "<=", ">", ">="
+  ],
+  "requireSpaceAfterBinaryOperators": [
+    "=", "+", "+=", "-", "-=", "/", "/=", "*", "*=", "===", "!==", "<", "<=", ">", ">="
+  ],
+  "disallowKeywords": ["with"],
+  "disallowMultipleLineStrings": true,
+  "disallowMixedSpacesAndTabs": "smart",
+  "disallowTrailingWhitespace": true,
+  "disallowTrailingComma": true,
+  "disallowKeywordsOnNewLine": ["else"],
+  "requireLineFeedAtFileEnd": true,
+  "maximumLineLength": {
+    "value": 120,
+    "tabSize": 4,
+    "allowUrlComments": true,
+    "allowRegex": true
+  },
+  "requireCapitalizedConstructors": true,
+  "requireDotNotation": true,
+  "disallowYodaConditions": true,
+  "requireSpaceAfterLineComment": {
+    "allExcept": ["#", "="]
+  },
+  "disallowNewlineBeforeBlockStatements": true,
+  "validateQuoteMarks": {
+    "mark": "'",
+    "escape": true
+  },
+  "validateParameterSeparator": ", ",
+  "safeContextKeyword": ["that"]
+}

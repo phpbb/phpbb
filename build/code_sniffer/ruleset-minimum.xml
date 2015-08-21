@@ -12,4 +12,7 @@
  <!-- Tabs MUST be used for indentation -->
  <rule ref="Generic.WhiteSpace.DisallowSpaceIndent" />
 
+ <!-- ALL braces MUST be on their own lines. -->
+ <rule ref="./phpbb/Sniffs/ControlStructures/OpeningBraceBsdAllmanSniff.php" />
+
 </ruleset>

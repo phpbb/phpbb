@@ -26,7 +26,6 @@ class manager
 	protected $db;
 	protected $config;
 	protected $cache;
-	protected $user;
 	protected $php_ext;
 	protected $extensions;
 	protected $extension_table;
@@ -39,15 +38,14 @@ class manager
 	* @param ContainerInterface $container A container
 	* @param \phpbb\db\driver\driver_interface $db A database connection
 	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\filesystem $filesystem
-	* @param \phpbb\user $user User object
+	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
 	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem $filesystem, \phpbb\user $user, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
@@ -58,7 +56,6 @@ class manager
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->user = $user;
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
@@ -154,7 +151,7 @@ class manager
 	*/
 	public function create_extension_metadata_manager($name, \phpbb\template\template $template)
 	{
-		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $template, $this->user, $this->phpbb_root_path);
+		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
 	}
 
 	/**
@@ -464,15 +461,17 @@ class manager
 	* All enabled and disabled extensions are considered configured. A purged
 	* extension that is no longer in the database is not configured.
 	*
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_configured()
+	public function all_configured($phpbb_relative = true)
 	{
 		$configured = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			$data['ext_path'] = $this->phpbb_root_path . $data['ext_path'];
+			$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			$configured[$name] = $data;
 		}
 		return $configured;
@@ -480,18 +479,19 @@ class manager
 
 	/**
 	* Retrieves all enabled extensions.
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
 	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_enabled()
+	public function all_enabled($phpbb_relative = true)
 	{
 		$enabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
 			if ($data['ext_active'])
 			{
-				$enabled[$name] = $this->phpbb_root_path . $data['ext_path'];
+				$enabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
 		}
 		return $enabled;
@@ -500,17 +500,19 @@ class manager
 	/**
 	* Retrieves all disabled extensions.
 	*
+	* @param bool $phpbb_relative Whether the path should be relative to phpbb root
+	*
 	* @return array An array with extension names as keys and and the
 	*               database stored extension information as values
 	*/
-	public function all_disabled()
+	public function all_disabled($phpbb_relative = true)
 	{
 		$disabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
 			if (!$data['ext_active'])
 			{
-				$disabled[$name] = $this->phpbb_root_path . $data['ext_path'];
+				$disabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
 		}
 		return $disabled;

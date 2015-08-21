@@ -480,13 +480,15 @@ class p_master
 	*/
 	function set_active($id = false, $mode = false)
 	{
+		global $request;
+
 		$icat = false;
 		$this->active_module = false;
 
-		if (request_var('icat', ''))
+		if ($request->variable('icat', ''))
 		{
 			$icat = $id;
-			$id = request_var('icat', '');
+			$id = $request->variable('icat', '');
 		}
 
 		// Restore the backslashes in class names
@@ -553,10 +555,10 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template, $request;
 
 		$module_path = $this->include_path . $this->p_class;
-		$icat = request_var('icat', '');
+		$icat = $request->variable('icat', '');
 
 		if ($this->active_module === false)
 		{
@@ -976,7 +978,7 @@ class p_master
 	*
 	* @param string $class module class (acp/mcp/ucp)
 	* @param string $name module name (class name of the module, or its basename
-    *                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
+	*                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
 	* @param string $mode mode, as passed through to the module
 	*
 	*/
@@ -1086,7 +1088,7 @@ class p_master
 			->core_path('language/' . $user->lang_name . '/mods/')
 			->find();
 
-		$lang_files = array_unique(array_merge($user_lang_files, $english_lang_files, $default_lang_files));
+		$lang_files = array_merge($english_lang_files, $default_lang_files, $user_lang_files);
 		foreach ($lang_files as $lang_file => $ext_name)
 		{
 			$user->add_lang_ext($ext_name, $lang_file);

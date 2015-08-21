@@ -42,8 +42,8 @@ $posts_per_topic = 500;
 
 
 // general vars
-$mode = request_var('mode', 'generate');
-$start = request_var('start', 0);
+$mode = $request->variable('mode', 'generate');
+$start = $request->variable('start', 0);
 
 switch ($mode)
 {

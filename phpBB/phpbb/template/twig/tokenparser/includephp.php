@@ -14,7 +14,6 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-
 class includephp extends \Twig_TokenParser
 {
 	/**
@@ -31,7 +30,8 @@ class includephp extends \Twig_TokenParser
 		$stream = $this->parser->getStream();
 
 		$ignoreMissing = false;
-		if ($stream->test(\Twig_Token::NAME_TYPE, 'ignore')) {
+		if ($stream->test(\Twig_Token::NAME_TYPE, 'ignore'))
+		{
 			$stream->next();
 			$stream->expect(\Twig_Token::NAME_TYPE, 'missing');
 

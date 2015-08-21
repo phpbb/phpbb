@@ -53,14 +53,13 @@ html {
 }
 
 body {
-	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
 	font-size: 10px;
 	line-height: normal;
 	margin: 0;
 	padding: 12px 0;
 	word-wrap: break-word;
+	-webkit-print-color-adjust: exact;
 }
 
 h1 {
@@ -113,7 +112,6 @@ img {
 }
 
 hr {
-	/* Also see tweaks.css */
 	border: 0 solid transparent;
 	border-top-width: 1px;
 	height: 1px;
@@ -171,6 +169,14 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
 }
 
+.fa { 
+	font-size: 14px;
+	padding-right: 2px;
+}
+
+.button .fa {
+	padding-right: 0;
+}
 
 /* Main blocks
 ---------------------------------------- */
@@ -275,6 +281,11 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 ----------------------------------------*/
 .navbar ul.linklist {
 	padding: 2px 0;
+	list-style-type: none;
+}
+
+.navbar .linklist > li {
+	display: inline-block;
 }
 
 ul.linklist {
@@ -329,10 +340,10 @@ ul.linklist li.responsive-menu {
 ul.linklist li.responsive-menu a.responsive-menu-link {
 	display: inline-block;
 	margin: 0 5px;
-	font-size: 16px;
+	font-size: 1.455em;
 	position: relative;
 	width: 16px;
-	line-height: 20px;
+	line-height: 1.2em;
 	text-decoration: none;
 }
 
@@ -533,22 +544,25 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
-	min-width: 40px;
 	max-height: 300px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
+.dropdown-contents a {
+	display: block;
+	padding: 5px;
+}
+
 .dropdown li {
+	display: list-item;
 	border-top: 1px dotted transparent;
 	float: none !important;
 	line-height: normal !important;
 	font-size: 1em !important;
 	list-style: none;
 	margin: 0;
-	padding-top: 4px;
-	padding-bottom: 4px;
 	white-space: nowrap;
 	text-align: left;
 }
@@ -584,7 +598,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 
 .dropdown li.separator {
 	border-top: 1px solid transparent;
-	margin: 4px 0;
 	padding: 0;
 }
 
@@ -671,6 +684,8 @@ table.table1 tbody th {
 
 /* Specific column styles */
 table.table1 .name		{ text-align: left; }
+table.table1 .center		{ text-align: center; }
+table.table1 .reportby	{ width: 15%; }
 table.table1 .posts		{ text-align: center; width: 7%; }
 table.table1 .joined	{ text-align: left; width: 15%; }
 table.table1 .active	{ text-align: left; width: 15%; }
@@ -711,8 +726,7 @@ table.info tbody th {
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts
-   Also see tweaks.css */
+/* column[1-2] styles are containers for two column layouts */
 .column1 {
 	float: left;
 	clear: left;
@@ -812,7 +826,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 ---------------------------------------- */
 .pagination {
 	float: right;
-	font-size: 11px;
 	margin-top: 3px;
 	text-align: right;
 	width: auto;
@@ -842,7 +855,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	display: block;
 	font-size: 0.9em;
 	font-weight: normal;
-	line-height: 13px;
+	line-height: 1.4em;
 	min-width: 10px;
 	padding: 3px;
 	text-align: center;
@@ -1157,12 +1170,11 @@ ul.linklist:after,
 .dropdown-extended .header {
 	padding: 0 10px;
 	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 11px;
 	font-weight: bold;
 	text-align: left;
 	text-shadow: 1px 1px 1px white;
 	text-transform: uppercase;
-	line-height: 30px;
+	line-height: 3em;
 	border-bottom: 1px solid;
 	border-radius: 5px 5px 0 0;
 }
@@ -1214,7 +1226,7 @@ ul.linklist:after,
 }
 
 .notification_list p.notification-time {
-	font-size: 10px;
+	font-size: 0.9em;
 	margin: 0;
 	text-align: right;
 }
@@ -1230,7 +1242,7 @@ ul.linklist:after,
 
 .notification_list p.notifications_title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 13px !important;
+	font-size: 1.2em !important;
 }
 
 .notification_list p.notifications_title strong {
@@ -1238,7 +1250,7 @@ ul.linklist:after,
 }
 
 .notification_list p.notifications_time {
-	font-size: 10px !important;
+	font-size: 0.9em !important;
 }
 
 .notification_text {
@@ -1261,12 +1273,14 @@ ul.linklist:after,
 }
 
 #quick-links a.responsive-menu-link:before {
-	font-size: 16px;
+	font-size: 1.455em;
 	line-height: 16.5px;
 }
 
 .compact #quick-links a.responsive-menu-link {
-	font-size: 0;
+	width: 0;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .compact .icon-notification > a > span, .compact .icon-pm > a > span {

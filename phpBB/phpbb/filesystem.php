@@ -14,37 +14,8 @@
 namespace phpbb;
 
 /**
-* A class with various functions that are related to paths, files and the filesystem
-*/
-class filesystem
+ * @deprecated	3.2.0-dev	(To be removed 3.3.0) use \phpbb\filesystem\filesystem instead
+ */
+class filesystem extends \phpbb\filesystem\filesystem
 {
-	/**
-	* Eliminates useless . and .. components from specified path.
-	*
-	* @param string $path Path to clean
-	* @return string Cleaned path
-	*/
-	public function clean_path($path)
-	{
-		$exploded = explode('/', $path);
-		$filtered = array();
-		foreach ($exploded as $part)
-		{
-			if ($part === '.' && !empty($filtered))
-			{
-				continue;
-			}
-
-			if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '.' && $filtered[sizeof($filtered) - 1] !== '..')
-			{
-				array_pop($filtered);
-			}
-			else
-			{
-				$filtered[] = $part;
-			}
-		}
-		$path = implode('/', $filtered);
-		return $path;
-	}
 }

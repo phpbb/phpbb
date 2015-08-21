@@ -1,0 +1,26 @@
+parameters:
+    core: true
+
+services:
+    config.php:
+        synthetic: true
+
+    dbal.conn:
+        class: phpbb\db\driver\factory
+        arguments:
+            - @service_container
+
+    dispatcher:
+        class: phpbb\db\driver\container_mock
+
+    template.twig.environment:
+        class: Exception
+        arguments:
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - ~
+            - []

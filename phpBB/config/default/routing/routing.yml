@@ -1,0 +1,16 @@
+# Structure:
+#
+# foo_controller:
+#     path: /foo
+#     defaults: { _controller: foo_sevice:method }
+#
+# The above will be accessed via app.php?controller=foo and it will
+# instantiate the "foo_service" service and call the "method" method.
+#
+
+phpbb_help_routing:
+    resource: "help.yml"
+    prefix: /help
+
+phpbb_report_routing:
+    resource: "report.yml"
