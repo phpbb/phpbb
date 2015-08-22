@@ -1,8 +1,10 @@
+<!-- EVENT attachment_file_before -->
 
 <!-- BEGIN _file -->
 	<!-- IF _file.S_DENIED -->
 	<p>[{_file.DENIED_MESSAGE}]</p>
 	<!-- ELSE -->
+		<!-- EVENT attachment_file_prepend -->
 
 		<!-- IF _file.S_THUMBNAIL -->
 		<dl class="thumbnail">
@@ -10,7 +12,6 @@
 			<!-- IF _file.COMMENT --><dd> {_file.COMMENT}</dd><!-- ENDIF -->
 		</dl>
 		<!-- ENDIF -->
-
 
 		<!-- IF _file.S_IMAGE -->
 		<dl class="file">
@@ -27,8 +28,6 @@
 			<dd>({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
 		</dl>
 		<!-- ENDIF -->
-
-
 
 		<!-- IF _file.S_WM_FILE -->
 			<!-- method used here from http://alistapart.com/articles/byebyeembed / autosizing seems to not work always, this will not fix -->
@@ -118,5 +117,7 @@
 			<a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</p>
 		<!-- ENDIF -->
 
+		<!-- EVENT attachment_file_append -->
 	<!-- ENDIF -->
 <!-- END _file -->
+<!-- EVENT attachment_file_after -->
