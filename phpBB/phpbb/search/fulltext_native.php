@@ -1050,6 +1050,7 @@ class fulltext_native extends \phpbb\search\base
 		* @event core.search_native_author_count_query_before
 		* @var	int		total_results		The previous result count for the format of the query.
 		*									Set to 0 to force a re-count
+		* @var	string	type				The type of search being made
 		* @var	string	select				SQL SELECT clause for what to get
 		* @var	string	sql_sort_table		CROSS JOIN'ed table to allow doing the sort chosen
 		* @var	string	sql_sort_join		Condition to define how to join the CROSS JOIN'ed table specifyed in sql_sort_table
@@ -1062,6 +1063,7 @@ class fulltext_native extends \phpbb\search\base
 		* @var	string	sort_days			Time, in days, that the oldest post showing can have
 		* @var	string	sql_time			The SQL to search on the time specifyed by sort_days
 		* @var	bool	firstpost_only		Wether or not to search only on the first post of the topics
+		* @var	string	sql_firstpost		The SQL used in the WHERE claused to filter by firstpost.
 		* @var	array	ex_fid_ary			Forum ids that must not be searched on
 		* @var	array	sql_fora			SQL query for ex_fid_ary
 		* @var	int		start				How many posts to skip in the search results (used for pagination)
@@ -1069,6 +1071,7 @@ class fulltext_native extends \phpbb\search\base
 		*/
 		$vars = array(
 			'total_results',
+			'type',
 			'select',
 			'sql_sort_table',
 			'sql_sort_join',
@@ -1081,6 +1084,7 @@ class fulltext_native extends \phpbb\search\base
 			'sort_days',
 			'sql_time',
 			'firstpost_only',
+			'sql_firstpost',
 			'ex_fid_ary',
 			'sql_fora',
 			'start',
