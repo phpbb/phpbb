@@ -30,7 +30,7 @@ class ucp_activate
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $auth, $template, $phpbb_container, $phpbb_log;
+		global $db, $user, $auth, $template, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 		$user_id = $request->variable('u', 0);
 		$key = $request->variable('k', '');
@@ -149,6 +149,17 @@ class ucp_activate
 				$message = 'PASSWORD_ACTIVATED';
 			}
 		}
+
+		/**
+		* This event can be used to modify data after user account's activation
+		*
+		* @event core.ucp_activate_after
+		* @var	array	user_row	Array with some user data
+		* @var	string	message		Language string of the message that will be displayed to the user
+		* @since 3.1.6-RC1
+		*/
+		$vars = array('user_row', 'message');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_activate_after', compact($vars)));
 
 		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 		trigger_error($user->lang[$message]);
