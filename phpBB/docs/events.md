@@ -991,6 +991,14 @@ overall_header_content_before
 * Since: 3.1.0-a3
 * Purpose: Add content on all pages before the main content, after the header
 
+overall_header_feeds
+===
+* Locations:
+    + styles/prosilver/template/overall_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.6-RC1
+* Purpose: Add custom feeds
+
 overall_header_head_append
 ===
 * Locations:
