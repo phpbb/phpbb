@@ -1737,6 +1737,20 @@ viewtopic_body_footer_before
 * Purpose: Add content to the bottom of the View topic screen below the posts
 and quick reply, directly before the jumpbox in Prosilver.
 
+viewtopic_body_poll_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add content after the poll panel.
+
+viewtopic_body_poll_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.6-RC1
+* Purpose: Add content before the poll panel.
+
 viewtopic_body_poll_option_after
 ===
 * Locations:
