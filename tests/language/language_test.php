@@ -39,6 +39,20 @@ class phpbb_language_test extends phpbb_test_case
 		$lang_array->setValue($this->lang, $this->get_test_data_set());
 	}
 
+	public function test_is_set()
+	{
+		// Check for non-existing key
+		$this->assertFalse($this->lang->is_set('VALUE'));
+		$this->assertFalse($this->lang->is_set(array('dateformat', 'MAYBE')));
+
+		// Check for existing key
+		$this->assertTrue($this->lang->is_set('FOO'));
+		$this->assertTrue($this->lang->is_set(array('dateformat', 'AGO')));
+
+		// Array doesn't exist at all...
+		$this->assertFalse($this->lang->is_set(array('PHPBB', 'PHP')));
+	}
+
 	public function test_lang()
 	{
 		// No param

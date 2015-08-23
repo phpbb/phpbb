@@ -2215,6 +2215,9 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 {
 	global $phpbb_root_path, $config, $db, $user, $file_upload, $phpbb_container, $phpbb_log;
 
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
+
 	$error = array();
 
 	// Attributes which also affect the users table
@@ -2466,7 +2469,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			group_set_user_default($group_id, $user_ary, $sql_ary);
 		}
 
-		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
+		$name = $group_helper->get_name($name);
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($name));
 
 		group_update_listings($group_id);
@@ -3320,7 +3323,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 */
 function get_group_name($group_id)
 {
-	global $db, $user;
+	global $db, $user, $phpbb_container;
 
 	$sql = 'SELECT group_name, group_type
 		FROM ' . GROUPS_TABLE . '
@@ -3329,12 +3332,15 @@ function get_group_name($group_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || ($row['group_type'] == GROUP_SPECIAL && !$user->is_setup()))
+	if (!$row)
 	{
 		return '';
 	}
 
-	return ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
+
+	return $group_helper->get_name($row['group_name']);
 }
 
 /**
