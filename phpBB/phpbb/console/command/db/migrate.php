@@ -52,6 +52,7 @@ class migrate extends \phpbb\console\command\command
 		$this
 			->setName('db:migrate')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_DB_MIGRATE'))
+			->setHelp($this->user->lang('CLI_HELP_DB_MIGRATE'))
 		;
 	}
 

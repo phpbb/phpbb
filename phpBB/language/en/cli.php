@@ -54,7 +54,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_DELETE_CONFIG'				=> 'Deletes a configuration option',
 	'CLI_DESCRIPTION_DISABLE_EXTENSION'			=> 'Disables the specified extension.',
 	'CLI_DESCRIPTION_ENABLE_EXTENSION'			=> 'Enables the specified extension.',
-	'CLI_DESCRIPTION_FIND_MIGRATIONS'			=> 'Finds migrations that are not depended on.',
+	'CLI_DESCRIPTION_FIND_MIGRATIONS'			=> 'Finds migrations that are not depended upon.',
 	'CLI_DESCRIPTION_GET_CONFIG'				=> 'Gets a configuration option’s value',
 	'CLI_DESCRIPTION_INCREMENT_CONFIG'			=> 'Increments a configuration option’s value',
 	'CLI_DESCRIPTION_LIST_EXTENSIONS'			=> 'Lists all extensions in the database and on the filesystem.',
@@ -64,6 +64,86 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_RECALCULATE_EMAIL_HASH'	=> 'Recalculates the user_email_hash column of the users table.',
 	'CLI_DESCRIPTION_SET_ATOMIC_CONFIG'			=> 'Sets a configuration option’s value only if the old matches the current value',
 	'CLI_DESCRIPTION_SET_CONFIG'				=> 'Sets a configuration option’s value',
+
+	'CLI_HELP_PURGE_CACHE'				=> 'The <info>%command.name%</info> command allows you to purge the board’s cache.
+
+ <info>php %command.full_name%</info>
+',
+	'CLI_HELP_DELETE_CONFIG'			=> 'The <info>%command.name%</info> command deletes a configuration option. The key name is required.
+
+ <info>php %command.full_name% config_key</info>
+',
+	'CLI_HELP_GET_CONFIG'				=> 'The <info>%command.name%</info> command gets a configuration option’s value. The key name is required.
+
+ <info>php %command.full_name% config_key</info>
+',
+	'CLI_HELP_INCREMENT_CONFIG'			=> 'The <info>%command.name%</info> command increments an integer configuration option’s value. The key name and increment amount are required.
+
+ <info>php %command.full_name% config_key 1</info>
+
+If the configuration option changes too frequently to be efficiently cached, use the <info>--dynamic</info> or <info>-d</info> option:
+
+ <info>php %command.full_name% config_key 1 --dynamic</info>
+ <info>php %command.full_name% config_key 1 -d</info>
+',
+	'CLI_HELP_SET_CONFIG'				=> 'The <info>%command.name%</info> sets a configuration option’s value. The key name and value are required.
+
+ <info>php %command.full_name% config_key foo</info>
+
+If the configuration option changes too frequently to be efficiently cached, use the <info>--dynamic</info> or <info>-d</info> option:
+
+ <info>php %command.full_name% config_key foo --dynamic</info>
+ <info>php %command.full_name% config_key foo -d</info>
+',
+	'CLI_HELP_SET_ATOMIC_CONFIG'		=> 'The <info>%command.name%</info> command sets a configuration option’s value only if the old value matches the current value or the configuration value does not exist yet. The key name, old and new values are required.
+
+ <info>php %command.full_name% config_name foo bar</info>
+
+If the configuration option changes too frequently to be efficiently cached, use the <info>--dynamic</info> or <info>-d</info> option:
+
+ <info>php %command.full_name% config_key foo bar --dynamic</info>
+ <info>php %command.full_name% config_key foo bar -d</info>
+',
+	'CLI_HELP_CRON_LIST'				=> 'The <info>%command.name%</info> command prints a list of ready and unready cron jobs.
+
+ <info>php %command.full_name%</info>
+',
+	'CLI_HELP_CRON_RUN'					=> 'The <info>%command.name%</info> command runs all ready cron tasks.
+
+ <info>php %command.full_name%</info>
+
+Optionally you can specify a cron task name to run only the specified cron task:
+
+ <info>php %command.full_name% task_name</info>
+',
+	'CLI_HELP_DB_MIGRATE'				=> 'The <info>%command.name%</info> command updates the database by applying available migrations.
+
+ <info>php %command.full_name%</info>
+',
+	'CLI_HELP_FIND_MIGRATIONS'			=> 'The <info>%command.name%</info> command finds migrations that are not depended upon.
+
+ <info>php %command.full_name%</info>
+',
+	'CLI_HELP_DISABLE_EXTENSION'		=> 'The <info>%command.name%</info> command disables the specified extension. The extension name is required.
+
+ <info>php %command.full_name% vendor_name/package_name</info>
+',
+	'CLI_HELP_ENABLE_EXTENSION'			=> 'The <info>%command.name%</info> command enables the specified extension. The extension name is required.
+
+ <info>php %command.full_name% vendor_name/package_name</info>
+',
+	'CLI_HELP_PURGE_EXTENSION'			=> 'The <info>%command.name%</info> command purges the specified extension. The extension name is required.
+
+ <info>php %command.full_name% vendor_name/package_name</info>
+',
+	'CLI_HELP_LIST_EXTENSIONS'			=> 'The <info>%command.name%</info> command lists all extensions in the database and on the filesystem.
+
+ <info>php %command.full_name%</info>
+',
+	'CLI_HELP_RECALCULATE_EMAIL_HASH'	=> 'The <info>%command.name%</info> command recalculates the user_email_hash column of the users table.
+
+ <info>php %command.full_name%</info>
+',
 
 	'CLI_EXTENSION_DISABLE_FAILURE'		=> 'Could not disable extension %s',
 	'CLI_EXTENSION_DISABLE_SUCCESS'		=> 'Successfully disabled extension %s',

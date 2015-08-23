@@ -27,6 +27,7 @@ class get extends command
 		$this
 			->setName('config:get')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_GET_CONFIG'))
+			->setHelp($this->user->lang('CLI_HELP_GET_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

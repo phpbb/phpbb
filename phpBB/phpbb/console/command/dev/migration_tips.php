@@ -31,6 +31,7 @@ class migration_tips extends \phpbb\console\command\command
 		$this
 			->setName('dev:migration-tips')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_FIND_MIGRATIONS'))
+			->setHelp($this->user->lang('CLI_HELP_FIND_MIGRATIONS'))
 		;
 	}
 

@@ -26,6 +26,7 @@ class delete extends command
 		$this
 			->setName('config:delete')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_DELETE_CONFIG'))
+			->setHelp($this->user->lang('CLI_HELP_DELETE_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

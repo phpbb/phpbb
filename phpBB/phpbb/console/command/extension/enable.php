@@ -23,6 +23,7 @@ class enable extends command
 		$this
 			->setName('extension:enable')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_ENABLE_EXTENSION'))
+			->setHelp($this->user->lang('CLI_HELP_ENABLE_EXTENSION'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,
