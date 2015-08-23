@@ -92,7 +92,8 @@ class installer
 		$module_found = false;
 
 		// Variable used to check if the install process have been finished
-		$install_finished = false;
+		$install_finished	= false;
+		$fail_cleanup		= false;
 
 		// We are installing something, so the introduction stage can go now...
 		$this->install_config->set_finished_navigation_stage(array('install', 0, 'introduction'));
@@ -209,13 +210,19 @@ class installer
 		{
 			// Do nothing
 		}
+		catch (\Exception $e)
+		{
+			$this->iohandler->add_error_message($e->getMessage());
+			$this->iohandler->send_response();
+			$fail_cleanup = true;
+		}
 
 		if ($install_finished)
 		{
 			// Send install finished message
 			$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
 		}
-		else
+		else if (!$fail_cleanup)
 		{
 			$this->iohandler->request_refresh();
 		}
@@ -223,7 +230,7 @@ class installer
 		// Save install progress
 		try
 		{
-			if ($install_finished)
+			if ($install_finished || $fail_cleanup)
 			{
 				$this->install_config->clean_up_config_file();
 			}
