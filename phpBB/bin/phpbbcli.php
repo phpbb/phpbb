@@ -46,13 +46,17 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 $phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file);
 
-$phpbb_container_builder->without_cache();
-
 $input = new ArgvInput();
+
+if ($input->hasParameterOption(array('--env')))
+{
+	$phpbb_container_builder->with_environment($input->getParameterOption('--env'));
+}
 
 if ($input->hasParameterOption(array('--safe-mode')))
 {
 	$phpbb_container_builder->without_extensions();
+	$phpbb_container_builder->without_cache();
 }
 else
 {
@@ -68,6 +72,8 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 $user = $phpbb_container->get('user');
 $user->add_lang('acp/common');
 $user->add_lang('cli');
+
+/* @var $lang \phpbb\language\language */
 $lang = $phpbb_container->get('language');
 
 $application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $lang);
