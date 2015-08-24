@@ -13,6 +13,7 @@
 
 namespace phpbb\console;
 
+use phpbb\exception\exception_interface;
 use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

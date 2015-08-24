@@ -71,5 +71,6 @@ $user->add_lang('cli');
 $lang = $phpbb_container->get('language');
 
 $application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $lang);
+$application->setDispatcher($phpbb_container->get('dispatcher'));
 $application->register_container_commands($phpbb_container->get('console.command_collection'));
 $application->run($input);

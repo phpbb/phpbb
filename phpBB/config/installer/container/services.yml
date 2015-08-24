@@ -68,3 +68,11 @@ services:
             - null
             - @template.twig.loader
             - []
+
+    console.exception_subscriber:
+        class: phpbb\console\exception_subscriber
+        arguments:
+            - @language
+            - %debug.exceptions%
+        tags:
+            - { name: kernel.event_subscriber }

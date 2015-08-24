@@ -4,6 +4,9 @@ imports:
 core:
     require_dev_dependencies: true
 
+    debug:
+        exceptions: true
+
     twig:
         debug: true
         auto_reload: true

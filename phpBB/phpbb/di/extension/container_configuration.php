@@ -31,6 +31,12 @@ class container_configuration implements ConfigurationInterface
 		$rootNode
 			->children()
 				->booleanNode('require_dev_dependencies')->defaultValue(false)->end()
+				->arrayNode('debug')
+					->addDefaultsIfNotSet()
+					->children()
+						->booleanNode('exceptions')->defaultValue(false)->end()
+					->end()
+				->end()
 				->arrayNode('twig')
 					->addDefaultsIfNotSet()
 					->children()

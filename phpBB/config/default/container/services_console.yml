@@ -1,4 +1,12 @@
 services:
+    console.exception_subscriber:
+        class: phpbb\console\exception_subscriber
+        arguments:
+            - @language
+            - %debug.exceptions%
+        tags:
+            - { name: kernel.event_subscriber }
+
     console.command_collection:
         class: phpbb\di\service_collection
         arguments:
