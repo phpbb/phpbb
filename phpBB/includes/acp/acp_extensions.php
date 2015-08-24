@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\exception\exception_interface;
+
 /**
 * @ignore
 */
@@ -92,7 +94,7 @@ class acp_extensions
 			{
 				$md_manager->get_metadata('all');
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				trigger_error($message, E_USER_WARNING);
@@ -320,11 +322,13 @@ class acp_extensions
 						$template->assign_block_vars('updates_available', $version_data);
 					}
 				}
-				catch (\RuntimeException $e)
+				catch (exception_interface $e)
 				{
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+
 					$template->assign_vars(array(
 						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
-						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
 					));
 				}
 
@@ -367,7 +371,7 @@ class acp_extensions
 				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$this->template->assign_block_vars('disabled', array(
@@ -425,7 +429,7 @@ class acp_extensions
 				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$this->template->assign_block_vars('disabled', array(
@@ -486,7 +490,7 @@ class acp_extensions
 				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
 				$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$this->template->assign_block_vars('disabled', array(

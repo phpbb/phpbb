@@ -13,6 +13,8 @@
 
 namespace phpbb\extension;
 
+use phpbb\exception\runtime_exception;
+use phpbb\file_downloader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -572,7 +574,7 @@ class manager
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @param string $stability Force the stability (null by default).
 	* @return string
-	* @throws \RuntimeException
+	* @throws runtime_exception
 	*/
 	public function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false, $stability = null)
 	{
@@ -580,12 +582,12 @@ class manager
 
 		if (!isset($meta['extra']['version-check']))
 		{
-			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
+			throw new runtime_exception('NO_VERSIONCHECK');
 		}
 
 		$version_check = $meta['extra']['version-check'];
 
-		$version_helper = new \phpbb\version_helper($this->cache, $this->config, $this->user);
+		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new file_downloader());
 		$version_helper->set_current_version($meta['version']);
 		$version_helper->set_file_location($version_check ['host'], $version_check ['directory'], $version_check ['filename']);
 		$version_helper->force_stability($stability);

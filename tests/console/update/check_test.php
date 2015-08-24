@@ -62,6 +62,9 @@ class phpbb_console_command_check_test extends phpbb_test_case
 		$this->assertSame($status, 1);
 	}
 
+	/**
+	 * @expectedException phpbb\exception\runtime_exception
+	 */
 	public function test_error()
 	{
 		$command_tester = $this->get_command_tester('1');
@@ -87,7 +90,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 			->getMock();
 
 		$config = new \phpbb\config\config(array('version' => $current_version));
-		$this->version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader(), $user);
+		$this->version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader());
 
 		$container = new phpbb_mock_container_builder;
 		$container->set('version_helper', $this->version_helper);

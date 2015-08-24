@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\update;
 
+use phpbb\exception\exception_interface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -116,18 +117,9 @@ class check extends \phpbb\console\command\command
 	*/
 	protected function check_ext(InputInterface $input, OutputInterface $output, $stability, $recheck, $ext_name)
 	{
-		try
-		{
-			$ext_manager = $this->phpbb_container->get('ext.manager');
-			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name, null);
-			$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
-		}
-		catch (\RuntimeException $e)
-		{
-			$output->writeln('<error>' . $e->getMessage() . '</error>');
-
-			return 2;
-		}
+		$ext_manager = $this->phpbb_container->get('ext.manager');
+		$md_manager = $ext_manager->create_extension_metadata_manager($ext_name, null);
+		$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 
 		$metadata = $md_manager->get_metadata('all');
 		if ($input->getOption('verbose'))
@@ -178,16 +170,7 @@ class check extends \phpbb\console\command\command
 		$version_helper = $this->phpbb_container->get('version_helper');
 		$version_helper->force_stability($stability);
 
-		try
-		{
-			$updates_available = $version_helper->get_suggested_updates($recheck);
-		}
-		catch (\RuntimeException $e)
-		{
-			$output->writeln('<error>' . $this->user->lang('VERSIONCHECK_FAIL') . '</error>');
-
-			return 2;
-		}
+		$updates_available = $version_helper->get_suggested_updates($recheck);
 
 		if ($input->getOption('verbose'))
 		{
@@ -257,6 +240,11 @@ class check extends \phpbb\console\command\command
 				{
 					$message .= ' | ';
 				}
+			}
+			catch (exception_interface $e)
+			{
+				$exception_message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+				$message .= ('<error>' . $exception_message . '</error>');
 			}
 			catch (\RuntimeException $e)
 			{
