@@ -76,7 +76,10 @@ class phpbb_console_command_check_test extends phpbb_test_case
 	{
 		global $user;
 
-		$user = $this->getMock('\phpbb\user');
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$user->method('lang')->will($this->returnArgument(0));
 
 		$cache = $this->getMockBuilder('\phpbb\cache\service')
@@ -84,7 +87,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 			->getMock();
 
 		$config = new \phpbb\config\config(array('version' => $current_version));
-		$this->version_helper = new \phpbb\version_helper($cache, $config, $user);
+		$this->version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader(), $user);
 
 		$container = new phpbb_mock_container_builder;
 		$container->set('version_helper', $this->version_helper);
