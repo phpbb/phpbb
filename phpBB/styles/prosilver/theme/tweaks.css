@@ -27,3 +27,7 @@ dd label input { vertical-align: text-bottom\9; }
 .search-header, .search-header .inputbox, .search-header a.button {
 	border-radius: 0;
 }
+
+.headerbar, .forumbg, .forabg {
+	filter: none;
+}
