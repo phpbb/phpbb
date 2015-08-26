@@ -1171,38 +1171,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					$update_count[] = $attachment['attach_id'];
 				break;
 
-				// Windows Media Streams
-				case ATTACHMENT_CATEGORY_WM:
-
-					// Giving the filename directly because within the wm object all variables are in local context making it impossible
-					// to validate against a valid session (all params can differ)
-					// $download_link = $filename;
-
-					$block_array += array(
-						'U_FORUM'		=> generate_board_url(),
-						'ATTACH_ID'		=> $attachment['attach_id'],
-						'S_WM_FILE'		=> true,
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Real Media Streams
-				case ATTACHMENT_CATEGORY_RM:
-				case ATTACHMENT_CATEGORY_QUICKTIME:
-
-					$block_array += array(
-						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
-						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
-						'U_FORUM'			=> generate_board_url(),
-						'ATTACH_ID'			=> $attachment['attach_id'],
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
 				// Macromedia Flash Files
 				case ATTACHMENT_CATEGORY_FLASH:
 					list($width, $height) = @getimagesize($filename);
