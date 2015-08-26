@@ -78,6 +78,10 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->lock->owns_lock());
 	}
 
+	/**
+	 * @expectedException \phpbb\exception\runtime_exception
+	 * @expectedExceptionMessage CRON_LOCK_ERROR
+	 */
 	public function test_error_lock()
 	{
 		$this->lock->acquire();
@@ -126,6 +130,10 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->lock->owns_lock());
 	}
 
+	/**
+	 * @expectedException \phpbb\exception\runtime_exception
+	 * @expectedExceptionMessage CRON_NO_SUCH_TASK
+	 */
 	public function test_arg_invalid()
 	{
 		$command_tester = $this->get_command_tester();
