@@ -132,7 +132,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[img]https://area51.phpbb.com/images/area51.png[/img]',
-				'<img src="https://area51.phpbb.com/images/area51.png" alt="Image">'
+				'<img src="https://area51.phpbb.com/images/area51.png" class="postimage" alt="Image">'
 			),
 			array(
 				'[url]https://area51.phpbb.com/[/url]',

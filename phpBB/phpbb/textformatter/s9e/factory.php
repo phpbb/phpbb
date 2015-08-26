@@ -104,7 +104,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'b'     => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
 		'i'     => '<span style="font-style: italic"><xsl:apply-templates/></span>',
 		'u'     => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
-		'img'   => '<img src="{IMAGEURL}" alt="{L_IMAGE}"/>',
+		'img'   => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
 		'size'  => '<span style="font-size: {FONTSIZE}%; line-height: normal"><xsl:apply-templates/></span>',
 		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
 		'email' => '<a>
