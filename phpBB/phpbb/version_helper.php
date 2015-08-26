@@ -12,6 +12,7 @@
 */
 
 namespace phpbb;
+
 use phpbb\exception\runtime_exception;
 
 /**

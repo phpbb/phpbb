@@ -81,7 +81,6 @@ $user->data['user_id'] = ANONYMOUS;
 $user->ip = '127.0.0.1';
 
 $application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $language);
-$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $lang);
 $application->setDispatcher($phpbb_container->get('dispatcher'));
 $application->register_container_commands($phpbb_container->get('console.command_collection'));
 $application->run($input);
