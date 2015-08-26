@@ -23,6 +23,9 @@ class phpbb_files_upload_test extends phpbb_test_case
 	/** @var \phpbb\files\factory */
 	protected $factory;
 
+	/** @var \phpbb\php\ini */
+	protected $php_ini;
+
 	/** @var \phpbb\language\language */
 	protected $language;
 
@@ -49,10 +52,12 @@ class phpbb_files_upload_test extends phpbb_test_case
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$this->php_ini = new \phpbb\php\ini;
 
 		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
 		$this->container->set('files.filespec', new \phpbb\files\filespec(
 			$this->filesystem,
+			$this->php_ini,
 			$this->language,
 			$phpbb_root_path,
 			new \phpbb\mimetype\guesser(array(
@@ -66,7 +71,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 
 	public function test_reset_vars()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->php_ini, $this->language, $this->request, $this->phpbb_root_path);
 		$upload->set_max_filesize(500);
 		$this->assertEquals(500, $upload->max_filesize);
 		$upload->reset_vars();
@@ -75,7 +80,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 
 	public function test_set_disallowed_content()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->php_ini, $this->language, $this->request, $this->phpbb_root_path);
 		$disallowed_content = new ReflectionProperty($upload, 'disallowed_content');
 		$disallowed_content->setAccessible(true);
 
@@ -93,7 +98,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 
 	public function test_is_valid()
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->php_ini, $this->language, $this->request, $this->phpbb_root_path);
 		$this->assertFalse($upload->is_valid('foobar'));
 	}
 
@@ -116,7 +121,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 	 */
 	public function test_assign_internal_error($error_code, $expected)
 	{
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->php_ini, $this->language, $this->request, $this->phpbb_root_path);
 		$this->assertSame($expected, $upload->assign_internal_error($error_code));
 	}
 }

@@ -74,6 +74,15 @@ class filespec
 	 */
 	protected $filesystem;
 
+	/** @var \phpbb\php\ini ini_get() wrapper class */
+	protected $php_ini;
+
+	/** @var language Language class */
+	protected $language;
+
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
 	/**
 	 * The plupload object
 	 * @var \phpbb\plupload\plupload
@@ -86,28 +95,24 @@ class filespec
 	 */
 	protected $mimetype_guesser;
 
-	/** @var language Language class */
-	protected $language;
-
-	/** @var string phpBB root path */
-	protected $phpbb_root_path;
-
 	/**
 	 * File upload class
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem Filesystem
+	 * @param \phpbb\php\ini			$php_ini ini_get() wrapper
 	 * @param language					$language Language
-	 * @param string									$phpbb_root_path phpBB root path
-	 * @param \phpbb\mimetype\guesser					$mimetype_guesser Mime type guesser
-	 * @param \phpbb\plupload\plupload					$plupload Plupload
+	 * @param string					$phpbb_root_path phpBB root path
+	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
+	 * @param \phpbb\plupload\plupload	$plupload Plupload
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, \phpbb\php\ini $php_ini, language $language, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
-		$this->plupload = $plupload;
-		$this->mimetype_guesser = $mimetype_guesser;
 		$this->filesystem = $phpbb_filesystem;
+		$this->php_ini = $php_ini;
 		$this->language = $language;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->plupload = $plupload;
+		$this->mimetype_guesser = $mimetype_guesser;
 	}
 
 	/**
@@ -420,7 +425,7 @@ class filespec
 			return false;
 		}
 
-		$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on') ? 'move' : 'copy';
+		$upload_mode = ($this->php_ini->get_bool('open_basedir') || $this->php_ini->get_bool('safe_mode')) ? 'move' : 'copy';
 		$upload_mode = ($this->local) ? 'local' : $upload_mode;
 		$this->destination_file = $this->destination_path . '/' . utf8_basename($this->realname);
 
