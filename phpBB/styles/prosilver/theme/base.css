@@ -105,3 +105,11 @@ ul {
  * might still respond to pointer events.
  */
 [tabindex="-1"]:focus { outline: none !important }
+
+/**
+ * Remove double underline from recent version of firefox
+ */
+abbr[title] {
+    text-decoration: none;
+}
+
