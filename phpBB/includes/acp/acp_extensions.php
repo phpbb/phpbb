@@ -364,12 +364,19 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$force_update = $this->request->variable('versioncheck_force', false);
-				$updates = $phpbb_extension_manager->version_check($md_manager, $force_update, !$force_update);
+				if (isset($meta['extra']['version-check']))
+				{
+					$force_update = $this->request->variable('versioncheck_force', false);
+					$updates = $phpbb_extension_manager->version_check($md_manager, $force_update, !$force_update);
 
-				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+					$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+					$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+					$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+				}
+				else
+				{
+					$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
 			}
 			catch (exception_interface $e)
 			{
@@ -422,12 +429,19 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$force_update = $this->request->variable('versioncheck_force', false);
-				$updates = $phpbb_extension_manager->version_check($md_manager, $force_update, !$force_update);
+				if (isset($meta['extra']['version-check']))
+				{
+					$force_update = $this->request->variable('versioncheck_force', false);
+					$updates = $phpbb_extension_manager->version_check($md_manager, $force_update, !$force_update);
 
-				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+					$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+					$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+				}
+				else
+				{
+					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
 			}
 			catch (exception_interface $e)
 			{
@@ -483,12 +497,19 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$force_update = $this->request->variable('versioncheck_force', false);
-				$updates = $phpbb_extension_manager->version_check($md_manager, $force_update, !$force_update);
+				if (isset($meta['extra']['version-check']))
+				{
+					$force_update = $this->request->variable('versioncheck_force', false);
+					$updates = $phpbb_extension_manager->version_check($md_manager, $force_update, !$force_update);
 
-				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-				$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+					$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+					$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+				}
+				else
+				{
+					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
 			}
 			catch (exception_interface $e)
 			{
