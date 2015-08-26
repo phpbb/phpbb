@@ -73,17 +73,17 @@ class upload
 	 *
 	 * @param filesystem_interface $filesystem
 	 * @param factory $factory Files factory
-	 * @param \phpbb\php\ini $php_ini ini_get() wrapper
 	 * @param language $language Language class
+	 * @param \phpbb\php\ini $php_ini ini_get() wrapper
 	 * @param request_interface $request Request class
 	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(filesystem_interface $filesystem, factory $factory, \phpbb\php\ini $php_ini, language $language, request_interface $request, $phpbb_root_path)
+	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, \phpbb\php\ini $php_ini, request_interface $request, $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->factory = $factory;
-		$this->php_ini = $php_ini;
 		$this->language = $language;
+		$this->php_ini = $php_ini;
 		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}

@@ -12,8 +12,8 @@ services:
         scope: prototype
         arguments:
             - @filesystem
-            - @php_ini
             - @language
+            - @php_ini
             - %core.root_path%
             - @mimetype.guesser
             - @plupload
@@ -24,8 +24,8 @@ services:
         arguments:
             - @filesystem
             - @files.factory
-            - @php_ini
             - @language
+            - @php_ini
             - @request
             - %core.root_path%
 
