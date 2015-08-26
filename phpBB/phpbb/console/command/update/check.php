@@ -52,8 +52,8 @@ class check extends \phpbb\console\command\command
 			->setName('update:check')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK'))
 			->addArgument('ext-name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_ARGUMENT_1'))
-			->addOption('stability', null, InputOption::VALUE_REQUIRED, 'CLI_DESCRIPTION_CRON_RUN_OPTION_STABILITY')
-			->addOption('cache', 'c', InputOption::VALUE_NONE, 'CLI_DESCRIPTION_CRON_RUN_OPTION_CACHE')
+			->addOption('stability', null, InputOption::VALUE_REQUIRED, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY'))
+			->addOption('cache', 'c', InputOption::VALUE_NONE, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE'))
 		;
 	}
 
@@ -215,6 +215,7 @@ class check extends \phpbb\console\command\command
 	*/
 	protected function check_all_ext(InputInterface $input, OutputInterface $output, $stability, $recheck)
 	{
+		/** @var \phpbb\extension\manager $ext_manager */
 		$ext_manager = $this->phpbb_container->get('ext.manager');
 
 		$ext_name_length = max(30, strlen($this->user->lang('EXTENSION_NAME')));
@@ -230,15 +231,30 @@ class check extends \phpbb\console\command\command
 			try
 			{
 				$metadata = $md_manager->get_metadata('all');
-				$message .= sprintf(" | <info>%-{$current_version_length}s</info>", $metadata['version']);
-				try
+				if (isset($metadata['extra']['version-check']))
 				{
-					$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
-					$message .= sprintf(" | <comment>%s</comment>", implode(', ', array_keys($updates_available)));
+					try {
+						$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
+						if (!empty($updates_available))
+						{
+							$message .= sprintf(" | <comment>%-{$current_version_length}s</comment> | %s",
+								$metadata['version'],
+								implode(', ', array_keys($updates_available))
+							);
+						}
+						else
+						{
+							$message .= sprintf(" | <info>%-{$current_version_length}s</info> | ",
+								$metadata['version']
+							);
+						}
+					} catch (\RuntimeException $e) {
+						$message .= ' | ';
+					}
 				}
-				catch (\RuntimeException $e)
+				else
 				{
-					$message .= ' | ';
+					$message .= sprintf(" | %-{$current_version_length}s | ", $metadata['version']);
 				}
 			}
 			catch (exception_interface $e)

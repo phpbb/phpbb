@@ -50,9 +50,6 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_CRON_LIST'					=> 'Prints a list of ready and unready cron jobs.',
 	'CLI_DESCRIPTION_CRON_RUN'					=> 'Runs all ready cron tasks.',
 	'CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'		=> 'Name of the task to be run',
-	'CLI_DESCRIPTION_CRON_RUN_OPTION_CACHE'		=> 'Run check command with cache.',
-	'CLI_DESCRIPTION_CRON_RUN_OPTION_STABILITY'	=> 'Run command choosing to check only stable or unstable versions.',
-
 	'CLI_DESCRIPTION_DB_LIST'					=> 'List all installed and available migrations.',
 	'CLI_DESCRIPTION_DB_MIGRATE'				=> 'Updates the database by applying migrations.',
 	'CLI_DESCRIPTION_DB_REVERT'					=> 'Revert a migration.',
@@ -88,8 +85,10 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_THUMBNAIL_GENERATE'				=> 'Generate all missing thumbnails.',
 	'CLI_DESCRIPTION_THUMBNAIL_RECREATE'				=> 'Recreate all thumbnails.',
 
-	'CLI_DESCRIPTION_UPDATE_CHECK'				=> 'Check if the board is up to date.',
-	'CLI_DESCRIPTION_UPDATE_CHECK_ARGUMENT_1'	=> 'Name of the extension to check (if all, checks all the extensions)',
+	'CLI_DESCRIPTION_UPDATE_CHECK'					=> 'Check if the board is up to date.',
+	'CLI_DESCRIPTION_UPDATE_CHECK_ARGUMENT_1'		=> 'Name of the extension to check (if all, checks all the extensions)',
+	'CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE'		=> 'Run check command with cache.',
+	'CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY'	=> 'Run command choosing to check only stable or unstable versions.',
 
 	'CLI_ERROR_INVALID_STABILITY' => '"%s" is not a valid stability.',
 
