@@ -112,7 +112,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			),
 			array(
 				'<r><IMG src="http://example.org/foo.png"><s>[img]</s>http://example.org/foo.png<e>[/img]</e></IMG></r>',
-				'<img src="http://example.org/foo.png" alt="Image">',
+				'<img src="http://example.org/foo.png" class="postimage" alt="Image">',
 				array('set_viewimg' => true)
 			),
 			array(
@@ -231,7 +231,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			),
 			array(
 				'<r><IMG src="http://localhost/mrgreen.gif"><s>[img]</s><URL url="http://localhost/mrgreen.gif">http://localhost/mrgreen.gif</URL><e>[/img]</e></IMG></r>',
-				'<img src="http://localhost/mrgreen.gif" alt="Image">'
+				'<img src="http://localhost/mrgreen.gif" class="postimage" alt="Image">'
 			),
 			array(
 				'<r><IMG src="http://localhost/mrgreen.gif"><s>[img]</s><URL url="http://localhost/mrgreen.gif">http://localhost/mrgreen.gif</URL><e>[/img]</e></IMG></r>',

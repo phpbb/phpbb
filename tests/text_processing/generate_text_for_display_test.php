@@ -173,7 +173,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 			),
 			array(
 				'<r><IMG src="http://localhost/mrgreen.gif"><s>[img]</s><URL url="http://localhost/mrgreen.gif">http://localhost/mrgreen.gif</URL><e>[/img]</e></IMG></r>',
-				'<img src="http://localhost/mrgreen.gif" alt="Image">'
+				'<img src="http://localhost/mrgreen.gif" class="postimage" alt="Image">'
 			),
 			array(
 				'<r><IMG src="http://localhost/mrgreen.gif"><s>[img]</s><URL url="http://localhost/mrgreen.gif">http://localhost/mrgreen.gif</URL><e>[/img]</e></IMG></r>',
