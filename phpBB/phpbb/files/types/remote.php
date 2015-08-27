@@ -13,6 +13,7 @@
 
 namespace phpbb\files\types;
 
+use \bantu\IniGetWrapper\IniGetWrapper;
 use \phpbb\files\factory;
 use \phpbb\files\filespec;
 use \phpbb\language\language;
@@ -25,6 +26,9 @@ class remote extends base
 
 	/** @var language */
 	protected $language;
+
+	/** @var IniGetWrapper */
+	protected $php_ini;
 
 	/** @var request_interface */
 	protected $request;
@@ -40,13 +44,15 @@ class remote extends base
 	 *
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
+	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request object
 	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(factory $factory, language $language, request_interface $request, $phpbb_root_path)
+	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
 	{
 		$this->factory = $factory;
 		$this->language = $language;
+		$this->php_ini = $php_ini;
 		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
@@ -199,7 +205,7 @@ class remote extends base
 			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
 
-		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $this->phpbb_root_path . 'cache';
+		$tmp_path = (!$this->php_ini->getBool('safe_mode')) ? false : $this->phpbb_root_path . 'cache';
 		$filename = tempnam($tmp_path, unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
@@ -232,7 +238,7 @@ class remote extends base
 		$max_file_size = $this->upload->max_filesize;
 		if (!$max_file_size)
 		{
-			$max_file_size = @ini_get('upload_max_filesize');
+			$max_file_size = $this->php_ini->getString('upload_max_filesize');
 
 			if (!empty($max_filesize))
 			{

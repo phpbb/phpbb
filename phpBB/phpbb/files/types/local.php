@@ -13,6 +13,7 @@
 
 namespace phpbb\files\types;
 
+use \bantu\IniGetWrapper\IniGetWrapper;
 use \phpbb\files\factory;
 use \phpbb\files\filespec;
 use \phpbb\language\language;
@@ -26,6 +27,9 @@ class local extends base
 	/** @var language */
 	protected $language;
 
+	/** @var IniGetWrapper */
+	protected $php_ini;
+
 	/** @var request_interface */
 	protected $request;
 
@@ -37,12 +41,14 @@ class local extends base
 	 *
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
+	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request object
 	 */
-	public function __construct(factory $factory, language $language, request_interface $request)
+	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request)
 	{
 		$this->factory = $factory;
 		$this->language = $language;
+		$this->php_ini = $php_ini;
 		$this->request = $request;
 	}
 
@@ -89,21 +95,11 @@ class local extends base
 			}
 		}
 
-		// PHP Upload filesize exceeded
-		if ($file->get('filename') == 'none')
+		// PHP Upload file size check
+		$this->check_upload_size($file);
+		$file = $this->check_upload_size($file);
+		if (sizeof($file->error))
 		{
-			$max_filesize = @ini_get('upload_max_filesize');
-			$unit = 'MB';
-
-			if (!empty($max_filesize))
-			{
-				$unit = strtolower(substr($max_filesize, -1, 1));
-				$max_filesize = (int) $max_filesize;
-
-				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
-			}
-
-			$file->error[] = (empty($max_filesize)) ?$this->language->lang($this->upload->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->upload->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
 			return $file;
 		}
 

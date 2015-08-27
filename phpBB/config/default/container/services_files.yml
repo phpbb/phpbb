@@ -35,6 +35,7 @@ services:
         arguments:
             - @files.factory
             - @language
+            - @php_ini
             - @plupload
             - @request
 
@@ -44,6 +45,7 @@ services:
         arguments:
             - @files.factory
             - @language
+            - @php_ini
             - @request
 
     files.types.remote:
@@ -52,5 +54,6 @@ services:
         arguments:
             - @files.factory
             - @language
+            - @php_ini
             - @request
             - %core.root_path%

@@ -18,6 +18,9 @@ abstract class base implements type_interface
 	/** @var \phpbb\language\language */
 	protected $language;
 
+	/** @var \bantu\IniGetWrapper\IniGetWrapper */
+	protected $php_ini;
+
 	/** @var \phpbb\files\upload */
 	protected $upload;
 
@@ -33,7 +36,7 @@ abstract class base implements type_interface
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$max_filesize = @ini_get('upload_max_filesize');
+			$max_filesize = $this->php_ini->getString('upload_max_filesize');
 			$unit = 'MB';
 
 			if (!empty($max_filesize))

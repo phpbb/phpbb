@@ -81,12 +81,14 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$this->container->set('files.types.form', new \phpbb\files\types\form(
 			$this->factory,
 			$this->language,
+			$this->php_ini,
 			$plupload,
 			$this->request
 		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
 		$this->container->set('files.types.local', new \phpbb\files\types\local(
 			$this->factory,
 			$this->language,
+			$this->php_ini,
 			$this->request
 		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
 

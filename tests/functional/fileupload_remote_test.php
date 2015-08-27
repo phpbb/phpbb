@@ -60,7 +60,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, $this->phpbb_root_path));
 		$this->factory = new \phpbb\files\factory($container);
 		$container->set('files.factory', $this->factory);
-		$container->set('files.types.remote', new \phpbb\files\types\remote($this->factory, $this->language, $this->request, $phpbb_root_path));
+		$container->set('files.types.remote', new \phpbb\files\types\remote($this->factory, $this->language, $this->php_ini, $this->request, $phpbb_root_path));
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
