@@ -23,7 +23,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 	/** @var \phpbb\files\factory */
 	protected $factory;
 
-	/** @var \phpbb\php\ini */
+	/** @var \bantu\IniGetWrapper\IniGetWrapper */
 	protected $php_ini;
 
 	/** @var \phpbb\language\language */
@@ -52,7 +52,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
-		$this->php_ini = new \phpbb\php\ini;
+		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
 		$this->container->set('files.filespec', new \phpbb\files\filespec(

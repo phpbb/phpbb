@@ -93,7 +93,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \phpbb\php\ini, $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, $this->mimetype_guesser);
 		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
@@ -114,7 +114,7 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function test_empty_upload_ary()
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \phpbb\php\ini, $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, $this->mimetype_guesser);
 		$this->assertInstanceOf('\phpbb\files\filespec', $filespec->set_upload_ary(array()));
 		$this->assertTrue($filespec->init_error());
 	}
@@ -262,7 +262,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_clean_filename_avatar($filename, $expected, $mode, $prefix = '', $user_id = '')
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \phpbb\php\ini, $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, $this->mimetype_guesser);
 
 		if ($filename)
 		{
@@ -419,7 +419,7 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function test_is_uploaded()
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \phpbb\php\ini, $this->phpbb_root_path, null);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, null);
 		$reflection_filespec = new ReflectionClass($filespec);
 		$plupload_property = $reflection_filespec->getProperty('plupload');
 		$plupload_property->setAccessible(true);

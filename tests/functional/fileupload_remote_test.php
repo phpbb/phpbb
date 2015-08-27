@@ -22,7 +22,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 	/** @var \phpbb\files\factory */
 	protected $factory;
 
-	/** @var \phpbb\php\ini */
+	/** @var \bantu\IniGetWrapper\IniGetWrapper */
 	protected $php_ini;
 
 	/** @var \phpbb\language\language */
@@ -54,7 +54,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->request = $this->getMock('\phpbb\request\request');
-		$this->php_ini = new \phpbb\php\ini;
+		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$container = new phpbb_mock_container_builder();
 		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, $this->phpbb_root_path));

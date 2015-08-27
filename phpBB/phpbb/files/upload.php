@@ -56,7 +56,7 @@ class upload
 	/** @var \phpbb\files\factory Files factory */
 	protected $factory;
 
-	/** @var \phpbb\php\ini ini_get() wrapper */
+	/** @var \bantu\IniGetWrapper\IniGetWrapper ini_get() wrapper */
 	protected $php_ini;
 
 	/** @var \phpbb\language\language Language class */
@@ -74,11 +74,11 @@ class upload
 	 * @param filesystem_interface $filesystem
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
-	 * @param \phpbb\php\ini $php_ini ini_get() wrapper
+	 * @param \bantu\IniGetWrapper\IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request class
 	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, \phpbb\php\ini $php_ini, request_interface $request, $phpbb_root_path)
+	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->factory = $factory;
@@ -216,7 +216,7 @@ class upload
 		switch ($errorcode)
 		{
 			case UPLOAD_ERR_INI_SIZE:
-				$max_filesize = $this->php_ini->get_string('upload_max_filesize');
+				$max_filesize = $this->php_ini->getString('upload_max_filesize');
 				$unit = 'MB';
 
 				if (!empty($max_filesize))

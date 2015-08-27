@@ -27,7 +27,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 	/** @var \phpbb\files\factory */
 	protected $factory;
 
-	/** @var \phpbb\php\ini */
+	/** @var \bantu\IniGetWrapper\IniGetWrapper */
 	protected $php_ini;
 
 	/** @var \phpbb\language\language */
@@ -53,7 +53,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$config['rand_seed_last_update'] = time() + 600;
 
 		$this->request = $this->getMock('\phpbb\request\request');
-		$this->php_ini = new \phpbb\php\ini;
+		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
