@@ -32,7 +32,6 @@ class recalculate_email_hash extends \phpbb\console\command\command
 		$this
 			->setName('fixup:recalculate-email-hash')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_RECALCULATE_EMAIL_HASH'))
-			->setHelp($this->user->lang('CLI_HELP_RECALCULATE_EMAIL_HASH'))
 		;
 	}
 

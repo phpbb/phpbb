@@ -23,7 +23,6 @@ class disable extends command
 		$this
 			->setName('extension:disable')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_DISABLE_EXTENSION'))
-			->setHelp($this->user->lang('CLI_HELP_DISABLE_EXTENSION'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,

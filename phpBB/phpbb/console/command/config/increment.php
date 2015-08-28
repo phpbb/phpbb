@@ -27,7 +27,6 @@ class increment extends command
 		$this
 			->setName('config:increment')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_INCREMENT_CONFIG'))
-			->setHelp($this->user->lang('CLI_HELP_INCREMENT_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

@@ -27,7 +27,6 @@ class set_atomic extends command
 		$this
 			->setName('config:set-atomic')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_SET_ATOMIC_CONFIG'))
-			->setHelp($this->user->lang('CLI_HELP_SET_ATOMIC_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

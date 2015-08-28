@@ -23,7 +23,6 @@ class purge extends command
 		$this
 			->setName('extension:purge')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_PURGE_EXTENSION'))
-			->setHelp($this->user->lang('CLI_HELP_PURGE_EXTENSION'))
 			->addArgument(
 				'extension-name',
 				InputArgument::REQUIRED,

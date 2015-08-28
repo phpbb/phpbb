@@ -40,7 +40,6 @@ class cron_list extends \phpbb\console\command\command
 		$this
 			->setName('cron:list')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_CRON_LIST'))
-			->setHelp($this->user->lang('CLI_HELP_CRON_LIST'))
 		;
 	}
 

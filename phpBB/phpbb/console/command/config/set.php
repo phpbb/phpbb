@@ -27,7 +27,6 @@ class set extends command
 		$this
 			->setName('config:set')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_SET_CONFIG'))
-			->setHelp($this->user->lang('CLI_HELP_SET_CONFIG'))
 			->addArgument(
 				'key',
 				InputArgument::REQUIRED,

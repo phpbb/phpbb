@@ -22,7 +22,6 @@ class show extends command
 		$this
 			->setName('extension:show')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_LIST_EXTENSIONS'))
-			->setHelp($this->user->lang('CLI_HELP_LIST_EXTENSIONS'))
 		;
 	}
 
