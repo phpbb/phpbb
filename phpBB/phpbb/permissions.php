@@ -160,6 +160,17 @@ class permissions
 	}
 
 	/**
+	* Checks if a category has been defined
+	*
+	* @param	string	$category	Identifier of the category
+	* @return	bool	True if the category is defined, false otherwise
+	*/
+	public function category_defined($category)
+	{
+		return isset($this->categories[$category]);
+	}
+
+	/**
 	* Checks if a permission has been defined
 	*
 	* @param	string	$permission	Identifier of the permission
