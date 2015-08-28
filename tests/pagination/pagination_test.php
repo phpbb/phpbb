@@ -54,7 +54,8 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			$request
 		);
 
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $router, $symfony_request, $request, $filesystem, '', 'php', dirname(__FILE__) . '/');
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $router, $symfony_request, $request, $filesystem, '', 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $symfony_request, $request, $this->routing_helper);
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper, $phpbb_dispatcher);
 	}
 

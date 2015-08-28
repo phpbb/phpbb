@@ -18,3 +18,14 @@ services:
             - @request_stack
         tags:
             - { name: kernel.event_subscriber }
+
+    routing.helper:
+        class: phpbb\routing\helper
+        arguments:
+            - @config
+            - @router
+            - @symfony_request
+            - @request
+            - @filesystem
+            - %core.root_path%
+            - %core.php_ext%
