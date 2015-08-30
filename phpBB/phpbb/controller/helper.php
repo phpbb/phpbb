@@ -100,12 +100,14 @@ class helper
 	* @param string $page_title The title of the page to output
 	* @param int $status_code The status code to be sent to the page header
 	* @param bool $display_online_list Do we display online users list
+	* @param int $item_id Restrict online users to item id
+	* @param string $item Restrict online users to a certain session item, e.g. forum for session_forum_id
 	*
 	* @return Response object containing rendered page
 	*/
-	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false)
+	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum')
 	{
-		page_header($page_title, $display_online_list);
+		page_header($page_title, $display_online_list, $item_id, $item);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,
