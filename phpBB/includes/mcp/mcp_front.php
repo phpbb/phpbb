@@ -274,7 +274,7 @@ function mcp_front_view($id, $mode, $action)
 	}
 
 	// Latest 5 reported PMs
-	if ($module->loaded('pm_reports') && $auth->acl_getf_global('m_report'))
+	if ($module->loaded('pm_reports') && $auth->acl_get('m_pm_report'))
 	{
 		$template->assign_var('S_SHOW_PM_REPORTS', true);
 		$user->add_lang(array('ucp'));
