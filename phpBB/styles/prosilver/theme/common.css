@@ -519,6 +519,15 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	width: 100%;
 }
 
+.jumpbox .spacer {
+	display: inline-block;
+	width: 0px;
+}
+
+.jumpbox .spacer + .spacer {
+	width: 20px;
+}
+
 .dropdown li {
 	border-top: 1px dotted transparent;
 	float: none !important;
