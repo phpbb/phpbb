@@ -678,6 +678,7 @@ class mcp_queue
 				$approve_log[] = array(
 					'forum_id'		=> $post_data['forum_id'],
 					'topic_id'		=> $post_data['topic_id'],
+					'post_id'		=> $post_id,
 					'post_subject'	=> $post_data['post_subject'],
 				);
 			}
@@ -694,6 +695,7 @@ class mcp_queue
 				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_POST_' . strtoupper($action) . 'D', false, array(
 					'forum_id' => $log_data['forum_id'],
 					'topic_id' => $log_data['topic_id'],
+					'post_id'  => $log_data['post_id'],
 					$log_data['post_subject']
 				));
 			}
