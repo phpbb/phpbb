@@ -205,7 +205,7 @@ class mcp_logs
 		{
 			$data = array();
 
-			$checks = array('viewtopic', 'viewforum');
+			$checks = array('viewpost', 'viewtopic', 'viewforum');
 			foreach ($checks as $check)
 			{
 				if (isset($row[$check]) && $row[$check])
