@@ -20,7 +20,7 @@
 			<ul class="dropdown-contents">
 			<!-- BEGIN jumpbox_forums -->
 				<!-- IF jumpbox_forums.FORUM_ID neq -1 -->
-					<li><!-- BEGIN level -->&nbsp; &nbsp;<!-- END level --><a href="{jumpbox_forums.LINK}">{jumpbox_forums.FORUM_NAME}</a></li>
+					<li><a href="{jumpbox_forums.LINK}" class="<!-- IF jumpbox_forums.level -->jumpbox-link<!-- ELSE -->jumpbox-header-link<!-- ENDIF -->"><!-- IF jumpbox_forums.level -->&nbsp; &nbsp; &#124;<!-- ENDIF --><!-- BEGIN level -->&ndash;&ndash;<!-- END level --> <span>{jumpbox_forums.FORUM_NAME}</span></a></li>
 				<!-- ENDIF -->
 			<!-- END jumpbox_forums -->
 			</ul>

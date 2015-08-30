@@ -58,6 +58,8 @@ li.breadcrumbs span:first-child > a {
 	width: 40px;
 }
 
+.jumpbox-header-link { font-weight: bold; }
+
 /* Links for forum/topic lists */
 a.forumtitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
