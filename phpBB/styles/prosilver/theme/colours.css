@@ -197,6 +197,32 @@ dl.details dd {
 	background-image: url("./images/icon_pages.gif");
 }
 
+.jumpbox .dropdown li {
+	border-top-color: #0076B1;
+}
+
+.jumpbox-cat-link {
+	background-color: #0076b1;
+	color: #FFFFFF;
+}
+
+.jumpbox-cat-link:hover { 
+	background-color: #12A3EB;
+	color: #FFFFFF;
+}
+
+.jumpbox-forum-link {
+	background-color: #E1EBF2;
+}
+
+.jumpbox-forum-link:hover {
+	background-color: #F6F4D0;
+}
+
+.jumpbox-sub-link {
+	background-color: #E1EBF2;
+}
+
 /* Miscellaneous styles
 ---------------------------------------- */
 

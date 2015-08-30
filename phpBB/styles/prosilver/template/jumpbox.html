@@ -11,7 +11,7 @@
 
 <!-- IF S_DISPLAY_JUMPBOX -->
 
-	<div class="dropdown-container dropdown-container-{S_CONTENT_FLOW_END}<!-- IF not S_IN_MCP --> dropdown-up<!-- ENDIF --> dropdown-{S_CONTENT_FLOW_BEGIN} dropdown-button-control" id="jumpbox">
+	<div class="jumpbox dropdown-container dropdown-container-{S_CONTENT_FLOW_END}<!-- IF not S_IN_MCP --> dropdown-up<!-- ENDIF --> dropdown-{S_CONTENT_FLOW_BEGIN} dropdown-button-control" id="jumpbox">
 		<span title="<!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->" class="dropdown-trigger button dropdown-select">
 			<!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->
 		</span>
@@ -20,7 +20,7 @@
 			<ul class="dropdown-contents">
 			<!-- BEGIN jumpbox_forums -->
 				<!-- IF jumpbox_forums.FORUM_ID neq -1 -->
-					<li><a href="{jumpbox_forums.LINK}" class="<!-- IF jumpbox_forums.level -->jumpbox-link<!-- ELSE -->jumpbox-header-link<!-- ENDIF -->"><!-- IF jumpbox_forums.level -->&nbsp; &nbsp; &#124;<!-- ENDIF --><!-- BEGIN level -->&ndash;&ndash;<!-- END level --> <span>{jumpbox_forums.FORUM_NAME}</span></a></li>
+					<li><a href="{jumpbox_forums.LINK}" class="<!-- IF jumpbox_forums.level -->jumpbox-sub-link<!-- ELSEIF jumpbox_forums.S_IS_CAT -->jumpbox-cat-link<!-- ELSE -->jumpbox-forum-link<!-- ENDIF -->"><!-- BEGIN level -->&nbsp; &nbsp; &nbsp;<!-- END level --> <!-- IF jumpbox_forums.level -->&#8627; &nbsp;<!-- ENDIF --> <span>{jumpbox_forums.FORUM_NAME}</span></a></li>
 				<!-- ENDIF -->
 			<!-- END jumpbox_forums -->
 			</ul>

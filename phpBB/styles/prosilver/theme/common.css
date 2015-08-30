@@ -487,9 +487,36 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	position: relative;
 	min-width: 40px;
 	max-height: 300px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
+}
+
+.dropdown-contents a {
+	display: block;
+	padding: 5px;
+}
+
+
+.jumpbox .dropdown li {
+	border-top: 1px solid transparent;
+}
+
+.jumpbox .dropdown-select {
+	margin: 0;
+}
+
+.jumpbox .dropdown-contents {
+	padding: 0;
+	text-decoration: none;
+}
+
+.jumpbox .dropdown-contents li {
+	padding: 0;
+}
+
+.jumpbox .dropdown-contents a {
+	margin-right: 20px;
+	padding: 5px 10px;
+	text-decoration: none;
+	width: 100%;
 }
 
 .dropdown li {
