@@ -310,6 +310,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 			{
 				$template->assign_block_vars('topic_icon', array(
 					'ICON_ID'		=> $id,
+					'ICON_NAME'		=> $data['img'],
 					'ICON_IMG'		=> $root_path . $config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
