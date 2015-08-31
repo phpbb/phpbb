@@ -198,16 +198,18 @@ dl.details dd {
 }
 
 .jumpbox .dropdown li {
-	border-top-color: #0076B1;
+	border-top-color: #CCCCCC;
 }
 
 .jumpbox-cat-link {
 	background-color: #0076b1;
+	border-top-color: #0076B1;
 	color: #FFFFFF;
 }
 
 .jumpbox-cat-link:hover { 
 	background-color: #12A3EB;
+	border-top-color: #12A3EB;
 	color: #FFFFFF;
 }
 
@@ -219,8 +221,16 @@ dl.details dd {
 	background-color: #F6F4D0;
 }
 
+.jumpbox .dropdown .pointer-inner {
+	border-color: #E1EBF2 transparent;
+}
+
 .jumpbox-sub-link {
 	background-color: #E1EBF2;
+}
+
+.jumpbox-sub-link:hover {
+	background-color: #F1F8FF;
 }
 
 /* Miscellaneous styles
