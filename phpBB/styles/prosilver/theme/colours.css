@@ -48,23 +48,25 @@ hr {
 }
 
 .headerbar {
-	background-color: #12A3EB;
-	background-image: url("./images/bg_header.gif");
 	color: #FFFFFF;
 }
 
-.navbar {
-	background-color: #cadceb;
+.headerbar, .forumbg {
+	background-color: #12A3EB;
+	background-image: -webkit-linear-gradient(top, #6ACEFF 0%, #0076B1 2px, #12A3EB 92px, #12A3EB 100%);
+	background-image: linear-gradient(to bottom, #6ACEFF 0%,#0076B1 2px,#12A3EB 92px,#12A3EB 100%);
+	background-repeat: repeat-x;
 }
 
 .forabg {
-	background-color: #0076b1;
-	background-image: url("./images/bg_list.gif");
+	background-color: #0076B1;
+	background-image: -webkit-linear-gradient(top, #6ACEFF 0%, #12A3EB 2px, #0076B1 92px, #0076B1 100%);
+	background-image: linear-gradient(to bottom, #6ACEFF 0%,#12A3EB 2px,#0076B1 92px,#0076B1 100%);
+	background-repeat: repeat-x;
 }
 
-.forumbg {
-	background-color: #12A3EB;
-	background-image: url("./images/bg_header.gif");
+.navbar {
+	background-color: #CADCEB;
 }
 
 .panel {
@@ -89,15 +91,15 @@ table.zebra-list tr:nth-child(odd) td, ul.zebra-list li:nth-child(odd) {
 }
 
 .bg2 {
-	background-color: #e1ebf2;
+	background-color: #E1EBF2;
 }
 
 table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
-	background-color: #e1ebf2;
+	background-color: #E1EBF2;
 }
 
 .bg3	{
-	background-color: #cadceb;
+	background-color: #CADCEB;
 }
 
 .ucprowbg {
@@ -352,8 +354,10 @@ Colours and backgrounds for content.css
 -------------------------------------------------------------- */
 
 ul.forums {
-	background-color: #eef5f9;
-	background-image: url("./images/gradient.gif");
+	background-color: #EEF5F9; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #D2E0EB 0%, #EEF5F9 100%);
+	background-image: linear-gradient(to bottom, #D2E0EB 0%,#EEF5F9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2E0EB', endColorstr='#EEF5F9',GradientType=0 ); /* IE6-9 */
 }
 
 ul.topiclist li {
@@ -365,7 +369,7 @@ ul.topiclist dd {
 }
 
 .rtl ul.topiclist dd {
-	border-right-color: #fff;
+	border-right-color: #FFFFFF;
 	border-left-color: transparent;
 }
 
@@ -636,12 +640,10 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 .button {
 	border-color: #C7C3BF;
-	background-color: #FFFFFF;
-	background-image: -moz-linear-gradient(top, #FFFFFF, #E9E9E9);
-	background-image: -webkit-linear-gradient(top, #FFFFFF, #E9E9E9);
-	background-image: -o-linear-gradient(top, #FFFFFF, #E9E9E9);
-	background-image: linear-gradient(to bottom, #FFFFFF, #E9E9E9);
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#FFFFFF', EndColorStr='#E9E9E9')";
+	background-color: #E9E9E9; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #FFFFFF 0%, #E9E9E9 100%);
+	background-image: linear-gradient(to bottom, #FFFFFF 0%,#E9E9E9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#E9E9E9',GradientType=0 ); /* IE6-9 */
 	box-shadow: 0 0 0 1px #FFFFFF inset;
 	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
 	color: #D31141;
@@ -652,12 +654,11 @@ Colours and backgrounds for buttons.css
 }
 
 .button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
-	border-color: #0a8ed0;
-	background-image: -moz-linear-gradient(top, #E9E9E9, #FFFFFF);
-	background-image: -webkit-linear-gradient(top, #E9E9E9, #FFFFFF);
-	background-image: -o-linear-gradient(top, #E9E9E9, #FFFFFF);
-	background-image: linear-gradient(to bottom, #E9E9E9, #FFFFFF);
-	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#E9E9E9', EndColorStr='#FFFFFF')";
+	border-color: #0A8ED0;
+	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #E9E9E9 0%, #FFFFFF 100%);
+	background-image: linear-gradient(to bottom, #E9E9E9 0%,#FFFFFF 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E9E9E9', endColorstr='#FFFFFF',GradientType=0 ); /* IE6-9 */
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
@@ -674,35 +675,36 @@ Colours and backgrounds for buttons.css
 
 /* Icon images
 ---------------------------------------- */
-.icon-acp					{ background-image: url("./images/icon_acp.gif"); }
-.icon-bookmark				{ background-image: url("./images/icon_bookmark.gif"); }
-.icon-bump					{ background-image: url("./images/icon_bump.gif"); }
-.icon-contact				{ background-image: url("./images/icon_pm.gif"); }
-.icon-delete-cookies		{ background-image: url("./images/icon_delete_cookies.gif"); }
-.icon-download				{ background-image: url("./images/icon_download.gif"); }
-.icon-faq					{ background-image: url("./images/icon_faq.gif"); }
-.icon-home					{ background-image: url("./images/icon_home.gif"); }
-.icon-logout				{ background-image: url("./images/icon_logout.gif"); }
-.icon-mark					{ background-image: url("./images/icon_mark.gif"); }
-.icon-mcp					{ background-image: url("./images/icon_mcp.gif"); }
-.icon-members				{ background-image: url("./images/icon_members.gif"); }
-.icon-notification			{ background-image: url("./images/icon_notification.gif"); }
-.icon-pages					{ background-image: url("./images/icon_pages.gif"); }
-.icon-pm					{ background-image: url("./images/icon_pm.gif"); }
-.icon-print					{ background-image: url("./images/icon_print.gif"); }
-.icon-profile				{ background-image: url("./images/icon_profile.gif"); }
-.icon-register				{ background-image: url("./images/icon_register.gif"); }
-.icon-search, .responsive-search a	{ background-image: url("./images/icon_search.gif"); }
-.icon-search-active			{ background-image: url("./images/subforum_read.gif"); }
-.icon-search-new			{ background-image: url("./images/subforum_unread.gif"); }
-.icon-search-self			{ background-image: url("./images/icon_topic_latest.gif"); }
-.icon-search-unanswered		{ background-image: url("./images/icon_post_target.gif"); }
-.icon-search-unread			{ background-image: url("./images/subforum_unread.gif"); }
-.icon-sendemail				{ background-image: url("./images/icon_sendemail.gif"); }
-.icon-subscribe				{ background-image: url("./images/icon_subscribe.gif"); }
-.icon-team					{ background-image: url("./images/icon_team.gif"); }
-.icon-ucp					{ background-image: url("./images/icon_ucp.gif"); }
-.icon-unsubscribe			{ background-image: url("./images/icon_unsubscribe.gif"); }
+.icon-acp														{ background-image: url("./images/icon_acp.gif"); }
+.icon-bookmark													{ background-image: url("./images/icon_bookmark.gif"); }
+.icon-bump														{ background-image: url("./images/icon_bump.gif"); }
+.icon-contact													{ background-image: url("./images/icon_pm.gif"); }
+.icon-delete-cookies											{ background-image: url("./images/icon_delete_cookies.gif"); }
+.icon-download													{ background-image: url("./images/icon_download.gif"); }
+.icon-faq														{ background-image: url("./images/icon_faq.gif"); }
+.icon-home														{ background-image: url("./images/icon_home.gif"); }
+.icon-logout													{ background-image: url("./images/icon_logout.gif"); }
+.icon-mark														{ background-image: url("./images/icon_mark.gif"); }
+.icon-mcp														{ background-image: url("./images/icon_mcp.gif"); }
+.icon-members													{ background-image: url("./images/icon_members.gif"); }
+.icon-notification												{ background-image: url("./images/icon_notification.gif"); }
+.icon-pages														{ background-image: url("./images/icon_pages.gif"); }
+.icon-pm														{ background-image: url("./images/icon_pm.gif"); }
+.icon-print														{ background-image: url("./images/icon_print.gif"); }
+.icon-profile													{ background-image: url("./images/icon_profile.gif"); }
+.icon-register													{ background-image: url("./images/icon_register.gif"); }
+.icon-search, 
+.responsive-search a 											{ background-image: url("./images/icon_search.gif"); }
+.icon-search-active												{ background-image: url("./images/subforum_read.gif"); }
+.icon-search-new												{ background-image: url("./images/subforum_unread.gif"); }
+.icon-search-self												{ background-image: url("./images/icon_topic_latest.gif"); }
+.icon-search-unanswered											{ background-image: url("./images/icon_post_target.gif"); }
+.icon-search-unread												{ background-image: url("./images/subforum_unread.gif"); }
+.icon-sendemail													{ background-image: url("./images/icon_sendemail.gif"); }
+.icon-subscribe													{ background-image: url("./images/icon_subscribe.gif"); }
+.icon-team														{ background-image: url("./images/icon_team.gif"); }
+.icon-ucp														{ background-image: url("./images/icon_ucp.gif"); }
+.icon-unsubscribe												{ background-image: url("./images/icon_unsubscribe.gif"); }
 
 /* Profile & navigation icons */
 .contact-icon													{ background-image: url("./images/icons_contact.png"); }
@@ -810,14 +812,10 @@ ul.cplist {
 
 #tabs .activetab > a,
 #tabs .activetab > a:hover {
-	background: #CADCEB;
-	background: -moz-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #E2F2FF), color-stop(100%, #CADCEB));
-	background: -webkit-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: -o-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: -ms-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
-	background: linear-gradient(to bottom, #E2F2FF 0%, #CADCEB 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E2F2FF', endColorstr='#CADCEB', GradientType=0 );
+	background-color: #CADCEB; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
+	background-image: linear-gradient(to bottom, #E2F2FF 0%,#CADCEB 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#E2F2FF', endColorstr='#CADCEB',GradientType=0 ); /* IE6-9 */
 	border-color: #CADCEB;
 	box-shadow: 0 1px 1px #F2F9FF inset;
 	color: #333333;
@@ -855,25 +853,17 @@ ul.cplist {
 /* Link styles for the sub-section links */
 #navigation a {
 	color: #333;
-	background: #B4C4D1;
-	background: -moz-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
-	background: -webkit-gradient(left top, right top, color-stop(50%, #B4C4D1), color-stop(100%, #CADCEB));
+	background: #CADCEB; /* Old browsers */ /* FF3.6+ */
 	background: -webkit-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
-	background: -o-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
-	background: -ms-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
-	background: linear-gradient(to right, #B4C4D1 50%, #CADCEB 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#B4C4D1', endColorstr='#CADCEB', GradientType=1 );
+	background: linear-gradient(to right, #B4C4D1 50%,#CADCEB 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#B4C4D1', endColorstr='#CADCEB',GradientType=1 ); /* IE6-9 */
 }
 
 .rtl #navigation a {
-	background: #B4C4D1;
-	background: -moz-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
-	background: -webkit-gradient(left top, right top, color-stop(0%, #CADCEB), color-stop(50%, #B4C4D1));
-	background: -webkit-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
-	background: -o-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
-	background: -ms-linear-gradient(left, #CADCEB 0%, #B4C4D1 50%);
-	background: linear-gradient(to right, #CADCEB 0%, #B4C4D1 50%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CADCEB', endColorstr='#B4C4D1', GradientType=1 );
+	background: #B4C4D1; /* Old browsers */ /* FF3.6+ */
+	background: -webkit-linear-gradient(left, #CADCEB 50%, #B4C4D1 100%);
+	background: linear-gradient(to right, #CADCEB 50%,#B4C4D1 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CADCEB', endColorstr='#B4C4D1',GradientType=1 ); /* IE6-9 */
 }
 
 #navigation a:hover {
@@ -915,7 +905,7 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
-	background-color: #eef5f9;
+	background-color: #EEF5F9;
 }
 
 dl.mini dt {
@@ -1060,8 +1050,10 @@ fieldset.quick-login input.inputbox {
 
 a.button1, input.button1, input.button3, a.button2, input.button2 {
 	color: #000;
-	background-color: #FAFAFA;
-	background-image: url("./images/bg_button.gif");
+	background-color: #EFEFEF; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #D2D2D2 0%, #EFEFEF 100%);
+	background-image: linear-gradient(to bottom, #D2D2D2 0%,#EFEFEF 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2D2D2', endColorstr='#EFEFEF',GradientType=0 ); /* IE6-9 */
 }
 
 a.button1, input.button1 {
@@ -1084,8 +1076,12 @@ a.button1, a.button2 {
 
 /* Hover states */
 a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
-	border-color: #BC2A4D;
-	color: #BC2A4D;
+	border-color: #D31141;
+	color: #D31141;
+	background-color: #D2D2D2; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #EFEFEF 0%, #D2D2D2 100%);
+	background-image: linear-gradient(to bottom, #EFEFEF 0%,#D2D2D2 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EFEFEF', endColorstr='#D2D2D2',GradientType=0 ); /* IE6-9 */
 }
 
 /* Focus states */
@@ -1140,13 +1136,10 @@ input.disabled {
 }
 
 .dropdown-extended .header {
-	background: #F1F8FF;
-	background: -moz-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #F1F8FF), color-stop(100%, #CADCEB));
-	background: -webkit-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: -o-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: -ms-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
-	background: linear-gradient(to bottom, #F1F8FF 0%, #CADCEB 100%);
+	background-color: #F1F8FF; /* Old browsers */ /* FF3.6+ */
+	background-image: -webkit-linear-gradient(top, #F1F8FF 0%, #CADCEB 100%);
+	background-image: linear-gradient(to bottom, #F1F8FF 0%,#CADCEB 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F1F8FF', endColorstr='#CADCEB',GradientType=0 ); /* IE6-9 */
 }
 
 .dropdown .pointer {
@@ -1171,7 +1164,7 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 
 .dropdown .dropdown-contents {
 	background: #fff;
-	border-color: #b9b9b9;
+	border-color: #B9B9B9;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
