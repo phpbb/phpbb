@@ -49,6 +49,13 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 		$this->assertSame(null, $this->php_ini->getNumeric('phpBB'));
 	}
 
+	public function test_get_float()
+	{
+		$this->assertSame(1234.0, $this->php_ini->getNumeric('1234.0'));
+		$this->assertSame(-12345.0, $this->php_ini->getNumeric('-12345.0'));
+		$this->assertSame(null, $this->php_ini->getNumeric('phpBB'));
+	}
+
 	public function test_get_bytes_invalid()
 	{
 		$this->assertSame(null, $this->php_ini->getBytes(false));
