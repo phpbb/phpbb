@@ -1157,6 +1157,11 @@ ul.linklist:after,
 	text-transform: none;
 }
 
+.dropdown-extended .header .header_settings a {
+	display: inline-block;
+	padding: 0 5px;
+}
+
 .dropdown-extended .footer {
 	text-align: center;
 	font-size: 1.1em;
