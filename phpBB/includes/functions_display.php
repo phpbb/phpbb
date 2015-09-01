@@ -1483,7 +1483,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 * @param array $user_data the current stored users data
 * @param int $user_posts the users number of posts
 *
-* @return array An associative array containing the rank title (title), the rank image source (img) and the rank image as full img tag (img)
+* @return array An associative array containing the rank title (title), the rank image as full img tag (img) and the rank image source (img_src)
 *
 * Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
 */
