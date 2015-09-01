@@ -1113,6 +1113,11 @@ class auth_admin extends \phpbb\auth\auth
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
 		{
+			if (!$phpbb_permissions->category_defined($cat))
+			{
+				continue;
+			}
+
 			$template->assign_block_vars($tpl_cat, array(
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
@@ -1139,6 +1144,11 @@ class auth_admin extends \phpbb\auth\auth
 			@reset($cat_array['permissions']);
 			while (list($permission, $allowed) = each($cat_array['permissions']))
 			{
+				if (!$phpbb_permissions->permission_defined($permission))
+				{
+					continue;
+				}
+
 				if ($s_view)
 				{
 					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
