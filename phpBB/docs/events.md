@@ -2122,6 +2122,14 @@ viewtopic_body_topic_actions_before
 * Since: 3.1.0-a4
 * Purpose: Add data before the topic actions buttons (after the posts sorting options)
 
+viewtopic_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.7-RC1
+* Purpose: Add content directly after the topic title link on the View topic screen (outside of the h2 HTML tag)
+
 viewtopic_topic_title_append
 ===
 * Locations:
