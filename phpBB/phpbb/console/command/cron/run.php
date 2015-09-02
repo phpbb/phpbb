@@ -50,6 +50,7 @@ class run extends \phpbb\console\command\command
 		$this
 			->setName('cron:run')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_CRON_RUN'))
+			->setHelp($this->user->lang('CLI_HELP_CRON_RUN'))
 			->addArgument('name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCRIPTION_CRON_RUN_ARGUMENT_1'))
 		;
 	}
