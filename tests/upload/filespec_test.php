@@ -93,7 +93,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
 		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
@@ -114,7 +114,7 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function test_empty_upload_ary()
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
 		$this->assertInstanceOf('\phpbb\files\filespec', $filespec->set_upload_ary(array()));
 		$this->assertTrue($filespec->init_error());
 	}
@@ -262,7 +262,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_clean_filename_avatar($filename, $expected, $mode, $prefix = '', $user_id = '')
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
 
 		if ($filename)
 		{
@@ -403,6 +403,117 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertFalse($filespec->move_file('foo'));
 	}
 
+	public function data_move_file_copy()
+	{
+		return array(
+			array('gif_copy', true, false, array()),
+			array('gif_copy', true, true, array()),
+			array('foo_bar', false, false, array('GENERAL_UPLOAD_ERROR')),
+			array('foo_bar', false, true, array('GENERAL_UPLOAD_ERROR')),
+		);
+	}
+
+	/**
+	 * @dataProvider data_move_file_copy
+	 */
+	public function test_move_file_copy($tmp_name, $move_success, $safe_mode_on, $expected_error)
+	{
+		// Initialise a blank filespec object for use with trivial methods
+		$upload_ary = array(
+			'name' => 'gif_moved',
+			'type' => 'image/gif',
+			'size' => '',
+			'tmp_name' => $this->path . 'copies/' . $tmp_name,
+			'error' => '',
+		);
+
+		$php_ini = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
+			->getMock();
+		$php_ini->expects($this->any())
+			->method('getBool')
+			->with($this->anything())
+			->willReturn($safe_mode_on);
+		$upload = new phpbb_mock_fileupload();
+		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $php_ini, new \fastImageSize\fastImagesize,  '', $this->mimetype_guesser);
+		$filespec->set_upload_ary($upload_ary);
+		$filespec->local = false;
+		$filespec->extension = 'gif';
+		$filespec->set_upload_namespace($upload);
+
+		$this->assertEquals($move_success, $filespec->move_file($this->path . 'copies'));
+		$this->assertEquals($filespec->file_moved, file_exists($this->path . 'copies/gif_moved'));
+		$this->assertSame($expected_error, $filespec->error);
+	}
+
+	public function data_move_file_imagesize()
+	{
+		return array(
+			array(
+				array(
+					'width'		=> 2,
+					'height'	=> 2,
+					'type'		=> IMAGETYPE_GIF,
+				),
+				array()
+			),
+			array(
+				array(
+					'width'		=> 2,
+					'height'	=> 2,
+					'type'		=> -1,
+				),
+				array('Image file type -1 for mimetype image/gif not supported.')
+			),
+			array(
+				array(
+					'width'		=> 0,
+					'height'	=> 0,
+					'type'		=> IMAGETYPE_GIF,
+				),
+				array('The image file you tried to attach is invalid.')
+			),
+			array(
+				false,
+				array('It was not possible to determine the dimensions of the image. Please verify that the URL you entered is correct.')
+			)
+		);
+	}
+
+	/**
+	 * @dataProvider data_move_file_imagesize
+	 */
+	public function test_move_file_imagesize($imagesize_return, $expected_error)
+	{
+		// Initialise a blank filespec object for use with trivial methods
+		$upload_ary = array(
+			'name' => 'gif_moved',
+			'type' => 'image/gif',
+			'size' => '',
+			'tmp_name' => $this->path . 'copies/gif_copy',
+			'error' => '',
+		);
+
+		$imagesize = $this->getMockBuilder('\fastImageSize\fastImageSize')
+			->getMock();
+		$imagesize->expects($this->any())
+			->method('getImageSize')
+			->with($this->anything())
+			->willReturn($imagesize_return);
+
+		$upload = new phpbb_mock_fileupload();
+		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $imagesize,  '', $this->mimetype_guesser);
+		$filespec->set_upload_ary($upload_ary);
+		$filespec->local = false;
+		$filespec->extension = 'gif';
+		$filespec->set_upload_namespace($upload);
+
+		$this->assertEquals(true, $filespec->move_file($this->path . 'copies'));
+		$this->assertEquals($filespec->file_moved, file_exists($this->path . 'copies/gif_moved'));
+		$this->assertSame($expected_error, $filespec->error);
+	}
+
 	/**
 	* @dataProvider clean_filename_variables
 	*/
@@ -419,7 +530,7 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function test_is_uploaded()
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $this->phpbb_root_path, null);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, null);
 		$reflection_filespec = new ReflectionClass($filespec);
 		$plupload_property = $reflection_filespec->getProperty('plupload');
 		$plupload_property->setAccessible(true);

@@ -75,6 +75,9 @@ class filespec
 	/** @var \bantu\IniGetWrapper\IniGetWrapper ini_get() wrapper class */
 	protected $php_ini;
 
+	/** @var \fastImageSize\fastImageSize */
+	protected $imagesize;
+
 	/** @var language Language class */
 	protected $language;
 
@@ -97,11 +100,12 @@ class filespec
 	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload	$plupload Plupload
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \fastImageSize\fastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		$this->filesystem = $phpbb_filesystem;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
+		$this->imagesize = $imagesize;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->plupload = $plupload;
 		$this->mimetype_guesser = $mimetype_guesser;
@@ -500,10 +504,7 @@ class filespec
 		{
 			$this->width = $this->height = 0;
 
-			// Get imagesize class
-			$imagesize = new \fastImageSize\fastImageSize();
-
-			$this->image_info = $imagesize->getImageSize($this->destination_file, $this->mimetype);
+			$this->image_info = $this->imagesize->getImageSize($this->destination_file, $this->mimetype);
 
 			if ($this->image_info !== false)
 			{

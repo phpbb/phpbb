@@ -14,6 +14,7 @@ services:
             - @filesystem
             - @language
             - @php_ini
+            - @upload_imagesize
             - %core.root_path%
             - @mimetype.guesser
             - @plupload
