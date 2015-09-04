@@ -53,7 +53,7 @@ class upload extends \phpbb\avatar\driver\driver
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data($row, $ignore_config = false)
+	public function get_data($row)
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
 
