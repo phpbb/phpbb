@@ -1864,7 +1864,7 @@ class install_install extends module
 	*/
 	function add_language($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $phpbb_container, $phpbb_root_path;
 
 		$dir = @opendir($phpbb_root_path . 'language');
 
@@ -1873,26 +1873,36 @@ class install_install extends module
 			$this->error('Unable to access the language directory', __LINE__, __FILE__);
 		}
 
+		/** @var \phpbb\language\language_file_helper $language_helper */
+		$language_helper = $phpbb_container->get('language.helper.language_file');
+
 		$installed_languages = array();
 		while (($file = readdir($dir)) !== false)
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
 
-			if ($file == '.' || $file == '..' || is_link($path) || is_file($path) || $file == 'CVS')
+			if (strpos($file, '.') === 0 || is_link($path) || is_file($path))
 			{
 				continue;
 			}
 
-			if (is_dir($path) && file_exists($path . '/iso.txt'))
+			if (file_exists($path . '/composer.json'))
 			{
-				$lang_file = file("$path/iso.txt");
+				try
+				{
+					$data = $language_helper->get_language_data_from_composer_file($path . '/composer.json');
+				}
+				catch (\DomainException $e)
+				{
+					continue;
+				}
 
 				$lang_pack = array(
-					'lang_iso'			=> basename($path),
-					'lang_dir'			=> basename($path),
-					'lang_english_name'	=> trim(htmlspecialchars($lang_file[0])),
-					'lang_local_name'	=> trim(htmlspecialchars($lang_file[1], ENT_COMPAT, 'UTF-8')),
-					'lang_author'		=> trim(htmlspecialchars($lang_file[2], ENT_COMPAT, 'UTF-8')),
+					'lang_iso'			=> $data['iso'],
+					'lang_dir'			=> $data['iso'],
+					'lang_english_name'	=> $data['name'],
+					'lang_local_name'	=> $data['local_name'],
+					'lang_author'		=> $data['author'],
 				);
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $lang_pack));

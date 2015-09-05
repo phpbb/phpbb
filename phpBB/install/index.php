@@ -195,7 +195,7 @@ if (!$language)
 	{
 		$path = $phpbb_root_path . 'language/' . $file;
 
-		if (!is_file($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+		if (!is_file($path) && !is_link($path) && file_exists($path . '/composer.json'))
 		{
 			$language = $file;
 			break;
@@ -826,7 +826,7 @@ class module
 	*/
 	function inst_language_select($default = '')
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpbb_container;
 
 		$dir = @opendir($phpbb_root_path . 'language');
 
@@ -835,19 +835,30 @@ class module
 			$this->error('Unable to access the language directory', __LINE__, __FILE__);
 		}
 
+		/** @var \phpbb\language\language_file_helper $language_helper */
+		$language_helper = $phpbb_container->get('language.helper.language_file');
+
 		while ($file = readdir($dir))
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
 
-			if ($file == '.' || $file == '..' || is_link($path) || is_file($path) || $file == 'CVS')
+			if (strpos($file, '.') === 0 || is_link($path) || is_file($path))
 			{
 				continue;
 			}
 
-			if (file_exists($path . '/iso.txt'))
+			if (file_exists($path . '/composer.json'))
 			{
-				list($displayname, $localname) = @file($path . '/iso.txt');
-				$lang[$localname] = $file;
+				try
+				{
+					$data = $language_helper->get_language_data_from_composer_file($path . '/composer.json');
+				}
+				catch (\DomainException $e)
+				{
+					continue;
+				}
+
+				$lang[$data['local_name']] = $data['iso'];
 			}
 		}
 		closedir($dir);
