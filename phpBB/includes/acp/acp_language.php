@@ -265,20 +265,21 @@ class acp_language
 				$lang_iso = $request->variable('iso', '');
 				$lang_iso = basename($lang_iso);
 
-				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/iso.txt"))
+				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/composer.json"))
 				{
 					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$file = file("{$phpbb_root_path}language/$lang_iso/iso.txt");
-
-				$lang_pack = array(
-					'iso'		=> $lang_iso,
-					'name'		=> trim(htmlspecialchars($file[0], ENT_COMPAT)),
-					'local_name'=> trim(htmlspecialchars($file[1], ENT_COMPAT, 'UTF-8')),
-					'author'	=> trim(htmlspecialchars($file[2], ENT_COMPAT, 'UTF-8'))
-				);
-				unset($file);
+				/** @var \phpbb\language\language_file_helper $language_helper */
+				$language_helper = $phpbb_container->get('language.helper.language_file');
+				try
+				{
+					$lang_pack = $language_helper->get_language_data_from_composer_file("{$phpbb_root_path}language/$lang_iso/composer.json");
+				}
+				catch (\DomainException $e)
+				{
+					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$sql = 'SELECT lang_iso
 					FROM ' . LANG_TABLE . "

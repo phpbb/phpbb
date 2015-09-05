@@ -45,7 +45,7 @@ class language_file_helper
 		// Find available language packages
 		$finder = new Finder();
 		$finder->files()
-			->name('iso.txt')
+			->name('composer.json')
 			->depth('== 1')
 			->followLinks()
 			->in($this->phpbb_root_path . 'language');
@@ -53,20 +53,58 @@ class language_file_helper
 		$available_languages = array();
 		foreach ($finder as $file)
 		{
-			$path = $file->getRelativePath();
-			$info = explode("\n", $file->getContents());
+			$json = $file->getContents();
+			$data = json_decode($json, true);
 
-			$available_languages[] = array(
-				// Get the name of the directory containing iso.txt
-				'iso' => $path,
-
-				// Recover data from file
-				'name' => trim($info[0]),
-				'local_name' => trim($info[1]),
-				'author' => trim($info[2])
-			);
+			$available_languages[] = $this->get_language_data_from_json($data);
 		}
 
 		return $available_languages;
+	}
+
+	/**
+	 * Collect some data from the composer.json file
+	 *
+	 * @param string $path
+	 * @return array
+	 */
+	public function get_language_data_from_composer_file($path)
+	{
+		$json_data = file_get_contents($path);
+		return $this->get_language_data_from_json(json_decode($json_data, true));
+	}
+
+	/**
+	 * Collect some data from the composer.json data
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	protected function get_language_data_from_json(array $data)
+	{
+		if (!isset($data['extra']['language-iso']) || !isset($data['extra']['english-name']) || !isset($data['extra']['local-name']))
+		{
+			throw new \DomainException('INVALID_LANGUAGE_PACK');
+		}
+
+		$authors = array();
+		if (isset($data['authors']))
+		{
+			foreach ($data['authors'] as $author)
+			{
+				if (isset($author['name']) && $author['name'] !== '')
+				{
+					$authors[] = $author['name'];
+				}
+			}
+		}
+
+		return array(
+			'iso' => $data['extra']['language-iso'],
+
+			'name' => $data['extra']['english-name'],
+			'local_name' => $data['extra']['local-name'],
+			'author' => implode(', ', $authors),
+		);
 	}
 }
