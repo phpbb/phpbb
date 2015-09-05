@@ -2669,8 +2669,13 @@ function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = f
 }
 
 /**
-* Parse cfg file
-*/
+ * Parse cfg file
+ * @param string $filename
+ * @param bool|array $lines
+ * @return array
+ *
+ * @deprecated Will be removed in the future as *.cfg files are being replaced by composer.json files
+ */
 function parse_cfg_file($filename, $lines = false)
 {
 	$parsed_items = array();
