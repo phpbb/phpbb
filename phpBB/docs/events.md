@@ -2030,6 +2030,13 @@ viewtopic_body_post_buttons_list_before
 * Purpose: Add post button custom list to posts (next to edit, quote etc),
 before the original list.
 
+viewtopic_body_post_subject_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.7-RC1
+* Purpose: Add data after post icon and subject
+
 viewtopic_body_postrow_custom_fields_after
 ===
 * Locations:
