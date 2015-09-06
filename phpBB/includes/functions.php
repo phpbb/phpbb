@@ -27,26 +27,51 @@ if (!defined('IN_PHPBB'))
 */
 function phpbb_load_extensions_autoloaders($phpbb_root_path)
 {
-	$iterator = new \RecursiveIteratorIterator(
-		new \phpbb\recursive_dot_prefix_filter_iterator(
-			new \RecursiveDirectoryIterator(
-				$phpbb_root_path . 'ext/',
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
-			)
-		),
-		\RecursiveIteratorIterator::SELF_FIRST
-	);
-	$iterator->setMaxDepth(2);
+	global $phpbb_config_php_file;
 
-	foreach ($iterator as $file_info)
+	$acm_type = $phpbb_config_php_file->get('acm_type');
+	if (preg_match('#^[a-z]+$#', $acm_type))
 	{
-		if ($file_info->getFilename() === 'vendor' && $iterator->getDepth() === 2)
+		$acm_type = 'phpbb\\cache\\driver\\' . $acm_type;
+	}
+	$cache = new $acm_type;
+
+	if (($autoloaders = $cache->get('_load_extensions_autoloaders')) === false)
+	{
+		$autoloaders = array();
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \phpbb\recursive_dot_prefix_filter_iterator(
+				new \RecursiveDirectoryIterator(
+					$phpbb_root_path . 'ext/',
+					\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
+				)
+			),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+		$iterator->setMaxDepth('2');
+
+		foreach ($iterator as $file_info)
 		{
-			$filename = $file_info->getRealPath() . '/autoload.php';
-			if (file_exists($filename))
+			if ($file_info->getFilename() === 'vendor' && $iterator->getDepth() === 2)
 			{
-				require $filename;
+				$filename = $file_info->getRealPath() . '/autoload.php';
+				if (file_exists($filename))
+				{
+					$autoloaders[] = $filename;
+				}
 			}
+		}
+
+		$cache->put('_load_extensions_autoloaders', $autoloaders);
+	}
+	unset($cache, $acm_type);
+
+	foreach ($autoloaders as $autoloader)
+	{
+		if (file_exists($autoloader))
+		{
+			require $autoloader;
 		}
 	}
 }
