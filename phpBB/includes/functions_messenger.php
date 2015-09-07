@@ -931,6 +931,8 @@ class queue
 			{
 				// Do nothing
 			}
+
+			$this->data = array();
 		}
 
 		$lock->release();
