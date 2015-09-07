@@ -69,16 +69,6 @@ class form extends base
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
-	public function set_upload(upload $upload)
-	{
-		$this->upload = $upload;
-
-		return $this;
-	}
-
-	/**
 	 * Form upload method
 	 * Upload file from users harddisk
 	 *
