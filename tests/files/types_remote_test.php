@@ -12,6 +12,7 @@
  */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/type_foo.php';
 
 class phpbb_files_types_remote_test extends phpbb_test_case
 {
@@ -39,8 +40,9 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-		global $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx;
 
+		$config = new \phpbb\config\config(array());
 		$this->request = $this->getMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
@@ -73,5 +75,67 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$file = $type_remote->upload('https://bärföö.com/foo.png');
 
 		$this->assertSame(array('NOT_UPLOADED'), $file->error);
+	}
+
+	public function data_get_max_file_size()
+	{
+		return array(
+			array('', 'http://example.com/foo/bar.png'),
+			array('2k', 'http://example.com/foo/bar.png'),
+			array('500k', 'http://example.com/foo/bar.png'),
+			array('500M', 'http://example.com/foo/bar.png'),
+			array('500m', 'http://example.com/foo/bar.png'),
+			array('500k', 'http://google.com/.png', 'DISALLOWED_CONTENT'),
+			array('1', 'http://google.com/.png', 'WRONG_FILESIZE'),
+			array('500g', 'http://example.com/foo/bar.png'),
+			array('foobar', 'http://example.com/foo/bar.png'),
+			array('-5k', 'http://example.com/foo/bar.png'),
+		);
+	}
+
+	/**
+	 * @dataProvider data_get_max_file_size
+	 */
+	public function test_get_max_file_size($max_file_size, $link, $expected = 'URL_NOT_FOUND')
+	{
+		$php_ini = $this->getMock('\bantu\IniGetWrapper\IniGetWrapper', array('getString'));
+		$php_ini->expects($this->any())
+			->method('getString')
+			->willReturn($max_file_size);
+		$type_remote = new \phpbb\files\types\remote($this->factory, $this->language, $php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('png'));
+		$type_remote->set_upload($upload);
+
+		$file = $type_remote->upload($link);
+
+		$this->assertSame(array($expected), $file->error);
+	}
+
+	public function test_upload_timeout()
+	{
+		$type_remote = new \phpbb\files\types\remote($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('png'));
+		$type_remote->set_upload($upload);
+		$upload->upload_timeout = -5;
+
+		$file = $type_remote->upload('http://google.com/.png');
+
+		$this->assertSame(array('REMOTE_UPLOAD_TIMEOUT'), $file->error);
+	}
+
+	public function test_upload_wrong_path()
+	{
+		$type_remote = new \phpbb\files\types\foo($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('png'));
+		$type_remote->set_upload($upload);
+		$type_remote::$tempnam_path = $this->phpbb_root_path . 'cache/wrong/path';
+
+		$file = $type_remote->upload('http://google.com/.png');
+
+		$this->assertSame(array('NOT_UPLOADED'), $file->error);
+		$type_remote::$tempnam_path = '';
 	}
 }

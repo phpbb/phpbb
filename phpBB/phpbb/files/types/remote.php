@@ -235,10 +235,10 @@ class remote extends base
 		{
 			$max_file_size = $this->php_ini->getString('upload_max_filesize');
 
-			if (!empty($max_filesize))
+			if (!empty($max_file_size))
 			{
 				$unit = strtolower(substr($max_file_size, -1, 1));
-				$max_file_size = (int) $max_filesize;
+				$max_file_size = (int) $max_file_size;
 
 				switch ($unit)
 				{
