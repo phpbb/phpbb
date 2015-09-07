@@ -84,19 +84,7 @@ class local extends base
 			return $file;
 		}
 
-		if (isset($upload['error']))
-		{
-			$error = $this->upload->assign_internal_error($upload['error']);
-
-			if ($error !== false)
-			{
-				$file->error[] = $error;
-				return $file;
-			}
-		}
-
 		// PHP Upload file size check
-		$this->check_upload_size($file);
 		$file = $this->check_upload_size($file);
 		if (sizeof($file->error))
 		{
