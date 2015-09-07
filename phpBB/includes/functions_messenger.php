@@ -902,6 +902,8 @@ class queue
 			fclose($fp);
 
 			phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+
+			$this->data = array();
 		}
 
 		$lock->release();
