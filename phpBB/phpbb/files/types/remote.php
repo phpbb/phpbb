@@ -84,11 +84,6 @@ class remote extends base
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'URL_INVALID'));
 		}
 
-		if (empty($match[2]))
-		{
-			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'URL_INVALID'));
-		}
-
 		$url = parse_url($upload_url);
 
 		$host = $url['host'];
