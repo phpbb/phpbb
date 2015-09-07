@@ -16,7 +16,6 @@ namespace phpbb\files\types;
 use \bantu\IniGetWrapper\IniGetWrapper;
 use \phpbb\files\factory;
 use \phpbb\files\filespec;
-use \phpbb\files\upload;
 use \phpbb\language\language;
 use \phpbb\plupload\plupload;
 use \phpbb\request\request_interface;
@@ -38,7 +37,7 @@ class form extends base
 	/** @var request_interface */
 	protected $request;
 
-	/** @var upload */
+	/** @var \phpbb\files\upload */
 	protected $upload;
 
 	/**

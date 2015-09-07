@@ -96,6 +96,7 @@ class filespec
 	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem Filesystem
 	 * @param language					$language Language
 	 * @param \bantu\IniGetWrapper\IniGetWrapper			$php_ini ini_get() wrapper
+	 * @param \fastImageSize\fastImageSize $imagesize Imagesize class
 	 * @param string					$phpbb_root_path phpBB root path
 	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload	$plupload Plupload
