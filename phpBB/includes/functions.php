@@ -4848,7 +4848,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 			return $html;
 		}
 
-		$avatar_data = $driver->get_data($row, $ignore_config);
+		$avatar_data = $driver->get_data($row);
 	}
 	else
 	{
