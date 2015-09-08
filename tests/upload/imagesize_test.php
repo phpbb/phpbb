@@ -16,7 +16,7 @@ require_once(__DIR__ . '/../../phpBB/includes/functions.php');
 
 class phpbb_upload_imagesize_test extends \phpbb_test_case
 {
-	/** @var \fastImageSize\fastImageSize */
+	/** @var \FastImageSize\FastImageSize */
 	protected $imagesize;
 
 	/** @var string Path to fixtures */
@@ -25,7 +25,7 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 	public function setUp()
 	{
 		parent::setUp();
-		$this->imagesize = new \fastImageSize\fastImageSize();
+		$this->imagesize = new \FastImageSize\FastImageSize();
 		$this->path = __DIR__ . '/fixture/';
 	}
 
