@@ -370,7 +370,7 @@ class parser implements \phpbb\textformatter\parser_interface
 
 		if ($max_height || $max_width)
 		{
-			$imagesize = new \fastImageSize\fastImageSize();
+			$imagesize = new \FastImageSize\FastImageSize();
 			$size_info = $imagesize->getImageSize($url);
 			if ($size_info === false)
 			{

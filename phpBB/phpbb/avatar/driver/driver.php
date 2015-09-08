@@ -30,7 +30,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	*/
 	protected $config;
 
-	/** @var \fastImageSize\fastImageSize */
+	/** @var \FastImageSize\FastImageSize */
 	protected $imagesize;
 
 	/**
@@ -76,13 +76,13 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	* Construct a driver object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
-	* @param \fastImageSize\fastImageSize $imagesize fastImageSize class
+	* @param \FastImageSize\FastImageSize $imagesize FastImageSize class
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, \fastImageSize\fastImageSize $imagesize, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->imagesize = $imagesize;

@@ -403,7 +403,7 @@ class filespec
 			$this->width = $this->height = 0;
 
 			// Get imagesize class
-			$imagesize = new \fastImageSize\fastImageSize();
+			$imagesize = new \FastImageSize\FastImageSize();
 
 			$this->image_info = $imagesize->getImageSize($this->destination_file, $this->mimetype);
 

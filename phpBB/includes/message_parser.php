@@ -403,7 +403,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
-			$imagesize = new \fastImageSize\fastImageSize();
+			$imagesize = new \FastImageSize\FastImageSize();
 			$size_info = $imagesize->getImageSize(htmlspecialchars_decode($in));
 
 			if ($size_info === false)
