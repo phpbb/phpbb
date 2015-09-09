@@ -8,6 +8,7 @@ imports:
     - { resource: services_cron.yml }
     - { resource: services_db.yml }
     - { resource: services_event.yml }
+    - { resource: services_extensions.yml }
     - { resource: services_feed.yml }
     - { resource: services_files.yml }
     - { resource: services_filesystem.yml }
@@ -97,18 +98,6 @@ services:
             - '@service_container'
             - '%core.root_path%'
             - '@template'
-
-    ext.manager:
-        class: phpbb\extension\manager
-        arguments:
-            - '@service_container'
-            - '@dbal.conn'
-            - '@config'
-            - '@filesystem'
-            - '%tables.ext%'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '@cache'
 
     file_downloader:
         class: phpbb\file_downloader

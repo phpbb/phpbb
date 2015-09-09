@@ -1,0 +1,39 @@
+services:
+    ext.manager:
+        class: phpbb\extension\manager
+        arguments:
+            - @service_container
+            - @dbal.conn
+            - @config
+            - @filesystem
+            - %tables.ext%
+            - %core.root_path%
+            - %core.php_ext%
+            - @cache
+
+    ext.composer.installer:
+        class: phpbb\composer\installer
+        arguments:
+            - %core.root_path%
+            - @config
+
+    ext.composer.manager:
+        class: phpbb\composer\manager
+        arguments:
+            - @ext.composer.installer
+            - phpbb-extension
+            - EXTENSIONS_
+
+    style.composer.manager:
+        class: phpbb\composer\manager
+        arguments:
+            - @ext.composer.installer
+            - phpbb-style
+            - STYLES_
+
+    lang.composer.manager:
+        class: phpbb\composer\manager
+        arguments:
+            - @ext.composer.installer
+            - phpbb-language
+            - LANGUAGES_
