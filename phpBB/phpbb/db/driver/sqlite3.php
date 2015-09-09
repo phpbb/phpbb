@@ -48,6 +48,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 		try
 		{
 			$this->dbo = new \SQLite3($this->server, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+			$this->dbo->busyTimeout(60000);
 			$this->db_connect_id = true;
 		}
 		catch (\Exception $e)
