@@ -197,7 +197,7 @@ class upload
 	{
 		$args = func_get_args();
 		array_shift($args);
-		$type_class = $this->factory->get('types.' . $type)
+		$type_class = $this->factory->get($type)
 			->set_upload($this);
 
 		return (is_object($type_class)) ? call_user_func_array(array($type_class, 'upload'), $args) : false;

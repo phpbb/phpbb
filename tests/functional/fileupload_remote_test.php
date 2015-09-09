@@ -78,7 +78,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$upload->set_error_prefix('')
 			->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(100);
-		$file = $upload->handle_upload('remote', self::$root_url . 'develop/blank.gif');
+		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'develop/blank.gif');
 		$this->assertEquals('URL_INVALID', $file->error[0]);
 	}
 
@@ -89,7 +89,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$upload->set_error_prefix('')
 			->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(100);
-		$file = $upload->handle_upload('remote', self::$root_url . 'develop/blank.jpg');
+		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'develop/blank.jpg');
 		$this->assertEquals('EMPTY_REMOTE_DATA', $file->error[0]);
 	}
 
@@ -100,7 +100,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$upload->set_error_prefix('')
 			->set_allowed_extensions(array('gif'))
 			->set_max_filesize(1000);
-		$file = $upload->handle_upload('remote', self::$root_url . 'styles/prosilver/theme/images/forum_read.gif');
+		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'styles/prosilver/theme/images/forum_read.gif');
 		$this->assertEquals(0, sizeof($file->error));
 		$this->assertTrue(file_exists($file->get('filename')));
 		$this->assertTrue($file->is_uploaded());
@@ -113,7 +113,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$upload->set_error_prefix('')
 			->set_allowed_extensions(array('gif'))
 			->set_max_filesize(100);
-		$file = $upload->handle_upload('remote', self::$root_url . 'styles/prosilver/theme/images/forum_read.gif');
+		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'styles/prosilver/theme/images/forum_read.gif');
 		$this->assertEquals(1, sizeof($file->error));
 		$this->assertEquals('WRONG_FILESIZE', $file->error[0]);
 	}

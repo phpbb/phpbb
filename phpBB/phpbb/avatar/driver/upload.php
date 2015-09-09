@@ -116,7 +116,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		if (!empty($upload_file['name']))
 		{
-			$file = $upload->handle_upload('form', 'avatar_upload_file');
+			$file = $upload->handle_upload('files.types.form', 'avatar_upload_file');
 		}
 		else if (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
@@ -146,7 +146,7 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			$file = $upload->handle_upload('remote', $url);
+			$file = $upload->handle_upload('files.types.remote', $url);
 		}
 		else
 		{
