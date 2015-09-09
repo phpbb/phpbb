@@ -245,15 +245,12 @@ class upload
 			break;
 
 			case UPLOAD_ERR_NO_TMP_DIR:
-				$error = 'Temporary folder could not be found. Please check your PHP installation.';
-			break;
-
 			case UPLOAD_ERR_CANT_WRITE:
-				$error = 'Can’t write to temporary folder.';
+				$error = $this->language->lang($this->error_prefix . 'NO_TEMP_DIR');
 			break;
 
 			case UPLOAD_ERR_EXTENSION:
-				$error = 'A PHP extension has stopped the file upload.';
+				$error = $this->language->lang($this->error_prefix . 'PHP_UPLOAD_STOPPED');
 			break;
 
 			default:

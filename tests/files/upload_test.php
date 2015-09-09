@@ -110,9 +110,9 @@ class phpbb_files_upload_test extends phpbb_test_case
 			array(UPLOAD_ERR_FORM_SIZE, 'WRONG_FILESIZE'),
 			array(UPLOAD_ERR_PARTIAL, 'PARTIAL_UPLOAD'),
 			array(UPLOAD_ERR_NO_FILE, 'NOT_UPLOADED'),
-			array(UPLOAD_ERR_NO_TMP_DIR, 'Temporary folder could not be found. Please check your PHP installation.'),
-			array(UPLOAD_ERR_CANT_WRITE, 'Can’t write to temporary folder.'),
-			array(UPLOAD_ERR_EXTENSION, 'A PHP extension has stopped the file upload.'),
+			array(UPLOAD_ERR_NO_TMP_DIR, 'NO_TEMP_DIR'),
+			array(UPLOAD_ERR_CANT_WRITE, 'NO_TEMP_DIR'),
+			array(UPLOAD_ERR_EXTENSION, 'PHP_UPLOAD_STOPPED'),
 			array(9, false),
 		);
 	}
