@@ -75,7 +75,7 @@ class filespec
 	/** @var \bantu\IniGetWrapper\IniGetWrapper ini_get() wrapper class */
 	protected $php_ini;
 
-	/** @var \fastImageSize\fastImageSize */
+	/** @var \FastImageSize\FastImageSize */
 	protected $imagesize;
 
 	/** @var language Language class */
@@ -96,12 +96,12 @@ class filespec
 	 * @param \phpbb\filesystem\filesystem_interface	$phpbb_filesystem Filesystem
 	 * @param language					$language Language
 	 * @param \bantu\IniGetWrapper\IniGetWrapper			$php_ini ini_get() wrapper
-	 * @param \fastImageSize\fastImageSize $imagesize Imagesize class
+	 * @param \FastImageSize\FastImageSize $imagesize Imagesize class
 	 * @param string					$phpbb_root_path phpBB root path
 	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload	$plupload Plupload
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \fastImageSize\fastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
 		$this->filesystem = $phpbb_filesystem;
 		$this->language = $language;

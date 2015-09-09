@@ -93,7 +93,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \FastImageSize\FastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
 		return $filespec->set_upload_ary(array_merge($upload_ary, $override));
 	}
 
@@ -114,7 +114,7 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function test_empty_upload_ary()
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \FastImageSize\FastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
 		$this->assertInstanceOf('\phpbb\files\filespec', $filespec->set_upload_ary(array()));
 		$this->assertTrue($filespec->init_error());
 	}
@@ -262,7 +262,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_clean_filename_avatar($filename, $expected, $mode, $prefix = '', $user_id = '')
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \FastImageSize\FastImageSize(), $this->phpbb_root_path, $this->mimetype_guesser);
 
 		if ($filename)
 		{
@@ -435,7 +435,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			->willReturn($safe_mode_on);
 		$upload = new phpbb_mock_fileupload();
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $php_ini, new \fastImageSize\fastImagesize,  '', $this->mimetype_guesser);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $php_ini, new \FastImageSize\FastImagesize,  '', $this->mimetype_guesser);
 		$filespec->set_upload_ary($upload_ary);
 		$filespec->local = false;
 		$filespec->extension = 'gif';
@@ -494,7 +494,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'error' => '',
 		);
 
-		$imagesize = $this->getMockBuilder('\fastImageSize\fastImageSize')
+		$imagesize = $this->getMockBuilder('\FastImageSize\FastImageSize')
 			->getMock();
 		$imagesize->expects($this->any())
 			->method('getImageSize')
@@ -530,7 +530,7 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	public function test_is_uploaded()
 	{
-		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \fastImageSize\fastImageSize(), $this->phpbb_root_path, null);
+		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \FastImageSize\FastImageSize(), $this->phpbb_root_path, null);
 		$reflection_filespec = new ReflectionClass($filespec);
 		$plupload_property = $reflection_filespec->getProperty('plupload');
 		$plupload_property->setAccessible(true);

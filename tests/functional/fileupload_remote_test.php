@@ -57,7 +57,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$container = new phpbb_mock_container_builder();
-		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \fastImageSize\fastImageSize(), $this->phpbb_root_path));
+		$container->set('files.filespec', new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \FastImageSize\FastImageSize(), $this->phpbb_root_path));
 		$this->factory = new \phpbb\files\factory($container);
 		$container->set('files.factory', $this->factory);
 		$container->set('files.types.remote', new \phpbb\files\types\remote($this->factory, $this->language, $this->php_ini, $this->request, $phpbb_root_path));

@@ -58,7 +58,7 @@ class phpbb_files_types_form_test extends phpbb_test_case
 			$this->filesystem,
 			$this->language,
 			$this->php_ini,
-			new \fastImageSize\fastImageSize(),
+			new \FastImageSize\FastImageSize(),
 			$phpbb_root_path,
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
@@ -147,7 +147,7 @@ class phpbb_files_types_form_test extends phpbb_test_case
 			$this->filesystem,
 			$this->language,
 			$this->php_ini,
-			new \fastImageSize\fastImageSize(),
+			new \FastImageSize\FastImageSize(),
 			$this->phpbb_root_path,
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),

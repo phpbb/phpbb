@@ -72,7 +72,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 			$this->filesystem,
 			$this->language,
 			$this->php_ini,
-			new \fastImageSize\fastImageSize(),
+			new \FastImageSize\FastImageSize(),
 			$phpbb_root_path,
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
@@ -132,7 +132,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('jpg'))
 			->set_max_filesize(1000);
-		$file = new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \fastImageSize\fastImageSize(), $this->phpbb_root_path);
+		$file = new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \FastImageSize\FastImageSize(), $this->phpbb_root_path);
 		$file->set_upload_ary(array(
 				'size'	=> 50,
 				'tmp_name'	=> dirname(__FILE__) . '/fixture/disallowed',
