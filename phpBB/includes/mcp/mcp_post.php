@@ -574,6 +574,7 @@ function change_poster(&$post_info, $userdata)
 	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MCP_CHANGE_POSTER', false, array(
 		'forum_id' => $post_info['forum_id'],
 		'topic_id' => $post_info['topic_id'],
+		'post_id'  => $post_info['post_id'],
 		$post_info['topic_title'],
 		$from_username,
 		$to_username

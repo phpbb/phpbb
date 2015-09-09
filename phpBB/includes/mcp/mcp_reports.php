@@ -716,6 +716,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_REPORT_' .  strtoupper($action) . 'D', false, array(
 					'forum_id' => $post_info[$report['post_id']]['forum_id'],
 					'topic_id' => $post_info[$report['post_id']]['topic_id'],
+					'post_id'  => $report['post_id'],
 					$post_info[$report['post_id']]['post_subject']
 				));
 				$phpbb_notifications->delete_notifications('notification.type.report_post', $report['post_id']);

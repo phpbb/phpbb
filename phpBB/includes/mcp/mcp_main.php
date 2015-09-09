@@ -322,6 +322,7 @@ function lock_unlock($action, $ids)
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($action), false, array(
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
+				'post_id'  => isset($row['post_id']) ? $row['post_id'] : 0,
 				$row['topic_title']
 			));
 		}
@@ -1022,6 +1023,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_SOFTDELETE_POST', false, array(
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
+				'post_id'  => $row['post_id'],
 				$row['post_subject'],
 				$post_username,
 				$soft_delete_reason
@@ -1071,6 +1073,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_POST', false, array(
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
+				'post_id'  => $row['post_id'],
 				$row['post_subject'],
 				$post_username,
 				$soft_delete_reason

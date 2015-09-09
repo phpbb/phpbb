@@ -1700,6 +1700,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_POST_EDITED', false, array(
 					'forum_id' => $data['forum_id'],
 					'topic_id' => $data['topic_id'],
+					'post_id'  => $data['post_id'],
 					$log_subject,
 					(!empty($username)) ? $username : $user->lang['GUEST'],
 					$data['post_edit_reason']
@@ -2666,6 +2667,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, (($is_soft) ? 'LOG_SOFTDELETE_POST' : 'LOG_DELETE_POST'), false, array(
 					'forum_id' => $forum_id,
 					'topic_id' => $topic_id,
+					'post_id'  => $post_id,
 					$post_data['post_subject'],
 					$post_username,
 					$delete_reason
