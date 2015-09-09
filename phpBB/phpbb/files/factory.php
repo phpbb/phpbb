@@ -42,7 +42,7 @@ class factory
 	{
 		$service = false;
 
-		$name = (strpos($name, 'files.') === false) ? 'files.' . $name : $name;
+		$name = (strpos($name, '.') === false) ? 'files.' . $name : $name;
 
 		try
 		{

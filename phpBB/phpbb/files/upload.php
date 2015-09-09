@@ -13,9 +13,9 @@
 
 namespace phpbb\files;
 
-use \phpbb\filesystem\filesystem_interface;
-use \phpbb\language\language;
-use \phpbb\request\request_interface;
+use phpbb\filesystem\filesystem_interface;
+use phpbb\language\language;
+use phpbb\request\request_interface;
 
 /**
  * File upload class

@@ -13,7 +13,7 @@
 
 namespace phpbb\files\types;
 
-use \phpbb\files\upload;
+use phpbb\files\upload;
 
 interface type_interface
 {

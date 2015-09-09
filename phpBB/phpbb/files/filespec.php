@@ -13,7 +13,7 @@
 
 namespace phpbb\files;
 
-use \phpbb\language\language;
+use phpbb\language\language;
 
 /**
  * Responsible for holding all file relevant information, as well as doing file-specific operations.
@@ -201,8 +201,6 @@ class filespec
 	 *				character. Unique creates a unique filename.
 	 * @param string $prefix Prefix applied to filename
 	 * @param string $user_id The user_id is only needed for when cleaning a user's avatar
-	 *
-	 *@access public
 	 */
 	public function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
