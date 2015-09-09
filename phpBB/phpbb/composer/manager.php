@@ -18,7 +18,7 @@ use phpbb\composer\exception\runtime_exception;
 /**
  * Class to manage packages through composer.
  */
-class manager
+class manager implements manager_interface
 {
 	/**
 	 * @var installer Composer packages installer
@@ -74,6 +74,16 @@ class manager
 			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED', [implode('|', $already_managed)]);
 		}
 
+		$this->do_install($packages);
+	}
+
+	/**
+	 * Really install the packages.
+	 *
+	 * @param array $packages Packages to install.
+	 */
+	protected function do_install($packages)
+	{
 		$managed_packages = array_merge($this->get_managed_packages(), $packages);
 		ksort($managed_packages);
 
@@ -135,12 +145,12 @@ class manager
 	/**
 	 * Tells whether or not a package is managed by Composer.
 	 *
-	 * @param string $packages Package name
+	 * @param string $package Package name
 	 * @return bool
 	 */
-	public function is_managed($packages)
+	public function is_managed($package)
 	{
-		return array_key_exists($packages, $this->get_managed_packages());
+		return array_key_exists($package, $this->get_managed_packages());
 	}
 
 	/**
@@ -177,11 +187,15 @@ class manager
 	{
 		$normalized_packages = [];
 
-		foreach ($packages as $package)
+		foreach ($packages as $package => $version)
 		{
-			if (!is_array($package))
+			if (is_numeric($package))
 			{
-				$normalized_packages[$package] = '*';
+				$normalized_packages[$version] = '*';
+			}
+			else
+			{
+				$normalized_packages[$package] = $version;
 			}
 		}
 

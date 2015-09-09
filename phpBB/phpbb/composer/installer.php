@@ -86,7 +86,8 @@ class installer
 	{
 		$this->generate_ext_json_file($packages);
 
-		putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . '/' . $this->packages_vendor_dir);
+		$original_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
+		putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . $this->packages_vendor_dir);
 
 		$io = new BufferIO('', OutputInterface::VERBOSITY_DEBUG);
 		$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
@@ -123,6 +124,10 @@ class installer
 		{
 			throw new runtime_exception('Cannot install packages', [], $e);
 		}
+		finally
+		{
+			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
+		}
 	}
 
 	/**
@@ -134,10 +139,12 @@ class installer
 	 */
 	public function get_installed_packages($type)
 	{
+		$original_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
+
 		try
 		{
 			$io = new NullIO();
-			putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . '/' . $this->packages_vendor_dir);
+			putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . $this->packages_vendor_dir);
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
 			$installed = [];
@@ -156,6 +163,10 @@ class installer
 		catch (\Exception $e)
 		{
 			return [];
+		}
+		finally
+		{
+			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
 		}
 	}
 

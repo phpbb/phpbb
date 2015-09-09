@@ -14,6 +14,7 @@
 namespace phpbb\console\command\extension;
 
 use phpbb\composer\manager;
+use phpbb\composer\manager_interface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,11 +23,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class update extends \phpbb\console\command\command
 {
 	/**
-	 * @var \phpbb\composer\manager Composer extensions manager
+	 * @var manager_interface Composer extensions manager
 	 */
 	protected $manager;
 
-	public function __construct(\phpbb\user $user, manager $manager)
+	public function __construct(\phpbb\user $user, manager_interface $manager)
 	{
 		$this->manager = $manager;
 

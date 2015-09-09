@@ -18,9 +18,10 @@ services:
             - @config
 
     ext.composer.manager:
-        class: phpbb\composer\manager
+        class: phpbb\composer\extension_manager
         arguments:
             - @ext.composer.installer
+            - @ext.manager
             - phpbb-extension
             - EXTENSIONS_
 
