@@ -22,3 +22,5 @@
 /tests/test_config*.php
 /tests/tmp/*
 /tests/vendor
+node_modules
+phpBB/styles/*/theme/*.dev.css
