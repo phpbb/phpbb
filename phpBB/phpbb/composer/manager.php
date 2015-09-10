@@ -191,7 +191,15 @@ class manager implements manager_interface
 		{
 			if (is_numeric($package))
 			{
-				$normalized_packages[$version] = '*';
+				if (strpos($version, ':') !== false)
+				{
+					$parts = explode(':', $version);
+					$normalized_packages[$parts[0]] = $parts[1];
+				}
+				else
+				{
+					$normalized_packages[$version] = '*';
+				}
 			}
 			else
 			{

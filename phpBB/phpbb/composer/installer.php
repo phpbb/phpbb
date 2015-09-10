@@ -118,7 +118,6 @@ class installer
 				// TODO Extract the precise error and use language string
 				throw new \RuntimeException(substr($output, $error_pos));
 			}
-
 		}
 		catch (\Exception $e)
 		{
