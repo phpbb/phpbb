@@ -1173,6 +1173,12 @@ ul.linklist:after,
 	text-transform: none;
 }
 
+.dropdown-extended .header:after {
+	content: '';
+	display: table;
+	clear: both;
+}
+
 .dropdown-extended .footer {
 	text-align: center;
 	font-size: 1.1em;

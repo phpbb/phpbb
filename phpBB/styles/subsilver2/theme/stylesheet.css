@@ -1224,6 +1224,12 @@ a.imageset {
 	text-transform: none;
 }
 
+#notification_list .header:after {
+	content: '';
+	display: table;
+	clear: both;
+}
+
 #notification_list .footer {
 	text-align: center;
 	font-size: 1.2em;
