@@ -141,6 +141,7 @@ class service
 				$icons[$row['icons_id']]['img'] = $row['icons_url'];
 				$icons[$row['icons_id']]['width'] = (int) $row['icons_width'];
 				$icons[$row['icons_id']]['height'] = (int) $row['icons_height'];
+				$icons[$row['icons_id']]['alt'] = ($row['icons_alt']) ? $row['icons_alt'] : '';
 				$icons[$row['icons_id']]['display'] = (bool) $row['display_on_posting'];
 			}
 			$this->db->sql_freeresult($result);
