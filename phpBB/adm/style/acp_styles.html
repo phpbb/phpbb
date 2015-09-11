@@ -99,7 +99,7 @@
 	</thead>
 	<!-- BEGIN styles_list -->
 	<tbody id="styles-list-{styles_list.S_ROW_COUNT}">
-	<tr<!-- IF styles_list.STYLE_ID and not styles_list.STYLE_ACTIVE --> class="row-inactive"<!-- ENDIF -->>
+	<tr class="row-highlight<!-- IF styles_list.STYLE_ID and not styles_list.STYLE_ACTIVE --> row-inactive<!-- ENDIF -->">
 		<!-- IF styles_list.LEVEL is odd -->
 			<!-- IF $ROW_CLASS == 'row1a' --><!-- DEFINE $ROW_CLASS = 'row1b' --><!-- ELSE --><!-- DEFINE $ROW_CLASS = 'row1a' --><!-- ENDIF -->
 		<!-- ELSE -->
