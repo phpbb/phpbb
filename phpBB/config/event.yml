@@ -32,3 +32,10 @@ services:
         class: phpbb\event\kernel_terminate_subscriber
         tags:
             - { name: kernel.event_subscriber }
+
+    symfony_response_listener:
+        class: Symfony\Component\HttpKernel\EventListener\ResponseListener
+        arguments:
+            - UTF-8
+        tags:
+            - { name: kernel.event_subscriber }
