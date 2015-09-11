@@ -1162,6 +1162,12 @@ ul.linklist:after,
 	padding: 0 5px;
 }
 
+.dropdown-extended .header:after {
+	content: '';
+	display: table;
+	clear: both;
+}
+
 .dropdown-extended .footer {
 	text-align: center;
 	font-size: 1.1em;
