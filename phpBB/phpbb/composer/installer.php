@@ -32,6 +32,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class installer
 {
+	const PHPBB_TYPES = ['phpbb-extension', 'phpbb-style', 'phpbb-language'];
+
 	/**
 	 * @var array Repositories to look packages from
 	 */
@@ -132,12 +134,14 @@ class installer
 	/**
 	 * Returns the list of currently installed packages
 	 *
-	 * @param string $type Returns only the packages with the given type
+	 * @param string|array $types Returns only the packages with the given type(s)
 	 *
 	 * @return array The installed packages associated to their version.
 	 */
-	public function get_installed_packages($type)
+	public function get_installed_packages($types)
 	{
+		$types = (array) $types;
+
 		$original_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
 
 		try
@@ -151,7 +155,7 @@ class installer
 
 			foreach ($packages as $package)
 			{
-				if ($package->getType() === $type)
+				if (in_array($package->getType(), $types, true))
 				{
 					$installed[$package->getName()] = $package->getPrettyVersion();
 				}
@@ -180,6 +184,8 @@ class installer
 	{
 		try
 		{
+			$this->generate_ext_json_file($this->get_installed_packages(self::PHPBB_TYPES));
+
 			$io = new NullIO();
 
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);

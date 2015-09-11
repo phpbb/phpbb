@@ -36,9 +36,14 @@ class manager implements manager_interface
 	protected $exception_prefix;
 
 	/**
-	 * @var array Caches the managed packages list
+	 * @var array Caches the managed packages list (for the current type)
 	 */
 	private $managed_packages;
+
+	/**
+	 * @var array Caches the managed packages list (for all phpBB types)
+	 */
+	private $all_managed_packages;
 
 	/**
 	 * @var array Caches the available packages list
@@ -84,7 +89,7 @@ class manager implements manager_interface
 	 */
 	protected function do_install($packages)
 	{
-		$managed_packages = array_merge($this->get_managed_packages(), $packages);
+		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
 		$this->installer->install($managed_packages, array_keys($packages));
@@ -110,7 +115,7 @@ class manager implements manager_interface
 			throw new runtime_exception($this->exception_prefix, 'NOT_MANAGED', [implode('|', array_keys($not_managed))]);
 		}
 
-		$managed_packages = array_merge($this->get_managed_packages(), $packages);
+		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
 		$this->installer->install($managed_packages, array_keys($packages));
@@ -134,7 +139,7 @@ class manager implements manager_interface
 			throw new runtime_exception($this->exception_prefix, 'NOT_MANAGED', [implode('|', array_keys($not_managed))]);
 		}
 
-		$managed_packages = array_diff_key($this->get_managed_packages(), $packages);
+		$managed_packages = array_diff_key($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
 		$this->installer->install($managed_packages, array_keys($packages));
@@ -154,7 +159,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Returns the list of managed packages
+	 * Returns the list of managed packages for the current type
 	 *
 	 * @return array The managed packages associated to their version.
 	 */
@@ -166,6 +171,21 @@ class manager implements manager_interface
 		}
 
 		return $this->managed_packages;
+	}
+
+	/**
+	 * Returns the list of managed packages for all phpBB types
+	 *
+	 * @return array The managed packages associated to their version.
+	 */
+	public function get_all_managed_packages()
+	{
+		if ($this->all_managed_packages === null)
+		{
+			$this->all_managed_packages = $this->installer->get_installed_packages(installer::PHPBB_TYPES);
+		}
+
+		return $this->all_managed_packages;
 	}
 
 	/**
