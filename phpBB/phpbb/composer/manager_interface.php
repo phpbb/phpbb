@@ -54,11 +54,18 @@ interface manager_interface
 	public function is_managed($packages);
 
 	/**
-	 * Returns the list of managed packages
+	 * Returns the list of managed packages for the current type
 	 *
 	 * @return array The managed packages associated to their version.
 	 */
 	public function get_managed_packages();
+
+	/**
+	 * Returns the list of managed packages for all phpBB types
+	 *
+	 * @return array The managed packages associated to their version.
+	 */
+	public function get_all_managed_packages();
 
 	/**
 	 * Returns the list of available packages
@@ -66,4 +73,15 @@ interface manager_interface
 	 * @return array The name of the available packages, associated to their definition. Ordered by name.
 	 */
 	public function get_available_packages();
+
+	/**
+	 * Start managing a manually installed package
+	 *
+	 * Remove a package installed manually and reinstall it using composer.
+	 *
+	 * @param string $package Package to manage
+	 *
+	 * @throws runtime_exception
+	 */
+	public function start_managing($package);
 }

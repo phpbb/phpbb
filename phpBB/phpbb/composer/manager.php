@@ -63,11 +63,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Installs (if necessary) a set of packages
-	 *
-	 * @param array $packages Packages to install.
-	 * 		Each entry may be a name or an array associating a version constraint to a name
-	 * @throws runtime_exception
+	 * {@inheritdoc}
 	 */
 	public function install(array $packages)
 	{
@@ -98,11 +94,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Updates or installs a set of packages
-	 *
-	 * @param array $packages Packages to update.
-	 * 		Each entry may be a name or an array associating a version constraint to a name
-	 * @throws runtime_exception
+	 * {@inheritdoc}
 	 */
 	public function update(array $packages)
 	{
@@ -122,11 +114,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Removes a set of packages
-	 *
-	 * @param array $packages Packages to remove.
-	 * 		Each entry may be a name or an array associating a version constraint to a name
-	 * @throws runtime_exception
+	 * {@inheritdoc}
 	 */
 	public function remove(array $packages)
 	{
@@ -148,10 +136,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Tells whether or not a package is managed by Composer.
-	 *
-	 * @param string $package Package name
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function is_managed($package)
 	{
@@ -159,9 +144,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Returns the list of managed packages for the current type
-	 *
-	 * @return array The managed packages associated to their version.
+	 * {@inheritdoc}
 	 */
 	public function get_managed_packages()
 	{
@@ -174,9 +157,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Returns the list of managed packages for all phpBB types
-	 *
-	 * @return array The managed packages associated to their version.
+	 * {@inheritdoc}
 	 */
 	public function get_all_managed_packages()
 	{
@@ -189,9 +170,7 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Returns the list of available packages
-	 *
-	 * @return array The name of the available packages, associated to their definition. Ordered by name.
+	 * {@inheritdoc}
 	 */
 	public function get_available_packages()
 	{
@@ -201,6 +180,14 @@ class manager implements manager_interface
 		}
 
 		return $this->available_packages;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function start_managing($package)
+	{
+		throw new \phpbb\exception\runtime_exception('COMPOSER_UNSUPPORTED_OPERATION', (array) $this->package_type);
 	}
 
 	protected function normalize_version($packages)

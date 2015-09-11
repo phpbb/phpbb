@@ -73,6 +73,9 @@ class installer
 			$this->packages_vendor_dir = $config['exts_composer_vendor_dir'];
 		}
 
+		$this->repositories = ['http://phpbb.local/ext/phpbb/titania/composer/'];
+		$this->packagist = true;
+
 		$this->root_path = $root_path;
 	}
 
@@ -214,12 +217,18 @@ class installer
 						{
 							$packages = $repository->findPackages($package);
 							$package = array_pop($packages);
+
+							if (isset($available[$package->getName()]))
+							{
+								continue;
+							}
+
 							$available[$package->getName()] = ['name' => $package->getPrettyName()];
 
 							if ($package instanceof CompletePackage)
 							{
 								$available[$package->getName()]['description'] = $package->getDescription();
-								$available[$package->getName()]['url'] = $package->getHomepage();
+								$available[$package->getName()]['url'] = $package->getDistUrl();//getHomepage();
 							}
 						}
 					}
@@ -236,7 +245,7 @@ class installer
 							if ($package instanceof CompletePackage)
 							{
 								$available[$package->getName()]['description'] = $package->getDescription();
-								$available[$package->getName()]['url'] = $package->getHomepage();
+								$available[$package->getName()]['url'] = $package->getDistUrl();//getHomepage();
 							}
 						}
 					}

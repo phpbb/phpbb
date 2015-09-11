@@ -240,6 +240,9 @@ $lang = array_merge($lang, array(
 	'EXCEPTION' => 'Exception',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
+
+	'COMPOSER_UNSUPPORTED_OPERATION'	=> 'Operation unsupported for the package type “%s”.',
+
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',

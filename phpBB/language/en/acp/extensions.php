@@ -35,6 +35,16 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+
+	'EXTENSION_ALREADY_INSTALLED'				=> 'The “%s” extension has already been installed.',
+	'EXTENSION_ALREADY_INSTALLED_MANUALLY'		=> 'The “%s” extension has already been installed manually.',
+	'EXTENSION_ALREADY_MANAGED'					=> 'The “%s” extension has already been installed manually.',
+	'EXTENSION_CANNOT_MANAGE_FILESYSTEM_ERROR'	=> 'The “%s” extension cannot be managed because the old files cannot be removed.',
+	'EXTENSION_CANNOT_MANAGE_INSTALL_ERROR'		=> 'The “%s” extension cannot be installed. The old extension have been restored.',
+	'EXTENSION_MANAGED_WITH_CLEAN_ERROR'		=> 'The “%1$s” extension has been installed but an error occurred and the old files have not been removed. You might want to delete the “%2$s” files manually.',
+	'EXTENSION_MANAGED_WITH_ENABLE_ERROR'		=> 'The “%s” extension has been installed but an error occurred when re-enabling it.',
+	'EXTENSION_NOT_INSTALLED'					=> 'The “%s” extension is not installed.',
+
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',
 	'EXTENSIONS_ADMIN'			=> 'Extensions Manager',

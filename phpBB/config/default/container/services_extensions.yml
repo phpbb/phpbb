@@ -22,6 +22,7 @@ services:
         arguments:
             - @ext.composer.installer
             - @ext.manager
+            - @filesystem
             - phpbb-extension
             - EXTENSIONS_
 

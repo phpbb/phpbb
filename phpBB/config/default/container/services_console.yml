@@ -183,6 +183,14 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.extension.start_managing:
+        class: phpbb\console\command\extension\start_managing
+        arguments:
+            - @user
+            - @ext.composer.manager
+        tags:
+            - { name: console.command }
+
     console.command.extension.update:
         class: phpbb\console\command\extension\update
         arguments:
