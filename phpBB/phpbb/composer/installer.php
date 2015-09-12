@@ -119,20 +119,19 @@ class installer
 			->setRunScripts(false)
 			->setDryRun(false);
 
-		$result = 0;
 		try
 		{
 			$result = $install->run();
+
+			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
 			//$output = $io->getOutput();
 			//$error_pos = strpos($output, 'Your requirements could not be resolved to an installable set of packages.');
 		}
 		catch (\Exception $e)
 		{
-			throw new runtime_exception('Cannot install packages', [], $e);
-		}
-		finally
-		{
+
 			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
+			throw new runtime_exception('Cannot install packages', [], $e);
 		}
 
 		if ($result !== 0)
@@ -161,25 +160,24 @@ class installer
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
 			$installed = [];
-			$packages = $composer->getPackage()->getRequires();//$composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+			$required_links = $composer->getPackage()->getRequires();
+			$installed_packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
 
-			foreach ($packages as $package)
+			foreach ($installed_packages as $package)
 			{
-				if (in_array($package->getType(), $types, true))
+				if (array_key_exists($package->getName(), $required_links) && in_array($package->getType(), $types, true))
 				{
-					$installed[$package->getName()] = $package->getPrettyVersion();
+					$installed[$package->getName()] = $required_links[$package->getName()]->getPrettyConstraint();
 				}
 			}
 
+			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
 			return $installed;
 		}
 		catch (\Exception $e)
 		{
-			return [];
-		}
-		finally
-		{
 			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
+			return [];
 		}
 	}
 
