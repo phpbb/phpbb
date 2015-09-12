@@ -239,14 +239,27 @@ class language
 	 */
 	public function lang()
 	{
+		$args = func_get_args();
+		$key = array_shift($args);
+
+		return $this->lang_array($key, $args);
+	}
+
+	/**
+	 * Act like lang() but takes a key and an array of parameters instead of using variadic
+	 *
+	 * @param string|array	$key	Language key
+	 * @param array			$args	Parameters
+	 *
+	 * @return array|string
+	 */
+	public function lang_array($key, $args = [])
+	{
 		// Load common language files if they not loaded yet
 		if (!$this->common_language_files_loaded)
 		{
 			$this->load_common_language_files();
 		}
-
-		$args = func_get_args();
-		$key = $args[0];
 
 		if (is_array($key))
 		{
@@ -271,26 +284,25 @@ class language
 		// If the language entry is a string, we simply mimic sprintf() behaviour
 		if (is_string($lang))
 		{
-			if (sizeof($args) == 1)
+			if (count($args) === 0)
 			{
 				return $lang;
 			}
 
 			// Replace key with language entry and simply pass along...
-			$args[0] = $lang;
-			return call_user_func_array('sprintf', $args);
+			return vsprintf($lang, $args);
 		}
 		else if (sizeof($lang) == 0)
 		{
 			// If the language entry is an empty array, we just return the language key
-			return $args[0];
+			return $key;
 		}
 
 		// It is an array... now handle different nullar/singular/plural forms
 		$key_found = false;
 
 		// We now get the first number passed and will select the key based upon this number
-		for ($i = 1, $num_args = sizeof($args); $i < $num_args; $i++)
+		for ($i = 0, $num_args = sizeof($args); $i < $num_args; $i++)
 		{
 			if (is_int($args[$i]) || is_float($args[$i]))
 			{
@@ -337,8 +349,7 @@ class language
 		}
 
 		// Use the language string we determined and pass it to sprintf()
-		$args[0] = $lang[$key_found];
-		return call_user_func_array('sprintf', $args);
+		return vsprintf($lang[$key_found], $args);
 	}
 
 	/**
