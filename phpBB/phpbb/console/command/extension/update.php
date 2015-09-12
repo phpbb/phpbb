@@ -13,8 +13,10 @@
 
 namespace phpbb\console\command\extension;
 
-use phpbb\composer\manager;
+use phpbb\composer\io\console_io;
 use phpbb\composer\manager_interface;
+use phpbb\language\language;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,9 +29,15 @@ class update extends \phpbb\console\command\command
 	 */
 	protected $manager;
 
-	public function __construct(\phpbb\user $user, manager_interface $manager)
+	/**
+	 * @var \phpbb\language\language
+	 */
+	protected $language;
+
+	public function __construct(\phpbb\user $user, manager_interface $manager, language $language)
 	{
 		$this->manager = $manager;
+		$this->language = $language;
 
 		parent::__construct($user);
 	}
@@ -60,11 +68,13 @@ class update extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$io = new SymfonyStyle($input, $output);
+		$output->getFormatter()->setStyle('warning', new OutputFormatterStyle('black', 'yellow'));
 
+		$io = new SymfonyStyle($input, $output);
+		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
 		$extensions = $input->getArgument('extensions');
 
-		$this->manager->update($extensions);
+		$this->manager->update($extensions, $composer_io);
 
 		$io->success('All extensions updated');
 

@@ -6,6 +6,7 @@
  * Time: 23:12
  */
 namespace phpbb\composer;
+use Composer\IO\IOInterface;
 use phpbb\composer\exception\runtime_exception;
 
 
@@ -19,30 +20,33 @@ interface manager_interface
 	 *
 	 * @param array $packages Packages to install.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */
-	public function install(array $packages);
+	public function install(array $packages, IOInterface $io = null);
 
 	/**
 	 * Updates or installs a set of packages
 	 *
 	 * @param array $packages Packages to update.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */
-	public function update(array $packages);
+	public function update(array $packages, IOInterface $io = null);
 
 	/**
 	 * Removes a set of packages
 	 *
 	 * @param array $packages Packages to remove.
 	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */
-	public function remove(array $packages);
+	public function remove(array $packages, IOInterface $io = null);
 
 	/**
 	 * Tells whether or not a package is managed by Composer.

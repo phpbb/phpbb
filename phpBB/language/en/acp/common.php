@@ -242,6 +242,13 @@ $lang = array_merge($lang, array(
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
 	'COMPOSER_UNSUPPORTED_OPERATION'	=> 'Operation unsupported for the package type “%s”.',
+	'COMPOSER_UPDATING_DEPENDENCIES'	=> 'Updating packages',
+	'COMPOSER_LOADING_REPOSITORIES'		=> 'Loading remote packages information',
+	'COMPOSER_ERROR_CONFLICT'			=> 'Your requirements could not be resolved to an installable set of packages.',
+	'COMPOSER_REPOSITORY_UNAVAILABLE'	=> 'An error occurred when fetching the repository %s.',
+	'COMPOSER_INSTALLING_PACKAGE'		=> '  - Installing %1$s (%2$s)',
+	'COMPOSER_DELETING'					=> '  - Deleting %s',
+	'COMPOSER_UPDATE_NOTHING'			=> 'Nothing to update',
 
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',

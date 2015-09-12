@@ -15,7 +15,7 @@ namespace phpbb\composer;
 
 use Composer\Composer;
 use Composer\Factory;
-use Composer\IO\BufferIO;
+use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Package\CompletePackage;
@@ -25,7 +25,6 @@ use Composer\Repository\RepositoryInterface;
 use Composer\Util\RemoteFilesystem;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class to install packages through composer while freezing core dependencies.
@@ -85,18 +84,26 @@ class installer
 	 * @param array $packages Packages to install.
 	 *        Each entry may be a name or an array associating a version constraint to a name
 	 * @param array $whitelist White-listed packages (packages that can be installed/updated/removed)
+	 * @param IOInterface $io IO object used for the output
+	 *
 	 * @throws runtime_exception
 	 */
-	public function install(array $packages, $whitelist)
+	public function install(array $packages, $whitelist, IOInterface $io = null)
 	{
+		if (!$io)
+		{
+			$io = new NullIO();
+		}
+
 		$this->generate_ext_json_file($packages);
 
 		$original_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
 		putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . $this->packages_vendor_dir);
 
-		$io = new BufferIO('', OutputInterface::VERBOSITY_DEBUG);
 		$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 		$install = \Composer\Installer::create($io, $composer);
+
+		$composer->getDownloadManager()->setOutputProgress(false);
 
 		$install
 			->setVerbose(true)
@@ -112,17 +119,12 @@ class installer
 			->setRunScripts(false)
 			->setDryRun(false);
 
+		$result = 0;
 		try
 		{
-			$install->run();
-			$output = $io->getOutput();
-			$error_pos = strpos($output, 'Your requirements could not be resolved to an installable set of packages.');
-
-			if ($error_pos)
-			{
-				// TODO Extract the precise error and use language string
-				throw new \RuntimeException(substr($output, $error_pos));
-			}
+			$result = $install->run();
+			//$output = $io->getOutput();
+			//$error_pos = strpos($output, 'Your requirements could not be resolved to an installable set of packages.');
 		}
 		catch (\Exception $e)
 		{
@@ -131,6 +133,11 @@ class installer
 		finally
 		{
 			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
+		}
+
+		if ($result !== 0)
+		{
+			throw new runtime_exception($io->get_composer_error(), []);
 		}
 	}
 
@@ -154,7 +161,7 @@ class installer
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
 			$installed = [];
-			$packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+			$packages = $composer->getPackage()->getRequires();//$composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
 
 			foreach ($packages as $package)
 			{
@@ -282,6 +289,7 @@ class installer
 				$packages),
 			'replace' => $core_packages,
 			'repositories' => $this->get_composer_repositories(),
+		    'minimum-stability' => 'dev',
 		];
 
 		$json_file = new JsonFile($this->get_composer_ext_json_filename());

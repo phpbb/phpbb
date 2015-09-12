@@ -154,6 +154,7 @@ services:
         arguments:
             - @user
             - @ext.composer.manager
+            - @language
         tags:
             - { name: console.command }
 
@@ -171,6 +172,7 @@ services:
         arguments:
             - @user
             - @ext.composer.manager
+            - @language
         tags:
             - { name: console.command }
 
@@ -188,6 +190,7 @@ services:
         arguments:
             - @user
             - @ext.composer.manager
+            - @language
         tags:
             - { name: console.command }
 

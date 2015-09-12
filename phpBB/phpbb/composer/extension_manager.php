@@ -13,6 +13,7 @@
 
 namespace phpbb\composer;
 
+use Composer\IO\IOInterface;
 use phpbb\composer\exception\managed_with_clean_error_exception;
 use phpbb\composer\exception\managed_with_enable_error_exception;
 use phpbb\composer\exception\managed_with_error_exception;
@@ -54,7 +55,7 @@ class extension_manager extends manager
 	/**
 	 * {@inheritdoc}
 	 */
-	public function install(array $packages)
+	public function install(array $packages, IOInterface $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -70,7 +71,7 @@ class extension_manager extends manager
 			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED_MANUALLY', [implode('|', array_keys($installed_manually))]);
 		}
 
-		$this->do_install($packages);
+		$this->do_install($packages, $io);
 	}
 
 	/**

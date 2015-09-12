@@ -13,6 +13,7 @@
 
 namespace phpbb\composer;
 
+use Composer\IO\IOInterface;
 use phpbb\composer\exception\runtime_exception;
 
 /**
@@ -65,7 +66,7 @@ class manager implements manager_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function install(array $packages)
+	public function install(array $packages, IOInterface $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -75,20 +76,21 @@ class manager implements manager_interface
 			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED', [implode('|', $already_managed)]);
 		}
 
-		$this->do_install($packages);
+		$this->do_install($packages, $io);
 	}
 
 	/**
 	 * Really install the packages.
 	 *
 	 * @param array $packages Packages to install.
+	 * @param IOInterface $io IO object used for the output
 	 */
-	protected function do_install($packages)
+	protected function do_install($packages, IOInterface $io = null)
 	{
 		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
-		$this->installer->install($managed_packages, array_keys($packages));
+		$this->installer->install($managed_packages, array_keys($packages), $io);
 
 		$this->managed_packages = null;
 	}
@@ -96,7 +98,7 @@ class manager implements manager_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function update(array $packages)
+	public function update(array $packages, IOInterface $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -110,13 +112,13 @@ class manager implements manager_interface
 		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
-		$this->installer->install($managed_packages, array_keys($packages));
+		$this->installer->install($managed_packages, array_keys($packages), $io);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function remove(array $packages)
+	public function remove(array $packages, IOInterface $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -130,7 +132,7 @@ class manager implements manager_interface
 		$managed_packages = array_diff_key($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
-		$this->installer->install($managed_packages, array_keys($packages));
+		$this->installer->install($managed_packages, array_keys($packages), $io);
 
 		$this->managed_packages = null;
 	}
