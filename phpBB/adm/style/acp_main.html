@@ -141,19 +141,24 @@
 		<td>{L_GZIP_COMPRESSION}{L_COLON} </td>
 		<td><strong>{GZIP_COMPRESSION}</strong></td>
 	</tr>
+	<!-- IF S_TOTAL_ORPHAN or S_VERSIONCHECK -->
 	<tr>
+	<!-- IF S_VERSIONCHECK -->
 		<td>{L_BOARD_VERSION}{L_COLON} </td>
 		<td>
 			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF --> title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
 		</td>
+	<!-- ENDIF -->
 	<!-- IF S_TOTAL_ORPHAN -->
 		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
 		<td><strong>{TOTAL_ORPHAN}</strong></td>
-	<!-- ELSE -->
+	<!-- ENDIF -->
+	<!-- IF not S_TOTAL_ORPHAN or not S_VERSIONCHECK -->
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 	<!-- ENDIF -->
 	</tr>
+	<!-- ENDIF -->
 	</tbody>
 	</table>
 
