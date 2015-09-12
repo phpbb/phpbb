@@ -445,6 +445,12 @@ class acp_main
 			));
 		}
 
+		// Incomplete update?
+		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
+		{
+			$template->assign_var('S_UPDATE_INCOMPLETE', true);
+		}
+
 		/**
 		* Notice admin
 		*
