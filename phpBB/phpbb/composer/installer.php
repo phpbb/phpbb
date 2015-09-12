@@ -233,7 +233,7 @@ class installer
 							if ($package instanceof CompletePackage)
 							{
 								$available[$package->getName()]['description'] = $package->getDescription();
-								$available[$package->getName()]['url'] = $package->getDistUrl();//getHomepage();
+								$available[$package->getName()]['url'] = $package->getHomepage();
 							}
 						}
 					}
@@ -245,12 +245,12 @@ class installer
 					{
 						if ($package->getType() === $type)
 						{
-							$available[$package->getName()] = ['name' => $package];
+							$available[$package->getName()] = ['name' => $package->getPrettyName()];
 
 							if ($package instanceof CompletePackage)
 							{
 								$available[$package->getName()]['description'] = $package->getDescription();
-								$available[$package->getName()]['url'] = $package->getDistUrl();//getHomepage();
+								$available[$package->getName()]['url'] = $package->getHomepage();
 							}
 						}
 					}

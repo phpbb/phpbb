@@ -14,6 +14,7 @@
 namespace phpbb\composer;
 
 use Composer\IO\IOInterface;
+use phpbb\cache\driver\driver_interface;
 use phpbb\composer\exception\runtime_exception;
 
 /**
@@ -25,6 +26,11 @@ class manager implements manager_interface
 	 * @var installer Composer packages installer
 	 */
 	protected $installer;
+
+	/**
+	 * @var driver_interface Cache instance
+	 */
+	protected $cache;
 
 	/**
 	 * @var string Type of packages (phpbb-packages per example)
@@ -52,13 +58,15 @@ class manager implements manager_interface
 	private $available_packages;
 
 	/**
-	 * @param installer	$installer			Installer object
-	 * @param string	$package_type		Composer type of managed packages
-	 * @param string	$exception_prefix	Exception prefix to use
+	 * @param installer			$installer			Installer object
+	 * @param driver_interface	$cache				Cache object
+	 * @param string			$package_type		Composer type of managed packages
+	 * @param string			$exception_prefix	Exception prefix to use
 	 */
-	public function __construct(installer $installer, $package_type, $exception_prefix)
+	public function __construct(installer $installer, driver_interface $cache, $package_type, $exception_prefix)
 	{
 		$this->installer = $installer;
+		$this->cache = $cache;
 		$this->package_type = $package_type;
 		$this->exception_prefix = $exception_prefix;
 	}
@@ -178,7 +186,12 @@ class manager implements manager_interface
 	{
 		if ($this->available_packages === null)
 		{
-			$this->available_packages = $this->installer->get_available_packages($this->package_type);
+			$this->available_packages = $this->cache->get('_composer_' . $this->package_type . '_available');
+			if ($this->available_packages === false)
+			{
+				$this->available_packages = $this->installer->get_available_packages($this->package_type);
+				$this->cache->put('_composer_' . $this->package_type . '_available', $this->available_packages, 24*60*60);
+			}
 		}
 
 		return $this->available_packages;

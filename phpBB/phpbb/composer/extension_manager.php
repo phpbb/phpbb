@@ -14,6 +14,7 @@
 namespace phpbb\composer;
 
 use Composer\IO\IOInterface;
+use phpbb\cache\driver\driver_interface;
 use phpbb\composer\exception\managed_with_clean_error_exception;
 use phpbb\composer\exception\managed_with_enable_error_exception;
 use phpbb\composer\exception\managed_with_error_exception;
@@ -38,18 +39,19 @@ class extension_manager extends manager
 	protected $filesystem;
 
 	/**
-	 * @param installer		$installer			Installer object
-	 * @param ext_manager	$extension_manager	phpBB extension manager
-	 * @param filesystem	$filesystem			Filesystem object
-	 * @param string		$package_type		Composer type of managed packages
-	 * @param string		$exception_prefix	Exception prefix to use
+	 * @param installer			$installer			Installer object
+	 * @param driver_interface	$cache				Cache object
+	 * @param ext_manager		$extension_manager	phpBB extension manager
+	 * @param filesystem		$filesystem			Filesystem object
+	 * @param string			$package_type		Composer type of managed packages
+	 * @param string			$exception_prefix	Exception prefix to use
 	 */
-	public function __construct(installer $installer, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix)
+	public function __construct(installer $installer, driver_interface $cache, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;
 
-		parent::__construct($installer, $package_type, $exception_prefix);
+		parent::__construct($installer, $cache, $package_type, $exception_prefix);
 	}
 
 	/**

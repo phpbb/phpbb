@@ -21,6 +21,7 @@ services:
         class: phpbb\composer\extension_manager
         arguments:
             - @ext.composer.installer
+            - @cache.driver
             - @ext.manager
             - @filesystem
             - phpbb-extension
@@ -30,6 +31,7 @@ services:
         class: phpbb\composer\manager
         arguments:
             - @ext.composer.installer
+            - @cache.driver
             - phpbb-style
             - STYLES_
 
@@ -37,5 +39,6 @@ services:
         class: phpbb\composer\manager
         arguments:
             - @ext.composer.installer
+            - @cache.driver
             - phpbb-language
             - LANGUAGES_
