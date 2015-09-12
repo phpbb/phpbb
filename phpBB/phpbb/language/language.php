@@ -253,7 +253,7 @@ class language
 	 *
 	 * @return array|string
 	 */
-	public function lang_array($key, $args = [])
+	public function lang_array($key, $args = array())
 	{
 		// Load common language files if they not loaded yet
 		if (!$this->common_language_files_loaded)
