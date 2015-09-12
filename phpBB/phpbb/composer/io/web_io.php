@@ -13,13 +13,13 @@
 
 namespace phpbb\composer\io;
 
-use Composer\IO\ConsoleIO;
+use Composer\IO\BufferIO;
 use phpbb\language\language;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class console_io extends ConsoleIO
+class web_io extends BufferIO
 {
 	use translate_composer_trait;
 

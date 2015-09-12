@@ -287,7 +287,6 @@ class installer
 				$packages),
 			'replace' => $core_packages,
 			'repositories' => $this->get_composer_repositories(),
-		    'minimum-stability' => 'dev',
 		];
 
 		$json_file = new JsonFile($this->get_composer_ext_json_filename());
