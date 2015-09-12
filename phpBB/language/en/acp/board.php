@@ -576,7 +576,7 @@ $lang = array_merge($lang, array(
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
-	'TEST_EMAIL_SENT'				=> 'The test email has been sent.',
+	'TEST_EMAIL_SENT'				=> 'The test email has been sent.<br />If you don’t receive it, please check your emails configuration.<br /><br />If you require assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.',
 	'USE_SMTP'						=> 'Use SMTP server for email',
 	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
 ));
