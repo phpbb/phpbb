@@ -1128,6 +1128,14 @@ posting_preview_poll_after
 * Since: 3.1.7-RC1
 * Purpose: Add content after the poll preview block
 
+posting_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/posting_layout.html
+    + styles/subsilver2/template/posting_body.html
+* Since: 3.1.7-RC1
+* Purpose: Allows to add some information after the topic title in the posting form
+
 posting_topic_title_before
 ===
 * Locations:
