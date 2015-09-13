@@ -173,7 +173,7 @@ class manager implements manager_interface
 	{
 		if ($this->all_managed_packages === null)
 		{
-			$this->all_managed_packages = $this->installer->get_installed_packages(installer::PHPBB_TYPES);
+			$this->all_managed_packages = $this->installer->get_installed_packages(explode(',', installer::PHPBB_TYPES));
 		}
 
 		return $this->all_managed_packages;

@@ -33,7 +33,7 @@ use phpbb\exception\runtime_exception;
  */
 class installer
 {
-	const PHPBB_TYPES = ['phpbb-extension', 'phpbb-style', 'phpbb-language'];
+	const PHPBB_TYPES = 'phpbb-extension,phpbb-style,phpbb-language';
 
 	/**
 	 * @var array Repositories to look packages from
@@ -268,7 +268,7 @@ class installer
 	{
 		try
 		{
-			$this->generate_ext_json_file($this->do_get_installed_packages(self::PHPBB_TYPES));
+			$this->generate_ext_json_file($this->do_get_installed_packages(explode(',', self::PHPBB_TYPES)));
 
 			$io = new NullIO();
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
