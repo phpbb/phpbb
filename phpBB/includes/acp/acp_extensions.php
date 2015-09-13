@@ -405,14 +405,56 @@ class acp_extensions
 	{
 		global $phpbb_container;
 
-		/** @var \phpbb\composer\extension_manager $manager */
-		$manager = $phpbb_container->get('ext.composer.manager');
-		$this->page_title = 'ACP_EXTENSIONS_GALLERY';
-		$this->tpl_name = 'acp_ext_gallery';
+		$action = $this->request->variable('action', 'list');
 
-		$this->request->enable_super_globals();
-		$this->template->assign_var('extensions', $manager->get_available_packages());
-		$this->request->disable_super_globals();
+		/** @var \phpbb\language\language $language */
+		$language = $phpbb_container->get('language');
+
+		/** @var \phpbb\composer\manager $composer_manager */
+		$composer_manager = $phpbb_container->get('ext.composer.manager');
+
+		switch ($action)
+		{
+			case 'install':
+				$extension = $this->request->variable('extension', '');
+
+				if (empty($extension))
+				{
+					redirect($this->u_action);
+				}
+
+				$formatter = new \Composer\Console\HtmlOutputFormatter([
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+				]);
+
+				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_NORMAL, $formatter);
+
+				try
+				{
+					$composer_manager->install((array) $extension, $composer_io);
+				}
+				catch (\phpbb\exception\runtime_exception $e)
+				{
+					trigger_error($language->lang_array($e->getMessage(), $e->get_parameters()) . '<br /><br />' . $composer_io->getOutput() . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				trigger_error($language->lang('EXTENSIONS_INSTALLED') . '<br /><br />' . $composer_io->getOutput() . adm_back_link($this->u_action));
+
+				break;
+			case 'remove':
+				break;
+			case 'list':
+			default:
+				/** @var \phpbb\composer\extension_manager $manager */
+				$manager = $phpbb_container->get('ext.composer.manager');
+				$this->page_title = 'ACP_EXTENSIONS_GALLERY';
+				$this->tpl_name = 'acp_ext_gallery';
+
+				$this->request->enable_super_globals();
+				$this->template->assign_var('extensions', $manager->get_available_packages());
+				$this->request->disable_super_globals();
+				break;
+		}
 	}
 
 	/**

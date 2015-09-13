@@ -29,6 +29,7 @@ class console_io extends ConsoleIO
 	 * @param InputInterface	$input		The input instance
 	 * @param OutputInterface	$output		The output instance
 	 * @param HelperSet			$helperSet	The helperSet instance
+	 * @param language			$language	Language object
 	 */
 	public function __construct(InputInterface $input, OutputInterface $output, HelperSet $helperSet, language $language)
 	{

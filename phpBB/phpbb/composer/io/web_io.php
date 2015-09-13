@@ -15,25 +15,23 @@ namespace phpbb\composer\io;
 
 use Composer\IO\BufferIO;
 use phpbb\language\language;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class web_io extends BufferIO
 {
 	use translate_composer_trait;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param InputInterface	$input		The input instance
-	 * @param OutputInterface	$output		The output instance
-	 * @param HelperSet			$helperSet	The helperSet instance
+	 * @param language					$language	Language object
+	 * @param string					$input		Input string
+	 * @param int						$verbosity	Verbosity level
+	 * @param OutputFormatterInterface	$formatter	Output formatter
 	 */
-	public function __construct(InputInterface $input, OutputInterface $output, HelperSet $helperSet, language $language)
+	public function __construct(language $language, $input = '', $verbosity = StreamOutput::VERBOSITY_NORMAL, OutputFormatterInterface $formatter = null)
 	{
 		$this->language = $language;
 
-		parent::__construct($input, $output, $helperSet);
+		parent::__construct($input, $verbosity, $formatter);
 	}
 }

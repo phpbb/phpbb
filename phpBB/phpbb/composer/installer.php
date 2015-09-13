@@ -119,7 +119,7 @@ class installer
 			->setDumpAutoloader(false)
 			->setPreferStable(true)
 			->setRunScripts(false)
-			->setDryRun(false);
+			->setDryRun(true);
 
 		try
 		{
@@ -282,6 +282,7 @@ class installer
 				// Generates the entry
 				$available[$name] = [];
 				$available[$name]['name'] = $highest_version->getPrettyName();
+				$available[$name]['composer_name'] = $highest_version->getName();
 				$available[$name]['version'] = $highest_version->getPrettyVersion();
 
 				if ($version instanceof CompletePackage)

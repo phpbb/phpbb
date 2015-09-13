@@ -45,7 +45,7 @@
 		<tr>
 			<td>
 				<strong>{{ extension.name }}</strong><br />
-				<span><a href="{{ extension.url }}">{{ lang('DETAILS') }}</a> &bull; <a href="">{{ lang('INSTALL') }}</a></span>
+				<span><a href="{{ extension.url }}">{{ lang('DETAILS') }}</a> &bull; <a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a></span>
 			</td>
 			<td>{{ extension.version }}</td>
 			<td>{{ extension.description }}</td>
