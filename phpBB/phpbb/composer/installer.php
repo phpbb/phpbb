@@ -19,6 +19,8 @@ use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Package\CompletePackage;
+use Composer\Package\LinkConstraint\LinkConstraintInterface;
+use Composer\Package\LinkConstraint\VersionConstraint;
 use Composer\Package\PackageInterface;
 use Composer\Repository\ComposerRepository;
 use Composer\Repository\RepositoryInterface;
@@ -198,62 +200,101 @@ class installer
 
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
+			/** @var LinkConstraintInterface $core_constraint */
+			$core_constraint = $composer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
+
 			$available = [];
+
+			$compatible_packages = [];
 			$repositories = $composer->getRepositoryManager()->getRepositories();
 
 			/** @var RepositoryInterface $repository */
 			foreach ($repositories as $repository)
 			{
-				if ($repository instanceof ComposerRepository && $repository->hasProviders())
+				try
 				{
-					$r = new \ReflectionObject($repository);
-					$repo_url = $r->getProperty('url');
-					$repo_url->setAccessible(true);
-
-					if ($repo_url->getValue($repository) === 'http://packagist.org')
+					if ($repository instanceof ComposerRepository && $repository->hasProviders())
 					{
-						$url      = 'https://packagist.org/packages/list.json?type=' . $type;
-						$rfs      = new RemoteFilesystem($io);
-						$hostname = parse_url($url, PHP_URL_HOST) ?: $url;
-						$json     = $rfs->getContents($hostname, $url, false);
+						// Special case for packagist which exposes an api to retrieve all packages of a given type.
+						// For the others composer repositories with providers we can't do anything. It would be too slow.
 
-						/** @var PackageInterface $package */
-						foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
+						$r        = new \ReflectionObject($repository);
+						$repo_url = $r->getProperty('url');
+						$repo_url->setAccessible(true);
+
+						if ($repo_url->getValue($repository) === 'http://packagist.org')
 						{
-							$packages = $repository->findPackages($package);
-							$package = array_pop($packages);
+							$url      = 'https://packagist.org/packages/list.json?type=' . $type;
+							$rfs      = new RemoteFilesystem($io);
+							$hostname = parse_url($url, PHP_URL_HOST) ?: $url;
+							$json     = $rfs->getContents($hostname, $url, false);
 
-							if (isset($available[$package->getName()]))
+							/** @var PackageInterface $package */
+							foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
 							{
-								continue;
+								$versions            = $repository->findPackages($package);
+								$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $package, $versions);
 							}
-
-							$available[$package->getName()] = ['name' => $package->getPrettyName()];
-
-							if ($package instanceof CompletePackage)
+						}
+					}
+					else
+					{
+						// Pre-filter repo packages by their type
+						$packages = [];
+						/** @var PackageInterface $package */
+						foreach ($repository->getPackages() as $package)
+						{
+							if ($package->getType() === $type)
 							{
-								$available[$package->getName()]['description'] = $package->getDescription();
-								$available[$package->getName()]['url'] = $package->getHomepage();
+								$packages[$package->getName()][] = $package;
 							}
+						}
+
+						// Filter the compatibles versions
+						foreach ($packages as $package => $versions)
+						{
+							$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $package, $versions);
 						}
 					}
 				}
+				catch (\Exception $e)
+				{
+					// If a repo fails, just skip it.
+					continue;
+				}
+			}
+
+			foreach ($compatible_packages as $name => $versions)
+			{
+				// Determine the highest version of the package
+				/** @var CompletePackage $highest_version */
+				$highest_version = null;
+
+				/** @var CompletePackage $version */
+				foreach ($versions as $version)
+				{
+					if (!$highest_version || version_compare($version->getVersion(), $highest_version->getVersion(), '>'))
+					{
+						$highest_version = $version;
+					}
+				}
+
+				// Generates the entry
+				$available[$name] = [];
+				$available[$name]['name'] = $highest_version->getPrettyName();
+				$available[$name]['version'] = $highest_version->getPrettyVersion();
+
+				if ($version instanceof CompletePackage)
+				{
+					$available[$name]['description'] = $highest_version->getDescription();
+					$available[$name]['url'] = $highest_version->getHomepage();
+					$available[$name]['authors'] = $highest_version->getAuthors();
+				}
 				else
 				{
-					/** @var PackageInterface $package */
-					foreach ($repository->getPackages() as $package)
-					{
-						if ($package->getType() === $type)
-						{
-							$available[$package->getName()] = ['name' => $package->getPrettyName()];
-
-							if ($package instanceof CompletePackage)
-							{
-								$available[$package->getName()]['description'] = $package->getDescription();
-								$available[$package->getName()]['url'] = $package->getHomepage();
-							}
-						}
-					}
+					$available[$name]['description'] = '';
+					$available[$name]['url'] = '';
+					$available[$name]['authors'] = [];
 				}
 			}
 
@@ -268,6 +309,38 @@ class installer
 	}
 
 	/**
+	 * Updates $compatible_packages with the versions of $versions compatibles with the $core_constraint
+	 *
+	 * @param array						$compatible_packages	List of compatibles versions
+	 * @param LinkConstraintInterface	$core_constraint		Constraint against the phpBB version
+	 * @param string					$package_name			Considered package
+	 * @param array						$versions				List of available versions
+	 *
+	 * @return array
+	 */
+	private function get_compatible_versions(array $compatible_packages, LinkConstraintInterface $core_constraint, $package_name, array $versions)
+	{
+		/** @var PackageInterface $version */
+		foreach ($versions as $version)
+		{
+			if (array_key_exists('phpbb/phpbb', $version->getRequires()))
+			{
+				/** @var LinkConstraintInterface $package_constraint */
+				$package_constraint = $version->getRequires()['phpbb/phpbb']->getConstraint();
+
+				if (!$package_constraint->matches($core_constraint))
+				{
+					continue;
+				}
+			}
+
+			$compatible_packages[$package_name][] = $version;
+		}
+
+		return $compatible_packages;
+	}
+
+	/**
 	 * Generates and write the json file used to install the set of packages
 	 *
 	 * @param array $packages Packages to update.
@@ -276,7 +349,7 @@ class installer
 	protected function generate_ext_json_file(array $packages)
 	{
 		$io = new NullIO();
-		$composer = Factory::create($io, null, false);
+		$composer = Factory::create($io, $this->root_path . 'composer.json', false);
 
 		$core_packages = $this->get_core_packages($composer);
 		$core_json_data = [
@@ -300,6 +373,27 @@ class installer
 	 * @return array The core packages with their version
 	 */
 	protected function get_core_packages(Composer $composer)
+	{
+		$core_deps = [];
+		$packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+
+		foreach ($packages as $package)
+		{
+			$core_deps[$package->getName()] = $package->getPrettyVersion();
+		}
+
+		$core_deps['phpbb/phpbb'] = $composer->getPackage()->getPrettyVersion();
+
+		return $core_deps;
+	}
+
+	/**
+	 * Get the core installed packages
+	 *
+	 * @param Composer $composer Composer object to load the dependencies
+	 * @return array The core packages with their version
+	 */
+	protected function get_core_version(Composer $composer)
 	{
 		$core_deps = [];
 		$packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();

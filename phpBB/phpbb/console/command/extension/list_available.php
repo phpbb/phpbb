@@ -66,7 +66,8 @@ class list_available extends \phpbb\console\command\command
 
 		foreach ($this->manager->get_available_packages() as $package)
 		{
-			$extensions[] = '<info>' . $package['name'] . '</info> <comment>' . $package['url'] . "</comment>\n" . $package['description'];
+			$extensions[] = '<info>' . $package['name'] . '</info> (<comment>' . $package['version'] . '</comment>) ' . $package['url'] .
+			                ($package['description'] ? "\n" . $package['description'] : '');
 		}
 
 		$io->listing($extensions);

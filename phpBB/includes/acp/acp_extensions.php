@@ -28,10 +28,13 @@ class acp_extensions
 	var $tpl_name;
 	var $page_title;
 
+	private $db;
 	private $config;
 	private $template;
 	private $user;
 	private $log;
+
+	/** @var \phpbb\request\request */
 	private $request;
 	private $phpbb_dispatcher;
 	private $ext_manager;
@@ -39,8 +42,10 @@ class acp_extensions
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
 
+
+		$this->db       = $db;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
@@ -49,7 +54,22 @@ class acp_extensions
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->ext_manager = $phpbb_extension_manager;
 
-		$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
+		$this->user->add_lang(['install', 'acp/extensions', 'migrator']);
+
+		switch ($mode)
+		{
+			case 'gallery':
+				$this->gallery_mode();
+				break;
+			default:
+				$this->main_mode();
+				break;
+		}
+	}
+
+	public function main_mode()
+	{
+		global $phpbb_extension_manager, $phpbb_root_path;
 
 		$this->page_title = 'ACP_EXTENSIONS';
 
@@ -379,6 +399,20 @@ class acp_extensions
 		// In case they have been updated by the event
 		$this->u_action = $u_action;
 		$this->tpl_name = $tpl_name;
+	}
+
+	public function gallery_mode()
+	{
+		global $phpbb_container;
+
+		/** @var \phpbb\composer\extension_manager $manager */
+		$manager = $phpbb_container->get('ext.composer.manager');
+		$this->page_title = 'ACP_EXTENSIONS_GALLERY';
+		$this->tpl_name = 'acp_ext_gallery';
+
+		$this->request->enable_super_globals();
+		$this->template->assign_var('extensions', $manager->get_available_packages());
+		$this->request->disable_super_globals();
 	}
 
 	/**

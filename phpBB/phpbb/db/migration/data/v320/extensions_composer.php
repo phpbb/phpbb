@@ -22,6 +22,14 @@ class extensions_composer extends \phpbb\db\migration\migration
 			array('config.add', array('exts_composer_packagist', true)),
 			array('config.add', array('exts_composer_json_file', 'composer-ext.json')),
 			array('config.add', array('exts_composer_vendor_dir', 'vendor-ext/')),
+			array('module.add', array(
+				'acp',
+				'ACP_EXTENSION_MANAGEMENT',
+				array(
+					'module_basename'	=> 'acp_extensions',
+					'modes'				=> array('gallery'),
+				),
+			)),
 		);
 	}
 }
