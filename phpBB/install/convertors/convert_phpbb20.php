@@ -963,7 +963,6 @@ if (!$get_info)
 				array('pf_phpbb_interests',		'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_location',		'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_icq',			'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
-				array('pf_phpbb_wlm',			'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_yahoo',			'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_aol',			'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_website',		'users.user_website',				'validate_website'),
