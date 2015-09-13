@@ -427,18 +427,65 @@ class acp_extensions
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
-				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_NORMAL, $formatter);
+				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
 
 				try
 				{
+					$this->request->enable_super_globals();
 					$composer_manager->install((array) $extension, $composer_io);
+					$this->request->disable_super_globals();
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
-					trigger_error($language->lang_array($e->getMessage(), $e->get_parameters()) . '<br /><br />' . $composer_io->getOutput() . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+					$this->tpl_name = 'detailled_message_body';
 
-				trigger_error($language->lang('EXTENSIONS_INSTALLED') . '<br /><br />' . $composer_io->getOutput() . adm_back_link($this->u_action));
+					if ($e->getPrevious())
+					{
+						$message_title = $language->lang_array($e->getMessage(), $e->get_parameters());
+
+						if ($e->getPrevious() instanceof \phpbb\exception\exception_interface)
+						{
+							$message_text  = $language->lang_array($e->getPrevious()->getMessage(), $e->getPrevious()->get_parameters()) . adm_back_link($this->u_action);
+						}
+						else
+						{
+							$message_text = $e->getPrevious()->getMessage();
+							if (strpos($message_text, 'ext/') === 0 && strpos($message_text, 'does not exist and could not be created.') !== false)
+							{dump($e->getPrevious()->getTraceAsString());
+								$message_text = $language->lang('EXTENSIONS_DIR_NOT_WRITABLE');
+							}
+							$message_text .= adm_back_link($this->u_action);
+						}
+					}
+					else
+					{
+						$message_title = $language->lang('INFORMATION');
+						$message_text  = $language->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
+					}
+
+					$this->template->assign_vars(array(
+							'MESSAGE_TITLE'			=> $message_title,
+							'MESSAGE_TEXT'			=> $message_text,
+							'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
+							'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+							'S_USER_ERROR'			=> true,
+						)
+					);
+
+					return;
+				}
+				$this->tpl_name = 'detailled_message_body';
+
+				$this->template->assign_vars(array(
+						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_INSTALL'),
+						'MESSAGE_TEXT'			=> $language->lang('EXTENSIONS_INSTALLED') . adm_back_link($this->u_action),
+						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
+						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'S_USER_NOTICE'			=> true,
+					)
+				);
+
+				return;
 
 				break;
 			case 'remove':
@@ -452,6 +499,7 @@ class acp_extensions
 
 				$this->request->enable_super_globals();
 				$this->template->assign_var('extensions', $manager->get_available_packages());
+				$this->template->assign_var('U_ACTION', $this->u_action);
 				$this->request->disable_super_globals();
 				break;
 		}

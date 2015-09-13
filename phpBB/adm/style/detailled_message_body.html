@@ -1,0 +1,14 @@
+<!-- INCLUDE overall_header.html -->
+
+<fieldset>
+	{%- if MESSAGE_DETAIL_LEGEND -%}
+	<legend>{{ MESSAGE_DETAIL_LEGEND|nl2br }}</legend>
+	{%- endif -%}
+	<pre>{{ MESSAGE_DETAIL }}</pre>
+</fieldset>
+<div {% if S_USER_NOTICE %}class="successbox"{% else %}class="errorbox"{% endif %}>
+	<h3>{{ MESSAGE_TITLE }}</h3>
+	<p>{{ MESSAGE_TEXT }}</p>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

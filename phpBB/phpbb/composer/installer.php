@@ -74,7 +74,7 @@ class installer
 			$this->packages_vendor_dir = $config['exts_composer_vendor_dir'];
 		}
 
-		$this->repositories = ['http://phpbb.local/ext/phpbb/titania/composer/'];
+		$this->repositories = [/*'http://phpbb.local/ext/phpbb/titania/composer/'*/];
 		$this->packagist = true;
 
 		$this->root_path = $root_path;
@@ -92,15 +92,42 @@ class installer
 	 */
 	public function install(array $packages, $whitelist, IOInterface $io = null)
 	{
+		// The composer installers works with a path relative to the current directory
+		$original_working_dir = getcwd();
+		chdir($this->root_path);
+
+		try
+		{
+			$this->do_install($packages, $whitelist, $io);
+			chdir($original_working_dir);
+		}
+		catch (\Exception $e)
+		{
+			chdir($original_working_dir);
+			throw $e;
+		}
+	}
+
+	/**
+	 * Update the current installed set of packages
+	 *
+	 * /!\ Doesn't change the current working directory
+	 *
+	 * @param array $packages Packages to install.
+	 *        Each entry may be a name or an array associating a version constraint to a name
+	 * @param array $whitelist White-listed packages (packages that can be installed/updated/removed)
+	 * @param IOInterface $io IO object used for the output
+	 *
+	 * @throws runtime_exception
+	 */
+	protected function do_install(array $packages, $whitelist, IOInterface $io = null)
+	{
 		if (!$io)
 		{
 			$io = new NullIO();
 		}
 
 		$this->generate_ext_json_file($packages);
-
-		$original_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
-		putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . $this->packages_vendor_dir);
 
 		$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 		$install = \Composer\Installer::create($io, $composer);
@@ -119,21 +146,15 @@ class installer
 			->setDumpAutoloader(false)
 			->setPreferStable(true)
 			->setRunScripts(false)
-			->setDryRun(true);
+			->setDryRun(false);
 
 		try
 		{
 			$result = $install->run();
-
-			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
-			//$output = $io->getOutput();
-			//$error_pos = strpos($output, 'Your requirements could not be resolved to an installable set of packages.');
 		}
 		catch (\Exception $e)
 		{
-
-			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
-			throw new runtime_exception('Cannot install packages', [], $e);
+			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
 
 		if ($result !== 0)
@@ -151,14 +172,40 @@ class installer
 	 */
 	public function get_installed_packages($types)
 	{
-		$types = (array) $types;
+		// The composer installers works with a path relative to the current directory
+		$original_working_dir = getcwd();
+		chdir($this->root_path);
 
-		$original_vendor_dir = getenv('COMPOSER_VENDOR_DIR');
+		try
+		{
+			$result = $this->do_get_installed_packages($types);
+			chdir($original_working_dir);
+		}
+		catch (\Exception $e)
+		{
+			chdir($original_working_dir);
+			throw $e;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns the list of currently installed packages
+	 *
+	 * /!\ Doesn't change the current working directory
+	 *
+	 * @param string|array $types Returns only the packages with the given type(s)
+	 *
+	 * @return array The installed packages associated to their version.
+	 */
+	protected function do_get_installed_packages($types)
+	{
+		$types = (array) $types;
 
 		try
 		{
 			$io = new NullIO();
-			putenv('COMPOSER_VENDOR_DIR=' . $this->root_path . $this->packages_vendor_dir);
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
 			$installed = [];
@@ -173,14 +220,41 @@ class installer
 				}
 			}
 
-			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
 			return $installed;
 		}
 		catch (\Exception $e)
 		{
-			putenv('COMPOSER_VENDOR_DIR=' . $original_vendor_dir);
 			return [];
 		}
+	}
+
+	/**
+	 * Gets the list of the available packages of the configured type in the configured repositories
+	 *
+	 * /!\ Doesn't change the current working directory
+	 *
+	 * @param string $type Returns only the packages with the given type
+	 *
+	 * @return array The name of the available packages, associated to their definition. Ordered by name.
+	 */
+	public function get_available_packages($type)
+	{
+		// The composer installers works with a path relative to the current directory
+		$original_working_dir = getcwd();
+		chdir($this->root_path);
+
+		try
+		{
+			$result = $this->do_get_available_packages($type);
+			chdir($original_working_dir);
+		}
+		catch (\Exception $e)
+		{
+			chdir($original_working_dir);
+			throw $e;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -190,14 +264,13 @@ class installer
 	 *
 	 * @return array The name of the available packages, associated to their definition. Ordered by name.
 	 */
-	public function get_available_packages($type)
+	protected function do_get_available_packages($type)
 	{
 		try
 		{
-			$this->generate_ext_json_file($this->get_installed_packages(self::PHPBB_TYPES));
+			$this->generate_ext_json_file($this->do_get_installed_packages(self::PHPBB_TYPES));
 
 			$io = new NullIO();
-
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
 			/** @var LinkConstraintInterface $core_constraint */
@@ -350,10 +423,11 @@ class installer
 	protected function generate_ext_json_file(array $packages)
 	{
 		$io = new NullIO();
-		$composer = Factory::create($io, $this->root_path . 'composer.json', false);
+
+		$composer = Factory::create($io, null, false);
 
 		$core_packages = $this->get_core_packages($composer);
-		$core_json_data = [
+		$ext_json_data = [
 			'require' => array_merge(
 				['php' => $this->get_core_php_requirement($composer)],
 				$core_packages,
@@ -361,10 +435,14 @@ class installer
 				$packages),
 			'replace' => $core_packages,
 			'repositories' => $this->get_composer_repositories(),
+			'config' => [
+				'cache-dir' => 'store/composer',
+				'vendor-dir'=> $this->packages_vendor_dir,
+			],
 		];
 
 		$json_file = new JsonFile($this->get_composer_ext_json_filename());
-		$json_file->write($core_json_data);
+		$json_file->write($ext_json_data);
 	}
 
 	/**
@@ -452,7 +530,7 @@ class installer
 	 */
 	protected function get_composer_ext_json_filename()
 	{
-		return $this->root_path . $this->composer_filename;
+		return $this->composer_filename;
 	}
 
 	/**

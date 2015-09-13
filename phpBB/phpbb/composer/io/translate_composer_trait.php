@@ -50,6 +50,10 @@ trait translate_composer_trait
 				$lang_key = 'COMPOSER_DELETING';
 				$parameters = [$elements[1]];
 			}
+			else
+			{
+				dump('WRITE | ' . $message);
+			}
 
 			//$translated_message = $this->language->lang_array($lang_key, $parameters);
 			$translated_message = call_user_func_array([$this->language, 'lang'], array_merge((array)$lang_key, $parameters));
@@ -153,9 +157,17 @@ trait translate_composer_trait
 			{
 				continue;
 			}
+			else if ($message === '    Extracting archive')
+			{
+				continue;
+			}
 			else if (empty($message))
 			{
 				continue;
+			}
+			else
+			{
+				dump('WRITE ERROR | ' . $message);
 			}
 
 			//$translated_message = $this->language->lang_array($lang_key, $parameters);
