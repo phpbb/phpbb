@@ -34,10 +34,10 @@ class filespec
 	protected $mimetype = '';
 
 	/** @var string File extension */
-	public $extension = '';
+	protected $extension = '';
 
 	/** @var int File size */
-	public $filesize = 0;
+	protected $filesize = 0;
 
 	/** @var int Width of file */
 	protected $width = 0;
@@ -55,10 +55,10 @@ class filespec
 	protected $destination_path = '';
 
 	/** @var bool Whether file was moved */
-	public $file_moved = false;
+	protected $file_moved = false;
 
 	/** @var bool Whether file is local */
-	public $local = false;
+	protected $local = false;
 
 	/** @var bool Class initialization flag */
 	protected $class_initialized = false;

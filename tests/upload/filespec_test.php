@@ -82,6 +82,13 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
+	private function set_reflection_property(&$class, $property_name, $value)
+	{
+		$property = new ReflectionProperty($class, $property_name);
+		$property->setAccessible(true);
+		$property->setValue($class, $value);
+	}
+
 	private function get_filespec($override = array())
 	{
 		// Initialise a blank filespec object for use with trivial methods
@@ -141,8 +148,8 @@ class phpbb_filespec_test extends phpbb_test_case
 		$upload = new phpbb_mock_fileupload();
 		$filespec = $this->get_filespec();
 		$filespec->set_upload_namespace($upload);
-		$filespec->file_moved = true;
-		$filespec->filesize = $filespec->get_filesize($this->path . $filename);
+		$this->set_reflection_property($filespec, 'file_moved', true);
+		$this->set_reflection_property($filespec, 'filesize', $filespec->get_filesize($this->path . $filename));
 
 		$this->assertEquals($expected, $filespec->additional_checks());
 	}
@@ -153,7 +160,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec = $this->get_filespec();
 		$filespec->set_upload_namespace($upload);
 		$upload->valid_dimensions = false;
-		$filespec->file_moved = true;
+		$this->set_reflection_property($filespec, 'file_moved', true);
 		$upload->max_filesize = 0;
 
 		$this->assertEquals(false, $filespec->additional_checks());
@@ -381,12 +388,12 @@ class phpbb_filespec_test extends phpbb_test_case
 			'name' => $realname,
 			'type' => $mime_type,
 		));
-		$filespec->extension = $extension;
+		$this->set_reflection_property($filespec, 'extension', $extension);
 		$filespec->set_upload_namespace($upload);
-		$filespec->local = true;
+		$this->set_reflection_property($filespec, 'local', true);
 
 		$this->assertEquals($expected, $filespec->move_file($this->path . 'copies'));
-		$this->assertEquals($filespec->file_moved, file_exists($this->path . 'copies/' . $realname));
+		$this->assertEquals($filespec->get('file_moved'), file_exists($this->path . 'copies/' . $realname));
 		if ($error)
 		{
 			$this->assertEquals($error, $filespec->error[0]);
@@ -437,12 +444,12 @@ class phpbb_filespec_test extends phpbb_test_case
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
 		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, $php_ini, new \FastImageSize\FastImagesize,  '', $this->mimetype_guesser);
 		$filespec->set_upload_ary($upload_ary);
-		$filespec->local = false;
-		$filespec->extension = 'gif';
+		$this->set_reflection_property($filespec, 'local', false);
+		$this->set_reflection_property($filespec, 'extension', 'gif');
 		$filespec->set_upload_namespace($upload);
 
 		$this->assertEquals($move_success, $filespec->move_file($this->path . 'copies'));
-		$this->assertEquals($filespec->file_moved, file_exists($this->path . 'copies/gif_moved'));
+		$this->assertEquals($filespec->get('file_moved'), file_exists($this->path . 'copies/gif_moved'));
 		$this->assertSame($expected_error, $filespec->error);
 	}
 
@@ -505,12 +512,12 @@ class phpbb_filespec_test extends phpbb_test_case
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
 		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, $imagesize,  '', $this->mimetype_guesser);
 		$filespec->set_upload_ary($upload_ary);
-		$filespec->local = false;
-		$filespec->extension = 'gif';
+		$this->set_reflection_property($filespec, 'local', false);
+		$this->set_reflection_property($filespec, 'extension', 'gif');
 		$filespec->set_upload_namespace($upload);
 
 		$this->assertEquals(true, $filespec->move_file($this->path . 'copies'));
-		$this->assertEquals($filespec->file_moved, file_exists($this->path . 'copies/gif_moved'));
+		$this->assertEquals($filespec->get('file_moved'), file_exists($this->path . 'copies/gif_moved'));
 		$this->assertSame($expected_error, $filespec->error);
 	}
 

@@ -202,7 +202,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
 		$this->assertFalse($file->move_file('../tests/upload/fixture'));
-		$this->assertFalse($file->file_moved);
+		$this->assertFalse($file->get('file_moved'));
 		$this->assertEquals(1, sizeof($file->error));
 	}
 
