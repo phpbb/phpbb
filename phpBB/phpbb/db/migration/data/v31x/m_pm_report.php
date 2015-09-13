@@ -31,6 +31,17 @@ class m_pm_report extends \phpbb\db\migration\migration
 		);
 	}
 
+	public function revert_data()
+	{
+		return array(
+			array('permission.remove', array('m_pm_report')),
+			array('custom', array(
+					array($this, 'revert_module_auth'),
+				),
+			),
+		);
+	}
+
 	public function update_module_auth()
 	{
 		$sql = 'UPDATE ' . MODULES_TABLE . "
@@ -38,6 +49,16 @@ class m_pm_report extends \phpbb\db\migration\migration
 			WHERE module_class = 'mcp'
 				AND module_basename = 'mcp_pm_reports'
 				AND module_auth = 'aclf_m_report'";
+		$this->db->sql_query($sql);
+	}
+
+	public function revert_module_auth()
+	{
+		$sql = 'UPDATE ' . MODULES_TABLE . "
+			SET module_auth = 'aclf_m_report'
+			WHERE module_class = 'mcp'
+				AND module_basename = 'mcp_pm_reports'
+				AND module_auth = 'acl_m_pm_report'";
 		$this->db->sql_query($sql);
 	}
 }
