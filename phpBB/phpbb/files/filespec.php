@@ -145,7 +145,7 @@ class filespec
 		$this->extension = strtolower(self::get_extension($this->realname));
 
 		// Try to get real filesize from temporary folder (not always working) ;)
-		$this->filesize = (@filesize($this->filename)) ? @filesize($this->filename) : $this->filesize;
+		$this->filesize = ($this->get_filesize($this->filename)) ?: $this->filesize;
 
 		$this->width = $this->height = 0;
 		$this->file_moved = false;
@@ -494,7 +494,7 @@ class filespec
 		}
 
 		// Try to get real filesize from destination folder
-		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
+		$this->filesize = ($this->get_filesize($this->destination_file)) ?: $this->filesize;
 
 		// Get mimetype of supplied file
 		$this->mimetype = $this->get_mimetype($this->destination_file);
