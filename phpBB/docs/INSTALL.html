@@ -265,7 +265,7 @@
 
 <p>If you are currently using a stable release of phpBB, updating to this version is straightforward. You would have downloaded one of four packages and your choice determines what you need to do. <strong>Note</strong>: Before updating, we heavily recommend you do a <em>full backup of your database and existing phpBB files</em>! If you are unsure how to achieve this please ask your hosting provider for advice.</p>
 
-<p><strong>Please make sure you update your phpBB source files too, even if you run the <code>database_update.php</code> file.</strong></p>
+<p><strong>Please make sure you update your phpBB source files too, even if you run the <code>database_update.php</code> file.</strong> If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_full"></a><h3>4.i. Full package</h3>
 
@@ -273,7 +273,7 @@
 
 	<p>First, you should make a copy of your existing <code>config.php</code> file; keep it in a safe place! Next, delete all the existing phpBB files, you may want to leave your <code>files/</code> and <code>images/</code> directories in place. You can leave alternative styles in place too. With this complete, you can upload the new phpBB files (see <a href="#install">New installation</a> for details if necessary). Once complete, copy back your saved <code>config.php</code>, replacing the new one. Another method is to just <strong>replace</strong> the existing files with the files from the full package - though make sure you do <strong>not</strong> overwrite your config.php file.</p>
 
-	<p>You should now run <code>install/database_update.php</code> which, depending on your previous version, will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
+	<p>You should now run <code>install/database_update.php</code> which, depending on your previous version, will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker). If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 	<p>Once <code>install/database_update.php</code> has completed, you may proceed to the Administration Control Panel and then remove the install directory as advised.</p>
 
@@ -285,7 +285,7 @@
 
 	<p>The directory structure has been preserved, enabling you (if you wish) to simply upload the uncompressed contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any modifications (MODs) these files will overwrite the originals, possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
-	<p>As for the other update procedures, you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and increment the version number.</p>
+	<p>As for the other update procedures, you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_patch"></a><h3>4.iii. Patch file</h3>
 
@@ -297,7 +297,7 @@
 
 	<p>If you do get failures, you should look at using the <a href="#update_files">Changed Files</a> package to replace the files which failed to patch. Please note that you will need to manually re-add any MODs to these particular files. Alternatively, if you know how, you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
-	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
+	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_auto"></a><h3>4.iv. Automatic update package</h3>
 
