@@ -20,7 +20,6 @@ use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Package\CompletePackage;
 use Composer\Package\LinkConstraint\LinkConstraintInterface;
-use Composer\Package\LinkConstraint\VersionConstraint;
 use Composer\Package\PackageInterface;
 use Composer\Repository\ComposerRepository;
 use Composer\Repository\RepositoryInterface;
@@ -61,6 +60,11 @@ class installer
 	protected $root_path;
 
 	/**
+	 * @var string Store the original working directory in case it has been changed through move_to_root()
+	 */
+	private $original_cwd;
+
+	/**
 	 * @param \phpbb\config\config	$config		Config object
 	 * @param string				$root_path	phpBB root path
 	 */
@@ -93,17 +97,16 @@ class installer
 	public function install(array $packages, $whitelist, IOInterface $io = null)
 	{
 		// The composer installers works with a path relative to the current directory
-		$original_working_dir = getcwd();
-		chdir($this->root_path);
+		$this->move_to_root();
 
 		try
 		{
 			$this->do_install($packages, $whitelist, $io);
-			chdir($original_working_dir);
+			$this->restore_cwd();
 		}
 		catch (\Exception $e)
 		{
-			chdir($original_working_dir);
+			$this->restore_cwd();
 			throw $e;
 		}
 	}
@@ -154,11 +157,13 @@ class installer
 		}
 		catch (\Exception $e)
 		{
+			$this->restore_cwd();
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
 
 		if ($result !== 0)
 		{
+			$this->restore_cwd();
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
 	}
@@ -173,17 +178,16 @@ class installer
 	public function get_installed_packages($types)
 	{
 		// The composer installers works with a path relative to the current directory
-		$original_working_dir = getcwd();
-		chdir($this->root_path);
+		$this->move_to_root();
 
 		try
 		{
 			$result = $this->do_get_installed_packages($types);
-			chdir($original_working_dir);
+			$this->restore_cwd();
 		}
 		catch (\Exception $e)
 		{
-			chdir($original_working_dir);
+			$this->restore_cwd();
 			throw $e;
 		}
 
@@ -240,17 +244,16 @@ class installer
 	public function get_available_packages($type)
 	{
 		// The composer installers works with a path relative to the current directory
-		$original_working_dir = getcwd();
-		chdir($this->root_path);
+		$this->move_to_root();
 
 		try
 		{
 			$result = $this->do_get_available_packages($type);
-			chdir($original_working_dir);
+			$this->restore_cwd();
 		}
 		catch (\Exception $e)
 		{
-			chdir($original_working_dir);
+			$this->restore_cwd();
 			throw $e;
 		}
 
@@ -591,5 +594,29 @@ class installer
 	public function set_root_path($root_path)
 	{
 		$this->root_path = $root_path;
+	}
+
+	/**
+	 * Change the current directory to phpBB root
+	 */
+	protected function move_to_root()
+	{
+		if ($this->original_cwd === null)
+		{
+			$this->original_cwd = getcwd();
+			chdir($this->root_path);
+		}
+	}
+
+	/**
+	 * Restore the current working directory if move_to_root() have been called
+	 */
+	protected function restore_cwd()
+	{
+		if ($this->original_cwd)
+		{
+			chdir($this->original_cwd);
+			$this->original_cwd = null;
+		}
 	}
 }
