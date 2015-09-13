@@ -89,6 +89,19 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.db.revert:
+        class: phpbb\console\command\db\revert
+        arguments:
+            - @user
+            - @migrator
+            - @ext.manager
+            - @config
+            - @cache
+            - @filesystem
+            - %core.root_path%
+        tags:
+            - { name: console.command }
+
     console.command.dev.migration_tips:
         class: phpbb\console\command\dev\migration_tips
         arguments:
