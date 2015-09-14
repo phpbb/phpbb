@@ -383,7 +383,10 @@ class installer
 				}
 			}
 
-			ksort($available);
+			usort($available, function($a, $b)
+			{
+				return strcmp($a['display_name'], $b['display_name']);
+			});
 
 			return $available;
 		}
