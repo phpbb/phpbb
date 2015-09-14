@@ -88,7 +88,7 @@
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools {
+.rtl .dropdown-container.topic-tools, .rtl .dropdown-container-left {
 	float: right;
 }
 
@@ -114,12 +114,12 @@
 	text-align: right;
 }
 
-.rtl .dropdown-extended .header .header_settings {
+.rtl .dropdown-extended .header .header_settings, .rtl .dropdown-container-right {
 	float: left;
 }
 
 /* Notifications
-----------------------------------------*/
+-----------------------------------------*/
 .rtl .notification_list ul li img {
 	float: right;
 	margin-left: 5px;
