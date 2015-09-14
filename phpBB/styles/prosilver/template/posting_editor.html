@@ -35,7 +35,7 @@
 
 	<!-- INCLUDE posting_buttons.html -->
 
-	<div id="smiley-box">
+	<div id="smiley-box" class="smiley-box">
 		<!-- EVENT posting_editor_smilies_before -->	
 		<!-- IF S_SMILIES_ALLOWED and .smiley -->
 			<strong>{L_SMILIES}</strong><br />
@@ -69,7 +69,7 @@
 
 	<!-- EVENT posting_editor_message_before -->
 
-	<div id="message-box">
+	<div id="message-box" class="message-box">
 		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 	</div>
 
@@ -102,13 +102,13 @@
 	<!-- ENDIF -->
 
 	<!-- IF not S_PRIVMSGS and not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
-		<div id="tabs" class="sub-panels" data-show-panel="<!-- IF SHOW_PANEL -->{SHOW_PANEL}<!-- ELSE -->options-panel<!-- ENDIF -->" role="tablist">
+		<div id="tabs" class="tabs sub-panels" data-show-panel="<!-- IF SHOW_PANEL -->{SHOW_PANEL}<!-- ELSE -->options-panel<!-- ENDIF -->" role="tablist">
 			<ul>
 				<li id="options-panel-tab" class="tab activetab"><a href="#tabs" data-subpanel="options-panel" role="tab" aria-controls="options-panel"><span>{L_OPTIONS}</span></a></li>
 				<!-- IF S_SHOW_ATTACH_BOX -->
 					<li id="attach-panel-tab" class="tab">
 						<a href="#tabs" data-subpanel="attach-panel" role="tab" aria-controls="attach-panel">
-							{L_ATTACHMENTS} <strong id="file-total-progress"><strong id="file-total-progress-bar"></strong></strong>
+							{L_ATTACHMENTS} <strong id="file-total-progress" class="file-total-progress"><strong id="file-total-progress-bar" class="file-total-progress-bar"></strong></strong>
 						</a>
 					</li>
 				<!-- ENDIF -->

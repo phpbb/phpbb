@@ -11,7 +11,7 @@
 	<!-- DEFINE $SHOW_PANEL = 'display-panel' -->
 <!-- ENDIF -->
 
-<div id="minitabs" class="sub-panels" data-show-panel="{$SHOW_PANEL}" role="tablist">
+<div id="minitabs" class="minitabs sub-panels" data-show-panel="{$SHOW_PANEL}" role="tablist">
 	<ul>
 		<li id="display-panel-tab" class="tab<!-- IF not S_MERGE_VIEW --> activetab<!-- ENDIF -->">
 			<a href="#minitabs" data-subpanel="display-panel" role="tab" aria-controls="display-panel">{L_DISPLAY_OPTIONS}</a>
@@ -87,12 +87,12 @@
 <div class="panel">
 	<div class="inner">
 
-	<h3 id="review">
+	<h3 id="review" class="review">
 		<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
 		{L_TOPIC_REVIEW}{L_COLON} <!-- EVENT mcp_topic_topic_title_before -->{TOPIC_TITLE}<!-- EVENT mcp_topic_topic_title_after -->
 	</h3>
 
-	<div id="topicreview">
+	<div id="topicreview" class="topicreview">
 		<!-- BEGIN postrow -->
 		<div class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 			<div class="inner">
