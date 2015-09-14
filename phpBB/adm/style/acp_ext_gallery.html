@@ -46,15 +46,15 @@
 		<tr>
 			<td>
 				<strong>{{ extension.display_name }}</strong><br />
-				<span>
-					<a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a>
-				</span>
+				<em>{{ extension.name }}</em>
 			</td>
 			<td style="text-align: center">{{ extension.version }}</td>
-			<td>{{ extension.description }}</td>
+			<td>{{ extension.description }} &bull; <a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a></td>
 			<td style="text-align: center">
 				{% if extension.name in managed_extensions %}
-					<span style="color: #228822;">{{ lang('INSTALLED') }}</span>
+					<span style="color: #228822;">{{ lang('INSTALLED') }}</span><br />
+					(<a href="{{ U_ACTION }}&amp;action=update&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('UPDATE') }}</a>
+					&bull; <a href="{{ U_ACTION }}&amp;action=remove&amp;extension={{ extension.composer_name|url_encode }}" style="color: #BC2A4D;">{{ lang('REMOVE') }}</a>)
 				{% elseif extension.name in installed_extensions -%}
 					<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span> (<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
 				{% else -%}
