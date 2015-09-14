@@ -39,6 +39,11 @@ class extension_manager extends manager
 	protected $filesystem;
 
 	/**
+	 * @var array
+	 */
+	private $enabled_extensions;
+
+	/**
 	 * @param installer			$installer			Installer object
 	 * @param driver_interface	$cache				Cache object
 	 * @param ext_manager		$extension_manager	phpBB extension manager
@@ -57,29 +62,112 @@ class extension_manager extends manager
 	/**
 	 * {@inheritdoc}
 	 */
-	public function install(array $packages, IOInterface $io = null)
+	public function pre_install(array $packages, IOInterface $io = null)
 	{
-		$packages = $this->normalize_version($packages);
-
-		$already_managed = array_intersect(array_keys($this->get_managed_packages()), array_keys($packages));
-		if (count($already_managed) !== 0)
-		{
-			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED', [implode('|', $already_managed)]);
-		}
-
 		$installed_manually = array_intersect(array_keys($this->extension_manager->all_available()), array_keys($packages));
 		if (count($installed_manually) !== 0)
 		{
 			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED_MANUALLY', [implode('|', array_keys($installed_manually))]);
 		}
-
-		$this->do_install($packages, $io);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function start_managing($package)
+	protected function pre_update(array $packages, IOInterface $io = null)
+	{
+		$io->writeError('DISABLING_EXTENSIONS', true, 1);
+		$this->enabled_extensions = [];
+		foreach ($packages as $package)
+		{
+			try
+			{
+				if ($this->extension_manager->is_enabled($package))
+				{
+					$this->enabled_extensions[] = $package;
+					$this->extension_manager->disable($package);
+				}
+			}
+			catch (\phpbb\exception\runtime_exception $e)
+			{
+				$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+			}
+			catch (\Exception $e)
+			{
+				$io->writeError($e->getMessage(), true, 4);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function post_update(array $packages, IOInterface $io = null)
+	{
+		$io->writeError('ENABLING_EXTENSIONS', true, 1);
+		foreach ($this->enabled_extensions as $package)
+		{
+			try
+			{
+				$this->extension_manager->enable($package);
+			}
+			catch (\phpbb\exception\runtime_exception $e)
+			{
+				$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+			}
+			catch (\Exception $e)
+			{
+				$io->writeError($e->getMessage(), true, 4);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function remove(array $packages, IOInterface $io = null)
+	{
+		$packages = $this->normalize_version($packages);
+
+		$not_installed = array_diff(array_keys($packages), array_keys($this->extension_manager->all_available()));
+		if (count($not_installed) !== 0)
+		{
+			throw new runtime_exception($this->exception_prefix, 'NOT_INSTALLED', [implode('|', array_keys($not_installed))]);
+		}
+
+		parent::remove($packages, $io);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function pre_remove(array $packages, IOInterface $io = null)
+	{
+		$io->writeError('DISABLING_EXTENSIONS', true, 1);
+		foreach ($packages as $package)
+		{
+			try
+			{
+				if ($this->extension_manager->is_enabled($package))
+				{
+					$this->extension_manager->disable($package);
+				}
+			}
+			catch (\phpbb\exception\runtime_exception $e)
+			{
+				$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+			}
+			catch (\Exception $e)
+			{
+				$io->writeError($e->getMessage(), true, 4);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function start_managing($package, $io)
 	{
 		if (!$this->extension_manager->is_available($package))
 		{
@@ -95,6 +183,7 @@ class extension_manager extends manager
 		if ($this->extension_manager->is_enabled($package))
 		{
 			$enabled = true;
+			$io->writeError('DISABLING_EXTENSION', true, 1);
 			$this->extension_manager->disable($package);
 		}
 
@@ -129,7 +218,8 @@ class extension_manager extends manager
 		{
 			try
 			{
-				$this->extension_manager->enable($package);
+				$io->writeError('ENABLING_EXTENSION', true, 1);
+				$this->extension_manager->enabling($package);
 			}
 			catch (\Exception $e)
 			{

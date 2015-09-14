@@ -84,23 +84,38 @@ class manager implements manager_interface
 			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED', [implode('|', $already_managed)]);
 		}
 
-		$this->do_install($packages, $io);
-	}
+		$this->pre_install($packages, $io);
 
-	/**
-	 * Really install the packages.
-	 *
-	 * @param array $packages Packages to install.
-	 * @param IOInterface $io IO object used for the output
-	 */
-	protected function do_install($packages, IOInterface $io = null)
-	{
 		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
 		$this->installer->install($managed_packages, array_keys($packages), $io);
 
+		$this->post_install($packages, $io);
+
 		$this->managed_packages = null;
+	}
+
+	/**
+	 * Hook called before installing the packages
+	 *
+	 * @param array $packages Packages to update.
+	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
+	 */
+	protected function pre_install(array $packages, IOInterface $io = null)
+	{
+	}
+
+	/**
+	 * Hook called after installing the packages
+	 *
+	 * @param array $packages Packages to update.
+	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
+	 */
+	protected function post_install(array $packages, IOInterface $io = null)
+	{
 	}
 
 	/**
@@ -110,17 +125,42 @@ class manager implements manager_interface
 	{
 		$packages = $this->normalize_version($packages);
 
-		// TODO: if the extension is already enabled, we should disabled and re-enable it
 		$not_managed = array_diff_key($packages, $this->get_managed_packages());
 		if (count($not_managed) !== 0)
 		{
 			throw new runtime_exception($this->exception_prefix, 'NOT_MANAGED', [implode('|', array_keys($not_managed))]);
 		}
 
+		$this->pre_update($packages, $io);
+
 		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
 		$this->installer->install($managed_packages, array_keys($packages), $io);
+
+		$this->post_update($packages, $io);
+	}
+
+	/**
+	 * Hook called before updating the packages
+	 *
+	 * @param array $packages Packages to update.
+	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
+	 */
+	protected function pre_update(array $packages, IOInterface $io = null)
+	{
+	}
+
+	/**
+	 * Hook called after updating the packages
+	 *
+	 * @param array $packages Packages to update.
+	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
+	 */
+	protected function post_update(array $packages, IOInterface $io = null)
+	{
 	}
 
 	/**
@@ -137,12 +177,38 @@ class manager implements manager_interface
 			throw new runtime_exception($this->exception_prefix, 'NOT_MANAGED', [implode('|', array_keys($not_managed))]);
 		}
 
+		$this->pre_remove($packages, $io);
+
 		$managed_packages = array_diff_key($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
 		$this->installer->install($managed_packages, array_keys($packages), $io);
 
+		$this->post_remove($packages, $io);
+
 		$this->managed_packages = null;
+	}
+
+	/**
+	 * Hook called before removing the packages
+	 *
+	 * @param array $packages Packages to update.
+	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
+	 */
+	protected function pre_remove(array $packages, IOInterface $io = null)
+	{
+	}
+
+	/**
+	 * Hook called after removing the packages
+	 *
+	 * @param array $packages Packages to update.
+	 *                        Each entry may be a name or an array associating a version constraint to a name
+	 * @param IOInterface $io IO object used for the output
+	 */
+	protected function post_remove(array $packages, IOInterface $io = null)
+	{
 	}
 
 	/**
@@ -200,7 +266,7 @@ class manager implements manager_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function start_managing($package)
+	public function start_managing($package, $io)
 	{
 		throw new \phpbb\exception\runtime_exception('COMPOSER_UNSUPPORTED_OPERATION', (array) $this->package_type);
 	}

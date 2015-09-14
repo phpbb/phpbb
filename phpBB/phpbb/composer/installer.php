@@ -60,9 +60,14 @@ class installer
 	protected $root_path;
 
 	/**
-	 * @var string Store the original working directory in case it has been changed through move_to_root()
+	 * @var string Stores the original working directory in case it has been changed through move_to_root()
 	 */
 	private $original_cwd;
+
+	/**
+	 * @var array Stores the content of the ext json file before generate_ext_json_file() overrides it
+	 */
+	private $ext_json_file_backup;
 
 	/**
 	 * @param \phpbb\config\config	$config		Config object
@@ -157,12 +162,14 @@ class installer
 		}
 		catch (\Exception $e)
 		{
+			$this->restore_ext_json_file();
 			$this->restore_cwd();
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
 
 		if ($result !== 0)
 		{
+			$this->restore_ext_json_file();
 			$this->restore_cwd();
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
@@ -444,8 +451,31 @@ class installer
 			],
 		];
 
+		$this->ext_json_file_backup = null;
 		$json_file = new JsonFile($this->get_composer_ext_json_filename());
+		$ext_json_file_backup = $json_file->read();
 		$json_file->write($ext_json_data);
+		$this->ext_json_file_backup = $ext_json_file_backup;
+	}
+
+	/**
+	 * Restore the json file overridden by generate_ext_json_file()
+	 */
+	protected function restore_ext_json_file()
+	{
+		if ($this->ext_json_file_backup)
+		{
+			try
+			{
+				$json_file = new JsonFile($this->get_composer_ext_json_filename());
+				$json_file->write($this->ext_json_file_backup);
+			}
+			catch (\Exception $e)
+			{
+			}
+
+			$this->ext_json_file_backup = null;
+		}
 	}
 
 	/**

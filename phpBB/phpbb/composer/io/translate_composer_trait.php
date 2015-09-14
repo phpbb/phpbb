@@ -38,9 +38,21 @@ trait translate_composer_trait
 
 		foreach ($messages as $message)
 		{
-			$lang_key = $message;
-			$parameters = [];
 			$level = 0;
+			if (is_array($message))
+			{
+				$lang_key = $message[0];
+				$parameters = $message[1];
+				if (count($message) > 2)
+				{
+					$level = $message[2];
+				}
+			}
+			else
+			{
+				$lang_key = $message;
+				$parameters = [];
+			}
 
 			$message = trim($this->strip_format($message), "\n\r");
 
@@ -49,10 +61,6 @@ trait translate_composer_trait
 				$elements = explode(' ', $message);
 				$lang_key = 'COMPOSER_DELETING';
 				$parameters = [$elements[1]];
-			}
-			else
-			{
-				dump('WRITE | ' . $message);
 			}
 
 			//$translated_message = $this->language->lang_array($lang_key, $parameters);
@@ -90,9 +98,21 @@ trait translate_composer_trait
 
 		foreach ($messages as $message)
 		{
-			$lang_key = $message;
-			$parameters = [];
 			$level = 0;
+			if (is_array($message))
+			{
+				$lang_key = $message[0];
+				$parameters = $message[1];
+				if (count($message) > 2)
+				{
+					$level = $message[2];
+				}
+			}
+			else
+			{
+				$lang_key = $message;
+				$parameters = [];
+			}
 
 			$message = trim($this->strip_format($message), "\n\r");
 
@@ -165,13 +185,8 @@ trait translate_composer_trait
 			{
 				continue;
 			}
-			else
-			{
-				dump('WRITE ERROR | ' . $message);
-			}
 
-			//$translated_message = $this->language->lang_array($lang_key, $parameters);
-			$translated_message = call_user_func_array([$this->language, 'lang'], array_merge((array)$lang_key, $parameters));
+			$translated_message = $this->language->lang_array($lang_key, $parameters);
 
 			switch ($level)
 			{

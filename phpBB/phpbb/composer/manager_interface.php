@@ -84,8 +84,9 @@ interface manager_interface
 	 * Remove a package installed manually and reinstall it using composer.
 	 *
 	 * @param string $package Package to manage
+	 * @param IOInterface $io IO object used for the output
 	 *
 	 * @throws runtime_exception
 	 */
-	public function start_managing($package);
+	public function start_managing($package, $io);
 }
