@@ -44,7 +44,7 @@
 	{% for extension in extensions %}
 		<tr>
 			<td>
-				<strong>{{ extension.name }}</strong><br />
+				<strong>{{ extension.display_name }}</strong><br />
 				<span>
 					<a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a> &bull;
 					{% if extension.name in managed_extensions %}

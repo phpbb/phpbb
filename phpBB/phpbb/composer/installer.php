@@ -365,6 +365,7 @@ class installer
 				// Generates the entry
 				$available[$name] = [];
 				$available[$name]['name'] = $highest_version->getPrettyName();
+				$available[$name]['display_name'] = $highest_version->getExtra()['display-name'];
 				$available[$name]['composer_name'] = $highest_version->getName();
 				$available[$name]['version'] = $highest_version->getPrettyVersion();
 
