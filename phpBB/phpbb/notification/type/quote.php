@@ -117,7 +117,7 @@ class quote extends \phpbb\notification\type\post
 		$notifications = array_keys($this->find_users_for_notification($post));
 
 		// Find the notifications we must delete
-		$remove_notifications = array_diff($old_notifications, array_keys($notifications));
+		$remove_notifications = array_diff(array_keys($old_notifications), array_keys($notifications));
 
 		// Find the notifications we must add
 		$add_notifications = array();
