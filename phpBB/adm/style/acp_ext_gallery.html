@@ -32,12 +32,13 @@
 	</form>
 
 	<table class="table1">
-		<col class="row1" ><col class="row1" ><col class="row1" >
+		<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" >
 	<thead>
 		<tr>
 			<th style="width: 21%;">{{ lang("EXTENSION_NAME") }}</th>
-			<th style="text-align: center; width: 10%;">{{ lang("VERSION") }}</th>
+			<th style="text-align: center; width: 80px;">{{ lang("VERSION") }}</th>
 			<th>{{ lang("DESCRIPTION") }}</th>
+			<th style="text-align: center; width: 100px;">{{ lang("EXTENSION_ACTIONS") }}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -46,18 +47,20 @@
 			<td>
 				<strong>{{ extension.display_name }}</strong><br />
 				<span>
-					<a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a> &bull;
-					{% if extension.name in managed_extensions %}
-						<span style="color: #228822;">{{ lang('INSTALLED') }}</span>
-					{% elseif extension.name in installed_extensions -%}
-						<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span> (<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
-					{% else -%}
-						<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
-					{%- endif -%}
+					<a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a>
 				</span>
 			</td>
-			<td>{{ extension.version }}</td>
+			<td style="text-align: center">{{ extension.version }}</td>
 			<td>{{ extension.description }}</td>
+			<td style="text-align: center">
+				{% if extension.name in managed_extensions %}
+					<span style="color: #228822;">{{ lang('INSTALLED') }}</span>
+				{% elseif extension.name in installed_extensions -%}
+					<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span> (<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
+				{% else -%}
+					<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
+				{%- endif -%}
+			</td>
 		</tr>
 	{% endfor %}
 	</tbody>
