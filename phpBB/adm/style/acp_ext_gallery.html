@@ -1,18 +1,23 @@
-<!-- INCLUDE overall_header.html -->
+{% include('overall_header.html') %}
 
 <a id="maincontent"></a>
 
-	<h1>{{lang( 'EXTENSIONS_ADMIN') }}</h1>
+<h1>{{lang( 'EXTENSIONS_ADMIN') }}</h1>
 
-	<p>{{lang( 'EXTENSIONS_EXPLAIN') }}</p>
+<p>{{lang( 'EXTENSIONS_EXPLAIN') }}</p>
 
-	<fieldset class="quick">
-		<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{{ lang('BROWSE_EXTENSIONS_DATABASE') }}</a> &bull; <a href="javascript:phpbb.toggleDisplay('gallery_settings');">{{ lang('SETTINGS') }}</a></span>
-	</fieldset>
+<fieldset class="quick quick-left">
+	<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{{ lang('BROWSE_EXTENSIONS_DATABASE') }}</a> &bull; <a href="javascript:phpbb.toggleDisplay('gallery_settings');">{{ lang('SETTINGS') }}</a></span>
+</fieldset>
 
-	<form id="gallery_settings" method="post" action="{{ U_ACTION }}" style="display:none">
+{% if pagination is defined %}
+	<div class="pagination top-pagination">
+		{% include('pagination.html') %}
+	</div>
+{% endif %}
 
-	<fieldset>
+<form id="gallery_settings" method="post" action="{{ U_ACTION }}" style="display:none">
+	<fieldset style="clear: both;">
 		<legend>{{ lang('EXTENSIONS_GALLERY_SETTINGS') }}</legend>
 		<dl>
 			<dt><label for="force_unstable">{L_FORCE_UNSTABLE}{L_COLON}</label></dt>
@@ -29,41 +34,47 @@
 			{{ S_FORM_TOKEN }}
 		</p>
 	</fieldset>
-	</form>
+</form>
 
-	<table class="table1">
-		<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" >
-	<thead>
-		<tr>
-			<th style="width: 250px;">{{ lang("EXTENSION_NAME") }}</th>
-			<th style="text-align: center; width: 80px;">{{ lang("VERSION") }}</th>
-			<th>{{ lang("DESCRIPTION") }}</th>
-			<th style="text-align: center; width: 150px;">{{ lang("EXTENSION_ACTIONS") }}</th>
-		</tr>
-	</thead>
-	<tbody>
-	{% for extension in extensions %}
-		<tr>
-			<td>
-				<strong>{{ extension.display_name }}</strong><br />
-				{{ extension.name }}
-			</td>
-			<td style="text-align: center">{{ extension.version }}</td>
-			<td>{{ extension.description }} &bull; <a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a></td>
-			<td style="text-align: center">
-				{% if extension.name in managed_extensions %}
-					<span style="color: #228822;">{{ lang('INSTALLED') }}</span><br />
-					(<a href="{{ U_ACTION }}&amp;action=update&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('UPDATE') }}</a>
-					&bull; <a href="{{ U_ACTION }}&amp;action=remove&amp;extension={{ extension.composer_name|url_encode }}" style="color: #BC2A4D;">{{ lang('REMOVE') }}</a>)
-				{% elseif extension.name in installed_extensions -%}
-					<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span> (<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
-				{% else -%}
-					<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
-				{%- endif -%}
-			</td>
-		</tr>
-	{% endfor %}
-	</tbody>
-	</table>
+<table class="table1">
+	<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" >
+<thead>
+	<tr>
+		<th style="width: 250px;">{{ lang("EXTENSION_NAME") }}</th>
+		<th style="text-align: center; width: 80px;">{{ lang("VERSION") }}</th>
+		<th>{{ lang("DESCRIPTION") }}</th>
+		<th style="text-align: center; width: 150px;">{{ lang("EXTENSION_ACTIONS") }}</th>
+	</tr>
+</thead>
+<tbody>
+{% for extension in extensions %}
+	<tr>
+		<td>
+			<strong>{{ extension.display_name }}</strong><br />
+			{{ extension.name }}
+		</td>
+		<td style="text-align: center">{{ extension.version }}</td>
+		<td>{{ extension.description }} &bull; <a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a></td>
+		<td style="text-align: center">
+			{% if extension.name in managed_extensions %}
+				<span style="color: #228822;">{{ lang('INSTALLED') }}</span><br />
+				(<a href="{{ U_ACTION }}&amp;action=update&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('UPDATE') }}</a>
+				&bull; <a href="{{ U_ACTION }}&amp;action=remove&amp;extension={{ extension.composer_name|url_encode }}" style="color: #BC2A4D;">{{ lang('REMOVE') }}</a>)
+			{% elseif extension.name in installed_extensions -%}
+				<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span> (<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
+			{% else -%}
+				<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
+			{%- endif -%}
+		</td>
+	</tr>
+{% endfor %}
+</tbody>
+</table>
 
-<!-- INCLUDE overall_footer.html -->
+{% if pagination is defined %}
+	<div class="pagination bottom-pagination">
+		{% include('pagination.html') %}
+	</div>
+{% endif %}
+
+{% include('overall_footer.html') %}

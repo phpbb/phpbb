@@ -1333,6 +1333,16 @@ p.quick {
 	text-align: left;
 }
 
+fieldset.quick-left, p.quick-left {
+	margin: 15px 0 5px 0;
+	padding: 0 0px 0;
+	float: left;
+}
+
+.rtl fieldset.quick-left, .rtl p.quick-left {
+	float: right;
+}
+
 fieldset.quick legend {
 	display: none;
 }

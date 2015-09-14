@@ -576,11 +576,23 @@ class acp_extensions
 			default:
 				/** @var \phpbb\composer\extension_manager $manager */
 				$manager = $phpbb_container->get('ext.composer.manager');
+
+				/** @var \phpbb\pagination $pagination */
+				$pagination = $phpbb_container->get('pagination');
+
+				$start = $this->request->variable('start', 0);
+				$base_url = $this->u_action;
+
+				$available_extensions = $manager->get_available_packages();
+				$extensions = array_slice($available_extensions, $start, 20);
+
+				$pagination->generate_template_pagination($base_url, 'pagination', 'start', count($available_extensions), 20, $start);
+
 				$this->page_title = 'ACP_EXTENSIONS_GALLERY';
 				$this->tpl_name = 'acp_ext_gallery';
 
 				$this->request->enable_super_globals();
-				$this->template->assign_var('extensions', $manager->get_available_packages());
+				$this->template->assign_var('extensions', $extensions);
 				$this->template->assign_var('managed_extensions', array_keys($manager->get_managed_packages()));
 				$this->template->assign_var('installed_extensions', array_keys($extensions_manager->all_available()));
 				$this->template->assign_var('U_ACTION', $this->u_action);
