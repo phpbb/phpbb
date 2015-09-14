@@ -187,7 +187,7 @@ class extension_manager extends manager
 			$this->extension_manager->disable($package);
 		}
 
-		$ext_path = $this->extension_manager->get_extension_path($package);
+		$ext_path = $this->extension_manager->get_extension_path($package, true);
 		$backup_path = rtrim($ext_path, '/') . '__backup__';
 
 		try
@@ -201,7 +201,7 @@ class extension_manager extends manager
 
 		try
 		{
-			$this->install((array) $package);
+			$this->install((array) $package, $io);
 			$this->filesystem->remove($backup_path);
 		}
 		catch (runtime_exception $e)

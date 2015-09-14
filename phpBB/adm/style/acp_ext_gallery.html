@@ -35,7 +35,7 @@
 		<col class="row1" ><col class="row1" ><col class="row1" >
 	<thead>
 		<tr>
-			<th style="width: 20%;">{{ lang("EXTENSION_NAME") }}</th>
+			<th style="width: 21%;">{{ lang("EXTENSION_NAME") }}</th>
 			<th style="text-align: center; width: 10%;">{{ lang("VERSION") }}</th>
 			<th>{{ lang("DESCRIPTION") }}</th>
 		</tr>
@@ -46,7 +46,7 @@
 			<td>
 				<strong>{{ extension.name }}</strong><br />
 				<span>
-					<a href="{{ extension.url }}">{{ lang('DETAILS') }}</a> &bull;
+					<a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a> &bull;
 					{% if extension.name in managed_extensions %}
 						<span style="color: #228822;">{{ lang('INSTALLED') }}</span>
 					{% elseif extension.name in installed_extensions -%}

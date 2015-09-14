@@ -59,17 +59,17 @@ class acp_extensions
 		switch ($mode)
 		{
 			case 'gallery':
-				$this->gallery_mode();
+				$this->gallery_mode($id, $mode);
 				break;
 			default:
-				$this->main_mode();
+				$this->main_mode($id, $mode);
 				break;
 		}
 	}
 
-	public function main_mode()
+	public function main_mode($id, $mode)
 	{
-		global $phpbb_extension_manager, $phpbb_root_path;
+		global $phpbb_extension_manager, $phpbb_root_path, $phpbb_container, $phpbb_admin_path, $phpEx;
 
 		$this->page_title = 'ACP_EXTENSIONS';
 
@@ -167,11 +167,17 @@ class acp_extensions
 				$this->list_disabled_exts();
 				$this->list_available_exts();
 
+				$composer_manager = $phpbb_container->get('ext.composer.manager');
+
+				$this->request->enable_super_globals();
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
+					'MANAGED_EXTENSIONS'	=> array_keys($composer_manager->get_managed_packages()),
+					'U_GALLERY_ACTION' 		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=gallery"),
 				));
+				$this->request->disable_super_globals();
 
 				$this->tpl_name = 'acp_ext_list';
 			break;
@@ -401,7 +407,7 @@ class acp_extensions
 		$this->tpl_name = $tpl_name;
 	}
 
-	public function gallery_mode()
+	public function gallery_mode($id, $mode)
 	{
 		global $phpbb_container;
 
@@ -440,41 +446,7 @@ class acp_extensions
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
-					$this->tpl_name = 'detailled_message_body';
-
-					if ($e->getPrevious())
-					{
-						$message_title = $language->lang_array($e->getMessage(), $e->get_parameters());
-
-						if ($e->getPrevious() instanceof \phpbb\exception\exception_interface)
-						{
-							$message_text  = $language->lang_array($e->getPrevious()->getMessage(), $e->getPrevious()->get_parameters()) . adm_back_link($this->u_action);
-						}
-						else
-						{
-							$message_text = $e->getPrevious()->getMessage();
-							if (strpos($message_text, 'ext/') === 0 && strpos($message_text, 'does not exist and could not be created.') !== false)
-							{
-								$message_text = $language->lang('EXTENSIONS_DIR_NOT_WRITABLE');
-							}
-							$message_text .= adm_back_link($this->u_action);
-						}
-					}
-					else
-					{
-						$message_title = $language->lang('INFORMATION');
-						$message_text  = $language->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
-					}
-
-					$this->template->assign_vars(array(
-							'MESSAGE_TITLE'			=> $message_title,
-							'MESSAGE_TEXT'			=> $message_text,
-							'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
-							'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
-							'S_USER_ERROR'			=> true,
-						)
-					);
-
+					$this->display_composer_exception($language, $e, $composer_io);
 					return;
 				}
 				$this->tpl_name = 'detailled_message_body';
@@ -488,10 +460,117 @@ class acp_extensions
 					)
 				);
 
-				return;
-
 				break;
 			case 'remove':
+				$extension = $this->request->variable('extension', '');
+
+				if (empty($extension))
+				{
+					redirect($this->u_action);
+				}
+
+				$formatter = new \Composer\Console\HtmlOutputFormatter([
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+				]);
+
+				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+
+				try
+				{
+					$this->request->enable_super_globals();
+					$composer_manager->remove((array) $extension, $composer_io);
+					$this->request->disable_super_globals();
+				}
+				catch (\phpbb\exception\runtime_exception $e)
+				{
+					$this->display_composer_exception($language, $e, $composer_io);
+					return;
+				}
+				$this->tpl_name = 'detailled_message_body';
+
+				$this->template->assign_vars(array(
+						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_REMOVE'),
+						'MESSAGE_TEXT'			=> $language->lang('EXTENSIONS_REMOVED') . adm_back_link($this->u_action),
+						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
+						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'S_USER_NOTICE'			=> true,
+					)
+				);
+
+				break;
+			case 'update':
+				$extension = $this->request->variable('extension', '');
+
+				if (empty($extension))
+				{
+					redirect($this->u_action);
+				}
+
+				$formatter = new \Composer\Console\HtmlOutputFormatter([
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+				]);
+
+				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+
+				try
+				{
+					$this->request->enable_super_globals();
+					$composer_manager->update((array) $extension, $composer_io);
+					$this->request->disable_super_globals();
+				}
+				catch (\phpbb\exception\runtime_exception $e)
+				{
+					$this->display_composer_exception($language, $e, $composer_io);
+					return;
+				}
+				$this->tpl_name = 'detailled_message_body';
+
+				$this->template->assign_vars(array(
+						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_UPDATE'),
+						'MESSAGE_TEXT'			=> $language->lang('EXTENSIONS_UPDATED') . adm_back_link($this->u_action),
+						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
+						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'S_USER_NOTICE'			=> true,
+					)
+				);
+
+				break;
+			case 'manage':
+				$extension = $this->request->variable('extension', '');
+
+				if (empty($extension))
+				{
+					redirect($this->u_action);
+				}
+
+				$formatter = new \Composer\Console\HtmlOutputFormatter([
+					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
+				]);
+
+				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+
+				try
+				{
+					$this->request->enable_super_globals();
+					$composer_manager->start_managing($extension, $composer_io);
+					$this->request->disable_super_globals();
+				}
+				catch (\phpbb\exception\runtime_exception $e)
+				{
+					$this->display_composer_exception($language, $e, $composer_io);
+					return;
+				}
+				$this->tpl_name = 'detailled_message_body';
+
+				$this->template->assign_vars(array(
+						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_MANAGE'),
+						'MESSAGE_TEXT'			=> $language->lang('EXTENSION_MANAGED') . adm_back_link($this->u_action),
+						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
+						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+						'S_USER_NOTICE'			=> true,
+					)
+				);
+
 				break;
 			case 'list':
 			default:
@@ -508,6 +587,51 @@ class acp_extensions
 				$this->request->disable_super_globals();
 				break;
 		}
+	}
+
+	/**
+	 * Display an exception raised by the composer manager
+	 *
+	 * @param \phpbb\language\language           $language
+	 * @param \phpbb\exception\runtime_exception $e
+	 * @param \phpbb\composer\io\web_io          $composer_io
+	 */
+	private function display_composer_exception(\phpbb\language\language $language, \phpbb\exception\runtime_exception $e, \phpbb\composer\io\web_io $composer_io)
+	{
+		$this->tpl_name = 'detailled_message_body';
+
+		if ($e->getPrevious())
+		{
+			$message_title = $language->lang_array($e->getMessage(), $e->get_parameters());
+
+			if ($e->getPrevious() instanceof \phpbb\exception\exception_interface)
+			{
+				$message_text  = $language->lang_array($e->getPrevious()->getMessage(), $e->getPrevious()->get_parameters()) . adm_back_link($this->u_action);
+			}
+			else
+			{
+				$message_text = $e->getPrevious()->getMessage();
+				if (strpos($message_text, 'ext/') === 0 && strpos($message_text, 'does not exist and could not be created.') !== false)
+				{
+					$message_text = $language->lang('EXTENSIONS_DIR_NOT_WRITABLE');
+				}
+				$message_text .= adm_back_link($this->u_action);
+			}
+		}
+		else
+		{
+			$message_title = $language->lang('INFORMATION');
+			$message_text  = $language->lang_array($e->getMessage(), $e->get_parameters()) . adm_back_link($this->u_action);
+		}
+
+		$this->template->assign_vars(array(
+				'MESSAGE_TITLE'			=> $message_title,
+				'MESSAGE_TEXT'			=> $message_text,
+				'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
+				'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
+				'S_USER_ERROR'			=> true,
+			)
+		);
 	}
 
 	/**
@@ -529,6 +653,7 @@ class acp_extensions
 				$enabled_extension_meta_data[$name] = array(
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
 					'META_VERSION' => $meta['version'],
+					'META_NAME' => $md_manager->get_metadata('name'),
 				);
 
 				if (isset($meta['extra']['version-check']))
@@ -600,6 +725,7 @@ class acp_extensions
 				$disabled_extension_meta_data[$name] = array(
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
 					'META_VERSION' => $meta['version'],
+					'META_NAME' => $md_manager->get_metadata('name'),
 				);
 
 				if (isset($meta['extra']['version-check']))
@@ -671,6 +797,7 @@ class acp_extensions
 				$available_extension_meta_data[$name] = array(
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
 					'META_VERSION' => $meta['version'],
+					'META_NAME' => $md_manager->get_metadata('name'),
 				);
 
 				if (isset($meta['extra']['version-check']))
