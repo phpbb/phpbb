@@ -38,7 +38,7 @@
 			<th style="width: 250px;">{{ lang("EXTENSION_NAME") }}</th>
 			<th style="text-align: center; width: 80px;">{{ lang("VERSION") }}</th>
 			<th>{{ lang("DESCRIPTION") }}</th>
-			<th style="text-align: center; width: 110px;">{{ lang("EXTENSION_ACTIONS") }}</th>
+			<th style="text-align: center; width: 150px;">{{ lang("EXTENSION_ACTIONS") }}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -46,7 +46,7 @@
 		<tr>
 			<td>
 				<strong>{{ extension.display_name }}</strong><br />
-				<em>{{ extension.name }}</em>
+				{{ extension.name }}
 			</td>
 			<td style="text-align: center">{{ extension.version }}</td>
 			<td>{{ extension.description }} &bull; <a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a></td>
