@@ -104,6 +104,9 @@ $lang = array_merge($lang, array(
 	'EXTENSION_ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable the “%s” extension?',
 	'EXTENSION_FORCE_UNSTABLE_CONFIRM'	=> 'Are you sure that you wish to force the use of unstable version?',
 
+	'INSTALLED'				=> 'Installed',
+	'INSTALLED_MANUALLY'	=> 'Installed manually',
+
 	'RETURN_TO_EXTENSION_LIST'	=> 'Return to the extension list',
 
 	'EXT_DETAILS'			=> 'Extension Details',

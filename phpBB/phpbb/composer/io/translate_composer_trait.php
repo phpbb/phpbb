@@ -42,7 +42,7 @@ trait translate_composer_trait
 			$parameters = [];
 			$level = 0;
 
-			$message = trim(strip_tags($message), "\n\r");
+			$message = trim($this->strip_format($message), "\n\r");
 
 			if (strpos($message, 'Deleting ') === 0)
 			{
@@ -94,7 +94,7 @@ trait translate_composer_trait
 			$parameters = [];
 			$level = 0;
 
-			$message = trim(strip_tags($message), "\n\r");
+			$message = trim($this->strip_format($message), "\n\r");
 
 			if (strpos($message, '  Problem ') === 0)
 			{
@@ -103,7 +103,7 @@ trait translate_composer_trait
 					continue;
 				}
 
-				$lang_key = "\n" . $message . "\n";
+				$lang_key = "\n" . htmlentities($message) . "\n";
 				$level = 4;
 			}
 			else if ($message === 'Updating dependencies')
@@ -208,5 +208,15 @@ trait translate_composer_trait
 		$this->composer_error = [];
 
 		return $error;
+	}
+
+	protected function strip_format($message)
+	{
+		return str_replace([
+			'<info>', '</info>',
+			'<warning>', '</warning>',
+			'<comment>', '</comment>',
+			'<error>', '</error>',
+		], '', $message);
 	}
 }

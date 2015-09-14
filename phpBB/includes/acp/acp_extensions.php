@@ -413,6 +413,9 @@ class acp_extensions
 		/** @var \phpbb\composer\manager $composer_manager */
 		$composer_manager = $phpbb_container->get('ext.composer.manager');
 
+		/** @var \phpbb\extension\manager $extensions_manager */
+		$extensions_manager = $phpbb_container->get('ext.manager');
+
 		switch ($action)
 		{
 			case 'install':
@@ -451,7 +454,7 @@ class acp_extensions
 						{
 							$message_text = $e->getPrevious()->getMessage();
 							if (strpos($message_text, 'ext/') === 0 && strpos($message_text, 'does not exist and could not be created.') !== false)
-							{dump($e->getPrevious()->getTraceAsString());
+							{
 								$message_text = $language->lang('EXTENSIONS_DIR_NOT_WRITABLE');
 							}
 							$message_text .= adm_back_link($this->u_action);
@@ -499,6 +502,8 @@ class acp_extensions
 
 				$this->request->enable_super_globals();
 				$this->template->assign_var('extensions', $manager->get_available_packages());
+				$this->template->assign_var('managed_extensions', array_keys($manager->get_managed_packages()));
+				$this->template->assign_var('installed_extensions', array_keys($extensions_manager->all_available()));
 				$this->template->assign_var('U_ACTION', $this->u_action);
 				$this->request->disable_super_globals();
 				break;
