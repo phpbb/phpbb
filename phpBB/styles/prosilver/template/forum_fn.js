@@ -159,7 +159,10 @@ function selectCode(a) {
 			try {
 				s.setBaseAndExtent(e, 0, e, l);
 			} catch (error) {
-				s.setBaseAndExtent(e, 0, e, 1);
+				r = document.createRange();
+				r.selectNodeContents(e);
+				s.removeAllRanges();
+				s.addRange(r);
 			}
 		}
 		// Firefox and Opera
