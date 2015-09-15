@@ -99,7 +99,9 @@
 				&bull; <a href="{{ U_ACTION }}&amp;action=remove&amp;extension={{ extension.composer_name|url_encode }}" style="color: #BC2A4D;">{{ lang('REMOVE') }}</a>)
 				{%- endif -%}
 			{% elseif extension.name in installed_extensions -%}
-				<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span>{%- if enabled %} (<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>){%- endif -%}
+				<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span>
+				{%- if enabled -%}<br />
+				(<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>){%- endif -%}
 			{% elseif enabled -%}
 				<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
 			{%- endif -%}
