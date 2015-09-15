@@ -72,6 +72,13 @@ class manage extends \phpbb\console\command\command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
+
+		if (!$this->manager->check_requirements())
+		{
+			$io->error($this->language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'));
+			return 1;
+		}
+
 		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
 
 		$extension = $input->getArgument('extension');

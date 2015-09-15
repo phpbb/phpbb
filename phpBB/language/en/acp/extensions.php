@@ -161,5 +161,6 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS_INSTALLED'			=> 'Extensions successfully installed.',
 	'EXTENSIONS_REMOVED'			=> 'Extensions successfully removed.',
 	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated.',
-	'EXTENSIONS_DIR_NOT_WRITABLE'	=> 'The extension directory is not writable',
+
+	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'TODO: some required files / directory are not writable => disable ',
 ));

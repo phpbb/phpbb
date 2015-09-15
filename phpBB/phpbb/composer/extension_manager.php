@@ -60,12 +60,14 @@ class extension_manager extends manager
 	 * @param filesystem		$filesystem			Filesystem object
 	 * @param string			$package_type		Composer type of managed packages
 	 * @param string			$exception_prefix	Exception prefix to use
+	 * @param string			$root_path			phpBB root path
 	 * @param config			$config				Config object
 	 */
-	public function __construct(installer $installer, driver_interface $cache, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix, config $config = null)
+	public function __construct(installer $installer, driver_interface $cache, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix, $root_path, config $config = null)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;
+		$this->root_path = $root_path;
 
 		if ($config)
 		{
@@ -280,6 +282,14 @@ class extension_manager extends manager
 				throw new managed_with_enable_error_exception($this->exception_prefix, 'MANAGED_WITH_ENABLE_ERROR', [$package], $e);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function check_requirements()
+	{
+		return parent::check_requirements() && $this->filesystem->is_writable($this->root_path . 'ext/');
 	}
 
 	/**

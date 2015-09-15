@@ -642,7 +642,7 @@ class acp_extensions
 					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
 					'repositories' => unserialize($this->config['exts_composer_repositories']),
 				]);
-				$this->template->assign_var('enabled', $this->manager->check_requirements());
+				$this->template->assign_var('enabled', $manager->check_requirements());
 				$this->request->disable_super_globals();
 
 				add_form_key('gallery_settings');
@@ -672,12 +672,7 @@ class acp_extensions
 			}
 			else
 			{
-				$message_text = $e->getPrevious()->getMessage();
-				if (strpos($message_text, 'ext/') === 0 && strpos($message_text, 'does not exist and could not be created.') !== false)
-				{
-					$message_text = $language->lang('EXTENSIONS_DIR_NOT_WRITABLE');
-				}
-				$message_text .= adm_back_link($this->u_action);
+				$message_text = $e->getPrevious()->getMessage() . adm_back_link($this->u_action);
 			}
 		}
 		else

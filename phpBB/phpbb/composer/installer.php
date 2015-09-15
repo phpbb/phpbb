@@ -77,7 +77,13 @@ class installer
 	{
 		if ($config)
 		{
-			$this->repositories        = (array) unserialize($config['exts_composer_repositories']);
+			$repositories        = unserialize($config['exts_composer_repositories']);
+
+			if (!is_array($repositories) && !empty($repositories))
+			{
+				$this->repositories = (array) $repositories;
+			}
+
 			$this->packagist           = (bool) $config['exts_composer_packagist'];
 			$this->composer_filename   = $config['exts_composer_json_file'];
 			$this->packages_vendor_dir = $config['exts_composer_vendor_dir'];
@@ -393,6 +399,22 @@ class installer
 		{
 			return [];
 		}
+	}
+
+	/**
+	 * Checks the requirements of the manager and returns true if it can be used.
+	 *
+	 * @return bool
+	 */
+	public function check_requirements()
+	{
+		$filesystem = new \phpbb\filesystem\filesystem();
+
+		return $filesystem->is_writable([
+			$this->root_path . $this->composer_filename,
+			$this->root_path . $this->packages_vendor_dir,
+			$this->root_path . substr($this->composer_filename, 0, -5) . '.lock',
+		]);
 	}
 
 	/**

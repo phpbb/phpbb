@@ -26,6 +26,8 @@ services:
             - @filesystem
             - phpbb-extension
             - EXTENSIONS_
+            - %core.root_path%
+            - @config
 
     style.composer.manager:
         class: phpbb\composer\manager

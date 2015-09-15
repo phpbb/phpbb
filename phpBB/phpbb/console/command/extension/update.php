@@ -71,6 +71,13 @@ class update extends \phpbb\console\command\command
 		$output->getFormatter()->setStyle('warning', new OutputFormatterStyle('black', 'yellow'));
 
 		$io = new SymfonyStyle($input, $output);
+
+		if (!$this->manager->check_requirements())
+		{
+			$io->error($this->language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'));
+			return 1;
+		}
+
 		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
 		$extensions = $input->getArgument('extensions');
 

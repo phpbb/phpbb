@@ -276,7 +276,7 @@ class manager implements manager_interface
 	 */
 	public function check_requirements()
 	{
-		return true;
+		return $this->installer->check_requirements();
 	}
 
 	protected function normalize_version($packages)
