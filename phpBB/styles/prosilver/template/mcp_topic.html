@@ -100,8 +100,8 @@
 			<div class="postbody" id="pr{postrow.POST_ID}">
 				<ul class="post-buttons">
 					<li>
-						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button icon-button info-icon">
-							<span>{L_POST_DETAILS}</span>
+						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button">
+							<i class="icon fa-info fa-fw"></i><span>{L_POST_DETAILS}</span>
 						</a>
 					</li>
 					<li>
@@ -112,8 +112,11 @@
 				</ul>
 
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
-				<p class="author"><a href="#pr{postrow.POST_ID}">{postrow.MINI_POST_IMG}</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></p>
-
+				<p class="author">
+					<a href="#pr{postrow.POST_ID}" title="{postrow.MINI_POST}">
+						<i class="icon fa-file fa-fw icon-lightgray icon-tiny"></i><span class="sr-only">{postrow.MINI_POST}</span>
+					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --> 
+				</p>
 				<!-- IF postrow.S_POST_UNAPPROVED -->
 				<p class="post-notice unapproved">
 					<a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a>

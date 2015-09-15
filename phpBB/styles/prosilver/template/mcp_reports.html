@@ -46,7 +46,7 @@
 					<!-- IF S_PM -->
 					<dt>
 						<div class="list-inner">
-							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> <i class="icon fa-paperclip fa-fw"></i> <br />
 							<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
 							<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
 							<div class="responsive-show" style="display: none;">
@@ -60,7 +60,7 @@
 					<!-- ELSE -->
 					<dt>
 						<div class="list-inner">
-							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a><i class="icon fa-paperclip fa-fw"></i> <br />
 							<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 							<div class="responsive-show" style="display: none;">
 								{L_REPORTER}{L_COLON} {postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />

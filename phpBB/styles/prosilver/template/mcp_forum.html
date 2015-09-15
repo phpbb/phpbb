@@ -45,14 +45,26 @@
 					<!-- EVENT mcp_forum_topic_title_before -->
 					<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 					<!-- EVENT mcp_forum_topic_title_after -->
-					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-					<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.DELETED_IMG}</a> <!-- ENDIF -->
-					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
+						<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
+							<i class="icon fa-question fa-fw icon-blue"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
+						</a>
+					<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED -->
+						<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_DELETED">
+							<i class="icon fa-recycle fa-fw icon-green"></i><span class="sr-only">{TOPIC_DELETED}</span>
+						</a> 
+					<!-- ENDIF -->
+					<!-- IF topicrow.S_TOPIC_REPORTED -->
+						<a href="{topicrow.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
+							<i class="icon fa-exclamation fa-fw icon-red"></i><span class="sr-only">{TOPIC_REPORTED}</span>
+						</a>
+					<!-- ENDIF -->
 					<!-- IF topicrow.S_MOVED_TOPIC and S_CAN_DELETE -->&nbsp;<a href="{topicrow.U_DELETE_TOPIC}" class="topictitle">[ {L_DELETE_SHADOW_TOPIC} ]</a><!-- ENDIF -->
 					<br />
 
 					<div class="responsive-show" style="display: none;">
-						<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF -->
 						{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; {topicrow.LAST_POST_TIME}<br />
 					</div>
 					<span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span>
@@ -73,15 +85,14 @@
 					<!-- ENDIF -->
 
 					<div class="responsive-hide">
-						<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+						<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF -->
 						{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 					</div>
 					<!-- EVENT topiclist_row_append -->
 					</div>
 				</dt>
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
-				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}<br />{topicrow.LAST_POST_TIME}</span>
-				</dd>
+				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}<br />{topicrow.LAST_POST_TIME}</span></dd>
 				<!-- IF not S_MERGE_SELECT -->
 				<dd class="mark">
 					<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
