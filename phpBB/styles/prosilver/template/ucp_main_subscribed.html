@@ -35,9 +35,16 @@
 						<!-- ENDIF -->
 					</div>
 				</dt>
-				<dd class="lastpost"><!-- IF forumrow.LAST_POST_TIME --><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
-					<a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{forumrow.LAST_POST_TIME}</span>
-					<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF -->
+				<dd class="lastpost">
+					<!-- IF forumrow.LAST_POST_TIME -->
+						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
+							<a href="{forumrow.U_LAST_POST}">
+								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+							</a> 
+							<br />{forumrow.LAST_POST_TIME}</span>
+					<!-- ELSE -->
+						{L_NO_POSTS}<br />&nbsp;
+					<!-- ENDIF -->
 				</dd>
 				<dd class="mark"><input type="checkbox" name="f[{forumrow.FORUM_ID}]" id="f{forumrow.FORUM_ID}" /></dd>
 			</dl>
@@ -74,9 +81,22 @@
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
 					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
 					<div class="list-inner">
-						<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-						<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+						<!-- IF topicrow.S_UNREAD_TOPIC -->
+							<a href="{topicrow.U_NEWEST_POST}">
+								<i class="icon fa-file fa-fw icon-red icon-md"></i><span class="sr-only">{NEW_POST}</span>
+							</a>
+						<!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
+							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
+								<i class="icon fa-question fa-fw icon-blue"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
+							</a>  
+						<!-- ENDIF -->
+						<!-- IF topicrow.S_TOPIC_REPORTED -->
+							<a href="{topicrow.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
+								<i class="icon fa-exclamation fa-fw icon-red"></i><span class="sr-only">{TOPIC_REPORTED}</span>
+							</a>
+						<!-- ENDIF -->
+						<br />
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
 							<ul>
@@ -92,17 +112,20 @@
 						</div>
 						<!-- ENDIF -->
 						<div class="responsive-hide">
-							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
 						<div class="responsive-show" style="display: none;">
-							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF -->
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 						</div>
 					</div>
 				</dt>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{LAST_POST_IMG}</a> <br />{topicrow.LAST_POST_TIME}</span>
+					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
+						<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+					</a> 
+					<br />{topicrow.LAST_POST_TIME}</span>
 				</dd>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
 			</dl>
