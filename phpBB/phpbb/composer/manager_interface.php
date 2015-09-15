@@ -89,4 +89,11 @@ interface manager_interface
 	 * @throws runtime_exception
 	 */
 	public function start_managing($package, $io);
+
+	/**
+	 * Checks the requirements of the manager and returns true if it can be used.
+	 *
+	 * @return bool
+	 */
+	public function check_requirements();
 }

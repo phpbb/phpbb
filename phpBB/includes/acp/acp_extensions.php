@@ -566,7 +566,7 @@ class acp_extensions
 
 				$this->template->assign_vars(array(
 						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_MANAGE'),
-						'MESSAGE_TEXT'			=> $language->lang('EXTENSION_MANAGED') . adm_back_link($this->u_action),
+						'MESSAGE_TEXT'			=> $language->lang('EXTENSION_MANAGED_SUCCESS', $extension) . adm_back_link($this->u_action),
 						'MESSAGE_DETAIL'		=> $composer_io->getOutput(),
 						'MESSAGE_DETAIL_LEGEND'	=> $language->lang('COMPOSER_OUTPUT'),
 						'S_USER_NOTICE'			=> true,
@@ -642,6 +642,7 @@ class acp_extensions
 					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
 					'repositories' => unserialize($this->config['exts_composer_repositories']),
 				]);
+				$this->template->assign_var('enabled', $this->manager->check_requirements());
 				$this->request->disable_super_globals();
 
 				add_form_key('gallery_settings');

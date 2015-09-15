@@ -45,6 +45,12 @@ $lang = array_merge($lang, array(
 	'EXTENSION_MANAGED_WITH_ENABLE_ERROR'		=> 'The “%s” extension has been installed but an error occurred when re-enabling it.',
 	'EXTENSION_NOT_INSTALLED'					=> 'The “%s” extension is not installed.',
 
+	'ENABLING_EXTENSIONS'	=> 'Enabling extensions',
+	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
+
+	'EXTENSIONS_GALLERY' => 'Extensions Gallery',
+	'EXTENSIONS_GALLERY_EXPLAIN' => 'The Extensions Gallery is a tool in your phpBB Board which allows you to see all the extensions that are available for your board.',
+
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',
 	'EXTENSIONS_ADMIN'			=> 'Extensions Manager',
@@ -148,10 +154,12 @@ $lang = array_merge($lang, array(
 	'ENABLE_ON_INSTALL'				=> 'Enable extensions when installing',
 	'PURGE_ON_REMOVE'				=> 'Purge extensions when removing',
 	'ENABLE_PACKAGIST'				=> 'Enable Packagist usage',
-	'ENABLE_PACKAGIST_EXPLAIN'		=> 'TODO text explaining why packagist shouldn\'t be enabled, dev usage, etc...',
+	'ENABLE_PACKAGIST_EXPLAIN'		=> 'TODO: text explaining why packagist shouldn\'t be enabled, dev usage, etc...',
+	'ENABLE_PACKAGIST_CONFIRM'		=> 'TODO: are you sure you ant to enable packagist?',
 
-	'EXTENSION_MANAGED_SUCCESS'	=> 'The extension %s is now managed automatically.',
-	'EXTENSIONS_INSTALLED'		=> 'Extensions successfully installed.',
-	'EXTENSIONS_REMOVED'		=> 'Extensions successfully removed.',
-	'EXTENSIONS_UPDATED'		=> 'Extensions successfully updated..',
+	'EXTENSION_MANAGED_SUCCESS'		=> 'The extension %s is now managed automatically.',
+	'EXTENSIONS_INSTALLED'			=> 'Extensions successfully installed.',
+	'EXTENSIONS_REMOVED'			=> 'Extensions successfully removed.',
+	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated.',
+	'EXTENSIONS_DIR_NOT_WRITABLE'	=> 'The extension directory is not writable',
 ));

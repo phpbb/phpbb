@@ -271,6 +271,14 @@ class manager implements manager_interface
 		throw new \phpbb\exception\runtime_exception('COMPOSER_UNSUPPORTED_OPERATION', (array) $this->package_type);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function check_requirements()
+	{
+		return true;
+	}
+
 	protected function normalize_version($packages)
 	{
 		$normalized_packages = [];

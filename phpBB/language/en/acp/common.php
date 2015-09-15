@@ -89,6 +89,10 @@ $lang = array_merge($lang, array(
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
 	'ACP_EXTENSIONS'			=> 'Manage extensions',
 	'ACP_EXTENSIONS_GALLERY'	=> 'Extensions gallery',
+	'ACP_EXTENSIONS_INSTALL'	=> 'Install extensions',
+	'ACP_EXTENSIONS_REMOVE'		=> 'Remove extensions',
+	'ACP_EXTENSIONS_UPDATE'		=> 'Update extensions',
+	'ACP_EXTENSIONS_MANAGE'		=> 'Manage extension automatically',
 
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
@@ -250,6 +254,7 @@ $lang = array_merge($lang, array(
 	'COMPOSER_INSTALLING_PACKAGE'		=> '  - Installing %1$s (%2$s)',
 	'COMPOSER_DELETING'					=> '  - Deleting %s',
 	'COMPOSER_UPDATE_NOTHING'			=> 'Nothing to update',
+	'COMPOSER_OUTPUT'					=> 'Composer output',
 
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
