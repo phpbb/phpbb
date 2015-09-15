@@ -143,4 +143,10 @@ $lang = array_merge($lang, array(
 
 	'META_FIELD_NOT_SET'	=> 'Required meta field %s has not been set.',
 	'META_FIELD_INVALID'	=> 'Meta field %s is invalid.',
+
+	'EXTENSIONS_GALLERY_SETTINGS'	=> 'Extensions gallery settings',
+	'ENABLE_ON_INSTALL'				=> 'Enable extensions when installing',
+	'PURGE_ON_REMOVE'				=> 'Purge extensions when removing',
+	'ENABLE_PACKAGIST'				=> 'Enable Packagist usage',
+	'ENABLE_PACKAGIST_DETAIL'		=> 'TODO text explaining why packagist shouldn\'t be enabled, dev usage, etc...',
 ));

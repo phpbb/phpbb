@@ -29,6 +29,8 @@ class acp_extensions
 	var $page_title;
 
 	private $db;
+
+	/** @var  phpbb\config\config */
 	private $config;
 	private $template;
 	private $user;
@@ -574,6 +576,42 @@ class acp_extensions
 				break;
 			case 'list':
 			default:
+				if ($this->request->is_set('enable_packagist') && confirm_box(true))
+				{
+					$this->config->set('exts_composer_packagist', true);
+					trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+				}
+
+				$submit = $this->request->is_set('update');
+				if ($submit)
+				{
+					if (!check_form_key('gallery_settings'))
+					{
+						trigger_error($language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
+					$enable_packagist = $this->request->variable('enable_packagist', false);
+					$enable_on_install = $this->request->variable('enable_on_install', false);
+					$purge_on_remove = $this->request->variable('purge_on_remove', false);
+					//$repositories = $this->request->variable('repositories', []);
+
+					$this->config->set('exts_composer_enable_on_install', $enable_on_install);
+					$this->config->set('exts_composer_purge_on_remove', $purge_on_remove);
+					if ($enable_packagist)
+					{
+						$s_hidden_fields = build_hidden_fields(array(
+							'enable_packagist'	=> $enable_packagist
+						));
+
+						confirm_box(false, $language->lang('ENABLE_PACKAGIST_CONFIRM'), $s_hidden_fields);
+					}
+					else
+					{
+						$this->config->set('exts_composer_packagist', $enable_packagist);
+						trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
+					}
+				}
+
 				/** @var \phpbb\composer\extension_manager $manager */
 				$manager = $phpbb_container->get('ext.composer.manager');
 
@@ -596,7 +634,16 @@ class acp_extensions
 				$this->template->assign_var('managed_extensions', array_keys($manager->get_managed_packages()));
 				$this->template->assign_var('installed_extensions', array_keys($extensions_manager->all_available()));
 				$this->template->assign_var('U_ACTION', $this->u_action);
+				$this->template->assign_var('settings', [
+					'enable_packagist' => $this->config['exts_composer_packagist'],
+					'enable_on_install' => $this->config['exts_composer_enable_on_install'],
+					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
+					'repositories' => unserialize($this->config['exts_composer_repositories']),
+				]);
 				$this->request->disable_super_globals();
+
+				add_form_key('gallery_settings');
+
 				break;
 		}
 	}
