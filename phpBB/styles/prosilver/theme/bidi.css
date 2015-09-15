@@ -81,11 +81,6 @@
 	padding-right: 0;
 }
 
-.rtl ul.linklist li.responsive-menu a.responsive-menu-link:before {
-	left: auto;
-	right: 0;
-}
-
 /* Dropdown menu
 ---------------------------------------- */
 .rtl .dropdown-container.topic-tools, .rtl .dropdown-container-left {
@@ -261,10 +256,23 @@
 	margin-right: 0;
 }
 
-.pagination li.previous a { background-position: -50px 2px; }
-.pagination li.next a { background-position: -30px 2px; }
-.pagination li.previous a:hover { background-position: -50px -18px; }
-.pagination li.next a:hover { background-position: -30px -18px; }
+
+/* Action Bar styles
+---------------------------------------- */
+.rtl .action-bar .button {
+	margin-right: 0;
+	float: right;
+}
+
+.rtl .action-bar > .button {
+	margin-left: 5px;
+	float: right;
+}
+
+.rtl .action-bar .dropdown-button-control .button {
+	margin-left: 5px;
+}
+
 
 /* Miscellaneous styles
 ---------------------------------------- */

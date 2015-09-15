@@ -381,24 +381,20 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	box-sizing: border-box;
 }
 
-.search-box button {
+.search-box .button {
 	float: left;
-}
-
-.search-box button.search-icon {
 	border-radius: 0;
-	font-size: 0;
-	height: 24px;
 	margin: 0;
-	padding: 3px 5px;
+	padding: 2px 5px;
 }
 
 .search-box a.button {
 	border-left-width: 0;
 	border-radius: 0 4px 4px 0;
+}
+
+.search-box .button span {
 	font-size: 0;
-	margin: 0;
-	padding: 2px 5px 2px 3px;
 }
 
 /* Search box (header)
@@ -413,16 +409,13 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 
 .search-header .inputbox { border: 0; }
 
-.search-header button {
-	border-top: 0;
-	border-bottom: 0;
+.search-header .button {
+	border-top-width: 0;
+	border-bottom-width: 0;
+	padding: 3px 5px;
 }
 
-.search-header a.button {
-	border: 0;
-	border-left: 1px;
-	padding: 3px 5px 3px 4px;
-}
+.navbar .linklist > li.responsive-search { display: none; }
 
 input.search {
 	background-image: none;

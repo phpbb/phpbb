@@ -6,9 +6,11 @@ a {
 	direction: ltr;
 	unicode-bidi: embed;
 	text-decoration: none;
-}
+	/* we use links inline more often then not so to address several bugs with
+	IE and some other browsers we render all links as inlineblock by default */
+	display: inline-block; 
 
-a:hover	{ text-decoration: underline; }
+}
 
 /* Coloured usernames */
 .username-coloured {

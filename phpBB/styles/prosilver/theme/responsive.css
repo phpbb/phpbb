@@ -73,16 +73,6 @@ body {
 /* Search
 ----------------------------------------*/
 .responsive-search { display: block !important; }
-.responsive-search a {
-	display: block;
-	width: 16px;
-	height: 22px;
-	text-indent: 99px;
-	overflow: hidden;
-	background-position: 50% 50%;
-	background-repeat: no-repeat;
-	text-decoration: none;
-}
 
 /* .topiclist lists
 ----------------------------------------*/
@@ -181,7 +171,6 @@ li.row .responsive-show strong {
 }
 
 ul.topiclist li.row dt a.subforum {
-	display: inline-block;
 	vertical-align: bottom;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -313,10 +302,6 @@ dl.pmlist dd:first-of-type {
 
 .horizontal-palette td:nth-child(2n), .vertical-palette tr:nth-child(2n) {
 	display: none;
-}
-
-.colour-palette a {
-	display: inline-block !important;
 }
 
 fieldset.quick-login label {

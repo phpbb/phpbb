@@ -281,27 +281,6 @@ ul.linklist li.responsive-menu {
 	margin: 0 5px;
 }
 
-ul.linklist .responsive-menu-link {
-	display: inline-block;
-	margin: 0 5px;
-	font-size: 1.455em;
-	position: relative;
-	width: 16px;
-	line-height: 1.2em;
-	text-decoration: none;
-}
-
-ul.linklist .responsive-menu-link:before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 7px;
-	height: 2px;
-	width: 14px;
-	border-bottom: 0.125em solid transparent;
-	border-top: 0.375em double transparent;
-}
-
 .hasjs ul.linklist.leftside, .hasjs ul.linklist.rightside {
 	max-width: 48%;
 }
@@ -1240,30 +1219,11 @@ ul.linklist:after,
 	margin: 0 7px 0 0;
 }
 
-.linklist .quick-links .responsive-menu-link {
-	display: block;
-	font-size: inherit;
-	line-height: inherit;
-	margin: 0;
-	width: auto;
-}
-
-.linklist .quick-links .responsive-menu-link:before {
-	font-size: 1.455em;
-	line-height: 16.5px;
-}
-
-.compact .quick-links .responsive-menu-link {
-	width: 0;
-	overflow: hidden;
-	white-space: nowrap;
-}
-
-.compact .icon-notification > a > span, .compact .icon-pm > a > span {
+.linklist.compact .rightside > a > span span {
 	display: none;
 }
 
-.compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
+.linklist.compact .rightside > a strong {
 	padding-left: 2px;
 }
 
