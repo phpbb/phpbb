@@ -164,6 +164,12 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	text-decoration: none;
 }
 
+.site_logo {
+	display: inline-block;
+	width: 149px;
+	height: 52px;
+}
+
 /* Site description and logo */
 .site-description {
 	float: left;

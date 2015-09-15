@@ -129,36 +129,36 @@ li.header dd {
 	box-sizing: border-box;
 }
 
-li.header dl.icon dt, li.header dl.icon dd {
+li.header dl.row-item dt, li.header dl.row-item dd {
 	min-height: 0;
 }
 
-li.header dl.icon dt .list-inner {
+li.header dl.row-item dt .list-inner {
 	/* Tweak for headers alignment when folder icon used */
 	padding-left: 0;
 	padding-right: 50px;
 }
 
 /* Forum list column styles */
-dl.icon {
+dl.row-item {
 	background-position: 10px 50%;		/* Position of folder icon */
 	background-repeat: no-repeat;
 }
 
-dl.icon dt {
+dl.row-item dt {
 	background-repeat: no-repeat;
 	background-position: 5px 95%;		/* Position of topic icon */
 }
 
-dl.icon dt .list-inner {
+dl.row-item dt .list-inner {
 	padding-left: 45px;					/* Space for folder icon */
 }
 
-dl.icon dt, dl.icon dd {
+dl.row-item dt, dl.row-item dd {
 	min-height: 35px;
 }
 
-dl a.icon-link {						/* topic row icon links */
+dl a.row-item-link {						/* topic row icon links */
 	display: block;
 	width: 30px;
 	height: 30px;
@@ -182,13 +182,13 @@ dd.posts, dd.topics, dd.views {
 }
 
 /* List in forum description */
-dl.icon dt ol,
-dl.icon dt ul {
+dl.row-item dt ol,
+dl.row-item dt ul {
 	list-style-position: inside;
 	margin-left: 1em;
 }
 
-dl.icon dt li {
+dl.row-item dt li {
 	display: list-item;
 	list-style-type: inherit;
 }

@@ -110,6 +110,10 @@ table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
 	background-color: #E7E8EA;
 }
 
+.site_logo {
+	background-image: url("./images/site_logo.gif");
+}
+
 /* Horizontal lists
 ----------------------------------------*/
 

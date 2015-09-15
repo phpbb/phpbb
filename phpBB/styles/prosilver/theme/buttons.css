@@ -159,21 +159,6 @@ ul.linklist.bulletin > li.small-icon:before {
 	clear: left;
 }
 
-/* Profile icons */
-.pm-icon		{ background-position: 0 0; }
-.email-icon		{ background-position: -21px 0; }
-.jabber-icon	{ background-position: -80px 0; }
-.phpbb_icq-icon	{ background-position: -61px 0 ; }
-.phpbb_wlm-icon	{ background-position: -182px 0; }
-.phpbb_aol-icon	{ background-position: -244px 0; }
-.phpbb_website-icon		{ background-position: -40px 0; }
-.phpbb_youtube-icon		{ background-position: -98px 0; }
-.phpbb_facebook-icon	{ background-position: -119px 0; }
-.phpbb_googleplus-icon	{ background-position: -140px 0; }
-.phpbb_skype-icon		{ background-position: -161px 0; }
-.phpbb_twitter-icon		{ background-position: -203px 0; }
-.phpbb_yahoo-icon		{ background-position: -224px 0; }
-
 /* Post control buttons
 --------------------------------------------- */
 .post-buttons {
@@ -214,21 +199,6 @@ ul.linklist.bulletin > li.small-icon:before {
 .post-buttons .icon-button:before {
 	margin-left: 0;
 }
-
-.quote-icon:before							{ background-position: -122px 0; }
-.quote-icon:hover:before					{ background-position: -122px -21px; }
-.edit-icon:before							{ background-position: -137px 0; }
-.edit-icon:hover:before						{ background-position: -137px -21px; }
-.warn-icon:before							{ background-position: -208px 0; }
-.warn-icon:hover:before						{ background-position: -208px -21px; }
-.delete-icon:before							{ background-position: -152px 0; }
-.delete-icon:hover:before					{ background-position: -152px -21px; }
-.report-icon:before							{ background-position: -165px 0; }
-.report-icon:hover:before					{ background-position: -165px -21px; }
-.info-icon:before							{ background-position: -175px 0; }
-.info-icon:hover:before						{ background-position: -175px -21px; }
-.button.responsive-menu-link:before			{ background-position: -191px 0; }
-.button.responsive-menu-link:hover:before	{ background-position: -191px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {
