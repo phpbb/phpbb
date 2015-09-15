@@ -14,25 +14,33 @@
 namespace phpbb\console\command\extension;
 
 use phpbb\composer\exception\managed_with_error_exception;
+use phpbb\composer\io\console_io;
 use phpbb\composer\manager;
 use phpbb\composer\manager_interface;
+use phpbb\language\language;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class start_managing extends \phpbb\console\command\command
+class manage extends \phpbb\console\command\command
 {
 	/**
 	 * @var manager_interface Composer extensions manager
 	 */
 	protected $manager;
 
-	public function __construct(\phpbb\user $user, manager_interface $manager)
+	/**
+	 * @var \phpbb\language\language
+	 */
+	protected $language;
+
+	public function __construct(\phpbb\user $user, manager_interface $manager, language $language)
 	{
 		$this->manager = $manager;
+		$this->language = $language;
 
-		$user->add_lang('acp/extensions');
+		$language->add_lang('acp/extensions');
 
 		parent::__construct($user);
 	}
@@ -45,12 +53,12 @@ class start_managing extends \phpbb\console\command\command
 	protected function configure()
 	{
 		$this
-			->setName('extension:start-managing')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_EXTENSION_START_MANAGING'))
+			->setName('extension:manage')
+			->setDescription($this->language->lang('CLI_DESCRIPTION_EXTENSION_MANAGE'))
 			->addArgument(
 				'extension',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_EXTENSION_START_MANAGING'))
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_MANAGE_ARGUMENT'))
 		;
 	}
 
@@ -64,20 +72,21 @@ class start_managing extends \phpbb\console\command\command
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
+		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
 
 		$extension = $input->getArgument('extension');
 
 		try
 		{
-			$this->manager->start_managing($extension);
+			$this->manager->start_managing($extension, $composer_io);
 		}
 		catch (managed_with_error_exception $e)
 		{
-			$io->warning(call_user_func_array([$this->user, 'lang'], [$e->getMessage(), $e->get_parameters()]));
+			$io->warning($this->language->lang_array($e->getMessage(), $e->get_parameters()));
 			return 1;
 		}
 
-		$io->success('The extension ' . $extension . ' is now managed automatically.');
+		$io->success($this->language->lang('EXTENSION_MANAGED_SUCCESS', $extension));
 
 		return 0;
 	}

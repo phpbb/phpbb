@@ -59,11 +59,11 @@ class remove extends \phpbb\console\command\command
 				'purge',
 				'p',
 				InputOption::VALUE_NONE,
-				$this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE_OPTION_URGE'))
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE_OPTION_PURGE'))
 			->addArgument(
 				'extensions',
 				InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-				$this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE'))
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE_ARGUMENT'))
 		;
 	}
 

@@ -55,7 +55,7 @@ class update extends \phpbb\console\command\command
 			->addArgument(
 				'extensions',
 				InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_EXTENSION_UPDATE'))
+				$this->user->lang('CLI_DESCRIPTION_EXTENSION_UPDATE_ARGUMENT'))
 		;
 	}
 
@@ -76,7 +76,7 @@ class update extends \phpbb\console\command\command
 
 		$this->manager->update($extensions, $composer_io);
 
-		$io->success('All extensions updated');
+		$io->success($this->language->lang('EXTENSIONS_UPDATED'));
 
 		return 0;
 	}

@@ -158,6 +158,15 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.extension.manage:
+        class: phpbb\console\command\extension\manage
+        arguments:
+            - @user
+            - @ext.composer.manager
+            - @language
+        tags:
+            - { name: console.command }
+
     console.command.extension.purge:
         class: phpbb\console\command\extension\purge
         arguments:
@@ -182,15 +191,6 @@ services:
             - '@user'
             - '@ext.manager'
             - '@log'
-        tags:
-            - { name: console.command }
-
-    console.command.extension.start_managing:
-        class: phpbb\console\command\extension\start_managing
-        arguments:
-            - @user
-            - @ext.composer.manager
-            - @language
         tags:
             - { name: console.command }
 
