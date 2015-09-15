@@ -427,6 +427,8 @@ class acp_extensions
 		switch ($action)
 		{
 			case 'install':
+				$this->page_title = 'ACP_EXTENSIONS_INSTALL';
+
 				$extension = $this->request->variable('extension', '');
 
 				if (empty($extension))
@@ -464,6 +466,8 @@ class acp_extensions
 
 				break;
 			case 'remove':
+				$this->page_title = 'ACP_EXTENSIONS_REMOVE';
+
 				$extension = $this->request->variable('extension', '');
 
 				if (empty($extension))
@@ -501,6 +505,8 @@ class acp_extensions
 
 				break;
 			case 'update':
+				$this->page_title = 'ACP_EXTENSIONS_UPDATE';
+
 				$extension = $this->request->variable('extension', '');
 
 				if (empty($extension))
@@ -538,6 +544,8 @@ class acp_extensions
 
 				break;
 			case 'manage':
+				$this->page_title = 'ACP_EXTENSIONS_MANAGE';
+
 				$extension = $this->request->variable('extension', '');
 
 				if (empty($extension))
@@ -623,7 +631,11 @@ class acp_extensions
 				$start = $this->request->variable('start', 0);
 				$base_url = $this->u_action;
 
+				$this->request->enable_super_globals();
 				$available_extensions = $manager->get_available_packages();
+				$managed_packages = $manager->get_managed_packages();
+				$this->request->disable_super_globals();
+
 				$extensions = array_slice($available_extensions, $start, 20);
 
 				$pagination->generate_template_pagination($base_url, 'pagination', 'start', count($available_extensions), 20, $start);
@@ -631,9 +643,8 @@ class acp_extensions
 				$this->page_title = 'ACP_EXTENSIONS_GALLERY';
 				$this->tpl_name = 'acp_ext_gallery';
 
-				$this->request->enable_super_globals();
 				$this->template->assign_var('extensions', $extensions);
-				$this->template->assign_var('managed_extensions', array_keys($manager->get_managed_packages()));
+				$this->template->assign_var('managed_extensions', array_keys($managed_packages));
 				$this->template->assign_var('installed_extensions', array_keys($extensions_manager->all_available()));
 				$this->template->assign_var('U_ACTION', $this->u_action);
 				$this->template->assign_var('settings', [
@@ -643,7 +654,6 @@ class acp_extensions
 					'repositories' => unserialize($this->config['exts_composer_repositories']),
 				]);
 				$this->template->assign_var('enabled', $manager->check_requirements());
-				$this->request->disable_super_globals();
 
 				add_form_key('gallery_settings');
 
