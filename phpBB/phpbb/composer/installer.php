@@ -222,9 +222,11 @@ class installer
 
 			foreach ($installed_packages as $package)
 			{
-				if (array_key_exists($package->getName(), $required_links) && in_array($package->getType(), $types, true))
+				if (in_array($package->getType(), $types, true))
 				{
-					$installed[$package->getName()] = $required_links[$package->getName()]->getPrettyConstraint();
+					$version = array_key_exists($package->getName(), $required_links) ?
+						$required_links[$package->getName()]->getPrettyConstraint() : '*';
+					$installed[$package->getName()] = $version;
 				}
 			}
 

@@ -17,8 +17,8 @@ use Composer\IO\IOInterface;
 use phpbb\cache\driver\driver_interface;
 use phpbb\composer\exception\managed_with_clean_error_exception;
 use phpbb\composer\exception\managed_with_enable_error_exception;
-use phpbb\composer\exception\managed_with_error_exception;
 use phpbb\composer\exception\runtime_exception;
+use phpbb\config\config;
 use phpbb\extension\manager as ext_manager;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
@@ -44,17 +44,34 @@ class extension_manager extends manager
 	private $enabled_extensions;
 
 	/**
+	 * @var bool Enables extensions when installing them?
+	 */
+	private $enable_on_install = false;
+
+	/**
+	 * @var bool Purges extensions data when removing them?
+	 */
+	private $purge_on_remove = false;
+
+	/**
 	 * @param installer			$installer			Installer object
 	 * @param driver_interface	$cache				Cache object
 	 * @param ext_manager		$extension_manager	phpBB extension manager
 	 * @param filesystem		$filesystem			Filesystem object
 	 * @param string			$package_type		Composer type of managed packages
 	 * @param string			$exception_prefix	Exception prefix to use
+	 * @param config			$config				Config object
 	 */
-	public function __construct(installer $installer, driver_interface $cache, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix)
+	public function __construct(installer $installer, driver_interface $cache, ext_manager $extension_manager, filesystem $filesystem, $package_type, $exception_prefix, config $config = null)
 	{
 		$this->extension_manager = $extension_manager;
 		$this->filesystem = $filesystem;
+
+		if ($config)
+		{
+			$this->enable_on_install = (bool) $config['exts_composer_enable_on_install'];
+			$this->purge_on_remove   = (bool) $config['exts_composer_purge_on_remove'];
+		}
 
 		parent::__construct($installer, $cache, $package_type, $exception_prefix);
 	}
@@ -68,6 +85,32 @@ class extension_manager extends manager
 		if (count($installed_manually) !== 0)
 		{
 			throw new runtime_exception($this->exception_prefix, 'ALREADY_INSTALLED_MANUALLY', [implode('|', array_keys($installed_manually))]);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function post_install(array $packages, IOInterface $io = null)
+	{
+		if ($this->enable_on_install)
+		{
+			$io->writeError('ENABLING_EXTENSIONS', true, 1);
+			foreach ($packages as $package)
+			{
+				try
+				{
+					$this->extension_manager->enable($package);
+				}
+				catch (\phpbb\exception\runtime_exception $e)
+				{
+					$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+				}
+				catch (\Exception $e)
+				{
+					$io->writeError($e->getMessage(), true, 4);
+				}
+			}
 		}
 	}
 
@@ -143,14 +186,25 @@ class extension_manager extends manager
 	 */
 	public function pre_remove(array $packages, IOInterface $io = null)
 	{
-		$io->writeError('DISABLING_EXTENSIONS', true, 1);
+		if ($this->purge_on_remove)
+		{
+			$io->writeError('DISABLING_EXTENSIONS', true, 1);
+		}
+
 		foreach ($packages as $package)
 		{
 			try
 			{
 				if ($this->extension_manager->is_enabled($package))
 				{
-					$this->extension_manager->disable($package);
+					if ($this->purge_on_remove)
+					{
+						$this->extension_manager->purge($package);
+					}
+					else
+					{
+						$this->extension_manager->disable($package);
+					}
 				}
 			}
 			catch (\phpbb\exception\runtime_exception $e)
@@ -226,5 +280,27 @@ class extension_manager extends manager
 				throw new managed_with_enable_error_exception($this->exception_prefix, 'MANAGED_WITH_ENABLE_ERROR', [$package], $e);
 			}
 		}
+	}
+
+	/**
+	 * Enable the extensions when installing
+	 *
+	 * Warning: Only the explicitly required extensions will be enabled
+	 *
+	 * @param bool $enable
+	 */
+	public function set_enable_on_install($enable)
+	{
+		$this->enable_on_install = $enable;
+	}
+
+	/**
+	 * Purge the extension when disabling it
+	 *
+	 * @param bool $purge
+	 */
+	public function set_purge_on_remove($purge)
+	{
+		$this->purge_on_remove = $purge;
 	}
 }

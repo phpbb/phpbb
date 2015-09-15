@@ -35,6 +35,8 @@ class list_available extends \phpbb\console\command\command
 	{
 		$this->manager = $manager;
 
+		$user->add_lang('acp/extensions');
+
 		parent::__construct($user);
 	}
 

@@ -598,6 +598,7 @@ class acp_extensions
 					$this->config->set('exts_composer_enable_on_install', $enable_on_install);
 					$this->config->set('exts_composer_purge_on_remove', $purge_on_remove);
 					$this->config->set('exts_composer_repositories', serialize($repositories));
+
 					if (!$this->config['exts_composer_packagist'] && $enable_packagist)
 					{
 						$s_hidden_fields = build_hidden_fields(array(

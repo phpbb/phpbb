@@ -13,19 +13,20 @@
 
 namespace phpbb\console\command\extension;
 
+use phpbb\composer\extension_manager;
 use phpbb\composer\io\console_io;
-use phpbb\composer\manager_interface;
 use phpbb\language\language;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class remove extends \phpbb\console\command\command
 {
 	/**
-	 * @var manager_interface Composer extensions manager
+	 * @var extension_manager Composer extensions manager
 	 */
 	protected $manager;
 
@@ -34,10 +35,12 @@ class remove extends \phpbb\console\command\command
 	 */
 	protected $language;
 
-	public function __construct(\phpbb\user $user, manager_interface $manager, language $language)
+	public function __construct(\phpbb\user $user, extension_manager $manager, language $language)
 	{
 		$this->manager = $manager;
 		$this->language = $language;
+
+		$language->add_lang('acp/extensions');
 
 		parent::__construct($user);
 	}
@@ -51,11 +54,16 @@ class remove extends \phpbb\console\command\command
 	{
 		$this
 			->setName('extension:remove')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_EXTENSION_REMOVE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE'))
+			->addOption(
+				'purge',
+				'p',
+				InputOption::VALUE_NONE,
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE_OPTION_URGE'))
 			->addArgument(
 				'extensions',
 				InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_EXTENSION_REMOVE'))
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_REMOVE'))
 		;
 	}
 
@@ -74,9 +82,14 @@ class remove extends \phpbb\console\command\command
 		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
 		$extensions = $input->getArgument('extensions');
 
+		if ($input->getOption('purge'))
+		{
+			$this->manager->set_purge_on_remove(true);
+		}
+
 		$this->manager->remove($extensions, $composer_io);
 
-		$io->success('All extensions removed');
+		$io->success($this->language->lang('EXTENSIONS_REMOVED'));
 
 		return 0;
 	}

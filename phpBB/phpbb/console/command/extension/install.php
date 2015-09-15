@@ -13,19 +13,20 @@
 
 namespace phpbb\console\command\extension;
 
+use phpbb\composer\extension_manager;
 use phpbb\composer\io\console_io;
-use phpbb\composer\manager_interface;
 use phpbb\language\language;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class install extends \phpbb\console\command\command
 {
 	/**
-	 * @var manager_interface Composer extensions manager
+	 * @var extension_manager Composer extensions manager
 	 */
 	protected $manager;
 
@@ -34,10 +35,12 @@ class install extends \phpbb\console\command\command
 	 */
 	protected $language;
 
-	public function __construct(\phpbb\user $user, manager_interface $manager, language $language)
+	public function __construct(\phpbb\user $user, extension_manager $manager, language $language)
 	{
 		$this->manager = $manager;
 		$this->language = $language;
+
+		$language->add_lang('acp/extensions');
 
 		parent::__construct($user);
 	}
@@ -51,11 +54,16 @@ class install extends \phpbb\console\command\command
 	{
 		$this
 			->setName('extension:install')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_EXTENSION_INSTALL'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_EXTENSION_INSTALL'))
+			->addOption(
+				'enable',
+				'e',
+				InputOption::VALUE_NONE,
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_INSTALL_OPTION_ENABLE'))
 			->addArgument(
 				'extensions',
 				InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-				$this->user->lang('CLI_DESCRIPTION_EXTENSION_INSTALL'))
+				$this->language->lang('CLI_DESCRIPTION_EXTENSION_INSTALL_ARGUMENT'))
 		;
 	}
 
@@ -74,9 +82,14 @@ class install extends \phpbb\console\command\command
 		$composer_io = new console_io($input, $output, $this->getHelperSet(), $this->language);
 		$extensions = $input->getArgument('extensions');
 
+		if ($input->getOption('enable'))
+		{
+			$this->manager->set_enable_on_install(true);
+		}
+
 		$this->manager->install($extensions, $composer_io);
 
-		$io->success('All extensions installed');
+		$io->success($this->language->lang('EXTENSIONS_INSTALLED'));
 
 		return 0;
 	}
