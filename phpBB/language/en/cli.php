@@ -160,15 +160,15 @@ $lang = array_merge($lang, array(
 
 	'CLI_DESCRIPTION_EXTENSION_MANAGE'					=> 'Manages an extension',
 	'CLI_DESCRIPTION_EXTENSION_MANAGE_ARGUMENT'			=> 'Extension to manage',
-	'CLI_DESCRIPTION_EXTENSION_INSTALL'					=> 'Install extensions',
-	'CLI_DESCRIPTION_EXTENSION_INSTALL_OPTION_ENABLE'	=> 'Enable the extensions after installing them',
-	'CLI_DESCRIPTION_EXTENSION_INSTALL_ARGUMENT'		=> 'Extensions to install',
-	'CLI_DESCRIPTION_EXTENSION_LIST_AVAILABLE'			=> 'Show extensions available for installation',
-	'CLI_DESCRIPTION_EXTENSION_REMOVE'					=> 'Removes extensions',
-	'CLI_DESCRIPTION_EXTENSION_REMOVE_OPTION_PURGE'		=> 'Purge the extensions before removing them',
-	'CLI_DESCRIPTION_EXTENSION_REMOVE_ARGUMENT'			=> 'Extensions to remove',
-	'CLI_DESCRIPTION_EXTENSION_UPDATE'					=> 'Updates extensions',
-	'CLI_DESCRIPTION_EXTENSION_UPDATE_ARGUMENT'			=> 'Extensions to update',
+	'CLI_DESCRIPTION_EXTENSION_INSTALL'					=> 'Install the specified extension(s).',
+	'CLI_DESCRIPTION_EXTENSION_INSTALL_OPTION_ENABLE'	=> 'Enable extension(s) after installation',
+	'CLI_DESCRIPTION_EXTENSION_INSTALL_ARGUMENT'		=> 'Extension(s) to install, e.g.: vendor/package',
+	'CLI_DESCRIPTION_EXTENSION_LIST_AVAILABLE'			=> 'List extensions available for installation.',
+	'CLI_DESCRIPTION_EXTENSION_REMOVE'					=> 'Remove the specified extension(s).',
+	'CLI_DESCRIPTION_EXTENSION_REMOVE_OPTION_PURGE'		=> 'Purge extension(s) when removing them',
+	'CLI_DESCRIPTION_EXTENSION_REMOVE_ARGUMENT'			=> 'Extension(s) to remove, e.g.: vendor/package',
+	'CLI_DESCRIPTION_EXTENSION_UPDATE'					=> 'Update the specified extension(s).',
+	'CLI_DESCRIPTION_EXTENSION_UPDATE_ARGUMENT'			=> 'Extension(s) to update, e.g.: vendor/package',
 ));
 
 // Additional help for commands.
