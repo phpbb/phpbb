@@ -576,7 +576,7 @@ class acp_extensions
 				break;
 			case 'list':
 			default:
-				if ($this->request->is_set('enable_packagist') && confirm_box(true))
+				if (!$this->config['exts_composer_packagist'] && $this->request->is_set('enable_packagist') && confirm_box(true))
 				{
 					$this->config->set('exts_composer_packagist', true);
 					trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
@@ -593,11 +593,12 @@ class acp_extensions
 					$enable_packagist = $this->request->variable('enable_packagist', false);
 					$enable_on_install = $this->request->variable('enable_on_install', false);
 					$purge_on_remove = $this->request->variable('purge_on_remove', false);
-					//$repositories = $this->request->variable('repositories', []);
+					$repositories = array_unique(explode("\n", $this->request->variable('repositories', '')));
 
 					$this->config->set('exts_composer_enable_on_install', $enable_on_install);
 					$this->config->set('exts_composer_purge_on_remove', $purge_on_remove);
-					if ($enable_packagist)
+					$this->config->set('exts_composer_repositories', serialize($repositories));
+					if (!$this->config['exts_composer_packagist'] && $enable_packagist)
 					{
 						$s_hidden_fields = build_hidden_fields(array(
 							'enable_packagist'	=> $enable_packagist
@@ -638,7 +639,7 @@ class acp_extensions
 					'enable_packagist' => $this->config['exts_composer_packagist'],
 					'enable_on_install' => $this->config['exts_composer_enable_on_install'],
 					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
-					'repositories' => ['a', 'b', 'c'],//unserialize($this->config['exts_composer_repositories']),
+					'repositories' => unserialize($this->config['exts_composer_repositories']),
 				]);
 				$this->request->disable_super_globals();
 

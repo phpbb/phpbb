@@ -83,9 +83,6 @@ class installer
 			$this->packages_vendor_dir = $config['exts_composer_vendor_dir'];
 		}
 
-		$this->repositories = [/*'http://phpbb.local/ext/phpbb/titania/composer/'*/];
-		$this->packagist = true;
-
 		$this->root_path = $root_path;
 	}
 
