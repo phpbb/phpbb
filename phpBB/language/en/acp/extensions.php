@@ -156,6 +156,8 @@ $lang = array_merge($lang, array(
 	'ENABLE_PACKAGIST'				=> 'Enable Packagist usage',
 	'ENABLE_PACKAGIST_EXPLAIN'		=> 'TODO: text explaining why packagist shouldn\'t be enabled, dev usage, etc...',
 	'ENABLE_PACKAGIST_CONFIRM'		=> 'TODO: are you sure you ant to enable packagist?',
+	'COMPOSER_REPOSITORIES'			=> 'Repositories',
+	'COMPOSER_REPOSITORIES_EXPLAIN'	=> 'TODO: One repo per line',
 
 	'EXTENSION_MANAGED_SUCCESS'		=> 'The extension %s is now managed automatically.',
 	'EXTENSIONS_INSTALLED'			=> 'Extensions successfully installed.',

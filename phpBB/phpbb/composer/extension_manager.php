@@ -275,7 +275,7 @@ class extension_manager extends manager
 			try
 			{
 				$io->writeError('ENABLING_EXTENSION', true, 1);
-				$this->extension_manager->enabling($package);
+				$this->extension_manager->enable($package);
 			}
 			catch (\Exception $e)
 			{
