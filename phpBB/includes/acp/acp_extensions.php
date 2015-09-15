@@ -638,7 +638,7 @@ class acp_extensions
 					'enable_packagist' => $this->config['exts_composer_packagist'],
 					'enable_on_install' => $this->config['exts_composer_enable_on_install'],
 					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
-					'repositories' => unserialize($this->config['exts_composer_repositories']),
+					'repositories' => ['a', 'b', 'c'],//unserialize($this->config['exts_composer_repositories']),
 				]);
 				$this->request->disable_super_globals();
 

@@ -148,5 +148,5 @@ $lang = array_merge($lang, array(
 	'ENABLE_ON_INSTALL'				=> 'Enable extensions when installing',
 	'PURGE_ON_REMOVE'				=> 'Purge extensions when removing',
 	'ENABLE_PACKAGIST'				=> 'Enable Packagist usage',
-	'ENABLE_PACKAGIST_DETAIL'		=> 'TODO text explaining why packagist shouldn\'t be enabled, dev usage, etc...',
+	'ENABLE_PACKAGIST_EXPLAIN'		=> 'TODO text explaining why packagist shouldn\'t be enabled, dev usage, etc...',
 ));

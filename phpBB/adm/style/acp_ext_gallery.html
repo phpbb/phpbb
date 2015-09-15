@@ -35,10 +35,22 @@
 		</dl>
 		<dl>
 			<dt>
+				<label for="repositories">{{ lang('COMPOSER_REPOSITORIES') }}{{ lang('COLON') }}</label>
+				<span class="explain">
+					{{ lang('COMPOSER_REPOSITORIES_EXPLAIN') }}
+				</span>
+			</dt>
+			<dd>
+				<textarea id="repositories" name="repositories" rows="5" cols="30">{{ settings.repositories|join('\n') }}</textarea>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
 				<label for="enable_packagist">{{ lang('ENABLE_PACKAGIST') }}{{ lang('COLON') }}</label><br />
 				<span class="explain">
-					<strong class="error">{{ lang('WARNING') }}{{ lang('COLON') }}</strong> {{ lang('ENABLE_PACKAGIST_DETAIL') }}
-				</span></dt>
+					<strong class="error">{{ lang('WARNING') }}{{ lang('COLON') }}</strong> {{ lang('ENABLE_PACKAGIST_EXPLAIN') }}
+				</span>
+			</dt>
 			<dd>
 				<label><input type="radio" id="enable_packagist" name="enable_packagist" class="radio" value="1"{% if settings.enable_packagist %} checked="checked" {% endif %} /> {{ lang('YES') }}</label>
 				<label><input type="radio" name="enable_packagist" class="radio" value="0"{% if not settings.enable_packagist %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
