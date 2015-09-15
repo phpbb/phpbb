@@ -4,19 +4,19 @@
 
 /* Main CP box
 ----------------------------------------*/
-#cp-menu {
+.cp-menu {
 	float:left;
 	width: 19%;
 	margin-top: 1em;
 	margin-bottom: 5px;
 }
 
-#cp-main {
+.cp-main {
 	float: left;
 	width: 81%;
 }
 
-#cp-main .content {
+.cp-main .content {
 	padding: 0;
 }
 
@@ -59,7 +59,7 @@ ul.cplist {
 	border-bottom: none;
 }
 
-#cp-main .pm-message {
+.cp-main .pm-message {
 	border: 1px solid transparent;
 	margin: 10px 0;
 	width: auto;
@@ -70,7 +70,7 @@ ul.cplist {
 	padding-bottom: 5px;
 }
 
-#cp-main .postbody h3, #cp-main .box2 h3 {
+.cp-main .postbody h3, .cp-main .box2 h3 {
 	margin-top: 0;
 }
 
@@ -78,11 +78,11 @@ ul.cplist {
 	font-size: 1.1em;
 }
 
-#cp-main .buttons {
+.cp-main .buttons {
 	margin-left: 0;
 }
 
-#cp-main ul.linklist {
+.cp-main ul.linklist {
 	margin: 0;
 }
 
@@ -98,18 +98,18 @@ ul.cplist {
 
 /* CP tabs shared
 ----------------------------------------*/
-#tabs, #minitabs {
+.tabs, .minitabs {
 	line-height: normal;
 }
 
-#tabs > ul, #minitabs > ul {
+.tabs > ul, .minitabs > ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	position: relative;
 }
 
-#tabs .tab, #minitabs .tab {
+.tabs .tab, .minitabs .tab {
 	display: block;
 	float: left;
 	font-size: 1em;
@@ -117,7 +117,7 @@ ul.cplist {
 	line-height: 1.4em;
 }
 
-#tabs .tab > a, #minitabs .tab > a {
+.tabs .tab > a, .minitabs .tab > a {
 	display: block;
 	padding: 5px 9px;
 	position: relative;
@@ -128,39 +128,39 @@ ul.cplist {
 
 /* CP tabbed menu
 ----------------------------------------*/
-#tabs {
+.tabs {
 	margin: 20px 0 0 7px;
 }
 
-#tabs .tab > a {
+.tabs .tab > a {
 	border: 1px solid transparent;
 	border-radius: 4px 4px 0 0;
 	margin: 1px 1px 0 0;
 }
 
-#tabs .activetab > a {
+.tabs .activetab > a {
 	margin-top: 0;
 	padding-bottom: 7px;
 }
 
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
-#minitabs {
+.minitabs {
 	float: right;
 	margin: 15px 7px 0 0;
 	max-width: 50%;
 }
 
-#minitabs .tab {
+.minitabs .tab {
 	float: right;
 }
 
-#minitabs .tab > a {
+.minitabs .tab > a {
 	border-radius: 5px 5px 0 0;
 	margin-left: 2px;
 }
 
-#minitabs .tab > a:hover {
+.minitabs .tab > a:hover {
 	text-decoration: none;
 }
 
@@ -190,44 +190,44 @@ ul.cplist {
 	border-top: 0.375em double transparent;
 }
 
-#tabs .dropdown, #minitabs .dropdown {
+.tabs .dropdown, .minitabs .dropdown {
 	top: 20px;
 	margin-right: -2px;
 	font-size: 1.1em;
 	font-weight: normal;
 }
 
-#minitabs .dropdown {
+.minitabs .dropdown {
 	margin-right: -4px;
 }
 
-#tabs .dropdown-up .dropdown, #minitabs .dropdown-up .dropdown {
+.tabs .dropdown-up .dropdown, .minitabs .dropdown-up .dropdown {
 	bottom: 20px;
 	top: auto;
 }
 
-#tabs .dropdown li {
+.tabs .dropdown li {
 	text-align: right;
 }
 
-#minitabs .dropdown li {
+.minitabs .dropdown li {
 	text-align: left;
 }
 
 /* UCP navigation menu
 ----------------------------------------*/
 /* Container for sub-navigation list */
-#navigation {
+.navigation {
 	width: 100%;
 	padding-top: 36px;
 }
 
-#navigation ul {
+.navigation ul {
 	list-style: none;
 }
 
 /* Default list state */
-#navigation li {
+.navigation li {
 	display: inline;
 	font-weight: bold;
 	margin: 1px 0;
@@ -235,20 +235,20 @@ ul.cplist {
 }
 
 /* Link styles for the sub-section links */
-#navigation a {
+.navigation a {
 	display: block;
 	padding: 5px;
 	margin: 1px 0;
 	text-decoration: none;
 }
 
-#navigation a:hover {
+.navigation a:hover {
 	text-decoration: none;
 }
 
 /* Preferences pane layout
 ----------------------------------------*/
-#cp-main h2 {
+.cp-main h2 {
 	border-bottom: none;
 	padding: 0;
 	margin-left: 10px;
@@ -281,10 +281,6 @@ dl.mini dd {
 
 /* PM Styles
 ----------------------------------------*/
-#pm-menu {
-	line-height: 2.5em;
-}
-
 /* Defined rules list for PM options */
 ol.def-rules {
 	padding-left: 0;
@@ -327,7 +323,7 @@ ol.def-rules li {
 }
 
 /* Avatar gallery */
-#gallery label {
+.gallery label {
 	position: relative;
 	float: left;
 	margin: 10px;
@@ -341,35 +337,35 @@ ol.def-rules li {
 ----------------------------------------*/
 @media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
 {
-	.nojs #tabs a span, .nojs #minitabs a span {
+	.nojs .tabs a span, .nojs .minitabs a span {
 		max-width: 40px;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		letter-spacing: -.5px;
 	}
 
-	#cp-menu, #navigation, #cp-main {
+	.cp-menu, .navigation, .cp-main {
 		float: none;
 		width: auto;
 		margin: 0;
 	}
 
-	#navigation {
+	.navigation {
 		padding: 0;
 		margin: 0 auto;
 		max-width: 320px;
 	}
 
-	#navigation a {
+	.navigation a {
 		background-image: none;
 	}
 
-	#navigation li:first-child a {
+	.navigation li:first-child a {
 		border-top-left-radius: 5px;
 		border-top-right-radius: 5px;
 	}
 
-	#navigation li:last-child a {
+	.navigation li:last-child a {
 		border-bottom-left-radius: 5px;
 		border-bottom-right-radius: 5px;
 	}

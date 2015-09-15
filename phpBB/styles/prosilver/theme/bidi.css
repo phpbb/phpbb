@@ -27,11 +27,11 @@
 
 /* Site Description
 --------------------------------------------- */
-.rtl #site-description {
+.rtl .site-description {
 	float: right;
 }
 
-.rtl #site-description h1 {
+.rtl .site-description h1 {
 	margin-left: 0;
 }
 
@@ -268,16 +268,7 @@
 
 /* Miscellaneous styles
 ---------------------------------------- */
-.rtl #forum-permissions {
-	float: left;
-	padding-right: 5px;
-	padding-left: 0;
-	margin-right: 5px;
-	margin-left: 0;
-	text-align: left;
-}
-
-.rtl #quick-links {
+.rtl .quick-links {
 	margin-left: 7px;
 	margin-right: 0;
 }
@@ -471,7 +462,7 @@ li.breadcrumbs span:first-child > a {
 
 /* Topic review panel
 ----------------------------------------*/
-.rtl #topicreview {
+.rtl .topicreview {
 	padding-right: 0;
 	padding-left: 5px;
 }
@@ -687,20 +678,20 @@ li.breadcrumbs span:first-child > a {
 
 /* Main CP box
 ----------------------------------------*/
-.rtl #cp-menu {
+.rtl .cp-menu {
 	float: right;
 }
 
-.rtl #cp-main {
+.rtl .cp-main {
 	float: right;
 }
 
-.rtl #cp-main .panel ol {
+.rtl .cp-main .panel ol {
 	margin-right: 2em;
 	margin-left: 0;
 }
 
-.rtl #cp-main .buttons {
+.rtl .cp-main .buttons {
 	margin-right: 0;
 	margin-left: 0;
 }
@@ -711,52 +702,52 @@ li.breadcrumbs span:first-child > a {
 
 /* CP tabbed menu
 ----------------------------------------*/
-.rtl #tabs {
+.rtl .tabs {
 	margin-left: 0;
 	margin-right: 7px;
 }
 
-.rtl #tabs .tab {
+.rtl .tabs .tab {
 	float: right;
 }
 
-.rtl #tabs .tab > a {
+.rtl .tabs .tab > a {
 	margin-left: 1px;
 	margin-right: 0;
 }
 
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
-.rtl #minitabs {
+.rtl .minitabs {
 	float: left;
 	margin-right: 0;
 	margin-left: 7px;
 }
 
-.rtl #minitabs .tab {
+.rtl .minitabs .tab {
 	float: left;
 }
 
-.rtl #minitabs .tab > a {
+.rtl .minitabs .tab > a {
 	margin-right: 2px;
 	margin-left: 0;
 }
 
 /* Responsive tabs
 ----------------------------------------*/
-.rtl #tabs .dropdown {
+.rtl .tabs .dropdown {
 	margin-left: -2px;
 }
 
-.rtl #tabs .dropdown li {
+.rtl .tabs .dropdown li {
 	text-align: left;
 }
 
-.rtl #minitabs .dropdown {
+.rtl .minitabs .dropdown {
 	margin-left: -4px;
 }
 
-.rtl #minitabs .dropdown li {
+.rtl .minitabs .dropdown li {
 	text-align: right;
 }
 
@@ -764,7 +755,7 @@ li.breadcrumbs span:first-child > a {
 ----------------------------------------*/
 @media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
 {
-	.rtl #cp-menu, .rtl #navigation, .rtl #cp-main {
+	.rtl .cp-menu, .rtl .navigation, .rtl .cp-main {
 		float: none;
 	}
 }
@@ -774,7 +765,7 @@ li.breadcrumbs span:first-child > a {
 
 /* Preferences pane layout
 ----------------------------------------*/
-.rtl #cp-main h2 {
+.rtl .cp-main h2 {
 	margin-left: 0;
 	margin-right: 10px;
 }
@@ -815,7 +806,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Avatar gallery */
-.rtl #gallery label {
+.rtl .gallery label {
 	float: right;
 }
 
@@ -823,7 +814,7 @@ li.breadcrumbs span:first-child > a {
 ----------------------------------------*/
 @media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
 {
-	.rtl #cp-menu, .rtl #navigation, .rtl #cp-main {
+	.rtl .cp-menu, .rtl .navigation, .rtl .cp-main {
 		float: none;
 	}
 }
@@ -935,7 +926,7 @@ li.breadcrumbs span:first-child > a {
 ----------------------------------------*/
 
 /* Emoticons panel */
-.rtl #smiley-box {
+.rtl .smiley-box {
 	float: left;
 }
 
@@ -984,7 +975,7 @@ li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 
 /** Reference: Bug #27155 */
-.rtl #wrap, .rtl .headerbar, .rtl #site-description, .rtl .navbar {
+.rtl .wrap, .rtl .headerbar, .rtl .site-description, .rtl .navbar {
 	position: relative;
 }
 

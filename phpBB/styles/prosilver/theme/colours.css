@@ -42,7 +42,7 @@ hr {
 
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
-#wrap {
+.wrap {
 	background-color: #FFF;
 	border-color: #E6E9ED;
 }
@@ -771,7 +771,7 @@ Colours and backgrounds for cp.css
 /* Main CP box
 ----------------------------------------*/
 
-.panel-container h3, .panel-container hr, #cp-menu hr {
+.panel-container h3, .panel-container hr, .cp-menu hr {
 	border-color: #A4B3BF;
 }
 
@@ -793,25 +793,25 @@ ul.cplist {
 	border-bottom-color: #333333;
 }
 
-#cp-main .pm-message {
+.cp-main .pm-message {
 	border-color: #DBDEE2;
 	background-color: #FFFFFF;
 }
 
 /* CP tabbed menu
 ----------------------------------------*/
-#tabs .tab > a {
+.tabs .tab > a {
 	background: #BACCD9;
 	color: #536482;
 }
 
-#tabs .tab > a:hover {
+.tabs .tab > a:hover {
 	background: #DDEDFB;
 	color: #D31141;
 }
 
-#tabs .activetab > a,
-#tabs .activetab > a:hover {
+.tabs .activetab > a,
+.tabs .activetab > a:hover {
 	background-color: #CADCEB; /* Old browsers */ /* FF3.6+ */
 	background-image: -webkit-linear-gradient(top, #E2F2FF 0%, #CADCEB 100%);
 	background-image: linear-gradient(to bottom, #E2F2FF 0%,#CADCEB 100%); /* W3C */
@@ -821,18 +821,18 @@ ul.cplist {
 	color: #333333;
 }
 
-#tabs .activetab > a:hover {
+.tabs .activetab > a:hover {
 	color: #000000;
 }
 
 /* Mini tabbed menu used in MCP
 ----------------------------------------*/
-#minitabs .tab > a {
+.minitabs .tab > a {
 	background-color: #E1EBF2;
 }
 
-#minitabs .activetab > a,
-#minitabs .activetab > a:hover {
+.minitabs .activetab > a,
+.minitabs .activetab > a:hover {
 	background-color: #F9F9F9;
 	color: #333333;
 }
@@ -851,7 +851,7 @@ ul.cplist {
 ----------------------------------------*/
 
 /* Link styles for the sub-section links */
-#navigation a {
+.navigation a {
 	color: #333;
 	background: #CADCEB; /* Old browsers */ /* FF3.6+ */
 	background: -webkit-linear-gradient(left, #B4C4D1 50%, #CADCEB 100%);
@@ -859,26 +859,26 @@ ul.cplist {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#B4C4D1', endColorstr='#CADCEB',GradientType=1 ); /* IE6-9 */
 }
 
-.rtl #navigation a {
+.rtl .navigation a {
 	background: #B4C4D1; /* Old browsers */ /* FF3.6+ */
 	background: -webkit-linear-gradient(left, #CADCEB 50%, #B4C4D1 100%);
 	background: linear-gradient(to right, #CADCEB 50%,#B4C4D1 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CADCEB', endColorstr='#B4C4D1',GradientType=1 ); /* IE6-9 */
 }
 
-#navigation a:hover {
+.navigation a:hover {
 	background: #AABAC6;
 	color: #BC2A4D;
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 
-#navigation #active-subsection a {
+.navigation .active-subsection a {
 	background: #F9F9F9;
 	color: #D31141;
 	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 
-#navigation #active-subsection a:hover {
+.navigation .active-subsection a:hover {
 	color: #D31141;
 }
 
@@ -899,7 +899,7 @@ ul.cplist {
 	background-color: #F9F9F9;
 }
 
-#cp-main .pm {
+.cp-main .pm {
 	background-color: #FFFFFF;
 }
 
@@ -942,12 +942,12 @@ dl.mini dt {
 }
 
 /* Avatar gallery */
-#gallery label {
+.gallery label {
 	background: #FFFFFF;
 	border-color: #CCC;
 }
 
-#gallery label:hover {
+.gallery label:hover {
 	background-color: #EEE;
 }
 
@@ -999,15 +999,15 @@ fieldset.quick-login input.inputbox {
 /* Posting page styles
 ----------------------------------------*/
 
-#message-box textarea {
+.message-box textarea {
 	color: #333333;
 }
 
-#message-box textarea.drag-n-drop {
+.message-box textarea.drag-n-drop {
 	outline-color: rgba(102, 102, 102, 0.5);
 }
 
-#message-box textarea.drag-n-drop-highlight {
+.message-box textarea.drag-n-drop-highlight {
 	outline-color: rgba(17, 163, 234, 0.5);
 }
 
@@ -1107,11 +1107,11 @@ input.disabled {
 .phpbb_alert .alert_close {
 	background-image: url("./images/alert_close.png");
 }
-#darken {
+.darken {
 	background-color: #000000;
 }
 
-#loading_indicator {
+.loading_indicator {
 	background-color: #000000;
 	background-image: url("./images/loading.gif");
 }

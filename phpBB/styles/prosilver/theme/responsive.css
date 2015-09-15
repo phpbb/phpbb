@@ -16,7 +16,7 @@ body {
 	padding: 0;
 }
 
-#wrap {
+.wrap {
 	border: none;
 	border-radius: 0;
 	margin: 0;
@@ -32,13 +32,13 @@ body {
 	margin-right: -5px;
 }
 
-#cp-main .forabg, #cp-main .forumdb, #cp-main .post, #cp-main .panel {
+.cp-main .forabg, .cp-main .forumdb, .cp-main .post, .cp-main .panel {
 	border-radius: 7px;
 }
 
 /* Logo block
 ----------------------------------------*/
-#site-description {
+.site-description {
 	float: none;
 	width: auto;
 	text-align: center;
@@ -51,7 +51,7 @@ body {
 	padding: 10px;
 }
 
-#site-description h1, #site-description p {
+.site-description h1, .site-description p {
 	text-align: inherit;
 	float: none;
 	margin: 5px;
@@ -60,7 +60,7 @@ body {
 	text-overflow: ellipsis;
 }
 
-#site-description p, .search-header {
+.site-description p, .search-header {
 	display: none;
 }
 
@@ -254,7 +254,7 @@ table.responsive span.rank-img {
 	padding-right: 5px;
 }
 
-table.responsive#memberlist td:first-child input[type="checkbox"] {
+table.responsive.memberlist td:first-child input[type="checkbox"] {
 	float: right;
 }
 
@@ -269,7 +269,7 @@ fieldset dd, fieldset.fields1 dd, fieldset.fields2 dd {
 	margin-left: 20px;
 }
 
-textarea, dd textarea, #message-box textarea {
+textarea, dd textarea, .message-box textarea {
 	width: 100%;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -289,12 +289,12 @@ dl.pmlist dd:first-of-type {
 	padding-left: 20px;
 }
 
-#smiley-box, #message-box {
+.smiley-box, .message-box {
 	float: none;
 	width: auto;
 }
 
-#smiley-box {
+.smiley-box {
 	margin-top: 5px;
 }
 
@@ -357,13 +357,6 @@ fieldset.quick-login label[for="autologin"] {
 
 	.captcha-panel dd.captcha-image img {
 		width: 100%;
-	}
-
-	#recaptcha_challenge_image,
-	#recaptcha_response_field,
-	.recaptchatable #recaptcha_image {
-		width: 100% !important;
-		height: auto !important;
 	}
 
 	.recaptchatable tr td:last-child {
@@ -518,7 +511,7 @@ dl.mini dd.pm-legend {
 	min-width: 200px;
 }
 
-#topicreview {
+.topicreview {
 	margin: 0 -5px;
 	padding: 0 5px;
 }

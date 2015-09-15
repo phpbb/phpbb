@@ -126,7 +126,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 /* Main blocks
 ---------------------------------------- */
-#wrap {
+.wrap {
 	border: 1px solid transparent;
 	border-radius: 8px;
 	margin: 0 auto;
@@ -136,21 +136,21 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 @media only screen and (max-width: 1220px), only screen and (max-device-width: 1220px) {
-	#wrap {
+	.wrap {
 		margin: 0 12px;
 	}
 }
 
-#page-body {
+.page-body {
 	margin: 4px 0;
 	clear: both;
 }
 
-#page-footer {
+.page-footer {
 	clear: both;
 }
 
-#page-footer h3 {
+.page-footer h3 {
 	margin-top: 20px;
 }
 
@@ -165,12 +165,12 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 /* Site description and logo */
-#site-description {
+.site-description {
 	float: left;
 	width: 65%;
 }
 
-#site-description h1 {
+.site-description h1 {
 	margin-right: 0;
 }
 
@@ -231,7 +231,7 @@ ul.linklist {
 	margin: 0;
 }
 
-#cp-main .panel {
+.cp-main .panel {
 	padding: 5px 10px;
 }
 
@@ -275,7 +275,7 @@ ul.linklist li.responsive-menu {
 	margin: 0 5px;
 }
 
-ul.linklist li.responsive-menu a.responsive-menu-link {
+ul.linklist .responsive-menu-link {
 	display: inline-block;
 	margin: 0 5px;
 	font-size: 1.455em;
@@ -285,7 +285,7 @@ ul.linklist li.responsive-menu a.responsive-menu-link {
 	text-decoration: none;
 }
 
-ul.linklist li.responsive-menu a.responsive-menu-link:before {
+ul.linklist .responsive-menu-link:before {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -491,6 +491,9 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	padding: 5px;
 }
 
+.jumpbox {
+	margin: 5px 0;
+}
 
 .jumpbox .dropdown li {
 	border-top: 1px solid transparent;
@@ -619,10 +622,6 @@ table.table1 {
 	width: 100%;
 }
 
-#ucp-main table.table1 {
-	padding: 2px;
-}
-
 table.table1 thead th {
 	font-weight: normal;
 	text-transform: uppercase;
@@ -691,7 +690,7 @@ table.info tbody th {
 	margin: 0 -1px;
 }
 
-#color_palette_placeholder table {
+.color_palette_placeholder table {
 	border-collapse: separate;
 	border-spacing: 1px;
 }
@@ -941,13 +940,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	font-size: 1.1em;
 }
 
-#darkenwrapper {
+.darkenwrapper {
 	display: none;
 	position: relative;
 	z-index: 44;
 }
 
-#darken {
+.darken {
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -957,7 +956,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	z-index: 45;
 }
 
-#loading_indicator {
+.loading_indicator {
 	background: center center no-repeat;
 	border-radius: 5px;
 	display: none;
@@ -974,15 +973,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 /* Miscellaneous styles
 ---------------------------------------- */
-#forum-permissions {
-	float: right;
-	width: auto;
-	padding-left: 5px;
-	margin-left: 5px;
-	margin-top: 10px;
-	text-align: right;
-}
-
 .copyright {
 	padding: 5px;
 	text-align: center;
@@ -1040,15 +1030,12 @@ form > p.post-notice strong {
 	line-height: 20px;
 }
 
-#jumpbox {
-	margin: 5px 0;
-}
-
 .stat-block {
 	clear: both;
 }
 
-#top {
+.top-anchor {
+	display: block;
 	position: absolute;
 	top: -20px;
 }
@@ -1067,8 +1054,8 @@ ul.linklist:after,
 .action-bar:after,
 .notification_text:after,
 .tabs-container:after,
-#tabs > ul:after,
-#minitabs > ul:after,
+.tabs > ul:after,
+.minitabs > ul:after,
 .postprofile .avatar-container:after {
 	clear: both;
 	content: '';
@@ -1243,11 +1230,11 @@ ul.linklist:after,
 /* Navbar specific list items
 ----------------------------------------*/
 
-#quick-links {
+.linklist .quick-links {
 	margin: 0 7px 0 0;
 }
 
-#quick-links a.responsive-menu-link {
+.linklist .quick-links .responsive-menu-link {
 	display: block;
 	font-size: inherit;
 	line-height: inherit;
@@ -1255,12 +1242,12 @@ ul.linklist:after,
 	width: auto;
 }
 
-#quick-links a.responsive-menu-link:before {
+.linklist .quick-links .responsive-menu-link:before {
 	font-size: 1.455em;
 	line-height: 16.5px;
 }
 
-.compact #quick-links a.responsive-menu-link {
+.compact .quick-links .responsive-menu-link {
 	width: 0;
 	overflow: hidden;
 	white-space: nowrap;

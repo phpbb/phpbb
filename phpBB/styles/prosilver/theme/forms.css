@@ -96,7 +96,7 @@ fieldset.fields1 div {
 }
 
 /* Set it back to 0px for the reCaptcha divs: PHPBB3-9587 */
-fieldset.fields1 #recaptcha_widget_div div, fieldset.fields1 .live-search div {
+fieldset.fields1 .live-search div {
 	margin-bottom: 0;
 }
 
@@ -138,7 +138,7 @@ dd textarea {
 }
 
 /* Hover effects */
-#timezone {
+.timezone {
 	width: 95%;
 }
 
@@ -222,20 +222,20 @@ fieldset.submit-buttons input {
 ----------------------------------------*/
 
 /* Buttons used in the editor */
-#format-buttons {
+.format-buttons {
 	margin: 15px 0 2px 0;
 }
 
-#format-buttons input, #format-buttons select {
+.format-buttons input, .format-buttons select {
 	vertical-align: middle;
 }
 
 /* Main message box */
-#message-box {
+.message-box {
 	width: 80%;
 }
 
-#message-box textarea {
+.message-box textarea {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	width: 450px;
 	height: 270px;
@@ -253,12 +253,12 @@ fieldset.submit-buttons input {
 }
 
 /* Emoticons panel */
-#smiley-box {
+.smiley-box {
 	width: 18%;
 	float: right;
 }
 
-#smiley-box img {
+.smiley-box img {
 	margin: 3px;
 }
 
