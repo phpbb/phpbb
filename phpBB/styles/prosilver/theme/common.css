@@ -1047,10 +1047,6 @@ ul.linklist:after,
 	display: block;
 }
 
-.hidden {
-	display: none;
-}
-
 .smilies {
 	vertical-align: text-bottom;
 }

@@ -17,9 +17,6 @@
 	vertical-align: bottom;
 }
 
-.dropdown-select {
-	padding-right: 24px;
-}
 
 .icon-button:before {
 	background: transparent 0 0 no-repeat;
@@ -30,99 +27,19 @@
 	width: 12px;
 }
 
-.dropdown-select.icon-button:before {
-	margin-right: 4px;
+.button:focus,
+.button:hover {
+ 	text-decoration: none;
 }
 
-.dropdown-select:after {
-	background-position: -103px 10px;
+.caret {
 	border-left: 1px solid;
-	content: '';
-	position: absolute;
-	top: 0;
-	right: 0;
-	height: 22px;
-	width: 16px;
+	position: relative;
+	right: -6px;
 }
 
-.dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
-	background-position: -103px -10px;
-}
-
-.buttons, .buttons .button {
-	float: left;
-}
-
-.buttons .button:before {
-	margin: 3px 0 0 2px;
-}
-
-.buttons .button, .dropdown-select {
-	margin-right: 5px;
-}
-
-.jumpbox .dropdown-select {
-	margin: 0;
-}
-
-/* Big button images */
-.reply-icon:before, .pmreply-icon:before					{ background-position: -20px 0; }
-.reply-icon:hover:before, .pmreply-icon:hover:before		{ background-position: -20px -20px; }
-
-.post-icon:before, .newpm-icon:before, .reply-all:before	{ background-position: 0 0; }
-.post-icon:hover:before,
-.newpm-icon:hover:before,
-.reply-all:hover:before										{ background-position: 0 -20px; }
-
-.locked-icon:before											{ background-position: -60px 0; }
-.locked-icon:hover:before									{ background-position: -60px -20px; }
-
-.forwardpm-icon:before										{ background-position: -40px 0; }
-.forwardpm-icon:hover:before								{ background-position: -40px -20px; }
-
-.modtools-icon {
-	font-size: 0;
-}
-
-.tools-icon:before, .modtools-icon:before, .search-icon:before, .search-adv-icon:before {
-	background-position: -80px 0;
-	height: 16px;
-	margin-top: 2px;
-	width: 16px;
-}
-
-.dropdown-visible .tools-icon:before,
-.nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
-
-.search-icon:before											{ background-position: -245px 0; }
-.search-icon:hover:before									{ background-position: -245px -20px; }
-
-.search-adv-icon:before										{ background-position: -265px 0; }
-.search-adv-icon:hover:before								{ background-position: -265px -20px; }
-
-.modtools-icon:before										{ background-position: -225px 0; }
-.dropdown-visible .modtools-icon:before,
-.nojs .dropdown-container:hover .modtools-icon:before		{ background-position: -225px -20px; }
-
-/* Icon images
----------------------------------------- */
-.small-icon {
-	background-position: 0 50%;
-	background-repeat: no-repeat;
-	background-image: none;
-}
-
-.small-icon > a {
-	display: inline-block;
-	padding: 0 0 0 18px;
-}
-
-ul.linklist.bulletin > li.small-icon:before {
-	display: none;
-}
-
-.dropdown .small-icon > a {
-	display: block;
+.caret i {
+	vertical-align: top;
 }
 
 /* Poster contact icons

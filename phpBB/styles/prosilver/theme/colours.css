@@ -38,6 +38,10 @@ hr {
 
 .search-header {
 	box-shadow: 0 0 10px #0075B0;
+/* Notification mark read link */
+.dropdown-extended a.mark_read {
+	background-color: #FFFFFF;
+}
 }
 
 /* Round cornered boxes and backgrounds
@@ -300,10 +304,6 @@ a:hover	{ color: #D31141; }
 	color: #A8D8FF;
 }
 
-/* Notification mark read link */
-.dropdown-extended a.mark_read {
-	background-color: #FFFFFF;
-}
 
 /* Post body links */
 .postlink {
@@ -653,10 +653,6 @@ Colours and backgrounds for buttons.css
 	color: #D31141;
 }
 
-.dropdown-select {
-	color: #536482;
-}
-
 .button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #0A8ED0;
 	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */
@@ -666,8 +662,8 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.dropdown-select:after	{ border-color: #DADADA; }
-.dropdown-select:hover	{ border-color: #C7C3BF; }
+.caret	{ border-color: #DADADA; }
+.caret	{ border-color: #C7C3BF; }
 
 .dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #A6B2BA;

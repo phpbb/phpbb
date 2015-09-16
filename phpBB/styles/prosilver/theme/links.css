@@ -45,8 +45,6 @@ li.breadcrumbs span:first-child > a {
 	z-index: 2;
 	right: 0;
 	top: 50%;
-	width: 30px;
-	height: 40px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -57,7 +55,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 .dropdown-extended a.mark_read:hover {
-	width: 40px;
+	width: 50px;
 }
 
 .jumpbox-cat-link,
