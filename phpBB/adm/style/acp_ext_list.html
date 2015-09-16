@@ -48,7 +48,7 @@
 		</tr>
 		<!-- BEGIN enabled -->
 		<tr class="ext_enabled">
-			<td><strong>{enabled.META_DISPLAY_NAME}</strong></td>
+			<td><strong title="{enabled.NAME}">{enabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
 				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong>
@@ -73,7 +73,7 @@
 		</tr>
 		<!-- BEGIN disabled -->
 		<tr class="ext_disabled">
-			<td><strong>{disabled.META_DISPLAY_NAME}</strong></td>
+			<td><strong title="{disabled.NAME}">{disabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
 				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong>
