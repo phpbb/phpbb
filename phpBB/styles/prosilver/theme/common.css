@@ -861,7 +861,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin-right: 5px;
 }
 
-
 .pagination li.page-jump a {
 	padding: 0 8px;
 }
@@ -870,10 +869,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	font-size: 21px;
 }
 
-.pagination li.arrow a i {
-	width: 8px;
+.pagination .arrow a {
+	padding: 2px 0;
 }
-
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
