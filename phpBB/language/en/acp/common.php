@@ -248,7 +248,7 @@ $lang = array_merge($lang, array(
 
 	'COMPOSER_UNSUPPORTED_OPERATION'	=> 'Operation unsupported for the package type “%s”.',
 	'COMPOSER_UPDATING_DEPENDENCIES'	=> 'Updating packages',
-	'COMPOSER_LOADING_REPOSITORIES'		=> 'Loading remote packages information',
+	'COMPOSER_LOADING_REPOSITORIES'		=> 'Loading remote repositories with package information',
 	'COMPOSER_ERROR_CONFLICT'			=> 'Your requirements could not be resolved to an installable set of packages.',
 	'COMPOSER_REPOSITORY_UNAVAILABLE'	=> 'An error occurred when fetching the repository %s.',
 	'COMPOSER_INSTALLING_PACKAGE'		=> '  - Installing %1$s (%2$s)',
