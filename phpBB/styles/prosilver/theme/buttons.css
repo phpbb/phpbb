@@ -125,3 +125,32 @@ button::-moz-focus-inner {
 	padding: 0;
 	border: 0
 }
+
+/* Deprecated as of version 3.2 
+-------------------------------------------------*/
+.small-icon {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: none;
+}
+
+.small-icon > a {
+	padding: 0 0 0 18px;
+}
+
+ul.linklist.bulletin > li.small-icon:before {
+	display: none;
+}
+ 
+.dropdown .small-icon > a {
+	display: block;
+}
+
+.rtl .small-icon {
+	background-position: 100% 50%;
+}
+
+.rtl .small-icon > a {
+	padding-left: 0;
+	padding-right: 19px;
+}
