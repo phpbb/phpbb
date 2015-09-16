@@ -172,26 +172,45 @@ dl.details dd {
 	color: #1198D9;
 }
 
+/* Icon styles
 ---------------------------------------- */
-
-.pagination li a {
+.icon.icon-blue, a:hover .icon.icon-blue {
+	color: #196db5;
 }
 
-.pagination li.ellipsis span {
+.icon.icon-green, a:hover .icon.icon-green{
+	color: #1b9A1B;
 }
 
-.pagination li.active span {
+.icon.icon-red, a:hover .icon.icon-red{
+	color: #BC2A4D;
 }
 
-.pagination li a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+.icon.icon-orange, a:hover .icon.icon-orange{
+	color: #FF6600;
 }
 
-.pagination li.next a, .pagination li.previous a, .pagination li.page-jump a {
+.icon.icon-bluegray, a:hover .icon.icon-bluegray{
+	color: #536482;
 }
 
-/* Pagination in viewforum for multipage topics */
+.icon.icon-gray, a:hover .icon.icon-gray{
+	color: #777777;
 }
 
+.icon.icon-lightgray, a:hover .icon.icon-lightgray{
+	color: #999999;
+}
+
+.icon.icon-black, a:hover .icon.icon-black{
+	color: #333333;
+}
+
+.alert_close .icon:before {
+	background-color: #FFFFFF;
+}
+
+/* Jumpbox */
 .jumpbox .dropdown li {
 	border-top-color: #CCCCCC;
 }
