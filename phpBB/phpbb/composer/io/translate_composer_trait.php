@@ -16,6 +16,9 @@ namespace phpbb\composer\io;
 use phpbb\language\language;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Trait to translate the composer Output
+ */
 trait translate_composer_trait
 {
 	/**
@@ -54,9 +57,13 @@ trait translate_composer_trait
 				$parameters = [];
 			}
 
-			$message = trim($this->strip_format($message), "\n\r");
+			$message = trim($this->strip_format($lang_key), "\n\r");
 
-			if (strpos($message, 'Deleting ') === 0)
+			if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG)
+			{
+				// Do nothing
+			}
+			else if (strpos($message, 'Deleting ') === 0)
 			{
 				$elements = explode(' ', $message);
 				$lang_key = 'COMPOSER_DELETING';
@@ -116,7 +123,11 @@ trait translate_composer_trait
 
 			$message = trim($this->strip_format($lang_key), "\n\r");
 
-			if (strpos($message, '  Problem ') === 0)
+			if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG)
+			{
+				// Do nothing
+			}
+			else if (strpos($message, '  Problem ') === 0)
 			{
 				if ($this->output->getVerbosity() < OutputInterface::VERBOSITY_VERBOSE)
 				{

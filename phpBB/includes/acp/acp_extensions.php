@@ -440,7 +440,7 @@ class acp_extensions
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
-				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
 
 				try
 				{
@@ -479,7 +479,7 @@ class acp_extensions
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
-				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
 
 				try
 				{
@@ -518,7 +518,7 @@ class acp_extensions
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
-				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
 
 				try
 				{
@@ -557,7 +557,7 @@ class acp_extensions
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
-				$composer_io = new \phpbb\composer\io\web_io($language, '', \Symfony\Component\Console\Output\OutputInterface::VERBOSITY_VERBOSE, $formatter);
+				$composer_io = new \phpbb\composer\io\web_io($language, '', $phpbb_container->getParameter('extensions.composer.output'), $formatter);
 
 				try
 				{

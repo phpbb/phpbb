@@ -106,11 +106,11 @@ class extension_manager extends manager
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
-					$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+					$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
 				}
 				catch (\Exception $e)
 				{
-					$io->writeError($e->getMessage(), true, 4);
+					$io->writeError([[$e->getMessage(), [], 4]], true);
 				}
 			}
 		}
@@ -121,7 +121,7 @@ class extension_manager extends manager
 	 */
 	protected function pre_update(array $packages, IOInterface $io = null)
 	{
-		$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true, 1);
+		$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
 		$this->enabled_extensions = [];
 		foreach ($packages as $package)
 		{
@@ -135,11 +135,11 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
 			}
 			catch (\Exception $e)
 			{
-				$io->writeError($e->getMessage(), true, 4);
+				$io->writeError([[$e->getMessage(), [], 4]], true);
 			}
 		}
 	}
@@ -149,7 +149,7 @@ class extension_manager extends manager
 	 */
 	protected function post_update(array $packages, IOInterface $io = null)
 	{
-		$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true, 1);
+		$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
 		foreach ($this->enabled_extensions as $package)
 		{
 			try
@@ -158,11 +158,11 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
 			}
 			catch (\Exception $e)
 			{
-				$io->writeError($e->getMessage(), true, 4);
+				$io->writeError([[$e->getMessage(), [], 4]], true);
 			}
 		}
 	}
@@ -190,7 +190,7 @@ class extension_manager extends manager
 	{
 		if ($this->purge_on_remove)
 		{
-			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true, 1);
+			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
 		}
 
 		foreach ($packages as $package)
@@ -211,11 +211,11 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				$io->writeError([$e->getMessage(), $e->get_parameters()], true, 4);
+				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
 			}
 			catch (\Exception $e)
 			{
-				$io->writeError($e->getMessage(), true, 4);
+				$io->writeError([[$e->getMessage(), [], 4]], true);
 			}
 		}
 	}
@@ -239,7 +239,7 @@ class extension_manager extends manager
 		if ($this->extension_manager->is_enabled($package))
 		{
 			$enabled = true;
-			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true, 1);
+			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
 			$this->extension_manager->disable($package);
 		}
 
@@ -274,7 +274,7 @@ class extension_manager extends manager
 		{
 			try
 			{
-				$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true, 1);
+				$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
 				$this->extension_manager->enable($package);
 			}
 			catch (\Exception $e)
