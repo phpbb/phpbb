@@ -42,6 +42,35 @@ hr {
 .dropdown-extended a.mark_read {
 	background-color: #FFFFFF;
 }
+
+/* Post body links */
+.postlink {
+	border-bottom-color: #368AD2;
+	color: #368AD2;
+}
+
+.postlink:visited {
+	border-bottom-color: #5D8FBD;
+	color: #5D8FBD;
+}
+
+.postlink:hover {
+	background-color: #D0E4F6;
+	color: #0D4473;
+}
+
+.signature a, .signature a:hover {
+	background-color: transparent;
+}
+
+/* Back to top of page */
+.top i {
+	color: #999999;
+}
+
+/* Arrow links  */
+.arrow-left:hover, .arrow-right:hover {
+	color: #368AD2;
 }
 
 /* Round cornered boxes and backgrounds
@@ -291,13 +320,6 @@ p.post-notice.reported:before, p.post-notice.error:before {
 	background-image: url("./images/icon_topic_reported.gif");
 }
 
-/*
---------------------------------------------------------------
-Colours and backgrounds for links.css
--------------------------------------------------------------- */
-
-a { color: #105289; }
-a:hover	{ color: #D31141; }
 
 /* Links on gradient backgrounds */
 .forumbg .header a, .forabg .header a, th a {
@@ -307,55 +329,6 @@ a:hover	{ color: #D31141; }
 .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	color: #A8D8FF;
 }
-
-
-/* Post body links */
-.postlink {
-	border-bottom-color: #368AD2;
-	color: #368AD2;
-}
-
-.postlink:visited {
-	border-bottom-color: #5D8FBD;
-	color: #5D8FBD;
-}
-
-.postlink:hover {
-	background-color: #D0E4F6;
-	color: #0D4473;
-}
-
-.signature a, .signature a:hover {
-	background-color: transparent;
-}
-
-/* Back to top of page */
-a.top {
-	background-image: url("./images/icon_back_top.gif");
-}
-
-a.top2 {
-	background-image: url("./images/icon_back_top.gif");
-}
-
-/* Arrow links  */
-a.arrow-up			{ background-image: url("./images/arrow_up.gif"); }
-a.arrow-down		{ background-image: url("./images/arrow_down.gif"); }
-a.arrow-left		{ background-image: url("./images/arrow_left.gif"); }
-a.arrow-right		{ background-image: url("./images/arrow_right.gif"); }
-
-a.arrow-up:hover {
-	background-color: transparent;
-}
-
-a.arrow-left:hover {
-	color: #368AD2;
-}
-
-a.arrow-right:hover {
-	color: #368AD2;
-}
-
 /*
 --------------------------------------------------------------
 Colours and backgrounds for content.css

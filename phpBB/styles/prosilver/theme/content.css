@@ -77,15 +77,6 @@ ul.topiclist dfn {
 	width: 990px;
 }
 
-ul.topiclist li.row dt a.subforum {
-	background-image: none;
-	background-position: 0 50%;
-	background-repeat: no-repeat;
-	position: relative;
-	white-space: nowrap;
-	padding: 0 0 0 12px;
-}
-
 .forum-image {
 	float: left;
 	padding-top: 5px;

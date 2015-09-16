@@ -123,6 +123,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
 }
 
+a:hover	{ text-decoration: underline; }
 
 /* Main blocks
 ---------------------------------------- */
@@ -909,18 +910,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .phpbb_alert .alert_close {
-	display: block;
 	float: right;
-	width: 16px;
-	height: 16px;
-	overflow: hidden;
-	text-decoration: none !important;
-	background: transparent none 0 0 no-repeat;
-	margin-top: -7px;
-	margin-right: -31px;
-}
-.phpbb_alert .alert_close:hover {
-	background-position: 0 -16px;
+	margin-right: -36px;
+	margin-top: -8px;
 }
 
 .phpbb_alert p {
