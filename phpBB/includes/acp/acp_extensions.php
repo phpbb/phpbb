@@ -436,7 +436,7 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				$formatter = new \Composer\Console\HtmlOutputFormatter([
+				$formatter = new \phpbb\composer\io\html_output_formatter([
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
@@ -475,7 +475,7 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				$formatter = new \Composer\Console\HtmlOutputFormatter([
+				$formatter = new \phpbb\composer\io\html_output_formatter([
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
@@ -514,7 +514,7 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				$formatter = new \Composer\Console\HtmlOutputFormatter([
+				$formatter = new \phpbb\composer\io\html_output_formatter([
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
@@ -553,7 +553,7 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				$formatter = new \Composer\Console\HtmlOutputFormatter([
+				$formatter = new \phpbb\composer\io\html_output_formatter([
 					'warning' => new \Symfony\Component\Console\Formatter\OutputFormatterStyle('black', 'yellow')
 				]);
 
