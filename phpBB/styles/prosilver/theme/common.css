@@ -623,6 +623,10 @@ table.table1 {
 	width: 100%;
 }
 
+.ucp-main table.table1 {
+	padding: 2px;
+}
+
 table.table1 thead th {
 	font-weight: normal;
 	text-transform: uppercase;
