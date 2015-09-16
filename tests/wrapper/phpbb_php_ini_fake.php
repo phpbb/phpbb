@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_php_ini_fake extends \phpbb\php\ini
+class phpbb_php_ini_fake extends \bantu\IniGetWrapper\IniGetWrapper
 {
 	function get($varname)
 	{

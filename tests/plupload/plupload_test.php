@@ -48,7 +48,7 @@ class phpbb_plupload_test extends phpbb_test_case
 			$config,
 			new phpbb_mock_request,
 			new \phpbb\user($lang, '\phpbb\datetime'),
-			new \phpbb\php\ini,
+			new \bantu\IniGetWrapper\IniGetWrapper,
 			new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser))
 		);
 

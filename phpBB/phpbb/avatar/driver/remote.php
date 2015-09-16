@@ -114,13 +114,8 @@ class remote extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		if (!class_exists('fileupload'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
-		}
-
-		$types = \fileupload::image_types();
-		$extension = strtolower(\filespec::get_extension($url));
+		$types = \phpbb\files\upload::image_types();
+		$extension = strtolower(\phpbb\files\filespec::get_extension($url));
 
 		// Check if this is actually an image
 		if ($file_stream = @fopen($url, 'r'))

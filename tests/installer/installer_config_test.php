@@ -24,11 +24,11 @@ class phpbb_installer_config_test extends phpbb_test_case
 	{
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$filesystem = $this->getMock('\phpbb\filesystem\filesystem');
-		$php_ini = $this->getMockBuilder('\phpbb\php\ini')
+		$php_ini = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
 			->getMock();
-		$php_ini->method('get_int')
+		$php_ini->method('getInt')
 			->willReturn(-1);
-		$php_ini->method('get_bytes')
+		$php_ini->method('getBytes')
 			->willReturn(-1);
 
 		$this->config = new config($filesystem, $php_ini, $phpbb_root_path);

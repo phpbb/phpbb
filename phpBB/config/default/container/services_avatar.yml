@@ -63,8 +63,8 @@ services:
             - %core.php_ext%
             - @filesystem
             - @path_helper
-            - @mimetype.guesser
             - @dispatcher
+            - @files.factory
             - @cache.driver
         calls:
             - [set_name, [avatar.driver.upload]]

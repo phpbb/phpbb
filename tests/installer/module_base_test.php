@@ -43,7 +43,7 @@ class module_base_test extends phpbb_test_case
 		$this->module = new test_installer_module($module_collection, true, false);
 
 		$iohandler = $this->getMock('\phpbb\install\helper\iohandler\iohandler_interface');
-		$config = new \phpbb\install\helper\config(new \phpbb\filesystem\filesystem(), new \phpbb\php\ini(), '', 'php');
+		$config = new \phpbb\install\helper\config(new \phpbb\filesystem\filesystem(), new \bantu\IniGetWrapper\IniGetWrapper(), '', 'php');
 		$this->module->setup($config, $iohandler);
 	}
 

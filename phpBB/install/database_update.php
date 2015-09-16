@@ -205,8 +205,8 @@ $migrator->set_migrations($migrations);
 
 // What is a safe limit of execution time? Half the max execution time should be safe.
 //  No more than 15 seconds so the user isn't sitting and waiting for a very long time
-$phpbb_ini = new \phpbb\php\ini();
-$safe_time_limit = min(15, ($phpbb_ini->get_int('max_execution_time') / 2));
+$phpbb_ini = new \bantu\IniGetWrapper\IniGetWrapper();
+$safe_time_limit = min(15, ($phpbb_ini->getNumeric('max_execution_time') / 2));
 
 // While we're going to try limit this to half the max execution time,
 //  we want to try and take additional measures to prevent hitting the

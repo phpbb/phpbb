@@ -41,7 +41,7 @@ class config
 	protected $install_config_file;
 
 	/**
-	 * @var \phpbb\php\ini
+	 * @var \bantu\IniGetWrapper\IniGetWrapper
 	 */
 	protected $php_ini;
 
@@ -83,7 +83,7 @@ class config
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \phpbb\php\ini $php_ini, $phpbb_root_path)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \bantu\IniGetWrapper\IniGetWrapper $php_ini, $phpbb_root_path)
 	{
 		$this->filesystem		= $filesystem;
 		$this->php_ini			= $php_ini;
@@ -373,7 +373,7 @@ class config
 	protected function setup_system_data()
 	{
 		// Query maximum runtime from php.ini
-		$execution_time = $this->php_ini->get_int('max_execution_time');
+		$execution_time = $this->php_ini->getNumeric('max_execution_time');
 		$execution_time = min(15, $execution_time / 2);
 		$this->system_data['max_execution_time'] = $execution_time;
 
@@ -381,6 +381,6 @@ class config
 		$this->system_data['start_time'] = time();
 
 		// Get memory limit
-		$this->system_data['memory_limit'] = $this->php_ini->get_bytes('memory_limit');
+		$this->system_data['memory_limit'] = $this->php_ini->getBytes('memory_limit');
 	}
 }
