@@ -26,18 +26,23 @@ hr {
 	border-top-color: #CCCCCC;
 }
 
-/* Search box
---------------------------------------------- */
+/*
+--------------------------------------------------------------
+Colours and backgrounds for links.css
+-------------------------------------------------------------- */
 
-.search-box .inputbox,
-.search-box .inputbox:hover,
-.search-box .inputbox:focus,
-.search-box .button:hover {
-	border-color: #C7C3BF;
+a { color: #105289; }
+a:hover { color: #D31141; }
+
+/* Links on gradient backgrounds */
+.forumbg .header a, .forabg .header a, th a {
+	color: #FFFFFF;
 }
 
-.search-header {
-	box-shadow: 0 0 10px #0075B0;
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
+	color: #A8D8FF;
+}
+
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
 	background-color: #FFFFFF;
