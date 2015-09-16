@@ -27,9 +27,8 @@
 <!-- ENDIF -->
 
 <div class="action-bar top">
-
-	<div class="buttons">
-		<!-- EVENT viewtopic_buttons_top_before -->
+<div class="action-bar bar-top">
+	<!-- EVENT viewtopic_buttons_top_before -->
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
 		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
@@ -41,9 +40,7 @@
 		</a>
 	<!-- ENDIF -->
 
-		<!-- EVENT viewtopic_buttons_top_after -->
-	</div>
-
+	<!-- EVENT viewtopic_buttons_top_after -->
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 	<!-- EVENT viewtopic_dropdown_top_custom -->
 
@@ -392,8 +389,7 @@
 
 <!-- EVENT viewtopic_body_topic_actions_before -->
 <div class="action-bar bottom">
-	<div class="buttons">
-		<!-- EVENT viewtopic_buttons_bottom_before -->
+	<!-- EVENT viewtopic_buttons_bottom_before -->
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
 		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
@@ -404,9 +400,7 @@
 			<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
-
-		<!-- EVENT viewtopic_buttons_bottom_after -->
-	</div>
+	<!-- EVENT viewtopic_buttons_bottom_after -->
 
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 

@@ -806,16 +806,20 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li a, .pagination li span {
-	border: 1px solid transparent;
 	border-radius: 2px;
-	display: block;
-	font-size: 10px;
+	padding: 2px 5px;
+}
+
+.pagination li.active span {
+	display: inline-block;
+	font-size: 13px;
 	font-weight: normal;
-	line-height: 14px;
-	min-width: 10px;
-	padding: 3px;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	line-height: 1.4;
 	text-align: center;
-	text-decoration: none;
+	white-space: nowrap;
+	vertical-align: middle;
+	border: 1px solid transparent;
 }
 
 .pagination li.ellipsis span {
@@ -827,37 +831,24 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin-right: 5px;
 }
 
-.pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
-	background-repeat: no-repeat;
-	font-size: 0;
-	height: 14px;
-	width: 11px;
-}
 
 .pagination li.page-jump a {
-	background-position: 0 2px;
-	width: 24px;
+	padding: 0 8px;
 }
 
-.pagination li.next a {
-	background-position: -50px 2px;
+.pagination li.page-jump a i {
+	font-size: 21px;
 }
 
-.pagination li.previous a {
-	background-position: -30px 2px;
+.pagination li.arrow a i {
+	width: 8px;
 }
 
-.pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
-.pagination li.next a:hover { background-position: -48px -16px; }
-.pagination li.previous a:hover { background-position: -29px -16px; }
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
 	margin-top: 0;
-	padding: 1px 0 1px 15px;
-	font-size: 10px;
-	background: none 0 50% no-repeat;
 }
 
 .row .pagination > ul {
@@ -865,8 +856,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .row .pagination li a, .row .pagination li span {
-	border-radius: 1px;
-	padding: 1px;
+	border-radius: 2px;
+    padding: 1px 3px;
+    font-size: 9px;
 }
 
 /* jQuery popups

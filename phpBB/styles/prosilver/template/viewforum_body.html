@@ -38,7 +38,6 @@
 	<div class="action-bar top">
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
-		<div class="buttons">
 			<!-- EVENT viewforum_buttons_top_before -->
 
 		<a href="{U_POST_NEW_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
@@ -49,12 +48,12 @@
 			<!-- ENDIF -->
 		</a>
 			<!-- EVENT viewforum_buttons_top_after -->
-		</div>
 	<!-- ENDIF -->
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
 		<div class="search-box" role="search">
 			<form method="get" id="forum-search" action="{S_SEARCHBOX_ACTION}">
+		</div>
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
 				<button class="button" type="submit" title="{L_SEARCH}">
@@ -263,8 +262,7 @@
 <!-- IF .topicrow and not S_DISPLAY_ACTIVE -->
 	<div class="action-bar bottom">
 		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
-			<div class="buttons">
-				<!-- EVENT viewforum_buttons_bottom_before -->
+			<!-- EVENT viewforum_buttons_bottom_before -->
 
 			<a href="{U_POST_NEW_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->
@@ -274,8 +272,7 @@
 			<!-- ENDIF -->
 			</a>
 
-				<!-- EVENT viewforum_buttons_bottom_after -->
-			</div>
+			<!-- EVENT viewforum_buttons_bottom_after -->
 		<!-- ENDIF -->
 
 		<div class="pagination">

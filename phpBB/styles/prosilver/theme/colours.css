@@ -172,39 +172,24 @@ dl.details dd {
 	color: #1198D9;
 }
 
-/* Pagination
 ---------------------------------------- */
 
 .pagination li a {
-	background-color: #ECEDEE;
-	border-color: #B4BAC0;
-	color: #5C758C;
 }
 
 .pagination li.ellipsis span {
-	background-color: transparent;
-	color:	#000000;
 }
 
 .pagination li.active span {
-	background-color: #4692BF;
-	border-color: #4692BF;
-	color: #FFFFFF;
 }
 
 .pagination li a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
-	background-color: #368AD2;
-	border-color: #368AD2;
-	color: #FFFFFF;
 }
 
 .pagination li.next a, .pagination li.previous a, .pagination li.page-jump a {
-	background-image: url("./images/icons_pagination.png");
 }
 
 /* Pagination in viewforum for multipage topics */
-.row .pagination {
-	background-image: url("./images/icon_pages.gif");
 }
 
 .jumpbox .dropdown li {
@@ -662,8 +647,29 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
+.button i {
+	color: #8f8f8f;
+}
+
+.button:focus i,
+.button:hover i {
+	color: #1878cb;
+}
+
 .caret	{ border-color: #DADADA; }
 .caret	{ border-color: #C7C3BF; }
+
+.jumpbox .button, .jumpbox .button i {
+	color: #536482;
+}
+
+.jumpbox .button:hover {
+	border-color: #C7C3BF;
+}
+
+.jumpbox .button:hover i {
+	color: #536482;
+}
 
 .dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
 	border-color: #A6B2BA;
@@ -672,6 +678,52 @@ Colours and backgrounds for buttons.css
 
 .contact-icons a		{ border-color: #DCDCDC; }
 .contact-icons a:hover	{ background-color: #F2F6F9; }
+
+/* Pagination
+---------------------------------------- */
+
+.pagination li a {
+	background: #ECEDEE;
+	filter: none;
+	border-color: #B4BAC0;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	color: #5C758C;
+}
+
+.pagination li.ellipsis span {
+	background: transparent;
+	color:	#000000;
+}
+
+.pagination li.active span {
+	background: #4692BF;
+	border-color: #4692BF;
+	color: #FFFFFF;
+}
+
+.pagination li a:hover, .pagination li a:hover .icon, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+	background: #368AD2;
+	border-color: #368AD2;
+	filter: none;
+	color: #FFFFFF;
+	text-shadow: none;
+}
+
+/* Search box
+--------------------------------------------- */
+
+.search-box .inputbox,
+.search-box .inputbox:hover,
+.search-box .inputbox:focus,
+.search-box .button:focus,
+.search-box .button:hover {
+	border-color: #C7C3BF;
+}
+
+.search-header {
+	box-shadow: 0 0 10px #0075B0;
+}
 
 /* Icon images
 ---------------------------------------- */
@@ -1152,14 +1204,6 @@ input.disabled {
 
 .dropdown-extended .pointer-inner {
 	border-color: #F1F8FF transparent;
-}
-
-ul.linklist li.responsive-menu a.responsive-menu-link:before {
-	border-color: #105289;
-}
-
-ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist li.responsive-menu.visible a.responsive-menu-link:before {
-	border-color: #D31141;
 }
 
 .dropdown .dropdown-contents {

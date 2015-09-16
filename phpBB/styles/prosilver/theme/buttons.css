@@ -2,29 +2,24 @@
 ---------------------------------------- */
 
 .button {
-	cursor: pointer;
 	display: inline-block;
-	font-size: 1.2em;
+	padding: 2px 8px;
+	font-size: 13px;
+	font-weight: normal;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	line-height: 1.4;
+	text-align: center;
 	white-space: nowrap;
+	vertical-align: middle;
+	-ms-touch-action: manipulation;
+	    touch-action: manipulation;
+	cursor: pointer;
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	    -ms-user-select: none;
+	        user-select: none;
 	border: 1px solid transparent;
 	border-radius: 4px;
-	background: transparent none 0 0 repeat-x;
-	padding: 2px 8px;
-	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	position: relative;
-	text-decoration: none !important;
-	outline-style: none !important;
-	vertical-align: bottom;
-}
-
-
-.icon-button:before {
-	background: transparent 0 0 no-repeat;
-	content: '';
-	display: inline-block;
-	float: right;
-	height: 12px;
-	width: 12px;
 }
 
 .button:focus,
@@ -97,24 +92,17 @@
 	margin-right: 3px;
 }
 
-.post-buttons .icon-button {
-	padding: 5px;
+.post-buttons .button, .format-buttons .button {
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
-.hastouch .post-buttons .icon-button {
-	padding: 2px 8px;
+.hastouch .post-buttons {
+	margin-right: 10px;
 }
 
-.post-buttons .icon-button span {
-	display: block;
-	height: 0;
-	overflow: hidden;
-	position: absolute;
-	width: 1px;
-}
-
-.post-buttons .icon-button:before {
-	margin-left: 0;
+.post-buttons .button span {
+	font-size: 0;
 }
 
 /* Responsive buttons in post body */

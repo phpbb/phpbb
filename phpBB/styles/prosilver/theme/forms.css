@@ -316,6 +316,7 @@ a.button1, input.button1, input.button3, a.button2, input.button2 {
 	padding-bottom: 1px;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	background: transparent none repeat-x top left;
+	line-height: 1.5;
 }
 
 a.button1, input.button1 {
@@ -342,12 +343,10 @@ a.button2, input.button2, input.button3 {
 }
 
 /* <a> button in the style of the form buttons */
-a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
+a.button1, a.button2 {
 	text-decoration: none;
 	padding: 2px 8px;
-	line-height: 250%;
 	vertical-align: text-bottom;
-	background-position: 0 1px;
 }
 
 /* Hover states */
