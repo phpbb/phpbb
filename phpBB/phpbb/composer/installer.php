@@ -18,6 +18,7 @@ use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
+use Composer\Package\BasePackage;
 use Composer\Package\CompletePackage;
 use Composer\Package\LinkConstraint\LinkConstraintInterface;
 use Composer\Package\PackageInterface;
@@ -290,6 +291,7 @@ class installer
 
 			/** @var LinkConstraintInterface $core_constraint */
 			$core_constraint = $composer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
+			$core_stability = $composer->getPackage()->getMinimumStability();
 
 			$available = [];
 
@@ -321,7 +323,7 @@ class installer
 							foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
 							{
 								$versions            = $repository->findPackages($package);
-								$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $package, $versions);
+								$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $core_stability, $package, $versions);
 							}
 						}
 					}
@@ -341,7 +343,7 @@ class installer
 						// Filter the compatibles versions
 						foreach ($packages as $package => $versions)
 						{
-							$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $package, $versions);
+							$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $core_stability, $package, $versions);
 						}
 					}
 				}
@@ -422,16 +424,24 @@ class installer
 	 *
 	 * @param array						$compatible_packages	List of compatibles versions
 	 * @param LinkConstraintInterface	$core_constraint		Constraint against the phpBB version
+	 * @param string $core_stability Core stability
 	 * @param string					$package_name			Considered package
 	 * @param array						$versions				List of available versions
 	 *
 	 * @return array
 	 */
-	private function get_compatible_versions(array $compatible_packages, LinkConstraintInterface $core_constraint, $package_name, array $versions)
+	private function get_compatible_versions(array $compatible_packages, LinkConstraintInterface $core_constraint, $core_stability, $package_name, array $versions)
 	{
+		$core_stability_value = BasePackage::$stabilities[$core_stability];
+		//VersionParser::parseStability($version['version'])
 		/** @var PackageInterface $version */
 		foreach ($versions as $version)
 		{
+			if (BasePackage::$stabilities[$version->getStability()] > $core_stability_value)
+			{
+				continue;
+			}
+
 			if (array_key_exists('phpbb/phpbb', $version->getRequires()))
 			{
 				/** @var LinkConstraintInterface $package_constraint */
