@@ -48,8 +48,8 @@ $lang = array_merge($lang, array(
 	'ENABLING_EXTENSIONS'	=> 'Enabling extensions',
 	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
 
-	'EXTENSIONS_GALLERY' => 'Extensions Gallery',
-	'EXTENSIONS_GALLERY_EXPLAIN' => 'The Extensions Gallery is a tool in your phpBB Board which allows you to see all the extensions that are available for your board.',
+	'EXTENSIONS_CATALOG'			=> 'Extensions Catalog',
+	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all of the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the Settings to allow instant enabling and purging of extensions.',
 
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',
@@ -150,7 +150,7 @@ $lang = array_merge($lang, array(
 	'META_FIELD_NOT_SET'	=> 'Required meta field %s has not been set.',
 	'META_FIELD_INVALID'	=> 'Meta field %s is invalid.',
 
-	'EXTENSIONS_GALLERY_SETTINGS'	=> 'Extensions gallery settings',
+	'EXTENSIONS_CATALOG_SETTINGS'	=> 'Extensions catalog settings',
 	'ENABLE_ON_INSTALL'				=> 'Enable extensions when installing',
 	'PURGE_ON_REMOVE'				=> 'Purge extensions when removing',
 	'ENABLE_PACKAGIST'				=> 'Enable Packagist usage',

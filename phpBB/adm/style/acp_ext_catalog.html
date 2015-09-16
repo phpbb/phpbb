@@ -2,9 +2,9 @@
 
 <a id="maincontent"></a>
 
-<h1>{{lang( 'EXTENSIONS_GALLERY') }}</h1>
+<h1>{{lang( 'EXTENSIONS_CATALOG') }}</h1>
 
-<p>{{lang( 'EXTENSIONS_GALLERY_EXPLAIN') }}</p>
+<p>{{lang( 'EXTENSIONS_CATALOG_EXPLAIN') }}</p>
 
 {% if not enabled %}
 <div class="errorbox">
@@ -13,7 +13,7 @@
 {% endif %}
 
 <fieldset class="quick quick-left">
-	<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{{ lang('BROWSE_EXTENSIONS_DATABASE') }}</a> &bull; <a href="javascript:phpbb.toggleDisplay('gallery_settings');">{{ lang('SETTINGS') }}</a></span>
+	<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{{ lang('BROWSE_EXTENSIONS_DATABASE') }}</a> &bull; <a href="javascript:phpbb.toggleDisplay('catalog_settings');">{{ lang('SETTINGS') }}</a></span>
 </fieldset>
 
 {% if pagination is defined %}
@@ -22,9 +22,9 @@
 	</div>
 {% endif %}
 
-<form id="gallery_settings" method="post" action="{{ U_ACTION }}" style="display:none">
+<form id="catalog_settings" method="post" action="{{ U_ACTION }}" style="display:none">
 	<fieldset style="clear: both;">
-		<legend>{{ lang('EXTENSIONS_GALLERY_SETTINGS') }}</legend>
+		<legend>{{ lang('EXTENSIONS_CATALOG_SETTINGS') }}</legend>
 		<dl>
 			<dt><label for="enable_on_install">{{ lang('ENABLE_ON_INSTALL') }}{{ lang('COLON') }}</label></dt>
 			<dd>
@@ -66,7 +66,7 @@
 		<p class="submit-buttons">
 			<input class="button1" type="submit" name="update" value="{{ lang('SUBMIT') }}" />&nbsp;
 			<input class="button2" type="reset" name="reset" value="{{ lang('RESET') }}" />
-			<input type="hidden" name="action" value="set_gallery_settings" />
+			<input type="hidden" name="action" value="set_catalog_settings" />
 			{{ S_FORM_TOKEN }}
 		</p>
 	</fieldset>

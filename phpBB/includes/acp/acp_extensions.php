@@ -60,8 +60,8 @@ class acp_extensions
 
 		switch ($mode)
 		{
-			case 'gallery':
-				$this->gallery_mode($id, $mode);
+			case 'catalog':
+				$this->catalog_mode($id, $mode);
 				break;
 			default:
 				$this->main_mode($id, $mode);
@@ -177,7 +177,7 @@ class acp_extensions
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
 					'MANAGED_EXTENSIONS'	=> array_keys($composer_manager->get_managed_packages()),
-					'U_GALLERY_ACTION' 		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=gallery"),
+					'U_CATALOG_ACTION' 		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=catalog"),
 				));
 				$this->request->disable_super_globals();
 
@@ -409,7 +409,7 @@ class acp_extensions
 		$this->tpl_name = $tpl_name;
 	}
 
-	public function gallery_mode($id, $mode)
+	public function catalog_mode($id, $mode)
 	{
 		global $phpbb_container;
 
@@ -593,7 +593,7 @@ class acp_extensions
 				$submit = $this->request->is_set('update');
 				if ($submit)
 				{
-					if (!check_form_key('gallery_settings'))
+					if (!check_form_key('catalog_settings'))
 					{
 						trigger_error($language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -640,8 +640,8 @@ class acp_extensions
 
 				$pagination->generate_template_pagination($base_url, 'pagination', 'start', count($available_extensions), 20, $start);
 
-				$this->page_title = 'ACP_EXTENSIONS_GALLERY';
-				$this->tpl_name = 'acp_ext_gallery';
+				$this->page_title = 'ACP_EXTENSIONS_CATALOG';
+				$this->tpl_name = 'acp_ext_catalog';
 
 				$this->template->assign_var('extensions', $extensions);
 				$this->template->assign_var('managed_extensions', array_keys($managed_packages));
@@ -655,7 +655,7 @@ class acp_extensions
 				]);
 				$this->template->assign_var('enabled', $manager->check_requirements());
 
-				add_form_key('gallery_settings');
+				add_form_key('catalog_settings');
 
 				break;
 		}

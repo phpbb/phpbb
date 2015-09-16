@@ -29,7 +29,7 @@ class extensions_composer extends \phpbb\db\migration\migration
 				'ACP_EXTENSION_MANAGEMENT',
 				array(
 					'module_basename'	=> 'acp_extensions',
-					'modes'				=> array('gallery'),
+					'modes'				=> array('catalog'),
 				),
 			)),
 		);
