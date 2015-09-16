@@ -313,14 +313,6 @@ p.post-notice {
 	background-image: none;
 }
 
-/* Links on gradient backgrounds */
-.forumbg .header a, .forabg .header a, th a {
-	color: #FFFFFF;
-}
-
-.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
-	color: #A8D8FF;
-}
 /*
 --------------------------------------------------------------
 Colours and backgrounds for content.css
