@@ -770,12 +770,17 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Action-bars (container for post/reply buttons, pagination, etc.)
 ---------------------------------------- */
 .action-bar {
-	font-size: 1.1em;
+	font-size: 11px;
 	margin: 4px 0;
 }
 
 .forabg + .action-bar {
 	margin-top: 2em;
+}
+
+.action-bar .button {
+	margin-right: 5px;
+	float: left;
 }
 
 /* Pagination
@@ -787,8 +792,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	width: auto;
 }
 
-.action-bar.bottom .pagination {
+.action-bar.bar-bottom .pagination {
 	margin-top: 0;
+}
+
+.action-bar .pagination .button {
+	margin-right: 0;
+	float: none;
 }
 
 .pagination > ul {
