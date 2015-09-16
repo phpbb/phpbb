@@ -379,6 +379,7 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .dropdown {
+	display: none;
 	position: absolute;
 	left: 0;
 	top: 1.2em;
@@ -472,7 +473,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
-	min-width: 40px;
 	max-height: 300px;
 }
 
@@ -518,15 +518,27 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	width: 20px;
 }
 
+.dropdown-contents a {
+	display: block;
+	padding: 5px;
+}
+
+.jumpbox .dropdown-select {
+	margin: 0;
+}
+
+.jumpbox .dropdown-contents a {
+	text-decoration: none;
+}
+
 .dropdown li {
+	display: list-item;
 	border-top: 1px dotted transparent;
 	float: none !important;
 	line-height: normal !important;
 	font-size: 1em !important;
 	list-style: none;
 	margin: 0;
-	padding-top: 4px;
-	padding-bottom: 4px;
 	white-space: nowrap;
 	text-align: left;
 }
@@ -562,7 +574,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 
 .dropdown li.separator {
 	border-top: 1px solid transparent;
-	margin: 4px 0;
 	padding: 0;
 }
 
