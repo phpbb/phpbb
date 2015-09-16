@@ -230,6 +230,11 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 ----------------------------------------*/
 .navbar ul.linklist {
 	padding: 2px 0;
+	list-style-type: none;
+}
+
+.navbar .linklist > li {
+	display: inline-block;
 }
 
 ul.linklist {
@@ -584,7 +589,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .breadcrumbs .crumb a {
-	display: inline-block;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	vertical-align: bottom;

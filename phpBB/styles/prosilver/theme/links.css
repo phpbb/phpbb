@@ -28,12 +28,6 @@ a {
 	text-decoration: underline;
 }
 
-/* Navigation bar links */
-li.breadcrumbs span:first-child > a {
-	display: inline-block;
-	padding-left: 17px;
-}
-
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
 	background-position: center center;
