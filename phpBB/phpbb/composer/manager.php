@@ -266,6 +266,18 @@ class manager implements manager_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function reset_cache()
+	{
+		$this->cache->destroy('_composer_' . $this->package_type . '_available');
+
+		$this->available_packages = null;
+		$this->managed_packages = null;
+		$this->all_managed_packages = null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function start_managing($package, $io)
 	{
 		throw new \phpbb\exception\runtime_exception('COMPOSER_UNSUPPORTED_OPERATION', (array) $this->package_type);

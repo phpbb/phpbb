@@ -62,6 +62,21 @@
 				<label><input type="radio" name="enable_packagist" class="radio" value="0"{% if not settings.enable_packagist %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
 			</dd>
 		</dl>
+		<dl>
+			<dt>
+				<label for="minimum_stability">{{ lang('COMPOSER_MINIMUM_STABILITY') }}{{ lang('COLON') }}</label><br />
+				<span class="explain">
+					<strong class="error">{{ lang('WARNING') }}{{ lang('COLON') }}</strong> {{ lang('COMPOSER_MINIMUM_STABILITY_EXPLAIN') }}
+				</span>
+			</dt>
+			<dd>
+				<select id="minimum_stability" name="minimum_stability">
+					{% for stability in settings.stabilities %}
+						<option value="{{ stability }}"{% if stability === settings.minimum_stability %} selected='selected'{% endif %}>{{ lang('STABILITY_' ~ stability|upper) }}</option>
+					{% endfor %}
+				</select>
+			</dd>
+		</dl>
 
 		<p class="submit-buttons">
 			<input class="button1" type="submit" name="update" value="{{ lang('SUBMIT') }}" />&nbsp;

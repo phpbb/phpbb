@@ -56,6 +56,11 @@ class installer
 	protected $packages_vendor_dir = 'vendor-ext/';
 
 	/**
+	 * @var string Minimum stability
+	 */
+	protected $minimum_stability = 'stable';
+
+	/**
 	 * @var string phpBB root path
 	 */
 	protected $root_path;
@@ -88,6 +93,7 @@ class installer
 			$this->packagist           = (bool) $config['exts_composer_packagist'];
 			$this->composer_filename   = $config['exts_composer_json_file'];
 			$this->packages_vendor_dir = $config['exts_composer_vendor_dir'];
+			$this->minimum_stability   = $config['exts_composer_minimum_stability'];
 		}
 
 		$this->root_path = $root_path;
@@ -484,6 +490,7 @@ class installer
 				'cache-dir' => 'store/composer',
 				'vendor-dir'=> $this->packages_vendor_dir,
 			],
+			'minimum-stability' => $this->minimum_stability,
 		];
 
 		$this->ext_json_file_backup = null;

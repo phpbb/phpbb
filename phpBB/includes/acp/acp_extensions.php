@@ -587,6 +587,8 @@ class acp_extensions
 				if (!$this->config['exts_composer_packagist'] && $this->request->is_set('enable_packagist') && confirm_box(true))
 				{
 					$this->config->set('exts_composer_packagist', true);
+					$composer_manager->reset_cache();
+
 					trigger_error($language->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 
@@ -601,11 +603,24 @@ class acp_extensions
 					$enable_packagist = $this->request->variable('enable_packagist', false);
 					$enable_on_install = $this->request->variable('enable_on_install', false);
 					$purge_on_remove = $this->request->variable('purge_on_remove', false);
+					$minimum_stability = $this->request->variable('minimum_stability', 'stable');
 					$repositories = array_unique(explode("\n", $this->request->variable('repositories', '')));
+
+					$previous_minimum_stability = $this->config['exts_composer_minimum_stability'];
+					$previous_repositories = $this->config['exts_composer_repositories'];
+					$previous_enable_packagist = $this->config['exts_composer_packagist'];
 
 					$this->config->set('exts_composer_enable_on_install', $enable_on_install);
 					$this->config->set('exts_composer_purge_on_remove', $purge_on_remove);
+					$this->config->set('exts_composer_minimum_stability', $minimum_stability);
 					$this->config->set('exts_composer_repositories', json_encode($repositories, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+					if ($minimum_stability != $previous_minimum_stability
+						|| $repositories != $previous_repositories
+						|| $enable_packagist != $previous_enable_packagist)
+					{
+						$composer_manager->reset_cache();
+					}
 
 					if (!$this->config['exts_composer_packagist'] && $enable_packagist)
 					{
@@ -651,6 +666,8 @@ class acp_extensions
 					'enable_packagist' => $this->config['exts_composer_packagist'],
 					'enable_on_install' => $this->config['exts_composer_enable_on_install'],
 					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
+					'minimum_stability' => $this->config['exts_composer_minimum_stability'],
+					'stabilities' => array_keys(\Composer\Package\BasePackage::$stabilities),
 					'repositories' => json_decode($this->config['exts_composer_repositories'], true),
 				]);
 				$this->template->assign_var('enabled', $manager->check_requirements());

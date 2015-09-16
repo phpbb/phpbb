@@ -165,4 +165,14 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated.',
 
 	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'TODO: some required files / directory are not writable => disable ',
+
+	'STABILITY_STABLE'	=> 'stable',
+	'STABILITY_RC'		=> 'RC',
+	'STABILITY_BETA'	=> 'beta',
+	'STABILITY_ALPHA'	=> 'alpha',
+	'STABILITY_DEV'		=> 'dev',
+
+	'COMPOSER_MINIMUM_STABILITY'			=> 'Minimum stability',
+	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'TODO: why it is dangerous to change that',
+
 ));

@@ -79,6 +79,11 @@ interface manager_interface
 	public function get_available_packages();
 
 	/**
+	 * Reset the cache
+	 */
+	public function reset_cache();
+
+	/**
 	 * Start managing a manually installed package
 	 *
 	 * Remove a package installed manually and reinstall it using composer.
