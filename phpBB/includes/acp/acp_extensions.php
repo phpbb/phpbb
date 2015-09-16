@@ -605,7 +605,7 @@ class acp_extensions
 
 					$this->config->set('exts_composer_enable_on_install', $enable_on_install);
 					$this->config->set('exts_composer_purge_on_remove', $purge_on_remove);
-					$this->config->set('exts_composer_repositories', serialize($repositories));
+					$this->config->set('exts_composer_repositories', json_encode($repositories, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 
 					if (!$this->config['exts_composer_packagist'] && $enable_packagist)
 					{
@@ -651,7 +651,7 @@ class acp_extensions
 					'enable_packagist' => $this->config['exts_composer_packagist'],
 					'enable_on_install' => $this->config['exts_composer_enable_on_install'],
 					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
-					'repositories' => unserialize($this->config['exts_composer_repositories']),
+					'repositories' => json_decode($this->config['exts_composer_repositories'], true),
 				]);
 				$this->template->assign_var('enabled', $manager->check_requirements());
 

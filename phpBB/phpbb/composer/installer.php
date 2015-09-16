@@ -77,7 +77,7 @@ class installer
 	{
 		if ($config)
 		{
-			$repositories        = unserialize($config['exts_composer_repositories']);
+			$repositories        = json_decode($config['exts_composer_repositories'], true);
 
 			if (!is_array($repositories) && !empty($repositories))
 			{
@@ -606,7 +606,7 @@ class installer
 	 *
 	 * @param array $repositories An array of composer repositories to use
 	 */
-	public function set_repositories($repositories)
+	public function set_repositories(array $repositories)
 	{
 		$this->repositories = $repositories;
 	}
