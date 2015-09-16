@@ -15,6 +15,36 @@ namespace phpbb\composer\io;
 
 class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 {
+	protected static $availableForegroundColors = [
+		30 => 'black',
+		31 => 'red',
+		32 => 'green',
+		33 => 'yellow',
+		34 => 'blue',
+		35 => 'magenta',
+		36 => 'cyan',
+		37 => 'white'
+	];
+
+	protected static $availableBackgroundColors = [
+		40 => 'black',
+		41 => 'red',
+		42 => 'green',
+		43 => 'yellow',
+		44 => 'blue',
+		45 => 'magenta',
+		46 => 'cyan',
+		47 => 'white'
+	];
+
+	protected static $availableOptions = [
+		1 => 'bold',
+		4 => 'underscore',
+		//5 => 'blink',
+		//7 => 'reverse',
+		//8 => 'conceal'
+	];
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -23,5 +53,29 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 		$formatted = parent::format($message);
 
 		return preg_replace_callback("{[\033\e]\[([0-9;]+)m(.*?)[\033\e]\[[0-9;]+m}s", array($this, 'formatHtml'), $formatted);
+	}
+
+	protected function formatHtml($matches)
+	{
+		$out = '<span style="';
+		foreach (explode(';', $matches[1]) as $code) {
+			if (isset(self::$availableForegroundColors[$code])) {
+				$out .= 'color:'.self::$availableForegroundColors[$code].';';
+			} elseif (isset(self::$availableBackgroundColors[$code])) {
+				$out .= 'background-color:'.self::$availableBackgroundColors[$code].';';
+			} elseif (isset(self::$availableOptions[$code])) {
+				switch (self::$availableOptions[$code]) {
+					case 'bold':
+						$out .= 'font-weight:bold;';
+						break;
+
+					case 'underscore':
+						$out .= 'text-decoration:underline;';
+						break;
+				}
+			}
+		}
+
+		return $out.'">'.$matches[2].'</span>';
 	}
 }

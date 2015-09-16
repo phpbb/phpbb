@@ -97,7 +97,7 @@ class extension_manager extends manager
 	{
 		if ($this->enable_on_install)
 		{
-			$io->writeError(['ENABLING_EXTENSIONS', [], 1], true);
+			$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
 			foreach ($packages as $package)
 			{
 				try
@@ -121,7 +121,7 @@ class extension_manager extends manager
 	 */
 	protected function pre_update(array $packages, IOInterface $io = null)
 	{
-		$io->writeError(['DISABLING_EXTENSIONS', [], 1], true, 1);
+		$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true, 1);
 		$this->enabled_extensions = [];
 		foreach ($packages as $package)
 		{
@@ -149,7 +149,7 @@ class extension_manager extends manager
 	 */
 	protected function post_update(array $packages, IOInterface $io = null)
 	{
-		$io->writeError(['ENABLING_EXTENSIONS', [], 1], true, 1);
+		$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true, 1);
 		foreach ($this->enabled_extensions as $package)
 		{
 			try
@@ -190,7 +190,7 @@ class extension_manager extends manager
 	{
 		if ($this->purge_on_remove)
 		{
-			$io->writeError(['DISABLING_EXTENSIONS', [], 1], true, 1);
+			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true, 1);
 		}
 
 		foreach ($packages as $package)
@@ -239,7 +239,7 @@ class extension_manager extends manager
 		if ($this->extension_manager->is_enabled($package))
 		{
 			$enabled = true;
-			$io->writeError('DISABLING_EXTENSION', true, 1);
+			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true, 1);
 			$this->extension_manager->disable($package);
 		}
 
@@ -274,7 +274,7 @@ class extension_manager extends manager
 		{
 			try
 			{
-				$io->writeError('ENABLING_EXTENSION', true, 1);
+				$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true, 1);
 				$this->extension_manager->enable($package);
 			}
 			catch (\Exception $e)

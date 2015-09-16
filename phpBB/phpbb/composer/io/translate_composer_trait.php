@@ -114,7 +114,7 @@ trait translate_composer_trait
 				$parameters = [];
 			}
 
-			$message = trim($this->strip_format($message), "\n\r");
+			$message = trim($this->strip_format($lang_key), "\n\r");
 
 			if (strpos($message, '  Problem ') === 0)
 			{
