@@ -353,12 +353,12 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .header-avatar span:after {
-	content: '\25BC';
+	content: '\f0dd';
 	display: inline-block;
-	font-size: 9px;
-	float: right;
-	padding-left: 2px;
-	opacity: 0.7;
+	font: normal normal normal 14px/1 FontAwesome;
+	padding-left: 6px;
+	padding-top: 2px;
+	vertical-align: top;
 }
 
 /* Dropdown menu
