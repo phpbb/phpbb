@@ -214,8 +214,6 @@ fieldset.submit-buttons {
 
 fieldset.submit-buttons input {
 	vertical-align: middle;
-	padding-top: 3px;
-	padding-bottom: 3px;
 }
 
 /* Posting page styles
@@ -345,7 +343,7 @@ a.button2, input.button2, input.button3 {
 /* <a> button in the style of the form buttons */
 a.button1, a.button2 {
 	text-decoration: none;
-	padding: 2px 8px;
+	padding: 0 3px;
 	vertical-align: text-bottom;
 }
 
