@@ -98,7 +98,7 @@ class extension_manager extends manager
 		if ($this->enable_on_install)
 		{
 			$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
-			foreach ($packages as $package)
+			foreach ($packages as $package => $version)
 			{
 				try
 				{
@@ -123,7 +123,7 @@ class extension_manager extends manager
 	{
 		$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
 		$this->enabled_extensions = [];
-		foreach ($packages as $package)
+		foreach ($packages as $package => $version)
 		{
 			try
 			{
@@ -193,7 +193,7 @@ class extension_manager extends manager
 			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
 		}
 
-		foreach ($packages as $package)
+		foreach ($packages as $package => $version)
 		{
 			try
 			{
