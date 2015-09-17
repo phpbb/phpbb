@@ -173,8 +173,6 @@ $lang = array_merge($lang, array(
 	'STABILITY_DEV'		=> 'dev',
 
 	'COMPOSER_MINIMUM_STABILITY'			=> 'Minimum stability',
-	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use <samp>stable</samp> versions on a live forum.
-Non-stable versions may still be in development and could cause unexpected problems with your
-forum and should only be used for development purposes in local or staging environments.',
+	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use <samp>stable</samp> versions on a live forum. Non-stable versions may still be in development and could cause unexpected problems with your forum and should only be used for development purposes in local or staging environments.',
 
 ));
