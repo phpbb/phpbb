@@ -51,7 +51,7 @@ class extension_manager extends manager
 	/**
 	 * @var bool Purges extensions data when removing them?
 	 */
-	private $purge_on_remove = false;
+	private $purge_on_remove = true;
 
 	/**
 	 * @param installer			$installer			Installer object
