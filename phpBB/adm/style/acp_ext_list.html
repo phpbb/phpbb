@@ -62,12 +62,6 @@
 					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
 					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
-
-				<!-- IF enabled.META_NAME in MANAGED_EXTENSIONS -->
-					<!-- IF enabled.actions is defined  -->&nbsp;|&nbsp;<!-- ENDIF -->
-					<a href="{U_CATALOG_ACTION}&amp;action=update&amp;extension={enabled.META_NAME}">{L_UPDATE}</a>
-					&nbsp;|&nbsp;<a href="{U_CATALOG_ACTION}&amp;action=remove&amp;extension={enabled.META_NAME}" style="color: #BC2A4D;">{L_REMOVE}</a>
-				<!-- ENDIF -->
 			</td>
 		</tr>
 		<!-- END enabled -->
