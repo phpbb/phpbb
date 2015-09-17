@@ -49,6 +49,10 @@ class manager
 	*/
 	protected $config;
 
+	private $initialized = false;
+	private $hashing_algorithms;
+	private $defaults;
+
 	/**
 	* Construct a passwords object
 	*
@@ -62,9 +66,18 @@ class manager
 	{
 		$this->config = $config;
 		$this->helper = $helper;
+		$this->hashing_algorithms = $hashing_algorithms;
+		$this->defaults = $defaults;
+	}
 
-		$this->fill_type_map($hashing_algorithms);
-		$this->register_default_type($defaults);
+	protected function initialize()
+	{
+		if (!$this->initialized)
+		{
+			$this->initialized = true;
+			$this->fill_type_map($this->hashing_algorithms);
+			$this->register_default_type($this->defaults);
+		}
 	}
 
 	/**
@@ -144,6 +157,8 @@ class manager
 			return false;
 		}
 
+		$this->initialize();
+
 		// Be on the lookout for multiple hashing algorithms
 		// 2 is correct: H\2a > 2, H\P > 2
 		if (strlen($match[1]) > 2)
@@ -191,6 +206,8 @@ class manager
 			// and not let the server try to hash it.
 			return false;
 		}
+
+		$this->initialize();
 
 		// Try to retrieve algorithm by service name if type doesn't
 		// start with dollar sign
@@ -241,6 +258,8 @@ class manager
 		{
 			return false;
 		}
+
+		$this->initialize();
 
 		// First find out what kind of hash we're dealing with
 		$stored_hash_type = $this->detect_algorithm($hash);
@@ -297,6 +316,8 @@ class manager
 	*/
 	public function combined_hash_password($password_hash, $type)
 	{
+		$this->initialize();
+
 		$data = array(
 			'prefix' => '$',
 			'settings' => '$',
