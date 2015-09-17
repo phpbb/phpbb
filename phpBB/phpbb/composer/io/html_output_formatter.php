@@ -19,7 +19,7 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 		30 => 'black',
 		31 => 'red',
 		32 => 'green',
-		33 => 'yellow',
+		33 => 'orange',
 		34 => 'blue',
 		35 => 'magenta',
 		36 => 'cyan',
