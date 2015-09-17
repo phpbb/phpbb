@@ -34,9 +34,21 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
 	}
 
+	public function test_help_faq()
+	{
+		$crawler = self::request('GET', 'app.php/help/faq');
+		$this->assertGreaterThan(0, $crawler->filter('h2.faq-title')->count());
+	}
+
+	public function test_help_bbcode()
+	{
+		$crawler = self::request('GET', 'app.php/help/bbcode');
+		$this->assertGreaterThan(0, $crawler->filter('h2.faq-title')->count());
+	}
+
 	public function test_feed()
 	{
-		$crawler = self::request('GET', 'feed.php', array(), false);
+		$crawler = self::request('GET', 'app.php/feed', array(), false);
 		self::assert_response_xml();
 		$this->assertGreaterThan(0, $crawler->filter('entry')->count());
 	}

@@ -26,9 +26,17 @@ class group_request extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_GROUP_REQUEST',
 	);
+
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
 
 	/**
 	* {@inheritdoc}
@@ -50,7 +58,7 @@ class group_request extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_id($group)
+	static public function get_item_id($group)
 	{
 		return (int) $group['user_id'];
 	}
@@ -58,7 +66,7 @@ class group_request extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_parent_id($group)
+	static public function get_item_parent_id($group)
 	{
 		// Group id is the parent
 		return (int) $group['group_id'];
@@ -96,7 +104,7 @@ class group_request extends \phpbb\notification\type\base
 	*/
 	public function get_avatar()
 	{
-		return $this->user_loader->get_avatar($this->item_id);
+		return $this->user_loader->get_avatar($this->item_id, false, true);
 	}
 
 	/**
@@ -156,6 +164,6 @@ class group_request extends \phpbb\notification\type\base
 	{
 		$this->set_data('group_name', $group['group_name']);
 
-		return parent::create_insert_array($group, $pre_create_data);
+		parent::create_insert_array($group, $pre_create_data);
 	}
 }

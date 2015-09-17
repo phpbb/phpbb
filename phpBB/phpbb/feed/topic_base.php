@@ -1,26 +1,29 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* Abstract class for topic based feeds
-*/
-abstract class topic_base extends \phpbb\feed\attachments_base
+ * Abstract class for topic based feeds
+ */
+abstract class topic_base extends attachments_base
 {
-	var $num_items = 'feed_limit_topic';
+	protected $num_items = 'feed_limit_topic';
 
-	function set_keys()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_keys()
 	{
 		$this->set('title',		'topic_title');
 		$this->set('title2',	'forum_name');
@@ -39,7 +42,10 @@ abstract class topic_base extends \phpbb\feed\attachments_base
 		$this->set('enable_magic_url',	'enable_magic_url');
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		$item_row['link'] = $this->helper->append_sid('viewtopic.' . $this->phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
 

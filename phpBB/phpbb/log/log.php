@@ -249,10 +249,13 @@ class log implements \phpbb\log\log_interface
 				unset($additional_data['forum_id']);
 				$topic_id = isset($additional_data['topic_id']) ? (int) $additional_data['topic_id'] : 0;
 				unset($additional_data['topic_id']);
+				$post_id = isset($additional_data['post_id']) ? (int) $additional_data['post_id'] : 0;
+				unset($additional_data['post_id']);
 				$sql_ary += array(
 					'log_type'		=> LOG_MOD,
 					'forum_id'		=> $forum_id,
 					'topic_id'		=> $topic_id,
+					'post_id'		=> $post_id,
 					'log_data'		=> (!empty($additional_data)) ? serialize($additional_data) : '',
 				);
 			break;
@@ -417,7 +420,7 @@ class log implements \phpbb\log\log_interface
 		$this->entry_count = 0;
 		$this->last_page_offset = $offset;
 
-		$topic_id_list = $reportee_id_list = array();
+		$post_id_list = $topic_id_list = $reportee_id_list = array();
 
 		$profile_url = ($this->get_is_admin() && $this->phpbb_admin_path) ? append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", 'i=users&amp;mode=overview') : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
 
@@ -521,15 +524,77 @@ class log implements \phpbb\log\log_interface
 			$sql_keywords = $this->generate_sql_keyword($keywords);
 		}
 
+		$get_logs_sql_ary = array(
+			'SELECT' => 'l.*, u.username, u.username_clean, u.user_colour',
+			'FROM' => array(
+						$this->log_table => 'l',
+						USERS_TABLE => 'u',
+					),
+			'WHERE' => 'l.log_type = ' . (int) $log_type . "
+					AND l.user_id = u.user_id
+					$sql_keywords
+					$sql_additional",
+
+			'ORDER_BY' => $sort_by,
+		);
+
+		if ($log_time)
+		{
+			$get_logs_sql_ary['WHERE'] = 'l.log_time >= ' . (int) $log_time . '
+					AND ' . $get_logs_sql_ary['WHERE'];
+		}
+
+		/**
+		* Modify the query to obtain the logs data
+		*
+		* @event core.get_logs_main_query_before
+		* @var	array	get_logs_sql_ary	The array in the format of the query builder with the query
+		*									to get the log count and the log list
+		* @var	string	mode				Mode of the entries we display
+		* @var	bool	count_logs			Do we count all matching entries?
+		* @var	int		limit				Limit the number of entries
+		* @var	int		offset				Offset when fetching the entries
+		* @var	mixed	forum_id			Limit entries to the forum_id,
+		*									can also be an array of forum_ids
+		* @var	int		topic_id			Limit entries to the topic_id
+		* @var	int		user_id				Limit entries to the user_id
+		* @var	int		log_time			Limit maximum age of log entries
+		* @var	string	sort_by				SQL order option
+		* @var	string	keywords			Will only return entries that have the
+		*									keywords in log_operation or log_data
+		* @var	string	profile_url			URL to the users profile
+		* @var	int		log_type			Limit logs to a certain type. If log_type
+		*									is false, no entries will be returned.
+		* @var	string	sql_additional		Additional conditions for the entries,
+		*									e.g.: 'AND l.forum_id = 1'
+		* @since 3.1.5-RC1
+		*/
+		$vars = array(
+			'get_logs_sql_ary',
+			'mode',
+			'count_logs',
+			'limit',
+			'offset',
+			'forum_id',
+			'topic_id',
+			'user_id',
+			'log_time',
+			'sort_by',
+			'keywords',
+			'profile_url',
+			'log_type',
+			'sql_additional',
+		);
+		extract($this->dispatcher->trigger_event('core.get_logs_main_query_before', compact($vars)));
+
 		if ($count_logs)
 		{
-			$sql = 'SELECT COUNT(l.log_id) AS total_entries
-				FROM ' . $this->log_table . ' l, ' . USERS_TABLE . ' u
-				WHERE l.log_type = ' . (int) $log_type . '
-					AND l.user_id = u.user_id
-					AND l.log_time >= ' . (int) $log_time . "
-					$sql_keywords
-					$sql_additional";
+			$count_logs_sql_ary = $get_logs_sql_ary;
+
+			$count_logs_sql_ary['SELECT'] = 'COUNT(l.log_id) AS total_entries';
+			unset($count_logs_sql_ary['ORDER_BY']);
+
+			$sql = $this->db->sql_build_query('SELECT', $count_logs_sql_ary);
 			$result = $this->db->sql_query($sql);
 			$this->entry_count = (int) $this->db->sql_fetchfield('total_entries');
 			$this->db->sql_freeresult($result);
@@ -548,14 +613,7 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
-		$sql = 'SELECT l.*, u.username, u.username_clean, u.user_colour
-			FROM ' . $this->log_table . ' l, ' . USERS_TABLE . ' u
-			WHERE l.log_type = ' . (int) $log_type . '
-				AND u.user_id = l.user_id
-				' . (($log_time) ? 'AND l.log_time >= ' . (int) $log_time : '') . "
-				$sql_keywords
-				$sql_additional
-			ORDER BY $sort_by";
+		$sql = $this->db->sql_build_query('SELECT', $get_logs_sql_ary);
 		$result = $this->db->sql_query_limit($sql, $limit, $this->last_page_offset);
 
 		$i = 0;
@@ -588,6 +646,7 @@ class log implements \phpbb\log\log_interface
 				'time'				=> (int) $row['log_time'],
 				'forum_id'			=> (int) $row['forum_id'],
 				'topic_id'			=> (int) $row['topic_id'],
+				'post_id'			=> (int) $row['post_id'],
 
 				'viewforum'			=> ($row['forum_id'] && $this->auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $row['forum_id']) : false,
 				'action'			=> (isset($this->user->lang[$row['log_operation']])) ? $row['log_operation'] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
@@ -688,6 +747,7 @@ class log implements \phpbb\log\log_interface
 			foreach ($log as $key => $row)
 			{
 				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
+				$log[$key]['viewpost'] = (isset($topic_auth['f_read'][$row['topic_id']]) && $row['post_id']) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id'] . '&amp;p=' . $row['post_id']) : false;
 				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $this->user->session_id) : false;
 			}
 		}

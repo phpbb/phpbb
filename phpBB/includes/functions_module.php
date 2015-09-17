@@ -978,7 +978,7 @@ class p_master
 	*
 	* @param string $class module class (acp/mcp/ucp)
 	* @param string $name module name (class name of the module, or its basename
-    *                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
+	*                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
 	* @param string $mode mode, as passed through to the module
 	*
 	*/
@@ -1088,7 +1088,7 @@ class p_master
 			->core_path('language/' . $user->lang_name . '/mods/')
 			->find();
 
-		$lang_files = array_unique(array_merge($user_lang_files, $english_lang_files, $default_lang_files));
+		$lang_files = array_merge($english_lang_files, $default_lang_files, $user_lang_files);
 		foreach ($lang_files as $lang_file => $ext_name)
 		{
 			$user->add_lang_ext($ext_name, $lang_file);

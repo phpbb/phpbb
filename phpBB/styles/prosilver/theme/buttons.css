@@ -1,14 +1,10 @@
 /* Button Styles
 ---------------------------------------- */
 
-/* Rollover buttons
-   Based on: http://wellstyled.com/css-nopreload-rollovers.html
-----------------------------------------*/
 .button {
 	cursor: pointer;
 	display: inline-block;
-	height: 18px;
-	font-size: 13px;
+	font-size: 1.2em;
 	white-space: nowrap;
 	border: 1px solid transparent;
 	border-radius: 4px;
@@ -31,7 +27,6 @@
 	display: inline-block;
 	float: right;
 	height: 12px;
-	margin: 3px 0 0 2px;
 	width: 12px;
 }
 
@@ -58,11 +53,15 @@
 	float: left;
 }
 
+.buttons .button:before {
+	margin: 3px 0 0 2px;
+}
+
 .buttons .button, .dropdown-select {
 	margin-right: 5px;
 }
 
-#jumpbox .dropdown-select {
+.jumpbox .dropdown-select {
 	margin: 0;
 }
 
@@ -197,7 +196,7 @@ ul.linklist.bulletin > li.small-icon:before {
 }
 
 .post-buttons .icon-button {
-	padding: 0 5px;
+	padding: 5px;
 }
 
 .hastouch .post-buttons .icon-button {

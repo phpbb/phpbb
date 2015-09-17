@@ -84,6 +84,7 @@ services:
             - @config
             - @cache
             - @log
+            - @filesystem
             - %core.root_path%
         tags:
             - { name: console.command }
@@ -137,5 +138,49 @@ services:
         arguments:
             - @user
             - @dbal.conn
+        tags:
+            - { name: console.command }
+
+    console.command.reparser.list:
+        class: phpbb\console\command\reparser\list_all
+        arguments:
+            - @user
+            - @text_reparser_collection
+        tags:
+            - { name: console.command }
+
+    console.command.reparser.reparse:
+        class: phpbb\console\command\reparser\reparse
+        arguments:
+            - @user
+            - @text_reparser_collection
+            - @config_text
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.delete:
+        class: phpbb\console\command\thumbnail\delete
+        arguments:
+            - @user
+            - @dbal.conn
+            - %core.root_path%
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.generate:
+        class: phpbb\console\command\thumbnail\generate
+        arguments:
+            - @user
+            - @dbal.conn
+            - @cache
+            - %core.root_path%
+            - %core.php_ext%
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.recreate:
+        class: phpbb\console\command\thumbnail\recreate
+        arguments:
+            - @user
         tags:
             - { name: console.command }

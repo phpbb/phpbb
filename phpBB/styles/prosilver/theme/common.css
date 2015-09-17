@@ -1,49 +1,3 @@
-/* CSS Reset http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126
----------------------------------------- */
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
 /* General Markup Styles
 ---------------------------------------- */
 html {
@@ -53,14 +7,13 @@ html {
 }
 
 body {
-	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	/*font-size: 62.5%;			 This sets the default font size to be equivalent to 10px */
 	font-size: 10px;
 	line-height: normal;
 	margin: 0;
 	padding: 12px 0;
 	word-wrap: break-word;
+	-webkit-print-color-adjust: exact;
 }
 
 h1 {
@@ -113,7 +66,6 @@ img {
 }
 
 hr {
-	/* Also see tweaks.css */
 	border: 0 solid transparent;
 	border-top-width: 1px;
 	height: 1px;
@@ -174,7 +126,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 /* Main blocks
 ---------------------------------------- */
-#wrap {
+.wrap {
 	border: 1px solid transparent;
 	border-radius: 8px;
 	margin: 0 auto;
@@ -184,21 +136,21 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 @media only screen and (max-width: 1220px), only screen and (max-device-width: 1220px) {
-	#wrap {
+	.wrap {
 		margin: 0 12px;
 	}
 }
 
-#page-body {
+.page-body {
 	margin: 4px 0;
 	clear: both;
 }
 
-#page-footer {
+.page-footer {
 	clear: both;
 }
 
-#page-footer h3 {
+.page-footer h3 {
 	margin-top: 20px;
 }
 
@@ -213,19 +165,18 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 /* Site description and logo */
-#site-description {
+.site-description {
 	float: left;
 	width: 65%;
 }
 
-#site-description h1 {
+.site-description h1 {
 	margin-right: 0;
 }
 
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
-	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
 	border-radius: 7px;
@@ -237,7 +188,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 .forabg {
-	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
 	clear: both;
@@ -245,7 +195,6 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 }
 
 .forumbg {
-	background: transparent none repeat-x 0 0;
 	margin-bottom: 4px;
 	padding: 5px;
 	clear: both;
@@ -282,7 +231,7 @@ ul.linklist {
 	margin: 0;
 }
 
-#cp-main .panel {
+.cp-main .panel {
 	padding: 5px 10px;
 }
 
@@ -326,22 +275,22 @@ ul.linklist li.responsive-menu {
 	margin: 0 5px;
 }
 
-ul.linklist li.responsive-menu a.responsive-menu-link {
+ul.linklist .responsive-menu-link {
 	display: inline-block;
 	margin: 0 5px;
-	font-size: 16px;
+	font-size: 1.455em;
 	position: relative;
 	width: 16px;
-	line-height: 20px;
+	line-height: 1.2em;
 	text-decoration: none;
 }
 
-ul.linklist li.responsive-menu a.responsive-menu-link:before {
+ul.linklist .responsive-menu-link:before {
 	content: '';
 	position: absolute;
 	left: 0;
 	top: 7px;
-	height: .125em;
+	height: 2px;
 	width: 14px;
 	border-bottom: 0.125em solid transparent;
 	border-top: 0.375em double transparent;
@@ -535,9 +484,48 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	position: relative;
 	min-width: 40px;
 	max-height: 300px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
+}
+
+.dropdown-contents a {
+	display: block;
+	padding: 5px;
+}
+
+.jumpbox {
+	margin: 5px 0;
+}
+
+.jumpbox .dropdown li {
+	border-top: 1px solid transparent;
+}
+
+.jumpbox .dropdown-select {
+	margin: 0;
+}
+
+.jumpbox .dropdown-contents {
+	padding: 0;
+	text-decoration: none;
+}
+
+.jumpbox .dropdown-contents li {
+	padding: 0;
+}
+
+.jumpbox .dropdown-contents a {
+	margin-right: 20px;
+	padding: 5px 10px;
+	text-decoration: none;
+	width: 100%;
+}
+
+.jumpbox .spacer {
+	display: inline-block;
+	width: 0px;
+}
+
+.jumpbox .spacer + .spacer {
+	width: 20px;
 }
 
 .dropdown li {
@@ -634,10 +622,6 @@ table.table1 {
 	width: 100%;
 }
 
-#ucp-main table.table1 {
-	padding: 2px;
-}
-
 table.table1 thead th {
 	font-weight: normal;
 	text-transform: uppercase;
@@ -671,6 +655,8 @@ table.table1 tbody th {
 
 /* Specific column styles */
 table.table1 .name		{ text-align: left; }
+table.table1 .center		{ text-align: center; }
+table.table1 .reportby	{ width: 15%; }
 table.table1 .posts		{ text-align: center; width: 7%; }
 table.table1 .joined	{ text-align: left; width: 15%; }
 table.table1 .active	{ text-align: left; width: 15%; }
@@ -704,15 +690,14 @@ table.info tbody th {
 	margin: 0 -1px;
 }
 
-#color_palette_placeholder table {
+.color_palette_placeholder table {
 	border-collapse: separate;
 	border-spacing: 1px;
 }
 
 /* Misc layout styles
 ---------------------------------------- */
-/* column[1-2] styles are containers for two column layouts
-   Also see tweaks.css */
+/* column[1-2] styles are containers for two column layouts */
 .column1 {
 	float: left;
 	clear: left;
@@ -800,7 +785,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Action-bars (container for post/reply buttons, pagination, etc.)
 ---------------------------------------- */
 .action-bar {
-	font-size: 11px;
+	font-size: 1.1em;
 	margin: 4px 0;
 }
 
@@ -812,7 +797,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 ---------------------------------------- */
 .pagination {
 	float: right;
-	font-size: 11px;
 	margin-top: 3px;
 	text-align: right;
 	width: auto;
@@ -840,9 +824,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	border: 1px solid transparent;
 	border-radius: 2px;
 	display: block;
-	font-size: 0.9em;
+	font-size: 10px;
 	font-weight: normal;
-	line-height: 13px;
+	line-height: 14px;
 	min-width: 10px;
 	padding: 3px;
 	text-align: center;
@@ -861,7 +845,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
 	background-repeat: no-repeat;
 	font-size: 0;
-	height: 13px;
+	height: 14px;
 	width: 11px;
 }
 
@@ -879,15 +863,15 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
-.pagination li.next a:hover { background-position: -50px -18px; }
-.pagination li.previous a:hover { background-position: -30px -18px; }
+.pagination li.next a:hover { background-position: -48px -16px; }
+.pagination li.previous a:hover { background-position: -29px -16px; }
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
 	margin-top: 0;
 	padding: 1px 0 1px 15px;
-	font-size: 0.9em;
+	font-size: 10px;
 	background: none 0 50% no-repeat;
 }
 
@@ -956,13 +940,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	font-size: 1.1em;
 }
 
-#darkenwrapper {
+.darkenwrapper {
 	display: none;
 	position: relative;
 	z-index: 44;
 }
 
-#darken {
+.darken {
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -972,7 +956,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	z-index: 45;
 }
 
-#loading_indicator {
+.loading_indicator {
 	background: center center no-repeat;
 	border-radius: 5px;
 	display: none;
@@ -989,15 +973,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 /* Miscellaneous styles
 ---------------------------------------- */
-#forum-permissions {
-	float: right;
-	width: auto;
-	padding-left: 5px;
-	margin-left: 5px;
-	margin-top: 10px;
-	text-align: right;
-}
-
 .copyright {
 	padding: 5px;
 	text-align: center;
@@ -1055,15 +1030,12 @@ form > p.post-notice strong {
 	line-height: 20px;
 }
 
-#jumpbox {
-	margin: 5px 0;
-}
-
 .stat-block {
 	clear: both;
 }
 
-#top {
+.top-anchor {
+	display: block;
 	position: absolute;
 	top: -20px;
 }
@@ -1082,8 +1054,8 @@ ul.linklist:after,
 .action-bar:after,
 .notification_text:after,
 .tabs-container:after,
-#tabs > ul:after,
-#minitabs > ul:after,
+.tabs > ul:after,
+.minitabs > ul:after,
 .postprofile .avatar-container:after {
 	clear: both;
 	content: '';
@@ -1157,12 +1129,11 @@ ul.linklist:after,
 .dropdown-extended .header {
 	padding: 0 10px;
 	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 11px;
 	font-weight: bold;
 	text-align: left;
 	text-shadow: 1px 1px 1px white;
 	text-transform: uppercase;
-	line-height: 30px;
+	line-height: 3em;
 	border-bottom: 1px solid;
 	border-radius: 5px 5px 0 0;
 }
@@ -1171,6 +1142,17 @@ ul.linklist:after,
 	float: right;
 	font-weight: normal;
 	text-transform: none;
+}
+
+.dropdown-extended .header .header_settings a {
+	display: inline-block;
+	padding: 0 5px;
+}
+
+.dropdown-extended .header:after {
+	content: '';
+	display: table;
+	clear: both;
 }
 
 .dropdown-extended .footer {
@@ -1214,7 +1196,7 @@ ul.linklist:after,
 }
 
 .notification_list p.notification-time {
-	font-size: 10px;
+	font-size: 0.9em;
 	margin: 0;
 	text-align: right;
 }
@@ -1230,7 +1212,7 @@ ul.linklist:after,
 
 .notification_list p.notifications_title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 13px !important;
+	font-size: 1.2em !important;
 }
 
 .notification_list p.notifications_title strong {
@@ -1238,7 +1220,7 @@ ul.linklist:after,
 }
 
 .notification_list p.notifications_time {
-	font-size: 10px !important;
+	font-size: 0.9em !important;
 }
 
 .notification_text {
@@ -1248,11 +1230,11 @@ ul.linklist:after,
 /* Navbar specific list items
 ----------------------------------------*/
 
-#quick-links {
+.linklist .quick-links {
 	margin: 0 7px 0 0;
 }
 
-#quick-links a.responsive-menu-link {
+.linklist .quick-links .responsive-menu-link {
 	display: block;
 	font-size: inherit;
 	line-height: inherit;
@@ -1260,13 +1242,15 @@ ul.linklist:after,
 	width: auto;
 }
 
-#quick-links a.responsive-menu-link:before {
-	font-size: 16px;
+.linklist .quick-links .responsive-menu-link:before {
+	font-size: 1.455em;
 	line-height: 16.5px;
 }
 
-.compact #quick-links a.responsive-menu-link {
-	font-size: 0;
+.compact .quick-links .responsive-menu-link {
+	width: 0;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .compact .icon-notification > a > span, .compact .icon-pm > a > span {

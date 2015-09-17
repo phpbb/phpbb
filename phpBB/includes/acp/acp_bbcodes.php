@@ -25,7 +25,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
+		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_log;
 
 		$user->add_lang('acp/posting');
@@ -269,6 +269,7 @@ class acp_bbcodes
 
 						$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_ADDED';
 						$log_action = 'LOG_BBCODE_ADD';
@@ -280,6 +281,7 @@ class acp_bbcodes
 							WHERE bbcode_id = ' . $bbcode_id;
 						$db->sql_query($sql);
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 
 						$lang = 'BBCODE_EDITED';
 						$log_action = 'LOG_BBCODE_EDIT';
@@ -319,6 +321,7 @@ class acp_bbcodes
 					{
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						$cache->destroy('sql', BBCODES_TABLE);
+						$phpbb_container->get('text_formatter.cache')->invalidate();
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_BBCODE_DELETE', false, array($row['bbcode_tag']));
 
 						if ($request->is_ajax())
@@ -413,8 +416,6 @@ class acp_bbcodes
 		// Allow unicode characters for URL|LOCAL_URL|RELATIVE_URL|INTTEXT tokens
 		$utf8 = preg_match('/(URL|LOCAL_URL|RELATIVE_URL|INTTEXT)/', $bbcode_match);
 
-		$utf8_pcre_properties = phpbb_pcre_utf8_support();
-
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
 		$fp_replace = preg_replace('#\[/(.*?)\]$#', '[/$1:$uid]', $fp_replace);
@@ -445,7 +446,7 @@ class acp_bbcodes
 				'!([a-zA-Z0-9-+.,_ ]+)!'	 =>	"$1"
 			),
 			'INTTEXT' => array(
-				($utf8_pcre_properties) ? '!([\p{L}\p{N}\-+,_. ]+)!u' : '!([a-zA-Z0-9\-+,_. ]+)!u'	 =>	"$1"
+				'!([\p{L}\p{N}\-+,_. ]+)!u'	 =>	"$1"
 			),
 			'IDENTIFIER' => array(
 				'!([a-zA-Z0-9-_]+)!'	 =>	"$1"
@@ -465,7 +466,7 @@ class acp_bbcodes
 			'EMAIL' => '(' . get_preg_expression('email') . ')',
 			'TEXT' => '(.*?)',
 			'SIMPLETEXT' => '([a-zA-Z0-9-+.,_ ]+)',
-			'INTTEXT' => ($utf8_pcre_properties) ? '([\p{L}\p{N}\-+,_. ]+)' : '([a-zA-Z0-9\-+,_. ]+)',
+			'INTTEXT' => '([\p{L}\p{N}\-+,_. ]+)',
 			'IDENTIFIER' => '([a-zA-Z0-9-_]+)',
 			'COLOR' => '([a-zA-Z]+|#[0-9abcdefABCDEF]+)',
 			'NUMBER' => '([0-9]+)',
@@ -473,7 +474,7 @@ class acp_bbcodes
 
 		$pad = 0;
 		$modifiers = 'i';
-		$modifiers .= ($utf8 && $utf8_pcre_properties) ? 'u' : '';
+		$modifiers .= ($utf8) ? 'u' : '';
 
 		if (preg_match_all('/\{(' . implode('|', array_keys($tokens)) . ')[0-9]*\}/i', $bbcode_match, $m))
 		{
@@ -488,7 +489,9 @@ class acp_bbcodes
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
 				{
 					$repad = $pad + sizeof(array_unique($repad[0]));
-					$replace = preg_replace('/(?<!\\\\)\$([0-9]+)/e', "'\${' . (\$1 + \$pad) . '}'", $replace);
+					$replace = preg_replace_callback('/(?<!\\\\)\$([0-9]+)/', function ($match) use ($pad) {
+						return '${' . ($match[1] + $pad) . '}';
+					}, $replace);
 					$pad = $repad;
 				}
 
@@ -553,10 +556,18 @@ class acp_bbcodes
 			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$fp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_match);
-		$fp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_replace);
-		$sp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_match);
-		$sp_replace = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $sp_replace);
+		$fp_match = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $fp_match);
+		$fp_replace = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $fp_replace);
+		$sp_match = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $sp_match);
+		$sp_replace = preg_replace_callback('#\[/?' . $bbcode_search . '#i', function ($match) {
+			return strtolower($match[0]);
+		}, $sp_replace);
 
 		return array(
 			'bbcode_tag'				=> $bbcode_tag,

@@ -50,10 +50,26 @@ class topic extends \phpbb\notification\type\base
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_TOPIC',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
+
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
 
 	/**
 	* Is available
@@ -68,7 +84,7 @@ class topic extends \phpbb\notification\type\base
 	*
 	* @param array $post The data from the post
 	*/
-	public static function get_item_id($post)
+	static public function get_item_id($post)
 	{
 		return (int) $post['topic_id'];
 	}
@@ -78,7 +94,7 @@ class topic extends \phpbb\notification\type\base
 	*
 	* @param array $post The data from the post
 	*/
-	public static function get_item_parent_id($post)
+	static public function get_item_parent_id($post)
 	{
 		return (int) $post['forum_id'];
 	}
@@ -119,7 +135,7 @@ class topic extends \phpbb\notification\type\base
 	*/
 	public function get_avatar()
 	{
-		return $this->user_loader->get_avatar($this->get_data('poster_id'));
+		return $this->user_loader->get_avatar($this->get_data('poster_id'), false, true);
 	}
 
 	/**
@@ -263,13 +279,7 @@ class topic extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -290,6 +300,6 @@ class topic extends \phpbb\notification\type\base
 			$this->notification_read = true;
 		}
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

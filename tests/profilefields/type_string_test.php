@@ -28,9 +28,12 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 	*/
 	public function setUp()
 	{
-		global $request, $user, $cache;
+		global $request, $user, $cache, $phpbb_root_path, $phpEx;
 
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$cache = new phpbb_mock_cache;
 		$user->expects($this->any())
 			->method('lang')

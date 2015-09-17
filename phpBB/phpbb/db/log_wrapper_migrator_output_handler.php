@@ -38,16 +38,23 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 	protected $file_handle = false;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	 * Constructor
 	 *
 	 * @param user $user	User object
 	 * @param migrator_output_handler_interface $migrator Migrator output handler
 	 * @param string $log_file	File to log to
+	 * @param \phpbb\filesystem\filesystem_interface	phpBB filesystem object
 	 */
-	public function __construct(user $user, migrator_output_handler_interface $migrator, $log_file)
+	public function __construct(user $user, migrator_output_handler_interface $migrator, $log_file, \phpbb\filesystem\filesystem_interface $filesystem)
 	{
 		$this->user = $user;
 		$this->migrator = $migrator;
+		$this->filesystem = $filesystem;
 		$this->file_open($log_file);
 	}
 
@@ -58,7 +65,7 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 	 */
 	protected function file_open($file)
 	{
-		if (phpbb_is_writable(dirname($file)))
+		if ($this->filesystem->is_writable(dirname($file)))
 		{
 			$this->file_handle = fopen($file, 'w');
 		}

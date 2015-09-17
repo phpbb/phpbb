@@ -1,6 +1,7 @@
 <!-- INCLUDE overall_header.html -->
 
 <h2 class="topic-title"><!-- EVENT viewtopic_topic_title_prepend --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- EVENT viewtopic_topic_title_append --></h2>
+<!-- EVENT viewtopic_topic_title_after -->
 <!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
 <!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 
@@ -40,9 +41,10 @@
 	</div>
 
 	<!-- INCLUDE viewtopic_topic_tools.html -->
+	<!-- EVENT viewtopic_dropdown_top_custom -->
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
-		<div class="search-box">
+		<div class="search-box" role="search">
 			<form method="get" id="topic-search" action="{S_SEARCHBOX_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
@@ -64,8 +66,10 @@
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
-
+	<!-- EVENT viewtopic_body_pagination_top_after -->
 </div>
+
+<!-- EVENT viewtopic_body_poll_before -->
 
 <!-- IF S_HAS_POLL -->
 	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" class="topic_poll">
@@ -120,6 +124,8 @@
 	<hr />
 <!-- ENDIF -->
 
+<!-- EVENT viewtopic_body_poll_after -->
+
 <!-- BEGIN postrow -->
 	<!-- EVENT viewtopic_body_postrow_post_before -->
 	<!-- IF postrow.S_FIRST_UNREAD -->
@@ -142,7 +148,9 @@
 				<!-- EVENT viewtopic_body_post_author_after -->
 			</dt>
 
+			<!-- EVENT viewtopic_body_postrow_rank_before -->
 			<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_TITLE}<!-- IF postrow.RANK_TITLE and postrow.RANK_IMG --><br /><!-- ENDIF -->{postrow.RANK_IMG}</dd><!-- ENDIF -->
+			<!-- EVENT viewtopic_body_postrow_rank_after -->
 
 		<!-- IF postrow.POSTER_POSTS != '' --><dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> <!-- IF postrow.U_SEARCH !== '' --><a href="{postrow.U_SEARCH}"><!-- ENDIF -->{postrow.POSTER_POSTS}<!-- IF postrow.U_SEARCH !== '' --></a><!-- ENDIF --></dd><!-- ENDIF -->
 		<!-- IF postrow.POSTER_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
@@ -210,8 +218,10 @@
 
 			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
 
+		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
+		<!-- EVENT viewtopic_body_post_buttons_list_before -->
 		<!-- IF not S_IS_BOT -->
-			<!-- IF postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE -->
+			<!-- IF $SHOW_POST_BUTTONS -->
 				<ul class="post-buttons">
 					<!-- EVENT viewtopic_body_post_buttons_before -->
 					<!-- IF postrow.U_EDIT -->
@@ -248,6 +258,7 @@
 				</ul>
 			<!-- ENDIF -->
 		<!-- ENDIF -->
+		<!-- EVENT viewtopic_body_post_buttons_list_after -->
 
 			<!-- EVENT viewtopic_body_postrow_post_details_before -->
 			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE} </p>
@@ -360,7 +371,7 @@
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 
 	<!-- IF .quickmod -->
-		<div class="dropdown-container dropdown-container-{S_CONTENT_FLOW_BEGIN} dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
+		<div class="dropdown-container dropdown-container-left dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
 			<span title="{L_QUICK_MOD}" class="dropdown-trigger button icon-button modtools-icon dropdown-select">{L_QUICK_MOD}</span>
 			<div class="dropdown hidden">
 				<div class="pointer"><div class="pointer-inner"></div></div>
@@ -373,6 +384,8 @@
 			</div>
 		</div>
 	<!-- ENDIF -->
+	
+	<!-- EVENT viewtopic_dropdown_bottom_custom -->
 
 	<!-- IF .pagination or TOTAL_POSTS -->
 		<div class="pagination">

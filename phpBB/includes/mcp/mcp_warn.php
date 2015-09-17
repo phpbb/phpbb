@@ -589,6 +589,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_WARNING', false, array(
 		'forum_id' => $row['forum_id'],
 		'topic_id' => $row['topic_id'],
+		'post_id'  => $post_id,
 		$user_row['username']
 	));
 }

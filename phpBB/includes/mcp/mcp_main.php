@@ -226,6 +226,31 @@ class mcp_main
 			break;
 
 			default:
+				if ($quickmod)
+				{
+					switch ($action)
+					{
+						case 'lock':
+						case 'unlock':
+						case 'make_announce':
+						case 'make_sticky':
+						case 'make_global':
+						case 'make_normal':
+						case 'make_onindex':
+						case 'move':
+						case 'fork':
+						case 'delete_topic':
+							trigger_error('TOPIC_NOT_EXIST');
+						break;
+
+						case 'lock_post':
+						case 'unlock_post':
+						case 'delete_post':
+							trigger_error('POST_NOT_EXIST');
+						break;
+					}
+				}
+
 				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
@@ -297,6 +322,7 @@ function lock_unlock($action, $ids)
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($action), false, array(
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
+				'post_id'  => isset($row['post_id']) ? $row['post_id'] : 0,
 				$row['topic_title']
 			));
 		}
@@ -337,7 +363,7 @@ function change_topic_type($action, $topic_ids)
 
 		case 'make_global':
 			$new_topic_type = POST_GLOBAL;
-			$check_acl = 'f_announce';
+			$check_acl = 'f_announce_global';
 			$l_new_type = (sizeof($topic_ids) == 1) ? 'MCP_MAKE_GLOBAL' : 'MCP_MAKE_GLOBALS';
 		break;
 
@@ -997,6 +1023,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_SOFTDELETE_POST', false, array(
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
+				'post_id'  => $row['post_id'],
 				$row['post_subject'],
 				$post_username,
 				$soft_delete_reason
@@ -1046,6 +1073,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_POST', false, array(
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
+				'post_id'  => $row['post_id'],
 				$row['post_subject'],
 				$post_username,
 				$soft_delete_reason
@@ -1163,7 +1191,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 function mcp_fork_topic($topic_ids)
 {
 	global $auth, $user, $db, $template, $config;
-	global $phpEx, $phpbb_root_path, $phpbb_log, $request;
+	global $phpEx, $phpbb_root_path, $phpbb_log, $request, $phpbb_dispatcher;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
@@ -1241,7 +1269,7 @@ function mcp_fork_topic($topic_ids)
 				}
 
 				$error = false;
-				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 				$search_mode = 'post';
 
 				if ($error)

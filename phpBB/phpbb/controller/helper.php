@@ -13,9 +13,9 @@
 
 namespace phpbb\controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RequestContext;
 
 /**
 * Controller helper class, contains methods that do things for controllers
@@ -40,12 +40,6 @@ class helper
 	*/
 	protected $config;
 
-	/**
-	 * phpBB router
-	 * @var \phpbb\routing\router
-	 */
-	protected $router;
-
 	/* @var \phpbb\symfony_request */
 	protected $symfony_request;
 
@@ -53,21 +47,9 @@ class helper
 	protected $request;
 
 	/**
-	* @var \phpbb\filesystem The filesystem object
-	*/
-	protected $filesystem;
-
-	/**
-	* phpBB root path
-	* @var string
-	*/
-	protected $phpbb_root_path;
-
-	/**
-	* PHP file extension
-	* @var string
-	*/
-	protected $php_ext;
+	 * @var \phpbb\routing\helper
+	 */
+	protected $routing_helper;
 
 	/**
 	* Constructor
@@ -75,24 +57,18 @@ class helper
 	* @param \phpbb\template\template $template Template object
 	* @param \phpbb\user $user User object
 	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\routing\router $router phpBB router
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\filesystem $filesystem The filesystem object
-	* @param string $phpbb_root_path phpBB root path
-	* @param string $php_ext PHP file extension
+	* @param \phpbb\routing\helper $routing_helper Helper to generate the routes
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\routing\helper $routing_helper)
 	{
 		$this->template = $template;
 		$this->user = $user;
 		$this->config = $config;
-		$this->router = $router;
 		$this->symfony_request = $symfony_request;
 		$this->request = $request;
-		$this->filesystem = $filesystem;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
+		$this->routing_helper = $routing_helper;
 	}
 
 	/**
@@ -102,12 +78,14 @@ class helper
 	* @param string $page_title The title of the page to output
 	* @param int $status_code The status code to be sent to the page header
 	* @param bool $display_online_list Do we display online users list
+	* @param int $item_id Restrict online users to item id
+	* @param string $item Restrict online users to a certain session item, e.g. forum for session_forum_id
 	*
 	* @return Response object containing rendered page
 	*/
-	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false)
+	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum')
 	{
-		page_header($page_title, $display_online_list);
+		page_header($page_title, $display_online_list, $item_id, $item);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,
@@ -130,55 +108,7 @@ class helper
 	*/
 	public function route($route, array $params = array(), $is_amp = true, $session_id = false, $reference_type = UrlGeneratorInterface::ABSOLUTE_PATH)
 	{
-		$anchor = '';
-		if (isset($params['#']))
-		{
-			$anchor = '#' . $params['#'];
-			unset($params['#']);
-		}
-
-		$context = new RequestContext();
-		$context->fromRequest($this->symfony_request);
-
-		$script_name = $this->symfony_request->getScriptName();
-		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
-
-		$base_url = $context->getBaseUrl();
-
-		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
-		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
-
-		// We need to update the base url to move to the directory of the app.php file if the current script is not app.php
-		if ($page_name !== 'app.php')
-		{
-			if (empty($this->config['enable_mod_rewrite']))
-			{
-				$base_url = str_replace('/app.' . $this->php_ext, '/' . $this->phpbb_root_path . 'app.' . $this->php_ext, $base_url);
-			}
-			else
-			{
-				$base_url .= preg_replace(get_preg_expression('path_remove_dot_trailing_slash'), '$2', $this->phpbb_root_path);
-			}
-		}
-
-		$base_url = $this->request->escape($this->filesystem->clean_path($base_url), true);
-
-		$context->setBaseUrl($base_url);
-
-		$this->router->setContext($context);
-		$route_url = $this->router->generate($route, $params, $reference_type);
-
-		if ($is_amp)
-		{
-			$route_url = str_replace(array('&amp;', '&'), array('&', '&amp;'), $route_url);
-		}
-
-		if ($reference_type === UrlGeneratorInterface::RELATIVE_PATH && empty($this->config['enable_mod_rewrite']))
-		{
-			$route_url = 'app.' . $this->php_ext . '/' . $route_url;
-		}
-
-		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);
+		return $this->routing_helper->route($route, $params, $is_amp, $session_id, $reference_type);
 	}
 
 	/**
@@ -209,12 +139,45 @@ class helper
 	public function message($message, array $parameters = array(), $title = 'INFORMATION', $code = 200)
 	{
 		array_unshift($parameters, $message);
+		$message_text = call_user_func_array(array($this->user, 'lang'), $parameters);
+		$message_title = $this->user->lang($title);
+
+		if ($this->request->is_ajax())
+		{
+			global $refresh_data;
+
+			return new JsonResponse(
+				array(
+					'MESSAGE_TITLE'		=> $message_title,
+					'MESSAGE_TEXT'		=> $message_text,
+					'S_USER_WARNING'	=> false,
+					'S_USER_NOTICE'		=> false,
+					'REFRESH_DATA'		=> (!empty($refresh_data)) ? $refresh_data : null
+				),
+				$code
+			);
+		}
+
 		$this->template->assign_vars(array(
-			'MESSAGE_TEXT'	=> call_user_func_array(array($this->user, 'lang'), $parameters),
-			'MESSAGE_TITLE'	=> $this->user->lang($title),
+			'MESSAGE_TEXT'	=> $message_text,
+			'MESSAGE_TITLE'	=> $message_title,
 		));
 
-		return $this->render('message_body.html', $this->user->lang($title), $code);
+		return $this->render('message_body.html', $message_title, $code);
+	}
+
+	/**
+	 * Assigns automatic refresh time meta tag in template
+	 *
+	 * @param	int		$time	time in seconds, when redirection should occur
+	 * @param	string	$url	the URL where the user should be redirected
+	 * @return	null
+	 */
+	public function assign_meta_refresh_var($time, $url)
+	{
+		$this->template->assign_vars(array(
+			'META' => '<meta http-equiv="refresh" content="' . $time . '; url=' . $url . '" />',
+		));
 	}
 
 	/**

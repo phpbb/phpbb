@@ -19,9 +19,19 @@ namespace phpbb\avatar\driver;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
-	* @var \phpbb\mimetype\guesser
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
+	* @var \phpbb\event\dispatcher_interface
 	*/
-	protected $mimetype_guesser;
+	protected $dispatcher;
+
+	/**
+	 * @var \phpbb\files\factory
+	 */
+	protected $files_factory;
 
 	/**
 	* Construct a driver object
@@ -29,27 +39,33 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param \phpbb_path_helper $path_helper phpBB path helper
-	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
+	* @param \phpbb\filesystem\filesystem_interface $filesystem phpBB filesystem helper
+	* @param \phpbb\path_helper $path_helper phpBB path helper
+	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
+	* @param \phpbb\files\factory $files_factory File classes factory
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\path_helper $path_helper, \phpbb\mimetype\guesser $mimetype_guesser, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->filesystem = $filesystem;
 		$this->path_helper = $path_helper;
-		$this->mimetype_guesser = $mimetype_guesser;
+		$this->dispatcher = $dispatcher;
+		$this->files_factory = $files_factory;
 		$this->cache = $cache;
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_data($row, $ignore_config = false)
+	public function get_data($row)
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+
 		return array(
-			'src' => $this->path_helper->get_web_root_path() . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'src' => $root_path . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
@@ -83,19 +99,24 @@ class upload extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		if (!class_exists('fileupload'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
-		}
-
-		$upload = new \fileupload('AVATAR_', $this->allowed_extensions, $this->config['avatar_filesize'], $this->config['avatar_min_width'], $this->config['avatar_min_height'], $this->config['avatar_max_width'], $this->config['avatar_max_height'], (isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
+		/** @var \phpbb\files\upload $upload */
+		$upload = $this->files_factory->get('upload')
+			->set_error_prefix('AVATAR_')
+			->set_allowed_extensions($this->allowed_extensions)
+			->set_max_filesize($this->config['avatar_filesize'])
+			->set_allowed_dimensions(
+				$this->config['avatar_min_width'],
+				$this->config['avatar_min_height'],
+				$this->config['avatar_max_width'],
+				$this->config['avatar_max_height'])
+			->set_disallowed_content((isset($this->config['mime_triggers']) ? explode('|', $this->config['mime_triggers']) : false));
 
 		$url = $request->variable('avatar_upload_url', '');
 		$upload_file = $request->file('avatar_upload_file');
 
 		if (!empty($upload_file['name']))
 		{
-			$file = $upload->form_upload('avatar_upload_file', $this->mimetype_guesser);
+			$file = $upload->handle_upload('files.types.form', 'avatar_upload_file');
 		}
 		else if (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
@@ -125,7 +146,7 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			$file = $upload->remote_upload($url, $this->mimetype_guesser);
+			$file = $upload->handle_upload('files.types.remote', $url);
 		}
 		else
 		{
@@ -135,6 +156,15 @@ class upload extends \phpbb\avatar\driver\driver
 		$prefix = $this->config['avatar_salt'] . '_';
 		$file->clean_filename('avatar', $prefix, $row['id']);
 
+		// If there was an error during upload, then abort operation
+		if (sizeof($file->error))
+		{
+			$file->remove();
+			$error = $file->error;
+			return false;
+		}
+
+		// Calculate new destination
 		$destination = $this->config['avatar_path'];
 
 		// Adjust destination path (no trailing slash)
@@ -149,14 +179,43 @@ class upload extends \phpbb\avatar\driver\driver
 			$destination = '';
 		}
 
-		// Move file and overwrite any existing image
-		$file->move_file($destination, true);
+		/**
+		* Before moving new file in place (and eventually overwriting the existing avatar with the newly uploaded avatar)
+		*
+		* @event core.avatar_driver_upload_move_file_before
+		* @var	string	destination			Destination directory where the file is going to be moved
+		* @var	string	prefix				Prefix for the avatar filename
+		* @var	array	row					Array with avatar row data
+		* @var	array	error				Array of errors, if filled in by this event file will not be moved
+		* @since 3.1.6-RC1
+		*/
+		$vars = array(
+			'destination',
+			'prefix',
+			'row',
+			'error',
+		);
+		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_move_file_before', compact($vars)));
 
-		if (sizeof($file->error))
+		if (!sizeof($error))
+		{
+			// Move file and overwrite any existing image
+			$file->move_file($destination, true);
+		}
+
+		// If there was an error during move, then clean up leftovers
+		$error = array_merge($error, $file->error);
+		if (sizeof($error))
 		{
 			$file->remove();
-			$error = array_merge($error, $file->error);
 			return false;
+		}
+
+		// Delete current avatar if not overwritten
+		$ext = substr(strrchr($row['avatar'], '.'), 1);
+		if ($ext && $ext !== $file->get('extension'))
+		{
+			$this->delete($row);
 		}
 
 		return array(
@@ -183,10 +242,32 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function delete($row)
 	{
-		$ext = substr(strrchr($row['avatar'], '.'), 1);
-		$filename = $this->phpbb_root_path . $this->config['avatar_path'] . '/' . $this->config['avatar_salt'] . '_' . $row['id'] . '.' . $ext;
 
-		if (file_exists($filename))
+		$error = array();
+		$destination = $this->config['avatar_path'];
+		$prefix = $this->config['avatar_salt'] . '_';
+		$ext = substr(strrchr($row['avatar'], '.'), 1);
+		$filename = $this->phpbb_root_path . $destination . '/' . $prefix . $row['id'] . '.' . $ext;
+
+		/**
+		* Before deleting an existing avatar
+		*
+		* @event core.avatar_driver_upload_delete_before
+		* @var	string	destination			Destination directory where the file is going to be deleted
+		* @var	string	prefix				Prefix for the avatar filename
+		* @var	array	row					Array with avatar row data
+		* @var	array	error				Array of errors, if filled in by this event file will not be deleted
+		* @since 3.1.6-RC1
+		*/
+		$vars = array(
+			'destination',
+			'prefix',
+			'row',
+			'error',
+		);
+		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
+
+		if (!sizeof($error) && file_exists($filename))
 		{
 			@unlink($filename);
 		}
@@ -209,6 +290,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	protected function can_upload()
 	{
-		return (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && phpbb_is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
+		return (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && $this->filesystem->is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
 	}
 }

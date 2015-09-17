@@ -35,15 +35,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	// merge_topic is the quickmod action, merge_topics is the mcp_forum action, and merge_select is the mcp_topic action
 	$merge_select = ($action == 'merge_select' || $action == 'merge_topic' || $action == 'merge_topics') ? true : false;
 
-	if ($merge_select)
-	{
-		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
-		$request->overwrite('sk', null);
-		$request->overwrite('sd', null);
-		$request->overwrite('sk', null, \phpbb\request\request_interface::POST);
-		$request->overwrite('sd', null, \phpbb\request\request_interface::POST);
-	}
-
 	$forum_id			= $forum_info['forum_id'];
 	$start				= $request->variable('start', 0);
 	$topic_id_list		= $request->variable('topic_id_list', array(0));
@@ -76,6 +67,30 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			}
 		break;
 	}
+
+	/**
+	* Get some data in order to execute other actions.
+	*
+	* @event core.mcp_forum_view_before
+	* @var	string	action				The action
+	* @var	array	forum_info			Array with forum infos
+	* @var	int		start				Start value
+	* @var	array	topic_id_list		Array of topics ids
+	* @var	array	post_id_list		Array of posts ids
+	* @var	array	source_topic_ids	Array of source topics ids
+	* @var	int		to_topic_id			Array of destination topics ids
+	* @since 3.1.6-RC1
+	*/
+	$vars = array(
+		'action',
+		'forum_info',
+		'start',
+		'topic_id_list',
+		'post_id_list',
+		'source_topic_ids',
+		'to_topic_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.mcp_forum_view_before', compact($vars)));
 
 	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
@@ -131,9 +146,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
 		'S_MERGE_SELECT'		=> ($merge_select) ? true : false,
-		'S_CAN_MAKE_NORMAL'		=> $auth->acl_gets('f_sticky', 'f_announce', $forum_id),
+		'S_CAN_MAKE_NORMAL'		=> $auth->acl_gets('f_sticky', 'f_announce', 'f_announce_global', $forum_id),
 		'S_CAN_MAKE_STICKY'		=> $auth->acl_get('f_sticky', $forum_id),
 		'S_CAN_MAKE_ANNOUNCE'	=> $auth->acl_get('f_announce', $forum_id),
+		'S_CAN_MAKE_ANNOUNCE_GLOBAL'	=> $auth->acl_get('f_announce_global', $forum_id),
 
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id) && $module->loaded('logs')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',

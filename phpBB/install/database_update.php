@@ -80,11 +80,13 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 // Set up container (must be done here because extensions table may not exist)
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container_builder->set_use_extensions(false);
-$phpbb_container_builder->set_use_kernel_pass(false);
-$phpbb_container_builder->set_dump_container(false);
-$phpbb_container = $phpbb_container_builder->get_container();
+$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+$phpbb_container = $phpbb_container_builder
+	->with_config($phpbb_config_php_file)
+	->without_extensions()
+	->without_cache()
+	->get_container()
+;
 
 // set up caching
 /* @var $cache \phpbb\cache\service */
@@ -183,7 +185,10 @@ define('IN_DB_UPDATE', true);
 
 /* @var $migrator \phpbb\db\migrator */
 $migrator = $phpbb_container->get('migrator');
-$migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log'));
+
+/** @var \phpbb\filesystem\filesystem_interface $phpbb_filesystem */
+$phpbb_filesystem = $phpbb_container->get('filesystem');
+$migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($user, new \phpbb\db\html_migrator_output_handler($user), $phpbb_root_path . 'store/migrations_' . time() . '.log', $phpbb_filesystem));
 
 $migrator->create_migrations_table();
 
@@ -200,8 +205,8 @@ $migrator->set_migrations($migrations);
 
 // What is a safe limit of execution time? Half the max execution time should be safe.
 //  No more than 15 seconds so the user isn't sitting and waiting for a very long time
-$phpbb_ini = new \phpbb\php\ini();
-$safe_time_limit = min(15, ($phpbb_ini->get_int('max_execution_time') / 2));
+$phpbb_ini = new \bantu\IniGetWrapper\IniGetWrapper();
+$safe_time_limit = min(15, ($phpbb_ini->getNumeric('max_execution_time') / 2));
 
 // While we're going to try limit this to half the max execution time,
 //  we want to try and take additional measures to prevent hitting the

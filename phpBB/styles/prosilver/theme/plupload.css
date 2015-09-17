@@ -1,9 +1,9 @@
-#attach-panel-multi {
+.attach-panel-multi {
 	display: none;
 	margin-bottom: 1em;
 }
 
-#file-list td {
+.file-list td {
 	vertical-align: middle;
 }
 
@@ -32,11 +32,11 @@
 	float: right;
 }
 
-#attach-row-tpl, .nojs .file-inline-bbcode {
+.nojs .file-inline-bbcode {
 	display: none;
 }
 
-#file-total-progress {
+.file-total-progress {
 	height: 2px;
 	display: block;
 	position: relative;
@@ -50,7 +50,7 @@
 	width: 50px;
 }
 
-.file-progress-bar, #file-total-progress-bar {
+.file-progress-bar, .file-total-progress-bar {
 	background-color: green;
 	display: block;
 	height: 100%;

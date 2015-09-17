@@ -277,7 +277,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user);
+	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 	if ($error)
 	{
@@ -800,7 +800,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		else
 		{
-			$bbcode_bitfield = $text_only_message = '';
+			$text_only_message = '';
 			$attach_list = array();
 
 			while ($row = $db->sql_fetchrow($result))
@@ -820,7 +820,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				if ($return_chars == -1 || utf8_strlen($text_only_message) < ($return_chars + 3))
 				{
 					$row['display_text_only'] = false;
-					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 					// Does this post have an attachment? If so, add it to the list
 					if ($row['post_attachment'] && $config['allow_attachments'])
@@ -839,13 +838,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$db->sql_freeresult($result);
 
 			unset($text_only_message);
-
-			// Instantiate BBCode if needed
-			if ($bbcode_bitfield !== '')
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode(base64_encode($bbcode_bitfield));
-			}
 
 			// Pull attachment data
 			if (sizeof($attach_list))
@@ -1178,14 +1170,25 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* Modify the title and/or load data for the search results page
 	*
 	* @event core.search_results_modify_search_title
-	* @var	int		author_id		ID of the author to search by
-	* @var	string	l_search_title	The title of the search page
-	* @var	string	search_id		Predefined search type name
-	* @var	string	show_results	Search results output mode - topics or posts
-	* @var	int		start			The starting id of the results
+	* @var	int		author_id			ID of the author to search by
+	* @var	string	l_search_title		The title of the search page
+	* @var	string	search_id			Predefined search type name
+	* @var	string	show_results		Search results output mode - topics or posts
+	* @var	int		start				The starting id of the results
+	* @var	int		total_match_count	The count of search results
+	* @var	string	keywords			The search keywords
 	* @since 3.1.0-RC4
+	* @changed 3.1.6-RC1 Added total_match_count and keywords
 	*/
-	$vars = array('author_id', 'l_search_title', 'search_id', 'show_results', 'start');
+	$vars = array(
+		'author_id',
+		'l_search_title',
+		'search_id',
+		'show_results',
+		'start',
+		'total_match_count',
+		'keywords',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.search_results_modify_search_title', compact($vars)));
 
 	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);

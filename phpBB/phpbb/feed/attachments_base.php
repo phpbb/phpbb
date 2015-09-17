@@ -16,7 +16,7 @@ namespace phpbb\feed;
 /**
 * Abstract class for feeds displaying attachments
 */
-abstract class attachments_base extends \phpbb\feed\base
+abstract class attachments_base extends base
 {
 	/**
 	* Attachments that may be displayed

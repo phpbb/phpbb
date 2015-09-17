@@ -92,24 +92,21 @@ class remote extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		// Make sure getimagesize works...
-		if (function_exists('getimagesize'))
+		// Get image dimensions
+		if (($width <= 0 || $height <= 0) && (($image_data = $this->imagesize->getImageSize($url)) === false))
 		{
-			if (($width <= 0 || $height <= 0) && (($image_data = @getimagesize($url)) === false))
-			{
-				$error[] = 'UNABLE_GET_IMAGE_SIZE';
-				return false;
-			}
-
-			if (!empty($image_data) && ($image_data[0] <= 0 || $image_data[1] <= 0))
-			{
-				$error[] = 'AVATAR_NO_SIZE';
-				return false;
-			}
-
-			$width = ($width && $height) ? $width : $image_data[0];
-			$height = ($width && $height) ? $height : $image_data[1];
+			$error[] = 'UNABLE_GET_IMAGE_SIZE';
+			return false;
 		}
+
+		if (!empty($image_data) && ($image_data['width'] <= 0 || $image_data['height'] <= 0))
+		{
+			$error[] = 'AVATAR_NO_SIZE';
+			return false;
+		}
+
+		$width = ($width && $height) ? $width : $image_data['width'];
+		$height = ($width && $height) ? $height : $image_data['height'];
 
 		if ($width <= 0 || $height <= 0)
 		{
@@ -117,13 +114,8 @@ class remote extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		if (!class_exists('fileupload'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_upload.' . $this->php_ext);
-		}
-
-		$types = \fileupload::image_types();
-		$extension = strtolower(\filespec::get_extension($url));
+		$types = \phpbb\files\upload::image_types();
+		$extension = strtolower(\phpbb\files\filespec::get_extension($url));
 
 		// Check if this is actually an image
 		if ($file_stream = @fopen($url, 'r'))
@@ -172,15 +164,15 @@ class remote extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
+		if (!empty($image_data) && (!isset($types[$image_data['type']]) || !in_array($extension, $types[$image_data['type']])))
 		{
-			if (!isset($types[$image_data[2]]))
+			if (!isset($types[$image_data['type']]))
 			{
 				$error[] = 'UNABLE_GET_IMAGE_SIZE';
 			}
 			else
 			{
-				$error[] = array('IMAGE_FILETYPE_MISMATCH', $types[$image_data[2]][0], $extension);
+				$error[] = array('IMAGE_FILETYPE_MISMATCH', $types[$image_data['type']][0], $extension);
 			}
 
 			return false;

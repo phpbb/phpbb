@@ -1,27 +1,30 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* New Topics feed
-*
-* This will give you the last {$this->num_items} created topics
-* including the first post.
-*/
-class topics extends \phpbb\feed\topic_base
+ * New Topics feed
+ *
+ * This will give you the last {$this->num_items} created topics
+ * including the first post.
+ */
+class topics extends topic_base
 {
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		$forum_ids_read = $this->get_readable_forums();
 		if (empty($forum_ids_read))
@@ -77,7 +80,10 @@ class topics extends \phpbb\feed\topic_base
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		parent::adjust_item($item_row, $row);
 

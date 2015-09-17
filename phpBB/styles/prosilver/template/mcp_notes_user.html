@@ -65,9 +65,9 @@
 	<table class="table1">
 	<thead>
 	<tr>
-		<th>{L_REPORT_BY}</th>
-		<th style="text-align: center">{L_IP}</th>
-		<th style="text-align: center">{L_TIME}</th>
+		<th class="name reportby">{L_REPORT_BY}</th>
+		<th class="center">{L_IP}</th>
+		<th class="center">{L_TIME}</th>
 		<th>{L_ACTION_NOTE}</th>
 		<!-- IF S_CLEAR_ALLOWED --><th>{L_MARK}</th><!-- ENDIF -->
 	</tr>
@@ -76,11 +76,11 @@
 	<!-- BEGIN usernotes -->
 	<!-- IF usernotes.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
 		<td>{usernotes.REPORT_BY}</td>
-		<td style="text-align: center">{usernotes.IP}</td>
-		<td style="text-align: center">{usernotes.REPORT_AT}</td>
+		<td class="center">{usernotes.IP}</td>
+		<td class="center">{usernotes.REPORT_AT}</td>
 		<td>{usernotes.ACTION}</td>
 
-		<!-- IF S_CLEAR_ALLOWED --><td style="width: 5%; text-align: center;"><input type="checkbox" name="marknote[]" id="note-{usernotes.ID}" value="{usernotes.ID}" /></td><!-- ENDIF -->
+		<!-- IF S_CLEAR_ALLOWED --><td class="center" style="width: 5%;"><input type="checkbox" name="marknote[]" id="note-{usernotes.ID}" value="{usernotes.ID}" /></td><!-- ENDIF -->
 	</tr>
 	<!-- BEGINELSE -->
 	<tr>

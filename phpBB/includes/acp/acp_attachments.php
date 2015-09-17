@@ -36,13 +36,16 @@ class acp_attachments
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var  \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
 	public $id;
 	public $u_action;
 	protected $new_config;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
+		global $db, $user, $auth, $template, $cache, $phpbb_container, $phpbb_filesystem;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log, $request;
 
 		$this->id = $id;
@@ -51,6 +54,7 @@ class acp_attachments
 		$this->template = $template;
 		$this->user = $user;
 		$this->phpbb_container = $phpbb_container;
+		$this->filesystem = $phpbb_filesystem;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -153,7 +157,7 @@ class acp_attachments
 						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'validate' => 'int:0:999999999999999',	'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'validate' => 'int:0:999999999999999',	'type' => 'number:0:999999999999999', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'validate' => 'path',	'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
+						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'validate' => 'absolute_path',	'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
 						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
@@ -616,10 +620,7 @@ class acp_attachments
 				$cat_lang = array(
 					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-					ATTACHMENT_CATEGORY_WM			=> $user->lang['CAT_WM_FILES'],
-					ATTACHMENT_CATEGORY_RM			=> $user->lang['CAT_RM_FILES'],
 					ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
-					ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 				);
 
 				$group_id = $request->variable('g', 0);
@@ -1367,10 +1368,7 @@ class acp_attachments
 		$types = array(
 			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-			ATTACHMENT_CATEGORY_WM			=> $user->lang['CAT_WM_FILES'],
-			ATTACHMENT_CATEGORY_RM			=> $user->lang['CAT_RM_FILES'],
 			ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
-			ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 		);
 
 		if ($group_id)
@@ -1501,7 +1499,15 @@ class acp_attachments
 			if (!file_exists($phpbb_root_path . $upload_dir))
 			{
 				@mkdir($phpbb_root_path . $upload_dir, 0777);
-				phpbb_chmod($phpbb_root_path . $upload_dir, CHMOD_READ | CHMOD_WRITE);
+
+				try
+				{
+					$this->filesystem->phpbb_chmod($phpbb_root_path . $upload_dir, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -1517,7 +1523,7 @@ class acp_attachments
 			return;
 		}
 
-		if (!phpbb_is_writable($phpbb_root_path . $upload_dir))
+		if (!$this->filesystem->is_writable($phpbb_root_path . $upload_dir))
 		{
 			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;

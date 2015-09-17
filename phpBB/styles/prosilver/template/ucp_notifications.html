@@ -16,7 +16,6 @@
 						<!-- BEGIN notification_methods -->
 							<th class="mark">{notification_methods.NAME}</th>
 						<!-- END notification_methods -->
-						<th class="mark">{L_NOTIFICATIONS}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,7 +33,6 @@
 							<!-- BEGIN notification_methods -->
 								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 							<!-- END notification_methods -->
-							<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 						</tr>
 					<!-- ENDIF -->
 				<!-- END notification_types -->

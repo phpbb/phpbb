@@ -13,9 +13,9 @@
 	<div class="action-bar top">
 		<div class="pagination">
 			{TOTAL_TOPICS}
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
@@ -40,9 +40,11 @@
 				<dt <!-- IF topicrow.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
 					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="icon-link"></a><!-- ENDIF -->
 					<div class="list-inner">
-
+					<!-- EVENT topiclist_row_prepend -->
 					<!-- IF topicrow.S_SELECT_TOPIC --><a href="{topicrow.U_SELECT_TOPIC}" class="topictitle">[ {L_SELECT_MERGE} ]</a>&nbsp;&nbsp; <!-- ENDIF -->
+					<!-- EVENT mcp_forum_topic_title_before -->
 					<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+					<!-- EVENT mcp_forum_topic_title_after -->
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.DELETED_IMG}</a> <!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF -->
@@ -74,7 +76,7 @@
 						<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
 						{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 					</div>
-
+					<!-- EVENT topiclist_row_append -->
 					</div>
 				</dt>
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
@@ -107,9 +109,9 @@
 	<div class="action-bar bottom">
 		<div class="pagination">
 			{TOTAL_TOPICS}
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
@@ -131,10 +133,8 @@
 		<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
 		<!-- IF S_CAN_MAKE_NORMAL --><option value="make_normal">{L_MAKE_NORMAL}</option><!-- ENDIF -->
 		<!-- IF S_CAN_MAKE_STICKY --><option value="make_sticky">{L_MAKE_STICKY}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MAKE_ANNOUNCE -->
-			<option value="make_announce">{L_MAKE_ANNOUNCE}</option>
-			<option value="make_global">{L_MAKE_GLOBAL}</option>
-		<!-- ENDIF -->
+		<!-- IF S_CAN_MAKE_ANNOUNCE --><option value="make_announce">{L_MAKE_ANNOUNCE}</option><!-- ENDIF -->
+		<!-- IF S_CAN_MAKE_ANNOUNCE_GLOBAL --><option value="make_global">{L_MAKE_GLOBAL}</option><!-- ENDIF -->
 	</select>
 	<input class="button2" type="submit" value="{L_SUBMIT}" />
 	<div><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a></div>

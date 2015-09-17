@@ -61,11 +61,9 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
 
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
-
 	// Set up container
-	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-	$phpbb_container = $phpbb_container_builder->get_container();
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -261,6 +259,30 @@ else
 	{
 		$display_cat = ATTACHMENT_CATEGORY_NONE;
 	}
+
+	/**
+	* Event to modify data before sending file to browser
+	*
+	* @event core.download_file_send_to_browser_before
+	* @var	int		attach_id			The attachment ID
+	* @var	array	attachment			Array with attachment data
+	* @var	int		display_cat			Attachment category
+	* @var	int		download_mode		File extension specific download mode
+	* @var	array	extension			Array with file extensions data
+	* @var	string	mode				Download mode
+	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
+	* @since 3.1.6-RC1
+	*/
+	$vars = array(
+		'attach_id',
+		'attachment',
+		'display_cat',
+		'download_mode',
+		'extension',
+		'mode',
+		'thumbnail',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
 
 	if ($thumbnail)
 	{

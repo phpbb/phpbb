@@ -1,0 +1,70 @@
+imports:
+    - { resource: services_installer.yml }
+    - { resource: ../../default/container/services_files.yml }
+    - { resource: ../../default/container/services_http.yml }
+    - { resource: ../../default/container/services_language.yml }
+    - { resource: ../../default/container/services_php.yml }
+    - { resource: ../../default/container/services_routing.yml }
+    - { resource: ../../default/container/services_twig.yml }
+
+services:
+    config:
+        class: phpbb\config\config
+        arguments:
+            - []
+
+    controller.resolver:
+        class: phpbb\controller\resolver
+        arguments:
+            - @service_container
+            - %core.root_path%
+            - @template
+
+    dispatcher:
+        class: phpbb\event\dispatcher
+        arguments:
+            - @service_container
+
+    language.loader:
+        parent: language.loader_abstract
+
+    path_helper:
+        class: phpbb\path_helper
+        arguments:
+            - @symfony_request
+            - @filesystem
+            - @request
+            - %core.root_path%
+            - %core.php_ext%
+
+    router:
+        class: phpbb\routing\router
+        arguments:
+            - @service_container
+            - @filesystem
+            - %core.root_path%
+            - %core.php_ext%
+            - %core.environment%
+
+    template:
+        class: phpbb\template\twig\twig
+        arguments:
+            - @path_helper
+            - @config
+            - @template_context
+            - @template.twig.environment
+            - %core.template.cache_path%
+            - null
+            - @template.twig.extensions.collection
+
+    template.twig.environment:
+        class: phpbb\template\twig\environment
+        arguments:
+            - @config
+            - @filesystem
+            - @path_helper
+            - @service_container
+            - %core.template.cache_path%
+            - null
+            - @template.twig.loader
+            - []

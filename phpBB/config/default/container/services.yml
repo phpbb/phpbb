@@ -8,10 +8,21 @@ imports:
     - { resource: services_db.yml }
     - { resource: services_event.yml }
     - { resource: services_feed.yml }
+    - { resource: services_files.yml }
+    - { resource: services_help.yml }
+    - { resource: services_http.yml }
+    - { resource: services_language.yml }
+    - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
+    - { resource: services_module.yml }
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
+    - { resource: services_php.yml }
     - { resource: services_profilefield.yml }
+    - { resource: services_report.yml }
+    - { resource: services_routing.yml }
+    - { resource: services_text_formatter.yml }
+    - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }
     - { resource: services_user.yml }
 
@@ -73,17 +84,13 @@ services:
             - @template
             - @user
             - @config
-            - @router
             - @symfony_request
             - @request
-            - @filesystem
-            - %core.root_path%
-            - %core.php_ext%
+            - @routing.helper
 
     controller.resolver:
         class: phpbb\controller\resolver
         arguments:
-            - @user
             - @service_container
             - %core.root_path%
             - @template
@@ -95,24 +102,18 @@ services:
             - @dbal.conn
             - @config
             - @filesystem
-            - @user
             - %tables.ext%
             - %core.root_path%
             - %core.php_ext%
             - @cache.driver
 
-    filesystem:
-        class: phpbb\filesystem
-
     file_downloader:
         class: phpbb\file_downloader
 
-    http_kernel:
-        class: Symfony\Component\HttpKernel\HttpKernel
+    group_helper:
+        class: phpbb\group\helper
         arguments:
-            - @dispatcher
-            - @controller.resolver
-            - @request_stack
+            - @language
 
     log:
         class: phpbb\log\log
@@ -136,9 +137,6 @@ services:
             - %core.php_ext%
             - %core.adm_relative_path%
 
-    php_ini:
-        class: phpbb\php\ini
-
     plupload:
         class: phpbb\plupload\plupload
         arguments:
@@ -149,54 +147,8 @@ services:
             - @php_ini
             - @mimetype.guesser
 
-    request:
-        class: phpbb\request\request
-        arguments:
-            - null
-            - %core.disable_super_globals%
-
-    router:
-        class: phpbb\routing\router
-        arguments:
-            - @ext.manager
-            - %core.root_path%
-            - %core.php_ext%
-            - %core.environment%
-
-    router.listener:
-        class: Symfony\Component\HttpKernel\EventListener\RouterListener
-        arguments:
-            - @router
-            - null
-            - null
-            - @request_stack
-        tags:
-            - { name: kernel.event_subscriber }
-
-    # WARNING: The Symfony request does not escape the input and should be used very carefully
-    #           prefer the phpbb request (service @request) as possible
-    symfony_request:
-        class: phpbb\symfony_request
-        arguments:
-            - @request
-
-    request_stack:
-        class: Symfony\Component\HttpFoundation\RequestStack
-
-    template:
-        class: phpbb\template\twig\twig
-        arguments:
-            - @path_helper
-            - @config
-            - @user
-            - @template_context
-            - @template.twig.environment
-            - %core.template.cache_path%
-            - @template.twig.extensions.collection
-            - @ext.manager
-
-    template_context:
-        class: phpbb\template\context
+    upload_imagesize:
+        class: FastImageSize\FastImageSize
 
     version_helper:
         class: phpbb\version_helper

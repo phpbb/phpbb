@@ -27,7 +27,9 @@
 			{MESSAGE_AUTHOR_FULL}
 		</dt>
 
+		<!-- EVENT ucp_pm_viewmessage_rank_before -->
 		<!-- IF RANK_TITLE or RANK_IMG --><dd class="profile-rank">{RANK_TITLE}<!-- IF RANK_TITLE and RANK_IMG --><br /><!-- ENDIF -->{RANK_IMG}</dd><!-- ENDIF -->
+		<!-- EVENT ucp_pm_viewmessage_rank_after -->
 
 		<dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> <!-- IF U_AUTHOR_POSTS != '' --><a href="{U_AUTHOR_POSTS}">{AUTHOR_POSTS}</a><!-- ELSE -->{AUTHOR_POSTS}<!-- ENDIF --></dd>
 		<!-- IF AUTHOR_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
@@ -73,7 +75,9 @@
 	<div class="postbody">
 		<h3 class="first">{SUBJECT}</h3>
 
-		<!-- IF U_DELETE or U_EDIT or U_QUOTE or U_REPORT -->
+		<!-- DEFINE $SHOW_PM_POST_BUTTONS = (U_EDIT or U_DELETE or U_REPORT or U_QUOTE) -->
+		<!-- EVENT ucp_pm_viewmessage_post_buttons_list_before -->
+		<!-- IF $SHOW_PM_POST_BUTTONS -->
 		<ul class="post-buttons">
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_before -->
 			<!-- IF U_EDIT -->
@@ -99,6 +103,7 @@
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_after -->
 		</ul>
 		<!-- ENDIF -->
+		<!-- EVENT ucp_pm_viewmessage_post_buttons_list_after -->
 
 		<p class="author">
 			<strong>{L_SENT_AT}{L_COLON}</strong> {SENT_DATE}

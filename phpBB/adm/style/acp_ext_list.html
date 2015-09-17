@@ -7,7 +7,7 @@
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 
 	<fieldset class="quick">
-		<span class="small"><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
+		<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{L_BROWSE_EXTENSIONS_DATABASE}</a> &bull; <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
 	</fieldset>
 
 	<form id="version_check_settings" method="post" action="{U_ACTION}" style="display:none">
@@ -48,7 +48,7 @@
 		</tr>
 		<!-- BEGIN enabled -->
 		<tr class="ext_enabled">
-			<td><strong>{enabled.META_DISPLAY_NAME}</strong></td>
+			<td><strong title="{enabled.NAME}">{enabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
 				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong>
@@ -73,7 +73,7 @@
 		</tr>
 		<!-- BEGIN disabled -->
 		<tr class="ext_disabled">
-			<td><strong>{disabled.META_DISPLAY_NAME}</strong></td>
+			<td><strong title="{disabled.NAME}">{disabled.META_DISPLAY_NAME}</strong></td>
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
 				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong>
@@ -97,6 +97,12 @@
 	</table>
 
 	<table class="table1">
+	<tr>
+		<th>{L_EXTENSION_INSTALL_HEADLINE}</th>
+	</tr>
+	<tr>
+		<td class="row3">{L_EXTENSION_INSTALL_EXPLAIN}</td>
+	</tr>
 	<tr>
 		<th>{L_EXTENSION_UPDATE_HEADLINE}</th>
 	</tr>
