@@ -5,11 +5,13 @@
 	<p>{{ MESSAGE_TEXT }}</p>
 </div>
 
-<fieldset>
-	{%- if MESSAGE_DETAIL_LEGEND -%}
-		<legend>{{ MESSAGE_DETAIL_LEGEND|nl2br }}</legend>
-	{%- endif -%}
-	<pre>{{ MESSAGE_DETAIL }}</pre>
-</fieldset>
+<div style="overflow-x:scroll">
+	<fieldset>
+		{%- if MESSAGE_DETAIL_LEGEND -%}
+			<legend>{{ MESSAGE_DETAIL_LEGEND|nl2br }}</legend>
+		{%- endif -%}
+		<pre>{{ MESSAGE_DETAIL }}</pre>
+	</fieldset>
+</div>
 
 <!-- INCLUDE overall_footer.html -->
