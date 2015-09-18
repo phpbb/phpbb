@@ -658,19 +658,21 @@ class acp_extensions
 				$this->page_title = 'ACP_EXTENSIONS_CATALOG';
 				$this->tpl_name = 'acp_ext_catalog';
 
-				$this->template->assign_var('extensions', $extensions);
-				$this->template->assign_var('managed_extensions', array_keys($managed_packages));
-				$this->template->assign_var('installed_extensions', array_keys($extensions_manager->all_available()));
-				$this->template->assign_var('U_ACTION', $this->u_action);
-				$this->template->assign_var('settings', [
-					'enable_packagist' => $this->config['exts_composer_packagist'],
-					'enable_on_install' => $this->config['exts_composer_enable_on_install'],
-					'purge_on_remove' => $this->config['exts_composer_purge_on_remove'],
-					'minimum_stability' => $this->config['exts_composer_minimum_stability'],
-					'stabilities' => array_keys(\Composer\Package\BasePackage::$stabilities),
-					'repositories' => json_decode($this->config['exts_composer_repositories'], true),
+				$this->template->assign_vars([
+					'enabled'				=> $manager->check_requirements(),
+					'extensions'			=> $extensions,
+					'managed_extensions'	=> array_keys($managed_packages),
+					'installed_extensions'	=> array_keys($extensions_manager->all_available()),
+					'U_ACTION'				=> $this->u_action,
+					'settings' => [
+						'enable_packagist'	=> $this->config['exts_composer_packagist'],
+						'enable_on_install'	=> $this->config['exts_composer_enable_on_install'],
+						'purge_on_remove'	=> $this->config['exts_composer_purge_on_remove'],
+						'minimum_stability'	=> $this->config['exts_composer_minimum_stability'],
+						'stabilities'		=> array_keys(\Composer\Package\BasePackage::$stabilities),
+						'repositories'		=> json_decode($this->config['exts_composer_repositories'], true),
+					],
 				]);
-				$this->template->assign_var('enabled', $manager->check_requirements());
 
 				add_form_key('catalog_settings');
 
