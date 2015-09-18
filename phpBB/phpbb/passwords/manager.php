@@ -49,18 +49,28 @@ class manager
 	*/
 	protected $config;
 
+	/**
+	 * @var bool Whether or not initialized() has been called
+	 */
 	private $initialized = false;
+
+	/**
+	 * @var array Hashing driver service collection
+	 */
 	private $hashing_algorithms;
+
+	/**
+	 * @var array List of default driver types
+	 */
 	private $defaults;
 
 	/**
 	* Construct a passwords object
 	*
-	* @param \phpbb\config\config $config phpBB configuration
-	* @param array $hashing_algorithms Hashing driver
-	*			service collection
-	* @param \phpbb\passwords\helper $helper Passwords helper object
-	* @param array $defaults List of default driver types
+	* @param \phpbb\config\config		$config				phpBB configuration
+	* @param array						$hashing_algorithms	Hashing driver service collection
+	* @param \phpbb\passwords\helper	$helper				Passwords helper object
+	* @param array						$defaults			List of default driver types
 	*/
 	public function __construct(\phpbb\config\config $config, $hashing_algorithms, helper $helper, $defaults)
 	{
@@ -70,6 +80,9 @@ class manager
 		$this->defaults = $defaults;
 	}
 
+	/**
+	 * Initialize the internal state
+	 */
 	protected function initialize()
 	{
 		if (!$this->initialized)
