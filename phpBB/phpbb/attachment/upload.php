@@ -245,6 +245,21 @@ class upload
 		}
 
 		// Create Thumbnail
+		$filedata = $this->create_thumbnail($file, $filedata);
+
+		return $filedata;
+	}
+
+	/**
+	 * Create thumbnail for file if necessary
+	 *
+	 * @param \phpbb\files\filespec $file
+	 * @param array $filedata File's filedata
+	 *
+	 * @return array Updated $filedata
+	 */
+	protected function create_thumbnail(\phpbb\files\filespec $file, $filedata)
+	{
 		if ($filedata['thumbnail'])
 		{
 			$source = $file->get('destination_file');
