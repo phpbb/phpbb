@@ -56,7 +56,23 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	 */
 	public function test_validate_table_prefix($expected, $test_string)
 	{
-		$this->assertEquals($expected, $this->database_helper->validate_table_prefix('sqlite3', $test_string));
+		$db_helper_mock = $this->getMockBuilder('\phpbb\install\helper\database')
+			->setMethods(array('get_available_dbms'))
+			->disableOriginalConstructor()
+			->getMock();
+
+		$db_helper_mock->method('get_available_dbms')
+			->willReturn(array('sqlite3' => array(
+				'LABEL'			=> 'SQLite3',
+				'SCHEMA'		=> 'sqlite',
+				'MODULE'		=> 'sqlite3',
+				'DELIM'			=> ';',
+				'DRIVER'		=> 'phpbb\db\driver\sqlite3',
+				'AVAILABLE'		=> true,
+				'2.0.x'			=> false,
+			)));
+
+		$this->assertEquals($expected, $db_helper_mock->validate_table_prefix('sqlite3', $test_string));
 	}
 
 	// Data provider for the remove comments function
