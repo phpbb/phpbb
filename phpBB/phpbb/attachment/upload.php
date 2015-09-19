@@ -55,6 +55,12 @@ class upload
 	/** @var user */
 	protected $user;
 
+	/** @var \phpbb\files\filespec Current filespec instance */
+	private $file;
+
+	/** @var array Extensions array */
+	private $extensions;
+
 	/**
 	 * Constructor for attachments upload class
 	 *
@@ -102,14 +108,7 @@ class upload
 			'error'	=> array()
 		);
 
-		if ($this->config['check_attachment_content'] && isset($this->config['mime_triggers']))
-		{
-			$this->files_upload->set_disallowed_content(explode('|', $this->config['mime_triggers']));
-		}
-		else if (!$this->config['check_attachment_content'])
-		{
-			$this->files_upload->set_disallowed_content(array());
-		}
+		$this->init_files_upload($forum_id, $is_message);
 
 		$filedata['post_attach'] = $local || $this->files_upload->is_valid($form_name);
 
@@ -119,80 +118,64 @@ class upload
 			return $filedata;
 		}
 
-		$extensions = $this->cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
-		$this->files_upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
+		$this->file = ($local) ? $this->files_upload->handle_upload('files.types.local', $local_storage, $local_filedata) : $this->files_upload->handle_upload('files.types.form', $form_name);
 
-		/** @var \phpbb\files\filespec $file */
-		$file = ($local) ? $this->files_upload->handle_upload('files.types.local', $local_storage, $local_filedata) : $this->files_upload->handle_upload('files.types.form', $form_name);
-
-		if ($file->init_error())
+		if ($this->file->init_error())
 		{
 			$filedata['post_attach'] = false;
 			return $filedata;
 		}
 
 		// Whether the uploaded file is in the image category
-		$is_image = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE : false;
+		$is_image = (isset($this->extensions[$this->file->get('extension')]['display_cat'])) ? $this->extensions[$this->file->get('extension')]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE : false;
 
 		if (!$this->auth->acl_get('a_') && !$this->auth->acl_get('m_', $forum_id))
 		{
 			// Check Image Size, if it is an image
 			if ($is_image)
 			{
-				$file->upload->set_allowed_dimensions(0, 0, $this->config['img_max_width'], $this->config['img_max_height']);
+				$this->file->upload->set_allowed_dimensions(0, 0, $this->config['img_max_width'], $this->config['img_max_height']);
 			}
 
 			// Admins and mods are allowed to exceed the allowed filesize
-			if (!empty($extensions[$file->get('extension')]['max_filesize']))
+			if (!empty($this->extensions[$this->file->get('extension')]['max_filesize']))
 			{
-				$allowed_filesize = $extensions[$file->get('extension')]['max_filesize'];
+				$allowed_filesize = $this->extensions[$this->file->get('extension')]['max_filesize'];
 			}
 			else
 			{
 				$allowed_filesize = ($is_message) ? $this->config['max_filesize_pm'] : $this->config['max_filesize'];
 			}
 
-			$file->upload->set_max_filesize($allowed_filesize);
+			$this->file->upload->set_max_filesize($allowed_filesize);
 		}
 
-		$file->clean_filename('unique', $this->user->data['user_id'] . '_');
+		$this->file->clean_filename('unique', $this->user->data['user_id'] . '_');
 
 		// Are we uploading an image *and* this image being within the image category?
 		// Only then perform additional image checks.
-		$file->move_file($this->config['upload_path'], false, !$is_image);
+		$this->file->move_file($this->config['upload_path'], false, !$is_image);
 
 		// Do we have to create a thumbnail?
 		$filedata['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;
 
-		if (sizeof($file->error))
+		if (sizeof($this->file->error))
 		{
-			$file->remove();
-			$filedata['error'] = array_merge($filedata['error'], $file->error);
+			$this->file->remove();
+			$filedata['error'] = array_merge($filedata['error'], $this->file->error);
 			$filedata['post_attach'] = false;
 
 			return $filedata;
 		}
 
 		// Make sure the image category only holds valid images...
-		if ($is_image && !$file->is_image())
-		{
-			$file->remove();
+		$this->check_image($is_image);
 
-			if ($this->plupload && $this->plupload->is_active())
-			{
-				$this->plupload->emit_error(104, 'ATTACHED_IMAGE_NOT_IMAGE');
-			}
-
-			// If this error occurs a user tried to exploit an IE Bug by renaming extensions
-			// Since the image category is displaying content inline we need to catch this.
-			trigger_error($this->language->lang('ATTACHED_IMAGE_NOT_IMAGE'));
-		}
-
-		$filedata['filesize'] = $file->get('filesize');
-		$filedata['mimetype'] = $file->get('mimetype');
-		$filedata['extension'] = $file->get('extension');
-		$filedata['physical_filename'] = $file->get('realname');
-		$filedata['real_filename'] = $file->get('uploadname');
+		$filedata['filesize'] = $this->file->get('filesize');
+		$filedata['mimetype'] = $this->file->get('mimetype');
+		$filedata['extension'] = $this->file->get('extension');
+		$filedata['physical_filename'] = $this->file->get('realname');
+		$filedata['real_filename'] = $this->file->get('uploadname');
 		$filedata['filetime'] = time();
 
 		/**
@@ -212,12 +195,12 @@ class upload
 		// Check our complete quota
 		if ($this->config['attachment_quota'])
 		{
-			if (intval($this->config['upload_dir_size']) + $file->get('filesize') > $this->config['attachment_quota'])
+			if (intval($this->config['upload_dir_size']) + $this->file->get('filesize') > $this->config['attachment_quota'])
 			{
 				$filedata['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				$filedata['post_attach'] = false;
 
-				$file->remove();
+				$this->file->remove();
 
 				return $filedata;
 			}
@@ -226,7 +209,7 @@ class upload
 		// Check free disk space
 		if ($free_space = @disk_free_space($this->phpbb_root_path . $this->config['upload_path']))
 		{
-			if ($free_space <= $file->get('filesize'))
+			if ($free_space <= $this->file->get('filesize'))
 			{
 				if ($this->auth->acl_get('a_'))
 				{
@@ -238,14 +221,14 @@ class upload
 				}
 				$filedata['post_attach'] = false;
 
-				$file->remove();
+				$this->file->remove();
 
 				return $filedata;
 			}
 		}
 
 		// Create Thumbnail
-		$filedata = $this->create_thumbnail($file, $filedata);
+		$filedata = $this->create_thumbnail($filedata);
 
 		return $filedata;
 	}
@@ -253,24 +236,67 @@ class upload
 	/**
 	 * Create thumbnail for file if necessary
 	 *
-	 * @param \phpbb\files\filespec $file
 	 * @param array $filedata File's filedata
 	 *
 	 * @return array Updated $filedata
 	 */
-	protected function create_thumbnail(\phpbb\files\filespec $file, $filedata)
+	protected function create_thumbnail($filedata)
 	{
 		if ($filedata['thumbnail'])
 		{
-			$source = $file->get('destination_file');
-			$destination = $file->get('destination_path') . '/thumb_' . $file->get('realname');
+			$source = $this->file->get('destination_file');
+			$destination = $this->file->get('destination_path') . '/thumb_' . $this->file->get('realname');
 
-			if (!create_thumbnail($source, $destination, $file->get('mimetype')))
+			if (!create_thumbnail($source, $destination, $this->file->get('mimetype')))
 			{
 				$filedata['thumbnail'] = 0;
 			}
 		}
 
 		return $filedata;
+	}
+
+	/**
+	 * Init files upload class
+	 *
+	 * @param int $forum_id Forum ID
+	 * @param bool $is_message Whether attachment is inside PM or not
+	 */
+	protected function init_files_upload($forum_id, $is_message)
+	{
+		if ($this->config['check_attachment_content'] && isset($this->config['mime_triggers']))
+		{
+			$this->files_upload->set_disallowed_content(explode('|', $this->config['mime_triggers']));
+		}
+		else if (!$this->config['check_attachment_content'])
+		{
+			$this->files_upload->set_disallowed_content(array());
+		}
+
+		$this->extensions = $this->cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
+		$this->files_upload->set_allowed_extensions(array_keys($this->extensions['_allowed_']));
+	}
+
+	/**
+	 * Check if uploaded file is really an image
+	 *
+	 * @param bool $is_image Whether file is image
+	 */
+	protected function check_image($is_image)
+	{
+		// Make sure the image category only holds valid images...
+		if ($is_image && !$this->file->is_image())
+		{
+			$this->file->remove();
+
+			if ($this->plupload && $this->plupload->is_active())
+			{
+				$this->plupload->emit_error(104, 'ATTACHED_IMAGE_NOT_IMAGE');
+			}
+
+			// If this error occurs a user tried to exploit an IE Bug by renaming extensions
+			// Since the image category is displaying content inline we need to catch this.
+			trigger_error($this->language->lang('ATTACHED_IMAGE_NOT_IMAGE'));
+		}
 	}
 }
