@@ -96,7 +96,7 @@ class upload
 	 *
 	 * @return object filespec
 	 */
-	public function upload($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
+	public function upload($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = array())
 	{
 		$filedata = array(
 			'error'	=> array()
@@ -115,7 +115,7 @@ class upload
 
 		if (!$filedata['post_attach'])
 		{
-			$filedata['error'][] = $this->user->lang['NO_UPLOAD_FORM_FOUND'];
+			$filedata['error'][] = $this->language->lang('NO_UPLOAD_FORM_FOUND');
 			return $filedata;
 		}
 
@@ -185,7 +185,7 @@ class upload
 
 			// If this error occurs a user tried to exploit an IE Bug by renaming extensions
 			// Since the image category is displaying content inline we need to catch this.
-			trigger_error($this->user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
+			trigger_error($this->language->lang('ATTACHED_IMAGE_NOT_IMAGE'));
 		}
 
 		$filedata['filesize'] = $file->get('filesize');
@@ -214,7 +214,7 @@ class upload
 		{
 			if (intval($this->config['upload_dir_size']) + $file->get('filesize') > $this->config['attachment_quota'])
 			{
-				$filedata['error'][] = $this->user->lang['ATTACH_QUOTA_REACHED'];
+				$filedata['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				$filedata['post_attach'] = false;
 
 				$file->remove();
@@ -230,11 +230,11 @@ class upload
 			{
 				if ($this->auth->acl_get('a_'))
 				{
-					$filedata['error'][] = $this->user->lang['ATTACH_DISK_FULL'];
+					$filedata['error'][] = $this->language->lang('ATTACH_DISK_FULL');
 				}
 				else
 				{
-					$filedata['error'][] = $this->user->lang['ATTACH_QUOTA_REACHED'];
+					$filedata['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				}
 				$filedata['post_attach'] = false;
 
