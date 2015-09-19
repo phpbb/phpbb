@@ -391,183 +391,25 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 * Upload Attachment - filedata is generated here
 * Uses upload class
 *
+* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
+*
 * @param string			$form_name		The form name of the file upload input
 * @param int			$forum_id		The id of the forum
 * @param bool			$local			Whether the file is local or not
 * @param string			$local_storage	The path to the local file
 * @param bool			$is_message		Whether it is a PM or not
-* @param \filespec		$local_filedata	A filespec object created for the local file
-* @param \phpbb\mimetype\guesser	$mimetype_guesser	The mimetype guesser object if used
-* @param \phpbb\plupload\plupload	$plupload		The plupload object if one is being used
+* @param array			$local_filedata	A filespec object created for the local file
 *
-* @return object filespec
+* @return \phpbb\files\filespec
 */
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
 {
-	global $auth, $user, $config, $db, $cache;
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container;
+	global $phpbb_container;
 
-	$filedata = array(
-		'error'	=> array()
-	);
+	/** @var \phpbb\attachment\upload $attachment_upload */
+	$attachment_upload = $phpbb_container->get('attachment.upload');
 
-	$upload = $phpbb_container->get('files.upload');
-
-	if ($config['check_attachment_content'] && isset($config['mime_triggers']))
-	{
-		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
-	}
-	else if (!$config['check_attachment_content'])
-	{
-		$upload->set_disallowed_content(array());
-	}
-
-	$filedata['post_attach'] = $local || $upload->is_valid($form_name);
-
-	if (!$filedata['post_attach'])
-	{
-		$filedata['error'][] = $user->lang['NO_UPLOAD_FORM_FOUND'];
-		return $filedata;
-	}
-
-	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
-	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
-
-	/** @var \phpbb\files\filespec $file */
-	$file = ($local) ? $upload->handle_upload('files.types.local', $local_storage, $local_filedata) : $upload->handle_upload('files.types.form', $form_name);
-
-	if ($file->init_error())
-	{
-		$filedata['post_attach'] = false;
-		return $filedata;
-	}
-
-	// Whether the uploaded file is in the image category
-	$is_image = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE : false;
-
-	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
-	{
-		// Check Image Size, if it is an image
-		if ($is_image)
-		{
-			$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
-		}
-
-		// Admins and mods are allowed to exceed the allowed filesize
-		if (!empty($extensions[$file->get('extension')]['max_filesize']))
-		{
-			$allowed_filesize = $extensions[$file->get('extension')]['max_filesize'];
-		}
-		else
-		{
-			$allowed_filesize = ($is_message) ? $config['max_filesize_pm'] : $config['max_filesize'];
-		}
-
-		$file->upload->set_max_filesize($allowed_filesize);
-	}
-
-	$file->clean_filename('unique', $user->data['user_id'] . '_');
-
-	// Are we uploading an image *and* this image being within the image category?
-	// Only then perform additional image checks.
-	$file->move_file($config['upload_path'], false, !$is_image);
-
-	// Do we have to create a thumbnail?
-	$filedata['thumbnail'] = ($is_image && $config['img_create_thumbnail']) ? 1 : 0;
-
-	if (sizeof($file->error))
-	{
-		$file->remove();
-		$filedata['error'] = array_merge($filedata['error'], $file->error);
-		$filedata['post_attach'] = false;
-
-		return $filedata;
-	}
-
-	// Make sure the image category only holds valid images...
-	if ($is_image && !$file->is_image())
-	{
-		$file->remove();
-
-		if ($plupload && $plupload->is_active())
-		{
-			$plupload->emit_error(104, 'ATTACHED_IMAGE_NOT_IMAGE');
-		}
-
-		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
-		// Since the image category is displaying content inline we need to catch this.
-		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
-	}
-
-	$filedata['filesize'] = $file->get('filesize');
-	$filedata['mimetype'] = $file->get('mimetype');
-	$filedata['extension'] = $file->get('extension');
-	$filedata['physical_filename'] = $file->get('realname');
-	$filedata['real_filename'] = $file->get('uploadname');
-	$filedata['filetime'] = time();
-
-	/**
-	* Event to modify uploaded file before submit to the post
-	*
-	* @event core.modify_uploaded_file
-	* @var	array	filedata	Array containing uploaded file data
-	* @var	bool	is_image	Flag indicating if the file is an image
-	* @since 3.1.0-RC3
-	*/
-	$vars = array(
-		'filedata',
-		'is_image',
-	);
-	extract($phpbb_dispatcher->trigger_event('core.modify_uploaded_file', compact($vars)));
-
-	// Check our complete quota
-	if ($config['attachment_quota'])
-	{
-		if ($config['upload_dir_size'] + $file->get('filesize') > $config['attachment_quota'])
-		{
-			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			$filedata['post_attach'] = false;
-
-			$file->remove();
-
-			return $filedata;
-		}
-	}
-
-	// Check free disk space
-	if ($free_space = @disk_free_space($phpbb_root_path . $config['upload_path']))
-	{
-		if ($free_space <= $file->get('filesize'))
-		{
-			if ($auth->acl_get('a_'))
-			{
-				$filedata['error'][] = $user->lang['ATTACH_DISK_FULL'];
-			}
-			else
-			{
-				$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
-			}
-			$filedata['post_attach'] = false;
-
-			$file->remove();
-
-			return $filedata;
-		}
-	}
-
-	// Create Thumbnail
-	if ($filedata['thumbnail'])
-	{
-		$source = $file->get('destination_file');
-		$destination = $file->get('destination_path') . '/thumb_' . $file->get('realname');
-
-		if (!create_thumbnail($source, $destination, $file->get('mimetype')))
-		{
-			$filedata['thumbnail'] = 0;
-		}
-	}
-
-	return $filedata;
+	return $attachment_upload->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
 }
 
 /**

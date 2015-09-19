@@ -1,4 +1,19 @@
 services:
+    attachment.upload:
+        class: phpbb\attachment\upload
+        scope: prototype
+        arguments:
+            - @auth
+            - @cache
+            - @config
+            - @files.upload
+            - @language
+            - @mimetype.guesser
+            - @dispatcher
+            - @plupload
+            - @user
+            - %core.root_path%
+
     filesystem:
         class: phpbb\filesystem\filesystem
 
