@@ -58,6 +58,11 @@ class upload
 	/** @var \phpbb\files\filespec Current filespec instance */
 	private $file;
 
+	/** @var array File data */
+	private $file_data = array(
+		'error'	=> array()
+	);
+
 	/** @var array Extensions array */
 	private $extensions;
 
@@ -104,26 +109,22 @@ class upload
 	 */
 	public function upload($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = array())
 	{
-		$filedata = array(
-			'error'	=> array()
-		);
-
 		$this->init_files_upload($forum_id, $is_message);
 
-		$filedata['post_attach'] = $local || $this->files_upload->is_valid($form_name);
+		$this->file_data['post_attach'] = $local || $this->files_upload->is_valid($form_name);
 
-		if (!$filedata['post_attach'])
+		if (!$this->file_data['post_attach'])
 		{
-			$filedata['error'][] = $this->language->lang('NO_UPLOAD_FORM_FOUND');
-			return $filedata;
+			$this->file_data['error'][] = $this->language->lang('NO_UPLOAD_FORM_FOUND');
+			return $this->file_data;
 		}
 
 		$this->file = ($local) ? $this->files_upload->handle_upload('files.types.local', $local_storage, $local_filedata) : $this->files_upload->handle_upload('files.types.form', $form_name);
 
 		if ($this->file->init_error())
 		{
-			$filedata['post_attach'] = false;
-			return $filedata;
+			$this->file_data['post_attach'] = false;
+			return $this->file_data;
 		}
 
 		// Whether the uploaded file is in the image category
@@ -157,26 +158,23 @@ class upload
 		$this->file->move_file($this->config['upload_path'], false, !$is_image);
 
 		// Do we have to create a thumbnail?
-		$filedata['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;
+		$this->file_data['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;
 
 		if (sizeof($this->file->error))
 		{
 			$this->file->remove();
-			$filedata['error'] = array_merge($filedata['error'], $this->file->error);
-			$filedata['post_attach'] = false;
+			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
+			$this->file_data['post_attach'] = false;
 
-			return $filedata;
+			return $this->file_data;
 		}
 
 		// Make sure the image category only holds valid images...
 		$this->check_image($is_image);
 
-		$filedata['filesize'] = $this->file->get('filesize');
-		$filedata['mimetype'] = $this->file->get('mimetype');
-		$filedata['extension'] = $this->file->get('extension');
-		$filedata['physical_filename'] = $this->file->get('realname');
-		$filedata['real_filename'] = $this->file->get('uploadname');
-		$filedata['filetime'] = time();
+		$this->fill_file_data();
+
+		$filedata = $this->file_data;
 
 		/**
 		 * Event to modify uploaded file before submit to the post
@@ -191,69 +189,38 @@ class upload
 			'is_image',
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.modify_uploaded_file', compact($vars)));
+		$this->file_data = $filedata;
+		unset($filedata);
 
-		// Check our complete quota
-		if ($this->config['attachment_quota'])
+		// Check for attachment quota and free space
+		if (!$this->check_attach_quota() || !$this->check_disk_space())
 		{
-			if (intval($this->config['upload_dir_size']) + $this->file->get('filesize') > $this->config['attachment_quota'])
-			{
-				$filedata['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
-				$filedata['post_attach'] = false;
-
-				$this->file->remove();
-
-				return $filedata;
-			}
-		}
-
-		// Check free disk space
-		if ($free_space = @disk_free_space($this->phpbb_root_path . $this->config['upload_path']))
-		{
-			if ($free_space <= $this->file->get('filesize'))
-			{
-				if ($this->auth->acl_get('a_'))
-				{
-					$filedata['error'][] = $this->language->lang('ATTACH_DISK_FULL');
-				}
-				else
-				{
-					$filedata['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
-				}
-				$filedata['post_attach'] = false;
-
-				$this->file->remove();
-
-				return $filedata;
-			}
+			return $this->file_data;
 		}
 
 		// Create Thumbnail
-		$filedata = $this->create_thumbnail($filedata);
+		$this->create_thumbnail();
 
-		return $filedata;
+		return $this->file_data;
 	}
 
 	/**
 	 * Create thumbnail for file if necessary
 	 *
-	 * @param array $filedata File's filedata
-	 *
 	 * @return array Updated $filedata
 	 */
-	protected function create_thumbnail($filedata)
+	protected function create_thumbnail()
 	{
-		if ($filedata['thumbnail'])
+		if ($this->file_data['thumbnail'])
 		{
 			$source = $this->file->get('destination_file');
 			$destination = $this->file->get('destination_path') . '/thumb_' . $this->file->get('realname');
 
 			if (!create_thumbnail($source, $destination, $this->file->get('mimetype')))
 			{
-				$filedata['thumbnail'] = 0;
+				$this->file_data['thumbnail'] = 0;
 			}
 		}
-
-		return $filedata;
 	}
 
 	/**
@@ -298,5 +265,71 @@ class upload
 			// Since the image category is displaying content inline we need to catch this.
 			trigger_error($this->language->lang('ATTACHED_IMAGE_NOT_IMAGE'));
 		}
+	}
+
+	/**
+	 * Check if attachment quota was reached
+	 *
+	 * @return bool False if attachment quota was reached, true if not
+	 */
+	protected function check_attach_quota()
+	{
+		if ($this->config['attachment_quota'])
+		{
+			if (intval($this->config['upload_dir_size']) + $this->file->get('filesize') > $this->config['attachment_quota'])
+			{
+				$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
+				$this->file_data['post_attach'] = false;
+
+				$this->file->remove();
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if there is enough free space available on disk
+	 *
+	 * @return bool True if disk space is available, false if not
+	 */
+	protected function check_disk_space()
+	{
+		if ($free_space = @disk_free_space($this->phpbb_root_path . $this->config['upload_path']))
+		{
+			if ($free_space <= $this->file->get('filesize'))
+			{
+				if ($this->auth->acl_get('a_'))
+				{
+					$this->file_data['error'][] = $this->language->lang('ATTACH_DISK_FULL');
+				}
+				else
+				{
+					$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
+				}
+				$this->file_data['post_attach'] = false;
+
+				$this->file->remove();
+
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Fills file data with file information and current time as filetime
+	 */
+	protected function fill_file_data()
+	{
+		$this->file_data['filesize'] = $this->file->get('filesize');
+		$this->file_data['mimetype'] = $this->file->get('mimetype');
+		$this->file_data['extension'] = $this->file->get('extension');
+		$this->file_data['physical_filename'] = $this->file->get('realname');
+		$this->file_data['real_filename'] = $this->file->get('uploadname');
+		$this->file_data['filetime'] = time();
 	}
 }
