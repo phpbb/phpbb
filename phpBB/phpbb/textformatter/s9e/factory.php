@@ -94,7 +94,7 @@ class factory implements \phpbb\textformatter\cache_interface
 			]{TEXT2}[/QUOTE]",
 		'size'  => '[SIZE={FONTSIZE}]{TEXT}[/SIZE]',
 		'u'     => '[U]{TEXT}[/U]',
-		'url'   => '[URL={URL;useContent}]{TEXT}[/URL]',
+		'url'   => '[URL={URL;useContent;postFilter=phpbb\\textformatter\\s9e\\parser::filter_url}]{TEXT}[/URL]',
 	);
 
 	/**
@@ -260,6 +260,9 @@ class factory implements \phpbb\textformatter\cache_interface
 			->addParameterByName('max_img_height')
 			->addParameterByName('max_img_width')
 			->markAsSafeAsURL();
+
+		// Allow phpbb\textformatter\s9e\parser::filter_url() to be used in attribute filters
+		$configurator->BBCodes->bbcodeMonkey->allowedFilters[] = 'phpbb\\textformatter\\s9e\\parser::filter_url';
 
 		// Add default BBCodes
 		foreach ($this->get_default_bbcodes($configurator) as $bbcode)
