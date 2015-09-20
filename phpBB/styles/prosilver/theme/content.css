@@ -130,39 +130,12 @@ li.header dl.row-item dt .list-inner {
 	padding-right: 50px;
 }
 
-/* Forum list column styles */
-dl.row-item {
-	background-position: 10px 50%;		/* Position of folder icon */
-	background-repeat: no-repeat;
-}
-
-dl.row-item dt {
-	background-repeat: no-repeat;
-	background-position: 5px 95%;		/* Position of topic icon */
-}
-
-dl.row-item dt .list-inner {
-	padding-left: 45px;					/* Space for folder icon */
+dl.row-item dt .list-inner a {
+	display: inline;
 }
 
 dl.row-item dt, dl.row-item dd {
 	min-height: 35px;
-}
-
-dl.row-item dt a {
-	display: inline;
-}
-
-dl a.row-item-link {						/* topic row icon links */
-	display: block;
-	width: 30px;
-	height: 30px;
-	padding: 0;
-	position: absolute;
-	top: 50%;
-	left: 0;
-	margin-top: -15px;
-	margin-left: 9px;
 }
 
 dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
@@ -186,6 +159,25 @@ dl.row-item dt ul {
 dl.row-item dt li {
 	display: list-item;
 	list-style-type: inherit;
+}
+
+.imageset {
+    display: inline-block;
+    background-repeat: no-repeat;
+    width: 27px;
+    height: 27px;
+    position: relative;
+    margin: 4px 10px 0;
+    float: left;
+}
+
+.topic-img {
+	display: inline-block;
+	background-repeat: no-repeat;
+	width: 16px;
+	height: 16px;
+	margin-left: -7px;
+	margin-top: 11px;
 }
 
 dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
