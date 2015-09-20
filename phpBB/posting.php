@@ -571,7 +571,6 @@ $plupload = $phpbb_container->get('plupload');
 /* @var $mimetype_guesser \phpbb\mimetype\guesser */
 $mimetype_guesser = $phpbb_container->get('mimetype.guesser');
 $message_parser->set_plupload($plupload);
-$message_parser->set_mimetype_guesser($mimetype_guesser);
 
 if (isset($post_data['post_text']))
 {

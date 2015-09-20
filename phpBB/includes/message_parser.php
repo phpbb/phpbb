@@ -1141,12 +1141,6 @@ class parse_message extends bbcode_firstpass
 	protected $plupload;
 
 	/**
-	* The mimetype guesser object used for attachment mimetypes
-	* @var \phpbb\mimetype\guesser
-	*/
-	protected $mimetype_guesser;
-
-	/**
 	* Init - give message here or manually
 	*/
 	function parse_message($message = '')
@@ -1541,6 +1535,7 @@ class parse_message extends bbcode_firstpass
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
 		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
+		global $phpbb_container;
 
 		$error = array();
 
@@ -1576,7 +1571,9 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($num_attachments < $cfg['max_attachments'] || $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id))
 			{
-				$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
+				/** @var \phpbb\attachment\upload $attachment_upload */
+				$attachment_upload = $phpbb_container->get('attachment.upload');
+				$filedata = $attachment_upload->upload($form_name, $forum_id, false, '', $is_message);
 				$error = $filedata['error'];
 
 				if ($filedata['post_attach'] && !sizeof($error))
@@ -1692,7 +1689,9 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message, false, $this->mimetype_guesser, $this->plupload);
+					/** @var \phpbb\attachment\upload $attachment_upload */
+					$attachment_upload = $phpbb_container->get('attachment.upload');
+					$filedata = $attachment_upload->upload($form_name, $forum_id, false, '', $is_message);;
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
@@ -1978,18 +1977,6 @@ class parse_message extends bbcode_firstpass
 	public function set_plupload(\phpbb\plupload\plupload $plupload)
 	{
 		$this->plupload = $plupload;
-	}
-
-	/**
-	* Setter function for passing the mimetype_guesser object
-	*
-	* @param \phpbb\mimetype\guesser $mimetype_guesser The mimetype_guesser object
-	*
-	* @return null
-	*/
-	public function set_mimetype_guesser(\phpbb\mimetype\guesser $mimetype_guesser)
-	{
-		$this->mimetype_guesser = $mimetype_guesser;
 	}
 
 	/**
