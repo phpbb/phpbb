@@ -23,7 +23,7 @@
 	<!-- ELSE -->
 		<h2 class="solo">{PAGE_TITLE}<!-- IF SEARCH_WORDS -->{L_COLON} <a href="{U_SEARCH_WORDS}">{SEARCH_WORDS}</a><!-- ENDIF --></h2>
 
-		<div class="action-bar top">
+		<div class="action-bar bar-top">
 			<div class="member-search panel">
 				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}" id="member_search" data-alt-text="{L_HIDE_MEMBER_SEARCH}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}" id="member_search" data-alt-text="{L_FIND_USERNAME}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
 				<strong>
@@ -141,7 +141,7 @@
 
 </form>
 
-<div class="action-bar bottom">
+<div class="action-bar bar-bottom">
 	<div class="pagination">
 		{TOTAL_USERS}
 		<!-- IF .pagination --> 

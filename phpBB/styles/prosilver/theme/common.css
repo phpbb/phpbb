@@ -123,6 +123,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	list-style-type: square;
 }
 
+a:hover	{ text-decoration: underline; }
 
 /* Main blocks
 ---------------------------------------- */
@@ -162,6 +163,12 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 
 .logo:hover {
 	text-decoration: none;
+}
+
+.site_logo {
+	display: inline-block;
+	width: 149px;
+	height: 52px;
 }
 
 /* Site description and logo */
@@ -224,6 +231,11 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 ----------------------------------------*/
 .navbar ul.linklist {
 	padding: 2px 0;
+	list-style-type: none;
+}
+
+.navbar .linklist > li {
+	display: inline-block;
 }
 
 ul.linklist {
@@ -273,27 +285,6 @@ ul.rightside {
 ul.linklist li.responsive-menu {
 	position: relative;
 	margin: 0 5px;
-}
-
-ul.linklist .responsive-menu-link {
-	display: inline-block;
-	margin: 0 5px;
-	font-size: 1.455em;
-	position: relative;
-	width: 16px;
-	line-height: 1.2em;
-	text-decoration: none;
-}
-
-ul.linklist .responsive-menu-link:before {
-	content: '';
-	position: absolute;
-	left: 0;
-	top: 7px;
-	height: 2px;
-	width: 14px;
-	border-bottom: 0.125em solid transparent;
-	border-top: 0.375em double transparent;
 }
 
 .hasjs ul.linklist.leftside, .hasjs ul.linklist.rightside {
@@ -362,12 +353,12 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .header-avatar span:after {
-	content: '\25BC';
+	content: '\f0dd';
 	display: inline-block;
-	font-size: 9px;
-	float: right;
-	padding-left: 2px;
-	opacity: 0.7;
+	font: normal normal normal 14px/1 FontAwesome;
+	padding-left: 6px;
+	padding-top: 2px;
+	vertical-align: top;
 }
 
 /* Dropdown menu
@@ -389,6 +380,7 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .dropdown {
+	display: none;
 	position: absolute;
 	left: 0;
 	top: 1.2em;
@@ -482,7 +474,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	border-radius: 5px;
 	padding: 5px;
 	position: relative;
-	min-width: 40px;
 	max-height: 300px;
 }
 
@@ -528,15 +519,27 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	width: 20px;
 }
 
+.dropdown-contents a {
+	display: block;
+	padding: 5px;
+}
+
+.jumpbox .dropdown-select {
+	margin: 0;
+}
+
+.jumpbox .dropdown-contents a {
+	text-decoration: none;
+}
+
 .dropdown li {
+	display: list-item;
 	border-top: 1px dotted transparent;
 	float: none !important;
 	line-height: normal !important;
 	font-size: 1em !important;
 	list-style: none;
 	margin: 0;
-	padding-top: 4px;
-	padding-bottom: 4px;
 	white-space: nowrap;
 	text-align: left;
 }
@@ -572,7 +575,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 
 .dropdown li.separator {
 	border-top: 1px solid transparent;
-	margin: 4px 0;
 	padding: 0;
 }
 
@@ -599,7 +601,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 }
 
 .breadcrumbs .crumb a {
-	display: inline-block;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	vertical-align: bottom;
@@ -620,6 +621,10 @@ ul.linklist.bulletin > li.no-bulletin:before {
 ----------------------------------------*/
 table.table1 {
 	width: 100%;
+}
+
+.ucp-main table.table1 {
+	padding: 2px;
 }
 
 table.table1 thead th {
@@ -785,12 +790,17 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Action-bars (container for post/reply buttons, pagination, etc.)
 ---------------------------------------- */
 .action-bar {
-	font-size: 1.1em;
+	font-size: 11px;
 	margin: 4px 0;
 }
 
 .forabg + .action-bar {
 	margin-top: 2em;
+}
+
+.action-bar .button {
+	margin-right: 5px;
+	float: left;
 }
 
 /* Pagination
@@ -802,8 +812,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	width: auto;
 }
 
-.action-bar.bottom .pagination {
+.action-bar.bar-bottom .pagination {
 	margin-top: 0;
+}
+
+.action-bar .pagination .button {
+	margin-right: 0;
+	float: none;
 }
 
 .pagination > ul {
@@ -821,16 +836,20 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li a, .pagination li span {
-	border: 1px solid transparent;
 	border-radius: 2px;
-	display: block;
-	font-size: 10px;
+	padding: 2px 5px;
+}
+
+.pagination li.active span {
+	display: inline-block;
+	font-size: 13px;
 	font-weight: normal;
-	line-height: 14px;
-	min-width: 10px;
-	padding: 3px;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	line-height: 1.4;
 	text-align: center;
-	text-decoration: none;
+	white-space: nowrap;
+	vertical-align: middle;
+	border: 1px solid transparent;
 }
 
 .pagination li.ellipsis span {
@@ -842,37 +861,22 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin-right: 5px;
 }
 
-.pagination li.page-jump a, .pagination li.next a, .pagination li.previous a {
-	background-repeat: no-repeat;
-	font-size: 0;
-	height: 14px;
-	width: 11px;
-}
-
 .pagination li.page-jump a {
-	background-position: 0 2px;
-	width: 24px;
+	padding: 0 8px;
 }
 
-.pagination li.next a {
-	background-position: -50px 2px;
+.pagination li.page-jump a i {
+	font-size: 21px;
 }
 
-.pagination li.previous a {
-	background-position: -30px 2px;
+.pagination .arrow a {
+	padding: 2px 0;
 }
-
-.pagination li.page-jump a:hover, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger { background-position: 0 -18px; }
-.pagination li.next a:hover { background-position: -48px -16px; }
-.pagination li.previous a:hover { background-position: -29px -16px; }
 
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
 	margin-top: 0;
-	padding: 1px 0 1px 15px;
-	font-size: 10px;
-	background: none 0 50% no-repeat;
 }
 
 .row .pagination > ul {
@@ -880,8 +884,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .row .pagination li a, .row .pagination li span {
-	border-radius: 1px;
-	padding: 1px;
+	border-radius: 2px;
+    padding: 1px 3px;
+    font-size: 9px;
 }
 
 /* jQuery popups
@@ -907,18 +912,9 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .phpbb_alert .alert_close {
-	display: block;
 	float: right;
-	width: 16px;
-	height: 16px;
-	overflow: hidden;
-	text-decoration: none !important;
-	background: transparent none 0 0 no-repeat;
-	margin-top: -7px;
-	margin-right: -31px;
-}
-.phpbb_alert .alert_close:hover {
-	background-position: 0 -16px;
+	margin-right: -36px;
+	margin-top: -8px;
 }
 
 .phpbb_alert p {
@@ -1060,10 +1056,6 @@ ul.linklist:after,
 	clear: both;
 	content: '';
 	display: block;
-}
-
-.hidden {
-	display: none;
 }
 
 .smilies {
@@ -1234,30 +1226,11 @@ ul.linklist:after,
 	margin: 0 7px 0 0;
 }
 
-.linklist .quick-links .responsive-menu-link {
-	display: block;
-	font-size: inherit;
-	line-height: inherit;
-	margin: 0;
-	width: auto;
-}
-
-.linklist .quick-links .responsive-menu-link:before {
-	font-size: 1.455em;
-	line-height: 16.5px;
-}
-
-.compact .quick-links .responsive-menu-link {
-	width: 0;
-	overflow: hidden;
-	white-space: nowrap;
-}
-
-.compact .icon-notification > a > span, .compact .icon-pm > a > span {
+.linklist.compact .rightside > a > span span {
 	display: none;
 }
 
-.compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
+.linklist.compact .rightside > a strong {
 	padding-left: 2px;
 }
 

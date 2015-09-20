@@ -1,61 +1,61 @@
 /* --------------------------------------------------------------
-    $Base
+	$Base
 -------------------------------------------------------------- */
 
 /** {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 *:before,
 *:after {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }*/
 
 /* Define your base font-size here; most elements will inherit this. _NO__DOTCOMMA__AFTER__*/
 html {
-    font-size: 1em; /* Assuming 16px... */
-    line-height: 1.5; /* 24px (This is now our magic number; all subsequent margin-bottoms and line-heights want to be a multiple of this number in order to maintain vertical rhythm.) _NO__DOTCOMMA__AFTER__*/
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	font-size: 1em; /* Assuming 16px... */
+	line-height: 1.5; /* 24px (This is now our magic number; all subsequent margin-bottoms and line-heights want to be a multiple of this number in order to maintain vertical rhythm.) _NO__DOTCOMMA__AFTER__*/
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #333333;
-    background-color: #ffffff;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #333333;
+	background-color: #ffffff;
 }
 
 input,
 button,
 select,
 textarea {
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
 }
 
 figure { margin: 0 }
 img { vertical-align: middle }
 
 hr {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    border: 0;
-    border-top: 1px solid #e5e5e5;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border: 0;
+	border-top: 1px solid #e5e5e5;
 }
 
 a {
-    color: #428bca;
-    text-decoration: none;
+	color: #428bca;
+	text-decoration: none;
 }
 
 a:hover,
 a:focus,
 a:active {
-    color: #2a6496;
-    text-decoration: underline;
+	color: #2a6496;
+	text-decoration: underline;
 }
 
 blockquote,
@@ -71,9 +71,9 @@ figure,
 p,
 pre { margin: 0 }
 button {
-    background: transparent;
-    border: 0;
-    padding: 0;
+	background: transparent;
+	border: 0;
+	padding: 0;
 }
 
 /**
@@ -81,22 +81,22 @@ button {
  * results in a loss of the default `button` focus styles.
  */
 button:focus {
-    outline: 1px dotted;
-    outline: 5px auto -webkit-focus-ring-color;
+	outline: 1px dotted;
+	outline: 5px auto -webkit-focus-ring-color;
 }
 
 fieldset {
-    border: 0;
-    margin: 0;
-    padding: 0;
+	border: 0;
+	margin: 0;
+	padding: 0;
 }
 
 iframe { border: 0 }
 ol,
 ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
 /**
@@ -110,6 +110,6 @@ ul {
  * Remove double underline from recent version of firefox
  */
 abbr[title] {
-    text-decoration: none;
+	text-decoration: none;
 }
 
