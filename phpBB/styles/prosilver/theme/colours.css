@@ -690,71 +690,72 @@ Colours and backgrounds for buttons.css
 .contact-icon						{ background-image: url("./images/icons_contact.png"); }
 
 /* Profile & navigation icons */
-.pm-icon							{ background-position: 0 0; }
-.email-icon							{ background-position: -21px 0; }
-.jabber-icon						{ background-position: -80px 0; }
-.phpbb_icq-icon						{ background-position: -61px 0 ; }
-.phpbb_wlm-icon						{ background-position: -182px 0; }
-.phpbb_aol-icon						{ background-position: -244px 0; }
-.phpbb_website-icon					{ background-position: -40px 0; }
-.phpbb_youtube-icon					{ background-position: -98px 0; }
-.phpbb_facebook-icon				{ background-position: -119px 0; }
-.phpbb_googleplus-icon				{ background-position: -140px 0; }
-.phpbb_skype-icon					{ background-position: -161px 0; }
-.phpbb_twitter-icon					{ background-position: -203px 0; }
-.phpbb_yahoo-icon					{ background-position: -224px 0; }
+.pm-icon									{ background-position: 0 0; }
+.email-icon									{ background-position: -21px 0; }
+.jabber-icon								{ background-position: -80px 0; }
+.phpbb_icq-icon								{ background-position: -61px 0 ; }
+.phpbb_wlm-icon								{ background-position: -182px 0; }
+.phpbb_aol-icon								{ background-position: -244px 0; }
+.phpbb_website-icon							{ background-position: -40px 0; }
+.phpbb_youtube-icon							{ background-position: -98px 0; }
+.phpbb_facebook-icon						{ background-position: -119px 0; }
+.phpbb_googleplus-icon						{ background-position: -140px 0; }
+.phpbb_skype-icon							{ background-position: -161px 0; }
+.phpbb_twitter-icon							{ background-position: -203px 0; }
+.phpbb_yahoo-icon							{ background-position: -224px 0; }
 
-/* Forum icons & Topic icons */
-.global_read						{ background-image: url("./images/announce_read.gif"); }
-.global_read_mine					{ background-image: url("./images/announce_read_mine.gif"); }
-.global_read_locked					{ background-image: url("./images/announce_read_locked.gif"); }
-.global_read_locked_mine			{ background-image: url("./images/announce_read_locked_mine.gif"); }
-.global_unread						{ background-image: url("./images/announce_unread.gif"); }
-.global_unread_mine					{ background-image: url("./images/announce_unread_mine.gif"); }
-.global_unread_locked				{ background-image: url("./images/announce_unread_locked.gif"); }
-.global_unread_locked_mine			{ background-image: url("./images/announce_unread_locked_mine.gif"); }
+/* Imageset icons */
+.imageset									{ background-image: url("./images/imageset.svg"); }
 
-.announce_read						{ background-image: url("./images/announce_read.gif"); }
-.announce_read_mine					{ background-image: url("./images/announce_read_mine.gif"); }
-.announce_read_locked				{ background-image: url("./images/announce_read_locked.gif"); }
-.announce_read_locked_mine			{ background-image: url("./images/announce_read_locked_mine.gif"); }
-.announce_unread					{ background-image: url("./images/announce_unread.gif"); }
-.announce_unread_mine				{ background-image: url("./images/announce_unread_mine.gif"); }
-.announce_unread_locked				{ background-image: url("./images/announce_unread_locked.gif"); }
-.announce_unread_locked_mine		{ background-image: url("./images/announce_unread_locked_mine.gif"); }
+.global_read,
+.announce_read								{ background-position: -518px 0; }
+.global_read_mine,
+.announce_read_mine							{ background-position: -481px 0; }
+.global_read_locked,
+.announce_read_locked						{ background-position: -444px 0; }
+.global_read_locked_mine,
+.announce_read_locked-mine					{ background-position: -407px 0; }
+.global_unread,	
+.announce_unread							{ background-position: -370px 0; }
+.global_unread_mine,
+.announce_unread_mine						{ background-position: -333px 0; }
+.global_unread_locked,
+.announce_unread_locked						{ background-position: -296px 0; }
+.global_unread_locked_mine,	
+.announce_unread_locked_mine				{ background-position: -259px 0; }
 
-.forum_link							{ background-image: url("./images/forum_link.gif"); }
-.forum_read							{ background-image: url("./images/forum_read.gif"); }
-.forum_read_locked					{ background-image: url("./images/forum_read_locked.gif"); }
-.forum_read_subforum				{ background-image: url("./images/forum_read_subforum.gif"); }
-.forum_unread						{ background-image: url("./images/forum_unread.gif"); }
-.forum_unread_locked				{ background-image: url("./images/forum_unread_locked.gif"); }
-.forum_unread_subforum				{ background-image: url("./images/forum_unread_subforum.gif"); }
+.forum_link									{ background-position: 0 0; }
+.forum_read									{ background-position: -111px 0; }
+.forum_read_locked							{ background-position: -37px 0; }
+.forum_read_subforum						{ background-position: -185px 0; }
+.forum_unread								{ background-position: -148px 0; }
+.forum_unread_locked						{ background-position: -74px 0; }
+.forum_unread_subforum						{ background-position: -222px 0; }
 
-.sticky_read						{ background-image: url("./images/sticky_read.gif"); }
-.sticky_read_mine					{ background-image: url("./images/sticky_read_mine.gif"); }
-.sticky_read_locked					{ background-image: url("./images/sticky_read_locked.gif"); }
-.sticky_read_locked_mine			{ background-image: url("./images/sticky_read_locked_mine.gif"); }
-.sticky_unread						{ background-image: url("./images/sticky_unread.gif"); }
-.sticky_unread_mine					{ background-image: url("./images/sticky_unread_mine.gif"); }
-.sticky_unread_locked				{ background-image: url("./images/sticky_unread_locked.gif"); }
-.sticky_unread_locked_mine			{ background-image: url("./images/sticky_unread_locked_mine.gif"); }
+.sticky_read								{ background-position: -555px -37px; }
+.sticky_read_mine							{ background-position: -481px -37px; }
+.sticky_read_locked							{ background-position: -407px -37px; }
+.sticky_read_locked_mine					{ background-position: -333px -37px; }
+.sticky_unread								{ background-position: -592px -37px; }
+.sticky_unread_mine							{ background-position: -518px -37px; }
+.sticky_unread_locked						{ background-position: -444px -37px; }
+.sticky_unread_locked_mine					{ background-position: -370px -37px; }
 
-.topic_moved						{ background-image: url("./images/topic_moved.gif"); }
+.topic_moved								{ background-position: -259px -37px; }
 .pm_read,
-.topic_read							{ background-image: url("./images/topic_read.gif"); }
-.topic_read_mine					{ background-image: url("./images/topic_read_mine.gif"); }
-.topic_read_hot						{ background-image: url("./images/topic_read_hot.gif"); }
-.topic_read_hot_mine				{ background-image: url("./images/topic_read_hot_mine.gif"); }
-.topic_read_locked					{ background-image: url("./images/topic_read_locked.gif"); }
-.topic_read_locked_mine				{ background-image: url("./images/topic_read_locked_mine.gif"); }
+.topic_read									{ background-position: -296px -37px; }
+.topic_read_mine							{ background-position: -185px -37px; }
+.topic_read_hot								{ background-position: -629px 0; }
+.topic_read_hot_mine						{ background-position: -555px 0; }
+.topic_read_locked							{ background-position: -111px -37px; }
+.topic_read_locked_mine						{ background-position: -37px -37px; }
 .pm_unread,
-.topic_unread						{ background-image: url("./images/topic_unread.gif"); }
-.topic_unread_mine					{ background-image: url("./images/topic_unread_mine.gif"); }
-.topic_unread_hot					{ background-image: url("./images/topic_unread_hot.gif"); }
-.topic_unread_hot_mine				{ background-image: url("./images/topic_unread_hot_mine.gif"); }
-.topic_unread_locked				{ background-image: url("./images/topic_unread_locked.gif"); }
-.topic_unread_locked_mine			{ background-image: url("./images/topic_unread_locked_mine.gif"); }
+.topic_unread								{ background-position: -629px -37px; }
+.topic_unread_mine							{ background-position: -222px -37px; }
+.topic_unread_hot							{ background-position: 0 -37px; }
+.topic_unread_hot_mine						{ background-position: -592px 0; }
+.topic_unread_locked						{ background-position: -148px -37px; }
+.topic_unread_locked_mine					{ background-position: -74px -37px; }
 
 
 /*
