@@ -31,10 +31,14 @@
 		<!-- EVENT forumlist_body_forum_row_before -->
 		<li class="row">
 			<!-- EVENT forumlist_body_forum_row_prepend -->
-			<dl class="row-item {forumrow.FORUM_IMG_STYLE}">
+			<dl class="row-item">
 				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}">
-					<!-- IF forumrow.S_UNREAD_FORUM --><a href="{forumrow.U_VIEWFORUM}" class="row-item-link"></a><!-- ENDIF -->
 					<div class="list-inner">
+						<!-- IF forumrow.S_UNREAD_FORUM --> 
+							<a class="imageset {forumrow.FORUM_IMG_STYLE}" href="{forumrow.U_VIEWFORUM}"></a>
+						<!-- ELSE -->
+							<span class="imageset {forumrow.FORUM_IMG_STYLE}"></span>
+						<!-- ENDIF -->
 						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED -->
 							<!-- 
 								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}">

@@ -57,11 +57,14 @@
 
 		<!-- BEGIN messagerow -->
 			<li class="row<!-- IF messagerow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF messagerow.PM_CLASS --> {messagerow.PM_CLASS}<!-- ENDIF -->">
-				<dl class="row-item {messagerow.FOLDER_IMG_STYLE}">
-					<dt<!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --> style="background-image: url({messagerow.PM_ICON_URL}); background-repeat: no-repeat;"<!-- ENDIF -->>
-						<!-- IF messagerow.S_PM_UNREAD and not messagerow.S_PM_DELETED --><a href="{messagerow.U_VIEW_PM}" class="row-item-link"></a><!-- ENDIF -->
+				<dl class="row-item">
+					<dt title="{messagerow.FORUM_FOLDER_IMG_ALT}">
 						<div class="list-inner">
-
+							<!-- IF messagerow.S_PM_UNREAD and not messagerow.S_PM_DELETED -->
+								<a class="imageset {messagerow.FOLDER_IMG_STYLE}" href="{messagerow.U_VIEW_PM}"><!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --><i class="topic-img" style="background-image: url({messagerow.PM_ICON_URL});"></i><!-- ENDIF --></a>
+							<!-- ELSE -->
+								<span class="imageset {messagerow.FOLDER_IMG_STYLE}"><!-- IF topicrow.TOPIC_ICON_IMG --><i class="topic-img" style="background-image: url({messagerow.PM_ICON_URL});"></i><!-- ENDIF --></span>
+							<!-- ENDIF -->
 						<!-- IF messagerow.S_PM_DELETED -->
 							<a href="{messagerow.U_REMOVE_PM}" class="topictitle">{L_DELETE_MESSAGE}</a><br />
 							<span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span>
