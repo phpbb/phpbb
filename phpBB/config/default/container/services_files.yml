@@ -14,6 +14,14 @@ services:
             - @user
             - %core.root_path%
 
+    attachment.delete:
+        class: phpbb\attachment\delete
+        scope: prototype
+        arguments:
+            - @config
+            - @dbal.conn
+            - @dispatcher
+
     filesystem:
         class: phpbb\filesystem\filesystem
 
