@@ -58,7 +58,7 @@ class phpbb_attachment_resync_test extends \phpbb_database_test_case
 		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$this->assertSame($exist_data, $data);
+		$this->assertEquals($exist_data, $data);
 
 		$this->resync->resync($type, $ids);
 
@@ -69,6 +69,6 @@ class phpbb_attachment_resync_test extends \phpbb_database_test_case
 		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$this->assertSame($resync_data, $data);
+		$this->assertEquals($resync_data, $data);
 	}
 }
