@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db\migration\data\v310;
+namespace phpbb\db\migration\data\v320;
 
 class notifications_board extends \phpbb\db\migration\migration
 {
