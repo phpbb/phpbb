@@ -216,20 +216,20 @@ class delete
 			case 'message':
 				$this->sql_id = 'post_msg_id';
 				$this->sql_where = ' AND in_message = ' . ($mode == 'message' ? 1 : 0);
-				break;
+			break;
 
 			case 'topic':
 				$this->sql_id = 'topic_id';
-				break;
+			break;
 
 			case 'user':
 				$this->sql_id = 'poster_id';
-				break;
+			break;
 
 			case 'attach':
 			default:
 				$this->sql_id = 'attach_id';
-				break;
+			break;
 		}
 	}
 
