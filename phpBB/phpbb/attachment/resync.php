@@ -93,6 +93,8 @@ class resync
 			return;
 		}
 
+		$this->set_type_constraints($type);
+
 		// Just check which elements are still having an assigned attachment
 		// not orphaned by querying the attachments table
 		$sql = 'SELECT ' . $this->attach_sql_id . '
@@ -113,7 +115,7 @@ class resync
 
 		if (sizeof($ids))
 		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
+			$sql = 'UPDATE ' . $this->resync_table . '
 				SET ' . $type . '_attachment = 0
 				WHERE ' . $this->db->sql_in_set($this->resync_sql_id, $ids);
 			$this->db->sql_query($sql);
