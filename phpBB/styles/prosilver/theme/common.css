@@ -184,7 +184,7 @@ ol ol ul, ol ul ul, ul ol ul, ul ul ul {
 	padding: 15px;
 }
 
-@media only screen and (max-width: 1220px), only screen and (max-device-width: 1220px) {
+@media only screen and (max-width: 1220px) {
 	#wrap {
 		margin: 0 12px;
 	}
@@ -916,7 +916,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin: 0 auto;
 }
 
-@media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
+@media only screen and (max-height: 500px)
 {
 	.phpbb_alert {
 		top: 25px;

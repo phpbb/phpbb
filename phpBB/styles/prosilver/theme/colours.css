@@ -856,7 +856,7 @@ ul.cplist {
 	color: #D31141;
 }
 
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+@media only screen and (max-width: 900px)
 {
 	#navigation a, .rtl #navigation a {
 		background: #B2C2CF;

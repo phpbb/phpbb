@@ -129,14 +129,14 @@ hr {
 	display: none;
 }
 
-@media only screen and (max-width: 800px), only screen and (max-device-width: 800px)
+@media only screen and (max-width: 800px)
 {
 	body {
 		margin: 5px 5px 0;
 	}
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	html, body {
 		height: auto;
@@ -263,7 +263,7 @@ li {
 	min-width: 0;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	#wrap, #page-body, #page-body.simple-page-body {
 		padding: 0;
@@ -310,7 +310,7 @@ li {
 	}
 }
 
-@media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
+@media only screen and (max-width: 400px)
 {
 	#page-header {
 		background-size: 76px 26.5px;
@@ -501,7 +501,7 @@ li {
 	overflow: hidden;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	#acp {
 		min-width: 0;
@@ -631,7 +631,7 @@ li {
 	outline-style: none;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	#menu, .rtl #menu {
 		float: none;
@@ -906,7 +906,7 @@ table.fixed-width-table {
 	word-break: break-word;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
 		display: block;
@@ -1276,7 +1276,7 @@ select#full_folder_action {
 	width: 95%;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	fieldset {
 		padding: 5px;
@@ -1427,7 +1427,7 @@ input:focus, textarea:focus {
 	outline-style: none;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	fieldset dl {
 		margin-bottom: 5px;
@@ -1469,7 +1469,7 @@ input:focus, textarea:focus {
 	}
 }
 
-@media only screen and (max-width: 400px), only screen and (max-device-width: 400px)
+@media only screen and (max-width: 400px)
 {
 	select, dd select, dd input {
 		max-width: 240px;
@@ -1502,7 +1502,7 @@ fieldset.submit-buttons legend {
 	display: none;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	p.submit-buttons {
 		margin-top: 0;
@@ -1648,14 +1648,14 @@ input.button1:focus, input.button2:focus {
 	z-index: 45;
 }
 
-@media only screen and (max-height: 500px), only screen and (max-device-width: 500px)
+@media only screen and (max-height: 500px)
 {
 	.phpbb_alert {
 		top: 25px;
 	}
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	.phpbb_alert {
 		width: auto;
@@ -1764,7 +1764,7 @@ li.pagination ul {
 	border-color: #B4BAC0;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	.pagination, .rtl .pagination {
 		float: none;
@@ -2238,7 +2238,7 @@ fieldset.permissions .padding {
 	padding: 0;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	.column1, .column2 {
 		float: none !important;
@@ -2463,7 +2463,7 @@ fieldset.permissions .padding {
 	font-size: 1.4em;
 }
 
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
+@media only screen and (max-width: 700px)
 {
 	.responsive-hide { display: none !important; }
 	.responsive-show { display: block !important; }

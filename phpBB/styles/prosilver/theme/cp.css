@@ -339,7 +339,7 @@ ol.def-rules li {
 
 /* Responsive *CP navigation
 ----------------------------------------*/
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
+@media only screen and (max-width: 900px)
 {
 	.nojs #tabs a span, .nojs #minitabs a span {
 		max-width: 40px;
