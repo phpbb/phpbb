@@ -36,7 +36,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
-		$phpbb_container->set('attachment.delete', new \phpbb\attachment\delete($config, $db));
+		$phpbb_container->set('attachment.delete', new \phpbb\attachment\delete($config, $db, new \phpbb\attachment\resync($db)));
 		$phpbb_container->set(
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()

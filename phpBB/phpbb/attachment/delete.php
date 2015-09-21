@@ -32,6 +32,9 @@ class delete
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
+	/** @var \phpbb\attachment\resync */
+	protected $resync;
+
 	/** @var array Attachement IDs */
 	protected $ids;
 
@@ -61,13 +64,15 @@ class delete
 	 *
 	 * @param config $config
 	 * @param driver_interface $db
-	 * @param dispatcher>>>>>>> 85b6020... [ticket/14168] Move function for attachment deletion into class
+	 * @param dispatcher $dispatcher
+	 * @param resync $resync
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher)
+	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, resync $resync)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
+		$this->resync = $resync;
 	}
 
 	/**
@@ -158,95 +163,14 @@ class delete
 		// No more use for the original ids
 		unset($ids);
 
-		// Now, we need to resync posts, messages, topics. We go through every one of them
 		// Update post indicators for posts now no longer having attachments
-		if (sizeof($this->post_ids))
-		{
-			// Just check which posts are still having an assigned attachment not orphaned by querying the attachments table
-			$sql = 'SELECT post_msg_id
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('post_msg_id', $this->post_ids) . '
-				AND in_message = 0
-				AND is_orphan = 0';
-			$result = $this->db->sql_query($sql);
-
-			$remaining_ids = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$remaining_ids[] = $row['post_msg_id'];
-			}
-			$this->db->sql_freeresult($result);
-
-			// Now only unset those ids remaining
-			$this->post_ids = array_diff($this->post_ids, $remaining_ids);
-
-			if (sizeof($this->post_ids))
-			{
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 0
-				WHERE ' . $this->db->sql_in_set('post_id', $this->post_ids);
-				$this->db->sql_query($sql);
-			}
-		}
+		$this->resync->resync('post', $this->post_ids);
 
 		// Update message table if messages are affected
-		if (sizeof($this->message_ids))
-		{
-			// Just check which messages are still having an assigned attachment not orphaned by querying the attachments table
-			$sql = 'SELECT post_msg_id
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('post_msg_id', $this->message_ids) . '
-				AND in_message = 1
-				AND is_orphan = 0';
-			$result = $this->db->sql_query($sql);
-
-			$remaining_ids = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$remaining_ids[] = $row['post_msg_id'];
-			}
-			$this->db->sql_freeresult($result);
-
-			// Now only unset those ids remaining
-			$this->message_ids = array_diff($this->message_ids, $remaining_ids);
-
-			if (sizeof($this->message_ids))
-			{
-				$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-				SET message_attachment = 0
-				WHERE ' . $this->db->sql_in_set('msg_id', $this->message_ids);
-				$this->db->sql_query($sql);
-			}
-		}
+		$this->resync->resync('message', $this->message_ids);
 
 		// Now update the topics. This is a bit trickier, because there could be posts still having attachments within the topic
-		if (sizeof($this->topic_ids))
-		{
-			// Just check which topics are still having an assigned attachment not orphaned by querying the attachments table (much less entries expected)
-			$sql = 'SELECT topic_id
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('topic_id', $this->topic_ids) . '
-				AND is_orphan = 0';
-			$result = $this->db->sql_query($sql);
-
-			$remaining_ids = array();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$remaining_ids[] = $row['topic_id'];
-			}
-			$this->db->sql_freeresult($result);
-
-			// Now only unset those ids remaining
-			$this->topic_ids = array_diff($this->topic_ids, $remaining_ids);
-
-			if (sizeof($this->topic_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 0
-				WHERE ' . $this->db->sql_in_set('topic_id', $this->topic_ids);
-				$this->db->sql_query($sql);
-			}
-		}
+		$this->resync->resync('topic', $this->topic_ids);
 
 		return $this->num_deleted;
 	}
@@ -384,7 +308,7 @@ class delete
 
 		// Delete attachments
 		$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
-		WHERE ' . $this->db->sql_in_set($this->sql_id, $this->ids);
+			WHERE ' . $this->db->sql_in_set($this->sql_id, $this->ids);
 
 		$sql .= $this->sql_where;
 
