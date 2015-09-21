@@ -161,6 +161,7 @@
 						<!-- ELSE -->
 							<span class="imageset {topicrow.TOPIC_IMG_STYLE}"><!-- IF topicrow.TOPIC_ICON_IMG --><i class="topic-img" style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG});"></i><!-- ENDIF --></span>
 						<!-- ENDIF -->
+						<!-- EVENT topiclist_row_prepend -->
 						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT -->
 							<a href="{topicrow.U_NEWEST_POST}">
 								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
