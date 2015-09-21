@@ -408,8 +408,10 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	/** @var \phpbb\attachment\upload $attachment_upload */
 	$attachment_upload = $phpbb_container->get('attachment.upload');
+	$file = $attachment_upload->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
+	unset($attachment_upload);
 
-	return $attachment_upload->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
+	return $file;
 }
 
 /**

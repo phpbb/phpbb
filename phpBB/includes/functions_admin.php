@@ -1125,6 +1125,7 @@ function delete_attachments($mode, $ids, $resync = true)
 	$attachment_delete = $phpbb_container->get('attachment.delete');
 
 	$num_deleted = $attachment_delete->delete($mode, $ids, $resync);
+	unset($attachment_delete);
 
 	return $num_deleted;
 }
