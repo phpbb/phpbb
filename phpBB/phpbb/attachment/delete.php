@@ -85,7 +85,7 @@ class delete
 	 * @return int|bool Number of deleted attachments or false if something
 	 *			went wrong during attachment deletion
 	 */
-	function delete($mode, $ids, $resync = true)
+	public function delete($mode, $ids, $resync = true)
 	{
 		if (!$this->set_attachment_ids($ids))
 		{
