@@ -312,12 +312,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$attachment_delete = new \phpbb\attachment\delete($config, $db);
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		$phpbb_container->set('attachment.delete', $attachment_delete);
 
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 
