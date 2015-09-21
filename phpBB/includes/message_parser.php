@@ -1691,7 +1691,7 @@ class parse_message extends bbcode_firstpass
 				{
 					/** @var \phpbb\attachment\upload $attachment_upload */
 					$attachment_upload = $phpbb_container->get('attachment.upload');
-					$filedata = $attachment_upload->upload($form_name, $forum_id, false, '', $is_message);;
+					$filedata = $attachment_upload->upload($form_name, $forum_id, false, '', $is_message);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))
