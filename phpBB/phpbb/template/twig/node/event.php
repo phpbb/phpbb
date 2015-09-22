@@ -46,7 +46,7 @@ class event extends \Twig_Node
 		{
 			$ext_namespace = str_replace('/', '_', $ext_namespace);
 
-			if (defined('DEBUG'))
+			if ($this->environment->isDebug())
 			{
 				// If debug mode is enabled, lets check for new/removed EVENT
 				//  templates on page load rather than at compile. This is
@@ -58,7 +58,7 @@ class event extends \Twig_Node
 				;
 			}
 
-			if (defined('DEBUG') || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
+			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
 			{
 				$compiler
 					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
@@ -70,7 +70,7 @@ class event extends \Twig_Node
 				;
 			}
 
-			if (defined('DEBUG'))
+			if ($this->environment->isDebug())
 			{
 				$compiler
 					->outdent()
