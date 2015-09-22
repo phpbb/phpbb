@@ -388,7 +388,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND topic_visibility = ' . ITEM_APPROVED;
+				$sql .= ' AND topic_visibility = ' . ITEM_APPROVED;
 			}
 			break;
 
@@ -404,7 +404,7 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
-				$sql .= 'AND post_visibility = ' . ITEM_APPROVED;
+				$sql .= ' AND post_visibility = ' . ITEM_APPROVED;
 			}
 			break;
 
