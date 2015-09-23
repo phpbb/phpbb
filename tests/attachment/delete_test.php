@@ -65,6 +65,13 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	 */
 	public function test_attachment_delete($mode, $ids, $resync, $expected)
 	{
+		// We need to reset the attachment ID sequence to properly test this
+		if ($this->db->get_sql_layer() === 'postgres')
+		{
+			$sql = 'ALTER SEQUENCE phpbb_attachments_seq RESTART WITH 1';
+			$this->db->sql_query($sql);
+		}
+
 		$this->assertSame($expected, $this->attachment_delete->delete($mode, $ids, $resync));
 	}
 }
