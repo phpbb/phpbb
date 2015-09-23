@@ -172,6 +172,8 @@ class gravatar extends \phpbb\avatar\driver\driver
 	*/
 	protected function get_gravatar_url($row)
 	{
+		global $phpbb_dispatcher;
+
 		$url = self::GRAVATAR_URL;
 		$url .=  md5(strtolower(trim($row['avatar'])));
 
@@ -179,6 +181,17 @@ class gravatar extends \phpbb\avatar\driver\driver
 		{
 			$url .= '?s=' . max($row['avatar_width'], $row['avatar_height']);
 		}
+
+		/**
+		* Modify gravatar url
+		*
+		* @event core.get_gravatar_url_after
+		* @var	string	row	User data or group data
+		* @var	string	url	Gravatar URL
+		* @since 3.1.7-RC1
+		*/
+		$vars = array('row', 'url');
+		extract($phpbb_dispatcher->trigger_event('core.get_gravatar_url_after', compact($vars)));
 
 		return $url;
 	}
