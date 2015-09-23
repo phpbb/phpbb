@@ -1024,7 +1024,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
 
-	delete_attachments('post', $post_ids, false);
+	/** @var \phpbb\attachment\delete $attachment_delete */
+	$attachment_delete = $phpbb_container->get('attachment.delete');
+	$attachment_delete->delete('post', $post_ids, false);
+	unset($attachment_delete);
 
 	/**
 	* Perform additional actions during post(s) deletion

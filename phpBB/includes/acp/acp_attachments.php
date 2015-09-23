@@ -39,6 +39,9 @@ class acp_attachments
 	/** @var  \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
+	/** @var \phpbb\attachment\delete */
+	protected $attachment_delete;
+
 	public $id;
 	public $u_action;
 	protected $new_config;
@@ -55,6 +58,7 @@ class acp_attachments
 		$this->user = $user;
 		$this->phpbb_container = $phpbb_container;
 		$this->filesystem = $phpbb_filesystem;
+		$this->attachment_delete = $phpbb_container->get('attachment.delete');
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -922,11 +926,11 @@ class acp_attachments
 						$delete_files = array();
 						while ($row = $db->sql_fetchrow($result))
 						{
-							phpbb_unlink($row['physical_filename'], 'file');
+							$this->attachment_delete->unlink_attachment($row['physical_filename'], 'file');
 
 							if ($row['thumbnail'])
 							{
-								phpbb_unlink($row['physical_filename'], 'thumbnail');
+								$this->attachment_delete->unlink_attachment($row['physical_filename'], 'thumbnail');
 							}
 
 							$delete_files[$row['attach_id']] = $row['real_filename'];
@@ -1091,7 +1095,7 @@ class acp_attachments
 						}
 						$db->sql_freeresult($result);
 
-						if ($num_deleted = delete_attachments('attach', $delete_files))
+						if ($num_deleted = $this->attachment_delete->delete('attach', $delete_files))
 						{
 							if (sizeof($delete_files) != $num_deleted)
 							{

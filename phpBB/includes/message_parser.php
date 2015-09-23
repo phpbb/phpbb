@@ -1643,6 +1643,9 @@ class parse_message extends bbcode_firstpass
 
 				if ($index !== false && !empty($this->attachment_data[$index]))
 				{
+					/** @var \phpbb\attachment\delete $attachment_delete */
+					$attachment_delete = $phpbb_container->get('attachment.delete');
+
 					// delete selected attachment
 					if ($this->attachment_data[$index]['is_orphan'])
 					{
@@ -1657,11 +1660,11 @@ class parse_message extends bbcode_firstpass
 
 						if ($row)
 						{
-							phpbb_unlink($row['physical_filename'], 'file');
+							$attachment_delete->unlink_attachment($row['physical_filename'], 'file');
 
 							if ($row['thumbnail'])
 							{
-								phpbb_unlink($row['physical_filename'], 'thumbnail');
+								$attachment_delete->unlink_attachment($row['physical_filename'], 'thumbnail');
 							}
 
 							$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . ' WHERE attach_id = ' . (int) $this->attachment_data[$index]['attach_id']);
@@ -1669,7 +1672,7 @@ class parse_message extends bbcode_firstpass
 					}
 					else
 					{
-						delete_attachments('attach', array(intval($this->attachment_data[$index]['attach_id'])));
+						$attachment_delete->delete('attach', $this->attachment_data[$index]['attach_id']);
 					}
 
 					unset($this->attachment_data[$index]);
