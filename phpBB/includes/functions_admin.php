@@ -1251,7 +1251,7 @@ function update_posted_info(&$topic_ids)
 */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $phpbb_container;;
+	global $phpbb_container;
 
 	/** @var \phpbb\attachment\delete $attachment_delete */
 	$attachment_delete = $phpbb_container->get('attachment.delete');
