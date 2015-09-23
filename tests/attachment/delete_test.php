@@ -21,11 +21,16 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\filesystem\filesystem */
+	protected $filesystem;
+
 	/** @var \phpbb\attachment\resync */
 	protected $resync;
 
 	/** @var \phpbb\attachment\delete */
 	protected $attachment_delete;
+
+	protected $phpbb_root_path;
 
 	public function getDataSet()
 	{
@@ -34,7 +39,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 
 	public function setUp()
 	{
-		global $db;
+		global $db, $phpbb_root_path;
 
 		parent::setUp();
 
@@ -42,7 +47,15 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$db = $this->db;
 		$this->resync = new \phpbb\attachment\resync($this->db);
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->resync);
+		$this->filesystem = $this->getMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
+		$this->filesystem->expects($this->any())
+			->method('remove')
+			->willReturn(false);
+		$this->filesystem->expects($this->any())
+			->method('exists')
+			->willReturn(true);
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->filesystem, $this->resync, $phpbb_root_path);
 	}
 
 	public function data_attachment_delete()
@@ -55,7 +68,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 			array('attach', array(1,2), true, 2),
 			array('post', 5, false, 0),
 			array('topic', 5, false, 0),
-			array('topic', 1, true, 2),
+			array('topic', 1, true, 3),
 			array('user', 1, false, 0),
 		);
 	}
@@ -73,5 +86,41 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		}
 
 		$this->assertSame($expected, $this->attachment_delete->delete($mode, $ids, $resync));
+	}
+
+	public function data_attachment_unlink()
+	{
+		return array(
+			array(true, true, true),
+			array(true, false, false),
+			array(true, true, false, true),
+		);
+	}
+
+	/**
+	 * @dataProvider data_attachment_unlink
+	 */
+	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
+	{
+		$this->filesystem = $this->getMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
+		if ($throw_exception)
+		{
+			$this->filesystem->expects($this->any())
+				->method('remove')
+				->willThrowException(new \phpbb\filesystem\exception\filesystem_exception);;
+		}
+		else
+		{
+			$this->filesystem->expects($this->any())
+				->method('remove')
+				->willReturn($remove_success);
+		}
+
+		$this->filesystem->expects($this->any())
+			->method('exists')
+			->willReturn($exists_success);
+
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->filesystem, $this->resync, $this->phpbb_root_path);
+		$this->assertSame($expected, $this->attachment_delete->unlink_attachment('foobar'));
 	}
 }

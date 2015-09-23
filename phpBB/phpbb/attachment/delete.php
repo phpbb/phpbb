@@ -16,6 +16,7 @@ namespace phpbb\attachment;
 use \phpbb\config\config;
 use \phpbb\db\driver\driver_interface;
 use \phpbb\event\dispatcher;
+use \phpbb\filesystem\filesystem;
 
 /**
  * Attachment delete class
@@ -23,17 +24,23 @@ use \phpbb\event\dispatcher;
 
 class delete
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
 	/** @var \phpbb\event\dispatcher */
 	protected $dispatcher;
 
-	/** @var \phpbb\attachment\resync */
+	/** @var filesystem  */
+	protected $filesystem;
+
+	/** @var resync */
 	protected $resync;
+
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
 
 	/** @var array Attachement IDs */
 	protected $ids;
@@ -65,14 +72,18 @@ class delete
 	 * @param config $config
 	 * @param driver_interface $db
 	 * @param dispatcher $dispatcher
+	 * @param filesystem $filesystem
 	 * @param resync $resync
+	 * @param string $phpbb_root_path
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, resync $resync)
+	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, filesystem $filesystem, resync $resync, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
+		$this->filesystem = $filesystem;
 		$this->resync = $resync;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -152,7 +163,7 @@ class delete
 		}
 
 		// Delete attachments from filesystem
-		$this->delete_attachments_from_filesystem();
+		$this->remove_from_filesystem();
 
 		// If we do not resync, we do not need to adjust any message, post, topic or user entries
 		if (!$resync)
@@ -319,13 +330,13 @@ class delete
 	/**
 	 * Delete attachments from filesystem
 	 */
-	protected function delete_attachments_from_filesystem()
+	protected function remove_from_filesystem()
 	{
 		$space_removed = $files_removed = 0;
 
 		foreach ($this->physical as $file_ary)
 		{
-			if (phpbb_unlink($file_ary['filename'], 'file', true) && !$file_ary['is_orphan'])
+			if ($this->unlink_attachment($file_ary['filename'], 'file', true) && !$file_ary['is_orphan'])
 			{
 				// Only non-orphaned files count to the file size
 				$space_removed += $file_ary['filesize'];
@@ -334,7 +345,7 @@ class delete
 
 			if ($file_ary['thumbnail'])
 			{
-				phpbb_unlink($file_ary['filename'], 'thumbnail', true);
+				$this->unlink_attachment($file_ary['filename'], 'thumbnail', true);
 			}
 		}
 
@@ -375,5 +386,48 @@ class delete
 			$this->config->increment('upload_dir_size', $space_removed * (-1), false);
 			$this->config->increment('num_files', $files_removed * (-1), false);
 		}
+	}
+
+	/**
+	 * Delete attachment from filesystem
+	 *
+	 * @param string $filename Filename of attachment
+	 * @param string $mode Delete mode
+	 * @param bool $entry_removed Whether entry was removed. Defaults to false
+	 * @return bool True if file was removed, false if not
+	 */
+	public function unlink_attachment($filename, $mode = 'file', $entry_removed = false)
+	{
+		// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
+		$sql = 'SELECT COUNT(attach_id) AS num_entries
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE physical_filename = '" . $this->db->sql_escape(utf8_basename($filename)) . "'";
+		$result = $this->db->sql_query($sql);
+		$num_entries = (int) $this->db->sql_fetchfield('num_entries');
+		$this->db->sql_freeresult($result);
+
+		// Do not remove file if at least one additional entry with the same name exist.
+		if (($entry_removed && $num_entries > 0) || (!$entry_removed && $num_entries > 1))
+		{
+			return false;
+		}
+
+		$filename = ($mode == 'thumbnail') ? 'thumb_' . utf8_basename($filename) : utf8_basename($filename);
+		$filepath = $this->phpbb_root_path . $this->config['upload_path'] . '/' . $filename;
+
+		try
+		{
+			if ($this->filesystem->exists($filepath))
+			{
+				$this->filesystem->remove($this->phpbb_root_path . $this->config['upload_path'] . '/' . $filename);
+				return true;
+			}
+		}
+		catch (\phpbb\filesystem\exception\filesystem_exception $exception)
+		{
+			// Fail is covered by return statement below
+		}
+
+		return false;
 	}
 }

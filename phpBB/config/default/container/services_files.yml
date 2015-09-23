@@ -6,7 +6,9 @@ services:
             - @config
             - @dbal.conn
             - @dispatcher
+            - @filesystem
             - @attachment.resync
+            - %core.root_path%
 
     attachment.resync:
         class: phpbb\attachment\resync

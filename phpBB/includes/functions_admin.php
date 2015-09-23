@@ -1243,27 +1243,19 @@ function update_posted_info(&$topic_ids)
 
 /**
 * Delete attached file
+*
+* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
 */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $db, $phpbb_root_path, $config;
+	global $phpbb_container;;
 
-	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
-	$sql = 'SELECT COUNT(attach_id) AS num_entries
-		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE physical_filename = '" . $db->sql_escape(utf8_basename($filename)) . "'";
-	$result = $db->sql_query($sql);
-	$num_entries = (int) $db->sql_fetchfield('num_entries');
-	$db->sql_freeresult($result);
+	/** @var \phpbb\attachment\delete $attachment_delete */
+	$attachment_delete = $phpbb_container->get('attachment.delete');
+	$unlink = $attachment_delete->unlink_attachment($filename, $mode, $entry_removed);
+	unset($attachment_delete);
 
-	// Do not remove file if at least one additional entry with the same name exist.
-	if (($entry_removed && $num_entries > 0) || (!$entry_removed && $num_entries > 1))
-	{
-		return false;
-	}
-
-	$filename = ($mode == 'thumbnail') ? 'thumb_' . utf8_basename($filename) : utf8_basename($filename);
-	return @unlink($phpbb_root_path . $config['upload_path'] . '/' . $filename);
+	return $unlink;
 }
 
 /**

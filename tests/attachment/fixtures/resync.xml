@@ -6,12 +6,16 @@
         <column>in_message</column>
         <column>is_orphan</column>
         <column>attach_comment</column>
+        <column>physical_filename</column>
+        <column>thumbnail</column>
         <row>
             <value>1</value>
             <value>1</value>
             <value>0</value>
             <value>0</value>
             <value>foo</value>
+            <value>foo</value>
+            <value>0</value>
         </row>
         <row>
             <value>1</value>
@@ -19,6 +23,17 @@
             <value>1</value>
             <value>0</value>
             <value>foo2</value>
+            <value>foo2</value>
+            <value>0</value>
+        </row>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>1</value>
+            <value>0</value>
+            <value>foo2</value>
+            <value>foo2</value>
+            <value>1</value>
         </row>
     </table>
     <table name="phpbb_posts">
