@@ -478,6 +478,11 @@ blockquote cite > div {
 	font-weight: normal;
 }
 
+.postbody .content li blockquote {
+	overflow: inherit;
+	margin-left: 0;
+}
+
 /* Code block */
 .codebox {
 	padding: 3px;
