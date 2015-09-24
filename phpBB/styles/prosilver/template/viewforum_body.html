@@ -55,11 +55,11 @@
 			<form method="get" id="forum-search" action="{S_SEARCHBOX_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
-				<button class="button" type="submit" title="{L_SEARCH}">
-					<i class="icon fa-search fa-fw"></i><span>{L_SEARCH}</span>
+				<button class="button button-search" type="submit" title="{L_SEARCH}">
+					<i class="icon fa-search fa-fw"></i><span class="sr-only">{L_SEARCH}</span>
 				</button>
-				<a href="{U_SEARCH}" class="button" title="{L_SEARCH_ADV}">
-					<i class="icon fa-cog fa-fw"></i><span>{L_SEARCH_ADV}</span>
+				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+					<i class="icon fa-cog fa-fw"></i><span class="sr-only">{L_SEARCH_ADV}</span>
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
@@ -111,7 +111,7 @@
 				</dl>
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd><input type="submit" name="login" tabindex="5" value="{L_LOGIN}" class="button1" /></dd>
+					<dd><input type="submit" name="login" tabindex="5" value="{L_LOGIN}" class="button button-form" /></dd>
 				</dl>
 				{S_LOGIN_REDIRECT}
 				</fieldset>
@@ -193,10 +193,10 @@
 							<ul>
 							<!-- BEGIN pagination -->
 								<!-- IF topicrow.pagination.S_IS_PREV -->
-								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li><span class="button button-paging button-sm button-active">{topicrow.pagination.PAGE_NUMBER}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-								<!-- ELSE --><li><a class="button" href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+								<!-- ELSE --><li><a class="button button-paging button-sm" class="button" href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
 								<!-- ENDIF -->
 							<!-- END pagination -->
 							</ul>
@@ -251,7 +251,7 @@
 			<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR}</label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
+			<input type="submit" name="sort" value="{L_GO}" class="button button-form-bold" />
 	<!-- ENDIF -->
 		</fieldset>
 	</form>

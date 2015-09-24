@@ -102,10 +102,10 @@
 							<ul>
 							<!-- BEGIN pagination -->
 								<!-- IF topicrow.pagination.S_IS_PREV -->
-								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li><span class="button button-paging button-sm button-active">topicrow.pagination.PAGE_NUMBER}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-								<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+								<!-- ELSE --><li><a class="button button-paging button-sm" href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
 								<!-- ENDIF -->
 							<!-- END pagination -->
 							</ul>
@@ -160,7 +160,7 @@
 
 <!-- IF .topicrow or .forumrow -->
 	<fieldset class="display-actions">
-		<input type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" class="button2" />
+		<input type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" class="button button-form-bold" />
 		<div><a href="#" onclick="marklist('ucp', 't', true); marklist('ucp', 'f', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', 't', false); marklist('ucp', 'f', false); return false;">{L_UNMARK_ALL}</a></div>
 		{S_FORM_TOKEN}
 	</fieldset>

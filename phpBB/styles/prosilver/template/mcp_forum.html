@@ -74,10 +74,10 @@
 						<ul>
 						<!-- BEGIN pagination -->
 							<!-- IF topicrow.pagination.S_IS_PREV -->
-							<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+							<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li><span class="button button-paging button-sm button-active">{topicrow.pagination.PAGE_NUMBER}</span></li>
 							<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
 							<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-							<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+							<!-- ELSE --><li><a class="button button-paging button-sm" href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
 							<!-- ENDIF -->
 						<!-- END pagination -->
 						</ul>
@@ -112,7 +112,7 @@
 		<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 		<label>{S_SELECT_SORT_DIR}</label>
-		<input type="submit" name="sort" value="{L_GO}" class="button2" />
+		<input type="submit" name="sort" value="{L_GO}" class="button button-form-bold" />
 	</fieldset>
 
 	<hr />
@@ -147,7 +147,7 @@
 		<!-- IF S_CAN_MAKE_ANNOUNCE --><option value="make_announce">{L_MAKE_ANNOUNCE}</option><!-- ENDIF -->
 		<!-- IF S_CAN_MAKE_ANNOUNCE_GLOBAL --><option value="make_global">{L_MAKE_GLOBAL}</option><!-- ENDIF -->
 	</select>
-	<input class="button2" type="submit" value="{L_SUBMIT}" />
+	<input class="button button-form-bold" type="submit" value="{L_SUBMIT}" />
 	<div><a href="#" onclick="marklist('mcp', 'topic_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'topic_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
 	<!-- ENDIF -->
 	{S_FORM_TOKEN}

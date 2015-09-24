@@ -31,10 +31,10 @@
 			<form method="post" action="{S_SEARCH_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" placeholder="{L_SEARCH_IN_RESULTS}" />
-				<button class="button" type="submit" title="{L_SEARCH}">
+				<button class="button button-search" type="submit" title="{L_SEARCH}">
 					<i class="icon fa-search fa-fw"></i><span class="sr-only">{L_SEARCH}</span>
 				</button>
-				<a href="{U_SEARCH}" class="button" title="{L_SEARCH_ADV}">
+				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
 					<i class="icon fa-cog fa-fw"></i><span class="sr-only">{L_SEARCH_ADV}</span>
 				</a>
 			</fieldset>
@@ -110,10 +110,10 @@
 								<ul>
 								<!-- BEGIN pagination -->
 									<!-- IF searchresults.pagination.S_IS_PREV -->
-									<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li class="active"><span>{searchresults.pagination.PAGE_NUMBER}</span></li>
+									<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li><span class="button button-paging button-sm button-active">{searchresults.pagination.PAGE_NUMBER}</span></li>
 									<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
 									<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
-									<!-- ELSE --><li><a class="button" href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
+									<!-- ELSE --><li><a class="button button-paging button-sm" href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
 									<!-- ENDIF -->
 								<!-- END pagination -->
 								</ul>
@@ -215,7 +215,7 @@
 		<!-- IF S_SELECT_SORT_DAYS or S_SELECT_SORT_KEY -->
 			<label><!-- IF S_SHOW_TOPICS -->{L_DISPLAY_POSTS}<!-- ELSE -->{L_SORT_BY}</label><label><!-- ENDIF --> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY --></label> <label>{S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR}<!-- ENDIF --></label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
+			<input type="submit" name="sort" value="{L_GO}" class="button button-form-bold" />
 		<!-- ENDIF -->
 	</fieldset>
 
