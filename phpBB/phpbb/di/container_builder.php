@@ -415,6 +415,12 @@ class container_builder
 			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\dummy');
 			$ext_container->compile();
 
+			$config = $ext_container->get('config');
+			if (is_file($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+			{
+				require_once($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+			}
+
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
 
 			// Load each extension found

@@ -161,7 +161,8 @@ class installer
 			->setUpdateWhitelist($whitelist)
 			->setWhitelistDependencies(false)
 			->setIgnorePlatformRequirements(false)
-			->setDumpAutoloader(false)
+			->setOptimizeAutoloader(true)
+			->setDumpAutoloader(true)
 			->setPreferStable(true)
 			->setRunScripts(false)
 			->setDryRun(false);
