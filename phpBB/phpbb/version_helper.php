@@ -34,6 +34,11 @@ class version_helper
 	protected $file = 'versions.json';
 
 	/**
+	 * @var bool Use SSL or not
+	 */
+	protected $use_ssl = false;
+
+	/**
 	 * @var string Current version installed
 	 */
 	protected $current_version;
@@ -85,13 +90,15 @@ class version_helper
 	 * @param string $host Host (e.g. version.phpbb.com)
 	 * @param string $path Path to file (e.g. /phpbb)
 	 * @param string $file File name (Default: versions.json)
+	 * @param bool $use_ssl Use SSL or not (Default: false)
 	 * @return version_helper
 	 */
-	public function set_file_location($host, $path, $file = 'versions.json')
+	public function set_file_location($host, $path, $file = 'versions.json', $use_ssl = false)
 	{
 		$this->host = $host;
 		$this->path = $path;
 		$this->file = $file;
+		$this->use_ssl = $use_ssl;
 
 		return $this;
 	}
@@ -244,7 +251,7 @@ class version_helper
 	*/
 	public function get_versions($force_update = false, $force_cache = false)
 	{
-		$cache_file = '_versioncheck_' . $this->host . $this->path . $this->file;
+		$cache_file = '_versioncheck_' . $this->host . $this->path . $this->file . $this->use_ssl;
 
 		$info = $this->cache->get($cache_file);
 
@@ -255,7 +262,7 @@ class version_helper
 		else if ($info === false || $force_update)
 		{
 			try {
-				$info = $this->file_downloader->get($this->host, $this->path, $this->file);
+				$info = $this->file_downloader->get($this->host, $this->path, $this->file, $this->use_ssl ? 443 : 80);
 			}
 			catch (\phpbb\exception\runtime_exception $exception)
 			{
