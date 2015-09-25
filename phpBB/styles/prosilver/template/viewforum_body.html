@@ -42,9 +42,9 @@
 
 		<a href="{U_POST_NEW_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->
-				<span>{L_BUTTON_FORUM_LOCKED}</span> <i class="icon fa-lock fa-fw"></i>
+				<span>{L_BUTTON_FORUM_LOCKED}</span> <i class="icon fa-lock fa-fw" aria-hidden="true"></i>
 			<!-- ELSE -->
-				<span>{L_BUTTON_NEW_TOPIC}</span> <i class="icon fa-pencil fa-fw"></i>
+				<span>{L_BUTTON_NEW_TOPIC}</span> <i class="icon fa-pencil fa-fw" aria-hidden="true"></i>
 			<!-- ENDIF -->
 		</a>
 			<!-- EVENT viewforum_buttons_top_after -->
@@ -56,10 +56,10 @@
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
 				<button class="button" type="submit" title="{L_SEARCH}">
-					<i class="icon fa-search fa-fw"></i><span>{L_SEARCH}</span>
+					<i class="icon fa-search fa-fw" aria-hidden="true"></i><span>{L_SEARCH}</span>
 				</button>
 				<a href="{U_SEARCH}" class="button" title="{L_SEARCH_ADV}">
-					<i class="icon fa-cog fa-fw"></i><span>{L_SEARCH_ADV}</span>
+					<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span>{L_SEARCH_ADV}</span>
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
@@ -158,23 +158,23 @@
 						<!-- EVENT topiclist_row_prepend -->
 						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT -->
 							<a href="{topicrow.U_NEWEST_POST}">
-								<i class="icon fa-file fa-fw icon-red icon-md"></i><span class="sr-only">{NEW_POST}</span>
+								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
 							</a> 
 						<!-- ENDIF -->
 						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
-								<i class="icon fa-question fa-fw icon-blue"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
+								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
 							</a> 
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_DELETED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_DELETED">
-								<i class="icon fa-recycle fa-fw icon-green"></i><span class="sr-only">{TOPIC_DELETED}</span>
+								<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{TOPIC_DELETED}</span>
 							</a> 
 							<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
 							<a href="{topicrow.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
-								<i class="icon fa-exclamation fa-fw icon-red"></i><span class="sr-only">{TOPIC_REPORTED}</span>
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{TOPIC_REPORTED}</span>
 							</a>
 						<!-- ENDIF -->
 						<br />
@@ -189,7 +189,7 @@
 
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
-							<span><i class="icon fa-clone fa-fw"></i></span>
+							<span><i class="icon fa-clone fa-fw" aria-hidden="true"></i></span>
 							<ul>
 							<!-- BEGIN pagination -->
 								<!-- IF topicrow.pagination.S_IS_PREV -->
@@ -204,8 +204,8 @@
 						<!-- ENDIF -->
 
 						<div class="responsive-hide">
-							<!-- IF topicrow.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw"></i><!-- ENDIF -->
-							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i><!-- ENDIF -->
+							<!-- IF topicrow.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
 						</div>
@@ -219,7 +219,7 @@
 					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 						<!-- IF not S_IS_BOT -->
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
 							</a> 
 						<!-- ENDIF -->
 						<br />{topicrow.LAST_POST_TIME}
@@ -265,9 +265,9 @@
 
 			<a href="{U_POST_NEW_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->
-				<span>{L_BUTTON_FORUM_LOCKED}</span> <i class="icon fa-lock fa-fw"></i>
+				<span>{L_BUTTON_FORUM_LOCKED}</span> <i class="icon fa-lock fa-fw" aria-hidden="true"></i>
 			<!-- ELSE -->
-				<span>{L_BUTTON_NEW_TOPIC}</span> <i class="icon fa-pencil fa-fw"></i>
+				<span>{L_BUTTON_NEW_TOPIC}</span> <i class="icon fa-pencil fa-fw" aria-hidden="true"></i>
 			<!-- ENDIF -->
 			</a>
 

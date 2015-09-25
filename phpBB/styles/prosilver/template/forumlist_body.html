@@ -38,7 +38,7 @@
 						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED -->
 							<!-- 
 								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}">
-									<i class="icon fa-rss-square fa-fw icon-orange"></i><span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
+									<i class="icon fa-rss-square fa-fw icon-orange" aria-hidden="true"></i><span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
 								</a> 
 							-->
 						<!-- ENDIF -->
@@ -53,7 +53,7 @@
 							<br /><strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
 							<!-- BEGIN subforum -->
 								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">
-									<i class="icon fa-file-o fa-fw <!-- IF forumrow.subforum.S_UNREAD --> icon-red<!-- ELSE --> icon-blue<!-- ENDIF --> icon-md"></i>{forumrow.subforum.SUBFORUM_NAME}
+									<i class="icon fa-file-o fa-fw <!-- IF forumrow.subforum.S_UNREAD --> icon-red<!-- ELSE --> icon-blue<!-- ENDIF --> icon-md" aria-hidden="true"></i>{forumrow.subforum.SUBFORUM_NAME}
 								</a>
 								<!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF -->
 							<!-- END subforum -->
@@ -80,11 +80,11 @@
 						<span>
 							<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
 								<a href="{forumrow.U_UNAPPROVED_TOPICS}" title="{TOPICS_UNAPPROVED}">
-									<i class="icon fa-question fa-fw icon-blue"></i><span class="sr-only">{TOPICS_UNAPPROVED}</span>
+									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPICS_UNAPPROVED}</span>
 								</a> 
 							<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
 								<a href="{forumrow.U_UNAPPROVED_POSTS}" title="{POSTS_UNAPPROVED_FORUM}">
-									<i class="icon fa-question fa-fw icon-blue"></i><span class="sr-only">{POSTS_UNAPPROVED_FORUM}</span>
+									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{POSTS_UNAPPROVED_FORUM}</span>
 								</a> 
 							<!-- ENDIF -->
 							<!-- IF forumrow.LAST_POST_TIME -->
@@ -96,7 +96,7 @@
 									{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
 								<!-- IF not S_IS_BOT -->
 									<a href="{forumrow.U_LAST_POST}" title="{VIEW_LATEST_POST}">
-										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
 									</a> 
 								<!-- ENDIF -->
 								<br />{forumrow.LAST_POST_TIME}
