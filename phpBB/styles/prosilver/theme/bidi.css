@@ -907,17 +907,17 @@ li.breadcrumbs span:first-child > a {
 	padding: 3px;
 }
 
-.rtl .search-box .button {
+.rtl .button-search,
+.button-search-end {
 	float: right;
 }
 
-.rtl .search-box a.button {
+.button-search-end {
 	border-left-width: 1px;
 	border-right-width: 0;
-	border-radius: 4px 0 0 4px;
 }
 
-.rtl .search-header a.button {
+.rtl .search-header .button-search-end {
 	border: 0;
 }
 
