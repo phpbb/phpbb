@@ -65,8 +65,10 @@
 					<option<!-- IF add_legend.GROUP_SPECIAL --> class="sep"<!-- ENDIF --> value="{add_legend.GROUP_ID}">{add_legend.GROUP_NAME}</option>
 				<!-- END add_legend -->
 			</select>
+			<!-- EVENT acp_groups_position_legend_add_button_before-->
 			<input class="button2" type="submit" name="submit" value="{L_ADD}" />
 			<input type="hidden" name="action" value="add" />
+			<!-- EVENT acp_groups_position_legend_add_button_after-->
 			{S_FORM_TOKEN}
 		</fieldset>
 	</form>
@@ -162,8 +164,10 @@
 					<option<!-- IF add_teampage.GROUP_SPECIAL --> class="sep"<!-- ENDIF --> value="{add_teampage.GROUP_ID}">{add_teampage.GROUP_NAME}</option>
 				<!-- END add_teampage -->
 			</select>
+			<!-- EVENT acp_groups_position_teampage_add_button_before-->
 			<input class="button2" type="submit" name="submit" value="{L_ADD}" />
 			<input type="hidden" name="action" value="add" />
+			<!-- EVENT acp_groups_position_teampage_add_button_after-->
 			{S_FORM_TOKEN}
 		</fieldset>
 	</form>

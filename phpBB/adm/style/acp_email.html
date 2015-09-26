@@ -19,12 +19,14 @@
 	<legend>{L_COMPOSE}</legend>
 <dl>
 	<dt><label for="group">{L_SEND_TO_GROUP}{L_COLON}</label></dt>
+	<!-- EVENT acp_email_group_options_prepend-->
 	<dd><select id="group" name="g">{S_GROUP_OPTIONS}</select></dd>
+	<!-- EVENT acp_email_group_options_append-->
 </dl>
 <dl>
 	<dt><label for="usernames">{L_SEND_TO_USERS}{L_COLON}</label><br /><span>{L_SEND_TO_USERS_EXPLAIN}</span></dt>
 	<dd><textarea name="usernames" id="usernames" rows="5" cols="40">{USERNAMES}</textarea></dd>
-	<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
+	<dd><!-- EVENT acp_email_find_username_prepend-->[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]<!-- EVENT acp_email_find_username_append--></dd>
 </dl>
 <dl>
 	<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>

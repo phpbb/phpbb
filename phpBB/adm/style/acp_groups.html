@@ -236,7 +236,7 @@
 	<dl>
 		<dt><label for="usernames">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
-		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
+		<dd><!-- EVENT acp_groups_find_username_prepend -->[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]<!-- EVENT acp_groups_find_username_append --></dd>
 	</dl>
 
 	<p class="quick">
@@ -265,6 +265,7 @@
 
 	<form id="acp_groups" method="post" action="{U_ACTION}">
 
+	<!-- EVENT acp_groups_manage_before -->
 	<table class="table1">
 		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
 	<thead>
@@ -285,6 +286,7 @@
 		<!-- ENDIF -->
 	</tbody>
 	</table>
+	<!-- EVENT acp_groups_manage_after -->
 
 	<fieldset class="quick">
 		<!-- IF S_GROUP_ADD -->
