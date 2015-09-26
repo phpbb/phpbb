@@ -30,7 +30,7 @@
 			<legend>{L_LOOK_UP_FORUM}</legend>
 			<!-- IF S_FORUM_MULTIPLE --><p>{L_LOOK_UP_FORUMS_EXPLAIN}</p><!-- ENDIF -->
 		<dl>
-			<dt><!-- EVENT acp_permissions_select_forum_prepend --><label for="forum">{L_LOOK_UP_FORUM}{L_COLON}</label><!-- EVENT acp_permissions_select_forum_append --></dt>
+			<dt><!-- EVENT acp_permissions_select_multiple_forum_prepend --><label for="forum">{L_LOOK_UP_FORUM}{L_COLON}</label><!-- EVENT acp_permissions_select_multiple_forum_append --></dt>
 			<dd><select id="forum" name="forum_id[]"<!-- IF S_FORUM_MULTIPLE --> multiple="multiple"<!-- ENDIF --> size="10">{S_FORUM_OPTIONS}</select></dd>
 			<!-- IF S_FORUM_ALL --><dd><label><input type="checkbox" class="radio" name="all_forums" value="1" /> {L_ALL_FORUMS}</label></dd><!-- ENDIF -->
 		</dl>
@@ -52,7 +52,7 @@
 				<legend>{L_LOOK_UP_FORUM}</legend>
 				<p>{L_SELECT_FORUM_SUBFORUM_EXPLAIN}</p>
 			<dl>
-				<dt><!-- EVENT acp_permissions_select_multiple_forum_prepend --><label for="sforum">{L_LOOK_UP_FORUM}{L_COLON}</label><!-- EVENT acp_permissions_select_multiple_forum_append --></dt>
+				<dt><!-- EVENT acp_permissions_select_forum_prepend --><label for="sforum">{L_LOOK_UP_FORUM}{L_COLON}</label><!-- EVENT acp_permissions_select_forum_append --></dt>
 				<dd><select id="sforum" name="subforum_id">{S_SUBFORUM_OPTIONS}</select></dd>
 			</dl>
 
