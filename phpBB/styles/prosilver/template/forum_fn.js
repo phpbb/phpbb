@@ -582,7 +582,6 @@ function parseDocument($container) {
 					$('.sr-only', $menuContents).removeClass('sr-only');
 					$('.js-responsive-menu-link').addClass('button').addClass('button-icon-only');
 					$('.js-responsive-menu-link .icon').removeClass('fa-bars').addClass('fa-ellipsis-h');
-
 				}
 				copied1 = true;
 			}
