@@ -81,7 +81,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I prevent my username appearing in the online user listings?',
-		1 => 'Within your User Control Panel, under “Board preferences”, you will find the option <em>Hide your online status</em>. Enable this option and you will only appear to the administrators, moderators and yourself. You will be counted as a hidden user.'
+		1 => 'Within your User Control Panel, under “Board preferences”, you will find the option <em>Hide your online status</em>. Enable this option and you will only appear to the administrators and moderators. You will be counted as a hidden user.'
 	),
 	array(
 		0 => 'The times are not correct!',
