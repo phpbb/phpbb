@@ -1345,13 +1345,19 @@ switch ($mode)
 			);
 		}
 
+		$user_types = array(USER_NORMAL, USER_FOUNDER);
+		if ($auth->acl_get('a_user') || $user->data['user_type'] == USER_FOUNDER)
+		{
+			$user_types[] = USER_INACTIVE;
+		}
+
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
 
 		// Get us some users :D
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+			WHERE u.user_type IN (" . implode(', ', $user_types) . ")
 				$sql_where
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
