@@ -1240,7 +1240,7 @@ class mcp_queue
 						continue;
 					}
 
-					$post_data['disapprove_reason'] = '';
+					$post_data['disapprove_reason'] = $disapprove_reason;
 					if (isset($disapprove_reason_lang))
 					{
 						// Okay we need to get the reason from the posters language
