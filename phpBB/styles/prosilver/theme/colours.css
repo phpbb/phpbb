@@ -627,23 +627,6 @@ Colours and backgrounds for buttons.css
 .caret	{ border-color: #DADADA; }
 .caret	{ border-color: #C7C3BF; }
 
-.jumpbox .button, .jumpbox .button i {
-	color: #536482;
-}
-
-.jumpbox .button:hover {
-	border-color: #C7C3BF;
-}
-
-.jumpbox .button:hover i {
-	color: #536482;
-}
-
-.dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
-	border-color: #A6B2BA;
-	color: #105289;
-}
-
 .contact-icons a		{ border-color: #DCDCDC; }
 .contact-icons a:hover	{ background-color: #F2F6F9; }
 
