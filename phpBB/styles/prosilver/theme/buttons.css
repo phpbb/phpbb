@@ -166,6 +166,11 @@ button::-moz-focus-inner {
 	background-image: none;
 }
 
+.dropdown .small-icon {
+	background-position: 5px 50%;
+	padding: 5px;
+}
+
 .small-icon > a {
 	padding: 0 0 0 18px;
 }
