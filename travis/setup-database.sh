@@ -13,6 +13,12 @@ set -x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
+NOTESTS=$3
+
+if [ "$NOTESTS" == '1' ]
+then
+	exit 0
+fi
 
 if [ "$DB" == "postgres" ]
 then
@@ -20,7 +26,7 @@ then
 	psql -c 'create database phpbb_tests;' -U postgres
 fi
 
-if [ "$TRAVIS_PHP_VERSION" == "5.3" -a "$DB" == "mysqli" ]
+if [ "$TRAVIS_PHP_VERSION" == "5.4" -a "$DB" == "mysqli" ]
 then
 	mysql -e 'SET GLOBAL storage_engine=MyISAM;'
 fi

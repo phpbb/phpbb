@@ -13,8 +13,9 @@ set -x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
+NOTESTS=$3
 
-if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
+if [ "$NOTESTS" == '1' ]
 then
 	cd build
 	../phpBB/vendor/bin/phing sniff
