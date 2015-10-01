@@ -773,12 +773,6 @@ fieldset.fields1 dd.recipients {
 	margin-left: 1em;
 }
 
-fieldset.fields1 ul.recipients  input.button2{
-	font-size: 0.8em;
-	margin-right: 0;
-	padding: 0;
-}
-
 fieldset.fields1 dl.pmlist > dt {
 	width: auto !important;
 }
@@ -803,11 +797,14 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	float: left;
 }
 
+.action-bar .button-search {
+	margin-right: 0;
+}
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
 	float: right;
-	margin-top: 3px;
 	text-align: right;
 	width: auto;
 }
@@ -823,33 +820,12 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .pagination > ul {
 	display: inline-block;
-	list-style: none !important;
 	margin-left: 5px;
 }
 
 .pagination > ul > li {
 	display: inline-block !important;
-	padding: 0;
-	font-size: 100%;
-	line-height: normal;
 	vertical-align: middle;
-}
-
-.pagination li a, .pagination li span {
-	border-radius: 2px;
-	padding: 2px 5px;
-}
-
-.pagination li.active span {
-	display: inline-block;
-	font-size: 13px;
-	font-weight: normal;
-	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	line-height: 1.4;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: middle;
-	border: 1px solid transparent;
 }
 
 .pagination li.ellipsis span {
@@ -861,18 +837,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	margin-right: 5px;
 }
 
-.pagination li.page-jump a {
-	padding: 0 8px;
-}
-
-.pagination li.page-jump a i {
-	font-size: 21px;
-}
-
-.pagination .arrow a {
-	padding: 2px 0;
-}
-
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
@@ -881,12 +845,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .row .pagination > ul {
 	margin: 0;
-}
-
-.row .pagination li a, .row .pagination li span {
-	border-radius: 2px;
-    padding: 1px 3px;
-    font-size: 9px;
 }
 
 /* jQuery popups

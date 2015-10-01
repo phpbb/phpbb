@@ -25,6 +25,110 @@
 .button:focus,
 .button:hover {
  	text-decoration: none;
+ 	outline: none;
+}
+
+/* Posting page styles
+----------------------------------------*/
+.button-form,
+.button-form-bold {
+	border-radius: 0;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+}
+
+.button-form-bold {
+	font-weight: 700;
+}
+
+.button-paging {
+	border-radius: 2px;
+	padding: 2px 5px;
+}
+
+.button-search,
+.button-search-end  {
+	float: left;
+	border-radius: 0;
+	margin: 0;
+	padding: 2px 5px;
+}
+
+.button-search-end {
+	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
+}
+
+.search-header .button-search,
+.search-header .button-search-end {
+	border-top-width: 0;
+	border-bottom-width: 0;
+	padding: 3px 5px;
+}
+
+.search-header .button-search-end {
+	border-right-width: 0;
+}
+
+.button-icon-only {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.button-paging-jump {
+	padding: 0 8px;
+}
+
+.button.button-paging-jump .icon {
+	font-size: 21px;
+}
+
+.button-active {
+	cursor: initial;
+}
+
+.button-sm {
+	padding: 1px 3px;
+	font-size: 9px;
+}
+
+/* Post control buttons
+--------------------------------------------- */
+.post-buttons {
+	float: right;
+	list-style: none;
+	margin-top: 2px;
+}
+
+.has-profile .post-buttons {
+	float: none;
+	position: absolute;
+	margin: 0;
+	right: 0;
+	top: 5px;
+}
+
+.post-buttons > li {
+	float: left;
+	margin-right: 3px;
+}
+
+.hastouch .post-buttons {
+	margin-right: 10px;
+}
+
+/* Responsive buttons in post body */
+.post-buttons .dropdown {
+	top: 18px;
+}
+
+.post-buttons .dropdown a {
+	display: block;
+	font-size: 1.2em;
+	text-align: right;
+}
+
+.hasjs .postbody .post-buttons {
+	max-width: 40%;
 }
 
 .caret {
@@ -69,61 +173,6 @@
 
 .contact-icons div {
 	clear: left;
-}
-
-/* Post control buttons
---------------------------------------------- */
-.post-buttons {
-	float: right;
-	list-style: none;
-	margin-top: 2px;
-}
-
-.has-profile .post-buttons {
-	float: none;
-	position: absolute;
-	margin: 0;
-	right: 0;
-	top: 5px;
-}
-
-.post-buttons > li {
-	float: left;
-	margin-right: 3px;
-}
-
-.post-buttons .button, .format-buttons .button {
-	padding-left: 3px;
-	padding-right: 3px;
-}
-
-.hastouch .post-buttons {
-	margin-right: 10px;
-}
-
-.post-buttons .button span {
-	font-size: 0;
-}
-
-/* Responsive buttons in post body */
-.post-buttons .dropdown {
-	top: 18px;
-}
-
-.post-buttons .dropdown a {
-	display: block;
-	font-size: 1.2em;
-	text-align: right;
-}
-
-.hasjs .postbody .post-buttons {
-	max-width: 40%;
-}
-
-/* Browser-specific tweaks */
-button::-moz-focus-inner {
-	padding: 0;
-	border: 0
 }
 
 /* Deprecated as of version 3.2 

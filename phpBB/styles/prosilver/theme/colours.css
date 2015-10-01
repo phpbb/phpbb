@@ -606,7 +606,7 @@ Colours and backgrounds for buttons.css
 	color: #D31141;
 }
 
-.button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
+.button:hover {
 	border-color: #0A8ED0;
 	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */
 	background-image: -webkit-linear-gradient(top, #E9E9E9 0%, #FFFFFF 100%);
@@ -615,62 +615,52 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.button i {
+.button .icon,
+.button-secondary {
 	color: #8f8f8f;
 }
 
-.button:focus i,
-.button:hover i {
-	color: #1878cb;
+.button-secondary:focus,
+.button-secondary:hover,
+.button:focus .icon,
+.button:hover .icon {
+	color: #0A8ED0;
 }
 
-.caret	{ border-color: #DADADA; }
-.caret	{ border-color: #C7C3BF; }
-
-.jumpbox .button, .jumpbox .button i {
-	color: #536482;
+.button-form,
+.button-form-bold {
+	border-color: #666666;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	color: #333333;
 }
 
-.jumpbox .button:hover {
-	border-color: #C7C3BF;
+.button-form:hover,
+.button-form-bold:hover {
+	color: #D31141;
+	text-shadow: none;
+	border-color: #D31141;
 }
 
-.jumpbox .button:hover i {
-	color: #536482;
+.button-form:focus,
+.button-form-bold:focus {
+	color: #0A8ED0;
+	text-shadow: none;
+	border-color: #0A8ED0;
 }
 
-.dropdown-visible .dropdown-select, .dropdown-visible .dropdown-select:hover, .nojs .dropdown-container:hover .dropdown-select {
-	border-color: #A6B2BA;
-	color: #105289;
-}
-
-.contact-icons a		{ border-color: #DCDCDC; }
-.contact-icons a:hover	{ background-color: #F2F6F9; }
-
-/* Pagination
----------------------------------------- */
-
-.pagination li a {
+.button-paging {
 	background: #ECEDEE;
 	filter: none;
 	border-color: #B4BAC0;
 	box-shadow: none;
 	-webkit-box-shadow: none;
-	color: #5C758C;
+	color: #8f8f8f;
 }
 
-.pagination li.ellipsis span {
-	background: transparent;
-	color:	#000000;
-}
-
-.pagination li.active span {
-	background: #4692BF;
-	border-color: #4692BF;
-	color: #FFFFFF;
-}
-
-.pagination li a:hover, .pagination li a:hover .icon, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+.button-paging:hover,
+.button-paging:focus,
+.button-active {
 	background: #368AD2;
 	border-color: #368AD2;
 	filter: none;
@@ -678,14 +668,29 @@ Colours and backgrounds for buttons.css
 	text-shadow: none;
 }
 
+.button-paging:hover .icon,
+.button-paging:focus .icon {
+	color: #FFFFFF;
+}
+
+.button-search:hover,
+.button-search-end:hover {
+	border-color: #C7C3BF;
+}
+
+/* Pagination
+---------------------------------------- */
+.pagination li.ellipsis span {
+	background: transparent;
+	color:	#000000;
+}
+
 /* Search box
 --------------------------------------------- */
 
 .search-box .inputbox,
 .search-box .inputbox:hover,
-.search-box .inputbox:focus,
-.search-box .button:focus,
-.search-box .button:hover {
+.search-box .inputbox:focus {
 	border-color: #C7C3BF;
 }
 
@@ -695,6 +700,14 @@ Colours and backgrounds for buttons.css
 
 /* Icon images
 ---------------------------------------- */
+
+.contact-icons a { 
+	border-color: #DCDCDC;
+}
+
+.contact-icons a:hover { 
+	background-color: #F2F6F9;
+}
 
 .contact-icon						{ background-image: url("./images/icons_contact.png"); }
 
@@ -1047,52 +1060,6 @@ fieldset.quick-login input.inputbox {
 	color: transparent;
 }
 
-
-/* Form button styles
----------------------------------------- */
-
-a.button1, input.button1, input.button3, a.button2, input.button2 {
-	color: #000;
-	background-color: #EFEFEF; /* Old browsers */ /* FF3.6+ */
-	background-image: -webkit-linear-gradient(top, #D2D2D2 0%, #EFEFEF 100%);
-	background-image: linear-gradient(to bottom, #D2D2D2 0%,#EFEFEF 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2D2D2', endColorstr='#EFEFEF',GradientType=0 ); /* IE6-9 */
-}
-
-a.button1, input.button1 {
-	border-color: #666666;
-}
-
-input.button3 {
-	background-image: none;
-}
-
-/* Alternative button */
-a.button2, input.button2, input.button3 {
-	border-color: #666666;
-}
-
-/* <a> button in the style of the form buttons */
-a.button1, a.button2 {
-	color: #000000;
-}
-
-/* Hover states */
-a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
-	border-color: #D31141;
-	color: #D31141;
-	background-color: #D2D2D2; /* Old browsers */ /* FF3.6+ */
-	background-image: -webkit-linear-gradient(top, #EFEFEF 0%, #D2D2D2 100%);
-	background-image: linear-gradient(to bottom, #EFEFEF 0%,#D2D2D2 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EFEFEF', endColorstr='#D2D2D2',GradientType=0 ); /* IE6-9 */
-}
-
-/* Focus states */
-input.button1:focus, input.button2:focus, input.button3:focus {
-	border-color: #11A3EA;
-	color: #0F4987;
-}
-
 input.disabled {
 	color: #666666;
 }
@@ -1167,6 +1134,8 @@ input.disabled {
 .dropdown li.separator {
 	border-color: #DCDCDC;
 }
+
+.caret	{ border-color: #C7C3BF; }
 
 /* Notifications
 ---------------------------------------- */

@@ -4,7 +4,7 @@
 
 <fieldset class="forum-selection">
 	<label for="fo">{L_FORUM}{L_COLON} <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
-	<input type="submit" name="sort" value="{L_GO}" class="button2" />
+	<input type="submit" name="sort" value="{L_GO}" class="button button-form-bold" />
 	{S_FORM_TOKEN}
 </fieldset>
 
@@ -77,7 +77,7 @@
 			<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
 			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
+			<input type="submit" name="sort" value="{L_GO}" class="button button-form-bold" />
 		</fieldset>
 
 		<hr />
@@ -109,11 +109,11 @@
 <!-- IF .postrow -->
 	<fieldset class="display-actions">
 		<!-- IF S_RESTORE -->
-		<input class="button2" type="submit" name="action[delete]" value="{L_DELETE}" />&nbsp;
-		<input class="button1" type="submit" name="action[restore]" value="{L_RESTORE}" />
+		<input class="button button-form-bold" type="submit" name="action[delete]" value="{L_DELETE}" />&nbsp;
+		<input class="button button-form" type="submit" name="action[restore]" value="{L_RESTORE}" />
 		<!-- ELSE -->
-		<input class="button2" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" />&nbsp;
-		<input class="button1" type="submit" name="action[approve]" value="{L_APPROVE}" />
+		<input class="button button-form-bold" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" />&nbsp;
+		<input class="button button-form" type="submit" name="action[approve]" value="{L_APPROVE}" />
 		<!-- ENDIF -->
 		<div>
 			<!-- IF S_TOPICS -->

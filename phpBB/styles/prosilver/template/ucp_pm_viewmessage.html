@@ -90,28 +90,28 @@
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_before -->
 			<!-- IF U_EDIT -->
 				<li>
-					<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button">
+					<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button button-icon-only">
 						<i class="icon fa-pencil fa-fw"></i><span class="sr-only">{L_POST_EDIT_PM}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_DELETE -->
 				<li>
-					<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button">
+					<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button button-icon-only">
 						<i class="icon fa-times fa-fw"></i><span class="sr-only">{L_DELETE_MESSAGE}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_REPORT -->
 				<li>
-					<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button">
+					<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button button-icon-only">
 						<i class="icon fa-exclamation fa-fw"></i><span class="sr-only">{L_REPORT_PM}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_QUOTE -->
 				<li>
-					<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button">
+					<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button button-icon-only">
 						<i class="icon fa-quote-left fa-fw"></i><span class="sr-only">{L_POST_QUOTE_PM}</span>
 					</a>
 				</li>
@@ -170,7 +170,7 @@
 <!-- IF S_VIEW_MESSAGE -->
 <fieldset class="display-options">
 
-	<!-- IF S_MARK_OPTIONS --><label for="mark_option"><select name="mark_option" id="mark_option">{S_MARK_OPTIONS}</select></label>&nbsp;<input class="button2" type="submit" name="submit_mark" value="{L_GO}" /><!-- ENDIF -->
+	<!-- IF S_MARK_OPTIONS --><label for="mark_option"><select name="mark_option" id="mark_option">{S_MARK_OPTIONS}</select></label>&nbsp;<input class="button button-form-bold" type="submit" name="submit_mark" value="{L_GO}" /><!-- ENDIF -->
 	<!-- IF U_PREVIOUS_PM -->
 		<a href="{U_PREVIOUS_PM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
 			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black"></i><span>{L_VIEW_PREVIOUS_PM}</span>
@@ -181,7 +181,7 @@
 			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black"></i><span>{L_VIEW_NEXT_PM}</span>
 		</a>
 	<!-- ENDIF -->
-	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button2" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->
+	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button button-form-bold" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->
 	<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
 	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 	<input type="hidden" name="p" value="{MSG_ID}" />
