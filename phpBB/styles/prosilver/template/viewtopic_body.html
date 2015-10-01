@@ -49,10 +49,10 @@
 			<fieldset>
 				<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
 				<button class="button" type="submit" title="{L_SEARCH}">
-					<i class="icon fa-search fa-fw"></i><span>{L_SEARCH}</span>
+					<i class="icon fa-search fa-fw"></i><span class="sr-only">{L_SEARCH}</span>
 				</button>
 				<a href="{U_SEARCH}" class="button" title="{L_SEARCH_ADV}">
-					<i class="icon fa-cog fa-fw"></i><span>{L_SEARCH_ADV}</span>
+					<i class="icon fa-cog fa-fw"></i><span class="sr-only">{L_SEARCH_ADV}</span>
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
@@ -233,42 +233,42 @@
 					<!-- IF postrow.U_EDIT -->
 						<li>
 							<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button icon-button">
-								<i class="icon fa-pencil fa-fw"></i><span>{L_BUTTON_EDIT}</span>
+								<i class="icon fa-pencil fa-fw"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_DELETE -->
 						<li>
 							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button icon-button">
-								<i class="icon fa-times fa-fw"></i><span>{L_DELETE_POST}</span>
+								<i class="icon fa-times fa-fw"></i><span class="sr-only">{L_DELETE_POST}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_REPORT -->
 						<li>
 							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button icon-button">
-								<i class="icon fa-exclamation fa-fw"></i><span>{L_REPORT_POST}</span>
+								<i class="icon fa-exclamation fa-fw"></i><span class="sr-only">{L_REPORT_POST}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_WARN -->
 						<li>
 							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button icon-button">
-								<i class="icon fa-exclamation-triangle fa-fw"></i><span>{L_WARN_USER}</span>
+								<i class="icon fa-exclamation-triangle fa-fw"></i><span class="sr-only">{L_WARN_USER}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_INFO -->
 						<li>
 							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button icon-button">
-								<i class="icon fa-info fa-fw"></i><span>{L_INFORMATION}</span>
+								<i class="icon fa-info fa-fw"></i><span class="sr-only">{L_INFORMATION}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_QUOTE -->
 						<li>
 							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button icon-button">
-								<i class="icon fa-quote-left fa-fw"></i><span>{L_QUOTE}</span>
+								<i class="icon fa-quote-left fa-fw"></i><span class="sr-only">{L_QUOTE}</span>
 							</a>
 						</li>
 					<!-- ENDIF -->

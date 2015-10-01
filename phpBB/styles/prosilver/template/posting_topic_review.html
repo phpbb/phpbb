@@ -29,14 +29,14 @@
 			<!-- IF topic_review_row.U_MCP_DETAILS -->
 				<li>
 					<a href="{topic_review_row.U_MCP_DETAILS}" title="{L_POST_DETAILS}" class="button">
-						<i class="icon fa-info fa-fw"></i><span>{L_POST_DETAILS}</span>
+						<i class="icon fa-info fa-fw"></i><span class="sr-only">{L_POST_DETAILS}</span>
 					</a>
 				<li>
 			<!-- ENDIF -->
 			<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE -->
 				<li>
 					<a href="#postingbox" onclick="addquote({topic_review_row.POST_ID}, '{topic_review_row.POSTER_QUOTE}', '{LA_WROTE}', {post_id:{topic_review_row.POST_ID},time:{topic_review_row.POST_TIME},user_id:{topic_review_row.USER_ID}});" title="{L_QUOTE} {topic_review_row.POST_AUTHOR}" class="button">
-						<i class="icon fa-quote-left fa-fw"></i><span>{L_QUOTE} {topic_review_row.POST_AUTHOR}</span>
+						<i class="icon fa-quote-left fa-fw"></i><span class="sr-only">{L_QUOTE} {topic_review_row.POST_AUTHOR}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
