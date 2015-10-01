@@ -60,8 +60,7 @@
 }
 
 .hidden {
-	display: none !important;
-	visibility: hidden !important;
+	display: none ;
 }
 
 .affix { position: fixed }
