@@ -1,7 +1,7 @@
 /* Responsive Design
 ---------------------------------------- */
 
-@media only screen and (max-width: 320px) {
+@media (max-width: 320px) {
 	select, .inputbox {
 		max-width: 240px;
 	}
@@ -9,19 +9,19 @@
 
 /* Notifications list
 ----------------------------------------*/
-@media only screen and (max-width: 350px) {
+@media (max-width: 350px) {
 	.dropdown-extended .dropdown-contents {
 		width: auto;
 	}
 }
 
-@media only screen and (max-width: 430px) {
+@media (max-width: 430px) {
 	.section-viewtopic .search-box .inputbox {
 		width: 110px;
 	}
 }
 
-@media only screen and (max-width: 500px) {
+@media (max-width: 500px) {
 	dd label {
 		white-space: normal;
 	}
@@ -94,7 +94,7 @@
 	}
 }
 
-@media only screen and (max-width: 550px) {
+@media (max-width: 550px) {
 	ul.topiclist.forums dt {
 		margin-right: 0;
 	}
@@ -108,7 +108,7 @@
 	}
 }
 
-@media only screen and (max-width: 700px) {
+@media (max-width: 700px) {
 	.responsive-hide { display: none !important; }
 	.responsive-show { display: block !important; }
 	.responsive-show-inline { display: inline !important; }
@@ -549,7 +549,7 @@
 	}
 }
 
-@media only screen and (max-width: 850px) {
+@media (max-width: 850px) {
 	.postprofile { width: 28%; }
 	.postbody { width: 70%; }
 }
