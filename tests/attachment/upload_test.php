@@ -180,4 +180,53 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 
 		$this->assertSame($expected, $filedata);
 	}
+
+	public function test_init_error()
+	{
+		$filespec = $this->getMockBuilder('\phpbb\files\filespec')
+			->disableOriginalConstructor()
+			->getMock();
+		$filespec->expects($this->any())
+			->method('init_error')
+			->willReturn(true);
+		$filespec->expects($this->any())
+			->method('set_upload_namespace')
+			->willReturnSelf();
+		$filespec->expects($this->any())
+			->method('set_upload_ary')
+			->willReturnSelf();
+		$this->container->set('files.filespec', $filespec);
+		$factory_mock = $this->getMockBuilder('\phpbb\files\factory')
+			->disableOriginalConstructor()
+			->getMock();
+		$factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($filespec);
+		$this->container->set('files.types.local', new \phpbb\files\types\local(
+			$factory_mock,
+			$this->language,
+			$this->php_ini,
+			$this->request
+		));
+
+		$this->upload = new \phpbb\attachment\upload(
+			$this->auth,
+			$this->cache,
+			$this->config,
+			$this->files_upload,
+			$this->language,
+			$this->mimetype_guesser,
+			$this->phpbb_dispatcher,
+			$this->plupload,
+			$this->user,
+			$this->phpbb_root_path
+		);
+
+		$filedata = $this->upload->upload('foobar', 1, true);
+
+		$this->assertSame(array(
+			'error'		=> array(),
+			'post_attach'	=> false,
+		), $filedata);
+	}
 }
