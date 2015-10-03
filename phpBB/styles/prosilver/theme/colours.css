@@ -606,7 +606,8 @@ Colours and backgrounds for buttons.css
 	color: #D31141;
 }
 
-.button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
+.button:hover,
+.button:focus {
 	border-color: #0A8ED0;
 	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */
 	background-image: -webkit-linear-gradient(top, #E9E9E9 0%, #FFFFFF 100%);

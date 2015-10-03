@@ -25,6 +25,7 @@
 .button:focus,
 .button:hover {
  	text-decoration: none;
+ 	outline: none;
 }
 
 .caret {
