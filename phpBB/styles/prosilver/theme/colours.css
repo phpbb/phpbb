@@ -615,13 +615,22 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.button i {
+
+.button .icon,
+.button-secondary {
 	color: #8f8f8f;
 }
 
-.button:focus i,
-.button:hover i {
-	color: #1878cb;
+.button-secondary:focus,
+.button-secondary:hover,
+.button:focus .icon,
+.button:hover .icon {
+	color: #0A8ED0;
+}
+
+.button-search:hover,
+.button-search-end:hover {
+	border-color: #C7C3BF;
 }
 
 .caret	{ border-color: #DADADA; }
@@ -683,9 +692,7 @@ Colours and backgrounds for buttons.css
 
 .search-box .inputbox,
 .search-box .inputbox:hover,
-.search-box .inputbox:focus,
-.search-box .button:focus,
-.search-box .button:hover {
+.search-box .inputbox:focus {
 	border-color: #C7C3BF;
 }
 

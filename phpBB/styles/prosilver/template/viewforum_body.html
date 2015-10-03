@@ -55,11 +55,11 @@
 			<form method="get" id="forum-search" action="{S_SEARCHBOX_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
-				<button class="button" type="submit" title="{L_SEARCH}">
-					<i class="icon fa-search fa-fw"></i><span>{L_SEARCH}</span>
+				<button class="button button-search" type="submit" title="{L_SEARCH}">
+					<i class="icon fa-search fa-fw"></i><span class="sr-only">{L_SEARCH}</span>
 				</button>
-				<a href="{U_SEARCH}" class="button" title="{L_SEARCH_ADV}">
-					<i class="icon fa-cog fa-fw"></i><span>{L_SEARCH_ADV}</span>
+				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+					<i class="icon fa-cog fa-fw"></i><span class="sr-only">{L_SEARCH_ADV}</span>
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>

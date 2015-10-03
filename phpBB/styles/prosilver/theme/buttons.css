@@ -37,6 +37,37 @@
 	vertical-align: top;
 }
 
+/* Posting page styles
+----------------------------------------*/
+.button-search,
+.button-search-end  {
+	float: left;
+	border-radius: 0;
+	margin: 0;
+	padding: 2px 5px;
+}
+
+.button-search-end {
+	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
+}
+
+.search-header .button-search,
+.search-header .button-search-end {
+	border-top-width: 0;
+	border-bottom-width: 0;
+	padding: 3px 5px;
+}
+
+.search-header .button-search-end {
+	border-right-width: 0;
+}
+
+.button-icon-only {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
 /* Poster contact icons
 ----------------------------------------*/
 .contact-icons.dropdown-contents {
