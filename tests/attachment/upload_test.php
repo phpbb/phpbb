@@ -74,7 +74,9 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		parent::setUp();
 
 		$this->auth = new \phpbb\auth\auth();
-		$this->config = new \phpbb\config\config(array());
+		$this->config = new \phpbb\config\config(array(
+			'upload_path'	=> '../attachment/fixtures/',
+		));
 		$config = $this->config;
 		$this->db = $this->new_dbal();
 		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $this->config, $this->db, $phpbb_root_path, $phpEx);
@@ -153,14 +155,33 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	public function data_upload()
 	{
 		return array(
-			array('foobar', 1, false, array(
+			array('foobar', 1, false,
+				array(),
+				array(
 					'error' => array(
 						'Upload initiated but no valid file upload form found.',
 					),
 					'post_attach'	=> false,
 				)
 			),
-			array('foobar', 1, true, array(
+			array('foobar', 1, true,
+				array(
+					'realname'		=> 'foobar.jpg',
+					'type'			=> 'jpg',
+					'size'			=> 100,
+				),
+				array(
+					'error' => array(
+						'NOT_UPLOADED',
+						'The image file you tried to attach is invalid.',
+					),
+					'post_attach'	=> false,
+					'thumbnail'		=> 0,
+				)
+			),
+			array('foobar', 1, true,
+				array(),
+				array(
 					'error' => array(
 						'NOT_UPLOADED',
 					),
@@ -174,9 +195,9 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/**
 	 * @dataProvider data_upload
 	 */
-	public function test_upload($form_name, $forum_id, $local, $expected)
+	public function test_upload($form_name, $forum_id, $local, $filedata, $expected)
 	{
-		$filedata = $this->upload->upload($form_name, $forum_id, $local);
+		$filedata = $this->upload->upload($form_name, $forum_id, $local, '', false, $filedata);
 
 		$this->assertSame($expected, $filedata);
 	}
@@ -227,6 +248,100 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->assertSame(array(
 			'error'		=> array(),
 			'post_attach'	=> false,
+		), $filedata);
+	}
+
+	public function data_image_not_image()
+	{
+		return array(
+			array(false),
+			array(true),
+		);
+	}
+
+	/**
+	 * @dataProvider data_image_not_image
+	 */
+	public function test_image_not_image($plupload_active)
+	{
+		$filespec = $this->getMock('\phpbb\files\filespec',
+			array(
+				'init_error',
+				'is_image',
+				'move_file',
+				'is_uploaded',
+			),
+			array(
+				$this->filesystem,
+				$this->language,
+				$this->php_ini,
+				new \FastImageSize\FastImageSize(),
+				$this->phpbb_root_path,
+				$this->mimetype_guesser,
+				$this->plupload
+			));
+		$filespec->set_upload_namespace($this->files_upload);
+		$filespec->expects($this->any())
+			->method('init_error')
+			->willReturn(false);
+		$filespec->expects($this->any())
+			->method('is_image')
+			->willReturn(false);
+		$filespec->expects($this->any())
+			->method('is_uploaded')
+			->willReturn(true);
+		$filespec->expects($this->any())
+			->method('move_file')
+			->willReturn(false);
+		$this->container->set('files.filespec', $filespec);
+		$factory_mock = $this->getMockBuilder('\phpbb\files\factory')
+			->disableOriginalConstructor()
+			->getMock();
+		$factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($filespec);
+		$this->container->set('files.types.local', new \phpbb\files\types\local(
+			$factory_mock,
+			$this->language,
+			$this->php_ini,
+			$this->request
+		));
+
+		$plupload = $this->getMockBuilder('\phpbb\plupload\plupload')
+			->disableOriginalConstructor()
+			->getMock();
+		$plupload->expects($this->any())
+			->method('is_active')
+			->willReturn($plupload_active);
+		if ($plupload_active)
+		{
+			$plupload->expects($this->once())
+				->method('emit_error')
+				->with(104, 'ATTACHED_IMAGE_NOT_IMAGE')
+				->willReturn(false);
+		}
+		$this->upload = new \phpbb\attachment\upload(
+			$this->auth,
+			$this->cache,
+			$this->config,
+			$this->files_upload,
+			$this->language,
+			$this->mimetype_guesser,
+			$this->phpbb_dispatcher,
+			$plupload,
+			$this->user,
+			$this->phpbb_root_path
+		);
+
+		$filedata = $this->upload->upload('foobar', 1, true, '', false, array(
+			'realname'		=> 'foobar.jpg',
+			'type'			=> 'jpg',
+			'size'			=> 100,
+		));
+		$this->assertEquals(array(
+			'error'			=> array('The image file you tried to attach is invalid.'),
+			'post_attach'	=> false,
+			'thumbnail'		=> 0,
 		), $filedata);
 	}
 }

@@ -36,6 +36,40 @@
             <value>1</value>
         </row>
     </table>
+    <table name="phpbb_extensions">
+        <column>extension</column>
+        <column>group_id</column>
+        <row>
+            <value>jpg</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>png</value>
+            <value>1</value>
+        </row>
+    </table>
+    <table name="phpbb_extension_groups">
+        <column>cat_id</column>
+        <column>group_id</column>
+        <column>download_mode</column>
+        <column>upload_icon</column>
+        <column>max_filesize</column>
+        <column>allow_group</column>
+        <column>allow_in_pm</column>
+        <column>allowed_forums</column>
+        <column>group_name</column>
+        <row>
+            <value>1</value>
+            <value>1</value>
+            <value>1</value>
+            <value> </value>
+            <value>1000</value>
+            <value>1</value>
+            <value>1</value>
+            <value>a:1:{i:0;i:1;}</value>
+            <value>Images</value>
+        </row>
+    </table>
     <table name="phpbb_posts">
         <column>post_id</column>
         <column>post_text</column>

@@ -160,6 +160,9 @@ class upload
 		// Do we have to create a thumbnail?
 		$this->file_data['thumbnail'] = ($is_image && $this->config['img_create_thumbnail']) ? 1 : 0;
 
+		// Make sure the image category only holds valid images...
+		$this->check_image($is_image);
+
 		if (sizeof($this->file->error))
 		{
 			$this->file->remove();
@@ -168,9 +171,6 @@ class upload
 
 			return $this->file_data;
 		}
-
-		// Make sure the image category only holds valid images...
-		$this->check_image($is_image);
 
 		$this->fill_file_data();
 
@@ -263,7 +263,7 @@ class upload
 
 			// If this error occurs a user tried to exploit an IE Bug by renaming extensions
 			// Since the image category is displaying content inline we need to catch this.
-			trigger_error($this->language->lang('ATTACHED_IMAGE_NOT_IMAGE'));
+			$this->file->set_error($this->language->lang('ATTACHED_IMAGE_NOT_IMAGE'));
 		}
 	}
 
