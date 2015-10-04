@@ -12,6 +12,7 @@
 */
 
 require_once(dirname(__FILE__) . '/../../phpBB/includes/functions.php');
+require_once(dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php');
 
 class phpbb_attachment_upload_test extends \phpbb_database_test_case
 {
@@ -75,7 +76,8 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 
 		$this->auth = new \phpbb\auth\auth();
 		$this->config = new \phpbb\config\config(array(
-			'upload_path'	=> '../attachment/fixtures/',
+			'upload_path'	=> '',
+			'img_create_thumbnail'	=> true,
 		));
 		$config = $this->config;
 		$this->db = $this->new_dbal();
@@ -176,7 +178,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 						'The image file you tried to attach is invalid.',
 					),
 					'post_attach'	=> false,
-					'thumbnail'		=> 0,
+					'thumbnail'		=> 1,
 				)
 			),
 			array('foobar', 1, true,
@@ -251,18 +253,89 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		), $filedata);
 	}
 
-	public function data_image_not_image()
+	public function data_image_upload()
 	{
 		return array(
-			array(false),
-			array(true),
+			array(false, false, array(),
+				array(
+					'error'			=> array('The image file you tried to attach is invalid.'),
+					'post_attach'	=> false,
+					'thumbnail'		=> 1,
+				)
+			),
+			array(false, true, array(),
+				array(
+					'error'			=> array('The image file you tried to attach is invalid.'),
+					'post_attach'	=> false,
+					'thumbnail'		=> 1,
+				)
+			),
+			array(true, false, array(),
+				array(
+					'error'			=> array(),
+					'post_attach'	=> true,
+					// thumbnail gets reset to 0 as creation was not possible
+					'thumbnail'		=> 0,
+					'filesize'		=> 100,
+					'mimetype'		=> 'jpg',
+					'extension'		=> 'jpg',
+					'real_filename'	=> 'foobar.jpg',
+				)
+			),
+			array(true, false,
+				array(
+					'check_attachment_content'	=> true,
+					'mime_triggers'	=> '',
+				),
+				array(
+					'error'			=> array(),
+					'post_attach'	=> true,
+					// thumbnail gets reset to 0 as creation was not possible
+					'thumbnail'		=> 0,
+					'filesize'		=> 100,
+					'mimetype'		=> 'jpg',
+					'extension'		=> 'jpg',
+					'real_filename'	=> 'foobar.jpg',
+				)
+			),
+			array(true, false,
+				array(
+					'attachment_quota'	=> 150,
+				),
+				array(
+					'error'			=> array(),
+					'post_attach'	=> true,
+					// thumbnail gets reset to 0 as creation was not possible
+					'thumbnail'		=> 0,
+					'filesize'		=> 100,
+					'mimetype'		=> 'jpg',
+					'extension'		=> 'jpg',
+					'real_filename'	=> 'foobar.jpg',
+				)
+			),
+			array(true, false,
+				array(
+					'attachment_quota'	=> 50,
+				),
+				array(
+					'error'			=> array(
+						'ATTACH_QUOTA_REACHED',
+					),
+					'post_attach'	=> false,
+					'thumbnail'		=> 1,
+					'filesize'		=> 100,
+					'mimetype'		=> 'jpg',
+					'extension'		=> 'jpg',
+					'real_filename'	=> 'foobar.jpg',
+				)
+			),
 		);
 	}
 
 	/**
-	 * @dataProvider data_image_not_image
+	 * @dataProvider data_image_upload
 	 */
-	public function test_image_not_image($plupload_active)
+	public function test_image_upload($is_image, $plupload_active, $config_data, $expected)
 	{
 		$filespec = $this->getMock('\phpbb\files\filespec',
 			array(
@@ -280,13 +353,17 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 				$this->mimetype_guesser,
 				$this->plupload
 			));
+		foreach ($config_data as $key => $value)
+		{
+			$this->config[$key] = $value;
+		}
 		$filespec->set_upload_namespace($this->files_upload);
 		$filespec->expects($this->any())
 			->method('init_error')
 			->willReturn(false);
 		$filespec->expects($this->any())
 			->method('is_image')
-			->willReturn(false);
+			->willReturn($is_image);
 		$filespec->expects($this->any())
 			->method('is_uploaded')
 			->willReturn(true);
@@ -338,10 +415,16 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			'type'			=> 'jpg',
 			'size'			=> 100,
 		));
-		$this->assertEquals(array(
-			'error'			=> array('The image file you tried to attach is invalid.'),
-			'post_attach'	=> false,
-			'thumbnail'		=> 0,
-		), $filedata);
+
+		foreach ($expected as $key => $entry)
+		{
+			$this->assertEquals($entry, $filedata[$key]);
+		}
+
+		// Reset config data
+		foreach ($config_data as $key => $value)
+		{
+			$this->config->delete($key);
+		}
 	}
 }
