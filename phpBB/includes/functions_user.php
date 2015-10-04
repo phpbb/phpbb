@@ -2754,6 +2754,18 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 
 		$db->sql_multi_insert(USER_GROUP_TABLE, $sql_ary);
+		/**
+		* Event after users are added to a group
+		*
+		* @event core.group_add_user_after
+		* @var	int		group_id		ID of the group to which users are added
+		* @var	string	group_name		Name of the group
+		* @var	array	user_id_ary		IDs of the users which are added
+		* @var	array	username_ary	names of the users which are added
+		* @since 3.6
+		*/
+		$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
+		extract($phpbb_dispatcher->trigger_event('core.group_add_user_after', compact($vars)));
 	}
 
 	if (sizeof($update_id_ary))
