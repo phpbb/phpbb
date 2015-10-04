@@ -39,6 +39,11 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	{
 		global $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
 
+		if (!@extension_loaded('gd'))
+		{
+			$this->markTestSkipped('Thumbnail tests require gd extension.');
+		}
+
 		parent::setUp();
 
 		$config = $this->config = new \phpbb\config\config(array(
