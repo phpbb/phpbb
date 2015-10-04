@@ -2698,7 +2698,7 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_container;
+	global $db, $auth, $phpbb_container, $phpbb_dispatcher;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2762,7 +2762,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		* @var	string	group_name		Name of the group
 		* @var	array	user_id_ary		IDs of the users which are added
 		* @var	array	username_ary	names of the users which are added
-		* @since 3.6
+		* @since 3.7
 		*/
 		$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
 		extract($phpbb_dispatcher->trigger_event('core.group_add_user_after', compact($vars)));
