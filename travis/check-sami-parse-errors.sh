@@ -12,8 +12,9 @@ set -e
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
+NOTESTS=$3
 
-if [ "$TRAVIS_PHP_VERSION" == "5.3" -a "$DB" == "mysqli" ]
+if [ "$NOTESTS" == '1' ]
 then
 	# Workarounds for
 	# https://github.com/fabpot/Sami/issues/116

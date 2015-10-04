@@ -12,10 +12,11 @@ set -e
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
-root="$3"
+NOTESTS=$3
+root="$4"
 path="${root}phpBB/"
 
-if [ "$TRAVIS_PHP_VERSION" == "5.3" -a "$DB" == "mysqli" ]
+if [ "$NOTESTS" == '1' ]
 then
 	# Check the permissions of the files
 

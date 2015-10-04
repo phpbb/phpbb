@@ -95,7 +95,7 @@ class check_server_environment extends \phpbb\install\task_base
 	{
 		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '5.3.9') < 0)
+		if (version_compare($php_version, '5.4') < 0)
 		{
 			$this->response_helper->add_error_message('PHP_VERSION_REQD', 'PHP_VERSION_REQD_EXPLAIN');
 
