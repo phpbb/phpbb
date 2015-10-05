@@ -1,0 +1,32 @@
+services:
+    attachment.delete:
+        class: phpbb\attachment\delete
+        scope: prototype
+        arguments:
+            - @config
+            - @dbal.conn
+            - @dispatcher
+            - @filesystem
+            - @attachment.resync
+            - %core.root_path%
+
+    attachment.resync:
+        class: phpbb\attachment\resync
+        scope: prototype
+        arguments:
+            - @dbal.conn
+
+    attachment.upload:
+        class: phpbb\attachment\upload
+        scope: prototype
+        arguments:
+            - @auth
+            - @cache
+            - @config
+            - @files.upload
+            - @language
+            - @mimetype.guesser
+            - @dispatcher
+            - @plupload
+            - @user
+            - %core.root_path%
