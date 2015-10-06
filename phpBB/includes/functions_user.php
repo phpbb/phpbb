@@ -2941,7 +2941,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	* @var	string	group_name		Name of the group
 	* @var	array	user_id_ary		IDs of the users which are removed
 	* @var	array	username_ary	names of the users which are removed
-	* @since 3.7
+	* @since 3.1.7-RC1
 	*/
 	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
 	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_after', compact($vars)));
