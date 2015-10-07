@@ -75,6 +75,17 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.db.list:
+        class: phpbb\console\command\db\list_command
+        arguments:
+            - @user
+            - @migrator
+            - @ext.manager
+            - @config
+            - @cache
+        tags:
+            - { name: console.command }
+
     console.command.db.migrate:
         class: phpbb\console\command\db\migrate
         arguments:
@@ -84,6 +95,19 @@ services:
             - @config
             - @cache
             - @log
+            - @filesystem
+            - %core.root_path%
+        tags:
+            - { name: console.command }
+
+    console.command.db.revert:
+        class: phpbb\console\command\db\revert
+        arguments:
+            - @user
+            - @migrator
+            - @ext.manager
+            - @config
+            - @cache
             - @filesystem
             - %core.root_path%
         tags:

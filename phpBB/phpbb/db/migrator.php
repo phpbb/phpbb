@@ -416,6 +416,9 @@ class migrator
 
 		if ($state['migration_data_done'])
 		{
+			$this->output_handler->write(array('MIGRATION_REVERT_DATA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+			$elapsed_time = microtime(true);
+
 			if ($state['migration_data_state'] !== 'revert_data')
 			{
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state'], true);
@@ -431,9 +434,22 @@ class migrator
 			}
 
 			$this->set_migration_state($name, $state);
+
+			$elapsed_time = microtime(true) - $elapsed_time;
+			if ($state['migration_data_done'])
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_DATA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_DATA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 		else if ($state['migration_schema_done'])
 		{
+			$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+			$elapsed_time = microtime(true);
+
 			$steps = $this->helper->get_schema_steps($migration->revert_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
@@ -448,6 +464,9 @@ class migrator
 
 				unset($this->migration_state[$name]);
 			}
+
+			$elapsed_time = microtime(true) - $elapsed_time;
+			$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 		}
 
 		return true;

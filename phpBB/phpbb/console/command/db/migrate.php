@@ -15,20 +15,8 @@ namespace phpbb\console\command\db;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class migrate extends \phpbb\console\command\command
+class migrate extends \phpbb\console\command\db\migration_command
 {
-	/** @var \phpbb\db\migrator */
-	protected $migrator;
-
-	/** @var \phpbb\extension\manager */
-	protected $extension_manager;
-
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/** @var \phpbb\cache\service */
-	protected $cache;
-
 	/** @var \phpbb\log\log */
 	protected $log;
 
@@ -40,14 +28,10 @@ class migrate extends \phpbb\console\command\command
 
 	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
 	{
-		$this->migrator = $migrator;
-		$this->extension_manager = $extension_manager;
-		$this->config = $config;
-		$this->cache = $cache;
 		$this->log = $log;
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
-		parent::__construct($user);
+		parent::__construct($user, $migrator, $extension_manager, $config, $cache);
 		$this->user->add_lang(array('common', 'install', 'migrator'));
 	}
 
@@ -90,22 +74,5 @@ class migrate extends \phpbb\console\command\command
 
 		$this->finalise_update();
 		$output->writeln($this->user->lang['DATABASE_UPDATE_COMPLETE']);
-	}
-
-	protected function load_migrations()
-	{
-		$migrations = $this->extension_manager
-			->get_finder()
-			->core_path('phpbb/db/migration/data/')
-			->extension_directory('/migrations')
-			->get_classes();
-
-		$this->migrator->set_migrations($migrations);
-	}
-
-	protected function finalise_update()
-	{
-		$this->cache->purge();
-		$this->config->increment('assets_version', 1);
 	}
 }
