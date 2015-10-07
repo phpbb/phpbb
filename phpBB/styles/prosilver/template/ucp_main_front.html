@@ -19,7 +19,7 @@
 					<div class="list-inner">
 						<!-- IF topicrow.S_UNREAD -->
 							<a href="{topicrow.U_NEWEST_POST}">
-								<i class="icon fa-file fa-fw icon-red icon-md"></i><span class="sr-only">{NEW_POST}</span>
+								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
 							</a> 
 						<!-- ENDIF -->
 						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><br />
@@ -38,11 +38,11 @@
 						</div>
 						<!-- ENDIF -->
 						<div class="responsive-hide">
-							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
 						<div class="responsive-show" style="display: none;">
-							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 						</div>
 					</div>
@@ -50,7 +50,7 @@
 				<dd class="lastpost">
 					<span>{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 						<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-							<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+							<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
 						</a> 
 						<br />{topicrow.LAST_POST_TIME}
 					</span>
@@ -70,7 +70,7 @@
 		<dt>{L_TOTAL_POSTS}{L_COLON}</dt> <dd><!-- IF POSTS_PCT -->{POSTS}<!-- IF S_DISPLAY_SEARCH --> | <strong><a href="{U_SEARCH_USER}">{L_SEARCH_YOUR_POSTS}</a></strong><!-- ENDIF --><br />({POSTS_DAY} / {POSTS_PCT})<!-- ELSE -->{POSTS}<!-- ENDIF --></dd>
 		<!-- IF ACTIVE_FORUM != '' --><dt>{L_ACTIVE_IN_FORUM}{L_COLON}</dt> <dd><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})</dd><!-- ENDIF -->
 		<!-- IF ACTIVE_TOPIC != '' --><dt>{L_ACTIVE_IN_TOPIC}{L_COLON}</dt> <dd><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})</dd><!-- ENDIF -->
-		<!-- IF WARNINGS --><dt>{L_YOUR_WARNINGS}{L_COLON}</dt> <dd class="error"><i class="icon fa-exclamation-triangle fa-fw icon-red"></i> [{WARNINGS}]</dd><!-- ENDIF -->
+		<!-- IF WARNINGS --><dt>{L_YOUR_WARNINGS}{L_COLON}</dt> <dd class="error"><i class="icon fa-exclamation-triangle fa-fw icon-red" aria-hidden="true"></i> [{WARNINGS}]</dd><!-- ENDIF -->
 	</dl>
 <!-- EVENT ucp_main_front_user_activity_after -->
 

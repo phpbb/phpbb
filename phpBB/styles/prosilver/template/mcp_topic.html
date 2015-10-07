@@ -101,7 +101,7 @@
 				<ul class="post-buttons">
 					<li>
 						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button button-icon-only">
-							<i class="icon fa-info fa-fw"></i><span class="sr-only">{L_POST_DETAILS}</span>
+							<i class="icon fa-info fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_DETAILS}</span>
 						</a>
 					</li>
 					<li>
@@ -114,7 +114,7 @@
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
 				<p class="author">
 					<a href="#pr{postrow.POST_ID}" title="{postrow.MINI_POST}">
-						<i class="icon fa-file fa-fw icon-lightgray icon-tiny"></i><span class="sr-only">{postrow.MINI_POST}</span>
+						<i class="icon fa-file fa-fw icon-lightgray icon-tiny" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span>
 					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --> 
 				</p>
 				<!-- IF postrow.S_POST_UNAPPROVED -->

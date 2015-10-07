@@ -26,7 +26,7 @@
 				<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
 				<li>
 					<a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}', {time:{history_row.MESSAGE_TIME},user_id:{history_row.USER_ID}});"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}" class="button button-icon-only">
-						<i class="icon fa-quote-left fa-fw"></i><span class="sr-only">{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
+						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
 					</a>
 				</li>
 				<!-- ENDIF -->
@@ -36,7 +36,7 @@
 			<!-- EVENT ucp_pm_history_post_buttons_list_after -->
 
 			<p class="author">
-				<span><i class="icon fa-file fa-fw icon-lightgray icon-md"></i><span class="sr-only">{history_row.MINI_POST}</span></span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
+				<span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{history_row.MINI_POST}</span></span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
 				<br />
 				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}
 			</p>
@@ -53,7 +53,7 @@
 <hr />
 <p>
 	<a href="#cp-main" class="top">
-		<i class="icon fa-chevron-circle-up fa-fw icon-gray"></i><span>{L_BACK_TO_TOP}</span>
+		<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span>{L_BACK_TO_TOP}</span>
 	</a>
 </p>
 

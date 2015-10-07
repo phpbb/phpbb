@@ -73,9 +73,9 @@
 						<!-- ENDIF -->
 						<!-- IF messagerow.S_PM_REPORTED -->
 							<a href="{messagerow.U_MCP_REPORT}">
-								<i class="icon fa-exclamation fa-fw icon-red"></i><span class="sr-only">{PM_REPORTED}</span>
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{PM_REPORTED}</span>
 							</a>
-						<!-- ENDIF --> <!-- IF messagerow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw"></i> <!-- ENDIF --><br />
+						<!-- ENDIF --> <!-- IF messagerow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF --><br />
 						<!-- IF S_SHOW_RECIPIENTS -->{L_MESSAGE_TO} {messagerow.RECIPIENTS}<!-- ELSE -->{L_MESSAGE_BY_AUTHOR} {messagerow.MESSAGE_AUTHOR_FULL} &raquo; {messagerow.SENT_TIME}<!-- ENDIF -->
 
 						</div>

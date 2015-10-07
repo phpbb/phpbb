@@ -5,7 +5,7 @@
 
 		<li id="quick-links" class="quick-links dropdown-container<!-- IF not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH --> hidden<!-- ENDIF -->" data-skip-responsive="true">
 			<a href="#" class="dropdown-trigger">
-				<i class="icon fa-bars fa-fw"></i><span>{L_QUICK_LINKS}</span>
+				<i class="icon fa-bars fa-fw" aria-hidden="true"></i><span>{L_QUICK_LINKS}</span>
 			</a>
 			<div class="dropdown">
 				<div class="pointer"><div class="pointer-inner"></div></div>
@@ -17,38 +17,38 @@
 						<!-- IF S_REGISTERED_USER -->
 							<li>
 								<a href="{U_SEARCH_SELF}" role="menuitem">
-									<i class="icon fa-file-o fa-fw icon-gray"></i><span>{L_SEARCH_SELF}</span>
+									<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_SELF}</span>
 								</a>
 							</li>
 						<!-- ENDIF -->
 						<!-- IF S_USER_LOGGED_IN -->
 							<li>
 								<a href="{U_SEARCH_NEW}" role="menuitem">
-									<i class="icon fa-file-o fa-fw icon-red"></i><span>{L_SEARCH_NEW}</span>
+									<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_NEW}</span>
 								</a>
 							</li>
 						<!-- ENDIF -->
 						<!-- IF S_LOAD_UNREADS --> 
 							<li>
 								<a href="{U_SEARCH_UNREAD}" role="menuitem">
-									<i class="icon fa-file-o fa-fw icon-red"></i><span>{L_SEARCH_UNREAD}</span>
+									<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_UNREAD}</span>
 								</a>
 							</li>
 						<!-- ENDIF -->
 							<li>
 								<a href="{U_SEARCH_UNANSWERED}" role="menuitem">
-									<i class="icon fa-file-o fa-fw icon-gray"></i><span>{L_SEARCH_UNANSWERED}</span>
+									<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_UNANSWERED}</span>
 								</a>
 							</li>
 							<li>
 								<a href="{U_SEARCH_ACTIVE_TOPICS}" role="menuitem">
-									<i class="icon fa-file-o fa-fw icon-blue"></i><span>{L_SEARCH_ACTIVE_TOPICS}</span>
+									<i class="icon fa-file-o fa-fw icon-blue" aria-hidden="true"></i><span>{L_SEARCH_ACTIVE_TOPICS}</span>
 								</a>
 							</li>
 							<li class="separator"></li>
 							<li>
 								<a href="{U_SEARCH}" role="menuitem">
-									<i class="icon fa-search fa-fw"></i><span>{L_SEARCH}</span>
+									<i class="icon fa-search fa-fw" aria-hidden="true"></i><span>{L_SEARCH}</span>
 								</a>
 							</li>
 					<!-- ENDIF -->
@@ -58,14 +58,14 @@
 						<!-- IF S_DISPLAY_MEMBERLIST -->
 							<li>
 								<a href="{U_MEMBERLIST}" role="menuitem">
-									<i class="icon fa-group fa-fw"></i><span>{L_MEMBERLIST}</span>
+									<i class="icon fa-group fa-fw" aria-hidden="true"></i><span>{L_MEMBERLIST}</span>
 								</a>
 							</li>
 						<!-- ENDIF -->
 						<!-- IF U_TEAM -->
 							<li>
 								<a href="{U_TEAM}" role="menuitem">
-									<i class="icon fa-shield fa-fw"></i><span>{L_THE_TEAM}</span>
+									<i class="icon fa-shield fa-fw" aria-hidden="true"></i><span>{L_THE_TEAM}</span>
 								</a>
 							</li>
 						<!-- ENDIF -->
@@ -80,21 +80,21 @@
 		<!-- EVENT overall_header_navigation_prepend -->
 		<li <!-- IF not S_USER_LOGGED_IN -->data-skip-responsive="true"<!-- ELSE -->data-last-responsive="true"<!-- ENDIF -->>
 			<a href="{U_FAQ}" rel="help" title="{L_FAQ_EXPLAIN}" role="menuitem">
-				<i class="icon fa-question-circle fa-fw"></i><span>{L_FAQ}</span>
+				<i class="icon fa-question-circle fa-fw" aria-hidden="true"></i><span>{L_FAQ}</span>
 			</a>
 		</li>
 		<!-- EVENT overall_header_navigation_append -->
 		<!-- IF U_ACP -->
 			<li data-last-responsive="true">
 				<a href="{U_ACP}" title="{L_ACP}" role="menuitem">
-					<i class="icon fa-cogs fa-fw"></i><span>{L_ACP_SHORT}</span>
+					<i class="icon fa-cogs fa-fw" aria-hidden="true"></i><span>{L_ACP_SHORT}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF U_MCP -->
 			<li data-last-responsive="true">
 				<a href="{U_MCP}" title="{L_MCP}" role="menuitem">
-					<i class="icon fa-gavel fa-fw"></i><span>{L_MCP_SHORT}</span>
+					<i class="icon fa-gavel fa-fw" aria-hidden="true"></i><span>{L_MCP_SHORT}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -110,7 +110,7 @@
 						<!-- IF U_RESTORE_PERMISSIONS -->
 							<li>
 								<a href="{U_RESTORE_PERMISSIONS}">
-									<i class="icon fa-refresh fa-fw"></i><span>{L_RESTORE_PERMISSIONS}</span>
+									<i class="icon fa-refresh fa-fw" aria-hidden="true"></i><span>{L_RESTORE_PERMISSIONS}</span>
 								</a>
 							</li>
 						<!-- ENDIF -->
@@ -119,12 +119,12 @@
 
 						<li>
 							<a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">
-								<i class="icon fa-sliders fa-fw"></i><span>{L_PROFILE}</span>
+								<i class="icon fa-sliders fa-fw" aria-hidden="true"></i><span>{L_PROFILE}</span>
 							</a>
 						</li>
 						<li>
 							<a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">
-								<i class="icon fa-user fa-fw"></i><span>{L_READ_PROFILE}</span>
+								<i class="icon fa-user fa-fw" aria-hidden="true"></i><span>{L_READ_PROFILE}</span>
 							</a>
 						</li>
 	
@@ -133,7 +133,7 @@
 						<li class="separator"></li>
 						<li>
 							<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
-								<i class="icon fa-power-off fa-fw"></i><span>{L_LOGIN_LOGOUT}</span>
+								<i class="icon fa-power-off fa-fw" aria-hidden="true"></i><span>{L_LOGIN_LOGOUT}</span>
 							</a>
 						</li>
 					</ul>
@@ -144,14 +144,14 @@
 		<!-- IF S_DISPLAY_PM -->
 			<li class="rightside" data-skip-responsive="true">
 				<a href="{U_PRIVATEMSGS}" role="menuitem">
-					<i class="icon fa-inbox fa-fw"></i><span><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></span>
+					<i class="icon fa-inbox fa-fw" aria-hidden="true"></i><span><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></span>
 				</a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF S_NOTIFICATIONS_DISPLAY -->
 			<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
 				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger">
-					<i class="icon fa-bell fa-fw"></i><span><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></span>
+					<i class="icon fa-bell fa-fw" aria-hidden="true"></i><span><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></span>
 				</a>
 				<!-- INCLUDE notification_dropdown.html -->
 			</li>
@@ -159,13 +159,13 @@
 	<!-- ELSE -->
 		<li class="rightside"  data-skip-responsive="true">
 			<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">
-				<i class="icon fa-power-off fa-fw"></i><span>{L_LOGIN_LOGOUT}</span>
+				<i class="icon fa-power-off fa-fw" aria-hidden="true"></i><span>{L_LOGIN_LOGOUT}</span>
 			</a>
 		</li>
 		<!-- IF S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) -->
 			<li class="rightside" data-skip-responsive="true">
 				<a href="{U_REGISTER}" role="menuitem">
-					<i class="icon fa-pencil-square-o  fa-fw"></i><span>{L_REGISTER}</span>
+					<i class="icon fa-pencil-square-o  fa-fw" aria-hidden="true"></i><span>{L_REGISTER}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -178,10 +178,10 @@
 		<!-- EVENT overall_header_breadcrumbs_before -->
 		<li class="breadcrumbs">
 			<!-- IF U_SITE_HOME -->
-				<span class="crumb" {$MICRODATA}><a href="{U_SITE_HOME}" data-navbar-reference="home"><i class="icon fa-home fa-fw"></i><span>{L_SITE_HOME}</span></a></span>
+				<span class="crumb" {$MICRODATA}><a href="{U_SITE_HOME}" data-navbar-reference="home"><i class="icon fa-home fa-fw" aria-hidden="true"></i><span>{L_SITE_HOME}</span></a></span>
 			<!-- ENDIF -->
 			<!-- EVENT overall_header_breadcrumb_prepend -->
-				<span class="crumb" {$MICRODATA}><a href="{U_INDEX}" accesskey="h" data-navbar-reference="index"><i class="icon fa-home fa-fw"></i><span>{L_INDEX}</span></a></span>
+				<span class="crumb" {$MICRODATA}><a href="{U_INDEX}" accesskey="h" data-navbar-reference="index"><i class="icon fa-home fa-fw" aria-hidden="true"></i><span>{L_INDEX}</span></a></span>
 			<!-- BEGIN navlinks -->
 				<!-- EVENT overall_header_navlink_prepend -->
 				<span class="crumb" {$MICRODATA}<!-- IF navlinks.MICRODATA --> {navlinks.MICRODATA}<!-- ENDIF -->><a href="{navlinks.U_VIEW_FORUM}" itemprop="url"><span itemprop="title">{navlinks.FORUM_NAME}</span></a></span>
@@ -194,7 +194,7 @@
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
 			<li class="rightside responsive-search">
 				<a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}" role="menuitem">
-					<i class="icon fa-search fa-fw"></i><span class="sr-only">{L_SEARCH}</span>
+					<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
