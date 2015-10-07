@@ -21,7 +21,6 @@ use \phpbb\filesystem\filesystem;
 /**
  * Attachment delete class
  */
-
 class delete
 {
 	/** @var config */
@@ -189,7 +188,7 @@ class delete
 	/**
 	 * Set attachment IDs
 	 *
-	 * @param array $ids
+	 * @param mixed $ids ID or array of IDs
 	 *
 	 * @return bool True if attachment IDs were set, false if not
 	 */

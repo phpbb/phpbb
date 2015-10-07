@@ -25,7 +25,6 @@ use \phpbb\user;
 /**
  * Attachment upload class
  */
-
 class upload
 {
 	/** @var auth */

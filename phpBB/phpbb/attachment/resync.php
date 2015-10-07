@@ -18,7 +18,6 @@ use \phpbb\db\driver\driver_interface;
 /**
  * Attachment delete class
  */
-
 class resync
 {
 	/** @var driver_interface */
