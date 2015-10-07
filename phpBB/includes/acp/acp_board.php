@@ -448,6 +448,7 @@ class acp_board
 						'board_email'			=> array('lang' => 'ADMIN_EMAIL',			'validate' => 'email',	'type' => 'email:25:100', 'explain' => true),
 						'board_email_sig'		=> array('lang' => 'EMAIL_SIG',				'validate' => 'string',	'type' => 'textarea:5:30', 'explain' => true),
 						'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'send_test_email'		=> array('lang' => 'SEND_TEST_EMAIL',		'validate' => 'bool',	'type' => 'custom', 'method' => 'send_test_email', 'explain' => true),
 
 						'legend2'				=> 'SMTP_SETTINGS',
 						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -628,6 +629,27 @@ class acp_board
 				{
 					trigger_error('NO_AUTH_PLUGIN', E_USER_ERROR);
 				}
+			}
+		}
+
+		if ($mode == 'email' && $request->is_set_post('send_test_email'))
+		{
+			if ($config['email_enable'])
+			{
+				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+				$messenger = new messenger(false);
+				$messenger->template('test');
+				$messenger->set_addresses($user->data);
+				$messenger->anti_abuse_headers($config, $user);
+				$messenger->send(NOTIFY_EMAIL);
+
+				trigger_error($user->lang('TEST_EMAIL_SENT') . adm_back_link($this->u_action));
+			}
+			else
+			{
+				$user->add_lang('memberlist');
+				trigger_error($user->lang('EMAIL_DISABLED') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -1138,5 +1160,12 @@ class acp_board
 
 		return h_radio($field_name, array(1 => 'YES', 0 => 'NO'), $value) .
 			($message !== false ? '<br /><span>' . $user->lang($message) . '</span>' : '');
+	}
+
+	function send_test_email($value, $key)
+	{
+		global $user;
+
+		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang['SEND_TEST_EMAIL'] . '" />';
 	}
 }
