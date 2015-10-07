@@ -110,6 +110,12 @@ services:
     file_downloader:
         class: phpbb\file_downloader
 
+    file_locator:
+        class: phpbb\routing\file_locator
+        arguments:
+            - @filesystem
+            - %core.root_path%
+
     group_helper:
         class: phpbb\group\helper
         arguments:

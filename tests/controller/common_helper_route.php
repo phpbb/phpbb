@@ -122,9 +122,11 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 
-		$this->router = new phpbb_mock_router($container, $this->filesystem, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$this->router->find_routing_files($this->extension_manager->all_enabled(false));
-		$this->router->find(dirname(__FILE__) . '/');
+		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
+			new \phpbb\routing\file_locator($this->filesystem, dirname(__FILE__) . '/')
+		);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
+		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
 
 		// Set correct current phpBB root path
 		$this->root_path = $this->get_phpbb_root_path();
