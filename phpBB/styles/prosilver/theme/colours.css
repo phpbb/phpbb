@@ -606,7 +606,8 @@ Colours and backgrounds for buttons.css
 	color: #D31141;
 }
 
-.button:hover, .dropdown-visible .dropdown-select, .nojs .dropdown-container:hover .dropdown-select {
+.button:hover,
+.button:focus {
 	border-color: #0A8ED0;
 	background-color: #FFFFFF; /* Old browsers */ /* FF3.6+ */
 	background-image: -webkit-linear-gradient(top, #E9E9E9 0%, #FFFFFF 100%);
@@ -615,13 +616,22 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.button i {
+
+.button .icon,
+.button-secondary {
 	color: #8f8f8f;
 }
 
-.button:focus i,
-.button:hover i {
-	color: #1878cb;
+.button-secondary:focus,
+.button-secondary:hover,
+.button:focus .icon,
+.button:hover .icon {
+	color: #0A8ED0;
+}
+
+.button-search:hover,
+.button-search-end:hover {
+	border-color: #C7C3BF;
 }
 
 .caret	{ border-color: #DADADA; }
@@ -683,9 +693,7 @@ Colours and backgrounds for buttons.css
 
 .search-box .inputbox,
 .search-box .inputbox:hover,
-.search-box .inputbox:focus,
-.search-box .button:focus,
-.search-box .button:hover {
+.search-box .inputbox:focus {
 	border-color: #C7C3BF;
 }
 

@@ -142,6 +142,12 @@ dd textarea {
 	width: 95%;
 }
 
+/* Browser-specific tweaks */
+button::-moz-focus-inner {
+	padding: 0;
+	border: 0
+}
+
 /* Quick-login on index page */
 fieldset.quick-login {
 	margin-top: 5px;
@@ -378,22 +384,6 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	box-sizing: border-box;
 }
 
-.search-box .button {
-	float: left;
-	border-radius: 0;
-	margin: 0;
-	padding: 2px 5px;
-}
-
-.search-box a.button {
-	border-left-width: 0;
-	border-radius: 0 4px 4px 0;
-}
-
-.search-box .button span {
-	font-size: 0;
-}
-
 /* Search box (header)
 --------------------------------------------- */
 .search-header {
@@ -405,12 +395,6 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 }
 
 .search-header .inputbox { border: 0; }
-
-.search-header .button {
-	border-top-width: 0;
-	border-bottom-width: 0;
-	padding: 3px 5px;
-}
 
 .navbar .linklist > li.responsive-search { display: none; }
 

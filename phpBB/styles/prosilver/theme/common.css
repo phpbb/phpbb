@@ -803,6 +803,10 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	float: left;
 }
 
+.action-bar .button-search {
+	margin-right: 0;
+}
+
 /* Pagination
 ---------------------------------------- */
 .pagination {
