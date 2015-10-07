@@ -278,7 +278,9 @@
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice deleted">
 					<strong>{L_POST_DELETED_ACTION}</strong>
-					<input class="button2" type="submit" value="{L_DELETE}" name="action[disapprove]" />
+					<!-- IF postrow.S_DELETE_PERMANENT -->
+						<input class="button2" type="submit" value="{L_DELETE}" name="action[delete]" />
+					<!-- ENDIF -->
 					<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
 					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
 					{S_FORM_TOKEN}
