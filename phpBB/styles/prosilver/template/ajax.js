@@ -242,7 +242,14 @@ phpbb.addAjaxCallback('vote_poll', function(res) {
 			var mostVoted = (res.vote_counts[optionId] === mostVotes);
 			var percent = (!res.total_votes) ? 0 : Math.round((res.vote_counts[optionId] / res.total_votes) * 100);
 			var percentRel = (mostVotes === 0) ? 0 : Math.round((res.vote_counts[optionId] / mostVotes) * 100);
+			var altText;
 
+			altText = $this.attr('data-alt-text');
+			if (voted) {
+				$this.attr('title', $.trim(altText));
+			} else {
+				$this.attr('title', '');
+			};
 			$this.toggleClass('voted', voted);
 			$this.toggleClass('most-votes', mostVoted);
 
