@@ -441,12 +441,12 @@ ul.linklist.bulletin > li.no-bulletin:before {
 .dropdown .pointer {
 	right: auto;
 	left: 10px;
-	top: 0;
+	top: -1px;
 	z-index: 3;
 }
 
 .dropdown-up .pointer {
-	bottom: 0;
+	bottom: -1px;
 	top: auto;
 }
 
