@@ -80,6 +80,7 @@ class core extends Extension
 		{
 			$twig_environment_options['auto_reload'] = true;
 		}
+
 		// Replace the 8th argument, the options passed to the environment
 		$definition->replaceArgument(7, $twig_environment_options);
 
@@ -87,6 +88,12 @@ class core extends Extension
 		{
 			$definition = $container->getDefinition('template.twig.extensions.debug');
 			$definition->addTag('twig.extension');
+		}
+
+		// Set the debug options
+		foreach ($config['debug'] as $name => $value)
+		{
+			$container->setParameter('debug.' . $name, $value);
 		}
 	}
 

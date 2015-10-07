@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\cron;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -93,8 +94,7 @@ class run extends \phpbb\console\command\command
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CRON_LOCK_ERROR') . '</error>');
-			return 1;
+			throw new runtime_exception('CRON_LOCK_ERROR', array(), null, 1);
 		}
 	}
 
@@ -165,8 +165,7 @@ class run extends \phpbb\console\command\command
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CRON_NO_SUCH_TASK', $task_name) . '</error>');
-			return 2;
+			throw new runtime_exception('CRON_NO_SUCH_TASK', array( $task_name), null, 2);
 		}
 	}
 }

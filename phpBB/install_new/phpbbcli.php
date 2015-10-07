@@ -62,5 +62,6 @@ $language = $phpbb_installer_container->get('language');
 $language->add_lang(array('common', 'acp/common', 'acp/board', 'install_new', 'posting', 'cli'));
 
 $application = new \phpbb\console\application('phpBB Installer', PHPBB_VERSION, $language);
+$application->setDispatcher($phpbb_installer_container->get('dispatcher'));
 $application->register_container_commands($phpbb_installer_container->get('console.installer.command_collection'));
 $application->run($input);
