@@ -1025,6 +1025,23 @@ switch ($mode)
 						FROM ' . POSTS_TABLE . '
 						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
 							AND " . $db->sql_in_set('forum_id', $ip_forums);
+
+					/**
+					* Modify sql query for members search by ip address / hostname
+					*
+					* @event core.memberlist_modify_ip_search_sql_query
+					* @var	string	ipdomain	The host name
+					* @var	string	ips			IP address list for the given host name
+					* @var	string	sql			The SQL query for searching members by IP address
+					* @since 3.1.7-RC1
+					*/
+					$vars = array(
+						'ipdomain',
+						'ips',
+						'sql',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_ip_search_sql_query', compact($vars)));
+
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
@@ -1164,6 +1181,32 @@ switch ($mode)
 		{
 			$order_by .= ', u.user_posts DESC';
 		}
+
+		/**
+		* Modify sql query data for members search
+		*
+		* @event core.memberlist_modify_sql_query_data
+		* @var	string	order_by		SQL ORDER BY clause condition
+		* @var	string	sort_dir		The sorting direction
+		* @var	string	sort_key		The sorting key
+		* @var	array	sort_key_sql	Arraty with the sorting conditions data
+		* @var	string	sql_from		SQL FROM clause condition
+		* @var	string	sql_select		SQL SELECT fields list
+		* @var	string	sql_where		SQL WHERE clause condition
+		* @var	string	sql_where_data	SQL WHERE clause additional conditions data
+		* @since 3.1.7-RC1
+		*/
+		$vars = array(
+			'order_by',
+			'sort_dir',
+			'sort_key',
+			'sort_key_sql',
+			'sql_from',
+			'sql_select',
+			'sql_where',
+			'sql_where_data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
 
 		// Count the users ...
 		if ($sql_where)
