@@ -369,6 +369,7 @@ class acp_extensions
 
 		foreach ($enabled_extension_meta_data as $name => $block_vars)
 		{
+			$block_vars['NAME'] = $name;
 			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
 			$this->template->assign_block_vars('enabled', $block_vars);
@@ -425,6 +426,7 @@ class acp_extensions
 
 		foreach ($disabled_extension_meta_data as $name => $block_vars)
 		{
+			$block_vars['NAME'] = $name;
 			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
 			$this->template->assign_block_vars('disabled', $block_vars);
@@ -484,6 +486,7 @@ class acp_extensions
 
 		foreach ($available_extension_meta_data as $name => $block_vars)
 		{
+			$block_vars['NAME'] = $name;
 			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
 			$this->template->assign_block_vars('disabled', $block_vars);

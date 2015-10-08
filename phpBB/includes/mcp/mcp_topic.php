@@ -194,6 +194,30 @@ function mcp_topic_view($id, $mode, $action)
 		}
 	}
 
+	/**
+	* Event to modify the post data for the MCP topic review before assigning the posts
+	*
+	* @event core.mcp_topic_modify_post_data
+	* @var	array	attachments		List of attachments post_id => array of attachments
+	* @var	int		forum_id		The forum ID we are currently in
+	* @var	int		id				ID of the tab we are displaying
+	* @var	string	mode			Mode of the MCP page we are displaying
+	* @var	array	post_id_list	Array with post ids we are going to display
+	* @var	array	rowset			Array with the posts data
+	* @var	int		topic_id		The topic ID we are currently reviewing
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'attachments',
+		'forum_id',
+		'id',
+		'mode',
+		'post_id_list',
+		'rowset',
+		'topic_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.mcp_topic_modify_post_data', compact($vars)));
+
 	foreach ($rowset as $i => $row)
 	{
 		$message = $row['post_text'];
