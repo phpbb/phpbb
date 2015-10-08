@@ -614,7 +614,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	}
 
 	/**
-	 * Perform additional actions before moving posts 
+	 * Perform additional actions before moving posts
 	 *
 	 * @event core.move_posts_before
 	 * @var	array	post_ids	Array of post ids to move
@@ -646,7 +646,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	$db->sql_query($sql);
 
 	/**
-	 * Perform additional actions after moving posts 
+	 * Perform additional actions after moving posts
 	 *
 	 * @event core.move_posts_after
 	 * @var	array	post_ids	Array of the moved post ids
