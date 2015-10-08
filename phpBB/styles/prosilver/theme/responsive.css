@@ -232,13 +232,6 @@
 	ul.topiclist.forums dt {
 		margin-right: -250px;
 	}
-	ul.topiclist.forums dt .list-inner {
-		margin-right: 250px;
-	}
-
-	ul.topiclist.forums dd.lastpost {
-		display: block;
-	}
 
 	ul.topiclist dd.mark {
 		display: block;
