@@ -38,14 +38,17 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			));
 	}
 
-	public function test_router_find_files()
+	public function test_router_default_loader()
 	{
 		$container = new phpbb_mock_container_builder();
 		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 
-		$router = new \phpbb\routing\router($container, new \phpbb\filesystem\filesystem(), dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$router->find_routing_files($this->extension_manager->all_enabled(false));
-		$routes = $router->find(__DIR__)->get_routes();
+		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
+			new \phpbb\routing\file_locator(new \phpbb\filesystem\filesystem(), dirname(__FILE__) . '/')
+		);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
+		$router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$routes = $router->get_routes();
 
 		// This will need to be updated if any new routes are defined
 		$this->assertInstanceOf('Symfony\Component\Routing\Route', $routes->get('core_controller'));
