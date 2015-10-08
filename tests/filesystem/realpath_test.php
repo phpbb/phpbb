@@ -13,19 +13,8 @@
 
 class phpbb_filesystem_realpath_test extends phpbb_test_case
 {
-	static protected $filesystem_own_realpath;
-
 	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
-
-	static public function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
-
-		$reflection_class = new ReflectionClass('\phpbb\filesystem\filesystem');
-		self::$filesystem_own_realpath = $reflection_class->getMethod('phpbb_own_realpath');
-		self::$filesystem_own_realpath->setAccessible(true);
-	}
 
 	public function setUp()
 	{
@@ -72,7 +61,10 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 	 */
 	public function test_realpath_absolute_without_links($path, $expected)
 	{
-		$this->assertEquals($expected, self::$filesystem_own_realpath->invoke($this->filesystem, $path));
+		$reflection = new ReflectionMethod('\phpbb\filesystem\filesystem', 'phpbb_own_realpath');
+		$reflection->setAccessible(true);
+
+		self::assertEquals($expected, $reflection->invoke($this->filesystem, $path));
 	}
 
 	/**
@@ -82,9 +74,12 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 	{
 		if (!function_exists('getcwd'))
 		{
-			$this->markTestSkipped('phpbb_own_realpath() cannot be tested with relative paths: getcwd is not available.');
+			self::markTestSkipped('phpbb_own_realpath() cannot be tested with relative paths: getcwd is not available.');
 		}
 
-		$this->assertEquals($expected, self::$filesystem_own_realpath->invoke($this->filesystem, $path));
+		$reflection = new ReflectionMethod('\phpbb\filesystem\filesystem', 'phpbb_own_realpath');
+		$reflection->setAccessible(true);
+
+		self::assertEquals($expected, $reflection->invoke($this->filesystem, $path));
 	}
 }
