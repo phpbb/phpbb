@@ -18,6 +18,7 @@
 <thead>
 <tr>
 	<th>{L_USERNAME}</th>
+	<th>{L_EMAIL}</th>
 	<th>{L_JOINED}</th>
 	<th>{L_INACTIVE_DATE}</th>
 	<th>{L_LAST_VISIT}</th>
@@ -32,6 +33,7 @@
 			{inactive.USERNAME_FULL}
 			<!-- IF inactive.POSTS --><br />{L_POSTS}{L_COLON} <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
 		</td>
+		<td style="vertical-align: top;">{inactive.USER_EMAIL}</td>
 		<td style="vertical-align: top;">{inactive.JOINED}</td>
 		<td style="vertical-align: top;">{inactive.INACTIVE_DATE}</td>
 		<td style="vertical-align: top;">{inactive.LAST_VISIT}</td>
