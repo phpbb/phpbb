@@ -34,7 +34,9 @@
 
 	<!-- BEGIN topicrow -->
 
+		<!-- EVENT viewforum_body_topic_row_before -->
 		<tr>
+			<!-- EVENT viewforum_body_topic_row_prepend -->
 			<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
 			<!-- IF S_TOPIC_ICONS -->
 				<td class="row1" width="25" align="center"><!-- IF topicrow.TOPIC_ICON_IMG --><img src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" width="{topicrow.TOPIC_ICON_IMG_WIDTH}" height="{topicrow.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" /><!-- ENDIF --></td>
@@ -75,7 +77,9 @@
 					<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}" class="imageset">{LAST_POST_IMG}</a><!-- ENDIF -->
 				</p>
 			</td>
+			<!-- EVENT viewforum_body_topic_row_append -->
 		</tr>
+		<!-- EVENT viewforum_body_topic_row_after -->
 
 	<!-- BEGINELSE -->
 
