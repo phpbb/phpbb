@@ -45,7 +45,7 @@ class acp_users
 		$action		= $request->variable('action', '');
 
 		// Get referer to redirect user to the appropriate page after delete action
-		$redirect		= request_var('redirect', '');
+		$redirect		= $request->variable('redirect', '');
 		$redirect_tag	= "redirect=$redirect";
 		$redirect_url	= append_sid("{$phpbb_admin_path}index.$phpEx", "i=$redirect");
 
