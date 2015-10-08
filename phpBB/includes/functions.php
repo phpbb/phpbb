@@ -2255,15 +2255,6 @@ function generate_board_url($without_script_path = false)
 		$script_path = $user->page['root_script_path'];
 	}
 
-	if ($server_port && (($cookie_secure && $server_port <> 443) || (!$cookie_secure && $server_port <> 80)))
-	{
-		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
-		if (strpos($server_name, ':') === false)
-		{
-			$url .= ':' . $server_port;
-		}
-	}
-
 	if (!$without_script_path)
 	{
 		$url .= $script_path;
