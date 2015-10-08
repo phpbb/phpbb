@@ -40,6 +40,7 @@ class loader_resolver implements LoaderResolverInterface
 		{
 			if ($loader->supports($resource, $type))
 			{
+				$loader->setResolver($this);
 				return $loader;
 			}
 		}
