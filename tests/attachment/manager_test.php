@@ -38,35 +38,6 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 		return new \phpbb\attachment\manager($this->delete, $this->resync, $this->upload);
 	}
 
-	public function data_delete()
-	{
-		return array(
-			[
-				['foo', [1, 2, 3], false],
-				['foo', [1, 2, 3], false],
-				true,
-			],
-			[
-				['foo', [1, 2, 3], true],
-				['foo', [1, 2, 3]],
-				true,
-			],
-		);
-	}
-
-	/**
-	 * @dataProvider data_delete
-	 */
-	public function test_delete($input, $input_manager, $output)
-	{
-		$mock = $this->delete->expects($this->atLeastOnce())
-			->method('delete');
-		$mock = call_user_func_array([$mock, 'with'], $input);
-		$mock->willReturn($output);
-		$manager = $this->get_manager();
-		$this->assertSame($output, call_user_func_array([$manager, 'delete'], $input_manager));
-	}
-
 	public function data_manager()
 	{
 		return array(
@@ -77,6 +48,7 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 				['foo'],
 				['foo', 'file', false],
 				true,
+				true,
 			),
 			array(
 				'delete',
@@ -85,6 +57,7 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 				['foo', 'bar'],
 				['foo', 'bar', false],
 				true,
+				true,
 			),
 			array(
 				'delete',
@@ -93,6 +66,52 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 				['foo', 'bar', true],
 				['foo', 'bar', true],
 				true,
+				true,
+			),
+			array(
+				'delete',
+				'delete',
+				'delete',
+				['foo', [1, 2, 3]],
+				['foo', [1, 2, 3], true],
+				true,
+				true,
+			),
+			array(
+				'delete',
+				'delete',
+				'delete',
+				['foo', [1, 2, 3], false],
+				['foo', [1, 2, 3], false],
+				true,
+				true,
+			),
+			array(
+				'resync',
+				'resync',
+				'resync',
+				['foo', [1, 2, 3]],
+				['foo', [1, 2, 3]],
+				true,
+				null,
+			),
+			array(
+				'upload',
+				'upload',
+				'upload',
+				['foo', 1],
+				['foo', 1, false, '', false, []],
+				true,
+				true,
+			),
+			array(
+				'upload',
+				'upload',
+				'upload',
+				['foo', 1, true, 'bar', true, ['filename' => 'foobar']],
+				['foo', 1, true, 'bar', true, ['filename' => 'foobar']],
+				true,
+				true,
 			),
 		);
 	}
@@ -100,12 +119,12 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 	/**
 	 * @dataProvider data_manager
 	 */
-	public function test_manager($class, $method_class, $method_manager, $input_manager, $input_method, $output)
+	public function test_manager($class, $method_class, $method_manager, $input_manager, $input_method, $return, $output)
 	{
 		$mock = call_user_func_array([$this->{$class}, 'expects'], [$this->atLeastOnce()]);
 		$mock = $mock->method($method_class);
 		$mock = call_user_func_array([$mock, 'with'], $input_method);
-		$mock->willReturn($output);
+		$mock->willReturn($return);
 		$manager = $this->get_manager();
 		$this->assertSame($output, call_user_func_array([$manager, $method_manager], $input_manager));
 	}
