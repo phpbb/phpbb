@@ -55,7 +55,8 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 			->method('exists')
 			->willReturn(true);
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->filesystem, $this->resync, $phpbb_root_path);
+		$this->dispatcher = new \phpbb_mock_event_dispatcher();
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->filesystem, $this->resync, $phpbb_root_path);
 	}
 
 	public function data_attachment_delete()
@@ -120,7 +121,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 			->method('exists')
 			->willReturn($exists_success);
 
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->filesystem, $this->resync, $this->phpbb_root_path);
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->filesystem, $this->resync, $this->phpbb_root_path);
 		$this->assertSame($expected, $this->attachment_delete->unlink_attachment('foobar'));
 	}
 }
