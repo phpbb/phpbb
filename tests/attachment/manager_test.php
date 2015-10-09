@@ -21,7 +21,7 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 	{
 		$this->delete = $this->getMockBuilder('\phpbb\attachment\delete')
 			->disableOriginalConstructor()
-			->setMethods(['delete', 'unlink'])
+			->setMethods(['delete', 'unlink_attachment'])
 			->getMock();
 		$this->resync = $this->getMockBuilder('\phpbb\attachment\resync')
 			->disableOriginalConstructor()
@@ -65,5 +65,48 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 		$mock->willReturn($output);
 		$manager = $this->get_manager();
 		$this->assertSame($output, call_user_func_array([$manager, 'delete'], $input_manager));
+	}
+
+	public function data_manager()
+	{
+		return array(
+			array(
+				'delete',
+				'unlink_attachment',
+				'unlink',
+				['foo'],
+				['foo', 'file', false],
+				true,
+			),
+			array(
+				'delete',
+				'unlink_attachment',
+				'unlink',
+				['foo', 'bar'],
+				['foo', 'bar', false],
+				true,
+			),
+			array(
+				'delete',
+				'unlink_attachment',
+				'unlink',
+				['foo', 'bar', true],
+				['foo', 'bar', true],
+				true,
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_manager
+	 */
+	public function test_manager($class, $method_class, $method_manager, $input_manager, $input_method, $output)
+	{
+		$mock = call_user_func_array([$this->{$class}, 'expects'], [$this->atLeastOnce()]);
+		$mock = $mock->method($method_class);
+		$mock = call_user_func_array([$mock, 'with'], $input_method);
+		$mock->willReturn($output);
+		$manager = $this->get_manager();
+		$this->assertSame($output, call_user_func_array([$manager, $method_manager], $input_manager));
 	}
 }
