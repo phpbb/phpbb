@@ -51,9 +51,9 @@ class manager
 	 * @return int|bool Number of deleted attachments or false if something
 	 *			went wrong during attachment deletion
 	 */
-	public function delete($mode, $id, $resync = true)
+	public function delete($mode, $ids, $resync = true)
 	{
-		return $this->delete->delete($mode, $id, $resync);
+		return $this->delete->delete($mode, $ids, $resync);
 	}
 
 	/**
