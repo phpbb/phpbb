@@ -859,6 +859,8 @@ table.zebra-table tbody tr:nth-child(even) {
 .row2a { background-color: #E7EEF4; }
 .row2b { background-color: #E3EBF2; }
 
+tr.row-highlight:hover td { background-color: #DBDFE2; }
+
 .spacer {
 	background-color: #DBDFE2;
 	height: 1px;
