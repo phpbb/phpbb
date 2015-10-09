@@ -16,7 +16,7 @@ namespace phpbb\attachment;
 use \phpbb\db\driver\driver_interface;
 
 /**
- * Attachment delete class
+ * Attachment resync class
  */
 class resync
 {
