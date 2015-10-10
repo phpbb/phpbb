@@ -151,7 +151,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$sql_ary = array(
-			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id',
+			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_type, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id',
 
 			'FROM'		=> array(
 				USER_GROUP_TABLE => 'ug',
@@ -313,6 +313,8 @@ switch ($mode)
 
 							'RANK_IMG'		=> $user_rank_data['img'],
 							'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
+
+							'S_INACTIVE'	=> $row['user_type'] == USER_INACTIVE,
 
 							'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 
@@ -1346,7 +1348,7 @@ switch ($mode)
 		}
 
 		$user_types = array(USER_NORMAL, USER_FOUNDER);
-		if ($auth->acl_get('a_user') || $user->data['user_type'] == USER_FOUNDER)
+		if ($auth->acl_get('a_user'))
 		{
 			$user_types[] = USER_INACTIVE;
 		}
@@ -1357,7 +1359,7 @@ switch ($mode)
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			WHERE u.user_type IN (" . implode(', ', $user_types) . ")
+			WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
 				$sql_where
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -1472,6 +1474,7 @@ switch ($mode)
 
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 					'S_GROUP_LEADER'	=> $is_leader,
+					'S_INACTIVE'		=> $row['user_type'] == USER_INACTIVE,
 
 					'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $row['username']),
 				));
