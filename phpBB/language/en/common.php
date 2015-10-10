@@ -867,7 +867,6 @@ $lang = array_merge($lang, array(
 	'WEBSITE'			=> 'Website',
 	'WHOIS'				=> 'Whois',
 	'WHO_IS_ONLINE'		=> 'Who is online',
-	'WLM'				=> 'WLM',
 	'WRONG_PASSWORD'	=> 'You entered an incorrect password.',
 
 	'WRONG_DATA_COLOUR'			=> 'The colour value you entered is invalid.',
