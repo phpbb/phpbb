@@ -248,7 +248,7 @@ class acp_icons
 					$data = $_images;
 				}
 
-				$colspan = (($mode == 'smilies') ? 7 : 5);
+				$colspan = (($mode == 'smilies') ? 7 : 6);
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
 
@@ -292,6 +292,8 @@ class acp_icons
 						'ID'				=> (isset($img_row[$fields . '_id'])) ? $img_row[$fields . '_id'] : 0,
 						'WIDTH'				=> (!empty($img_row[$fields .'_width'])) ? $img_row[$fields .'_width'] : $img_row['width'],
 						'HEIGHT'			=> (!empty($img_row[$fields .'_height'])) ? $img_row[$fields .'_height'] : $img_row['height'],
+						'TEXT_ALT'		    => ($mode == 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : $img,
+						'ALT'			    => ($mode == 'icons' && !empty($img_row['icons_alt'])) ? $img_row['icons_alt'] : '',
 						'POSTING_CHECKED'	=> (!empty($img_row['display_on_posting']) || $action == 'add') ? ' checked="checked"' : '',
 					));
 				}
@@ -336,6 +338,7 @@ class acp_icons
 				$image_add		= (isset($_POST['add_img'])) ? $request->variable('add_img', array('' => 0)) : array();
 				$image_emotion	= $request->variable('emotion', array('' => ''), true);
 				$image_code		= $request->variable('code', array('' => ''), true);
+				$image_alt		= ($request->is_set_post('alt')) ? $request->variable('alt', array('' => ''), true) : array();
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? $request->variable('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
@@ -435,6 +438,13 @@ class acp_icons
 							$img_sql = array_merge($img_sql, array(
 								'emotion'	=> $image_emotion[$image],
 								'code'		=> $image_code[$image])
+							);
+						}
+
+						if ($mode == 'icons')
+						{
+							$img_sql = array_merge($img_sql, array(
+								'icons_alt'	=> $image_alt[$image])
 							);
 						}
 
@@ -921,7 +931,7 @@ class acp_icons
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$alt_text = ($mode == 'smilies') ? $row['code'] : '';
+			$alt_text = ($mode == 'smilies') ? $row['code'] : (($mode == 'icons' && !empty($row['icons_alt'])) ? $row['icons_alt'] : $row['icons_url']);
 
 			$template->assign_block_vars('items', array(
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,

@@ -83,6 +83,7 @@ $lang = array_merge($lang, array(
 	'ALL_POSTS'						=> 'All posts',
 	'ALL_TIMES'						=> 'All times are <span title="%2$s">%1$s</span>',
 	'ALL_TOPICS'					=> 'All Topics',
+	'ALT_TEXT'						=> 'Alternative text',
 	'AND'							=> 'And',
 	'ARE_WATCHING_FORUM'			=> 'You have subscribed to be notified of new posts in this forum.',
 	'ARE_WATCHING_TOPIC'			=> 'You have subscribed to be notified of new posts in this topic.',
