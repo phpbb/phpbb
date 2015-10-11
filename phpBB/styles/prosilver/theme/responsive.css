@@ -280,6 +280,10 @@
 		margin: 5px 0 0;
 	}
 
+	.row .pagination {
+		margin-top: 0;
+	}
+
 	.row .pagination .ellipsis + li {
 		display: none !important;
 	}
@@ -555,5 +559,23 @@
 @media (max-width: 850px) {
 	.postprofile { width: 28%; }
 	.postbody { width: 70%; }
+}
+
+@media (min-width: 701px) and (max-width: 950px) {
+	.row .pagination {
+		margin-top: 0;
+	}
+
+	ul.topiclist dt {
+    	margin-right: -410px;
+	}
+
+	ul.topiclist dt .list-inner {
+    	margin-right: 410px;
+	}
+
+	dd.posts, dd.topics, dd.views {
+    	width: 80px;
+	}
 }
 
