@@ -16,9 +16,25 @@
 }
 
 @media (max-width: 430px) {
-	.section-viewtopic .search-box .inputbox {
-		width: 110px;
+	.action-bar .search-box .inputbox {
+		width: 120px;
 	}
+
+	.section-viewtopic .search-box .inputbox {
+		width: 57px;
+	}
+
+	.action-bar .search-box .inputbox ::-moz-placeholder {
+    	content: "Search...";
+  	}
+
+  	.action-bar .search-box .inputbox :-ms-input-placeholder {
+  		content: "Search...";
+  	}
+
+  	.action-bar .search-box .inputbox ::-webkit-input-placeholder {
+  		content: "Search...";
+  	}
 }
 
 @media (max-width: 500px) {
@@ -91,6 +107,10 @@
 	.attach-controls {
 		margin-top: 5px;
 		width: 100%;
+	}
+
+	.quick-links .dropdown-trigger span {
+		display: none;
 	}
 }
 
