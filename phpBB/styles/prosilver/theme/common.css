@@ -234,10 +234,6 @@ a:hover	{ text-decoration: underline; }
 	list-style-type: none;
 }
 
-.navbar .linklist > li {
-	display: inline-block;
-}
-
 ul.linklist {
 	display: block;
 	margin: 0;
