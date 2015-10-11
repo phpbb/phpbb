@@ -258,17 +258,18 @@ else
 	* @var	array	attachment			Array with attachment data
 	* @var	int		display_cat			Attachment category
 	* @var	int		download_mode		File extension specific download mode
-	* @var	array	extension			Array with file extensions data
+	* @var	array	extensions			Array with file extensions data
 	* @var	string	mode				Download mode
 	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
 	* @since 3.1.6-RC1
+	* @change 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
 	*/
 	$vars = array(
 		'attach_id',
 		'attachment',
 		'display_cat',
 		'download_mode',
-		'extension',
+		'extensions',
 		'mode',
 		'thumbnail',
 	);
