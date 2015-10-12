@@ -400,7 +400,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 * @param bool			$is_message		Whether it is a PM or not
 * @param array			$local_filedata	A filespec object created for the local file
 *
-* @return \phpbb\files\filespec
+* @return array File data array
 */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
 {

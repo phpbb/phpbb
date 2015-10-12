@@ -104,7 +104,7 @@ class upload
 	 * @param bool			$is_message		Whether it is a PM or not
 	 * @param array		$local_filedata	An file data object created for the local file
 	 *
-	 * @return object filespec
+	 * @return array File data array
 	 */
 	public function upload($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = array())
 	{
