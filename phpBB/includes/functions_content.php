@@ -1210,6 +1210,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			);
 		}
 
+		$update_count_ary = $update_count;
 		/**
 		* Use this event to modify the attachment template data.
 		*
@@ -1223,8 +1224,9 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		* @var array	extensions		Array with attachment extensions data
 		* @var mixed 	forum_id 		The forum id the attachments are displayed in (false if in private message)
 		* @var bool		preview			Flag indicating if we are in post preview mode
-		* @var array	update_count	Array with attachment ids to update download count
+		* @var array	update_count_ary	Array with attachment ids to update download count
 		* @since 3.1.0-RC5
+		* @change 3.1.7-RC1 Replaced update_count with update_count_ary
 		*/
 		$vars = array(
 			'attachment',
@@ -1234,9 +1236,11 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			'extensions',
 			'forum_id',
 			'preview',
-			'update_count',
+			'update_count_ary',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.parse_attachments_modify_template_data', compact($vars)));
+		$update_count = $update_count_ary;
+		unset($update_count_ary);
 
 		$template->assign_block_vars('_file', $block_array);
 

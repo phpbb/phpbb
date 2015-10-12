@@ -438,15 +438,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			*
 			* @event core.display_forums_modify_category_template_vars
 			* @var	array	cat_row			Template data of the 'category'
-			* @var	bool	catless			The flag indicating whether the 'category' has a parent category
 			* @var	bool	last_catless	The flag indicating whether the last forum had a parent category
 			* @var	array	root_data		Array with the root forum data
 			* @var	array	row				The data of the 'category'
 			* @since 3.1.0-RC4
+			* @change 3.1.7-RC1 Removed undefined catless variable
 			*/
 			$vars = array(
 				'cat_row',
-				'catless',
 				'last_catless',
 				'root_data',
 				'row',
@@ -811,25 +810,29 @@ function generate_forum_nav(&$forum_data)
 		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
 	);
 
+	$forum_data_ary = $forum_data;
 	/**
 	* Event to modify the navlinks text
 	*
 	* @event core.generate_forum_nav
-	* @var	array	forum_data				Array with the forum data
+	* @var	array	forum_data_ary				Array with the forum data
 	* @var	array	forum_template_data		Array with generic forum template data
 	* @var	string	microdata_attr			The microdata attribute
 	* @var	array	navlinks_parents		Array with the forum parents navlinks data
 	* @var	array	navlinks				Array with the forum navlinks data
 	* @since 3.1.5-RC1
+	* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 	*/
 	$vars = array(
-		'forum_data',
+		'forum_data_ary',
 		'forum_template_data',
 		'microdata_attr',
 		'navlinks_parents',
 		'navlinks',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.generate_forum_nav', compact($vars)));
+	$forum_data = $forum_data_ary;
+	unset($forum_data_ary);
 
 	$template->assign_block_vars_array('navlinks', $navlinks_parents);
 	$template->assign_block_vars('navlinks', $navlinks);
@@ -1237,17 +1240,21 @@ function display_user_activity(&$userdata)
 		}
 	}
 
+	$userdata_ary = $userdata;
 	/**
 	* Alter list of forums and topics to display as active
 	*
 	* @event core.display_user_activity_modify_actives
-	* @var	array	userdata						User's data
+	* @var	array	userdata_ary					User's data
 	* @var	array	active_f_row					List of active forums
 	* @var	array	active_t_row					List of active posts
 	* @since 3.1.0-RC3
+	* @change 3.1.7-RC1 Replaced userdata with userdata_ary
 	*/
-	$vars = array('userdata', 'active_f_row', 'active_t_row');
+	$vars = array('userdata_ary', 'active_f_row', 'active_t_row');
 	extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_actives', compact($vars)));
+	$userdata = $userdata_ary;
+	unset($userdata_ary);
 
 	$userdata['active_t_row'] = $active_t_row;
 	$userdata['active_f_row'] = $active_f_row;
