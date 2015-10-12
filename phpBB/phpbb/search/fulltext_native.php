@@ -57,7 +57,7 @@ class fulltext_native extends \phpbb\search\base
 	protected $must_not_contain_ids = array();
 
 	/**
-	 * Post ids of posts containing atleast one word that needs to be excluded
+	 * Post ids of posts containing at least one word that needs to be excluded
 	 * @var array
 	 */
 	protected $must_exclude_one_ids = array();
@@ -530,7 +530,7 @@ class fulltext_native extends \phpbb\search\base
 		sort($must_exclude_one_ids);
 
 		// generate a search_key from all the options to identify the results
-		$search_key = md5(implode('#', array(
+		$search_key_array = array(
 			serialize($must_contain_ids),
 			serialize($must_not_contain_ids),
 			serialize($must_exclude_one_ids),
@@ -544,7 +544,45 @@ class fulltext_native extends \phpbb\search\base
 			$post_visibility,
 			implode(',', $author_ary),
 			$author_name,
-		)));
+		);
+
+		/**
+		* Allow changing the search_key for cached results
+		*
+		* @event core.search_native_by_keyword_modify_search_key
+		* @var	array	search_key_array	Array with search parameters to generate the search_key
+		* @var	array	must_contain_ids	Array with post ids of posts containing words that are to be included
+		* @var	array	must_not_contain_ids	Array with post ids of posts containing words that should not be included
+		* @var	array	must_exclude_one_ids	Array with post ids of posts containing at least one word that needs to be excluded
+		* @var	string	type				Searching type ('posts', 'topics')
+		* @var	string	fields				Searching fields ('titleonly', 'msgonly', 'firstpost', 'all')
+		* @var	string	terms				Searching terms ('all', 'any')
+		* @var	int		sort_days			Time, in days, of the oldest possible post to list
+		* @var	string	sort_key			The sort type used from the possible sort types
+		* @var	int		topic_id			Limit the search to this topic_id only
+		* @var	array	ex_fid_ary			Which forums not to search on
+		* @var	string	post_visibility		Post visibility data
+		* @var	array	author_ary			Array of user_id containing the users to filter the results to
+		* @since 3.1.7-RC1
+		*/
+		$vars = array(
+			'search_key_array',
+			'must_contain_ids',
+			'must_not_contain_ids',
+			'must_exclude_one_ids',
+			'type',
+			'fields',
+			'terms',
+			'sort_days',
+			'sort_key',
+			'topic_id',
+			'ex_fid_ary',
+			'post_visibility',
+			'author_ary',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_by_keyword_modify_search_key', compact($vars)));
+
+		$search_key = md5(implode('#', $search_key_array));
 
 		// try reading the results from cache
 		$total_results = 0;
@@ -980,7 +1018,7 @@ class fulltext_native extends \phpbb\search\base
 		}
 
 		// generate a search_key from all the options to identify the results
-		$search_key = md5(implode('#', array(
+		$search_key_array = array(
 			'',
 			$type,
 			($firstpost_only) ? 'firstpost' : '',
@@ -993,7 +1031,39 @@ class fulltext_native extends \phpbb\search\base
 			$post_visibility,
 			implode(',', $author_ary),
 			$author_name,
-		)));
+		);
+
+		/**
+		* Allow changing the search_key for cached results
+		*
+		* @event core.search_native_by_author_modify_search_key
+		* @var	array	search_key_array	Array with search parameters to generate the search_key
+		* @var	string	type				Searching type ('posts', 'topics')
+		* @var	boolean	firstpost_only		Flag indicating if only topic starting posts are considered
+		* @var	int		sort_days			Time, in days, of the oldest possible post to list
+		* @var	string	sort_key			The sort type used from the possible sort types
+		* @var	int		topic_id			Limit the search to this topic_id only
+		* @var	array	ex_fid_ary			Which forums not to search on
+		* @var	string	post_visibility		Post visibility data
+		* @var	array	author_ary			Array of user_id containing the users to filter the results to
+		* @var	string	author_name			The username to search on
+		* @since 3.1.7-RC1
+		*/
+		$vars = array(
+			'search_key_array',
+			'type',
+			'firstpost_only',
+			'sort_days',
+			'sort_key',
+			'topic_id',
+			'ex_fid_ary',
+			'post_visibility',
+			'author_ary',
+			'author_name',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_by_author_modify_search_key', compact($vars)));
+
+		$search_key = md5(implode('#', $search_key_array));
 
 		// try reading the results from cache
 		$total_results = 0;
