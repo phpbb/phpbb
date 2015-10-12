@@ -1904,8 +1904,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_modify_sql_data', compact($vars)));
 	$poll = $poll_ary;
 	$data = $data_ary;
-	unset($poll);
-	unset($data);
+	unset($poll_ary);
+	unset($data_ary);
 
 	// Submit new topic
 	if ($post_mode == 'post')

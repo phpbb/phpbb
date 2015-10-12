@@ -779,7 +779,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
 
-		$rowset = array();
+		$rowset = $attachments = $topic_tracking_info = array();
 
 		if ($show_results == 'topics')
 		{
