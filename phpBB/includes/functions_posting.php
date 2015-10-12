@@ -1520,6 +1520,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 {
 	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
+	$poll_ary = $poll;
+	$data_ary = $data;
 	/**
 	* Modify the data for post submitting
 	*
@@ -1528,23 +1530,28 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	string	subject				Variable containing post subject value
 	* @var	string	username			Variable containing post author name
 	* @var	int		topic_type			Variable containing topic type value
-	* @var	array	poll				Array with the poll data for the post
-	* @var	array	data				Array with the data for the post
+	* @var	array	poll_ary			Array with the poll data for the post
+	* @var	array	data_ary			Array with the data for the post
 	* @var	bool	update_message		Flag indicating if the post will be updated
 	* @var	bool	update_search_index	Flag indicating if the search index will be updated
 	* @since 3.1.0-a4
+	* @change 3.2.0-a1 Replaced poll and data with poll_ary and data_ary
 	*/
 	$vars = array(
 		'mode',
 		'subject',
 		'username',
 		'topic_type',
-		'poll',
-		'data',
+		'poll_ary',
+		'data_ary',
 		'update_message',
 		'update_search_index',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact($vars)));
+	$poll = $poll_ary;
+	$data = $data_ary;
+	unset($poll_ary);
+	unset($data_ary);
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -1869,22 +1876,25 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		break;
 	}
 
+	$poll_ary = $poll;
+	$data_ary = $data;
 	/**
 	* Modify sql query data for post submitting
 	*
 	* @event core.submit_post_modify_sql_data
-	* @var	array	data				Array with the data for the post
-	* @var	array	poll				Array with the poll data for the post
+	* @var	array	data_ary			Array with the data for the post
+	* @var	array	poll_ary			Array with the poll data for the post
 	* @var	string	post_mode			Variable containing posting mode value
 	* @var	bool	sql_data			Array with the data for the posting SQL query
 	* @var	string	subject				Variable containing post subject value
 	* @var	int		topic_type			Variable containing topic type value
 	* @var	string	username			Variable containing post author name
 	* @since 3.1.3-RC1
+	* @change 3.2.0-a1 Replace poll and data with poll_ary and data_ary
 	*/
 	$vars = array(
-		'data',
-		'poll',
+		'data_ary',
+		'poll_ary',
 		'post_mode',
 		'sql_data',
 		'subject',
@@ -1892,6 +1902,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'username',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_modify_sql_data', compact($vars)));
+	$poll = $poll_ary;
+	$data = $data_ary;
+	unset($poll);
+	unset($data);
 
 	// Submit new topic
 	if ($post_mode == 'post')
@@ -2439,6 +2453,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
 	$url = append_sid($url, 'f=' . $data['forum_id'] . $params) . $add_anchor;
 
+	$poll_ary = $poll;
+	$data_ary = $data;
 	/**
 	* This event is used for performing actions directly after a post or topic
 	* has been submitted. When a new topic is posted, the topic ID is
@@ -2452,8 +2468,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @var	string	subject				Variable containing post subject value
 	* @var	string	username			Variable containing post author name
 	* @var	int		topic_type			Variable containing topic type value
-	* @var	array	poll				Array with the poll data for the post
-	* @var	array	data				Array with the data for the post
+	* @var	array	poll_ary			Array with the poll data for the post
+	* @var	array	data_ary			Array with the data for the post
 	* @var	int		post_visibility		Variable containing up to date post visibility
 	* @var	bool	update_message		Flag indicating if the post will be updated
 	* @var	bool	update_search_index	Flag indicating if the search index will be updated
@@ -2462,20 +2478,25 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	* @since 3.1.0-a3
 	* @change 3.1.0-RC3 Added vars mode, subject, username, topic_type,
 	*		poll, update_message, update_search_index
+	* @change 3.2.0-a1 Replaced data and poll with data_ary and poll_ary
 	*/
 	$vars = array(
 		'mode',
 		'subject',
 		'username',
 		'topic_type',
-		'poll',
-		'data',
+		'poll_ary',
+		'data_ary',
 		'post_visibility',
 		'update_message',
 		'update_search_index',
 		'url',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.submit_post_end', compact($vars)));
+	$data = $data_ary;
+	$poll = $poll_ary;
+	unset($data_ary);
+	unset($poll_ary);
 
 	return $url;
 }

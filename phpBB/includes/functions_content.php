@@ -1226,7 +1226,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		* @var bool		preview			Flag indicating if we are in post preview mode
 		* @var array	update_count_ary	Array with attachment ids to update download count
 		* @since 3.1.0-RC5
-		* @change 3.1.7-RC1 Replaced update_count with update_count_ary
+		* @change 3.2.0-a1 Replaced update_count with update_count_ary
 		*/
 		$vars = array(
 			'attachment',

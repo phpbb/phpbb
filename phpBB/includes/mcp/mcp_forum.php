@@ -334,16 +334,20 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			));
 		}
 
+		$row_ary = $row;
 		/**
 		* Modify the topic data before it is assigned to the template in MCP
 		*
 		* @event core.mcp_view_forum_modify_topicrow
-		* @var	array	row			Array with topic data
+		* @var	array	row_ary		Array with topic data
 		* @var	array	topic_row	Template array with topic data
 		* @since 3.1.0-a1
+		* @change 3.2.0-a1 Replace row with row_ary
 		*/
 		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.mcp_view_forum_modify_topicrow', compact($vars)));
+		$row = $row_ary;
+		unset($row_ary);
 
 		$template->assign_block_vars('topicrow', $topic_row);
 	}

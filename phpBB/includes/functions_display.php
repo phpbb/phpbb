@@ -1249,7 +1249,7 @@ function display_user_activity(&$userdata)
 	* @var	array	active_f_row					List of active forums
 	* @var	array	active_t_row					List of active posts
 	* @since 3.1.0-RC3
-	* @change 3.1.7-RC1 Replaced userdata with userdata_ary
+	* @change 3.2.0-a1 Replaced userdata with userdata_ary
 	*/
 	$vars = array('userdata_ary', 'active_f_row', 'active_t_row');
 	extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_actives', compact($vars)));

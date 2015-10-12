@@ -959,7 +959,7 @@ class acp_forums
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
-		* @change 3.1.7-RC1 Replaced forum_data with forum_data_ary
+		* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 		*/
 		$vars = array('forum_data_ary', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
@@ -1072,7 +1072,7 @@ class acp_forums
 		*						If forum_data_sql[forum_id] is set, we update
 		*						that forum, otherwise a new one is created.
 		* @since 3.1.0-a1
-		* @change 3.1.7-RC1 Replaced forum_data by forum_data_ary
+		* @change 3.2.0-a1 Replaced forum_data by forum_data_ary
 		*/
 		$vars = array('forum_data_ary', 'forum_data_sql');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
@@ -1369,7 +1369,7 @@ class acp_forums
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
-		* @change 3.1.7-RC1 Replaced forum_data with forum_data_ary
+		* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 		*/
 		$vars = array('forum_data_ary', 'forum_data_sql', 'is_new_forum', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));

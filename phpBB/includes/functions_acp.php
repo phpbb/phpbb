@@ -398,12 +398,12 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	* @var	array	vars		Array with the options for the config
 	* @var	string	tpl			The resulting html code we display
 	* @since 3.1.0-a1
-	* @change 3.1.7-RC1 Replaced new with new_ary
+	* @change 3.2.0-a1 Replaced new with new_ary
 	*/
 	$vars = array('tpl_type', 'key', 'new_ary', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
 	$new = $new_ary;
-	unset($new);
+	unset($new_ary);
 
 	return $tpl;
 }
