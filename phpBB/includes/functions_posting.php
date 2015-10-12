@@ -406,10 +406,10 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 {
 	global $phpbb_container;
 
-	/** @var \phpbb\attachment\upload $attachment_upload */
-	$attachment_upload = $phpbb_container->get('attachment.upload');
-	$file = $attachment_upload->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
-	unset($attachment_upload);
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$file = $attachment_manager->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
+	unset($attachment_manager);
 
 	return $file;
 }

@@ -1024,10 +1024,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
 
-	/** @var \phpbb\attachment\delete $attachment_delete */
-	$attachment_delete = $phpbb_container->get('attachment.delete');
-	$attachment_delete->delete('post', $post_ids, false);
-	unset($attachment_delete);
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$attachment_manager->delete('post', $post_ids, false);
+	unset($attachment_manager);
 
 	/**
 	* Perform additional actions during post(s) deletion
@@ -1124,11 +1124,11 @@ function delete_attachments($mode, $ids, $resync = true)
 {
 	global $phpbb_container;
 
-	/** @var \phpbb\attachment\delete $attachment_delete */
-	$attachment_delete = $phpbb_container->get('attachment.delete');
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$num_deleted = $attachment_manager->delete($mode, $ids, $resync);
 
-	$num_deleted = $attachment_delete->delete($mode, $ids, $resync);
-	unset($attachment_delete);
+	unset($attachment_manager);
 
 	return $num_deleted;
 }
@@ -1253,10 +1253,10 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
 	global $phpbb_container;
 
-	/** @var \phpbb\attachment\delete $attachment_delete */
-	$attachment_delete = $phpbb_container->get('attachment.delete');
-	$unlink = $attachment_delete->unlink_attachment($filename, $mode, $entry_removed);
-	unset($attachment_delete);
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$unlink = $attachment_manager->unlink($filename, $mode, $entry_removed);
+	unset($attachment_manager);
 
 	return $unlink;
 }

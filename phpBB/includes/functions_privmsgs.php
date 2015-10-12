@@ -1153,10 +1153,10 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	if (sizeof($delete_ids))
 	{
 		// Check if there are any attachments we need to remove
-		/** @var \phpbb\attachment\delete $attachment_delete */
-		$attachment_delete = $phpbb_container->get('attachment.delete');
-		$attachment_delete->delete('message', $delete_ids, false);
-		unset($attachment_delete);
+		/** @var \phpbb\attachment\manager $attachment_manager */
+		$attachment_manager = $phpbb_container->get('attachment.manager');
+		$attachment_manager->delete('message', $delete_ids, false);
+		unset($attachment_manager);
 
 		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
@@ -1361,10 +1361,10 @@ function phpbb_delete_users_pms($user_ids)
 		if (!empty($delete_ids))
 		{
 			// Check if there are any attachments we need to remove
-			/** @var \phpbb\attachment\delete $attachment_delete */
-			$attachment_delete = $phpbb_container->get('attachment.delete');
-			$attachment_delete->delete('message', $delete_ids, false);
-			unset($attachment_delete);
+			/** @var \phpbb\attachment\manager $attachment_manager */
+			$attachment_manager = $phpbb_container->get('attachment.manager');
+			$attachment_manager->delete('message', $delete_ids, false);
+			unset($attachment_manager);
 
 			$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 				WHERE ' . $db->sql_in_set('msg_id', $delete_ids);

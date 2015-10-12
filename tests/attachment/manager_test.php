@@ -74,8 +74,8 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 				'delete',
 				['foo', [1, 2, 3]],
 				['foo', [1, 2, 3], true],
-				true,
-				true,
+				5,
+				5,
 			),
 			array(
 				'delete',
@@ -83,8 +83,8 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 				'delete',
 				['foo', [1, 2, 3], false],
 				['foo', [1, 2, 3], false],
-				true,
-				true,
+				2,
+				2,
 			),
 			array(
 				'resync',

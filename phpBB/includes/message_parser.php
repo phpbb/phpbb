@@ -1571,9 +1571,9 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($num_attachments < $cfg['max_attachments'] || $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id))
 			{
-				/** @var \phpbb\attachment\upload $attachment_upload */
-				$attachment_upload = $phpbb_container->get('attachment.upload');
-				$filedata = $attachment_upload->upload($form_name, $forum_id, false, '', $is_message);
+				/** @var \phpbb\attachment\manager $attachment_manager */
+				$attachment_manager = $phpbb_container->get('attachment.manager');
+				$filedata = $attachment_manager->upload($form_name, $forum_id, false, '', $is_message);
 				$error = $filedata['error'];
 
 				if ($filedata['post_attach'] && !sizeof($error))
@@ -1643,8 +1643,8 @@ class parse_message extends bbcode_firstpass
 
 				if ($index !== false && !empty($this->attachment_data[$index]))
 				{
-					/** @var \phpbb\attachment\delete $attachment_delete */
-					$attachment_delete = $phpbb_container->get('attachment.delete');
+					/** @var \phpbb\attachment\manager $attachment_manager */
+					$attachment_manager = $phpbb_container->get('attachment.manager');
 
 					// delete selected attachment
 					if ($this->attachment_data[$index]['is_orphan'])
@@ -1660,11 +1660,11 @@ class parse_message extends bbcode_firstpass
 
 						if ($row)
 						{
-							$attachment_delete->unlink_attachment($row['physical_filename'], 'file');
+							$attachment_manager->unlink($row['physical_filename'], 'file');
 
 							if ($row['thumbnail'])
 							{
-								$attachment_delete->unlink_attachment($row['physical_filename'], 'thumbnail');
+								$attachment_manager->unlink($row['physical_filename'], 'thumbnail');
 							}
 
 							$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . ' WHERE attach_id = ' . (int) $this->attachment_data[$index]['attach_id']);
@@ -1672,7 +1672,7 @@ class parse_message extends bbcode_firstpass
 					}
 					else
 					{
-						$attachment_delete->delete('attach', $this->attachment_data[$index]['attach_id']);
+						$attachment_manager->delete('attach', $this->attachment_data[$index]['attach_id']);
 					}
 
 					unset($this->attachment_data[$index]);
@@ -1692,9 +1692,9 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					/** @var \phpbb\attachment\upload $attachment_upload */
-					$attachment_upload = $phpbb_container->get('attachment.upload');
-					$filedata = $attachment_upload->upload($form_name, $forum_id, false, '', $is_message);
+					/** @var \phpbb\attachment\manager $attachment_manager */
+					$attachment_manager = $phpbb_container->get('attachment.manager');
+					$filedata = $attachment_manager->upload($form_name, $forum_id, false, '', $is_message);
 					$error = array_merge($error, $filedata['error']);
 
 					if (!sizeof($error))

@@ -319,7 +319,8 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
-		$phpbb_container->set('attachment.delete', $attachment_delete);
+		// Works as a workaround for tests
+		$phpbb_container->set('attachment.manager', $attachment_delete);
 
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 
