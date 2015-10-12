@@ -564,10 +564,11 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * @param bool $allow_flash_bbcode
 * @param bool $allow_quote_bbcode
 * @param bool $allow_url_bbcode
+* @param string $mode Mode to parse text as, e.g. post or sig
 *
 * @return array	An array of string with the errors that occurred while parsing
 */
-function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true)
+function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
 {
 	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
@@ -586,7 +587,9 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_flash_bbcode	Whether or not to parse the [flash] BBCode
 	* @var bool		allow_quote_bbcode	Whether or not to parse the [quote] BBCode
 	* @var bool		allow_url_bbcode	Whether or not to parse the [url] BBCode
+	* @var string	mode				Mode to parse text as, e.g. post or sig
 	* @since 3.1.0-a1
+	* @changed 3.2.0-a1
 	*/
 	$vars = array(
 		'text',
@@ -600,6 +603,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		'allow_flash_bbcode',
 		'allow_quote_bbcode',
 		'allow_url_bbcode',
+		'mode',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
@@ -612,7 +616,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	}
 
 	$message_parser = new parse_message($text);
-	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode);
+	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode, true, $mode);
 
 	$text = $message_parser->message;
 	$uid = $message_parser->bbcode_uid;

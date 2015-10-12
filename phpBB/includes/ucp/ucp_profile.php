@@ -518,7 +518,20 @@ class ucp_profile
 				}
 
 				$bbcode_uid = $bbcode_bitfield = $bbcode_flags = '';
-				$warn_msg = generate_text_for_storage($signature, $bbcode_uid, $bbcode_bitfield, $bbcode_flags, $enable_bbcode, $enable_urls, $enable_smilies);
+				$warn_msg = generate_text_for_storage(
+					$signature,
+					$bbcode_uid,
+					$bbcode_bitfield,
+					$bbcode_flags,
+					$enable_bbcode,
+					$enable_urls,
+					$enable_smilies,
+					$config['allow_sig_img'],
+					$config['allow_sig_flash'],
+					true,
+					$config['allow_sig_links'],
+					'sig'
+				);
 
 				if (sizeof($warn_msg))
 				{
