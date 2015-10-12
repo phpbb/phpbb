@@ -331,7 +331,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			* @var	string	sql					The original SQL used in the query
 			* @var	array	post				Associative array with the data of the quoted post
 			* @var	array	msg_id				The post_id that was searched to get the message for quoting
-			* @var	int		topic_id			Topic ID of the quoted post
 			* @var	int		to_user_id			Users the message is sent to
 			* @var	int		to_group_id			Groups the message is sent to
 			* @var	bool	submit				Whether the user is sending the PM or not

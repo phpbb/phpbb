@@ -393,7 +393,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	*						1 [optional] => string: size, int: minimum
 	*						2 [optional] => string: max. length, int: maximum
 	* @var	string	key			Should be used for the id attribute in html
-	* @var	array	new_var			Array with the config values we display
+	* @var	array	new_ary			Array with the config values we display
 	* @var	string	name		Should be used for the name attribute
 	* @var	array	vars		Array with the options for the config
 	* @var	string	tpl			The resulting html code we display
