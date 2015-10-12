@@ -3653,7 +3653,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 					$row['username'] = '<em>' . $row['username'] . '</em>';
 				}
 
-				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
+				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline') || $row['user_id'] === $user->data['user_id'])
 				{
 					$user_online_link[$row['user_id']] = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
 				}
