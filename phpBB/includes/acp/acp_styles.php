@@ -62,9 +62,12 @@ class acp_styles
 	/** @var string */
 	protected $php_ext;
 
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $dispatcher;
+
 	public function main($id, $mode)
 	{
-		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_container;
+		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
 
 		$this->db = $db;
 		$this->user = $user;
@@ -76,6 +79,7 @@ class acp_styles
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
+		$this->dispatcher = $phpbb_dispatcher;
 
 		$this->default_style = $config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
@@ -124,6 +128,18 @@ class acp_styles
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields($this->s_hidden_fields)
 			)
 		);
+
+		/**
+		 * Run code before ACP styles action execution
+		 *
+		 * @event core.acp_styles_action_before
+		 * @var	int     id          Module ID
+		 * @var	string  mode        Active module
+		 * @var	string  action      Module that should be run
+		 * @since 3.1.7-RC1
+		 */
+		$vars = array('id', 'mode', 'action');
+		extract($this->dispatcher->trigger_event('core.acp_styles_action_before', compact($vars)));
 
 		// Execute actions
 		switch ($action)
