@@ -26,6 +26,7 @@
 	},
 	"require": {
 		"bantu/ini-get-wrapper": "1.0.*",
+	  	"google/recaptcha": "~1.1",
 		"lusitanian/oauth": "0.2.*",
 		"marc1706/fast-image-size": "1.1.*",
 		"patchwork/utf8": "1.1.*",

@@ -54,16 +54,6 @@
 		width: 100%;
 	}
 
-	.recaptchatable tr td:last-child {
-		display: none;
-	}
-
-	.captcha-panel .recaptcha-responsive {
-		display: inline-block !important;
-		margin-top: 10px;
-		vertical-align: middle;
-	}
-
 	dl.details dt, dl.details dd {
 		width: auto;
 		float: none;
