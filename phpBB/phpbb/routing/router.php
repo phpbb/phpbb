@@ -117,7 +117,7 @@ class router implements RouterInterface
 	 */
 	public function get_routes()
 	{
-		if ($this->route_collection === null /*|| $this->route_collection->count() === 0*/)
+		if ($this->route_collection === null || $this->route_collection->count() === 0)
 		{
 			$this->route_collection = new RouteCollection;
 			foreach ($this->resources_locator->locate_resources() as $resource)
