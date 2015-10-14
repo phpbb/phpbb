@@ -125,7 +125,7 @@ class plupload
 			// Need to modify some of the $_FILES values to reflect the new file
 			return array(
 				'tmp_name' => $file_path,
-				'name' => $this->request->variable('real_filename', ''),
+				'name' => $this->request->variable('real_filename', '', true),
 				'size' => filesize($file_path),
 				'type' => $this->mimetype_guesser->guess($file_path, $file_name),
 			);
