@@ -27,7 +27,10 @@ class acp_send_statistics
 	{
 		global $config, $template, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
-		include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
+		if (!class_exists('phpbb_questionnaire_data_collector'))
+		{
+			include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
+		}
 
 		$collect_url = "https://www.phpbb.com/stats/receive_stats.php";
 

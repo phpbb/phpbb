@@ -37,8 +37,15 @@ class acp_profile
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
-		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		if (!function_exists('generate_smilies'))
+		{
+			include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		}
+
+		if (!function_exists('user_get_id_name'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		$user->add_lang(array('ucp', 'acp/profile'));
 		$this->tpl_name = 'acp_profile';

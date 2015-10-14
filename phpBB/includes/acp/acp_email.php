@@ -189,8 +189,15 @@ class acp_email
 				$db->sql_freeresult($result);
 
 				// Send the messages
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!class_exists('messenger'))
+				{
+					include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				}
+
+				if (!function_exists('get_group_name'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 				$messenger = new messenger($use_queue);
 
 				$errored = false;

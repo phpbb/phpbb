@@ -28,7 +28,11 @@ class acp_prune
 		global $user, $phpEx, $phpbb_admin_path, $phpbb_root_path;
 
 		$user->add_lang('acp/prune');
-		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
+		if (!function_exists('user_active_flip'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		switch ($mode)
 		{

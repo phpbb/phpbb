@@ -114,7 +114,10 @@ class acp_attachments
 		{
 			case 'attach':
 
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				if (!function_exists('get_supported_image_types'))
+				{
+					include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				}
 
 				$sql = 'SELECT group_name, cat_id
 					FROM ' . EXTENSION_GROUPS_TABLE . '

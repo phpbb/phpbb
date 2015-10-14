@@ -141,7 +141,11 @@ class acp_bots
 
 			case 'edit':
 			case 'add':
-				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
+				if (!function_exists('user_update_name'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				$bot_row = array(
 					'bot_name'		=> $request->variable('bot_name', '', true),

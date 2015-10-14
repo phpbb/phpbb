@@ -30,8 +30,15 @@ class acp_permission_roles
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_log;
 
-		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+		if (!function_exists('user_get_id_name'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		if (!class_exists('auth_admin'))
+		{
+			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+		}
 
 		$this->auth_admin = new auth_admin();
 
