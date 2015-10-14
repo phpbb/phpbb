@@ -48,6 +48,9 @@ then
 	echo 'Enabling APC PHP extension'
 	register_php_extension 'apc' "$php_ini_file"
 	echo 'apc.enable_cli=1' >> "$php_ini_file"
+else
+	echo 'Disabling Opcache'
+	echo 'opcache.enable=0' >> "$php_ini_file"
 fi
 
 # redis
