@@ -83,6 +83,7 @@ class post extends \phpbb\notification\type\base
 	* Get the id of the item
 	*
 	* @param array $post The data from the post
+	* @return int The post id
 	*/
 	static public function get_item_id($post)
 	{
@@ -93,6 +94,7 @@ class post extends \phpbb\notification\type\base
 	* Get the id of the parent
 	*
 	* @param array $post The data from the post
+	* @return int The topic id
 	*/
 	static public function get_item_parent_id($post)
 	{
@@ -218,14 +220,14 @@ class post extends \phpbb\notification\type\base
 
 		if ($trimmed_responders_cnt > 20)
 		{
-			$usernames[] = $this->user->lang('NOTIFICATION_MANY_OTHERS');
+			$usernames[] = $this->language->lang('NOTIFICATION_MANY_OTHERS');
 		}
 		else if ($trimmed_responders_cnt)
 		{
-			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
+			$usernames[] = $this->language->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			phpbb_generate_string_list($usernames, $this->user),
 			$responders_cnt
@@ -239,7 +241,7 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('topic_title'))
 		);
@@ -407,6 +409,7 @@ class post extends \phpbb\notification\type\base
 	* Add responders to the notification
 	*
 	* @param mixed $post
+	* @return array Array of responder data
 	*/
 	public function add_responders($post)
 	{

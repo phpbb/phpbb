@@ -82,6 +82,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 		$messenger = new \messenger();
 
 		// Time to go through the queue and send emails
+		/** @var \phpbb\notification\type\type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
 			if ($notification->get_email_template() === false)

@@ -90,6 +90,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$loader->load('services_notification.yml');
 		$phpbb_container->set('user_loader', $this->user_loader);
 		$phpbb_container->set('user', $user);
+		$phpbb_container->set('language', $lang);
 		$phpbb_container->set('config', $this->config);
 		$phpbb_container->set('dbal.conn', $this->db);
 		$phpbb_container->set('auth', $auth);
@@ -111,6 +112,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$this->db,
 			$this->cache,
+			$lang,
 			$this->user,
 			'phpbb_notification_types',
 			'phpbb_user_notifications'

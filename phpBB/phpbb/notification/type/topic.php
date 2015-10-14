@@ -83,6 +83,7 @@ class topic extends \phpbb\notification\type\base
 	* Get the id of the item
 	*
 	* @param array $post The data from the post
+	* @return int The topic id
 	*/
 	static public function get_item_id($post)
 	{
@@ -93,6 +94,7 @@ class topic extends \phpbb\notification\type\base
 	* Get the id of the parent
 	*
 	* @param array $post The data from the post
+	* @return int The forum id
 	*/
 	static public function get_item_parent_id($post)
 	{
@@ -154,7 +156,7 @@ class topic extends \phpbb\notification\type\base
 			$username = $this->user_loader->get_username($this->get_data('poster_id'), 'no_profile');
 		}
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			$username
 		);
@@ -167,7 +169,7 @@ class topic extends \phpbb\notification\type\base
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('topic_title'))
 		);
@@ -180,7 +182,7 @@ class topic extends \phpbb\notification\type\base
 	*/
 	public function get_forum()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_FORUM',
 			$this->get_data('forum_name')
 		);

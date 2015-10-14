@@ -266,6 +266,7 @@ class board extends \phpbb\notification\method\base
 	{
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->notifications_table);
 
+		/** @var \phpbb\notification\type\type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
 			$data = $notification->get_insert_array();

@@ -106,6 +106,7 @@ class quote extends \phpbb\notification\type\post
 	* Update a notification
 	*
 	* @param array $post Data specific for this type that will be updated
+	* @return true
 	*/
 	public function update_notifications($post)
 	{
