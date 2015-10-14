@@ -915,7 +915,7 @@ abstract class driver implements driver_interface
 
 		}
 
-		if($operation === 'NOT')
+		if ($operation === 'NOT')
 		{
 			$operations_ary =  implode("", $operations_ary);
 		}
