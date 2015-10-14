@@ -1502,6 +1502,20 @@ switch ($mode)
 				usort($user_list,  'phpbb_sort_last_active');
 			}
 
+			// do we need to display contact fields as such
+			$use_contact_fields = false;
+
+			/**
+			 * Modify list of users before member row is created
+			 *
+			 * @event core.memberlist_memberrow_before
+			 * @var array	user_list			Array containing list of users
+			 * @var bool	use_contact_fields	Should we display contact fields as such?
+			 * @since 3.1.7-RC1
+			 */
+			$vars = array('user_list', 'use_contact_fields');
+			extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_before', compact($vars)));
+
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
@@ -1512,7 +1526,7 @@ switch ($mode)
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], false) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], $use_contact_fields) : array();
 				}
 
 				$memberrow = array_merge(phpbb_show_profile($row, false, false, false), array(
