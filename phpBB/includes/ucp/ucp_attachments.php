@@ -70,12 +70,10 @@ class ucp_attachments
 
 			if (confirm_box(true))
 			{
-				if (!function_exists('delete_attachments'))
-				{
-					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-				}
-
-				delete_attachments('attach', $delete_ids);
+				/** @var \phpbb\attachment\manager $attachment_manager */
+				$attachment_manager = $phpbb_container->get('attachment.manager');
+				$attachment_manager->delete('attach', $delete_ids);
+				unset($attachment_manager);
 
 				meta_refresh(3, $this->u_action);
 				$message = ((sizeof($delete_ids) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED']) . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');

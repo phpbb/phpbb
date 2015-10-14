@@ -543,7 +543,10 @@ class acp_users
 
 							if (confirm_box(true))
 							{
-								delete_attachments('user', $user_id);
+								/** @var \phpbb\attachment\manager $attachment_manager */
+								$attachment_manager = $phpbb_container->get('attachment.manager');
+								$attachment_manager->delete('user', $user_id);
+								unset($attachment_manager);
 
 								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DEL_ATTACH', false, array($user_row['username']));
 								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
@@ -2139,7 +2142,10 @@ class acp_users
 						}
 						$db->sql_freeresult($result);
 
-						delete_attachments('attach', $marked);
+						/** @var \phpbb\attachment\manager $attachment_manager */
+						$attachment_manager = $phpbb_container->get('attachment.manager');
+						$attachment_manager->delete('attach', $marked);
+						unset($attachment_manager);
 
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 

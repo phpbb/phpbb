@@ -1788,7 +1788,7 @@ class acp_forums
 	*/
 	function delete_forum_content($forum_id)
 	{
-		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+		global $db, $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -1809,7 +1809,10 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		delete_attachments('topic', $topic_ids, false);
+		/** @var \phpbb\attachment\manager $attachment_manager */
+		$attachment_manager = $phpbb_container->get('attachment.manager');
+		$attachment_manager->delete('topic', $topic_ids, false);
+		unset($attachment_manager);
 
 		// Delete shadow topics pointing to topics in this forum
 		delete_topic_shadows($forum_id);
