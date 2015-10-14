@@ -15,6 +15,11 @@
 	width: 30%;
 }
 
+.attach-comment .inputbox {
+	resize: vertical;
+	width: 100%;
+}
+
 .attach-filesize {
 	width: 15%;
 }
