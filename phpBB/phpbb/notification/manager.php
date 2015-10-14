@@ -848,7 +848,7 @@ class manager
 	 *
 	 * @param string $notification_type_name
 	 * @param array  $data
-	 * @return \phpbb\notification\type\type_interface
+	 * @return type\type_interface
 	 */
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
@@ -863,7 +863,7 @@ class manager
 	 * Helper to get the notifications method class and set it up
 	 *
 	 * @param string $method_name
-	 * @return \phpbb\notification\method\method_interface
+	 * @return method\method_interface
 	 */
 	public function get_method_class($method_name)
 	{
@@ -874,7 +874,7 @@ class manager
 	 * Helper to load objects (notification types/methods)
 	 *
 	 * @param string $object_name
-	 * @return \phpbb\notification\method\method_interface|\phpbb\notification\type\type_interface
+	 * @return method\method_interface|type\type_interface
 	 */
 	protected function load_object($object_name)
 	{
