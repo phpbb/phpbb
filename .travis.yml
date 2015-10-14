@@ -48,3 +48,4 @@ script:
   - sh -c "if [ '$NOTESTS' != '1' -a '$SLOWTESTS' != '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml; fi"
   - sh -c "if [ '$SLOWTESTS' = '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow; fi"
   - sh -c "set -x;if [ '$NOTESTS' = '1' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
+  - php -i | grep opcache
