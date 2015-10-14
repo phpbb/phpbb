@@ -8,7 +8,7 @@
 <div class="forumbg forumbg-table">
 	<div class="inner">
 
-	<table class="table1">
+	<table class="table1" id="team">
 	<thead>
 	<tr>
 		<th class="name" data-dfn="{L_RANK}{L_COMMA_SEPARATOR}{L_USERNAME}"><span class="rank-img">{L_RANK}&nbsp;</span><!-- IF group.U_GROUP --><a href="{group.U_GROUP}">{group.GROUP_NAME}</a><!-- ELSE -->{group.GROUP_NAME}<!-- ENDIF --></th>
@@ -18,7 +18,7 @@
 	</thead>
 	<tbody>
 <!-- BEGIN user -->
-	<tr class="<!-- IF group.user.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+	<tr class="<!-- IF group.user.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF group.user.S_INACTIVE --> inactive<!-- ENDIF -->">
 		<td><!-- IF group.user.RANK_IMG --><span class="rank-img">{group.user.RANK_IMG}</span><!-- ELSE --><span class="rank-img">{group.user.RANK_TITLE}</span><!-- ENDIF -->{group.user.USERNAME_FULL}</td>
 		<td class="info"><!-- IF group.user.U_GROUP -->
 			<a<!-- IF group.user.GROUP_COLOR --> style="font-weight: bold; color: #{group.user.GROUP_COLOR}"<!-- ENDIF --> href="{group.user.U_GROUP}">{group.user.GROUP_NAME}</a>
