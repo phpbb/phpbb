@@ -774,7 +774,18 @@ abstract class driver implements driver_interface
 
 				if (!empty($array['WHERE']))
 				{
-					$sql .= ' WHERE ' . $this->_sql_custom_build('WHERE', $array['WHERE']);
+					$sql .= ' WHERE ';
+
+					if (is_array($array['WHERE']))
+					{
+						$sql_where = $this->_process_boolean_tree_first($array['WHERE']);
+					}
+					else
+					{
+						$sql_where = $array['WHERE'];
+					}
+
+					$sql .= $this->_sql_custom_build('WHERE', $sql_where);
 				}
 
 				if (!empty($array['GROUP_BY']))
@@ -792,6 +803,130 @@ abstract class driver implements driver_interface
 
 		return $sql;
 	}
+
+
+	protected function _process_boolean_tree_first($operations_ary)
+	{
+		// In cases where an array exists but there is no head condition,
+		// it should be because there's only 1 WHERE clause. This seems the best way to deal with it.
+		if ($operations_ary[0] !== 'AND' &&
+			$operations_ary[0] !== 'OR')
+		{
+			$operations_ary = array('AND', $operations_ary);
+		}
+		return $this->_process_boolean_tree($operations_ary) . "\n";
+	}
+
+	protected function _process_boolean_tree($operations_ary)
+	{
+		$operation = array_shift($operations_ary);
+
+		foreach ($operations_ary as &$condition)
+		{
+			switch ($condition[0])
+			{
+				case 'AND':
+				case 'OR':
+
+					$condition = ' ( ' . $this->_process_boolean_tree($condition) . ') ';
+
+				break;
+				case 'NOT':
+
+					$condition = ' NOT (' . $this->_process_boolean_tree($condition) . ') ';
+
+				break;
+
+				default:
+
+					switch (sizeof($condition))
+					{
+						case 3:
+
+							// Typical 3 element clause with {left hand} {operator} {right hand}
+							switch ($condition[1])
+							{
+								case 'IN':
+								case 'NOT_IN':
+
+									// As this is used with an IN, assume it is a set of elements for sql_in_set()
+									$condition = $this->sql_in_set($condition[0], $condition[2], $condition[1] === 'NOT_IN', true);
+
+								break;
+
+								case 'LIKE':
+
+									$condition = $condition[0] . ' ' . $this->sql_like_expression($condition[2]) . ' ';
+
+								break;
+
+								case 'NOT_LIKE':
+
+									$condition = $condition[0] . ' ' . $this->sql_not_like_expression($condition[2]) . ' ';
+
+								break;
+
+								case 'IS_NOT':
+
+									$condition[1] = 'IS NOT';
+
+								// no break
+								case 'IS':
+
+									// If the value is NULL, the string of it is the empty string ('') which is not the intended result.
+									// this should solve that
+									if ($condition[2] === null)
+									{
+										$condition[2] = 'NULL';
+									}
+
+									$condition = implode(' ', $condition);
+
+								break;
+
+								default:
+
+									$condition = implode(' ', $condition);
+
+								break;
+							}
+
+						break;
+
+						case 5:
+
+							// Subquery with {left hand} {operator} {compare kind} {SELECT Kind } {Sub Query}
+
+							$condition = $condition[0] . ' ' . $condition[1] . ' ' . $condition[2] . ' ( ';
+							$condition .= $this->sql_build_query($condition[3], $condition[4]);
+							$condition .= ' )';
+
+						break;
+
+						default:
+							// This is an unpredicted clause setup. Just join all elements.
+							$condition = implode(' ', $condition);
+
+						break;
+					}
+
+				break;
+			}
+
+		}
+
+		if($operation === 'NOT')
+		{
+			$operations_ary =  implode("", $operations_ary);
+		}
+		else
+		{
+			$operations_ary = implode(" \n	$operation ", $operations_ary);
+		}
+
+		return $operations_ary;
+	}
+
 
 	/**
 	* {@inheritDoc}

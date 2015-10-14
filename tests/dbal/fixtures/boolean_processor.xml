@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_banlist">
+		<column>ban_id</column>
+		<column>ban_userid</column>
+		<row>
+			<value>1</value>
+			<value>2</value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>1</value>
+			<value>mass email</value>
+			<value>mass email</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>banned</value>
+			<value>banned</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>helper</value>
+			<value>helper</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>GroupBPal</value>
+			<value>groupbpal</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>GroupBPal2</value>
+			<value>groupBPal2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>not in group</value>
+			<value>not in group</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_user_group">
+		<column>user_id</column>
+		<column>group_id</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>2</value>
+		</row>
+	</table>
+</dataset>
