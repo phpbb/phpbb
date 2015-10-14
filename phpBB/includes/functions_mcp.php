@@ -557,6 +557,11 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 	// Default total to -1 to allow editing by the event
 	$total = -1;
 
+	$sort_by_sql_ary = $sort_by_sql;
+	$sort_days_val = $sort_days;
+	$sort_dir_val = $sort_dir;
+	$sort_key_val = $sort_key;
+	$total_val = $total;
 	/**
 	* This event allows you to control the SQL query used to get the total number
 	* of reports the user can access.
@@ -571,19 +576,20 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 	* @var	string	type				Which kind of information is this being used for displaying. Posts, topics, etc...
 	* @var	int		forum_id			The forum id of the posts the user is trying to access, if not 0
 	* @var	int		topic_id			The topic id of the posts the user is trying to access, if not 0
-	* @var	int		sort_days			The max age of the oldest report to be shown, in days
-	* @var	string	sort_key			The way the user has decided to sort the data.
+	* @var	int		sort_days_val		The max age of the oldest report to be shown, in days
+	* @var	string	sort_key_val		The way the user has decided to sort the data.
 	*									The valid values must be in the keys of the sort_by_* variables
-	* @var	string	sort_dir			Either 'd' for "DESC" or 'a' for 'ASC' in the SQL query
+	* @var	string	sort_dir_val		Either 'd' for "DESC" or 'a' for 'ASC' in the SQL query
 	* @var	int		limit_days			The possible max ages of the oldest report for the user to choose, in days.
-	* @var	array	sort_by_sql			SQL text (values) for the possible names of the ways of sorting data (keys).
+	* @var	array	sort_by_sql_ary		SQL text (values) for the possible names of the ways of sorting data (keys).
 	* @var	array	sort_by_text		Language text (values) for the possible names of the ways of sorting data (keys).
 	* @var	int		min_time			Integer with the minimum post time that the user is searching for
 	* @var	int		limit_time_sql		Time limiting options used in the SQL query.
-	* @var	int		total				The total number of reports that exist. Only set if you want to override the result
+	* @var	int		total_val			The total number of reports that exist. Only set if you want to override the result
 	* @var	string	where_sql			Extra information included in the WHERE clause. It must end with "WHERE" or "AND" or "OR".
 	*									Set to "WHERE" and set total above -1 to override the total value
 	* @since 3.1.4-RC1
+	* @change 3.2.0-a1 Replaced sort_days, sort_key, sort_dir, sort_by_sql, total with replacement variables
 	*/
 	$vars = array(
 		'sql',
@@ -591,18 +597,28 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 		'type',
 		'forum_id',
 		'topic_id',
-		'sort_days',
-		'sort_key',
-		'sort_dir',
+		'sort_days_val',
+		'sort_key_val',
+		'sort_dir_val',
 		'limit_days',
-		'sort_by_sql',
+		'sort_by_sql_ary',
 		'sort_by_text',
 		'min_time',
 		'limit_time_sql',
-		'total',
+		'total_val',
 		'where_sql',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.mcp_sorting_query_before', compact($vars)));
+	$sort_by_sql = $sort_by_sql_ary;
+	$sort_days = $sort_days_val;
+	$sort_key = $sort_key_val;
+	$sort_dir = $sort_dir_val;
+	$total = $total_val;
+	unset($sort_by_sql_ary);
+	unset($sort_days_val);
+	unset($sort_key_val);
+	unset($sort_dir_val);
+	unset($total_val);
 
 	if (!isset($sort_by_sql[$sort_key]))
 	{

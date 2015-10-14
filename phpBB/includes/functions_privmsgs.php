@@ -1620,17 +1620,21 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 	$current_time = time();
 
+	$data_ary = $data;
 	/**
 	* Get all parts of the PM that are to be submited to the DB.
 	*
 	* @event core.submit_pm_before
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
-	* @var	array	data	The whole row data of the PM.
+	* @var	array	data_ary	The whole row data of the PM.
 	* @since 3.1.0-b3
+	* @change 3.2.0-a1 Replaced data with data_ary
 	*/
-	$vars = array('mode', 'subject', 'data');
+	$vars = array('mode', 'subject', 'data_ary');
 	extract($phpbb_dispatcher->trigger_event('core.submit_pm_before', compact($vars)));
+	$data = $data_ary;
+	unset($data_ary);
 
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
@@ -1939,18 +1943,22 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		$phpbb_notifications->add_notifications('notification.type.pm', $pm_data);
 	}
 
+	$data_ary = $data;
 	/**
 	* Get PM message ID after submission to DB
 	*
 	* @event core.submit_pm_after
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
-	* @var	array	data	The whole row data of the PM.
+	* @var	array	data_ary	The whole row data of the PM.
 	* @var	array	pm_data	The data sent to notification class
 	* @since 3.1.0-b5
+	* @change 3.2.0-a1 Replaced data with data_ary
 	*/
-	$vars = array('mode', 'subject', 'data', 'pm_data');
+	$vars = array('mode', 'subject', 'data_ary', 'pm_data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_pm_after', compact($vars)));
+	$data = $data_ary;
+	unset($data_ary);
 
 	return $data['msg_id'];
 }

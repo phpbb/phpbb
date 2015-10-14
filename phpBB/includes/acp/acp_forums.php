@@ -950,17 +950,21 @@ class acp_forums
 
 		$errors = array();
 
+		$forum_data_ary = $forum_data;
 		/**
 		* Validate the forum data before we create/update the forum
 		*
 		* @event core.acp_manage_forums_validate_data
-		* @var	array	forum_data	Array with new forum data
+		* @var	array	forum_data_ary	Array with new forum data
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
+		* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 		*/
-		$vars = array('forum_data', 'errors');
+		$vars = array('forum_data_ary', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
+		$forum_data = $forum_data_ary;
+		unset($forum_data_ary);
 
 		if ($forum_data['forum_name'] == '')
 		{
@@ -1058,18 +1062,22 @@ class acp_forums
 		}
 		unset($forum_data_sql['forum_password_unset']);
 
+		$forum_data_ary = $forum_data;
 		/**
 		* Remove invalid values from forum_data_sql that should not be updated
 		*
 		* @event core.acp_manage_forums_update_data_before
-		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_ary		Array with forum data
 		* @var	array	forum_data_sql	Array with data we are going to update
 		*						If forum_data_sql[forum_id] is set, we update
 		*						that forum, otherwise a new one is created.
 		* @since 3.1.0-a1
+		* @change 3.2.0-a1 Replaced forum_data by forum_data_ary
 		*/
-		$vars = array('forum_data', 'forum_data_sql');
+		$vars = array('forum_data_ary', 'forum_data_sql');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
+		$forum_data = $forum_data_ary;
+		unset($forum_data_ary);
 
 		$is_new_forum = !isset($forum_data_sql['forum_id']);
 
@@ -1348,11 +1356,12 @@ class acp_forums
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_EDIT', false, array($forum_data['forum_name']));
 		}
 
+		$forum_data_ary = $forum_data;
 		/**
 		* Event after a forum was updated or created
 		*
 		* @event core.acp_manage_forums_update_data_after
-		* @var	array	forum_data		Array with forum data
+		* @var	array	forum_data_ary		Array with forum data
 		* @var	array	forum_data_sql	Array with data we updated
 		* @var	bool	is_new_forum	Did we create a forum or update one
 		*								If you want to overwrite this value,
@@ -1360,9 +1369,12 @@ class acp_forums
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
+		* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 		*/
-		$vars = array('forum_data', 'forum_data_sql', 'is_new_forum', 'errors');
+		$vars = array('forum_data_ary', 'forum_data_sql', 'is_new_forum', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
+		$forum_data = $forum_data_ary;
+		unset($forum_data_ary);
 
 		return $errors;
 	}

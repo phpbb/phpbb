@@ -383,6 +383,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		$tpl .= $vars['append'];
 	}
 
+	$new_ary = $new;
 	/**
 	* Overwrite the html code we display for the config value
 	*
@@ -392,14 +393,17 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	*						1 [optional] => string: size, int: minimum
 	*						2 [optional] => string: max. length, int: maximum
 	* @var	string	key			Should be used for the id attribute in html
-	* @var	array	new			Array with the config values we display
+	* @var	array	new_ary			Array with the config values we display
 	* @var	string	name		Should be used for the name attribute
 	* @var	array	vars		Array with the options for the config
 	* @var	string	tpl			The resulting html code we display
 	* @since 3.1.0-a1
+	* @change 3.2.0-a1 Replaced new with new_ary
 	*/
-	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
+	$vars = array('tpl_type', 'key', 'new_ary', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
+	$new = $new_ary;
+	unset($new_ary);
 
 	return $tpl;
 }
