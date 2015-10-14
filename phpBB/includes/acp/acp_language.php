@@ -34,7 +34,10 @@ class acp_language
 		global $config, $db, $user, $template;
 		global $phpbb_root_path, $phpEx, $request;
 
-		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		if (!function_exists('validate_language_iso_name'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		// Check and set some common vars
 		$action		= (isset($_POST['update_details'])) ? 'update_details' : '';

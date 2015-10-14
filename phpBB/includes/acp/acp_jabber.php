@@ -34,7 +34,10 @@ class acp_jabber
 
 		$user->add_lang('acp/board');
 
-		include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
+		if (!class_exists('jabber'))
+		{
+			include($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
+		}
 
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;

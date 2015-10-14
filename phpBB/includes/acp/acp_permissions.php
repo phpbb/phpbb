@@ -30,8 +30,15 @@ class acp_permissions
 		global $db, $user, $auth, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+		if (!function_exists('user_get_id_name'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		if (!class_exists('auth_admin'))
+		{
+			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+		}
 
 		$this->permissions = $phpbb_container->get('acl.permissions');
 

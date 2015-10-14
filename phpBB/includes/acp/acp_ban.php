@@ -28,7 +28,10 @@ class acp_ban
 		global $user, $template, $request, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpEx;
 
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		if (!function_exists('user_ban'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		$bansubmit	= $request->is_set_post('bansubmit');
 		$unbansubmit = $request->is_set_post('unbansubmit');
