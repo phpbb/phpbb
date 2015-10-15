@@ -833,6 +833,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		'notification.type.quote',
 		'notification.type.approve_post',
 		'notification.type.post_in_queue',
+		'notification.type.report_post',
 	);
 
 	/**
