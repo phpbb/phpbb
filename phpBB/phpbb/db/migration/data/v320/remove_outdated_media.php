@@ -21,6 +21,13 @@ class remove_outdated_media extends \phpbb\db\migration\migration
 			ATTACHMENT_CATEGORY_QUICKTIME,
 		);
 
+	static public function depends_on()
+	{
+		return array(
+			'\phpbb\db\migration\data\v320\dev',
+		);
+	}
+
 	public function update_data()
 	{
 		return array(

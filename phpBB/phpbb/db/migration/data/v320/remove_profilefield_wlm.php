@@ -17,7 +17,9 @@ class remove_profilefield_wlm extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v310\profilefield_wlm');
+		return array(
+			'\phpbb\db\migration\data\v320\dev',
+		);
 	}
 
 	public function update_schema()
