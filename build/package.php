@@ -196,9 +196,10 @@ if (sizeof($package->old_packages))
 		*/
 		$copy_relative_directories = array(
 			'config/'	=> array(
+				'recursive'	=> true,
 				'copied'	=> false,
 				'copy'		=> array(
-					'config/*.yml' => 'config',
+					'config/*' => 'config',
 				),
 			),
 		);
@@ -256,7 +257,15 @@ if (sizeof($package->old_packages))
 						}
 						$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_dir_files;
 						$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
-						$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+
+						if (isset($data['recursive']) && $data['recursive'])
+						{
+							$package->run_command('cp -Rp ' . $source_dir_files . ' ' . $destination_dir);
+						}
+						else
+						{
+							$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+						}
 					}
 					$copy_relative_directories[$reference]['copied'] = true;
 				}
