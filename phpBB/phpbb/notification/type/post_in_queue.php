@@ -108,7 +108,7 @@ class post_in_queue extends \phpbb\notification\type\post
 		}
 
 		return $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], array_merge($options, array(
-			'item_type'		=> self::$notification_option['id'],
+			'item_type'		=> static::$notification_option['id'],
 		)));
 	}
 
