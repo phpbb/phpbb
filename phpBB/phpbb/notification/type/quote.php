@@ -78,7 +78,7 @@ class quote extends \phpbb\notification\type\post
 		), $options);
 
 		$usernames = false;
-		preg_match_all(self::$regular_expression_match, $post['post_text'], $usernames);
+		preg_match_all(static::$regular_expression_match, $post['post_text'], $usernames);
 
 		if (empty($usernames[1]))
 		{
@@ -116,7 +116,7 @@ class quote extends \phpbb\notification\type\post
 		$sql = 'SELECT n.user_id
 			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
 			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_id = ' . self::get_item_id($post) . '
+				AND n.item_id = ' . static::get_item_id($post) . '
 				AND nt.notification_type_id = n.notification_type_id
 				AND nt.notification_type_enabled = 1';
 		$result = $this->db->sql_query($sql);
@@ -147,7 +147,7 @@ class quote extends \phpbb\notification\type\post
 		{
 			$sql = 'DELETE FROM ' . $this->notifications_table . '
 				WHERE notification_type_id = ' . (int) $this->notification_type_id . '
-					AND item_id = ' . self::get_item_id($post) . '
+					AND item_id = ' . static::get_item_id($post) . '
 					AND ' . $this->db->sql_in_set('user_id', $remove_notifications);
 			$this->db->sql_query($sql);
 		}
