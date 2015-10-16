@@ -183,37 +183,12 @@ class ucp_profile
 
 							if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{
-								// Grab an array of user_id's with a_user permissions ... these users can activate a user
-								$admin_ary = $auth->acl_get_list(false, 'a_user', false);
-								$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
-
-								// Also include founders
-								$where_sql = ' WHERE user_type = ' . USER_FOUNDER;
-
-								if (sizeof($admin_ary))
-								{
-									$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary);
-								}
-
-								$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
-									FROM ' . USERS_TABLE . ' ' .
-									$where_sql;
-								$result = $db->sql_query($sql);
-
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$messenger->template('admin_activate', $row['user_lang']);
-									$messenger->set_addresses($row);
-
-									$messenger->assign_vars(array(
-										'USERNAME'			=> htmlspecialchars_decode($data['username']),
-										'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&u={$user->data['user_id']}",
-										'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
-									);
-
-									$messenger->send($row['user_notify_type']);
-								}
-								$db->sql_freeresult($result);
+								$notifications_manager = $phpbb_container->get('notification_manager');
+								$notifications_manager->add_notifications('notification.type.admin_activate_user', array(
+									'user_id'		=> $user->data['user_id'],
+									'user_actkey'	=> $user_actkey,
+									'user_regdate'	=> time(), // Notification time
+								));
 							}
 
 							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
