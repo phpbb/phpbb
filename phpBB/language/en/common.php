@@ -329,6 +329,7 @@ $lang = array_merge($lang, array(
 	'IMAGE_FILETYPE_INVALID'	=> 'Image file type %d for mimetype %s not supported.',
 	'IMAGE_FILETYPE_MISMATCH'	=> 'Image file type mismatch: expected extension %1$s but extension %2$s given.',
 	'IN'						=> 'in',
+	'INACTIVE'					=> 'Inactive',
 	'INDEX'						=> 'Index page',
 	'INFORMATION'				=> 'Information',
 	'INSECURE_REDIRECT'			=> 'Tried to redirect to potentially insecure url.',
