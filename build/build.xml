@@ -322,82 +322,81 @@
 		<delete dir="${dir}/vendor/s9e/text-formatter/.git" />
 
 		<delete dir="${dir}/vendor/symfony/config/.git" />
-		<delete dir="${dir}/vendor/symfony/config/Symfony/Component/Config/Tests" />
-		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/.gitignore" />
-		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/README.md" />
-		<delete file="${dir}/vendor/symfony/config/Symfony/Component/Config/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/config/Tests" />
+		<delete file="${dir}/vendor/symfony/config/.gitignore" />
+		<delete file="${dir}/vendor/symfony/config/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/config/README.md" />
+		<delete file="${dir}/vendor/symfony/config/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/console/.git" />
-		<delete dir="${dir}/vendor/symfony/console/Symfony/Component/Console/.git" />
-		<delete dir="${dir}/vendor/symfony/console/Symfony/Component/Console/Tests" />
-		<delete file="${dir}/vendor/symfony/console/Symfony/Component/Console/.gitignore" />
-		<delete file="${dir}/vendor/symfony/console/Symfony/Component/Console/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/console/Symfony/Component/Console/README.md" />
-		<delete file="${dir}/vendor/symfony/console/Symfony/Component/Console/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/console/Tests" />
+		<delete file="${dir}/vendor/symfony/console/.gitignore" />
+		<delete file="${dir}/vendor/symfony/console/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/console/README.md" />
+		<delete file="${dir}/vendor/symfony/console/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/debug/.git" />
-		<delete dir="${dir}/vendor/symfony/debug/Symfony/Component/Debug/Tests" />
-		<delete file="${dir}/vendor/symfony/debug/Symfony/Component/Debug/.gitignore" />
-		<delete file="${dir}/vendor/symfony/debug/Symfony/Component/Debug/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/debug/Symfony/Component/Debug/README.md" />
-		<delete file="${dir}/vendor/symfony/debug/Symfony/Component/Debug/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/debug/Tests" />
+		<delete file="${dir}/vendor/symfony/debug/.gitignore" />
+		<delete file="${dir}/vendor/symfony/debug/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/debug/README.md" />
+		<delete file="${dir}/vendor/symfony/debug/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/dependency-injection/.git" />
-		<delete dir="${dir}/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests" />
-		<delete file="${dir}/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/.gitignore" />
-		<delete file="${dir}/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/README.md" />
-		<delete file="${dir}/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/dependency-injection/Tests" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/.gitignore" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/README.md" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/event-dispatcher/.git" />
-		<delete dir="${dir}/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/Tests" />
-		<delete file="${dir}/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/.gitignore" />
-		<delete file="${dir}/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/README.md" />
-		<delete file="${dir}/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/event-dispatcher/Tests" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/.gitignore" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/README.md" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/filesystem/.git" />
-		<delete dir="${dir}/vendor/symfony/filesystem/Symfony/Component/Filesystem/Tests" />
-		<delete file="${dir}/vendor/symfony/filesystem/Symfony/Component/Filesystem/.gitignore" />
-		<delete file="${dir}/vendor/symfony/filesystem/Symfony/Component/Filesystem/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/filesystem/Symfony/Component/Filesystem/README.md" />
-		<delete file="${dir}/vendor/symfony/filesystem/Symfony/Component/Filesystem/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/filesystem/Tests" />
+		<delete file="${dir}/vendor/symfony/filesystem/.gitignore" />
+		<delete file="${dir}/vendor/symfony/filesystem/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/filesystem/README.md" />
+		<delete file="${dir}/vendor/symfony/filesystem/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/finder/.git" />
-		<delete dir="${dir}/vendor/symfony/finder/Symfony/Component/Finder/Tests" />
-		<delete file="${dir}/vendor/symfony/finder/Symfony/Component/Finder/.gitignore" />
-		<delete file="${dir}/vendor/symfony/finder/Symfony/Component/Finder/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/finder/Symfony/Component/Finder/README.md" />
-		<delete file="${dir}/vendor/symfony/finder/Symfony/Component/Finder/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/finder/Tests" />
+		<delete file="${dir}/vendor/symfony/finder/.gitignore" />
+		<delete file="${dir}/vendor/symfony/finder/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/finder/README.md" />
+		<delete file="${dir}/vendor/symfony/finder/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/http-foundation/.git" />
-		<delete dir="${dir}/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Tests" />
-		<delete file="${dir}/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/.gitignore" />
-		<delete file="${dir}/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/README.md" />
-		<delete file="${dir}/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/http-foundation/Tests" />
+		<delete file="${dir}/vendor/symfony/http-foundation/.gitignore" />
+		<delete file="${dir}/vendor/symfony/http-foundation/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/http-foundation/README.md" />
+		<delete file="${dir}/vendor/symfony/http-foundation/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/http-kernel/.git" />
-		<delete dir="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/Tests" />
-		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/.gitignore" />
-		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/README.md" />
-		<delete file="${dir}/vendor/symfony/http-kernel/Symfony/Component/HttpKernel/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/http-kernel/Tests" />
+		<delete file="${dir}/vendor/symfony/http-kernel/.gitignore" />
+		<delete file="${dir}/vendor/symfony/http-kernel/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/http-kernel/README.md" />
+		<delete file="${dir}/vendor/symfony/http-kernel/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/routing/.git" />
-		<delete dir="${dir}/vendor/symfony/routing/Symfony/Component/Routing/Tests" />
-		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/.gitignore" />
-		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/README.md" />
-		<delete file="${dir}/vendor/symfony/routing/Symfony/Component/Routing/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/routing/Tests" />
+		<delete file="${dir}/vendor/symfony/routing/.gitignore" />
+		<delete file="${dir}/vendor/symfony/routing/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/routing/README.md" />
+		<delete file="${dir}/vendor/symfony/routing/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/yaml/.git" />
-		<delete dir="${dir}/vendor/symfony/yaml/Symfony/Component/Yaml/Tests" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/Component/Yaml/.gitignore" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/Component/Yaml/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/Component/Yaml/README.md" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/Component/Yaml/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/yaml/Symfony/Tests" />
+		<delete file="${dir}/vendor/symfony/yaml/Symfony/.gitignore" />
+		<delete file="${dir}/vendor/symfony/yaml/Symfony/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/yaml/Symfony/README.md" />
+		<delete file="${dir}/vendor/symfony/yaml/Symfony/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/twig/twig/doc" />
 		<delete dir="${dir}/vendor/twig/twig/ext" />
@@ -411,18 +410,18 @@
 		<delete file="${dir}/vendor/twig/twig/README.markdown" />
 
 		<delete dir="${dir}/vendor/symfony/security-core/.git" />
-		<delete dir="${dir}/vendor/symfony/security-core/Symfony/Component/Security/Core/Tests" />
-		<delete file="${dir}/vendor/symfony/security-core/Symfony/Component/Security/Core/.gitignore" />
-		<delete file="${dir}/vendor/symfony/security-core/Symfony/Component/Security/Core/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/security-core/Symfony/Component/Security/Core/README.md" />
-		<delete file="${dir}/vendor/symfony/security-core/Symfony/Component/Security/Core/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/security-core/Core/Tests" />
+		<delete file="${dir}/vendor/symfony/security-core/Core/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security-core/Core/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security-core/Core/README.md" />
+		<delete file="${dir}/vendor/symfony/security-core/Core/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/security-csrf/.git" />
-		<delete dir="${dir}/vendor/symfony/security-csrf/Symfony/Component/Security/Csrf/Tests" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Component/Security/Csrf/.gitignore" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Component/Security/Csrf/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Component/Security/Csrf/README.md" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Symfony/Component/Security/Csrf/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/security-csrf/Csrf/Tests" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/README.md" />
+		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/twig-bridge/.git" />
 		<delete dir="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Tests" />
@@ -432,11 +431,11 @@
 		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/symfony/security/.git" />
-		<delete dir="${dir}/vendor/symfony/security/Symfony/Component/Security/Tests" />
-		<delete file="${dir}/vendor/symfony/security/Symfony/Component/Security/.gitignore" />
-		<delete file="${dir}/vendor/symfony/security/Symfony/Component/Security/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/security/Symfony/Component/Security/README.md" />
-		<delete file="${dir}/vendor/symfony/security/Symfony/Component/Security/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/security/Tests" />
+		<delete file="${dir}/vendor/symfony/security/.gitignore" />
+		<delete file="${dir}/vendor/symfony/security/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/security/README.md" />
+		<delete file="${dir}/vendor/symfony/security/phpunit.xml.dist" />
 	</target>
 
 	<target name="clean-diff-dir">
