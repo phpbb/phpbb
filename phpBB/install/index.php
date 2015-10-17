@@ -243,6 +243,8 @@ $sub = $request->variable('sub', '');
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 $lang_service = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+$lang_service->add_lang($load_lang_files);
+$lang_service->set_user_language($language);
 $user = new \phpbb\user($lang_service, '\phpbb\datetime');
 $auth = new \phpbb\auth\auth();
 
@@ -302,6 +304,11 @@ $template = new \phpbb\template\twig\twig(
 	$user,
 	array($phpbb_container->get('template.twig.extensions.phpbb'))
 );
+
+/** @var \phpbb\language\language $lang_service */
+$lang_service = $phpbb_container->get('language');
+$lang_service->add_lang($load_lang_files);
+$lang_service->set_user_language($language);
 
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
