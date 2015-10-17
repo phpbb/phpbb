@@ -292,10 +292,10 @@ $lang = array_merge($lang, array(
 // Installer's general messages
 $lang = array_merge($lang, array(
 	'MODULE_NOT_FOUND'				=> 'Module not found',
-	'MODULE_NOT_FOUND_DESCRIPTION'	=> 'No module is found under the service definition “%s” is not defined.',
+	'MODULE_NOT_FOUND_DESCRIPTION'	=> 'A module could not be found because the service, %s, is undefined.',
 
 	'TASK_NOT_FOUND'				=> 'Task not found',
-	'TASK_NOT_FOUND_DESCRIPTION'	=> 'No task is found under the service definition “%s” is not defined.',
+	'TASK_NOT_FOUND_DESCRIPTION'	=> 'A task could not be found because the service, %s, is undefined.',
 
 	'SKIP_MODULE'	=> 'Skip “%s” module',
 	'SKIP_TASK'		=> 'Skip “%s” task',
