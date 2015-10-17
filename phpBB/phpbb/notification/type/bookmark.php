@@ -92,7 +92,7 @@ class bookmark extends \phpbb\notification\type\post
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), array(
-			'item_parent_id'	=> self::get_item_parent_id($post),
+			'item_parent_id'	=> static::get_item_parent_id($post),
 			'read'				=> 0,
 		));
 

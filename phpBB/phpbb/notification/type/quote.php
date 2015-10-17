@@ -110,7 +110,7 @@ class quote extends \phpbb\notification\type\post
 	public function update_notifications($post)
 	{
 		$old_notifications = $this->notification_manager->get_notified_users($this->get_type(), array(
-			'item_id'	=> self::get_item_id($post),
+			'item_id'	=> static::get_item_id($post),
 		));
 
 		// Find the new users to notify
@@ -132,7 +132,7 @@ class quote extends \phpbb\notification\type\post
 		// Remove the necessary notifications
 		if (!empty($remove_notifications))
 		{
-			$this->notification_manager->delete_notifications($this->get_type(), self::get_item_id($post), false, $remove_notifications);
+			$this->notification_manager->delete_notifications($this->get_type(), static::get_item_id($post), false, $remove_notifications);
 		}
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
