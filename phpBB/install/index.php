@@ -244,6 +244,7 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $lang_service = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 $lang_service->add_lang($load_lang_files);
+$lang_service->set_user_language($language);
 $user = new \phpbb\user($lang_service, '\phpbb\datetime');
 $auth = new \phpbb\auth\auth();
 
