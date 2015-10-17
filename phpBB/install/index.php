@@ -305,6 +305,11 @@ $template = new \phpbb\template\twig\twig(
 	array($phpbb_container->get('template.twig.extensions.phpbb'))
 );
 
+/** @var \phpbb\language\language $lang_service */
+$lang_service = $phpbb_container->get('language');
+$lang_service->add_lang($load_lang_files);
+$lang_service->set_user_language($language);
+
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
 $template->set_custom_style(array(
