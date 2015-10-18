@@ -108,7 +108,7 @@ class file_check extends task_base
 				$update_info['deleted'],
 				function ($filename) use ($root_path)
 				{
-					return !file_exists($root_path . $filename);
+					return file_exists($root_path . $filename);
 				}
 			);
 		}
