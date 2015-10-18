@@ -168,6 +168,13 @@ class container_factory
 		}
 
 		// Get compatibilty globals
-		require ($this->phpbb_root_path . 'includes/compatibility_globals.' . $this->php_ext);
+		if (file_exists($this->phpbb_root_path . 'install/update/new/includes/compatibility_globals.' . $this->php_ext))
+		{
+			require($this->phpbb_root_path . 'install/update/new/includes/compatibility_globals.' . $this->php_ext);
+		}
+		else
+		{
+			require($this->phpbb_root_path . 'includes/compatibility_globals.' . $this->php_ext);
+		}
 	}
 }
