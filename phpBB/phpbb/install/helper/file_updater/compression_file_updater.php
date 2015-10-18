@@ -94,7 +94,9 @@ class compression_file_updater implements file_updater_interface
 	 */
 	public function delete_file($path_to_file)
 	{
-		// We do absolutely nothing here
+		// We do absolutely nothing here, as this function is called when a file should be
+		// removed from the filesystem, but since this is an archive generator, it clearly
+		// cannot do that.
 	}
 
 	/**
