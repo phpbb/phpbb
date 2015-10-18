@@ -3,11 +3,11 @@
 
 .button {
 	display: inline-block;
-	padding: 2px 8px;
+	padding: 4px 8px;
 	font-size: 13px;
 	font-weight: normal;
 	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	line-height: 1.4;
+	line-height: 14px;
 	text-align: center;
 	white-space: nowrap;
 	vertical-align: middle;
@@ -34,15 +34,17 @@
 	right: -6px;
 }
 
-.caret i {
-	vertical-align: top;
+.caret .icon {
+	position: relative;
+	top: -3px;
 }
 
 /* Posting page styles
 ----------------------------------------*/
 .button-paging {
 	border-radius: 2px;
-	padding: 2px 5px;
+	padding: 4px 5px;
+	font-size: 12px;
 }
 
 .button-search,
@@ -50,12 +52,7 @@
 	float: left;
 	border-radius: 0;
 	margin: 0;
-	padding: 2px 5px;
-}
-
-.button-icon-only {
-	padding-left: 3px;
-	padding-right: 3px;
+	padding: 4px 5px;
 }
 
 .button-search-end {
@@ -67,7 +64,7 @@
 .search-header .button-search-end {
 	border-top-width: 0;
 	border-bottom-width: 0;
-	padding: 3px 5px;
+	padding: 5px 5px;
 }
 
 .search-header .button-search-end {
@@ -80,11 +77,15 @@
 }
 
 .button-paging-jump {
-	padding: 0 8px;
+	padding: 3px 7px;
+}
+
+.button-paging.button-icon-only {
+	font-size: 14px;
 }
 
 .button.button-paging-jump .icon {
-	font-size: 21px;
+	font-size: 20px;
 }
 
 .button-active {
