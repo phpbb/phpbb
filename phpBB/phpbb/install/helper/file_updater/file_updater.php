@@ -113,6 +113,13 @@ class file_updater implements file_updater_interface
 		$path_to_file_to_update = $this->phpbb_root_path . $path_to_file_to_update;
 		$original_file_perms = false;
 
+		// Maybe necessary for binary files
+		$dir = dirname($path_to_file_to_update);
+		if (!$this->filesystem->exists($dir))
+		{
+			$this->make_dir($dir);
+		}
+
 		if (!$this->filesystem->is_writable($path_to_file_to_update))
 		{
 			// Extract last 9 bits we actually need

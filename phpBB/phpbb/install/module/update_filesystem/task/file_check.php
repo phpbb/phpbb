@@ -101,7 +101,7 @@ class file_check extends task_base
 			$update_info = $this->installer_config->get('update_info_unprocessed', array());
 
 			$file_update_info = array();
-			$file_update_info['update_without_diff'] = $update_info['binary'];
+			$file_update_info['update_without_diff'] = array_diff($update_info['binary'], $update_info['deleted']);
 
 			// Filter out files that are already deleted
 			$file_update_info['delete'] = array_filter(
