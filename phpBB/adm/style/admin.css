@@ -1837,6 +1837,7 @@ li.pagination ul {
 }
 
 #log-container {
+	display: none;
 	max-height: 300px;
 	padding: 8px;
 	margin: 10px 0;
@@ -1845,7 +1846,8 @@ li.pagination ul {
 	background-color: #FFFFFF;
 }
 
-#log-container.show_border {
+#log-container.show_log_container {
+	display: block;
 	border: 1px solid #DBD7D1;
 }
 

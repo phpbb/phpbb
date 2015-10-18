@@ -69,7 +69,7 @@
 				case 'log':
 					$msgElement.addClass('log');
 					$logContainer.prepend($msgElement);
-					$logContainer.addClass('show_border');
+					$logContainer.addClass('show_log_container');
 					break;
 				case 'success':
 					$msgElement.addClass('successbox');
