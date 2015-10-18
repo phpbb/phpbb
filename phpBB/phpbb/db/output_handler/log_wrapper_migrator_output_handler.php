@@ -82,7 +82,8 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 
 		if ($this->file_handle !== false)
 		{
-			$translated_message = $this->language->lang_array($message);
+
+			$translated_message = $this->language->lang_array(array_shift($message), $message);
 
 			if ($verbosity <= migrator_output_handler_interface::VERBOSITY_NORMAL)
 			{

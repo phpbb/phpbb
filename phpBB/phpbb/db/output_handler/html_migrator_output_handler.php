@@ -39,7 +39,7 @@ class html_migrator_output_handler implements migrator_output_handler_interface
 	{
 		if ($verbosity <= migrator_output_handler_interface::VERBOSITY_VERBOSE)
 		{
-			$final_message = $this->language->lang_array($message);
+			$final_message = $this->language->lang_array(array_shift($message), $message);
 			echo $final_message . "<br />\n";
 		}
 	}
