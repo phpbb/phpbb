@@ -649,6 +649,7 @@ Colours and backgrounds for buttons.css
 	color: #8f8f8f;
 }
 
+.dropdown-visible .button-paging,
 .button-paging:hover,
 .button-paging:focus,
 .button-active {
@@ -659,6 +660,7 @@ Colours and backgrounds for buttons.css
 	text-shadow: none;
 }
 
+.dropdown-visible .button-paging .icon,
 .button-paging:hover .icon,
 .button-paging:focus .icon {
 	color: #FFFFFF;
