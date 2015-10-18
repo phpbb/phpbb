@@ -62,7 +62,6 @@ $phpbb_adm_relative_path = (isset($phpbb_adm_relative_path)) ? $phpbb_adm_relati
 $phpbb_admin_path = (defined('PHPBB_ADMIN_PATH')) ? PHPBB_ADMIN_PATH : $phpbb_root_path . $phpbb_adm_relative_path;
 
 // Include files
-phpbb_require_updated('includes/constants.' . $phpEx, $phpbb_root_path);
 phpbb_require_updated('includes/functions.' . $phpEx, $phpbb_root_path);
 phpbb_require_updated('includes/functions_content.' . $phpEx, $phpbb_root_path);
 phpbb_include_updated('includes/functions_compatibility.' . $phpEx, $phpbb_root_path);

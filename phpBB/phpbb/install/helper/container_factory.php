@@ -133,7 +133,7 @@ class container_factory
 		$phpbb_container_builder = new \phpbb\di\container_builder($this->phpbb_root_path, $this->php_ext);
 
 		// For BC with functions that we need during install
-		global $phpbb_container;
+		global $phpbb_container, $table_prefix;
 
 		$disable_super_globals = $this->request->super_globals_disabled();
 
@@ -172,6 +172,7 @@ class container_factory
 		$this->container->compile();
 
 		$phpbb_container = $this->container;
+		$table_prefix = $phpbb_config_php_file->get('table_prefix');
 
 		// Restore super globals to previous state
 		if ($disable_super_globals)
@@ -187,6 +188,16 @@ class container_factory
 		else
 		{
 			require($this->phpbb_root_path . 'includes/compatibility_globals.' . $this->php_ext);
+		}
+
+		// Get compatibilty globals
+		if (file_exists($this->phpbb_root_path . 'install/update/new/includes/constants.' . $this->php_ext))
+		{
+			require($this->phpbb_root_path . 'install/update/new/includes/constants.' . $this->php_ext);
+		}
+		else
+		{
+			require($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 		}
 	}
 }
