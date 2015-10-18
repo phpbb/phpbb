@@ -86,6 +86,7 @@ services:
         abstract: true
         arguments:
             - @installer.helper.config
+            - @path_helper
 
     installer.install.module_collection:
         class: phpbb\di\ordered_service_collection
