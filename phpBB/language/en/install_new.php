@@ -334,7 +334,7 @@ $lang = array_merge($lang, array(
 	'UPDATE_FILE_METHOD'			=> 'File updater method',
 	'UPDATE_FILE_METHOD_DOWNLOAD'	=> 'Download modified files in an archive',
 	'UPDATE_FILE_METHOD_FTP'		=> 'Update files via FTP (Automatic)',
-	'UPDATE_FILE_METHOD_FILESYSTEM'	=> 'Update files via file commands (Automatic)',
+	'UPDATE_FILE_METHOD_FILESYSTEM'	=> 'Update files via direct file access (Automatic)',
 
 	// File updater archives
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download archive format',

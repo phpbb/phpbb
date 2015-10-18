@@ -38,7 +38,7 @@ class archive_download
 	/**
 	 * Sends response with the merge conflict archive
 	 *
-	 * Merge conflicts are always have to be resolved manually,
+	 * Merge conflicts always have to be resolved manually,
 	 * so we use a different archive for that.
 	 *
 	 * @return BinaryFileResponse

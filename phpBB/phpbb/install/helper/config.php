@@ -262,7 +262,7 @@ class config
 	 *
 	 * @param string	$name	Name of the restart point
 	 *
-	 * @return bool	Returns false if the restart point name is not exist, true otherwise
+	 * @return bool	Returns false if the restart point name does not exist, otherwise true
 	 */
 	public function jump_to_restart_point($name)
 	{
