@@ -13,6 +13,7 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\exception\http_exception;
 use phpbb\install\helper\config;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -49,7 +50,7 @@ class archive_download
 
 		if (!$filename)
 		{
-			die ('The requested file is not exist.');
+			throw new http_exception(404, 'URL_NOT_FOUND');
 		}
 
 		return $this->send_response($filename);
@@ -66,7 +67,7 @@ class archive_download
 
 		if (!$filename)
 		{
-			die ('The requested file is not exist.');
+			throw new http_exception(404, 'URL_NOT_FOUND');
 		}
 
 		return $this->send_response($filename);
