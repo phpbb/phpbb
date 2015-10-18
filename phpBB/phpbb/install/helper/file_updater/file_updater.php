@@ -155,22 +155,7 @@ class file_updater implements file_updater_interface
 		}
 
 		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-		$dirs = explode('/', $path);
-		$dirs_to_create = array();
-
-		do
-		{
-			$path .= '../';
-			$dirs_to_create[] = array_pop($dirs);
-		}
-		while (!is_dir($path));
-
-		foreach ($dirs_to_create as $directory)
-		{
-			$path .= $directory;
-			$this->filesystem->mkdir($path, 493); // 493 === 0755
-			$path .= '/';
-		}
+		$this->filesystem->mkdir($path, 493); // 493 === 0755
 	}
 
 	/**
