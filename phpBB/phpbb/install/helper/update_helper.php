@@ -72,16 +72,11 @@ class update_helper
 	 */
 	public function include_file($filename)
 	{
-		if (!is_file($this->phpbb_root_path . $filename))
-		{
-			return;
-		}
-
 		if (is_file($this->path_to_new_files . $filename))
 		{
 			include_once($this->path_to_new_files . $filename);
 		}
-		else
+		else if (is_file($this->phpbb_root_path . $filename))
 		{
 			include_once($this->phpbb_root_path . $filename);
 		}
