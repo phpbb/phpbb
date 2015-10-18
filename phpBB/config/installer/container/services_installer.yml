@@ -59,6 +59,7 @@ services:
     installer.helper.container_factory:
         class: phpbb\install\helper\container_factory
         arguments:
+            - @language
             - @request
             - %core.root_path%
             - %core.php_ext%

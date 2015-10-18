@@ -15,9 +15,16 @@ namespace phpbb\install\helper;
 
 use phpbb\cache\driver\dummy;
 use phpbb\install\exception\cannot_build_container_exception;
+use phpbb\language\language;
+use phpbb\request\request;
 
 class container_factory
 {
+	/**
+	 * @var language
+	 */
+	protected $language;
+
 	/**
 	 * @var string
 	 */
@@ -43,12 +50,14 @@ class container_factory
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\request\request	$request			Request interface
-	 * @param string					$phpbb_root_path	Path to phpBB's root
-	 * @param string					$php_ext			Extension of PHP files
+	 * @param language 	$language			Language service
+	 * @param request	$request			Request interface
+	 * @param string	$phpbb_root_path	Path to phpBB's root
+	 * @param string	$php_ext			Extension of PHP files
 	 */
-	public function __construct(\phpbb\request\request $request, $phpbb_root_path, $php_ext)
+	public function __construct(language $language, request $request, $phpbb_root_path, $php_ext)
 	{
+		$this->language			= $language;
 		$this->request			= $request;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
@@ -149,6 +158,9 @@ class container_factory
 		// this container
 		$this->container->register('request')->setSynthetic(true);
 		$this->container->set('request', $this->request);
+
+		$this->container->register('language')->setSynthetic(true);
+		$this->container->set('language', $this->language);
 
 		// Replace cache service, as config gets cached, and we don't want that when we are installing
 		if (!is_dir($other_config_path))
