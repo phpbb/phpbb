@@ -8,6 +8,7 @@ services:
             - @installer.helper.iohandler
             - %core.root_path%
             - %core.php_ext%
+            - %installer.create_config_file.options%
         tags:
             - { name: install_filesystem_install, order: 10 }
 

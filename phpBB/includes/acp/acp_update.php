@@ -52,7 +52,7 @@ class acp_update
 			$template->assign_block_vars('updates_available', $version_data);
 		}
 
-		$update_link = append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update');
+		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
 
 		$template->assign_vars(array(
 			'S_UP_TO_DATE'			=> empty($updates_available),
