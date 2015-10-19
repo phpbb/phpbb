@@ -10,7 +10,8 @@
 <!-- BEGIN avatar_local_row -->
 <!-- BEGIN avatar_local_col -->
 	<label for="av-{avatar_local_row.S_ROW_COUNT}-{avatar_local_row.avatar_local_col.S_ROW_COUNT}"><img src="{avatar_local_row.avatar_local_col.AVATAR_IMAGE}" alt="" /><br />
-	<input type="radio" name="avatar_local_file" id="av-{avatar_local_row.S_ROW_COUNT}-{avatar_local_row.avatar_local_col.S_ROW_COUNT}" value="{avatar_local_row.avatar_local_col.AVATAR_FILE}" /></label>
+	<input type="radio" name="avatar_local_file" id="av-{avatar_local_row.S_ROW_COUNT}-{avatar_local_row.avatar_local_col.S_ROW_COUNT}"
+		   value="{avatar_local_row.avatar_local_col.AVATAR_FILE}"<!-- IF avatar_local_row.avatar_local_col.CHECKED --> checked="checked"<!-- ENDIF --> /></label>
 <!-- END avatar_local_col -->
 <!-- END avatar_local_row -->
 </div>
