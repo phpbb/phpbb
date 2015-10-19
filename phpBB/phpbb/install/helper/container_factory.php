@@ -15,9 +15,16 @@ namespace phpbb\install\helper;
 
 use phpbb\cache\driver\dummy;
 use phpbb\install\exception\cannot_build_container_exception;
+use phpbb\language\language;
+use phpbb\request\request;
 
 class container_factory
 {
+	/**
+	 * @var language
+	 */
+	protected $language;
+
 	/**
 	 * @var string
 	 */
@@ -34,6 +41,11 @@ class container_factory
 	protected $request;
 
 	/**
+	 * @var update_helper
+	 */
+	protected $update_helper;
+
+	/**
 	 * The full phpBB container
 	 *
 	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -43,13 +55,17 @@ class container_factory
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\request\request	$request			Request interface
-	 * @param string					$phpbb_root_path	Path to phpBB's root
-	 * @param string					$php_ext			Extension of PHP files
+	 * @param language 		$language			Language service
+	 * @param request		$request			Request interface
+	 * @param update_helper	$update_helper		Update helper
+	 * @param string		$phpbb_root_path	Path to phpBB's root
+	 * @param string		$php_ext			Extension of PHP files
 	 */
-	public function __construct(\phpbb\request\request $request, $phpbb_root_path, $php_ext)
+	public function __construct(language $language, request $request, update_helper $update_helper, $phpbb_root_path, $php_ext)
 	{
+		$this->language			= $language;
 		$this->request			= $request;
+		$this->update_helper	= $update_helper;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
 		$this->container		= null;
@@ -124,7 +140,7 @@ class container_factory
 		$phpbb_container_builder = new \phpbb\di\container_builder($this->phpbb_root_path, $this->php_ext);
 
 		// For BC with functions that we need during install
-		global $phpbb_container;
+		global $phpbb_container, $table_prefix;
 
 		$disable_super_globals = $this->request->super_globals_disabled();
 
@@ -134,8 +150,13 @@ class container_factory
 			$this->request->enable_super_globals();
 		}
 
-		$this->container = $phpbb_container = $phpbb_container_builder
+		$other_config_path = $this->phpbb_root_path . 'install/update/new/config';
+		$config_path = (is_dir($other_config_path)) ? $other_config_path : $this->phpbb_root_path . 'config';
+
+		$this->container = $phpbb_container_builder
+			->with_environment('production')
 			->with_config($phpbb_config_php_file)
+			->with_config_path($config_path)
 			->without_cache()
 			->without_compiled_container()
 			->get_container();
@@ -145,10 +166,20 @@ class container_factory
 		$this->container->register('request')->setSynthetic(true);
 		$this->container->set('request', $this->request);
 
-		// Replace cache service, as config gets cached, and we don't want that
-		$this->container->register('cache.driver')->setSynthetic(true);
-		$this->container->set('cache.driver', new dummy());
+		$this->container->register('language')->setSynthetic(true);
+		$this->container->set('language', $this->language);
+
+		// Replace cache service, as config gets cached, and we don't want that when we are installing
+		if (!is_dir($other_config_path))
+		{
+			$this->container->register('cache.driver')->setSynthetic(true);
+			$this->container->set('cache.driver', new dummy());
+		}
+
 		$this->container->compile();
+
+		$phpbb_container = $this->container;
+		$table_prefix = $phpbb_config_php_file->get('table_prefix');
 
 		// Restore super globals to previous state
 		if ($disable_super_globals)
@@ -156,7 +187,8 @@ class container_factory
 			$this->request->disable_super_globals();
 		}
 
-		// Get compatibilty globals
-		require ($this->phpbb_root_path . 'includes/compatibility_globals.' . $this->php_ext);
+		// Get compatibilty globals and constants
+		$this->update_helper->include_file('includes/compatibility_globals.' . $this->php_ext);
+		$this->update_helper->include_file('includes/constants.' . $this->php_ext);
 	}
 }

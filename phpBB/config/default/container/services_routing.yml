@@ -56,7 +56,7 @@ services:
         tags:
             - { name: routing.loader }
 
-# ---- Resources Locators ----
+# ---- Resources Locators ----
 
     routing.chained_resources_locator:
         class: phpbb\routing\resources_locator\chained_resources_locator

@@ -10,6 +10,7 @@ services:
     phpbb.installer.controller.helper:
         class: phpbb\install\controller\helper
         arguments:
+            - @installer.helper.config
             - @language
             - @language.helper.language_file
             - @installer.navigation.provider
@@ -24,7 +25,6 @@ services:
         class: phpbb\install\controller\install
         arguments:
             - @phpbb.installer.controller.helper
-            - @installer.helper.config
             - @installer.helper.iohandler_factory
             - @installer.navigation.provider
             - @language
@@ -32,3 +32,20 @@ services:
             - @request
             - @installer.installer.install
             - @installer.helper.install_helper
+
+    phpbb.installer.controller.update:
+        class: phpbb\install\controller\update
+        arguments:
+            - @phpbb.installer.controller.helper
+            - @installer.installer.update
+            - @installer.helper.install_helper
+            - @installer.helper.iohandler_factory
+            - @language
+            - @installer.navigation.provider
+            - @request
+            - @template
+
+    phpbb.installer.controller.file_downloader:
+        class: phpbb\install\controller\archive_download
+        arguments:
+            - @installer.helper.config

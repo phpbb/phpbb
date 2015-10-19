@@ -1,4 +1,5 @@
 imports:
+    - { resource: services_file_updater.yml }
     - { resource: services_install_console.yml }
     - { resource: services_install_controller.yml }
     - { resource: services_install_data.yml }
@@ -8,6 +9,10 @@ imports:
     - { resource: services_install_navigation.yml }
     - { resource: services_install_obtain_data.yml }
     - { resource: services_install_requirements.yml }
+    - { resource: services_update_database.yml }
+    - { resource: services_update_filesystem.yml }
+    - { resource: services_update_obtain_data.yml }
+    - { resource: services_update_requirements.yml }
 
 services:
 # -------- Installer helpers ------------------------
@@ -38,8 +43,10 @@ services:
         class: phpbb\install\helper\iohandler\ajax_iohandler
         parent: installer.helper.iohandler_abstract
         arguments:
+            - @path_helper
             - @request
             - @template
+            - @router
 
     installer.helper.iohandler_cli:
         class: phpbb\install\helper\iohandler\cli_iohandler
@@ -52,7 +59,9 @@ services:
     installer.helper.container_factory:
         class: phpbb\install\helper\container_factory
         arguments:
+            - @language
             - @request
+            - @installer.helper.update_helper
             - %core.root_path%
             - %core.php_ext%
 
@@ -61,6 +70,11 @@ services:
         arguments:
             - %core.root_path%
             - %core.php_ext%
+
+    installer.helper.update_helper:
+        class: phpbb\install\helper\update_helper
+        arguments:
+            - %core.root_path%
 
 # -------- Installer --------------------------------
     installer.module_base:
@@ -73,6 +87,7 @@ services:
         abstract: true
         arguments:
             - @installer.helper.config
+            - @path_helper
 
     installer.install.module_collection:
         class: phpbb\di\ordered_service_collection
@@ -81,7 +96,19 @@ services:
         tags:
             - { name: service_collection, tag: installer_install_module }
 
+    installer.update.module_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - @service_container
+        tags:
+            - { name: service_collection, tag: installer_update_module }
+
     installer.installer.install:
         parent: installer.installer.abstract
         calls:
             - [set_modules, [@installer.install.module_collection]]
+
+    installer.installer.update:
+        parent: installer.installer.abstract
+        calls:
+            - [set_modules, [@installer.update.module_collection]]

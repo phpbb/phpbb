@@ -165,7 +165,7 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 		$this->io_handler->add_user_form_group('BOARD_CONFIG', $board_form);
 
 		$this->io_handler->send_response();
-		throw new user_interaction_required_exception;
+		throw new user_interaction_required_exception();
 	}
 
 	/**

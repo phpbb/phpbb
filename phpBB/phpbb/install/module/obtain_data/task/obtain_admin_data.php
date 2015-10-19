@@ -155,7 +155,7 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 		$data_valid = true;
 
 		// Check if none of admin data is empty
-		if (in_array('', array($username, $pass1, $pass2, $email)))
+		if (in_array('', array($username, $pass1, $pass2, $email), true))
 		{
 			$this->io_handler->add_error_message('INST_ERR_MISSING_DATA');
 			$data_valid = false;

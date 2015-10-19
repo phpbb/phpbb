@@ -1,6 +1,7 @@
 imports:
     - { resource: services_installer.yml }
-    - { resource: ../../default/container/services_files.yml }
+    - { resource: ../../default/container/services_event.yml }
+    - { resource: ../../default/container/services_filesystem.yml }
     - { resource: ../../default/container/services_http.yml }
     - { resource: ../../default/container/services_language.yml }
     - { resource: ../../default/container/services_php.yml }
@@ -20,10 +21,11 @@ services:
             - %core.root_path%
             - @template
 
-    dispatcher:
-        class: phpbb\event\dispatcher
+    file_locator:
+        class: phpbb\routing\file_locator
         arguments:
-            - @service_container
+            - @filesystem
+            - %core.root_path%
 
     language.loader:
         parent: language.loader_abstract
@@ -37,14 +39,14 @@ services:
             - %core.root_path%
             - %core.php_ext%
 
-    router:
-        class: phpbb\routing\router
+    routing.resources_locator.default:
+        class: phpbb\routing\resources_locator\installer_resources_locator
         arguments:
-            - @service_container
             - @filesystem
             - %core.root_path%
-            - %core.php_ext%
             - %core.environment%
+        tags:
+            - { name: routing.resources_locator }
 
     template:
         class: phpbb\template\twig\twig

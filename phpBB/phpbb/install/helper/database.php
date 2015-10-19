@@ -338,7 +338,7 @@ class database
 		$db->sql_return_on_error(true);
 
 		// Check that we actually have a database name before going any further
-		if (!in_array($dbms_info['SCHEMA'], array('sqlite', 'oracle')) && $dbname === '')
+		if (!in_array($dbms_info['SCHEMA'], array('sqlite', 'oracle'), true) && $dbname === '')
 		{
 			$errors[] = array(
 				'title' => 'INST_ERR_DB_NO_NAME',

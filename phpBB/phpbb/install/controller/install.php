@@ -13,7 +13,6 @@
 
 namespace phpbb\install\controller;
 
-use phpbb\install\helper\config;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\navigation\navigation_provider;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -34,11 +33,6 @@ class install
 	 * @var helper
 	 */
 	protected $controller_helper;
-
-	/**
-	 * @var config
-	 */
-	protected $installer_config;
 
 	/**
 	 * @var factory
@@ -79,7 +73,6 @@ class install
 	 * Constructor
 	 *
 	 * @param helper 				$helper
-	 * @param config				$install_config
 	 * @param factory 				$factory
 	 * @param navigation_provider	$nav_provider
 	 * @param language				$language
@@ -88,10 +81,9 @@ class install
 	 * @param installer				$installer
 	 * @param install_helper		$install_helper
 	 */
-	public function __construct(helper $helper, config $install_config, factory $factory, navigation_provider $nav_provider, language $language, template $template, request_interface $request, installer $installer, install_helper $install_helper)
+	public function __construct(helper $helper, factory $factory, navigation_provider $nav_provider, language $language, template $template, request_interface $request, installer $installer, install_helper $install_helper)
 	{
 		$this->controller_helper	= $helper;
-		$this->installer_config		= $install_config;
 		$this->iohandler_factory	= $factory;
 		$this->menu_provider		= $nav_provider;
 		$this->language				= $language;
@@ -130,34 +122,6 @@ class install
 		// Set the appropriate input-output handler
 		$this->installer->set_iohandler($this->iohandler_factory->get());
 
-		// Set up navigation
-		$nav_data = $this->installer_config->get_navigation_data();
-		/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
-		$iohandler = $this->iohandler_factory->get();
-
-		// Set active navigation stage
-		if (isset($nav_data['active']) && is_array($nav_data['active']))
-		{
-			$iohandler->set_active_stage_menu($nav_data['active']);
-			$this->menu_provider->set_nav_property($nav_data['active'], array(
-				'selected'	=> true,
-				'completed'	=> false,
-			));
-		}
-
-		// Set finished navigation stages
-		if (isset($nav_data['finished']) && is_array($nav_data['finished']))
-		{
-			foreach ($nav_data['finished'] as $finished_stage)
-			{
-				$iohandler->set_finished_stage_menu($finished_stage);
-				$this->menu_provider->set_nav_property($finished_stage, array(
-					'selected'	=> false,
-					'completed'	=> true,
-				));
-			}
-		}
-
 		if ($this->request->is_ajax())
 		{
 			$installer = $this->installer;
@@ -193,6 +157,11 @@ class install
 					'TITLE'						=> $this->language->lang('INSTALL_INTRO'),
 					'CONTENT'					=> $this->language->lang('INSTALL_INTRO_BODY'),
 				));
+
+				/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
+				$iohandler = $this->iohandler_factory->get();
+				$this->controller_helper->handle_navigation($iohandler);
+
 				return $this->controller_helper->render('installer_install.html', 'INSTALL', true);
 			}
 

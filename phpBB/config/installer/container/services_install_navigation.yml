@@ -25,3 +25,11 @@ services:
         tags:
             - { name: installer.navigation }
 
+    installer.navigation.update_navigation:
+        class: phpbb\install\helper\navigation\update_navigation
+        arguments:
+            - @installer.helper.install_helper
+        scope: prototype
+        tags:
+            - { name: installer.navigation }
+

@@ -16,6 +16,7 @@ services:
             - @installer.helper.iohandler
         tags:
             - { name: installer_requirements, order: 20 }
+            - { name: update_requirements, order: 20 }
 
     installer.module.install_requirements_collection:
         class: phpbb\di\ordered_service_collection
@@ -26,7 +27,7 @@ services:
 
 # Please note, that the name of this module is hard coded in the installer service
     installer.module.requirements_install:
-        class: phpbb\install\module\requirements\module
+        class: phpbb\install\module\requirements\install_module
         parent: installer.module_base
         arguments:
             - @installer.module.install_requirements_collection

@@ -99,6 +99,8 @@ class config
 			'last_task_name'			=> '', // Stores the service name of the latest finished task
 			'max_task_progress'			=> 0,
 			'current_task_progress'		=> 0,
+			'_restart_points'			=> array(),
+			'use_restart_point'			=> false,
 		);
 
 		$this->install_config_file = $this->phpbb_root_path . 'store/install_config.php';
@@ -237,6 +239,56 @@ class config
 			$this->progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
 			$this->navigation_data = (is_array($unserialized_data['navigation_data'])) ? $unserialized_data['navigation_data'] : array();
 		}
+	}
+
+	/**
+	 * Creates a progress restart point
+	 *
+	 * Restart points can be used to repeat certain tasks periodically.
+	 * You need to call this method from the first task you want to repeat.
+	 *
+	 * @param string	$name	Name of the restart point
+	 */
+	public function create_progress_restart_point($name)
+	{
+		$tmp_progress_data = $this->progress_data;
+		unset($tmp_progress_data['_restart_points']);
+
+		$this->progress_data['_restart_points'][$name] = $tmp_progress_data;
+	}
+
+	/**
+	 * Set restart point to continue from
+	 *
+	 * @param string	$name	Name of the restart point
+	 *
+	 * @return bool	Returns false if the restart point name does not exist, otherwise true
+	 */
+	public function jump_to_restart_point($name)
+	{
+		if (!isset($this->progress_data['_restart_points'][$name]) || empty($this->progress_data['_restart_points'][$name]))
+		{
+			return false;
+		}
+
+		foreach ($this->progress_data['_restart_points'][$name] as $key => $value)
+		{
+			$this->progress_data[$key] = $value;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Returns whether a restart point with a given name exists or not
+	 *
+	 * @param string	$name Name of the restart point
+	 *
+	 * @return bool
+	 */
+	public function has_restart_point($name)
+	{
+		return isset($this->progress_data['_restart_points'][$name]);
 	}
 
 	/**

@@ -13,6 +13,7 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\install\helper\config;
 use phpbb\install\helper\navigation\navigation_provider;
 use phpbb\language\language;
 use phpbb\language\language_file_helper;
@@ -33,6 +34,11 @@ use Symfony\Component\HttpFoundation\Cookie;
  */
 class helper
 {
+	/**
+	 * @var config
+	 */
+	protected $installer_config;
+
 	/**
 	 * @var \phpbb\language\language
 	 */
@@ -91,6 +97,7 @@ class helper
 	/**
 	 * Constructor
 	 *
+	 * @param config				$config
 	 * @param language				$language
 	 * @param language_file_helper	$lang_helper
 	 * @param navigation_provider	$nav
@@ -101,8 +108,9 @@ class helper
 	 * @param router				$router
 	 * @param string				$phpbb_root_path
 	 */
-	public function __construct(language $language, language_file_helper $lang_helper, navigation_provider $nav, template $template, path_helper $path_helper, request $phpbb_request, symfony_request $request, router $router, $phpbb_root_path)
+	public function __construct(config $config, language $language, language_file_helper $lang_helper, navigation_provider $nav, template $template, path_helper $path_helper, request $phpbb_request, symfony_request $request, router $router, $phpbb_root_path)
 	{
+		$this->installer_config = $config;
 		$this->language = $language;
 		$this->language_cookie = false;
 		$this->lang_helper = $lang_helper;
@@ -200,6 +208,47 @@ class helper
 	}
 
 	/**
+	 * Process navigation data to reflect active/completed stages
+	 *
+	 * @param \phpbb\install\helper\iohandler\iohandler_interface|null	$iohandler
+	 */
+	public function handle_navigation($iohandler = null)
+	{
+		$nav_data = $this->installer_config->get_navigation_data();
+
+		// Set active navigation stage
+		if (isset($nav_data['active']) && is_array($nav_data['active']))
+		{
+			if ($iohandler !== null)
+			{
+				$iohandler->set_active_stage_menu($nav_data['active']);
+			}
+
+			$this->navigation_provider->set_nav_property($nav_data['active'], array(
+				'selected'	=> true,
+				'completed'	=> false,
+			));
+		}
+
+		// Set finished navigation stages
+		if (isset($nav_data['finished']) && is_array($nav_data['finished']))
+		{
+			foreach ($nav_data['finished'] as $finished_stage)
+			{
+				if ($iohandler !== null)
+				{
+					$iohandler->set_finished_stage_menu($finished_stage);
+				}
+
+				$this->navigation_provider->set_nav_property($finished_stage, array(
+					'selected'	=> false,
+					'completed'	=> true,
+				));
+			}
+		}
+	}
+
+	/**
 	 * Set default template variables
 	 *
 	 * @param string	$page_title			Title of the page
@@ -207,27 +256,32 @@ class helper
 	 */
 	protected function page_header($page_title, $selected_language = false)
 	{
+		// Path to templates
+		$paths = array($this->phpbb_root_path . 'install/update/new/adm/', $this->phpbb_admin_path);
+		$paths = array_filter($paths, 'is_dir');
+		$path = array_shift($paths);
+		$path = substr($path, strlen($this->phpbb_root_path));
+
 		$this->template->assign_vars(array(
-				'L_CHANGE'				=> $this->language->lang('CHANGE'),
-				'L_COLON'				=> $this->language->lang('COLON'),
-				'L_INSTALL_PANEL'		=> $this->language->lang('INSTALL_PANEL'),
-				'L_SELECT_LANG'			=> $this->language->lang('SELECT_LANG'),
-				'L_SKIP'				=> $this->language->lang('SKIP'),
-				'PAGE_TITLE'			=> $this->language->lang($page_title),
-				'T_IMAGE_PATH'			=> htmlspecialchars($this->phpbb_admin_path) . 'images/',
-				'T_JQUERY_LINK'			=> $this->path_helper->get_web_root_path() . 'assets/javascript/jquery.min.js',
-				'T_TEMPLATE_PATH'		=> $this->path_helper->get_web_root_path() . 'adm/style',
-				'T_ASSETS_PATH'			=> $this->path_helper->get_web_root_path() . 'assets/',
+			'L_CHANGE'				=> $this->language->lang('CHANGE'),
+			'L_COLON'				=> $this->language->lang('COLON'),
+			'L_INSTALL_PANEL'		=> $this->language->lang('INSTALL_PANEL'),
+			'L_SELECT_LANG'			=> $this->language->lang('SELECT_LANG'),
+			'L_SKIP'				=> $this->language->lang('SKIP'),
+			'PAGE_TITLE'			=> $this->language->lang($page_title),
+			'T_IMAGE_PATH'			=> $this->path_helper->get_web_root_path() . $path . 'images/',
+			'T_JQUERY_LINK'			=> $this->path_helper->get_web_root_path() . $path . '../assets/javascript/jquery.min.js',
+			'T_TEMPLATE_PATH'		=> $this->path_helper->get_web_root_path() . $path . 'style/',
+			'T_ASSETS_PATH'			=> $this->path_helper->get_web_root_path() . $path . '../assets/',
 
-				'S_CONTENT_DIRECTION' 	=> $this->language->lang('DIRECTION'),
-				'S_CONTENT_FLOW_BEGIN'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'left' : 'right',
-				'S_CONTENT_FLOW_END'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'right' : 'left',
-				'S_CONTENT_ENCODING' 	=> 'UTF-8',
-				'S_LANG_SELECT'			=> $selected_language,
+			'S_CONTENT_DIRECTION' 	=> $this->language->lang('DIRECTION'),
+			'S_CONTENT_FLOW_BEGIN'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'right' : 'left',
+			'S_CONTENT_ENCODING' 	=> 'UTF-8',
+			'S_LANG_SELECT'			=> $selected_language,
 
-				'S_USER_LANG'			=> $this->language->lang('USER_LANG'),
-			)
-		);
+			'S_USER_LANG'			=> $this->language->lang('USER_LANG'),
+		));
 
 		$this->render_navigation();
 	}

@@ -281,7 +281,7 @@ if (sizeof($package->old_packages))
 			'adm/style/admin.css'	=> 'adm/style',
 			'adm/style/admin.js'	=> 'adm/style',
 			'adm/style/ajax.js'		=> 'adm/style',
-			'adm/style/install_*'	=> 'adm/style',
+			'adm/style/installer_*'	=> 'adm/style',
 			'assets/javascript/*'	=> 'assets/javascript',
 		);
 

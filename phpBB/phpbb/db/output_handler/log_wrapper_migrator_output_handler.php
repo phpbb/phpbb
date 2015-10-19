@@ -11,18 +11,16 @@
 *
 */
 
-namespace phpbb\db;
-
-use phpbb\user;
+namespace phpbb\db\output_handler;
 
 class log_wrapper_migrator_output_handler implements migrator_output_handler_interface
 {
 	/**
-	 * User object.
+	 * Language object.
 	 *
-	 * @var user
+	 * @var \phpbb\language\language
 	 */
-	protected $user;
+	protected $language;
 
 	/**
 	 * A migrator output handler
@@ -45,14 +43,14 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 	/**
 	 * Constructor
 	 *
-	 * @param user $user	User object
-	 * @param migrator_output_handler_interface $migrator Migrator output handler
-	 * @param string $log_file	File to log to
-	 * @param \phpbb\filesystem\filesystem_interface	phpBB filesystem object
+	 * @param \phpbb\language\language					$language	Language object
+	 * @param migrator_output_handler_interface			$migrator	Migrator output handler
+	 * @param string									$log_file	File to log to
+	 * @param \phpbb\filesystem\filesystem_interface	$filesystem	phpBB filesystem object
 	 */
-	public function __construct(user $user, migrator_output_handler_interface $migrator, $log_file, \phpbb\filesystem\filesystem_interface $filesystem)
+	public function __construct(\phpbb\language\language $language, migrator_output_handler_interface $migrator, $log_file, \phpbb\filesystem\filesystem_interface $filesystem)
 	{
-		$this->user = $user;
+		$this->language = $language;
 		$this->migrator = $migrator;
 		$this->filesystem = $filesystem;
 		$this->file_open($log_file);
@@ -84,7 +82,8 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 
 		if ($this->file_handle !== false)
 		{
-			$translated_message = call_user_func_array(array($this->user, 'lang'), $message) . "\n";
+
+			$translated_message = $this->language->lang_array(array_shift($message), $message);
 
 			if ($verbosity <= migrator_output_handler_interface::VERBOSITY_NORMAL)
 			{

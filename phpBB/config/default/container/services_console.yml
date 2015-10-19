@@ -98,6 +98,7 @@ services:
         class: phpbb\console\command\db\migrate
         arguments:
             - @user
+            - @language
             - @migrator
             - @ext.manager
             - @config
@@ -112,6 +113,7 @@ services:
         class: phpbb\console\command\db\revert
         arguments:
             - @user
+            - @language
             - @migrator
             - @ext.manager
             - @config

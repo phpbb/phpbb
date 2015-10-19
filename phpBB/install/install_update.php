@@ -1115,7 +1115,7 @@ class install_update extends module
 	*/
 	function show_diff(&$update_list)
 	{
-		global $phpbb_root_path, $template, $user, $request, $phpbb_adm_relative_path;
+		global $phpbb_root_path, $template, $user, $request;
 
 		$this->tpl_name = 'install_update_diff';
 
@@ -1669,10 +1669,9 @@ class install_update extends module
 	*/
 	function get_file($mode)
 	{
-		global $user, $db;
+		global $user;
 
 		$errstr = '';
-		$errno = 0;
 
 		switch ($mode)
 		{

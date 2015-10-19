@@ -115,7 +115,7 @@ abstract class module_base implements module_interface
 		foreach ($this->task_collection as $name => $task)
 		{
 			// Run until there are available resources
-			if ($this->install_config->get_time_remaining() <= 0 && $this->install_config->get_memory_remaining() <= 0)
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
 			{
 				throw new resource_limit_reached_exception();
 			}

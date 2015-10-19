@@ -50,11 +50,9 @@ class check_filesystem extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$response			response helper
 	 * @param string												$phpbb_root_path	relative path to phpBB's root
 	 * @param string												$php_ext			extension of php files
+	 * @param bool													$check_config_php	Whether or not to check if config.php is writable
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem,
-								\phpbb\install\helper\iohandler\iohandler_interface $response,
-								$phpbb_root_path,
-								$php_ext)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \phpbb\install\helper\iohandler\iohandler_interface $response, $phpbb_root_path, $php_ext, $check_config_php = true)
 	{
 		parent::__construct(true);
 
@@ -87,12 +85,16 @@ class check_filesystem extends \phpbb\install\task_base
 				'failable' => true,
 				'is_file' => false,
 			),
-			array(
+		);
+
+		if ($check_config_php)
+		{
+			$this->files_to_check[] = array(
 				'path' => "config.$php_ext",
 				'failable' => false,
 				'is_file' => true,
-			),
-		);
+			);
+		}
 	}
 
 	/**

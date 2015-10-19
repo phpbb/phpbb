@@ -24,26 +24,28 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 {
 	/**
 	* Template object
+	*
 	* @var \phpbb\template\template
 	*/
 	protected $template;
 
 	/**
-	* User object
-	* @var \phpbb\user
+	* Language object
+	*
+	* @var \phpbb\language\language
 	*/
-	protected $user;
+	protected $language;
 
 	/**
 	* Construct method
 	*
-	* @param \phpbb\template\template $template Template object
-	* @param \phpbb\user $user User object
+	* @param \phpbb\template\template	$template	Template object
+	* @param \phpbb\language\language	$language	Language object
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\user $user)
+	public function __construct(\phpbb\template\template $template, \phpbb\language\language $language)
 	{
 		$this->template = $template;
-		$this->user = $user;
+		$this->language = $language;
 	}
 
 	/**
@@ -60,15 +62,15 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 		if ($exception instanceof \phpbb\exception\exception_interface)
 		{
-			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($message), $exception->get_parameters()));
+			$message = $this->language->lang_array($message, $exception->get_parameters());
 		}
 
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{
-			page_header($this->user->lang('INFORMATION'));
+			page_header($this->language->lang('INFORMATION'));
 
 			$this->template->assign_vars(array(
-				'MESSAGE_TITLE' => $this->user->lang('INFORMATION'),
+				'MESSAGE_TITLE' => $this->language->lang('INFORMATION'),
 				'MESSAGE_TEXT'  => $message,
 			));
 

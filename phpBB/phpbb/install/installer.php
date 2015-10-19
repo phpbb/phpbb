@@ -15,11 +15,13 @@ namespace phpbb\install;
 
 use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\installer_config_not_writable_exception;
+use phpbb\install\exception\jump_to_restart_point_exception;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\iohandler_interface;
+use phpbb\path_helper;
 
 class installer
 {
@@ -39,6 +41,11 @@ class installer
 	protected $iohandler;
 
 	/**
+	 * @var string
+	 */
+	protected $web_root;
+
+	/**
 	 * Stores the number of steps that a given module has
 	 *
 	 * @var array
@@ -48,12 +55,14 @@ class installer
 	/**
 	 * Constructor
 	 *
-	 * @param config				$config		Installer config handler
+	 * @param config		$config			Installer config handler
+	 * @param path_helper	$path_helper	Path helper
 	 */
-	public function __construct(config $config)
+	public function __construct(config $config, path_helper $path_helper)
 	{
 		$this->install_config		= $config;
 		$this->installer_modules	= null;
+		$this->web_root				= $path_helper->get_web_root_path();
 	}
 
 	/**
@@ -94,6 +103,7 @@ class installer
 		// Variable used to check if the install process have been finished
 		$install_finished	= false;
 		$fail_cleanup		= false;
+		$send_refresh		= false;
 
 		// We are installing something, so the introduction stage can go now...
 		$this->install_config->set_finished_navigation_stage(array('install', 0, 'introduction'));
@@ -142,7 +152,7 @@ class installer
 				$this->install_config->set_active_module($name);
 
 				// Run until there are available resources
-				if ($this->install_config->get_time_remaining() <= 0 && $this->install_config->get_memory_remaining() <= 0)
+				if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
 				{
 					throw new resource_limit_reached_exception();
 				}
@@ -181,21 +191,7 @@ class installer
 			else
 			{
 				global $SID;
-
-				// Construct ACP url
-				$acp_url = $protocol = $this->install_config->get('server_protocol');
-				$acp_url .= $this->install_config->get('server_name');
-				$port = $this->install_config->get('server_port');
-
-				if (!((strpos($protocol, 'https:') === 0 && $port === 443)
-					|| (strpos($protocol, 'http:') === 0 && $port === 80)))
-				{
-					$acp_url .= ':' . $port;
-				}
-
-				$acp_url .= $this->install_config->get('script_path');
-				$acp_url .= '/adm/index.php' . $SID;
-
+				$acp_url = $this->web_root . 'adm/index.php' . $SID;
 				$this->iohandler->add_success_message('INSTALLER_FINISHED', array(
 					'ACP_LINK',
 					$acp_url,
@@ -208,7 +204,12 @@ class installer
 		}
 		catch (resource_limit_reached_exception $e)
 		{
-			// Do nothing
+			$send_refresh = true;
+		}
+		catch (jump_to_restart_point_exception $e)
+		{
+			$this->install_config->jump_to_restart_point($e->get_restart_point_name());
+			$send_refresh = true;
 		}
 		catch (\Exception $e)
 		{
@@ -222,9 +223,10 @@ class installer
 			// Send install finished message
 			$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
 		}
-		else if (!$fail_cleanup)
+		else if ($send_refresh)
 		{
 			$this->iohandler->request_refresh();
+			$this->iohandler->send_response();
 		}
 
 		// Save install progress
