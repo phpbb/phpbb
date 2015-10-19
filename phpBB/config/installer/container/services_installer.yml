@@ -61,6 +61,7 @@ services:
         arguments:
             - @language
             - @request
+            - @installer.helper.update_helper
             - %core.root_path%
             - %core.php_ext%
 

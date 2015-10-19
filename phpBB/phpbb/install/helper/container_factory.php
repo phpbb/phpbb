@@ -41,6 +41,11 @@ class container_factory
 	protected $request;
 
 	/**
+	 * @var update_helper
+	 */
+	protected $update_helper;
+
+	/**
 	 * The full phpBB container
 	 *
 	 * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -50,15 +55,17 @@ class container_factory
 	/**
 	 * Constructor
 	 *
-	 * @param language 	$language			Language service
-	 * @param request	$request			Request interface
-	 * @param string	$phpbb_root_path	Path to phpBB's root
-	 * @param string	$php_ext			Extension of PHP files
+	 * @param language 		$language			Language service
+	 * @param request		$request			Request interface
+	 * @param update_helper	$update_helper		Update helper
+	 * @param string		$phpbb_root_path	Path to phpBB's root
+	 * @param string		$php_ext			Extension of PHP files
 	 */
-	public function __construct(language $language, request $request, $phpbb_root_path, $php_ext)
+	public function __construct(language $language, request $request, update_helper $update_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->language			= $language;
 		$this->request			= $request;
+		$this->update_helper	= $update_helper;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
 		$this->container		= null;
@@ -180,24 +187,8 @@ class container_factory
 			$this->request->disable_super_globals();
 		}
 
-		// Get compatibilty globals
-		if (file_exists($this->phpbb_root_path . 'install/update/new/includes/compatibility_globals.' . $this->php_ext))
-		{
-			require($this->phpbb_root_path . 'install/update/new/includes/compatibility_globals.' . $this->php_ext);
-		}
-		else
-		{
-			require($this->phpbb_root_path . 'includes/compatibility_globals.' . $this->php_ext);
-		}
-
-		// Get compatibilty globals
-		if (file_exists($this->phpbb_root_path . 'install/update/new/includes/constants.' . $this->php_ext))
-		{
-			require($this->phpbb_root_path . 'install/update/new/includes/constants.' . $this->php_ext);
-		}
-		else
-		{
-			require($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
-		}
+		// Get compatibilty globals and constants
+		$this->update_helper->include_file('includes/compatibility_globals.' . $this->php_ext);
+		$this->update_helper->include_file('includes/constants.' . $this->php_ext);
 	}
 }
