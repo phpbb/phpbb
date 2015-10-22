@@ -136,7 +136,19 @@ class sqlite3 extends \phpbb\db\driver\driver
 			{
 				if (($this->query_result = @$this->dbo->query($query)) === false)
 				{
-					$this->sql_error($query);
+					// Try to recover a lost database connection
+					if ($this->dbo && !@$this->dbo->lastErrorMsg())
+					{
+						if ($this->sql_connect($this->server, $this->user, '', $this->dbname))
+						{
+							$this->query_result = @$this->dbo->query($query);
+						}
+					}
+
+					if ($this->query_result === false)
+					{
+						$this->sql_error($query);
+					}
 				}
 
 				if (defined('DEBUG'))
