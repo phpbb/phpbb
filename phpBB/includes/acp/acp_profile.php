@@ -460,7 +460,7 @@ class acp_profile
 
 					if (!$cp->vars[$key] && $action == 'edit')
 					{
-						$cp->vars[$key] = $$key;
+						$cp->vars[$key] = ${$key};
 					}
 
 					$field_data = $cp->vars;

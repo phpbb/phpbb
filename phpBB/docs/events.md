@@ -1455,6 +1455,22 @@ viewtopic_body_poll_question_prepend
 * Since: 3.1.0-b3
 * Purpose: Add content directly before the poll question on the View topic screen
 
+viewtopic_body_post_author_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.3-RC1
+* Purpose: Add content directly after the post author on the view topic screen
+
+viewtopic_body_post_author_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.3-RC1
+* Purpose: Add content directly before the post author on the view topic screen
+
 viewtopic_body_post_buttons_after
 ===
 * Locations:
@@ -1514,6 +1530,22 @@ viewtopic_body_postrow_post_content_footer
     + styles/subsilver2/template/viewtopic_body.html
 * Since: 3.1.0-RC4
 * Purpose: Add data at the end of the posts.
+
+viewtopic_body_postrow_post_details_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content after the post details
+
+viewtopic_body_postrow_post_details_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.4-RC1
+* Purpose: Add content before the post details
 
 viewtopic_body_postrow_post_notices_after
 ===

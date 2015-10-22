@@ -357,6 +357,7 @@ class post extends \phpbb\notification\type\base
 		{
 			$tracking_data[$row['user_id']] = $row['mark_time'];
 		}
+		$this->db->sql_freeresult($result);
 
 		return $tracking_data;
 	}

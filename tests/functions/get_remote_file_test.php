@@ -21,6 +21,10 @@ class phpbb_functions_get_remote_file extends phpbb_test_case
 {
 	public function test_version_phpbb_com()
 	{
+		global $phpbb_container;
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('file_downloader', new \phpbb\file_downloader());
+
 		$hostname = 'version.phpbb.com';
 
 		if (!phpbb_checkdnsrr($hostname, 'A'))

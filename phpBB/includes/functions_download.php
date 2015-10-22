@@ -210,11 +210,6 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		}
 	}
 
-	if ($size)
-	{
-		header("Content-Length: $size");
-	}
-
 	// Close the db connection before sending the file etc.
 	file_gc(false);
 
@@ -236,6 +231,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 			// and always requires an absolute path.
 			header('X-Sendfile: ' . dirname(__FILE__) . "/../$upload_dir/{$attachment['physical_filename']}");
 			exit;
+		}
+
+		if ($size)
+		{
+			header("Content-Length: $size");
 		}
 
 		// Try to deliver in chunks

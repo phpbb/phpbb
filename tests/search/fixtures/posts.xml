@@ -19,6 +19,11 @@
 			<value>commonword</value>
 			<value>commonword</value>
 		</row>
+		<row>
+			<value>baaz</value>
+			<value>baaz</value>
+			<value>baaz</value>
+		</row>
 	</table>
 	<table name="phpbb_search_wordlist">
 		<column>word_id</column>
@@ -38,6 +43,11 @@
 			<value>3</value>
 			<value>commonword</value>
 			<value>1</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>baaz</value>
+			<value>0</value>
 		</row>
 	</table>
 </dataset>

@@ -44,6 +44,12 @@ class content_visibility
 	protected $config;
 
 	/**
+	* Event dispatcher object
+	* @var \phpbb\event\dispatcher
+	*/
+	protected $phpbb_dispatcher;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -60,6 +66,7 @@ class content_visibility
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
 	* @param	\phpbb\config\config	$config	Config object
+	* @param	\phpbb\event\dispatcher	$phpbb_dispatcher	Event dispatcher object
 	* @param	\phpbb\db\driver\driver_interface	$db		Database object
 	* @param	\phpbb\user		$user			User object
 	* @param	string		$phpbb_root_path	Root path
@@ -69,10 +76,11 @@ class content_visibility
 	* @param	string		$topics_table		Topics table name
 	* @param	string		$users_table		Users table name
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\event\dispatcher $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $php_ext, $forums_table, $posts_table, $topics_table, $users_table)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -160,6 +168,36 @@ class content_visibility
 
 		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
 
+		$get_forums_visibility_sql_overwrite = false;
+		/**
+		* Allow changing the result of calling get_forums_visibility_sql
+		*
+		* @event core.phpbb_content_visibility_get_forums_visibility_before
+		* @var	string		where_sql							The action the user tried to execute
+		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
+		* @var	string		table_alias							Table alias to prefix in SQL queries
+		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
+		* @var	mixed		get_forums_visibility_sql_overwrite	If a string, forces the function to return get_forums_visibility_sql_overwrite after executing the event
+		* 														If false, get_forums_visibility_sql continues normally
+		* 														It must be either boolean or string
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'where_sql',
+			'mode',
+			'forum_ids',
+			'table_alias',
+			'approve_forums',
+			'get_forums_visibility_sql_overwrite',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_forums_visibility_before', compact($vars)));
+
+		if ($get_forums_visibility_sql_overwrite !== false)
+		{
+			return $get_forums_visibility_sql_overwrite;
+		}
+
 		if (sizeof($approve_forums))
 		{
 			// Remove moderator forums from the rest
@@ -205,6 +243,35 @@ class content_visibility
 		$where_sqls = array();
 
 		$approve_forums = array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $exclude_forum_ids);
+
+		$visibility_sql_overwrite = null;
+
+		/**
+		* Allow changing the result of calling get_global_visibility_sql
+		*
+		* @event core.phpbb_content_visibility_get_global_visibility_before
+		* @var	array		where_sqls							The action the user tried to execute
+		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
+		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
+		* @var	string		table_alias							Table alias to prefix in SQL queries
+		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
+		* @var	string		visibility_sql_overwrite	Forces the function to return an implosion of where_sqls (joined by "OR")
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'where_sqls',
+			'mode',
+			'forum_ids',
+			'table_alias',
+			'approve_forums',
+			'visibility_sql_overwrite',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_get_global_visibility_before', compact($vars)));
+
+		if ($visibility_sql_overwrite)
+		{
+			return $visibility_sql_overwrite;
+		}
 
 		if (sizeof($exclude_forum_ids))
 		{

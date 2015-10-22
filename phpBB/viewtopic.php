@@ -336,8 +336,41 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 // Setup look and feel
 $user->setup('viewtopic', $topic_data['forum_style']);
 
+$overrides_f_read_check = false;
+$overrides_forum_password_check = false;
+$topic_tracking_info = isset($topic_tracking_info) ? $topic_tracking_info : null;
+
+/**
+* Event to apply extra permissions and to override original phpBB's f_read permission and forum password check
+* on viewtopic access
+*
+* @event core.viewtopic_before_f_read_check
+* @var	int		forum_id						The forum id from where the topic belongs
+* @var	int		topic_id						The id of the topic the user tries to access
+* @var	int		post_id							The id of the post the user tries to start viewing at.
+*												It may be 0 for none given.
+* @var	array	topic_data						All the information from the topic and forum tables for this topic
+* 												It includes posts information if post_id is not 0
+* @var	bool	overrides_f_read_check			Set true to remove f_read check afterwards
+* @var	bool	overrides_forum_password_check	Set true to remove forum_password check afterwards
+* @var	array	topic_tracking_info				Information upon calling get_topic_tracking()
+*												Set it to NULL to allow auto-filling later.
+*												Set it to an array to override original data.
+* @since 3.1.3-RC1
+*/
+$vars = array(
+	'forum_id',
+	'topic_id',
+	'post_id',
+	'topic_data',
+	'overrides_f_read_check',
+	'overrides_forum_password_check',
+	'topic_tracking_info',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_before_f_read_check', compact($vars)));
+
 // Start auth check
-if (!$auth->acl_get('f_read', $forum_id))
+if (!$overrides_f_read_check && !$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -349,7 +382,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box
-if ($topic_data['forum_password'])
+if (!$overrides_forum_password_check && $topic_data['forum_password'])
 {
 	login_forum_box($topic_data);
 }

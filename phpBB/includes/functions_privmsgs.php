@@ -1415,9 +1415,9 @@ function rebuild_header($check_ary)
 		$_types = array('u', 'g');
 		foreach ($_types as $type)
 		{
-			if (sizeof($$type))
+			if (sizeof(${$type}))
 			{
-				foreach ($$type as $id)
+				foreach (${$type} as $id)
 				{
 					$address[$type][$id] = $check_type;
 				}

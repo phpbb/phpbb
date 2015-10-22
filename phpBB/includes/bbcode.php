@@ -129,7 +129,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_extension_manager, $phpbb_path_helper;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper;
 
 		if (empty($this->template_filename))
 		{
@@ -388,6 +388,26 @@ class bbcode
 				break;
 			}
 		}
+
+		$bbcode_cache = $this->bbcode_cache;
+		$bbcode_bitfield = $this->bbcode_bitfield;
+		$bbcode_uid = $this->bbcode_uid;
+
+		/**
+		* Use this event to modify the bbcode_cache
+		*
+		* @event core.bbcode_cache_init_end
+		* @var	array	bbcode_cache		The array of cached search and replace patterns of bbcodes
+		* @var	string	bbcode_bitfield		The bbcode bitfield
+		* @var	string	bbcode_uid			The bbcode uid
+		* @since 3.1.3-RC1
+		*/
+		$vars = array('bbcode_cache', 'bbcode_bitfield', 'bbcode_uid');
+		extract($phpbb_dispatcher->trigger_event('core.bbcode_cache_init_end', compact($vars)));
+
+		$this->bbcode_cache = $bbcode_cache;
+		$this->bbcode_bitfield = $bbcode_bitfield;
+		$this->bbcode_uid = $bbcode_uid;
 	}
 
 	/**

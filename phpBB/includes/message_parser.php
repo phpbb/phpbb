@@ -313,7 +313,7 @@ class bbcode_firstpass extends bbcode
 		$in = str_replace(' ', '%20', $in);
 
 		// Checking urls
-		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
+		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $in) && !preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
 		{
 			return '[img]' . $in . '[/img]';
 		}
@@ -1172,13 +1172,18 @@ class parse_message extends bbcode_firstpass
 		* @var bool		update_this_message		Do we alter the parsed message
 		* @var string	mode					Posting mode
 		* @var string	message					The message text to parse
+		* @var string	bbcode_bitfield			The bbcode_bitfield before parsing
+		* @var string	bbcode_uid				The bbcode_uid before parsing
 		* @var bool		return					Do we return after the event is triggered if $warn_msg is not empty
 		* @var array	warn_msg				Array of the warning messages
 		* @since 3.1.2-RC1
+		* @change 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
 		*/
 		$message = $this->message;
 		$warn_msg = $this->warn_msg;
 		$return = false;
+		$bbcode_bitfield = $this->bbcode_bitfield;
+		$bbcode_uid = $this->bbcode_uid;
 		$vars = array(
 			'allow_bbcode',
 			'allow_magic_url',
@@ -1190,12 +1195,16 @@ class parse_message extends bbcode_firstpass
 			'update_this_message',
 			'mode',
 			'message',
+			'bbcode_bitfield',
+			'bbcode_uid',
 			'return',
 			'warn_msg',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.message_parser_check_message', compact($vars)));
 		$this->message = $message;
 		$this->warn_msg = $warn_msg;
+		$this->bbcode_bitfield = $bbcode_bitfield;
+		$this->bbcode_uid = $bbcode_uid;
 		if ($return && !empty($this->warn_msg))
 		{
 			return (!$update_this_message) ? $return_message : $this->warn_msg;

@@ -74,10 +74,74 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 				'http://www.phpbb.com/community/path/to/long/url/file.ext#section',
 				'<!-- m --><a class="postlink" href="http://www.phpbb.com/community/path/to/long/url/file.ext#section">http://www.phpbb.com/community/path/to/ ... xt#section</a><!-- m -->'
 			),
+		);
+	}
 
-			// IDN is not parsed and returned as is
-			array('http://домен.рф', 'http://домен.рф'),
+	public function data_test_make_clickable_url_idn()
+	{
+		return array(
+			array(
+				'http://www.täst.de/community/',
+				'<!-- m --><a class="postlink" href="http://www.täst.de/community/">http://www.täst.de/community/</a><!-- m -->'
+			),
+			array(
+				'http://www.täst.de/path/file.ext#section',
+				'<!-- m --><a class="postlink" href="http://www.täst.de/path/file.ext#section">http://www.täst.de/path/file.ext#section</a><!-- m -->'
+			),
+			array(
+				'ftp://ftp.täst.de/',
+				'<!-- m --><a class="postlink" href="ftp://ftp.täst.de/">ftp://ftp.täst.de/</a><!-- m -->'
+			),
+			array(
+				'sip://bantu@täst.de',
+				'<!-- m --><a class="postlink" href="sip://bantu@täst.de">sip://bantu@täst.de</a><!-- m -->'
+			),
+			array(
+				'www.täst.de/community/',
+				'<!-- w --><a class="postlink" href="http://www.täst.de/community/">www.täst.de/community/</a><!-- w -->'
+			),
+			// Test appending punctuation mark to the URL
+			array(
+				'http://домен.рф/viewtopic.php?t=1!',
+				'<!-- m --><a class="postlink" href="http://домен.рф/viewtopic.php?t=1">http://домен.рф/viewtopic.php?t=1</a><!-- m -->!'
+			),
+			array(
+				'www.домен.рф/сообщество/?',
+				'<!-- w --><a class="postlink" href="http://www.домен.рф/сообщество/">www.домен.рф/сообщество/</a><!-- w -->?'
+			),
+			// Test shortened text for URL > 55 characters long
+			// URL text should be turned into: first 39 chars + ' ... ' + last 10 chars
+			array(
+				'http://www.домен.рф/сообщество/путь/по/длинной/ссылке/file.ext#section',
+				'<!-- m --><a class="postlink" href="http://www.домен.рф/сообщество/путь/по/длинной/ссылке/file.ext#section">http://www.домен.рф/сообщество/путь/по/ ... xt#section</a><!-- m -->'
+			),
+
+			// IDN with invalid characters shouldn't be parsed correctly (only 'valid' part)
+			array(
+				'http://www.täst╫.de',
+				'<!-- m --><a class="postlink" href="http://www.täst">http://www.täst</a><!-- m -->╫.de'
+			),
+			// IDN in emails is unsupported yet
 			array('почта@домен.рф', 'почта@домен.рф'),
+		);
+	}
+
+	public function data_test_make_clickable_local_url_idn()
+	{
+		return array(
+			array(
+				'http://www.домен.рф/viewtopic.php?t=1',
+				'<!-- l --><a class="postlink-local" href="http://www.домен.рф/viewtopic.php?t=1">viewtopic.php?t=1</a><!-- l -->'
+			),
+			// Test appending punctuation mark to the URL
+			array(
+				'http://www.домен.рф/viewtopic.php?t=1!',
+				'<!-- l --><a class="postlink-local" href="http://www.домен.рф/viewtopic.php?t=1">viewtopic.php?t=1</a><!-- l -->!'
+			),
+			array(
+				'http://www.домен.рф/сообщество/?',
+				'<!-- l --><a class="postlink-local" href="http://www.домен.рф/сообщество/">сообщество/</a><!-- l -->?'
+			),
 		);
 	}
 
@@ -96,5 +160,21 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	public function test_urls_matching_positive($url, $expected)
 	{
 		$this->assertSame($expected, make_clickable($url));
+	}
+
+	/**
+	 * @dataProvider data_test_make_clickable_url_idn
+	 */
+	public function test_urls_matching_idn($url, $expected)
+	{
+		$this->assertSame($expected, make_clickable($url));
+	}
+
+	/**
+	 * @dataProvider data_test_make_clickable_local_url_idn
+	 */
+	public function test_local_urls_matching_idn($url, $expected)
+	{
+		$this->assertSame($expected, make_clickable($url, "http://www.домен.рф"));
 	}
 }

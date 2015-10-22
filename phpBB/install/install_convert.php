@@ -599,7 +599,7 @@ class install_convert extends module
 				'S_EXPLAIN'		=> $vars['explain'],
 				'S_LEGEND'		=> false,
 				'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
-				'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
+				'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], ${$config_key}, $options),
 				)
 			);
 		}

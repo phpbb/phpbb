@@ -64,7 +64,7 @@ class type_url extends type_string
 			return false;
 		}
 
-		if (!preg_match('#^' . get_preg_expression('url') . '$#i', $field_value))
+		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $field_value))
 		{
 			return $this->user->lang('FIELD_INVALID_URL', $this->get_field_name($field_data['lang_name']));
 		}

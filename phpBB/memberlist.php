@@ -173,6 +173,22 @@ switch ($mode)
 			'ORDER_BY'	=> 'u.username_clean ASC',
 		);
 
+		/**
+		 * Modify the query used to get the users for the team page
+		 *
+		 * @event core.memberlist_team_modify_query
+		 * @var array	sql_ary			Array containing the query
+		 * @var array	group_ids		Array of group ids
+		 * @var array	teampage_data	The teampage data
+		 * @since 3.1.3-RC1
+		 */
+		$vars = array(
+			'sql_ary',
+			'group_ids',
+			'teampage_data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_query', compact($vars)));
+
 		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 		$user_ary = $user_ids = $group_users = array();
@@ -285,7 +301,7 @@ switch ($mode)
 
 						$user_rank_data = phpbb_get_user_rank($row, (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']));
 
-						$template->assign_block_vars('group.user', array(
+						$template_vars = array(
 							'USER_ID'		=> $row['user_id'],
 							'FORUMS'		=> $row['forums'],
 							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
@@ -304,7 +320,25 @@ switch ($mode)
 							'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
-						));
+						);
+
+						/**
+						 * Modify the template vars for displaying the user in the groups on the teampage
+						 *
+						 * @event core.memberlist_team_modify_template_vars
+						 * @var array	template_vars		Array containing the query
+						 * @var array	row					Array containing the action user row
+						 * @var array	groups_ary			Array of groups with all users that should be displayed
+						 * @since 3.1.3-RC1
+						 */
+						$vars = array(
+							'template_vars',
+							'row',
+							'groups_ary',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_template_vars', compact($vars)));
+
+						$template->assign_block_vars('group.user', $template_vars);
 
 						if ($config['teampage_memberships'] != 2)
 						{

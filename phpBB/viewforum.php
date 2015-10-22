@@ -887,6 +887,28 @@ if (sizeof($topic_list))
 
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
+		/**
+		* Event after the topic data has been assigned to the template
+		*
+		* @event core.viewforum_topic_row_after
+		* @var	array	row				Array with the topic data
+		* @var	array	rowset			Array with topics data (in topic_id => topic_data format)
+		* @var	bool	s_type_switch	Flag indicating if the topic type is [global] announcement
+		* @var	int		topic_id		The topic ID
+		* @var	array	topic_list		Array with current viewforum page topic ids
+		* @var	array	topic_row		Template array with topic data
+		* @since 3.1.3-RC1
+		*/
+		$vars = array(
+			'row',
+			'rowset',
+			's_type_switch',
+			'topic_id',
+			'topic_list',
+			'topic_row',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.viewforum_topic_row_after', compact($vars)));
+
 		if ($unread_topic)
 		{
 			$mark_forum_read = false;

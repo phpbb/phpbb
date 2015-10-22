@@ -1,5 +1,5 @@
 <fieldset class="fields1">
-<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 
 	<!-- IF S_SHOW_TOPIC_ICONS or S_SHOW_PM_ICONS -->
 	<dl>
@@ -42,7 +42,7 @@
 				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
 			<!-- END smiley -->
 		<!-- ENDIF -->
-		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
+		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
 			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 750, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
 

@@ -78,7 +78,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	foreach ($sorts as $name => $sort_ary)
 	{
 		$key = $sort_ary['key'];
-		$selected = $$sort_ary['key'];
+		$selected = ${$sort_ary['key']};
 
 		// Check if the key is selectable. If not, we reset to the default or first key found.
 		// This ensures the values are always valid. We also set $sort_dir/sort_key/etc. to the
@@ -87,12 +87,12 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		{
 			if ($sort_ary['default'] !== false)
 			{
-				$selected = $$key = $sort_ary['default'];
+				$selected = ${$key} = $sort_ary['default'];
 			}
 			else
 			{
 				@reset($sort_ary['options']);
-				$selected = $$key = key($sort_ary['options']);
+				$selected = ${$key} = key($sort_ary['options']);
 			}
 		}
 

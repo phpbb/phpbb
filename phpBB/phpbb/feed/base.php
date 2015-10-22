@@ -67,6 +67,9 @@ abstract class base
 	*/
 	var $separator_stats = "\xE2\x80\x94"; // &mdash;
 
+	/** @var mixed Query result handle */
+	protected $result;
+
 	/**
 	* Constructor
 	*
@@ -229,9 +232,7 @@ abstract class base
 
 	function get_item()
 	{
-		static $result;
-
-		if (!isset($result))
+		if (!isset($this->result))
 		{
 			if (!$this->get_sql())
 			{
@@ -240,10 +241,10 @@ abstract class base
 
 			// Query database
 			$sql = $this->db->sql_build_query('SELECT', $this->sql);
-			$result = $this->db->sql_query_limit($sql, $this->num_items);
+			$this->result = $this->db->sql_query_limit($sql, $this->num_items);
 		}
 
-		return $this->db->sql_fetchrow($result);
+		return $this->db->sql_fetchrow($this->result);
 	}
 
 	function user_viewprofile($row)

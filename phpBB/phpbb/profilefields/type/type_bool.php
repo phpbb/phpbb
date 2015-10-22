@@ -173,7 +173,7 @@ class type_bool extends type_base
 		}
 		else
 		{
-			return $this->lang_helper->is_set($field_id, $lang_id, $field_value + 1);
+			return $this->lang_helper->is_set($field_id, $lang_id, $field_value + 1) ? $this->lang_helper->get($field_id, $lang_id, $field_value + 1) : null;
 		}
 	}
 
@@ -367,29 +367,29 @@ class type_bool extends type_base
 	*/
 	public function prepare_hidden_fields($step, $key, $action, &$field_data)
 	{
-		if ($key == 'l_lang_options' && $this->request->is_set('l_lang_options'))
+		if ($key == 'field_default_value')
 		{
-			return $this->request->variable($key, array(array('')), true);
+			$field_length = $this->request->variable('field_length', 0);
+
+			// Do a simple is set check if using checkbox.
+			if ($field_length == 2)
+			{
+				return $this->request->is_set($key);
+			}
+			return $this->request->variable($key, $field_data[$key], true);
 		}
-		else if ($key == 'field_default_value')
+
+		$default_lang_options = array(
+			'l_lang_options'	=> array(0 => array('')),
+			'lang_options'		=> array(0 => ''),
+		);
+
+		if (isset($default_lang_options[$key]) && $this->request->is_set($key))
 		{
-			return $this->request->variable($key, $field_data[$key]);
+			return $this->request->variable($key, $default_lang_options[$key], true);
 		}
-		else
-		{
-			if (!$this->request->is_set($key))
-			{
-				return false;
-			}
-			else if ($key == 'field_ident' && isset($field_data[$key]))
-			{
-				return $field_data[$key];
-			}
-			else
-			{
-				return ($key == 'lang_options') ? $this->request->variable($key, array(''), true) : $this->request->variable($key, '', true);
-			}
-		}
+
+		return parent::prepare_hidden_fields($step, $key, $action, $field_data);
 	}
 
 	/**

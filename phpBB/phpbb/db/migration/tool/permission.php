@@ -537,7 +537,8 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 				}
 
 				$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
-					WHERE ' . $this->db->sql_in_set('auth_option_id', $to_remove);
+					WHERE ' . $this->db->sql_in_set('auth_option_id', $to_remove) . '
+						AND role_id = ' . (int) $role_id;
 				$this->db->sql_query($sql);
 			break;
 

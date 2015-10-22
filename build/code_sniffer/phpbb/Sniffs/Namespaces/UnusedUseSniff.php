@@ -24,7 +24,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 		return array(T_USE);
 	}
 
-	protected function check($found_name, $full_name, $short_name, $line)
+	protected function check($phpcsFile, $found_name, $full_name, $short_name, $line)
 	{
 
 		if ($found_name === $full_name)
@@ -91,7 +91,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 				$simple_class_name = trim($phpcsFile->getTokensAsString($simple_class_name_start, ($simple_class_name_end - $simple_class_name_start)));
 
-				$ok = $this->check($simple_class_name, $class_name_full, $class_name_short, $simple_statement) ? true : $ok;
+				$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) ? true : $ok;
 			}
 		}
 
@@ -106,7 +106,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 			$paamayim_nekudotayim_class_name = trim($phpcsFile->getTokensAsString($paamayim_nekudotayim_class_name_start + 1, ($paamayim_nekudotayim_class_name_end - $paamayim_nekudotayim_class_name_start)));
 
-			$ok = $this->check($paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) ? true : $ok;
+			$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) ? true : $ok;
 		}
 
 		// Checks in implements
@@ -125,7 +125,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 				$implements_class_name = trim($phpcsFile->getTokensAsString($implements_class_name_start, ($implements_class_name_end - $implements_class_name_start)));
 
-				$ok = $this->check($implements_class_name, $class_name_full, $class_name_short, $implements) ? true : $ok;
+				$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) ? true : $ok;
 			}
 		}
 
@@ -163,7 +163,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 							$types = explode('|', str_replace('[]', '', $type));
 							foreach ($types as $type)
 							{
-								$ok = $this->check($type, $class_name_full, $class_name_short, $param->getLine() + $comment_start) ? true : $ok;
+								$ok = $this->check($phpcsFile, $type, $class_name_full, $class_name_short, $param->getLine() + $comment_start) ? true : $ok;
 							}
 						}
 
@@ -175,7 +175,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 							$types = explode('|', str_replace('[]', '', $type));
 							foreach ($types as $type)
 							{
-								$ok = $this->check($type, $class_name_full, $class_name_short, $return->getLine() + $comment_start) ? true : $ok;
+								$ok = $this->check($phpcsFile, $type, $class_name_full, $class_name_short, $return->getLine() + $comment_start) ? true : $ok;
 							}
 						}
 					}
@@ -191,7 +191,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 			$params = $phpcsFile->getMethodParameters($function_declaration);
 			foreach ($params as $param)
 			{
-				$ok = $this->check($param['type_hint'], $class_name_full, $class_name_short, $function_declaration) ? true : $ok;
+				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) ? true : $ok;
 			}
 		}
 

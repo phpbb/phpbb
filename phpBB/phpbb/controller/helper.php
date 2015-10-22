@@ -184,15 +184,34 @@ class helper
 	* @param string $message The error message
 	* @param int $code The error code (e.g. 404, 500, 503, etc.)
 	* @return Response A Response instance
+	*
+	* @deprecated 3.1.3 (To be removed: 3.3.0) Use exceptions instead.
 	*/
 	public function error($message, $code = 500)
 	{
+		return $this->message($message, array(), 'INFORMATION', $code);
+	}
+
+	/**
+	 * Output a message
+	 *
+	 * In case of an error, please throw an exception instead
+	 *
+	 * @param string $message The message to display (must be a language variable)
+	 * @param array $parameters The parameters to use with the language var
+	 * @param string $title Title for the message (must be a language variable)
+	 * @param int $code The HTTP status code (e.g. 404, 500, 503, etc.)
+	 * @return Response A Response instance
+	 */
+	public function message($message, array $parameters = array(), $title = 'INFORMATION', $code = 200)
+	{
+		array_unshift($parameters, $message);
 		$this->template->assign_vars(array(
-			'MESSAGE_TEXT'	=> $message,
-			'MESSAGE_TITLE'	=> $this->user->lang('INFORMATION'),
+			'MESSAGE_TEXT'	=> call_user_func_array(array($this->user, 'lang'), $parameters),
+			'MESSAGE_TITLE'	=> $this->user->lang($title),
 		));
 
-		return $this->render('message_body.html', $this->user->lang('INFORMATION'), $code);
+		return $this->render('message_body.html', $this->user->lang($title), $code);
 	}
 
 	/**

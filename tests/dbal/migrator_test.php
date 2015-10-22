@@ -46,7 +46,10 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			new \phpbb\db\migration\tool\config($this->config),
 		);
 
+		$container = new phpbb_mock_container_builder();
+
 		$this->migrator = new \phpbb\db\migrator(
+			$container,
 			$this->config,
 			$this->db,
 			$this->db_tools,
@@ -57,9 +60,8 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$tools,
 			new \phpbb\db\migration\helper()
 		);
-
-		$container = new phpbb_mock_container_builder();
-		$container->set('migrator', $migrator);
+		$container->set('migrator', $this->migrator);
+		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
 		$user = new \phpbb\user('\phpbb\datetime');
 
 		$this->extension_manager = new \phpbb\extension\manager(

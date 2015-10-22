@@ -7,6 +7,7 @@ services:
             - @service_container
             - @user_loader
             - @config
+            - @dispatcher
             - @dbal.conn
             - @cache
             - @user

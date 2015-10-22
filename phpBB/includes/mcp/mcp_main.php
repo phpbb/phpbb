@@ -1276,6 +1276,7 @@ function mcp_fork_topic($topic_ids)
 
 					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				}
+				$db->sql_freeresult($result);
 			}
 
 			$sql = 'SELECT *

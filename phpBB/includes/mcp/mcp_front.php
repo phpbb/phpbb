@@ -234,6 +234,7 @@ function mcp_front_view($id, $mode, $action)
 						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 					));
 				}
+				$db->sql_freeresult($result);
 			}
 
 			$template->assign_vars(array(
@@ -290,6 +291,7 @@ function mcp_front_view($id, $mode, $action)
 				$pm_by_id[(int) $row['msg_id']] = $row;
 				$pm_list[] = (int) $row['msg_id'];
 			}
+			$db->sql_freeresult($result);
 
 			$address_list = get_recipient_strings($pm_by_id);
 
