@@ -102,7 +102,16 @@ class sqlite3 extends \phpbb\db\driver\driver
 			break;
 
 			case 'rollback':
-				return $this->dbo->exec('ROLLBACK');
+				$ret = false;
+				try
+				{
+					$ret = $this->dbo->exec('ROLLBACK');
+				}
+				catch (\Exception $exception)
+				{
+					// Default $ret to false if rollback failed
+				}
+				return $ret;
 			break;
 		}
 
@@ -134,9 +143,26 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 			if ($this->query_result === false)
 			{
+				if ($this->transaction === true && strpos($query, 'INSERT') === 0)
+				{
+					$query = str_replace('INSERT INTO', 'INSERT OR ROLLBACK INTO', $query);
+				}
+
 				if (($this->query_result = @$this->dbo->query($query)) === false)
 				{
-					$this->sql_error($query);
+					// Try to recover a lost database connection
+					if ($this->dbo && !@$this->dbo->lastErrorMsg())
+					{
+						if ($this->sql_connect($this->server, $this->user, '', $this->dbname))
+						{
+							$this->query_result = @$this->dbo->query($query);
+						}
+					}
+
+					if ($this->query_result === false)
+					{
+						$this->sql_error($query);
+					}
 				}
 
 				if (defined('DEBUG'))
@@ -213,6 +239,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 		if ($query_id === false)
 		{
+			/** @var \SQLite3Result $query_id */
 			$query_id = $this->query_result;
 		}
 
@@ -221,7 +248,20 @@ class sqlite3 extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return is_object($query_id) ? $query_id->fetchArray(SQLITE3_ASSOC) : false;
+		$data = false;
+		if (is_object($query_id))
+		{
+			try
+			{
+				$data = $query_id->fetchArray(SQLITE3_ASSOC);
+			}
+			catch (\Exception $exception)
+			{
+				// Default $data to false if fetchArray failed
+			}
+		}
+
+		return $data;
 	}
 
 	/**
