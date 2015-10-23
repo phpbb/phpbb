@@ -1478,7 +1478,10 @@ class fulltext_native extends \phpbb\search\base
 				$this->db->sql_return_on_error(false);
 			}
 			unset($new_words, $sql_ary);
-			$this->db->sql_transaction('commit');
+		}
+		else
+		{
+			$this->db->sql_transaction('begin');
 		}
 
 		// now update the search match table, remove links to removed words and add links to new words
@@ -1508,11 +1511,6 @@ class fulltext_native extends \phpbb\search\base
 
 				unset($sql_in);
 			}
-		}
-
-		if (empty($unique_add_words))
-		{
-			$this->db->sql_transaction('begin');
 		}
 
 		$this->db->sql_return_on_error(true);
