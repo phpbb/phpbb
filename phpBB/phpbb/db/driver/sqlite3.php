@@ -136,7 +136,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 			{
 				if ($this->transaction === true && strpos($query, 'INSERT') === 0)
 				{
-					$query = str_replace('INSERT INTO', 'INSERT OR ROLLBACK INTO', $query);
+					$query = preg_replace('/^INSERT INTO/', 'INSERT OR ROLLBACK INTO', $query);
 				}
 
 				if (($this->query_result = @$this->dbo->query($query)) === false)
