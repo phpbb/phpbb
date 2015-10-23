@@ -1510,7 +1510,7 @@ class fulltext_native extends \phpbb\search\base
 			}
 		}
 
-		if (!count($unique_add_words))
+		if (empty($unique_add_words))
 		{
 			$this->db->sql_transaction('begin');
 		}
