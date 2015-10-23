@@ -102,18 +102,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 			break;
 
 			case 'rollback':
-				$ret = false;
-
-				try
-				{
-					$ret = $this->dbo->exec('ROLLBACK');
-				}
-				catch (\Exception $exception)
-				{
-					// Default $ret to false if rollback failed
-				}
-
-				return $ret;
+				return @$this->dbo->exec('ROLLBACK');
 			break;
 		}
 
@@ -250,21 +239,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$data = false;
-
-		if (is_object($query_id))
-		{
-			try
-			{
-				$data = $query_id->fetchArray(SQLITE3_ASSOC);
-			}
-			catch (\Exception $exception)
-			{
-				// Default $data to false if fetchArray failed
-			}
-		}
-
-		return $data;
+		return is_object($query_id) ? @$query_id->fetchArray(SQLITE3_ASSOC) : false;
 	}
 
 	/**
