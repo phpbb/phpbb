@@ -27,8 +27,8 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 //
 // Let's do the common.php logic
 //
-$startup_new_path = $phpbb_root_path . 'install/update/update/new/install_new/startup.' . $phpEx;
-$startup_path = (file_exists($startup_new_path)) ? $startup_new_path : $phpbb_root_path . 'install_new/startup.' . $phpEx;
+$startup_new_path = $phpbb_root_path . 'install/update/update/new/install/startup.' . $phpEx;
+$startup_path = (file_exists($startup_new_path)) ? $startup_new_path : $phpbb_root_path . 'install/startup.' . $phpEx;
 require($startup_path);
 
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
@@ -36,7 +36,7 @@ $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
 
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');
-$language->add_lang(array('common', 'acp/common', 'acp/board', 'install_new', 'posting', 'cli'));
+$language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting', 'cli'));
 
 $application = new \phpbb\console\application('phpBB Installer', PHPBB_VERSION, $language);
 $application->setDispatcher($phpbb_installer_container->get('dispatcher'));

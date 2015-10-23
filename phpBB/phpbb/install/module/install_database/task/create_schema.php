@@ -80,6 +80,16 @@ class create_schema extends \phpbb\install\task_base
 		$factory = new \phpbb\db\tools\factory();
 
 		$this->db				= new $dbms();
+		$this->db->sql_connect(
+			$config->get('dbhost'),
+			$config->get('dbuser'),
+			$config->get('dbpasswd'),
+			$config->get('dbname'),
+			$config->get('dbport'),
+			false,
+			false
+		);
+
 		$this->config			= $config;
 		$this->db_tools			= $factory->get($this->db);
 		$this->database_helper	= $db_helper;
@@ -89,9 +99,6 @@ class create_schema extends \phpbb\install\task_base
 		$this->php_ext			= $php_ext;
 
 		parent::__construct(true);
-
-		// Connect to DB
-		$this->db->sql_connect($config->get('dbhost'), $config->get('dbuser'), $config->get('dbpasswd'), $config->get('dbname'), $config->get('dbport'), false, false);
 	}
 
 	/**

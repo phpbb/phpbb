@@ -37,6 +37,8 @@ class populate_migrations extends \phpbb\install\task_base
 	{
 		$this->extension_manager	= $container->get('ext.manager');
 		$this->migrator				= $container->get('migrator');
+
+		parent::__construct(true);
 	}
 
 	/**

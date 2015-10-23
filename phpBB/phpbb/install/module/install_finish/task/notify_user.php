@@ -86,6 +86,8 @@ class notify_user extends \phpbb\install\task_base
 			$container->get('cache.driver'),
 			$container->get_parameter('tables.config')
 		);
+
+		parent::__construct(true);
 	}
 
 	/**
