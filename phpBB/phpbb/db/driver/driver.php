@@ -812,16 +812,16 @@ abstract class driver implements driver_interface
 		if ($operations_ary[0] !== 'AND' &&
 			$operations_ary[0] !== 'OR')
 		{
-			$operations_ary = array('AND', $operations_ary);
+			$operations_ary = array('AND', array($operations_ary));
 		}
 		return $this->_process_boolean_tree($operations_ary) . "\n";
 	}
 
 	protected function _process_boolean_tree($operations_ary)
 	{
-		$operation = array_shift($operations_ary);
+		$operation = $operations_ary[0];
 
-		foreach ($operations_ary as &$condition)
+		foreach ($operations_ary[1] as &$condition)
 		{
 			switch ($condition[0])
 			{
@@ -917,11 +917,11 @@ abstract class driver implements driver_interface
 
 		if ($operation === 'NOT')
 		{
-			$operations_ary =  implode("", $operations_ary);
+			$operations_ary =  implode("", $operations_ary[1]);
 		}
 		else
 		{
-			$operations_ary = implode(" \n	$operation ", $operations_ary);
+			$operations_ary = implode(" \n	$operation ", $operations_ary[1]);
 		}
 
 		return $operations_ary;
