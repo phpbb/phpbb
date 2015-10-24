@@ -984,14 +984,13 @@ class auth
 			}
 
 			/**
-			 * This event is triggered just after the user has been checked if he has a valid username/password,
-			 * but before the actual session creation.
+			 * TEvent is triggered after checking for valid username and password, and before the actual session creation.
 			 *
-			 * @event core.auth_login_before_session_create
-			 * @var	array	login				Variable containing login array value
-			 * @var	bool	admin				Variable containing if is logging into the acp
-			 * @var	string	username			Variable containing the username
-			 * @var	bool	autologin			Variable containing if this is by auto login
+			 * @event core.auth_login_session_create_before
+			 * @var	array	login				Variable containing login array
+			 * @var	bool	admin				Boolean variable whether user is logging into the ACP
+			 * @var	string	username			Username of user to log in
+			 * @var	bool	autologin			Boolean variable signaling whether login is triggered via auto login
 			 * @since 3.1.7-RC1
 			 */
 			$vars = array(
@@ -1000,7 +999,7 @@ class auth
 				'username',
 				'autologin',
 			);
-			extract($phpbb_dispatcher->trigger_event('core.auth_login_before_session_create', compact($vars)));
+			extract($phpbb_dispatcher->trigger_event('core.auth_login_session_create_before', compact($vars)));
 
 			// If login succeeded, we will log the user in... else we pass the login array through...
 			if ($login['status'] == LOGIN_SUCCESS)
