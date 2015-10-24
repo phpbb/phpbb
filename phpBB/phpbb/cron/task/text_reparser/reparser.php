@@ -99,7 +99,7 @@ class reparser extends \phpbb\cron\task\base
 			$this->load_resume_data();
 		}
 
-		if (empty($this->resume_data[$this->reparser_name]['range-max']) || $this->resume_data[$this->reparser_name]['range-max'] === $this->resume_data[$this->reparser_name]['range-min'])
+		if (empty($this->resume_data[$this->reparser_name]['range-max']) || $this->resume_data[$this->reparser_name]['range-max'] >= $this->resume_data[$this->reparser_name]['range-min'])
 		{
 			return true;
 		}
