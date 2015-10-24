@@ -928,6 +928,7 @@ class auth
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
 		global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $phpbb_dispatcher;
 
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 
@@ -981,6 +982,25 @@ class auth
 
 				redirect($url);
 			}
+
+			/**
+			 * This event is triggered just after the user has been checked if he has a valid username/password,
+			 * but before the actual session creation.
+			 *
+			 * @event core.auth_login_before_session_create
+			 * @var	array	login				Variable containing login array value
+			 * @var	bool	admin				Variable containing if is logging into the acp
+			 * @var	string	username			Variable containing the username
+			 * @var	bool	autologin			Variable containing if this is by auto login
+			 * @since 3.1.7-RC1
+			 */
+			$vars = array(
+				'login',
+				'admin',
+				'username',
+				'autologin',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.auth_login_before_session_create', compact($vars)));
 
 			// If login succeeded, we will log the user in... else we pass the login array through...
 			if ($login['status'] == LOGIN_SUCCESS)
