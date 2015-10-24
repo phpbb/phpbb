@@ -189,6 +189,7 @@ services:
             - @user
             - @text_reparser_collection
             - @config_text
+            - @text_reparser.lock
         tags:
             - { name: console.command }
 

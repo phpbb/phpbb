@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\reparser;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,6 +43,11 @@ class reparse extends \phpbb\console\command\command
 	protected $output;
 
 	/**
+	 * @var \phpbb\lock\db
+	 */
+	protected $reparse_lock;
+
+	/**
 	* @var \phpbb\di\service_collection
 	*/
 	protected $reparsers;
@@ -57,13 +63,15 @@ class reparse extends \phpbb\console\command\command
 	* @param \phpbb\user $user
 	* @param \phpbb\di\service_collection $reparsers
 	* @param \phpbb\config\db_text $config_text
+	* @param \phpbb\lock\db $reparse_lock
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers, \phpbb\config\db_text $config_text)
+	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers, \phpbb\config\db_text $config_text, \phpbb\lock\db $reparse_lock)
 	{
 		require_once __DIR__ . '/../../../../includes/functions_content.php';
 
 		$this->config_text = $config_text;
 		$this->reparsers = $reparsers;
+		$this->reparse_lock = $reparse_lock;
 		parent::__construct($user);
 	}
 
@@ -163,29 +171,39 @@ class reparse extends \phpbb\console\command\command
 		$this->input = $input;
 		$this->output = $output;
 		$this->io = new SymfonyStyle($input, $output);
-		$this->load_resume_data();
 
-		$name = $input->getArgument('reparser-name');
-		if (isset($name))
+		if (!$this->reparse_lock->acquire())
 		{
-			// Allow "post_text" to be an alias for "text_reparser.post_text"
-			if (!isset($this->reparsers[$name]))
+			$this->load_resume_data();
+
+			$name = $input->getArgument('reparser-name');
+			if (isset($name))
 			{
-				$name = 'text_reparser.' . $name;
+				// Allow "post_text" to be an alias for "text_reparser.post_text"
+				if (!isset($this->reparsers[$name]))
+				{
+					$name = 'text_reparser.' . $name;
+				}
+				$this->reparse($name);
 			}
-			$this->reparse($name);
+			else
+			{
+				foreach ($this->reparsers as $name => $service)
+				{
+					$this->reparse($name);
+				}
+			}
+
+			$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
+
+			$this->reparse_lock->release();
+
+			return 0;
 		}
 		else
 		{
-			foreach ($this->reparsers as $name => $service)
-			{
-				$this->reparse($name);
-			}
+			throw new runtime_exception('REPARSE_LOCK_ERROR', array(), null, 1);
 		}
-
-		$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
-
-		return 0;
 	}
 
 	/**

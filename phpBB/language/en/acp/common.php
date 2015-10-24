@@ -289,6 +289,7 @@ $lang = array_merge($lang, array(
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
 	'REMIND'							=> 'Remind',
+	'REPARSE_LOCK_ERROR'				=> 'Could not obtain reparse lock.',
 	'RESYNC'							=> 'Resynchronise',
 
 	'RUNNING_TASK'			=> 'Running task: %s.',
