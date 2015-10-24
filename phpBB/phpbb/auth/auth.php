@@ -984,7 +984,7 @@ class auth
 			}
 
 			/**
-			 * TEvent is triggered after checking for valid username and password, and before the actual session creation.
+			 * Event is triggered after checking for valid username and password, and before the actual session creation.
 			 *
 			 * @event core.auth_login_session_create_before
 			 * @var	array	login				Variable containing login array
