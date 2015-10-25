@@ -174,36 +174,34 @@ class reparse extends \phpbb\console\command\command
 
 		if (!$this->reparse_lock->acquire())
 		{
-			$this->load_resume_data();
+			throw new runtime_exception('REPARSE_LOCK_ERROR', array(), null, 1);
+		}
 
-			$name = $input->getArgument('reparser-name');
-			if (isset($name))
+		$this->load_resume_data();
+
+		$name = $input->getArgument('reparser-name');
+		if (isset($name))
+		{
+			// Allow "post_text" to be an alias for "text_reparser.post_text"
+			if (!isset($this->reparsers[$name]))
 			{
-				// Allow "post_text" to be an alias for "text_reparser.post_text"
-				if (!isset($this->reparsers[$name]))
-				{
-					$name = 'text_reparser.' . $name;
-				}
-				$this->reparse($name);
+				$name = 'text_reparser.' . $name;
 			}
-			else
-			{
-				foreach ($this->reparsers as $name => $service)
-				{
-					$this->reparse($name);
-				}
-			}
-
-			$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
-
-			$this->reparse_lock->release();
-
-			return 0;
+			$this->reparse($name);
 		}
 		else
 		{
-			throw new runtime_exception('REPARSE_LOCK_ERROR', array(), null, 1);
+			foreach ($this->reparsers as $name => $service)
+			{
+				$this->reparse($name);
+			}
 		}
+
+		$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
+
+		$this->reparse_lock->release();
+
+		return 0;
 	}
 
 	/**
