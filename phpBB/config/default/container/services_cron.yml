@@ -147,58 +147,6 @@ services:
         tags:
             - { name: cron.task }
 
-    cron.task.text_reparser.contact_admin_info:
-        class: phpbb\cron\task\text_reparser\reparser
-        arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser_collection
-        calls:
-            - [set_name, [cron.task.text_reparser.contact_admin_info]]
-            - [set_reparser, [text_reparser.contact_admin_info]]
-        tags:
-            - { name: cron.task }
-
-    cron.task.text_reparser.forum_description:
-        class: phpbb\cron\task\text_reparser\reparser
-        arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser_collection
-        calls:
-            - [set_name, [cron.task.text_reparser.forum_description]]
-            - [set_reparser, [text_reparser.forum_description]]
-        tags:
-            - { name: cron.task }
-
-    cron.task.text_reparser.forum_rules:
-        class: phpbb\cron\task\text_reparser\reparser
-        arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser_collection
-        calls:
-            - [set_name, [cron.task.text_reparser.forum_rules]]
-            - [set_reparser, [text_reparser.forum_rules]]
-        tags:
-            - { name: cron.task }
-
-    cron.task.text_reparser.group_description:
-        class: phpbb\cron\task\text_reparser\reparser
-        arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser_collection
-        calls:
-            - [set_name, [cron.task.text_reparser.group_description]]
-            - [set_reparser, [text_reparser.group_description]]
-        tags:
-            - { name: cron.task }
-
     cron.task.text_reparser.pm_text:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
