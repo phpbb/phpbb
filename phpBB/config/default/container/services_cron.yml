@@ -153,6 +153,7 @@ services:
             - @config
             - @config_text
             - @text_reparser.lock
+            - @text_reparser.manager
             - @text_reparser_collection
         calls:
             - [set_name, [cron.task.text_reparser.pm_text]]
@@ -166,6 +167,7 @@ services:
             - @config
             - @config_text
             - @text_reparser.lock
+            - @text_reparser.manager
             - @text_reparser_collection
         calls:
             - [set_name, [cron.task.text_reparser.poll_option]]
@@ -179,6 +181,7 @@ services:
             - @config
             - @config_text
             - @text_reparser.lock
+            - @text_reparser.manager
             - @text_reparser_collection
         calls:
             - [set_name, [cron.task.text_reparser.poll_title]]
@@ -192,6 +195,7 @@ services:
             - @config
             - @config_text
             - @text_reparser.lock
+            - @text_reparser.manager
             - @text_reparser_collection
         calls:
             - [set_name, [cron.task.text_reparser.post_text]]
@@ -205,6 +209,7 @@ services:
             - @config
             - @config_text
             - @text_reparser.lock
+            - @text_reparser.manager
             - @text_reparser_collection
         calls:
             - [set_name, [cron.task.text_reparser.user_signature]]

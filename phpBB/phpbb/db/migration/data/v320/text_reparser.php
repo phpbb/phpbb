@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v320;
 
-class reparse_fast extends \phpbb\db\migration\container_aware_migration
+class text_reparser extends \phpbb\db\migration\container_aware_migration
 {
 	static public function depends_on()
 	{
@@ -29,6 +29,16 @@ class reparse_fast extends \phpbb\db\migration\container_aware_migration
 	{
 		return array(
 			array('config.add', array('reparse_lock', 0, true)),
+			array('config.add', array('text_reparser.pm_text_cron_interval', 0)),
+			array('config.add', array('text_reparser.pm_text_last_cron', 0)),
+			array('config.add', array('text_reparser.poll_option_cron_interval', 0)),
+			array('config.add', array('text_reparser.poll_option_last_cron', 0)),
+			array('config.add', array('text_reparser.poll_title_cron_interval', 0)),
+			array('config.add', array('text_reparser.poll_title_last_cron', 0)),
+			array('config.add', array('text_reparser.post_text_cron_interval', 0)),
+			array('config.add', array('text_reparser.post_text_last_cron', 0)),
+			array('config.add', array('text_reparser.user_signature_cron_interval', 0)),
+			array('config.add', array('text_reparser.user_signature_last_cron', 0)),
 			array('custom', array(array($this, 'reparse'))),
 		);
 	}
@@ -36,7 +46,7 @@ class reparse_fast extends \phpbb\db\migration\container_aware_migration
 	public function reparse($resume_data)
 	{
 		// Somtimes a cron job is too much
-		$limit = 200;
+		$limit = 100;
 		$fast_reparsers = array(
 			'text_reparser.contact_admin_info',
 			'text_reparser.forum_description',
@@ -73,6 +83,10 @@ class reparse_fast extends \phpbb\db\migration\container_aware_migration
 
 			if ($start === 1)
 			{
+				// Prevent CLI command from running these reparsers again
+				$reparser_manager = $this->container->get('text_reparser.manager');
+				$reparser_manager->update_resume_data($fast_reparsers[$resume_data['reparser']], 1, 0, $limit);
+
 				$resume_data['reparser']++;
 			}
 		}

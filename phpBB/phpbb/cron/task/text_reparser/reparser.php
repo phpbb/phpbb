@@ -37,14 +37,19 @@ class reparser extends \phpbb\cron\task\base
 	protected $reparse_lock;
 
 	/**
-	 * @var \phpbb\di\service_collection
+	 * @var \phpbb\textreparser\manager
 	 */
-	protected $reparsers;
+	protected $reparser_manager;
 
 	/**
 	 * @var string
 	 */
 	protected $reparser_name;
+
+	/**
+	 * @var \phpbb\di\service_collection
+	 */
+	protected $reparsers;
 
 	/**
 	 * @var array
@@ -57,13 +62,15 @@ class reparser extends \phpbb\cron\task\base
 	 * @param \phpbb\config\config			$config
 	 * @param \phpbb\config\db_text			$config_text
 	 * @param \phpbb\lock\db				$reparse_lock
+	 * @param \phpbb\textreparser\manager	$reparser_manager
 	 * @param \phpbb\di\service_collection	$reparsers
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\lock\db $reparse_lock, \phpbb\di\service_collection $reparsers)
+	public function __construct(\phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
 		$this->reparse_lock = $reparse_lock;
+		$this->reparser_manager = $reparser_manager;
 		$this->reparsers = $reparsers;
 	}
 
@@ -74,18 +81,11 @@ class reparser extends \phpbb\cron\task\base
 	 */
 	public function set_reparser($reparser)
 	{
-		if (isset($this->reparsers[$reparser]))
-		{
-			$this->reparser_name = preg_replace('(^text_reparser\\.)', '', $reparser);
-		}
-		else if (isset($this->reparsers['text_reparser.' . $reparser]))
-		{
-			$this->reparser_name = $reparser;
-		}
+		$this->reparser_name = (!isset($this->reparsers[$reparser]) ? 'text_reparser.' : '') . $reparser;
 
 		if ($this->resume_data === null)
 		{
-			$this->load_resume_data();
+			$this->reparser_manager->get_resume_data($this->reparser_name);
 		}
 	}
 
@@ -96,10 +96,10 @@ class reparser extends \phpbb\cron\task\base
 	{
 		if ($this->resume_data === null)
 		{
-			$this->load_resume_data();
+			$this->reparser_manager->get_resume_data($this->reparser_name);
 		}
 
-		if (empty($this->resume_data[$this->reparser_name]['range-max']) || $this->resume_data[$this->reparser_name]['range-max'] >= $this->resume_data[$this->reparser_name]['range-min'])
+		if (empty($this->resume_data['range-max']) || $this->resume_data['range-max'] >= $this->resume_data['range-min'])
 		{
 			return true;
 		}
@@ -122,7 +122,12 @@ class reparser extends \phpbb\cron\task\base
 			}
 		}
 
-		return true;
+		if ($this->config[$this->reparser_name . '_cron_interval'] != -1)
+		{
+			return $this->config[$this->reparser_name . '_last_cron'] < time() - $this->config[$this->reparser_name . '_cron_interval'];
+		}
+
+		return false;
 	}
 
 	/**
@@ -134,17 +139,17 @@ class reparser extends \phpbb\cron\task\base
 		{
 			if ($this->resume_data === null)
 			{
-				$this->load_resume_data();
+				$this->resume_data = $this->reparser_manager->get_resume_data($this->reparser_name);
 			}
 
 			/**
 			 * @var \phpbb\textreparser\reparser_interface $reparser
 			 */
-			$reparser = isset($this->reparsers[$this->reparser_name]) ? $this->reparsers[$this->reparser_name] : $this->reparsers['text_reparser.' . $this->reparser_name];
+			$reparser = $this->reparsers[$this->reparser_name];
 
-			$min = !empty($this->resume_data[$this->reparser_name]['range-min']) ? $this->resume_data[$this->reparser_name]['range-min'] : self::MIN;
-			$current = !empty($this->resume_data[$this->reparser_name]['range-max']) ? $this->resume_data[$this->reparser_name]['range-max'] : $reparser->get_max_id();
-			$size = !empty($this->resume_data[$this->reparser_name]['range-size']) ? $this->resume_data[$this->reparser_name]['range-size'] : self::SIZE;
+			$min = !empty($this->resume_data['range-min']) ? $this->resume_data['range-min'] : self::MIN;
+			$current = !empty($this->resume_data['range-max']) ? $this->resume_data['range-max'] : $reparser->get_max_id();
+			$size = !empty($this->resume_data['range-size']) ? $this->resume_data['range-size'] : self::SIZE;
 
 			if ($current >= $min)
 			{
@@ -153,45 +158,11 @@ class reparser extends \phpbb\cron\task\base
 
 				$reparser->reparse_range($start, $end);
 
-				$this->update_resume_data($this->reparser_name, $min, $start - 1, $size);
+				$this->reparser_manager->update_resume_data($this->reparser_name, $min, $start - 1, $size);
 			}
 
+			$this->config->set($this->reparser_name . '_last_cron', time());
 			$this->reparse_lock->release();
 		}
-	}
-
-	/**
-	 * Load the resume data from the database
-	 */
-	protected function load_resume_data()
-	{
-		$resume_data = $this->config_text->get('reparser_resume');
-		$this->resume_data = (empty($resume_data)) ? array() : unserialize($resume_data);
-	}
-
-	/**
-	 * Save the resume data to the database
-	 */
-	protected function save_resume_data()
-	{
-		$this->config_text->set('reparser_resume', serialize($this->resume_data));
-	}
-
-	/**
-	 * Save the resume data to the database
-	 *
-	 * @param string	$name		Reparser name
-	 * @param int		$min		Lowest record ID
-	 * @param int		$current	Current ID
-	 * @param int		$size		Number of records to process at a time
-	 */
-	protected function update_resume_data($name, $min, $current, $size)
-	{
-		$this->resume_data[$name] = array(
-			'range-min'  => $min,
-			'range-max'  => $current,
-			'range-size' => $size,
-		);
-		$this->save_resume_data();
 	}
 }

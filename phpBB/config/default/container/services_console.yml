@@ -187,9 +187,9 @@ services:
         class: phpbb\console\command\reparser\reparse
         arguments:
             - @user
-            - @text_reparser_collection
-            - @config_text
             - @text_reparser.lock
+            - @text_reparser_collection
+            - @text_reparser.manager
         tags:
             - { name: console.command }
 

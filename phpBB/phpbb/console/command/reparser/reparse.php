@@ -23,11 +23,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class reparse extends \phpbb\console\command\command
 {
 	/**
-	* @var \phpbb\config\db_text
-	*/
-	protected $config_text;
-
-	/**
 	* @var InputInterface
 	*/
 	protected $input;
@@ -48,6 +43,11 @@ class reparse extends \phpbb\console\command\command
 	protected $reparse_lock;
 
 	/**
+	 * @var \phpbb\textreparser\manager
+	 */
+	protected $reparser_manager;
+
+	/**
 	* @var \phpbb\di\service_collection
 	*/
 	protected $reparsers;
@@ -65,13 +65,13 @@ class reparse extends \phpbb\console\command\command
 	* @param \phpbb\config\db_text $config_text
 	* @param \phpbb\lock\db $reparse_lock
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers, \phpbb\config\db_text $config_text, \phpbb\lock\db $reparse_lock)
+	public function __construct(\phpbb\user $user, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
 	{
 		require_once __DIR__ . '/../../../../includes/functions_content.php';
 
-		$this->config_text = $config_text;
-		$this->reparsers = $reparsers;
 		$this->reparse_lock = $reparse_lock;
+		$this->reparser_manager = $reparser_manager;
+		$this->reparsers = $reparsers;
 		parent::__construct($user);
 	}
 
@@ -177,8 +177,6 @@ class reparse extends \phpbb\console\command\command
 			throw new runtime_exception('REPARSE_LOCK_ERROR', array(), null, 1);
 		}
 
-		$this->load_resume_data();
-
 		$name = $input->getArgument('reparser-name');
 		if (isset($name))
 		{
@@ -234,15 +232,6 @@ class reparse extends \phpbb\console\command\command
 	}
 
 	/**
-	* Load the resume data from the database
-	*/
-	protected function load_resume_data()
-	{
-		$resume_data = $this->config_text->get('reparser_resume');
-		$this->resume_data = (empty($resume_data)) ? array() : unserialize($resume_data);
-	}
-
-	/**
 	* Reparse all text handled by given reparser within given range
 	*
 	* @param string $name Reparser name
@@ -250,6 +239,7 @@ class reparse extends \phpbb\console\command\command
 	protected function reparse($name)
 	{
 		$reparser = $this->reparsers[$name];
+		$this->resume_data = $this->reparser_manager->get_resume_data($name);
 		if ($this->input->getOption('dry-run'))
 		{
 			$reparser->disable_save();
@@ -288,34 +278,10 @@ class reparse extends \phpbb\console\command\command
 			$current = $start - 1;
 			$progress->setProgress($max + 1 - $start);
 
-			$this->update_resume_data($name, $current);
+			$this->reparser_manager->update_resume_data($name, $min, $current, $size, !$this->input->getOption('dry-run'));
 		}
 		$progress->finish();
 
 		$this->io->newLine(2);
-	}
-
-	/**
-	* Save the resume data to the database
-	*/
-	protected function save_resume_data()
-	{
-		$this->config_text->set('reparser_resume', serialize($this->resume_data));
-	}
-
-	/**
-	* Save the resume data to the database
-	*
-	* @param string $name    Reparser name
-	* @param string $current Current ID
-	*/
-	protected function update_resume_data($name, $current)
-	{
-		$this->resume_data[$name] = array(
-			'range-min'  => $this->get_option($name, 'range-min'),
-			'range-max'  => $current,
-			'range-size' => $this->get_option($name, 'range-size'),
-		);
-		$this->save_resume_data();
 	}
 }

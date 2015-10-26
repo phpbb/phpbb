@@ -1,4 +1,11 @@
 services:
+    text_reparser.manager:
+        class: phpbb\textreparser\manager
+        arguments:
+            - @config
+            - @config_text
+            - @text_reparser_collection
+
     text_reparser.lock:
         class: phpbb\lock\db
         arguments:
