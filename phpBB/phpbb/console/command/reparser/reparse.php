@@ -61,9 +61,9 @@ class reparse extends \phpbb\console\command\command
 	* Constructor
 	*
 	* @param \phpbb\user $user
-	* @param \phpbb\di\service_collection $reparsers
-	* @param \phpbb\config\db_text $config_text
 	* @param \phpbb\lock\db $reparse_lock
+	* @param \phpbb\textreparser\manager $reparser_manager
+	* @param \phpbb\di\service_collection $reparsers
 	*/
 	public function __construct(\phpbb\user $user, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
 	{
