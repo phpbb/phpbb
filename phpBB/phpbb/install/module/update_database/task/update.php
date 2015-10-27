@@ -98,6 +98,10 @@ class update extends task_base
 		$this->language				= $language;
 		$this->phpbb_root_path		= $phpbb_root_path;
 
+		// BC global for migrations
+		global $table_prefix;
+		$table_prefix = $container->get_parameter('table_prefix');
+
 		$this->cache				= $container->get('cache.driver');
 		$this->config				= $container->get('config');
 		$this->extension_manager	= $container->get('ext.manager');
