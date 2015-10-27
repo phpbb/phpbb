@@ -164,6 +164,8 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
+	$user->update_session_infos();
+
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(

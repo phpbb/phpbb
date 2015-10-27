@@ -446,39 +446,6 @@ class session
 
 					if (!$session_expired)
 					{
-						// Only update session DB a minute or so after last update or if page changes
-						if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
-						{
-							$sql_ary = array('session_time' => $this->time_now);
-
-							// Do not update the session page for ajax requests, so the view online still works as intended
-							if ($this->update_session_page && !$request->is_ajax())
-							{
-								$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
-								$sql_ary['session_forum_id'] = $this->page['forum'];
-							}
-
-							$db->sql_return_on_error(true);
-
-							$this->update_session($sql_ary);
-
-							$db->sql_return_on_error(false);
-
-							// If the database is not yet updated, there will be an error due to the session_forum_id
-							// @todo REMOVE for 3.0.2
-							if ($result === false)
-							{
-								unset($sql_ary['session_forum_id']);
-
-								$this->update_session($sql_ary);
-							}
-
-							if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
-							{
-								$this->leave_newly_registered();
-							}
-						}
-
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
 						$this->data['user_lang'] = basename($this->data['user_lang']);
@@ -734,18 +701,6 @@ class session
 				// Only update session DB a minute or so after last update or if page changes
 				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
-					$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
-
-					$sql_ary = array('session_time' => $this->time_now, 'session_last_visit' => $this->time_now, 'session_admin' => 0);
-
-					if ($this->update_session_page)
-					{
-						$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
-						$sql_ary['session_forum_id'] = $this->page['forum'];
-					}
-
-					$this->update_session($sql_ary);
-
 					// Update the last visit time
 					$sql = 'UPDATE ' . USERS_TABLE . '
 						SET user_lastvisit = ' . (int) $this->data['session_time'] . '
@@ -1598,5 +1553,49 @@ class session
 		*/
 		$vars = array('session_data', 'session_id');
 		extract($phpbb_dispatcher->trigger_event('core.update_session_after', compact($vars)));
+	}
+
+	public function update_session_infos()
+	{
+		global $db, $request;
+
+		// No need to update if it's a new session. Informations are already inserted by session_create()
+		if (isset($this->data['session_created']) && $this->data['session_created'])
+		{
+			return;
+		}
+
+		// Only update session DB a minute or so after last update or if page changes
+		if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+		{
+			$sql_ary = array('session_time' => $this->time_now);
+
+			// Do not update the session page for ajax requests, so the view online still works as intended
+			if ($this->update_session_page && !$request->is_ajax())
+			{
+				$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
+				$sql_ary['session_forum_id'] = $this->page['forum'];
+			}
+
+			$db->sql_return_on_error(true);
+
+			$this->update_session($sql_ary);
+
+			$db->sql_return_on_error(false);
+
+			// If the database is not yet updated, there will be an error due to the session_forum_id
+			// @todo REMOVE for 3.0.2
+			if ($result === false)
+			{
+				unset($sql_ary['session_forum_id']);
+
+				$this->update_session($sql_ary);
+			}
+
+			if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+			{
+				$this->leave_newly_registered();
+			}
+		}
 	}
 }
