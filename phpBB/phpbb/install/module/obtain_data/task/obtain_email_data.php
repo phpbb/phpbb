@@ -116,12 +116,12 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 				),
 				'smtp_host' => array(
 					'label'			=> 'SMTP_SERVER',
-					'description'	=> 'SMTP_SERVER_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $smtp_host,
 				),
 				'smtp_auth' => array(
 					'label'			=> 'SMTP_AUTH_METHOD',
+					'description'	=> 'SMTP_AUTH_METHOD_EXPLAIN',
 					'type'			=> 'select',
 					'options'		=> $auth_options,
 				),
