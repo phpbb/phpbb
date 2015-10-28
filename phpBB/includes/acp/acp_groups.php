@@ -930,6 +930,7 @@ class acp_groups
 			// used for easy access to the data within a group
 			$cached_group_data[$type][$row['group_id']] = $row;
 			$cached_group_data[$type][$row['group_id']]['total_members'] = 0;
+			$cached_group_data[$type][$row['group_id']]['pending_members'] = 0;
 		}
 		$db->sql_freeresult($result);
 
