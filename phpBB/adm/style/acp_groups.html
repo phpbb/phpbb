@@ -266,11 +266,12 @@
 	<form id="acp_groups" method="post" action="{U_ACTION}">
 
 	<table class="table1">
-		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
+		<col class="col1" /><col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
 		<th style="width: 50%">{L_GROUP}</th>
 		<th>{L_TOTAL_MEMBERS}</th>
+		<th>{L_PENDING_MEMBERS}</th>
 		<th colspan="2">{L_OPTIONS}</th>
 		<th>{L_ACTION}</th>
 	</tr>
@@ -280,7 +281,7 @@
 		<!-- IF groups.S_SPECIAL -->
 		<!-- IF groups.S_FIRST_ROW -->
 			<tr>
-				<td colspan="5" class="row3">{L_NO_GROUPS_CREATED}</td>
+				<td colspan="6" class="row3">{L_NO_GROUPS_CREATED}</td>
 			</tr>
 		<!-- ENDIF -->
 	</tbody>
@@ -300,11 +301,12 @@
 	<p>{L_SPECIAL_GROUPS_EXPLAIN}</p>
 
 	<table class="table1">
-		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
+		<col class="col1" /><col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
 		<th style="width: 50%">{L_GROUP}</th>
 		<th>{L_TOTAL_MEMBERS}</th>
+		<th>{L_PENDING_MEMBERS}</th>
 		<th colspan="2">{L_OPTIONS}</th>
 		<th>{L_ACTION}</th>
 	</tr>
@@ -314,6 +316,7 @@
 		<tr>
 			<td><strong>{groups.GROUP_NAME}</strong></td>
 			<td style="text-align: center;">{groups.TOTAL_MEMBERS}</td>
+			<td style="text-align: center;">{groups.PENDING_MEMBERS}</td>
 			<td style="text-align: center;"><a href="{groups.U_EDIT}">{L_SETTINGS}</a></td>
 			<td style="text-align: center;"><a href="{groups.U_LIST}">{L_MEMBERS}</a></td>
 			<td style="text-align: center;"><!-- IF not groups.S_GROUP_SPECIAL and groups.U_DELETE --><a href="{groups.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a><!-- ELSE -->{L_DELETE}<!-- ENDIF --></td>
