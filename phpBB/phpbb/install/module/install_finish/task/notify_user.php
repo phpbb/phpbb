@@ -41,6 +41,11 @@ class notify_user extends \phpbb\install\task_base
 	protected $config;
 
 	/**
+	 * @var \phpbb\language\language
+	 */
+	protected $language;
+
+	/**
 	 * @var \phpbb\log\log_interface
 	 */
 	protected $log;
@@ -75,6 +80,7 @@ class notify_user extends \phpbb\install\task_base
 		$this->iohandler		= $iohandler;
 
 		$this->auth				= $container->get('auth');
+		$this->language			= $container->get('language');
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->phpbb_root_path	= $phpbb_root_path;
@@ -103,7 +109,7 @@ class notify_user extends \phpbb\install\task_base
 			include ($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 
 			$messenger = new \messenger(false);
-			$messenger->template('installed', $this->install_config->get('language'));
+			$messenger->template('installed', $this->language->get_used_language());
 			$messenger->to($this->config['board_email'], $this->install_config->get('admin_name'));
 			$messenger->anti_abuse_headers($this->config, $this->user);
 			$messenger->assign_vars(array(

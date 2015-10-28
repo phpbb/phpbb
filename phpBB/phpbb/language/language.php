@@ -549,6 +549,16 @@ class language
 	}
 
 	/**
+	 * Returns the ISO code of the used language
+	 *
+	 * @return string	The ISO code of the currently used language
+	 */
+	public function get_used_language()
+	{
+		return $this->language_fallback[0];
+	}
+
+	/**
 	 * Returns language fallback data
 	 *
 	 * @param bool	$reload	Whether or not to reload language files
