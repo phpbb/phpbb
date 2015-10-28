@@ -72,6 +72,11 @@ class ajax_iohandler extends iohandler_base
 	protected $download;
 
 	/**
+	 * @var array
+	 */
+	protected $redirect_url;
+
+	/**
 	 * Constructor
 	 *
 	 * @param path_helper						$path_helper
@@ -89,6 +94,7 @@ class ajax_iohandler extends iohandler_base
 		$this->nav_data	= array();
 		$this->cookies	= array();
 		$this->download	= array();
+		$this->redirect_url = array();
 		$this->file_status = '';
 
 		parent::__construct();
@@ -130,6 +136,14 @@ class ajax_iohandler extends iohandler_base
 	 * {@inheritdoc}
 	 */
 	public function add_user_form_group($title, $form)
+	{
+		$this->form = $this->generate_form_render_data($title, $form);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function generate_form_render_data($title, $form)
 	{
 		$this->template->assign_block_vars('options', array(
 			'LEGEND'	=> $this->language->lang($title),
@@ -189,7 +203,7 @@ class ajax_iohandler extends iohandler_base
 			'form_install' => 'installer_form.html',
 		));
 
-		$this->form = $this->template->assign_display('form_install');
+		return $this->template->assign_display('form_install');
 	}
 
 	/**
@@ -271,6 +285,12 @@ class ajax_iohandler extends iohandler_base
 		{
 			$json_array['cookies'] = $this->cookies;
 			$this->cookies = array();
+		}
+
+		if (!empty($this->redirect_url))
+		{
+			$json_array['redirect'] = $this->redirect_url;
+			$this->redirect_url = array();
 		}
 
 		return $json_array;
@@ -370,6 +390,15 @@ class ajax_iohandler extends iohandler_base
 		));
 
 		$this->file_status = $this->template->assign_display('file_status');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function redirect($url, $use_ajax = false)
+	{
+		$this->redirect_url = array('url' => $url, 'use_ajax' => $use_ajax);
+		$this->send_response();
 	}
 
 	/**

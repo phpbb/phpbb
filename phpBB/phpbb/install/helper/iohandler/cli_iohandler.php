@@ -289,4 +289,11 @@ class cli_iohandler extends iohandler_base
 	public function render_update_file_status($status_array)
 	{
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function redirect($url, $use_ajax = false)
+	{
+	}
 }

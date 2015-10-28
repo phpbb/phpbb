@@ -33,3 +33,10 @@ services:
         tags:
             - { name: installer.navigation }
 
+    installer.navigation.convertor_navigation:
+        class: phpbb\install\helper\navigation\convertor_navigation
+        arguments:
+            - '@installer.helper.install_helper'
+        scope: prototype
+        tags:
+            - { name: installer.navigation }

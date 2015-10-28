@@ -124,6 +124,16 @@ interface iohandler_interface
 	public function add_user_form_group($title, $form);
 
 	/**
+	 * Returns the rendering information for the form
+	 *
+	 * @param string	$title	Language variable with the title of the form
+	 * @param array		$form	An array describing the required data (options etc)
+	 *
+	 * @return string	Information to render the form
+	 */
+	public function generate_form_render_data($title, $form);
+
+	/**
 	 * Sets the number of tasks belonging to the installer in the current mode.
 	 *
 	 * @param int	$task_count	Number of tasks
@@ -173,6 +183,14 @@ interface iohandler_interface
 	 * @param string|null|array	$msg	Language key for the message
 	 */
 	public function add_download_link($route, $title, $msg = null);
+
+	/**
+	 * Redirects the user to a new page
+	 *
+	 * @param string	$url		URL to redirect to
+	 * @param bool		$use_ajax	Whether or not to use AJAX redirect
+	 */
+	public function redirect($url, $use_ajax = false);
 
 	/**
 	 * Renders the status of update files

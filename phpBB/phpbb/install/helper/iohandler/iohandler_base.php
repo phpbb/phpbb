@@ -170,6 +170,14 @@ abstract class iohandler_base implements iohandler_interface
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function generate_form_render_data($title, $form)
+	{
+		return '';
+	}
+
+	/**
 	 * Localize message.
 	 *
 	 * Note: When an array is passed into the parameters below, it will be
