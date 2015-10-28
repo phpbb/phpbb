@@ -1583,15 +1583,6 @@ class session
 
 			$db->sql_return_on_error(false);
 
-			// If the database is not yet updated, there will be an error due to the session_forum_id
-			// @todo REMOVE for 3.0.2
-			if ($result === false)
-			{
-				unset($sql_ary['session_forum_id']);
-
-				$this->update_session($sql_ary);
-			}
-
 			if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
 			{
 				$this->leave_newly_registered();
