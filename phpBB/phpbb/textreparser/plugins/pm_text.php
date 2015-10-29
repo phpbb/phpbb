@@ -29,12 +29,4 @@ class pm_text extends \phpbb\textreparser\row_based_plugin
 			'bbcode_uid'       => 'bbcode_uid',
 		);
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_table_name()
-	{
-		return PRIVMSGS_TABLE;
-	}
 }

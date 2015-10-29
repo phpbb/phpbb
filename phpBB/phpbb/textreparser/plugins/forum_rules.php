@@ -27,12 +27,4 @@ class forum_rules extends \phpbb\textreparser\row_based_plugin
 			'options'    => 'forum_rules_options',
 		);
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_table_name()
-	{
-		return FORUMS_TABLE;
-	}
 }

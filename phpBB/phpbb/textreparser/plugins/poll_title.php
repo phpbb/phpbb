@@ -39,12 +39,4 @@ class poll_title extends \phpbb\textreparser\row_based_plugin
 
 		return $sql;
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_table_name()
-	{
-		return TOPICS_TABLE;
-	}
 }

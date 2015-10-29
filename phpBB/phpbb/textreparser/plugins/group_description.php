@@ -27,12 +27,4 @@ class group_description extends \phpbb\textreparser\row_based_plugin
 			'options'    => 'group_desc_options',
 		);
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function get_table_name()
-	{
-		return GROUPS_TABLE;
-	}
 }

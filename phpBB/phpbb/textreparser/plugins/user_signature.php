@@ -55,14 +55,6 @@ class user_signature extends \phpbb\textreparser\row_based_plugin
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
-	public function get_table_name()
-	{
-		return USERS_TABLE;
-	}
-
-	/**
 	* Save the keyoptions var from \phpbb\user
 	*/
 	protected function save_keyoptions()
