@@ -139,11 +139,11 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	*/
 	public function get_title()
 	{
-		$this->user->add_lang('mcp');
+		$this->language->add_lang('mcp');
 
 		$username = $this->user_loader->get_username($this->get_data('reporter_id'), 'no_profile');
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			$username
 		);
@@ -156,7 +156,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('post_subject'))
 		);
@@ -171,21 +171,21 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	{
 		if ($this->get_data('report_text'))
 		{
-			return $this->user->lang(
+			return $this->language->lang(
 				'NOTIFICATION_REASON',
 				$this->get_data('report_text')
 			);
 		}
 
-		if (isset($this->user->lang[$this->get_data('reason_title')]))
+		if ($this->language->is_set($this->get_data('reason_title')))
 		{
-			return $this->user->lang(
+			return $this->language->lang(
 				'NOTIFICATION_REASON',
-				$this->user->lang[$this->get_data('reason_title')]
+				$this->language->lang($this->get_data('reason_title'))
 			);
 		}
 
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REASON',
 			$this->get_data('reason_description')
 		);

@@ -70,6 +70,7 @@ class report_pm extends \phpbb\notification\type\pm
 	* Get the id of the parent
 	*
 	* @param array $pm The data from the pm
+	* @return int The report id
 	*/
 	static public function get_item_parent_id($pm)
 	{
@@ -144,10 +145,10 @@ class report_pm extends \phpbb\notification\type\pm
 		$user_data = $this->user_loader->get_username($this->get_data('reporter_id'), 'no_profile');
 
 		return array(
-			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
-			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username']),
+			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
 
-			'U_VIEW_REPORT'				=> generate_board_url() . "mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
+			'U_VIEW_REPORT'	=> generate_board_url() . "mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
 		);
 	}
 
@@ -168,11 +169,11 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_title()
 	{
-		$this->user->add_lang('mcp');
+		$this->language->add_lang('mcp');
 
 		$username = $this->user_loader->get_username($this->get_data('reporter_id'), 'no_profile');
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			$username
 		);
@@ -185,7 +186,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('message_subject'))
 		);
@@ -200,21 +201,21 @@ class report_pm extends \phpbb\notification\type\pm
 	{
 		if ($this->get_data('report_text'))
 		{
-			return $this->user->lang(
+			return $this->language->lang(
 				'NOTIFICATION_REASON',
 				$this->get_data('report_text')
 			);
 		}
 
-		if (isset($this->user->lang[$this->get_data('reason_title')]))
+		if ($this->language->is_set($this->get_data('reason_title')))
 		{
-			return $this->user->lang(
+			return $this->language->lang(
 				'NOTIFICATION_REASON',
-				$this->user->lang[$this->get_data('reason_title')]
+				$this->language->lang($this->get_data('reason_title'))
 			);
 		}
 
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REASON',
 			$this->get_data('reason_description')
 		);

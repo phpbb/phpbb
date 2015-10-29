@@ -54,7 +54,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 	{
 		parent::setUp();
 
-		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user, $request, $phpEx, $phpbb_root_path, $user_loader;
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader;
 
 		// Database
 		$this->db = $this->new_dbal();
@@ -91,9 +91,12 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		// Event dispatcher
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
+		// Language
+		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+
 		// User
 		$user = $this->getMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			$lang,
 			'\phpbb\datetime'
 		));
 		$user->ip = '';
@@ -117,6 +120,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$loader->load('services_notification.yml');
 		$phpbb_container->set('user_loader', $user_loader);
 		$phpbb_container->set('user', $user);
+		$phpbb_container->set('language', $lang);
 		$phpbb_container->set('config', $config);
 		$phpbb_container->set('dbal.conn', $db);
 		$phpbb_container->set('auth', $auth);
@@ -146,7 +150,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 		// Notification Manager
 		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, $notification_methods_array,
-			$phpbb_container, $user_loader, $phpbb_dispatcher, $db, $cache, $user,
+			$phpbb_container, $user_loader, $phpbb_dispatcher, $db, $cache, $lang, $user,
 			NOTIFICATION_TYPES_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
 	}

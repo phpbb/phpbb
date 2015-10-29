@@ -130,7 +130,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	{
 		$username = $this->user_loader->get_username($this->item_id, 'no_profile');
 
-		return $this->user->lang($this->language_key, $username);
+		return $this->language->lang($this->language_key, $username);
 	}
 
 	/**

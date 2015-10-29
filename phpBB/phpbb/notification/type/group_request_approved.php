@@ -69,7 +69,7 @@ class group_request_approved extends \phpbb\notification\type\base
 	*/
 	public function get_title()
 	{
-		return $this->user->lang('NOTIFICATION_GROUP_REQUEST_APPROVED', $this->get_data('group_name'));
+		return $this->language->lang('NOTIFICATION_GROUP_REQUEST_APPROVED', $this->get_data('group_name'));
 	}
 
 	/**

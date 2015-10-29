@@ -114,7 +114,7 @@ class group_request extends \phpbb\notification\type\base
 	{
 		$username = $this->user_loader->get_username($this->item_id, 'no_profile');
 
-		return $this->user->lang('NOTIFICATION_GROUP_REQUEST', $username, $this->get_data('group_name'));
+		return $this->language->lang('NOTIFICATION_GROUP_REQUEST', $username, $this->get_data('group_name'));
 	}
 
 	/**

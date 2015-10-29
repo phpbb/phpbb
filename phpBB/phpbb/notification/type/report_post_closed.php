@@ -113,7 +113,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	{
 		$username = $this->user_loader->get_username($this->get_data('closer_id'), 'no_profile');
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			$username
 		);
@@ -126,7 +126,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('post_subject'))
 		);

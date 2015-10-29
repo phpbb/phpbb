@@ -44,6 +44,9 @@ class manager
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -63,13 +66,14 @@ class manager
 	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
+	* @param \phpbb\language\language $language
 	* @param \phpbb\user $user
 	* @param string $notification_types_table
 	* @param string $user_notifications_table
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, $notification_types_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\language\language $language, \phpbb\user $user, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
@@ -79,6 +83,7 @@ class manager
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->language = $language;
 		$this->user = $user;
 
 		$this->notification_types_table = $notification_types_table;
@@ -111,7 +116,7 @@ class manager
 
 		if (! $method instanceof \phpbb\notification\method\method_interface)
 		{
-			throw new \phpbb\notification\exception($this->user->lang('NOTIFICATION_METHOD_INVALID', $method_name));
+			throw new \phpbb\notification\exception($this->language->lang('NOTIFICATION_METHOD_INVALID', $method_name));
 		}
 		else if ($method->is_available())
 		{
@@ -166,7 +171,7 @@ class manager
 			$notification_type_id = false;
 		}
 
-		/** @var method_interface $method */
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->mark_notifications($notification_type_id, $item_id, $user_id, $time, $mark_read);
@@ -208,6 +213,7 @@ class manager
 			$notification_type_id = $this->get_notification_type_id($notification_type_name);
 		}
 
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time, $mark_read);
@@ -263,8 +269,6 @@ class manager
 			return $notified_users;
 		}
 
-		$item_id = $this->get_item_type_class($notification_type_name)->get_item_id($data);
-
 		// find out which users want to receive this type of notification
 		$notify_users = $this->get_item_type_class($notification_type_name)->find_users_for_notification($data, $options);
 
@@ -317,7 +321,7 @@ class manager
 		$item_id = $this->get_item_type_class($notification_type_name)->get_item_id($data);
 
 		$user_ids = array();
-		$notification_objects = $notification_methods = array();
+		$notification_methods = array();
 
 		// Never send notifications to the anonymous user!
 		unset($notify_users[ANONYMOUS]);
@@ -325,6 +329,7 @@ class manager
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
 		// We remove each user which was already notified by at least one method.
+		/** @var method\method_interface $method */
 		foreach ($this->get_subscription_methods_instances() as $method)
 		{
 			$notified_users = $method->get_notified_users($notification_type_id, array('item_id' => $item_id));
@@ -415,6 +420,7 @@ class manager
 			$options['item_id'] = $notification->get_item_id($data);
 		}
 
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->update_notification($notification, $data, $options);
@@ -443,6 +449,7 @@ class manager
 
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->delete_notifications($notification_type_id, $item_id, $parent_id, $user_id);
@@ -462,6 +469,7 @@ class manager
 
 			foreach ($this->notification_types as $type_name => $data)
 			{
+				/** @var type\base $type */
 				$type = $this->get_item_type_class($type_name);
 
 				if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
@@ -497,6 +505,7 @@ class manager
 	{
 		$subscription_methods = array();
 
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
 			$subscription_methods[$method_name] = array(
@@ -539,6 +548,7 @@ class manager
 	{
 		$subscription_methods = array();
 
+		/** @var method\method_interface $method */
 		foreach ($this->get_subscription_methods_instances() as $method_name => $method)
 		{
 			if ($method->is_available())
@@ -768,6 +778,7 @@ class manager
 		{
 			$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
+			/** @var method\method_interface $method */
 			foreach ($this->get_available_subscription_methods() as $method)
 			{
 				$method->purge_notifications($notification_type_id);
@@ -805,6 +816,7 @@ class manager
 	*/
 	public function prune_notifications($timestamp, $only_read = true)
 	{
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->prune_notifications($timestamp, $only_read);
@@ -834,6 +846,8 @@ class manager
 	/**
 	 * Helper to get the notifications item type class and set it up
 	 *
+	 * @param string $notification_type_name
+	 * @param array  $data
 	 * @return type\type_interface
 	 */
 	public function get_item_type_class($notification_type_name, $data = array())
@@ -848,6 +862,7 @@ class manager
 	/**
 	 * Helper to get the notifications method class and set it up
 	 *
+	 * @param string $method_name
 	 * @return method\method_interface
 	 */
 	public function get_method_class($method_name)
@@ -858,6 +873,7 @@ class manager
 	/**
 	 * Helper to load objects (notification types/methods)
 	 *
+	 * @param string $object_name
 	 * @return method\method_interface|type\type_interface
 	 */
 	protected function load_object($object_name)
@@ -950,6 +966,8 @@ class manager
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
 		$notified_users = array();
+
+		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$notified_users = $notified_users + $method->get_notified_users($notification_type_id, $options);

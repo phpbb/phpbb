@@ -17,6 +17,9 @@ services:
     dbal.conn:
         synthetic: true
 
+    language:
+        synthetic: true
+
     auth:
         synthetic: true
 

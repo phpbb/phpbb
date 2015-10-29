@@ -55,13 +55,13 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data = array('user_lang' => 'en');
-		$user->add_lang('common');
+		$lang->add_lang('common');
 
 		$user_loader = new phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
 		$user_loader->load_users(array(2, 3, 4, 5, 6));
 
 		$this->notification = new phpbb_mock_notification_type_post(
-			$user_loader, null, null, $user, null, null, $phpbb_root_path, $phpEx, null, null
+			$user_loader, null, null, $lang, $user, null, null, $phpbb_root_path, $phpEx, null, null
 		);
 	}
 

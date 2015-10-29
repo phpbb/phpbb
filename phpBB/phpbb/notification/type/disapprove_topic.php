@@ -73,7 +73,7 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	*/
 	public function get_title()
 	{
-		return $this->user->lang($this->language_key);
+		return $this->language->lang($this->language_key);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('topic_title'))
 		);
@@ -96,7 +96,7 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	*/
 	public function get_reason()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REASON',
 			$this->get_data('disapprove_reason')
 		);

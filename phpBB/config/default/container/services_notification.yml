@@ -9,6 +9,7 @@ services:
             - @dispatcher
             - @dbal.conn
             - @cache
+            - @language
             - @user
             - %tables.notification_types%
             - %tables.user_notifications%
@@ -26,6 +27,7 @@ services:
         abstract: true
         arguments:
             - @dbal.conn
+            - @language
             - @user
             - @auth
             - %core.root_path%
