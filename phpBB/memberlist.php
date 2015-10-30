@@ -88,7 +88,7 @@ $submit = (isset($_POST['submit'])) ? true : false;
 
 $default_key = 'c';
 $sort_key = request_var('sk', $default_key);
-$sort_dir = request_var('sd', 'd');
+$sort_dir = request_var('sd', 'a');
 
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
@@ -1233,7 +1233,7 @@ switch ($mode)
 		$check_params = array(
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
-			'sd'			=> array('sd', 'd'),
+			'sd'			=> array('sd', 'a'),
 			'form'			=> array('form', ''),
 			'field'			=> array('field', ''),
 			'select_single'	=> array('select_single', $select_single),
@@ -1576,7 +1576,7 @@ switch ($mode)
 			'U_SORT_EMAIL'			=> $sort_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'd') ? 'a' : 'd'),
 			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'd') ? 'a' : 'd') : '',
 			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'd') ? 'a' : 'd'),
-			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'd') ? 'a' : 'd'),
+			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'd') ? 'a' : 'd'),
 
 			'S_SHOW_GROUP'		=> ($mode == 'group') ? true : false,
 			'S_VIEWONLINE'		=> $auth->acl_get('u_viewonline'),
