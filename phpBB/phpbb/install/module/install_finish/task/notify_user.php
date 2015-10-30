@@ -104,12 +104,14 @@ class notify_user extends \phpbb\install\task_base
 		$this->user->session_begin();
 		$this->user->setup('common');
 
+		$this->language->set_default_language($this->config['default_lang']);
+
 		if ($this->config['email_enable'])
 		{
 			include ($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 
 			$messenger = new \messenger(false);
-			$messenger->template('installed', $this->language->get_used_language());
+			$messenger->template('installed', $this->install_config->get('user_language', 'en'));
 			$messenger->to($this->config['board_email'], $this->install_config->get('admin_name'));
 			$messenger->anti_abuse_headers($this->config, $this->user);
 			$messenger->assign_vars(array(
