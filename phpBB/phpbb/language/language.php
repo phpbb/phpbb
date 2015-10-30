@@ -569,12 +569,12 @@ class language
 	{
 		$fallback_array = array();
 
-		if ($this->user_language !== false)
+		if ($this->user_language)
 		{
 			$fallback_array[] = $this->user_language;
 		}
 
-		if ($this->default_language !== false)
+		if ($this->default_language)
 		{
 			$fallback_array[] = $this->default_language;
 		}
