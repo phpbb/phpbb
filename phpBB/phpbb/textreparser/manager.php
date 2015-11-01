@@ -100,7 +100,7 @@ class manager
 	 * Sets the interval for a text_reparser cron task
 	 *
 	 * @param string	$name		Name of the reparser to schedule
-	 * @param int		$interval	Interval in seconds, -1 to disable the cron task
+	 * @param int		$interval	Interval in seconds, 0 to disable the cron task
 	 */
 	public function schedule($name, $interval)
 	{
@@ -113,7 +113,7 @@ class manager
 	/**
 	 * Sets the interval for all text_reparser cron tasks
 	 *
-	 * @param int	$interval	Interval in seconds, -1 to disable the cron task
+	 * @param int	$interval	Interval in seconds, 0 to disable the cron task
 	 */
 	public function schedule_all($interval)
 	{

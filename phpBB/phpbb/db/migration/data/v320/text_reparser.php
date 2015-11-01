@@ -29,15 +29,15 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 	{
 		return array(
 			array('config.add', array('reparse_lock', 0, true)),
-			array('config.add', array('text_reparser.pm_text_cron_interval', 0)),
+			array('config.add', array('text_reparser.pm_text_cron_interval', 10)),
 			array('config.add', array('text_reparser.pm_text_last_cron', 0)),
-			array('config.add', array('text_reparser.poll_option_cron_interval', 0)),
+			array('config.add', array('text_reparser.poll_option_cron_interval', 10)),
 			array('config.add', array('text_reparser.poll_option_last_cron', 0)),
-			array('config.add', array('text_reparser.poll_title_cron_interval', 0)),
+			array('config.add', array('text_reparser.poll_title_cron_interval', 10)),
 			array('config.add', array('text_reparser.poll_title_last_cron', 0)),
-			array('config.add', array('text_reparser.post_text_cron_interval', 0)),
+			array('config.add', array('text_reparser.post_text_cron_interval', 10)),
 			array('config.add', array('text_reparser.post_text_last_cron', 0)),
-			array('config.add', array('text_reparser.user_signature_cron_interval', 0)),
+			array('config.add', array('text_reparser.user_signature_cron_interval', 10)),
 			array('config.add', array('text_reparser.user_signature_last_cron', 0)),
 			array('custom', array(array($this, 'reparse'))),
 		);

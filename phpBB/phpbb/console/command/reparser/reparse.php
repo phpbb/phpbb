@@ -53,7 +53,7 @@ class reparse extends \phpbb\console\command\command
 	protected $reparsers;
 
 	/**
-	* @var array Reparser names as keys, and their last $current ID as values
+	* @var array The reparser's last $current ID as values
 	*/
 	protected $resume_data;
 
@@ -208,27 +208,18 @@ class reparse extends \phpbb\console\command\command
 	* Will use the last saved value if --resume is set and the option was not specified
 	* on the command line
 	*
-	* @param  string  $reparser_name Reparser name
 	* @param  string  $option_name   Option name
 	* @return integer
 	*/
-	protected function get_option($reparser_name, $option_name)
+	protected function get_option($option_name)
 	{
 		// Return the option from the resume_data if applicable
-		if ($this->input->getOption('resume') && isset($this->resume_data[$reparser_name][$option_name]) && !$this->input->hasParameterOption('--' . $option_name))
+		if ($this->input->getOption('resume') && isset($this->resume_data[$option_name]) && !$this->input->hasParameterOption('--' . $option_name))
 		{
-			return $this->resume_data[$reparser_name][$option_name];
+			return $this->resume_data[$option_name];
 		}
 
-		$value = $this->input->getOption($option_name);
-
-		// range-max has no default value, it must be computed for each reparser
-		if ($option_name === 'range-max' && $value === null)
-		{
-			$value = $this->reparsers[$reparser_name]->get_max_id();
-		}
-
-		return $value;
+		return $this->input->getOption($option_name);
 	}
 
 	/**
@@ -250,9 +241,15 @@ class reparse extends \phpbb\console\command\command
 		}
 
 		// Start at range-max if specified or at the highest ID otherwise
-		$max  = $this->get_option($name, 'range-max');
-		$min  = $this->get_option($name, 'range-min');
-		$size = $this->get_option($name, 'range-size');
+		$max  = $this->get_option('range-max');
+		$min  = $this->get_option('range-min');
+		$size = $this->get_option('range-size');
+
+		// range-max has no default value, it must be computed for each reparser
+		if ($max == null)
+		{
+			$max = $reparser->get_max_id();
+		}
 
 		if ($max < $min)
 		{

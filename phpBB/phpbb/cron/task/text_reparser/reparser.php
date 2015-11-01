@@ -122,7 +122,7 @@ class reparser extends \phpbb\cron\task\base
 			}
 		}
 
-		if ($this->config[$this->reparser_name . '_cron_interval'] != -1)
+		if ($this->config[$this->reparser_name . '_cron_interval'])
 		{
 			return $this->config[$this->reparser_name . '_last_cron'] < time() - $this->config[$this->reparser_name . '_cron_interval'];
 		}
