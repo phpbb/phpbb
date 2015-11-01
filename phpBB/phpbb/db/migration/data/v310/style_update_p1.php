@@ -69,10 +69,11 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		$skip_dirs = array('.', '..', 'prosilver');
 		foreach ($iterator as $fileinfo)
 		{
-			if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs) && file_exists($fileinfo->getPathname() . '/style.cfg'))
+			if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs) && file_exists($fileinfo->getPathname() . '/composer.json'))
 			{
-				$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
-				if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
+				$json = file_get_contents($fileinfo->getPathname() . '/composer.json');
+				$style_data = json_decode($json, true);
+				if (isset($style_data['extra']['phpbb-version']) && version_compare($style_data['extra']['phpbb-version'], '3.1.0-dev', '>='))
 				{
 					// 3.1 style
 					$available_styles[] = $fileinfo->getFilename();

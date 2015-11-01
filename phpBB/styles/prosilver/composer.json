@@ -1,0 +1,29 @@
+{
+	"name": "prosilver",
+	"description": "phpBB Forum Software default style",
+	"type": "phpbb-style",
+	"version": "3.2.0-a1-dev",
+	"homepage": "https://www.phpbb.com",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "phpBB Limited",
+			"email": "operations@phpbb.com",
+			"homepage": "https://www.phpbb.com/go/authors"
+		}
+	],
+	"support": {
+		"issues": "https://tracker.phpbb.com",
+		"forum": "https://www.phpbb.com/community/",
+		"wiki": "https://wiki.phpbb.com",
+		"irc": "irc://irc.freenode.org/phpbb"
+	},
+	"require": {
+		"php": ">=5.3.3"
+	},
+	"extra": {
+		"display-name": "prosilver",
+		"parent-style": "prosilver",
+		"phpbb-version": "3.2.0-a1-dev"
+	}
+}
