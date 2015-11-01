@@ -88,10 +88,6 @@
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools {
-	float: right;
-}
-
 .rtl .dropdown li {
 	text-align: right;
 }
@@ -908,6 +904,10 @@ li.breadcrumbs span:first-child > a {
 .rtl fieldset.display-options label {
 	padding-left: 2px;
 	padding-right: 0;
+}
+
+.rtl .dropdown fieldset.display-options label {
+	text-align: left;
 }
 
 /* Display actions for ucp and mcp pages */

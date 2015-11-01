@@ -82,7 +82,7 @@
 	font-size: 0;
 }
 
-.tools-icon:before, .modtools-icon:before, .search-icon:before, .search-adv-icon:before {
+.tools-icon:before, .modtools-icon:before, .search-icon:before, .search-adv-icon:before, .sort-icon:before {
 	background-position: -80px 0;
 	height: 16px;
 	margin-top: 2px;
@@ -91,6 +91,10 @@
 
 .dropdown-visible .tools-icon:before,
 .nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
+
+.sort-icon:before											{ background-position: -265px 0; }
+.dropdown-visible .sort-icon:before,
+.nojs .dropdown-container:hover .sort-icon:before			{ background-position: -265px -20px; }
 
 .search-icon:before											{ background-position: -245px 0; }
 .search-icon:hover:before									{ background-position: -245px -20px; }

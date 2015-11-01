@@ -177,6 +177,24 @@ fieldset.display-options a {
 	margin-top: 3px;
 }
 
+.dropdown fieldset.display-options {
+	font-size: 1em;
+	margin: 0;
+	padding: 0;
+}
+
+.dropdown fieldset.display-options label {
+	display: block;
+	margin: 4px;
+	padding: 0;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.dropdown fieldset.display-options select {
+	min-width: 120px;
+}
+
 /* Display actions for ucp and mcp pages */
 fieldset.display-actions {
 	text-align: right;
