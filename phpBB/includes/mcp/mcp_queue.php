@@ -72,6 +72,7 @@ class mcp_queue
 			case 'delete':
 				$post_id_list = $request->variable('post_id_list', array(0));
 				$topic_id_list = $request->variable('topic_id_list', array(0));
+				$delete_reason = $request->variable('delete_reason', '', true);
 
 				if (!empty($post_id_list))
 				{
@@ -80,7 +81,7 @@ class mcp_queue
 						global $phpbb_root_path, $phpEx;
 						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
 					}
-					mcp_delete_post($post_id_list, false, '', $action);
+					mcp_delete_post($post_id_list, false, $delete_reason, $action);
 				}
 				else if (!empty($topic_id_list))
 				{
@@ -89,7 +90,7 @@ class mcp_queue
 						global $phpbb_root_path, $phpEx;
 						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
 					}
-					mcp_delete_topic($topic_id_list, false, '', $action);
+					mcp_delete_topic($topic_id_list, false, $delete_reason, $action);
 				}
 				else
 				{
