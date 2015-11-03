@@ -375,19 +375,6 @@
 	<!-- INCLUDE quickreply_editor.html -->
 <!-- ENDIF -->
 
-<!-- IF S_NUM_POSTS > 1 or .pagination -->
-	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
-	<fieldset class="display-options" style="margin-top: 0; ">
-		<!-- IF not S_IS_BOT -->
-		<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> <label>{S_SELECT_SORT_DIR}</label>
-		<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		<!-- ENDIF -->
-	</fieldset>
-	</form>
-	<hr />
-<!-- ENDIF -->
-
 <!-- EVENT viewtopic_body_topic_actions_before -->
 	<div class="action-bar bar-bottom">
 	<!-- EVENT viewtopic_buttons_bottom_before -->
@@ -405,6 +392,12 @@
 
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 
+	<!-- IF (S_NUM_POSTS > 1 or .pagination) and not S_IS_BOT  -->
+		<form method="post" action="{S_TOPIC_ACTION}">
+		<!-- INCLUDE display_options.html -->
+		</form>
+	<!-- ENDIF -->
+	
 	<!-- IF .quickmod -->
 	<div class="quickmod dropdown-container dropdown-container-left dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
 		<span title="{L_QUICK_MOD}" class="button button-secondary dropdown-trigger dropdown-select">
@@ -435,7 +428,6 @@
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
-	<div class="clear"></div>
 </div>
 
 <!-- EVENT viewtopic_body_footer_before -->

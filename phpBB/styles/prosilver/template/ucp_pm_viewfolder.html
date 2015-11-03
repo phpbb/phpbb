@@ -108,6 +108,8 @@
 		<hr />
 	
 		<div class="action-bar bar-bottom">
+			<!-- INCLUDE display_options.html -->
+			<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 			<div class="pagination">
 				{TOTAL_MESSAGES}
 				<!-- IF .pagination --> 
@@ -121,16 +123,6 @@
 
 		</div>
 	</div>
-
-	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
-	<fieldset class="display-options">
-		<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
-		<label>{S_SELECT_SORT_DIR}</label>
-		<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
-	</fieldset>
-	<!-- ENDIF -->
 
 	<!-- INCLUDE ucp_pm_message_footer.html -->
 <!-- ENDIF -->

@@ -391,10 +391,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	top: auto;
 }
 
-.dropdown-container.topic-tools {
-	float: left;
-}
-
 .dropdown-up .dropdown {
 	top: auto;
 	bottom: 1.2em;

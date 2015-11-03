@@ -73,16 +73,9 @@
 		<!-- END postrow -->
 		</ul>
 
-		<fieldset class="display-options">
-			<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
-			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		</fieldset>
-
-		<hr />
-
 		<div class="action-bar bar-bottom">
+			<!-- INCLUDE display_options.html -->
+			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" onClick="document.getElementById('mcp').submit()" /> <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
 			<div class="pagination">
 				{TOTAL}
 				<!-- IF .pagination --> 
