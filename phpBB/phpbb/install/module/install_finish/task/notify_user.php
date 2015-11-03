@@ -104,11 +104,14 @@ class notify_user extends \phpbb\install\task_base
 		$this->user->session_begin();
 		$this->user->setup('common');
 
-		$this->language->set_default_language($this->config['default_lang']);
-
 		if ($this->config['email_enable'])
 		{
 			include ($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
+
+			// functions_messenger.php uses config to determine language paths
+			// Remove when able
+			global $config;
+			$config = $this->config;
 
 			$messenger = new \messenger(false);
 			$messenger->template('installed', $this->install_config->get('user_language', 'en'));
