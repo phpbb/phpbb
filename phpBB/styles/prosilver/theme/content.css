@@ -667,7 +667,7 @@ fieldset.polls dd div {
 	text-align: right;
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
-	padding: 0 2px;
+	padding: 2px 2px 0 2px;
 	overflow: visible;
 	min-width: 8px;
 }
