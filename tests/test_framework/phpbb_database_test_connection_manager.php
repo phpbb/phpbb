@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_install.php';
 require_once dirname(__FILE__) . '/phpbb_database_connection_odbc_pdo_wrapper.php';
 
 class phpbb_database_test_connection_manager
@@ -344,10 +343,13 @@ class phpbb_database_test_connection_manager
 
 		if (file_exists($filename))
 		{
-			$queries = file_get_contents($filename);
-			$sql = phpbb_remove_comments($queries);
+			global $phpbb_root_path;
 
-			$sql = split_sql_file($sql, $this->dbms['DELIM']);
+			$queries = file_get_contents($filename);
+
+			$db_helper = new \phpbb\install\helper\database(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
+			$sql = $db_helper->remove_comments($queries);
+			$sql = $db_helper->split_sql_file($sql, $this->dbms['DELIM']);
 
 			foreach ($sql as $query)
 			{

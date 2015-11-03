@@ -204,6 +204,7 @@ class helper
 		if ($lang !== null)
 		{
 			$this->language->set_user_language($lang, true);
+			$this->installer_config->set('user_language', $lang);
 		}
 	}
 

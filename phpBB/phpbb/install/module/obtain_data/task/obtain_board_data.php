@@ -126,7 +126,7 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 		}
 
 		// Use language because we only check this to be valid
-		$default_lang	= $this->install_config->get('language', '');
+		$default_lang	= $this->install_config->get('user_language', 'en');
 
 		$langs = $this->language_helper->get_available_languages();
 		$lang_options = array();

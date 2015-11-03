@@ -51,6 +51,11 @@ class create_config_file extends \phpbb\install\task_base
 	protected $php_ext;
 
 	/**
+	 * @var array
+	 */
+	protected $options;
+
+	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\filesystem\filesystem_interface				$filesystem
@@ -59,13 +64,15 @@ class create_config_file extends \phpbb\install\task_base
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
 	 * @param string												$phpbb_root_path
 	 * @param string												$php_ext
+	 * @param array													$options
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem,
 								\phpbb\install\helper\config $install_config,
 								\phpbb\install\helper\database $db_helper,
 								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
 								$phpbb_root_path,
-								$php_ext)
+								$php_ext,
+								$options = array())
 	{
 		$this->install_config	= $install_config;
 		$this->db_helper		= $db_helper;
@@ -73,6 +80,11 @@ class create_config_file extends \phpbb\install\task_base
 		$this->iohandler		= $iohandler;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
+		$this->options			= array_merge(array(
+			'debug' => false,
+			'debug_container' => false,
+			'environment' => null,
+		), $options);
 
 		parent::__construct(true);
 	}
@@ -93,7 +105,7 @@ class create_config_file extends \phpbb\install\task_base
 			$config_written = false;
 		}
 
-		$config_content = $this->get_config_data();
+		$config_content = $this->get_config_data($this->options['debug'], $this->options['debug_container'], $this->options['environment']);
 
 		if (!@fwrite($fp, $config_content))
 		{
@@ -145,15 +157,14 @@ class create_config_file extends \phpbb\install\task_base
 	/**
 	 * Returns the content which should be dumped to config.php
 	 *
-	 * @param	bool	$debug 				If the debug constants should be enabled by default or not
-	 * @param	bool	$debug_container 	If the container should be compiled on
+	 * @param bool		$debug 				If the debug constants should be enabled by default or not
+	 * @param bool		$debug_container 	If the container should be compiled on
 	 *										every page load or not
-	 * @param	bool	$debug_test			If the DEBUG_TEST constant should be added
-	 *										NOTE: Only for use within the testing framework
+	 * @param string	$environment		The environment to use
 	 *
 	 * @return string	content to be written to the config file
 	 */
-	protected function get_config_data($debug = false, $debug_container = false, $debug_test = false)
+	protected function get_config_data($debug = false, $debug_container = false, $environment = null)
 	{
 		$config_content = "<?php\n";
 		$config_content .= "// phpBB 3.2.x auto-generated configuration file\n// Do not change anything in this file!\n";
@@ -184,7 +195,7 @@ class create_config_file extends \phpbb\install\task_base
 		$config_content .= "\n@define('PHPBB_INSTALLED', true);\n";
 		$config_content .= "// @define('PHPBB_DISPLAY_LOAD_TIME', true);\n";
 
-		if ($debug_test)
+		if ($environment)
 		{
 			$config_content .= "@define('PHPBB_ENVIRONMENT', 'test');\n";
 		}
@@ -206,7 +217,7 @@ class create_config_file extends \phpbb\install\task_base
 			$config_content .= "// @define('DEBUG_CONTAINER', true);\n";
 		}
 
-		if ($debug_test)
+		if ($environment === 'test')
 		{
 			$config_content .= "@define('DEBUG_TEST', true);\n";
 

@@ -233,7 +233,7 @@ class add_config_settings extends \phpbb\install\task_base
 				SET username = '" . $this->db->sql_escape($this->install_config->get('admin_name')) . "',
 					user_password='" . $this->password_manager->hash($this->install_config->get('admin_passwd')) . "',
 					user_ip = '" . $this->db->sql_escape($user_ip) . "',
-					user_lang = '" . $this->db->sql_escape($this->install_config->get('language')) . "',
+					user_lang = '" . $this->db->sql_escape($this->install_config->get('user_language', 'en')) . "',
 					user_email='" . $this->db->sql_escape($this->install_config->get('board_email')) . "',
 					user_dateformat='" . $this->db->sql_escape($this->language->lang('default_dateformat')) . "',
 					user_email_hash = " . $this->db->sql_escape(phpbb_email_hash($this->install_config->get('board_email'))) . ",

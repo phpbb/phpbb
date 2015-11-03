@@ -20,8 +20,8 @@ define('PHPBB_ENVIRONMENT', 'production');
 $phpbb_root_path = '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-$startup_new_path = $phpbb_root_path . 'install/update/update/new/install_new/startup.' . $phpEx;
-$startup_path = (file_exists($startup_new_path)) ? $startup_new_path : $phpbb_root_path . 'install_new/startup.' . $phpEx;
+$startup_new_path = $phpbb_root_path . 'install/update/update/new/install/startup.' . $phpEx;
+$startup_path = (file_exists($startup_new_path)) ? $startup_new_path : $phpbb_root_path . 'install/startup.' . $phpEx;
 require($startup_path);
 
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
@@ -47,7 +47,7 @@ $phpbb_dispatcher = $phpbb_installer_container->get('dispatcher');
 
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');
-$language->add_lang(array('common', 'acp/common', 'acp/board', 'install_new', 'posting'));
+$language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
 
 /* @var $http_kernel \Symfony\Component\HttpKernel\HttpKernel */
 $http_kernel = $phpbb_installer_container->get('http_kernel');
