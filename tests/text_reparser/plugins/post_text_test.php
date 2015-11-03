@@ -21,6 +21,6 @@ class phpbb_textreparser_post_text_test extends phpbb_textreparser_test_row_base
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\post_text($this->db);
+		return new \phpbb\textreparser\plugins\post_text($this->db, POSTS_TABLE);
 	}
 }
