@@ -32,6 +32,15 @@ services:
             - @filesystem
             - %core.root_path%
 
+    kernel_exception_subscriber:
+        class: phpbb\install\event\kernel_exception_subscriber
+        arguments:
+            - @phpbb.installer.controller.helper
+            - @language
+            - @template
+        tags:
+            - { name: kernel.event_subscriber }
+
     language.loader:
         parent: language.loader_abstract
 
