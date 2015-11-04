@@ -276,6 +276,12 @@
 			</form>
 		<!-- ENDIF -->
 
+		<!-- IF S_SELECT_SORT_DAYS and not S_IS_BOT -->
+			<form method="post" action="{S_FORUM_ACTION}">
+			<!-- INCLUDE display_options.html -->
+			</form>
+		<!-- ENDIF -->
+
 		<div class="pagination">
 			<!-- IF not S_IS_BOT and U_MARK_TOPICS and .topicrow --><a href="{U_MARK_TOPICS}" data-ajax="mark_topics_read">{L_MARK_TOPICS_READ}</a> &bull; <!-- ENDIF -->
 			{TOTAL_TOPICS}
