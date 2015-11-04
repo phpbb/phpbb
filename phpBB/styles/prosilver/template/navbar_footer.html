@@ -6,22 +6,22 @@
 			<!-- IF U_SITE_HOME -->
 				<span class="crumb">
 					<a href="{U_SITE_HOME}" data-navbar-reference="home">
-						<i class="icon fa-home fa-fw" aria-hidden="true"></i><span>{L_SITE_HOME}</span>
+						<svg class="icon"><use xlink:href="#home"></use></svg><span>{L_SITE_HOME}</span>
 					</a>
 				</span>
 			<!-- ENDIF -->
 			<!-- EVENT overall_footer_breadcrumb_prepend -->
 			<span class="crumb">
 				<a href="{U_INDEX}" data-navbar-reference="index">
-					<!-- IF not U_SITE_HOME --><i class="icon fa-home fa-fw" aria-hidden="true"></i><!-- ENDIF --><span>{L_INDEX}</span>
+					<!-- IF not U_SITE_HOME --><svg class="icon"><use xlink:href="#home"></use></svg><!-- ENDIF --><span>{L_INDEX}</span>
 				</a>
 			</span>
 			<!-- EVENT overall_footer_breadcrumb_append -->
 		</li>
 		<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT -->
 			<li data-last-responsive="true">
-				<a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="icon <!-- IF S_WATCHING_FORUM -->fa-check-square-o<!-- ELSE -->fa-square-o<!-- ENDIF --> fa-fw" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">
-					<i class="icon <!-- IF S_WATCHING_FORUM -->fa-square-o<!-- ELSE -->fa-check-square-o<!-- ENDIF --> fa-fw" aria-hidden="true"></i><span>{S_WATCH_FORUM_TITLE}</span>
+				<a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-icon="<!-- IF S_WATCHING_FORUM -->#check-square-o<!-- ELSE -->#square-o<!-- ENDIF -->" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">
+					<svg class="icon"><use xlink:href="#<!-- IF S_WATCHING_FORUM -->square-o<!-- ELSE -->check-square-o<!-- ENDIF -->"></use></svg><span>{S_WATCH_FORUM_TITLE}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -32,13 +32,13 @@
 		<!-- IF not S_IS_BOT -->
 			<li class="rightside">
 				<a href="{U_DELETE_COOKIES}" data-ajax="true" data-refresh="true" role="menuitem">
-					<i class="icon fa-trash fa-fw" aria-hidden="true"></i><span>{L_DELETE_COOKIES}</span>
+					<svg class="icon"><use xlink:href="#trash"></use></svg><span>{L_DELETE_COOKIES}</span>
 				</a>
 			</li>
 			<!-- IF S_DISPLAY_MEMBERLIST -->
 				<li class="rightside" data-last-responsive="true">
 					<a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" role="menuitem">
-						<i class="icon fa-group fa-fw" aria-hidden="true"></i><span>{L_MEMBERLIST}</span>
+						<svg class="icon"><use xlink:href="#users"></use></svg><span>{L_MEMBERLIST}</span>
 					</a>
 				</li>
 			<!-- ENDIF -->
@@ -47,7 +47,7 @@
 		<!-- IF U_TEAM -->
 			<li class="rightside" data-last-responsive="true">
 				<a href="{U_TEAM}" role="menuitem">
-					<i class="icon fa-shield fa-fw" aria-hidden="true"></i><span>{L_THE_TEAM}</span>
+					<svg class="icon"><use xlink:href="#shield"></use></svg><span>{L_THE_TEAM}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
@@ -55,7 +55,7 @@
 		<!-- IF U_CONTACT_US -->
 			<li class="rightside" data-last-responsive="true">
 				<a href="{U_CONTACT_US}" role="menuitem">
-					<i class="icon fa-envelope fa-fw" aria-hidden="true"></i><span>{L_CONTACT_US}</span>
+					<svg class="icon"><use xlink:href="#envelope"></use></svg><span>{L_CONTACT_US}</span>
 				</a>
 			</li>
 		<!-- ENDIF -->
