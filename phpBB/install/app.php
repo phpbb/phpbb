@@ -30,7 +30,6 @@ $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
 /** @var \phpbb\template\template $template */
 $template = $phpbb_installer_container->get('template');
 
-
 // Path to templates
 $paths = array($phpbb_root_path . 'install/update/new/adm/style', $phpbb_admin_path . 'style');
 $paths = array_filter($paths, 'is_dir');
@@ -42,17 +41,17 @@ $template->set_custom_style(array(
 	),
 ), $paths);
 
-/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
+/** @var $phpbb_dispatcher \phpbb\event\dispatcher */
 $phpbb_dispatcher = $phpbb_installer_container->get('dispatcher');
 
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');
 $language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
 
-/* @var $http_kernel \Symfony\Component\HttpKernel\HttpKernel */
+/** @var $http_kernel \Symfony\Component\HttpKernel\HttpKernel */
 $http_kernel = $phpbb_installer_container->get('http_kernel');
 
-/* @var $symfony_request \phpbb\symfony_request */
+/** @var $symfony_request \phpbb\symfony_request */
 $symfony_request = $phpbb_installer_container->get('symfony_request');
 $response = $http_kernel->handle($symfony_request);
 $response->send();

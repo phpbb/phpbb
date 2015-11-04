@@ -86,6 +86,7 @@ services:
         class: phpbb\install\installer
         abstract: true
         arguments:
+            - @cache.driver
             - @installer.helper.config
             - @path_helper
 
