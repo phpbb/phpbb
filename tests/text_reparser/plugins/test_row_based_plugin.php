@@ -24,8 +24,13 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 	{
 		$reparser = $this->get_reparser();
 		$columns = $reparser->get_columns();
+
+		$reflection_reparser = new ReflectionClass(get_class($reparser));
+		$table_property = $reflection_reparser->getProperty('table');
+		$table_property->setAccessible(true);
+
 		$sql = 'SELECT ' . $columns['id'] . ' AS id, ' . $columns['text'] . ' AS text
-			FROM ' . $reparser->get_table_name() . '
+			FROM ' . $table_property->getValue($reparser) . '
 			WHERE ' . $this->db->sql_in_set($columns['id'], $ids) . '
 			ORDER BY id';
 		$result = $this->db->sql_query($sql);
