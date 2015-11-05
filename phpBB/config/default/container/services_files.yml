@@ -25,7 +25,6 @@ services:
             - @language
             - @php_ini
             - @request
-            - %core.root_path%
 
     files.types.form:
         class: phpbb\files\types\form
