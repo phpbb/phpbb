@@ -21,6 +21,6 @@ class phpbb_textreparser_pm_text_test extends phpbb_textreparser_test_row_based_
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\pm_text($this->db);
+		return new \phpbb\textreparser\plugins\pm_text($this->db, PRIVMSGS_TABLE);
 	}
 }

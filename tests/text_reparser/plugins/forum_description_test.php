@@ -21,6 +21,6 @@ class phpbb_textreparser_forum_description_test extends phpbb_textreparser_test_
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\forum_description($this->db);
+		return new \phpbb\textreparser\plugins\forum_description($this->db, FORUMS_TABLE);
 	}
 }

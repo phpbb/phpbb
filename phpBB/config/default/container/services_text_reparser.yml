@@ -17,6 +17,7 @@ services:
         class: phpbb\textreparser\plugins\forum_description
         arguments:
             - @dbal.conn
+            - %tables.forums%
         tags:
             - { name: text_reparser.plugin }
 
@@ -24,6 +25,7 @@ services:
         class: phpbb\textreparser\plugins\forum_rules
         arguments:
             - @dbal.conn
+            - %tables.forums%
         tags:
             - { name: text_reparser.plugin }
 
@@ -31,6 +33,7 @@ services:
         class: phpbb\textreparser\plugins\group_description
         arguments:
             - @dbal.conn
+            - %tables.groups%
         tags:
             - { name: text_reparser.plugin }
 
@@ -38,6 +41,7 @@ services:
         class: phpbb\textreparser\plugins\pm_text
         arguments:
             - @dbal.conn
+            - %tables.privmsgs%
         tags:
             - { name: text_reparser.plugin }
 
@@ -52,6 +56,7 @@ services:
         class: phpbb\textreparser\plugins\poll_title
         arguments:
             - @dbal.conn
+            - %tables.topics%
         tags:
             - { name: text_reparser.plugin }
 
@@ -59,6 +64,7 @@ services:
         class: phpbb\textreparser\plugins\post_text
         arguments:
             - @dbal.conn
+            - %tables.posts%
         tags:
             - { name: text_reparser.plugin }
 
@@ -66,5 +72,6 @@ services:
         class: phpbb\textreparser\plugins\user_signature
         arguments:
             - @dbal.conn
+            - %tables.users%
         tags:
             - { name: text_reparser.plugin }

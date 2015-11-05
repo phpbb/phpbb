@@ -21,13 +21,20 @@ abstract class row_based_plugin extends base
 	protected $db;
 
 	/**
+	 * @var string
+	 */
+	protected $table;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface $db Database connection
+	* @param string $table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $table)
 	{
 		$this->db = $db;
+		$this->table = $table;
 	}
 
 	/**
@@ -38,20 +45,13 @@ abstract class row_based_plugin extends base
 	abstract public function get_columns();
 
 	/**
-	* Return the name of the table used by this plugin
-	*
-	* @return string
-	*/
-	abstract public function get_table_name();
-
-	/**
 	* {@inheritdoc}
 	*/
 	public function get_max_id()
 	{
 		$columns = $this->get_columns();
 
-		$sql = 'SELECT MAX(' . $columns['id'] . ') AS max_id FROM ' . $this->get_table_name();
+		$sql = 'SELECT MAX(' . $columns['id'] . ') AS max_id FROM ' . $this->table;
 		$result = $this->db->sql_query($sql);
 		$max_id = (int) $this->db->sql_fetchfield('max_id');
 		$this->db->sql_freeresult($result);
@@ -96,7 +96,7 @@ abstract class row_based_plugin extends base
 		}
 
 		$sql = 'SELECT ' . implode(', ', $fields) . '
-			FROM ' . $this->get_table_name() . '
+			FROM ' . $this->table . '
 			WHERE ' . $columns['id'] . ' BETWEEN ' . $min_id . ' AND ' . $max_id;
 
 		return $sql;
@@ -109,7 +109,7 @@ abstract class row_based_plugin extends base
 	{
 		$columns = $this->get_columns();
 
-		$sql = 'UPDATE ' . $this->get_table_name() . '
+		$sql = 'UPDATE ' . $this->table . '
 			SET ' . $columns['text'] . " = '" . $this->db->sql_escape($record['text']) . "'
 			WHERE " . $columns['id'] . ' = ' . $record['id'];
 		$this->db->sql_query($sql);

@@ -21,6 +21,6 @@ class phpbb_textreparser_poll_title_test extends phpbb_textreparser_test_row_bas
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\poll_title($this->db);
+		return new \phpbb\textreparser\plugins\poll_title($this->db, TOPICS_TABLE);
 	}
 }

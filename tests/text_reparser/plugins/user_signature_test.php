@@ -21,6 +21,6 @@ class phpbb_textreparser_user_signature_test extends phpbb_textreparser_test_row
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\user_signature($this->db);
+		return new \phpbb\textreparser\plugins\user_signature($this->db, USERS_TABLE);
 	}
 }

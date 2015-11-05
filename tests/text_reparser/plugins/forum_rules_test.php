@@ -21,6 +21,6 @@ class phpbb_textreparser_forum_rules_test extends phpbb_textreparser_test_row_ba
 
 	protected function get_reparser()
 	{
-		return new \phpbb\textreparser\plugins\forum_rules($this->db);
+		return new \phpbb\textreparser\plugins\forum_rules($this->db, FORUMS_TABLE);
 	}
 }
