@@ -265,17 +265,17 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		break;
 
 		case 'color':
-		case 'date':
-		case 'time':
 		case 'datetime':
 		case 'datetime-local':
 		case 'month':
-		case 'range':
 		case 'week':
 			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
 		break;
 
+		case 'date':
+		case 'time':
 		case 'number':
+		case 'range':
 			$max = '';
 			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
 			if ( isset($tpl_type[2]) )
@@ -283,7 +283,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 				$max = (int) $tpl_type[2];
 			}
 
-			$tpl = '<input id="' . $key . '" type="number"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new[$config_key] . '" />';
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new[$config_key] . '" />';
 		break;
 
 		case 'dimension':
