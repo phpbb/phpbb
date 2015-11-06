@@ -25,7 +25,7 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $request, $user, $auth, $template;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		$user->add_lang('acp/board');
@@ -52,11 +52,36 @@ class acp_captcha
 		else
 		{
 			$config_vars = array(
-				'enable_confirm'		=> array('tpl' => 'REG_ENABLE', 'default' => false),
-				'enable_post_confirm'	=> array('tpl' => 'POST_ENABLE', 'default' => false),
-				'confirm_refresh'		=> array('tpl' => 'CONFIRM_REFRESH', 'default' => false),
-				'max_reg_attempts'		=> array('tpl' => 'REG_LIMIT', 'default' => 0),
-				'max_login_attempts'		=> array('tpl' => 'MAX_LOGIN_ATTEMPTS', 'default' => 0),
+				'enable_confirm'		=> array(
+					'tpl'		=> 'REG_ENABLE',
+					'default'	=> false,
+					'validate'	=> 'bool',
+					'lang'		=> 'VISUAL_CONFIRM_REG',
+				),
+				'enable_post_confirm'	=> array(
+					'tpl'		=> 'POST_ENABLE',
+					'default'	=> false,
+					'validate'	=> 'bool',
+					'lang'		=> 'VISUAL_CONFIRM_POST',
+				),
+				'confirm_refresh'		=> array(
+					'tpl'		=> 'CONFIRM_REFRESH',
+					'default'	=> false,
+					'validate'	=> 'bool',
+					'lang'		=> 'VISUAL_CONFIRM_REFRESH',
+				),
+				'max_reg_attempts'		=> array(
+					'tpl'		=> 'REG_LIMIT',
+					'default'	=> 0,
+					'validate'	=> 'int:0:99999',
+					'lang'		=> 'REG_LIMIT',
+				),
+				'max_login_attempts'	=> array(
+					'tpl'		=> 'MAX_LOGIN_ATTEMPTS',
+					'default'	=> 0,
+					'validate'	=> 'int:0:99999',
+					'lang'		=> 'MAX_LOGIN_ATTEMPTS',
+				),
 			);
 
 			$this->tpl_name = 'acp_captcha';
@@ -65,12 +90,31 @@ class acp_captcha
 			add_form_key($form_key);
 
 			$submit = request_var('main_submit', false);
+			$error = $cfg_array = array();
 
-			if ($submit && check_form_key($form_key))
+			if ($submit)
 			{
 				foreach ($config_vars as $config_var => $options)
 				{
-					set_config($config_var, request_var($config_var, $options['default']));
+					$cfg_array[$config_var] = $request->variable($config_var, $options['default']);
+				}
+				validate_config_vars($config_vars, $cfg_array, $error);
+
+				if (!check_form_key($form_key))
+				{
+					$error[] = $user->lang['FORM_INVALID'];
+				}
+				if ($error)
+				{
+					$submit = false;
+				}
+			}
+
+			if ($submit)
+			{
+				foreach ($cfg_array as $key => $value)
+				{
+					$config->set($key, $value);
 				}
 
 				if ($selected !== $config['captcha_plugin'])
@@ -93,10 +137,6 @@ class acp_captcha
 					}
 				}
 				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
-			}
-			else if ($submit)
-			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			else
 			{
@@ -124,6 +164,7 @@ class acp_captcha
 					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
 					'S_CAPTCHA_HAS_CONFIG'	=> $demo_captcha->has_config(),
 					'CAPTCHA_SELECT'		=> $captcha_select,
+					'ERROR_MSG'				=> implode('<br />', $error),
 
 					'U_ACTION'				=> $this->u_action,
 				));
