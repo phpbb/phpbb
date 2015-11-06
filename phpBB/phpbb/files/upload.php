@@ -65,9 +65,6 @@ class upload
 	/** @var request_interface Request class */
 	protected $request;
 
-	/** @var string phpBB root path */
-	protected $phpbb_root_path;
-
 	/**
 	 * Init file upload class.
 	 *
@@ -76,16 +73,14 @@ class upload
 	 * @param language $language Language class
 	 * @param \bantu\IniGetWrapper\IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request class
-	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
+	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request_interface $request)
 	{
 		$this->filesystem = $filesystem;
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
 		$this->request = $request;
-		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
