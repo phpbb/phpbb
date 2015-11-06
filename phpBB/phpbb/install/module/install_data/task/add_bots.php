@@ -197,6 +197,11 @@ class add_bots extends \phpbb\install\task_base
 				'user_allow_pm'			=> 0,
 			);
 
+			if (!function_exists('user_add'))
+			{
+				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+			}
+
 			$user_id = user_add($user_row);
 
 			if (!$user_id)
