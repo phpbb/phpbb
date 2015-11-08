@@ -269,7 +269,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		case 'datetime-local':
 		case 'month':
 		case 'week':
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '" name="' . $name . '" value="' . $new[$config_key] . '" />';
 		break;
 
 		case 'date':
