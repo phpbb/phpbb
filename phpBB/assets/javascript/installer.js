@@ -243,8 +243,21 @@
 	 */
 	function parseMessage(messageJSON) {
 		$('#loading_indicator').css('display', 'none');
+		var responseObject;
 
-		var responseObject = JSON.parse(messageJSON);
+		try {
+			responseObject = JSON.parse(messageJSON);
+		}
+		catch (err) {
+			if (window.console) {
+				console.log('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
+			} else {
+				alert('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
+			}
+
+			resetPolling();
+			return;
+		}
 
 		// Parse object
 		if (responseObject.hasOwnProperty('errors')) {

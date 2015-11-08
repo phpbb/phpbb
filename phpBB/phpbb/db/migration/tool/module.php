@@ -262,7 +262,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 			// Success
 			$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang[$data['module_langname']] : $data['module_langname']);
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_MODULE_ADD', false, array($module_log_name));
+			$phpbb_log->add('admin', ANONYMOUS, $user->ip, 'LOG_MODULE_ADD', false, array($module_log_name));
 
 			// Move the module if requested above/below an existing one
 			if (isset($data['before']) && $data['before'])
