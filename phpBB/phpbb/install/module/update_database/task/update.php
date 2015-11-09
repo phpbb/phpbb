@@ -172,7 +172,7 @@ class update extends task_base
 		{
 			$this->log->add(
 				'admin',
-				$this->user->data['user_id'],
+				(isset($this->user->data['user_id'])) ? $this->user->data['user_id'] : ANONYMOUS,
 				$this->user->ip,
 				'LOG_UPDATE_DATABASE',
 				false,
