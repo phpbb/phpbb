@@ -247,8 +247,7 @@
 
 		try {
 			responseObject = JSON.parse(messageJSON);
-		}
-		catch (err) {
+		} catch (err) {
 			if (window.console) {
 				console.log('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
 			} else {
