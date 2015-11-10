@@ -231,6 +231,7 @@ $lang = array_merge($lang, array(
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',
 	'CRON_NO_TASK'			=> 'No cron tasks need to be run right now.',
 	'CRON_NO_TASKS'			=> 'No cron tasks could be found.',
+	'CURRENT_VERSION'		=> 'Current version',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered path “%s” does not exist.',
@@ -256,6 +257,7 @@ $lang = array_merge($lang, array(
 	'IP'					=> 'User IP',
 	'IP_HOSTNAME'			=> 'IP addresses or hostnames',
 
+	'LATEST_VERSION'		=> 'Latest version',
 	'LOAD_NOTIFICATIONS'			=> 'Display Notifications',
 	'LOAD_NOTIFICATIONS_EXPLAIN'	=> 'Display the notifications list on every page (typically in the header).',
 	'LOGGED_IN_AS'			=> 'You are logged in as:',
@@ -288,6 +290,7 @@ $lang = array_merge($lang, array(
 	'PERMISSIONS_TRANSFERRED_EXPLAIN'	=> 'You currently have the permissions from %1$s. You are able to browse the board with this user’s permissions, but not access the administration control panel since admin permissions were not transferred. You can <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
+	'RELEASE_ANNOUNCEMENT'		=> 'Announcement',
 	'REMIND'							=> 'Remind',
 	'RESYNC'							=> 'Resynchronise',
 
@@ -420,6 +423,11 @@ $lang = array_merge($lang, array(
 	'VALUE'						=> 'Value',
 	'VERSIONCHECK_FAIL'			=> 'Failed to obtain latest version information.',
 	'VERSIONCHECK_FORCE_UPDATE'	=> 'Re-Check version',
+	'VERSION_CHECK'				=> 'Version check',
+	'VERSION_CHECK_EXPLAIN'		=> 'Checks to see if your phpBB installation is up to date.',
+	'VERSION_NOT_UP_TO_DATE_ACP'	=> 'Your phpBB installation is not up to date.<br />Below is a link to the release announcement, which contains more information as well as instructions on updating.',
+	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your phpBB installation is not up to date.',
+	'VERSION_UP_TO_DATE_ACP'	=> 'Your phpBB installation is up to date. There are no updates available at this time.',
 	'VIEW_ADMIN_LOG'			=> 'View administrator log',
 	'VIEW_INACTIVE_USERS'		=> 'View inactive users',
 
