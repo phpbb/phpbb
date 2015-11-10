@@ -96,7 +96,7 @@ class show extends \phpbb\console\command\command
 
 		if (!is_file($config_file))
 		{
-			$iohandler->add_error_message('MISSING_FILE', array($config_file));
+			$iohandler->add_error_message(array('MISSING_FILE', $config_file));
 
 			return;
 		}
