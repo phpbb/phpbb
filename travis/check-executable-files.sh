@@ -28,7 +28,7 @@ then
 	files_skipped="-false"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/*"
+	executable_files="-path ${path}bin/* -o -path ${path}install/phpbbcli.php"
 
 	incorrect_files=$( 								\
 		find ${path}								\
