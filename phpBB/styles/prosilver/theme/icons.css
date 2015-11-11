@@ -11,6 +11,9 @@
  */
 .icon {
 	display: inline-block;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
 	width: 14px;
 	height: 14px;
 	fill: currentColor;
