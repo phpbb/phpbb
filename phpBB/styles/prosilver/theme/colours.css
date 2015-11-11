@@ -7,80 +7,81 @@ Colours
 //------------------------------------------------------------
 
 // Grayscale Colors
-@color-black:				#000000;
-@color-black-80:			#333333;
-@color-black-70:			#4D4D4D;
-@color-black-60:			#666666;
-@color-black-50:			#7F7F7F;
-@color-black-40:			#999999;
-@color-black-25:			#BFBFBF;
-@color-black-20:			#CCCCCC;
-@color-black-23:			#DDDDDD;
-@color-black-10:			#E6E6E6;
-@color-black-5:				#F2F2F2;
-@color-black-2:				#FAFAFA;
+@color-black:					#000000;
+@color-black-80:				#333333;
+@color-black-70:				#4D4D4D;
+@color-black-60:				#666666;
+@color-black-50:				#7F7F7F;
+@color-black-40:				#999999;
+@color-black-25:				#BFBFBF;
+@color-black-20:				#CCCCCC;
+@color-black-23:				#DDDDDD;
+@color-black-10:				#E6E6E6;
+@color-black-5:					#F2F2F2;
+@color-black-2:					#FAFAFA;
 
-@color-white:				#FFFFFF;
+@color-white:					#FFFFFF;
 
 // Gradient
-@color-blue-gradient-dark:	#0076b1;
-@color-blue-gradient-light:	#12A3EB;
+@color-blue-gradient-highlight:	#6ACEFF;
+@color-blue-gradient-dark:		#0076B1;
+@color-blue-gradient-light:		#12A3EB;
 
 // Link Colors
-@color-link:				#105289;
-@color-link-hover:			#D31141;
-@color-link-accent:			#006ac6;
+@color-link:					#105289;
+@color-link-hover:				#D31141;
+@color-link-accent:				#006AC6;
 
 // Secodary Colors
-@color-secondary:			#4692BF;
-@color-secondary-hover:		#368AD2;
-@color-secondary-accent:	#5C758C;
-@color-secondary-dark:		#28313F;
+@color-secondary:				#4692BF;
+@color-secondary-hover:			#368AD2;
+@color-secondary-accent:		#5C758C;
+@color-secondary-dark:			#28313F;
 
 // Background Colors
-@color-bg-page:				#F5F7FA;
-@color-bg-1:				#ECF3F7;
-@color-bg-2:				#E1EBF2;
-@color-bg-3-light:			#F1F8FF;
-@color-bg-3:				#CADCEB;
-@color-bg-3-dark:			#B4C4D1;
-@color-bg-3-dark-hover:		#AABAC6;
+@color-bg-page:					#F5F7FA;
+@color-bg-1:					#ECF3F7;
+@color-bg-2:					#E1EBF2;
+@color-bg-3-light:				#F1F8FF;
+@color-bg-3:					#CADCEB;
+@color-bg-3-dark:				#B4C4D1;
+@color-bg-3-dark-hover:			#AABAC6;
 
 // Highlights
-@color-highlight-row:		#F6F4D0;
-@color-highlight-post:		#F3BFCC;
-@color-highlight-notice:	#ECD5D8;
-@color-highlight-report:	#F7ECEF;
+@color-highlight-row:			#F6F4D0;
+@color-highlight-post:			#F3BFCC;
+@color-highlight-notice:		#ECD5D8;
+@color-highlight-report:		#F7ECEF;
 
 // Blockquote Colors
-@color-blockquote:			#EBEADD;
-@color-blockquote-inner:	#EFEED9;
+@color-blockquote:				#EBEADD;
+@color-blockquote-inner:		#EFEED9;
 
 // Poll Colors
-@color-poll-bg1: 			#AA2346;
-@color-poll-bg2:			#BE1E4A;
-@color-poll-bg3:			#D11A4E;
-@color-poll-bg4:			#E41653;
-@color-poll-bg5:			#F81157;
+@color-poll-bg1: 				#AA2346;
+@color-poll-bg2:				#BE1E4A;
+@color-poll-bg3:				#D11A4E;
+@color-poll-bg4:				#E41653;
+@color-poll-bg5:				#F81157;
 
-@color-poll-border1:		#74162C;
-@color-poll-border2:		#8C1C38;
-@color-poll-border3:		@color-poll-bg1;
-@color-poll-border4:		@color-poll-bg2;
-@color-poll-border5:		@color-poll-bg3;
+@color-poll-border1:			#74162C;
+@color-poll-border2:			#8C1C38;
+@color-poll-border3:			@color-poll-bg1;
+@color-poll-border4:			@color-poll-bg2;
+@color-poll-border5:			@color-poll-bg3;
 
 // Code Colors
-@color-code-default:		#2E8B57;
-@color-code-orange:			#FF8000;
-@color-code-red:			#DD0000;
-@color-code-blue:			#0000BB;
-@color-code-green:			#007700;
+@color-code-default:			#2E8B57;
+@color-code-orange:				#FF8000;
+@color-code-red:				#DD0000;
+@color-code-blue:				#0000BB;
+@color-code-green:				#007700;
 
 // PM Colors
-@color-pm-marked:			#FF6600;
-@color-pm-reply:			#A9B8C2;
-@color-pm-friend:			#5D8FBD;
-@color-pm-foe:				@color-black;
+@color-pm-marked:				#FF6600;
+@color-pm-reply:				#A9B8C2;
+@color-pm-friend:				#5D8FBD;
+@color-pm-foe:					@color-black;
 
 -------------------------------------------------------------- */
 
@@ -100,7 +101,7 @@ h2 {
 
 h3 {
 	border-bottom-color: #CCCCCC;
-	color: #105289;
+	color: inherit;
 }
 
 hr {
@@ -129,7 +130,7 @@ th a {
 }
 
 .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
-	color: #A8D8FF;
+	color: #FFFFFF;
 }
 
 /* Notification mark read link */
@@ -258,7 +259,7 @@ table.table1 thead th {
 }
 
 table.table1 tbody tr {
-	border-color: #BFC1CF;
+	border-color: #B4C4D1;
 }
 
 table.table1 tbody tr:hover,
@@ -296,29 +297,19 @@ dl.details dd {
 }
 
 .sep {
-	color: #1198D9;
+	color: #12A3EB;
 }
 
 /* Icon styles
 ---------------------------------------- */
 .icon.icon-blue, 
 a:hover .icon.icon-blue {
-	color: #196db5;
-}
-
-.icon.icon-green, 
-a:hover .icon.icon-green {
-	color: #1b9A1B;
+	color: #006AC6;
 }
 
 .icon.icon-red, 
 a:hover .icon.icon-red {
 	color: #D31141;
-}
-
-.icon.icon-orange, 
-a:hover .icon.icon-orange {
-	color: #FF6600;
 }
 
 .icon.icon-bluegray, 
@@ -328,7 +319,7 @@ a:hover .icon.icon-bluegray {
 
 .icon.icon-gray, 
 a:hover .icon.icon-gray {
-	color: #777777;
+	color: #7F7F7F;
 }
 
 .icon.icon-lightgray, 
@@ -351,7 +342,7 @@ a:hover .icon.icon-black {
 }
 
 .jumpbox-cat-link {
-	background-color: #0076b1;
+	background-color: #0076B1;
 	border-top-color: #0076B1;
 	color: #FFFFFF;
 }
@@ -420,10 +411,10 @@ p.post-notice {
 Colours and backgrounds for content.css
 -------------------------------------------------------------- */
 ul.forums {
-	background-color: #EEF5F9; /* Old browsers */ /* FF3.6+ */
-	background-image: -webkit-linear-gradient(top, #D2E0EB 0%, #EEF5F9 100%);
-	background-image: linear-gradient(to bottom, #D2E0EB 0%,#EEF5F9 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#D2E0EB', endColorstr='#EEF5F9',GradientType=0 ); /* IE6-9 */
+	background-color: #ECF3F7;
+	background-image: -webkit-linear-gradient(top, #CADCEB 0%, #ECF3F7 100%);
+	background-image: linear-gradient(to bottom, #CADCEB 0%,#ECF3F7 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#CADCEB', endColorstr='#ECF3F7',GradientType=0 );
 }
 
 ul.topiclist li {
@@ -480,7 +471,7 @@ li.header dd {
 
 .content h2,
 .panel h2 {
-	color: #105289;
+	color: #5C758C;
 	border-bottom-color: #CCCCCC;
 }
 
@@ -711,8 +702,8 @@ Colours and backgrounds for buttons.css
 }
 
 .button:hover,
-.dropdown-visible .dropdown-select,
-.button:focus {
+.button:focus,
+.dropdown-visible .dropdown-select {
 	border-color: #006AC6;
 	background-color: #FFFFFF;
 	background-image: -webkit-linear-gradient(top, #E6E6E6 0%, #FFFFFF 100%);
