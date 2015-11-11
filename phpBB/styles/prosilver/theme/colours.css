@@ -159,11 +159,6 @@ th a {
 	background-color: transparent;
 }
 
-/* Back to top of page */
-.top i {
-	color: #999999;
-}
-
 /* Arrow links  */
 .arrow-left:hover, .arrow-right:hover {
 	color: #368AD2;
@@ -220,12 +215,12 @@ ul.zebra-list li:nth-child(odd) {
 	background-color: #ECF3F7;
 }
 
-.bg2 {
+table.zebra-list tr:nth-child(even) td,
+ul.zebra-list li:nth-child(even) {
 	background-color: #E1EBF2;
 }
 
-table.zebra-list tr:nth-child(even) td,
-ul.zebra-list li:nth-child(even) {
+.bg2 {
 	background-color: #E1EBF2;
 }
 
@@ -712,29 +707,6 @@ Colours and backgrounds for buttons.css
 	text-shadow: 1px 1px 0 #FFFFFF, -1px -1px 0 #FFFFFF, -1px -1px 0 rgba(188, 42, 77, 0.2);
 }
 
-.button i {
-	color: #7F7F7F;
-}
-
-.button:focus i,
-.button:hover i {
-	color: #006AC6;
-}
-
-.caret {
-	border-color: #CCCCCC; 
-}
-
-.dropdown-select:after {
-	border-color: #DDDDDD;
-}
-
-.dropdown-visible .dropdown-select,
-.dropdown-visible .dropdown-select:hover,
-.nojs .dropdown-container:hover .dropdown-select {
-	border-color: #006AC6;
-}
-
 .button .icon,
 .button-secondary {
 	color: #8f8f8f;
@@ -753,8 +725,9 @@ Colours and backgrounds for buttons.css
 	border-color: #C7C3BF;
 }
 
-.caret	{ border-color: #DADADA; }
-.caret	{ border-color: #C7C3BF; }
+.caret {
+	border-color: #CCCCCC; 
+}
 
 .contact-icons a:hover {
 	background-color: #F2F2F2;
@@ -771,7 +744,7 @@ Colours and backgrounds for buttons.css
 	filter: none;
 	-webkit-box-shadow: none;
 			box-shadow: none;
-	}
+}
 
 .pagination li.ellipsis span {
 	background: transparent;
@@ -806,7 +779,7 @@ Colours and backgrounds for buttons.css
 }
 
 .search-header {
-	box-shadow: 0 0 10px #0076b1;
+	box-shadow: 0 0 10px #0076B1;
 }
 
 /* Icon images
