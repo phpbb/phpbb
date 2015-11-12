@@ -306,6 +306,10 @@ phpbb.ajaxify = function(options) {
 					alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 				} else {
 					$dark.fadeOut(phpbb.alertTime);
+
+					if ($loadingIndicator) {
+						$loadingIndicator.fadeOut(phpbb.alertTime);
+					}
 				}
 
 				if (typeof phpbb.ajaxCallbacks[callback] === 'function') {
