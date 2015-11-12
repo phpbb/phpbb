@@ -56,10 +56,9 @@ class thumbnail
 	 */
 	function create($source, $destination, $mime_type)
 	{
-		$min_filesize = (int) $this->config['img_min_thumb_filesize'];
 		$img_filesize = (file_exists($source)) ? @filesize($source) : false;
 
-		if (!$img_filesize || $img_filesize <= $min_filesize)
+		if (!$img_filesize || $img_filesize <= (int) $this->config['img_min_thumb_filesize'])
 		{
 			return false;
 		}
