@@ -549,6 +549,18 @@ function change_poster(&$post_info, $userdata)
 	$from_username = $post_info['username'];
 	$to_username = $userdata['username'];
 
+	/**
+	* This event allows you to perform additional tasks after changing a post's poster
+	*
+	* @event core.mcp_change_poster_after
+	* @var	array	userdata	Information on a post's new poster
+	* @var	array	post_info	Information on the affected post
+	* @since 3.1.6-RC1
+	* @changed 3.1.7-RC1		Change location to prevent post_info from being set to the new post information
+	*/
+	$vars = array('userdata', 'post_info');
+	extract($phpbb_dispatcher->trigger_event('core.mcp_change_poster_after', compact($vars)));
+
 	// Renew post info
 	$post_info = phpbb_get_post_data(array($post_id), false, true);
 
@@ -558,17 +570,6 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	$post_info = $post_info[$post_id];
-
-	/**
-	* This event allows you to perform additional tasks after changing a post's poster
-	*
-	* @event core.mcp_change_poster_after
-	* @var	array	userdata	Information on a post's new poster
-	* @var	array	post_info	Information on the affected post
-	* @since 3.1.6-RC1
-	*/
-	$vars = array('userdata', 'post_info');
-	extract($phpbb_dispatcher->trigger_event('core.mcp_change_poster_after', compact($vars)));
 
 	// Now add log entry
 	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
