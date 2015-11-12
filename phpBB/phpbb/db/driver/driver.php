@@ -830,7 +830,7 @@ abstract class driver implements driver_interface
 	{
 		$operation = $operations_ary[self::LOGICAL_OP];
 
-		foreach ($operations_ary[1] as &$condition)
+		foreach ($operations_ary[self::LOGICAL_OP] as &$condition)
 		{
 			switch ($condition[self::LOGICAL_OP])
 			{
@@ -859,7 +859,7 @@ abstract class driver implements driver_interface
 								case 'NOT_IN':
 
 									// As this is used with an IN, assume it is a set of elements for sql_in_set()
-									$condition = $this->sql_in_set($condition[self::LEFT_STMT], $condition[self::RIGHT_STMT], $condition[Cself::OMPARE_OP] === 'NOT_IN', true);
+									$condition = $this->sql_in_set($condition[self::LEFT_STMT], $condition[self::RIGHT_STMT], $condition[self::COMPARE_OP] === 'NOT_IN', true);
 
 								break;
 
