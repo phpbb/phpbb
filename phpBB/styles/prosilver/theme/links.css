@@ -33,6 +33,9 @@ a {
 	background-position: center center;
 	background-repeat: no-repeat;
 	border-radius: 3px 0 0 3px;
+	border-style: solid;
+	border-width: 1px;
+	border-right-width: none;
 	display: none;
 	margin-top: -20px;
 	position: absolute;

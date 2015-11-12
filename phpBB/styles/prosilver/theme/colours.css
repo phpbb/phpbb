@@ -136,6 +136,7 @@ th a {
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
 	background-color: #FFFFFF;
+	border-color: #BFBFBF;
 }
 
 /* Post body links */
