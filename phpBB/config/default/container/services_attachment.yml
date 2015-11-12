@@ -23,6 +23,14 @@ services:
         arguments:
             - '@dbal.conn'
 
+    attachment.thumbnail:
+        class: phpbb\attachment\thumbnail
+        scope: prototype
+        arguments:
+            - @config
+            - @filesystem
+            - @upload_imagesize
+
     attachment.upload:
         class: phpbb\attachment\upload
         shared: false
