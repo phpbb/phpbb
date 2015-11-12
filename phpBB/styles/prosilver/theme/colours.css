@@ -46,7 +46,7 @@ Colours
 
 // Link Colors
 @color-link:					#0F618A;
-@color-link-accent:				#0088CC;
+@color-link-accent:				#0B95DA;
 @color-link-hover:				#D31141;
 @color-link-hover-highlight:	#F4BECB;
 @color-link-hover-notice:		#F0DBE0;
@@ -152,7 +152,7 @@ th a {
 
 .postlink:hover {
 	background-color: #C8DEEA;
-	color: #0088CC;
+	color: #0B95DA;
 }
 
 .signature a,
@@ -300,7 +300,7 @@ dl.details dd {
 ---------------------------------------- */
 .icon.icon-blue, 
 a:hover .icon.icon-blue {
-	color: #0088CC;
+	color: #0B95DA;
 }
 
 .icon.icon-red, 
@@ -700,7 +700,7 @@ Colours and backgrounds for buttons.css
 .button:hover,
 .button:focus,
 .dropdown-visible .dropdown-select {
-	border-color: #0088CC;
+	border-color: #0B95DA;
 	background-color: #FFFFFF;
 	background-image: -webkit-linear-gradient(top, #E6E6E6 0%, #FFFFFF 100%);
 	background-image: linear-gradient(to bottom, #E6E6E6 0%,#FFFFFF 100%); /* W3C */
@@ -1127,12 +1127,12 @@ fieldset.quick-login input.inputbox {
 }
 
 .inputbox:hover {
-	border-color: #0088CC;
+	border-color: #0B95DA;
 }
 
 .inputbox:focus {
-	border-color: #0088CC;
-	color: #0088CC;
+	border-color: #0B95DA;
+	color: #0B95DA;
 }
 
 .inputbox:focus:-moz-placeholder {
@@ -1189,8 +1189,8 @@ a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, inpu
 input.button1:focus,
 input.button2:focus,
 input.button3:focus {
-	border-color: #0088CC;
-	color: #0088CC;
+	border-color: #0B95DA;
+	color: #0B95DA;
 }
 
 input.disabled {
