@@ -31,6 +31,21 @@ class thumbnail
 	/** @var FastImageSize */
 	protected $image_size;
 
+	/** @var int Source image height */
+	protected $height;
+
+	/** @var int Source image width */
+	protected $width;
+
+	/** @var string Source image type */
+	protected $type;
+
+	/** @var int Source image height */
+	protected $new_height;
+
+	/** @var int Source image width */
+	protected $new_width;
+
 	/**
 	 * Thumbnail constructor
 	 *
@@ -56,31 +71,7 @@ class thumbnail
 	 */
 	function create($source, $destination, $mime_type)
 	{
-		$img_filesize = (file_exists($source)) ? @filesize($source) : false;
-
-		if (!$img_filesize || $img_filesize <= (int) $this->config['img_min_thumb_filesize'])
-		{
-			return false;
-		}
-
-		$dimension = $this->image_size->getImageSize($source, $mime_type);
-
-		if ($dimension === false)
-		{
-			return false;
-		}
-
-		list($width, $height, $type, ) = $dimension;
-
-		if (empty($width) || empty($height))
-		{
-			return false;
-		}
-
-		list($new_width, $new_height) = get_img_size_format($width, $height);
-
-		// Do not create a thumbnail if the resulting width/height is bigger than the original one
-		if ($new_width >= $width && $new_height >= $height)
+		if (!$this->set_size($source, $mime_type))
 		{
 			return false;
 		}
@@ -95,7 +86,7 @@ class thumbnail
 				$this->config['img_imagick'] .= '/';
 			}
 
-			@passthru(escapeshellcmd($this->config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -geometry ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" "' . str_replace('\\', '/', $destination) . '"');
+			@passthru(escapeshellcmd($this->config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -geometry ' . $this->new_width . 'x' . $this->new_height . ' "' . str_replace('\\', '/', $source) . '" "' . str_replace('\\', '/', $destination) . '"');
 
 			if (file_exists($destination))
 			{
@@ -105,7 +96,7 @@ class thumbnail
 
 		if (!$used_imagick)
 		{
-			$type = get_supported_image_types($type);
+			$type = get_supported_image_types($this->type);
 
 			if ($type['gd'])
 			{
@@ -142,18 +133,18 @@ class thumbnail
 
 				if ($type['version'] == 1)
 				{
-					$new_image = imagecreate($new_width, $new_height);
+					$new_image = imagecreate($this->new_width, $this->new_height);
 
 					if ($new_image === false)
 					{
 						return false;
 					}
 
-					imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+					imagecopyresized($new_image, $image, 0, 0, 0, 0, $this->new_width, $this->new_height, $this->width, $this->height);
 				}
 				else
 				{
-					$new_image = imagecreatetruecolor($new_width, $new_height);
+					$new_image = imagecreatetruecolor($this->new_width, $this->new_height);
 
 					if ($new_image === false)
 					{
@@ -164,7 +155,7 @@ class thumbnail
 					@imagealphablending($new_image, false);
 					@imagesavealpha($new_image, true);
 
-					imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+					imagecopyresampled($new_image, $image, 0, 0, 0, 0, $this->new_width, $this->new_height, $this->width, $this->height);
 				}
 
 				// If we are in safe mode create the destination file prior to using the gd functions to circumvent a PHP bug
@@ -212,6 +203,48 @@ class thumbnail
 		catch (\phpbb\filesystem\exception\filesystem_exception $e)
 		{
 			// Do nothing
+		}
+
+		return true;
+	}
+
+	/**
+	 * Set image size info
+	 *
+	 * @param string $source Source file path
+	 * @param string $mime_type Image mime type
+	 *
+	 * @return bool True if valid size could be set, false if not
+	 */
+	protected function set_size($source, $mime_type)
+	{
+		$img_filesize = (file_exists($source)) ? @filesize($source) : false;
+
+		if (!$img_filesize || $img_filesize <= (int) $this->config['img_min_thumb_filesize'])
+		{
+			return false;
+		}
+
+		$dimension = $this->image_size->getImageSize($source, $mime_type);
+
+		if ($dimension === false)
+		{
+			return false;
+		}
+
+		list($this->width, $this->height, $this->type, ) = $dimension;
+
+		if (empty($this->width) || empty($this->height))
+		{
+			return false;
+		}
+
+		list($this->new_width, $this->new_height) = get_img_size_format($this->width, $this->height);
+
+		// Do not create a thumbnail if the resulting width/height is bigger than the original one
+		if ($this->new_width >= $this->width && $this->new_height >= $this->height)
+		{
+			return false;
 		}
 
 		return true;
