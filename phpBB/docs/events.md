@@ -1598,38 +1598,6 @@ search_body_search_display_options_prepend
 * Since: 3.1.7-RC1
 * Purpose: Put content at the top of the search query display options fields set
 
-search_body_search_query_after
-===
-* Locations:
-    + styles/prosilver/template/search_body.html
-    + styles/subsilver2/template/search_body.html
-* Since: 3.1.7-RC1
-* Purpose: Add content after the search query fields set
-
-search_body_search_query_append
-===
-* Locations:
-    + styles/prosilver/template/search_body.html
-    + styles/subsilver2/template/search_body.html
-* Since: 3.1.7-RC1
-* Purpose: Put content at the bottom of the search query fields set
-
-search_body_search_query_before
-===
-* Locations:
-    + styles/prosilver/template/search_body.html
-    + styles/subsilver2/template/search_body.html
-* Since: 3.1.7-RC1
-* Purpose: Add content before the search query fields set
-
-search_body_search_query_prepend
-===
-* Locations:
-    + styles/prosilver/template/search_body.html
-    + styles/subsilver2/template/search_body.html
-* Since: 3.1.7-RC1
-* Purpose: Put content at the top of the search query fields set
-
 search_body_search_options_after
 ===
 * Locations:
@@ -1661,6 +1629,38 @@ search_body_search_options_prepend
     + styles/subsilver2/template/search_body.html
 * Since: 3.1.7-RC1
 * Purpose: Put content at the top of the search query options fields set
+
+search_body_search_query_after
+===
+* Locations:
+    + styles/prosilver/template/search_body.html
+    + styles/subsilver2/template/search_body.html
+* Since: 3.1.7-RC1
+* Purpose: Add content after the search query fields set
+
+search_body_search_query_append
+===
+* Locations:
+    + styles/prosilver/template/search_body.html
+    + styles/subsilver2/template/search_body.html
+* Since: 3.1.7-RC1
+* Purpose: Put content at the bottom of the search query fields set
+
+search_body_search_query_before
+===
+* Locations:
+    + styles/prosilver/template/search_body.html
+    + styles/subsilver2/template/search_body.html
+* Since: 3.1.7-RC1
+* Purpose: Add content before the search query fields set
+
+search_body_search_query_prepend
+===
+* Locations:
+    + styles/prosilver/template/search_body.html
+    + styles/subsilver2/template/search_body.html
+* Since: 3.1.7-RC1
+* Purpose: Put content at the top of the search query fields set
 
 search_results_header_after
 ===
