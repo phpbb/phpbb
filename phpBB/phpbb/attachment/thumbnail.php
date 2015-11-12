@@ -14,7 +14,8 @@
 namespace phpbb\attachment;
 
 use phpbb\config\config;
-use phpbb\filesystem\filesystem;
+use phpbb\filesystem\filesystem_interface;
+use bantu\IniGetWrapper\IniGetWrapper;
 use FastImageSize\FastImageSize;
 
 /**
@@ -25,8 +26,11 @@ class thumbnail
 	/** @var config phpBB config */
 	protected $config;
 
-	/** @var filesystem phpBB filesystem */
+	/** @var filesystem_interface phpBB filesystem */
 	protected $filesystem;
+
+	/** @var IniGetWrapper */
+	protected $php_ini;
 
 	/** @var FastImageSize */
 	protected $image_size;
@@ -59,13 +63,15 @@ class thumbnail
 	 * Thumbnail constructor
 	 *
 	 * @param config $config phpBB config
-	 * @param filesystem $filesystem phpBB filesystem
+	 * @param filesystem_interface $filesystem phpBB filesystem
+	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param FastImageSize $image_size FastImageSize library
 	 */
-	public function __construct(config $config, filesystem $filesystem, FastImageSize $image_size)
+	public function __construct(config $config, filesystem_interface $filesystem, IniGetWrapper $php_ini, FastImageSize $image_size)
 	{
 		$this->config = $config;
 		$this->filesystem = $filesystem;
+		$this->php_ini = $php_ini;
 		$this->imagesize = $image_size;
 	}
 
@@ -257,9 +263,9 @@ class thumbnail
 			}
 
 			// If we are in safe mode create the destination file prior to using the gd functions to circumvent a PHP bug
-			if (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on')
+			if ($this->php_ini->getBool('safe_mode'))
 			{
-				@touch($this->destination);
+				$this->filesystem->touch($this->destination);
 			}
 
 			switch ($type['format'])
