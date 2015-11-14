@@ -1148,7 +1148,7 @@ switch ($mode)
 				}
 			}
 			// include modules for manage groups link display or not
-			// need to ensure the modulr is active
+			// need to ensure the module is active
 			if (!class_exists('p_master'))
 			{
 				include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
