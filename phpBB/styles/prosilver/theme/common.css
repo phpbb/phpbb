@@ -807,7 +807,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 ---------------------------------------- */
 .pagination {
 	float: right;
-	margin-top: 3px;
 	text-align: right;
 	width: auto;
 }
@@ -876,7 +875,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
-	margin-top: 0;
+	margin-top: -12px;
 }
 
 .row .pagination > ul {

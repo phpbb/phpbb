@@ -149,6 +149,10 @@ dl.row-item dt, dl.row-item dd {
 	min-height: 35px;
 }
 
+dl.row-item dt a {
+	display: inline;
+}
+
 dl a.row-item-link {						/* topic row icon links */
 	display: block;
 	width: 30px;

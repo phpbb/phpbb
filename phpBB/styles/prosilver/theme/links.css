@@ -73,6 +73,7 @@ a.topictitle {
 	font-size: 1.2em;
 	font-weight: bold;
 	text-decoration: none;
+	display: inline;
 }
 
 a.topictitle:hover {
