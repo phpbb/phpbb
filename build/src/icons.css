@@ -47,14 +47,6 @@
 	font-size: 8px;
 }
 
-/* icon modifiers */
-.icon-tiny {
-	width: 12px;
-	transform: scale(0.65, 0.75);
-	vertical-align: text-bottom;
-	font-size: 16px;
-}
-
 .arrow-left:hover .icon {
 	margin-left: -5px;
 	margin-right: 5px;

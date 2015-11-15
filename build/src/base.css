@@ -24,8 +24,8 @@ html {
 
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	color: #333333;
-	background-color: #ffffff;
+	color: $color-black-80;
+	background-color: $color-white;
 }
 
 input,
@@ -44,18 +44,18 @@ hr {
 	margin-top: 20px;
 	margin-bottom: 20px;
 	border: 0;
-	border-top: 1px solid #e5e5e5;
+	border-top: 1px solid $color-black-10;
 }
 
 a {
-	color: #428bca;
+	color: $color-link;
 	text-decoration: none;
 }
 
 a:hover,
 a:focus,
 a:active {
-	color: #2a6496;
+	color: $color-link-accent;
 	text-decoration: underline;
 }
 

@@ -6,16 +6,17 @@
 	Modified by:		phpBB Limited ( https://www.phpbb.com/ )
     --------------------------------------------------------------
 */
+
 @import _vars.css;
-@import url("normalize.css");
-@import url("base.css");
-@import url("utilities.css");
-@import url("common.css");
-@import url("links.css");
-@import url("content.css");
-@import url("buttons.css");
-@import url("cp.css");
-@import url("forms.css");
-@import url("icons.css");
-@import url("colours.css");
-@import url("responsive.css");
+@import normalize.css;
+@import base.css;
+@import utilities.css;
+@import common.css;
+@import links.css;
+@import content.css;
+@import buttons.css;
+@import cp.css;
+@import forms.css;
+@import icons.css;
+@import colours.css;
+@import responsive.css;
