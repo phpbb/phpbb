@@ -72,7 +72,7 @@ class thumbnail
 		$this->config = $config;
 		$this->filesystem = $filesystem;
 		$this->php_ini = $php_ini;
-		$this->imagesize = $image_size;
+		$this->image_size = $image_size;
 	}
 
 	/**

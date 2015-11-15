@@ -13,6 +13,7 @@
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use phpbb\attachment\thumbnail;
 use phpbb\console\command\thumbnail\generate;
 use phpbb\console\command\thumbnail\delete;
 use phpbb\console\command\thumbnail\recreate;
@@ -26,6 +27,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	protected $phpEx;
 	protected $phpbb_root_path;
 	protected $application;
+	protected $thumbnail;
 
 	public function getDataSet()
 	{
@@ -63,12 +65,14 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 			'txt' => array('display_cat' => ATTACHMENT_CATEGORY_NONE),
 		)));
 
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+
+		$this->thumbnail = new \phpbb\attachment\thumbnail($config, $phpbb_filesystem, new \bantu\IniGetWrapper\IniGetWrapper(), new \FastImageSize\FastImageSize());
+
 		$this->application = new Application();
-		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->phpbb_root_path, $this->phpEx));
+		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->thumbnail, $this->phpbb_root_path, $this->phpEx));
 		$this->application->add(new delete($this->user, $this->db, $this->phpbb_root_path));
 		$this->application->add(new recreate($this->user));
-
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');

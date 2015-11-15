@@ -30,6 +30,11 @@ class generate extends \phpbb\console\command\command
 	protected $cache;
 
 	/**
+	 * @var \phpbb\attachment\thumbnail
+	 */
+	protected $thumbnail;
+
+	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -48,13 +53,15 @@ class generate extends \phpbb\console\command\command
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\cache\service $cache The cache service
+	* @param \phpbb\attachment\thumbnail $thumbnail Thumbnail service
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\attachment\thumbnail $thumbnail, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->thumbnail = $thumbnail;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -110,11 +117,6 @@ class generate extends \phpbb\console\command\command
 			WHERE thumbnail = 0';
 		$result = $this->db->sql_query($sql);
 
-		if (!function_exists('create_thumbnail'))
-		{
-			require($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-		}
-
 		$progress = $this->create_progress_bar($nb_missing_thumbnails, $io, $output);
 
 		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_GENERATING'));
@@ -129,7 +131,7 @@ class generate extends \phpbb\console\command\command
 				$source = $this->phpbb_root_path . 'files/' . $row['physical_filename'];
 				$destination = $this->phpbb_root_path . 'files/thumb_' . $row['physical_filename'];
 
-				if (create_thumbnail($source, $destination, $row['mimetype']))
+				if ($this->thumbnail->create($source, $destination, $row['mimetype']))
 				{
 					$thumbnail_created[] = (int) $row['attach_id'];
 
