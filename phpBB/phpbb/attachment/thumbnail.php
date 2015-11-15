@@ -84,7 +84,7 @@ class thumbnail
 	 *
 	 * @return bool True if thumbnail was created, false if not
 	 */
-	function create($source, $destination, $mime_type)
+	public function create($source, $destination, $mime_type)
 	{
 		$this->set_paths($source, $destination);
 		$this->thumbnail_created = false;
@@ -197,6 +197,11 @@ class thumbnail
 	 */
 	protected function create_gd()
 	{
+		if ($this->thumbnail_created)
+		{
+			return true;
+		}
+
 		$type = get_supported_image_types($this->type);
 
 		if ($type['gd'])
