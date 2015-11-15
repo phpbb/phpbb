@@ -8,32 +8,42 @@ var gulp            = require('gulp'),
 // Dir Variables
 var theme          = 'prosilver',
 	cssDir         = './phpbb/styles/' + theme + '/theme/',
+	css            =  [
+						'base.css',
+						'bidi.css',
+						'buttons.css',
+						'colours.css',
+						'common.css',
+						'content.css',
+						'cp.css',
+						'forms.css',
+						'icons.css',
+						'normalize.css',
+						'pupload.css',
+						'print.css',
+						'responsive.css',
+						'tweaks.css',
+						'utilities.css',
+					]
 	browserSupport = 'last 2 versions, IE >= 10',
 	minify         = true,
-	suf            = '.dev';
+	suf            = '';
 
 // Tasks
 gulp.task('build:css', function () {
 	var processors = [
-		require('postcss-import')(),
-		require('postcss-simple-vars'),
+		require('precss'),
 		require('autoprefixer')(),
 
 	];
 
 	if (minify) {
 		processors.push(require('csswring')());
+		css = 'stylesheet.css'
 		suf = '.min';
 	}
 
-	return gulp.src([
-					cssDir + "stylesheet.css",
-					cssDir + "print.css",
-					cssDir + "responsive.css",
-					cssDir + "bidi.css",
-					cssDir + "tweaks.css",
-					cssDir + "plupload.css"
-				])
+	return gulp.src(css)
 				.pipe(postcss(processors))
 				.pipe(rename({suffix: suf}))
 				.pipe(gulp.dest(cssDir));
@@ -41,7 +51,7 @@ gulp.task('build:css', function () {
 });
 
 gulp.task('watch', function () {
-	gulp.watch(cssDir + '(*.css|!*.min.css)', ['build:css']);
+	gulp.watch('*.css', ['build:css']);
 });
 
 gulp.task('default', ['build:css', 'watch']);
