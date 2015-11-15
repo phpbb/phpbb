@@ -7,81 +7,79 @@ Colours
 //------------------------------------------------------------
 
 // Grayscale Colors
-@color-black:					#000000;
-@color-black-90:				#1A1A1A;
-@color-black-80:				#333333;
-@color-black-70:				#4D4D4D;
-@color-black-60:				#666666;
-@color-black-50:				#7F7F7F;
-@color-black-40:				#999999;
-@color-black-30:				#B3B3B3;
-@color-black-25:				#BFBFBF;
-@color-black-20:				#CCCCCC;
-@color-black-13:				#DDDDDD;
-@color-black-10:				#E6E6E6;
-@color-black-5:					#F2F2F2;
-@color-black-2:					#FAFAFA;
+@color-black:					#000000
+@color-black-90:				#1A1A1A
+@color-black-80:				#333333
+@color-black-70:				#4D4D4D
+@color-black-60:				#666666
+@color-black-50:				#7F7F7F
+@color-black-40:				#999999
+@color-black-30:				#B3B3B3
+@color-black-25:				#BFBFBF
+@color-black-20:				#CCCCCC
+@color-black-13:				#DDDDDD
+@color-black-10:				#E6E6E6
+@color-black-5:					#F2F2F2
+@color-black-2:					#FAFAFA
 
-@color-white:					#FFFFFF;
+@color-white:					#FFFFFF
 
 // Gradient
-@color-primary:					#13A4EC;
-@color-primary-light:			#66CCFF;
-@color-primary-dark:			#0077B3;
+@color-primary:					#13A4EC
+@color-primary-light:			#66CCFF
+@color-primary-dark:			#0077B3
 
 // Secodary Colors
-@color-secondary:				#4095BF;
-@color-secondary-hover:			#2D9BD2;
-@color-secondary-accent:		#5C7A8A;
-@color-secondary-dark:			#29363D;
+@color-secondary:				#4095BF
+@color-secondary-hover:			#2D9BD2
+@color-secondary-accent:		#5C7A8A
+@color-secondary-dark:			#29363D
 
 // Background Colors
-@color-bg:						#EEF4F7;
-@color-bg-1:					#EDF4F7;
-@color-bg-2:					#DBE9F0;
-@color-bg-3:					#C8DEEA;
-@color-bg-light:				#E5F6FF;
-@color-bg-dark:					#AFC5CF;
-@color-bg-dark-hover:			#B3C3CC;
+@color-bg:						#EEF4F7
+@color-bg-1:					#EDF4F7
+@color-bg-2:					#DBE9F0
+@color-bg-3:					#C8DEEA
+@color-bg-light:				#E5F6FF
+@color-bg-dark:					#AFC5CF
+@color-bg-dark-hover:			#B3C3CC
 
 // Link Colors
-@color-link:					#0F618A;
-@color-link-accent:				#0B95DA;
-@color-link-hover:				#D31141;
-@color-link-hover-highlight:	#F4BECB;
-@color-link-hover-notice:		#F0DBE0;
-@color-link-hover-report:		#F7EDF0;
+@color-link:					#0F618A
+@color-link-accent:				#0B95DA
+@color-link-hover:				#D31141
+@color-link-hover-highlight:	#F4BECB
+@color-link-hover-notice:		#F0DBE0
+@color-link-hover-report:		#F7EDF0
 
 // Poll Colors
-@color-poll-bg1: 				#9E2E4A;
-@color-poll-bg2:				#BD284D;
-@color-poll-bg3:				#DF2050;
-@color-poll-bg4:				#EE2B5B;
-@color-poll-bg5:				#FA3869;
+@color-poll-bg1: 				#9E2E4A
+@color-poll-bg2:				#BD284D
+@color-poll-bg3:				#DF2050
+@color-poll-bg4:				#EE2B5B
+@color-poll-bg5:				#FA3869
 
-@color-poll-border1:			#861330;
-@color-poll-border2:			#9C1638;
-@color-poll-border3:			@color-poll-bg1;
-@color-poll-border4:			@color-poll-bg2;
-@color-poll-border5:			@color-poll-bg3;
+@color-poll-border1:			#861330
+@color-poll-border2:			#9C1638
+@color-poll-border3:			@color-poll-bg1
+@color-poll-border4:			@color-poll-bg2
+@color-poll-border5:			@color-poll-bg3
 
 // Highlights
-@color-highlight-row:			#F7F7D4;
-@color-blockquote:				#ECECDF;
-@color-blockquote-inner:		#F0F0DB;
+@color-highlight-row:			#F7F7D4
+@color-blockquote:				#ECECDF
+@color-blockquote-inner:		#F0F0DB
 
 // Code Colors
-@color-code-default:			#2D8652;
-@color-code-orange:				#FF8000;
-@color-code-red:				#E60000;
-@color-code-blue:				#0000CC;
-@color-code-green:				#008000;
+@color-code-default:			#2D8652
+@color-code-orange:				#FF8000
+@color-code-red:				#E60000
+@color-code-blue:				#0000CC
+@color-code-green:				#008000
 
 // PM Colors
-@color-pm-marked:				#FF8000;
-@color-pm-reply:				#A3B8C2;
-@color-pm-friend:				#5E9CBA;
-@color-pm-foe:					@color-black;
+@color-pm-reply:				#A3B8C2
+@color-pm-friend:				#5E9CBA
 
 -------------------------------------------------------------- */
 
@@ -310,7 +308,7 @@ a:hover .icon.icon-red {
 
 .icon.icon-bluegray, 
 a:hover .icon.icon-bluegray {
-	color: #536482;
+	color: #5C7A8A;
 }
 
 .icon.icon-gray, 
@@ -710,7 +708,7 @@ Colours and backgrounds for buttons.css
 
 .button .icon,
 .button-secondary {
-	color: #8f8f8f;
+	color: #7F7F7F;
 }
 
 
@@ -718,12 +716,12 @@ Colours and backgrounds for buttons.css
 .button-secondary:hover,
 .button:focus .icon,
 .button:hover .icon {
-	color: #0A8ED0;
+	color: #0B95DA;
 }
 
 .button-search:hover,
 .button-search-end:hover {
-	border-color: #C7C3BF;
+	border-color: #CCCCCC;
 }
 
 .caret {
