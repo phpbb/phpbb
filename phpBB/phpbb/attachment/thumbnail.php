@@ -148,17 +148,14 @@ class thumbnail
 
 		$dimension = $this->image_size->getImageSize($this->source, $mime_type);
 
-		if ($dimension === false)
+		if ($dimension === false || empty($dimension['width'] || empty($dimension['height'])))
 		{
 			return false;
 		}
 
-		list($this->width, $this->height, $this->type, ) = $dimension;
-
-		if (empty($this->width) || empty($this->height))
-		{
-			return false;
-		}
+		$this->width = $dimension['width'];
+		$this->height = $dimension['height'];
+		$this->type = $dimension['type'];
 
 		list($this->new_width, $this->new_height) = get_img_size_format($this->width, $this->height);
 
