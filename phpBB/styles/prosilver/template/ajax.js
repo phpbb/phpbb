@@ -87,7 +87,7 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 	});
 
 	// Remove link to first unread post
-	$('a').has('i.icon-red').remove();
+	$('a.unread').has('.icon-red').remove();
 
 	// Update mark topics read links
 	if (updateTopicLinks) {
