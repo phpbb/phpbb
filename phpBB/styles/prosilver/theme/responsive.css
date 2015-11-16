@@ -557,9 +557,16 @@
 	}
 }
 
+@media (min-width: 700px) {
+	.postbody { width: 70%; }
+}
+
+@media (min-width: 850px) {
+	.postbody { width: 76%; }
+}
+
 @media (max-width: 850px) {
 	.postprofile { width: 28%; }
-	.postbody { width: 70%; }
 }
 
 @media (min-width: 701px) and (max-width: 950px) {
