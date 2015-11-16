@@ -1,57 +1,57 @@
 'use strict';
 
 // Plugins
-var gulp            = require('gulp'),
-	rename 			= require('gulp-rename'),
-	postcss         = require('gulp-postcss');
+var gulp			= require('gulp'),
+	rename			= require('gulp-rename'),
+	sass			= require('gulp-sass'),
+	postcss			= require('gulp-postcss');
 
 // Dir Variables
-var theme          = 'prosilver',
-	cssDir         = './phpbb/styles/' + theme + '/theme/',
-	css            =  [
-						'base.css',
-						'bidi.css',
-						'buttons.css',
-						'colours.css',
-						'common.css',
-						'content.css',
-						'cp.css',
-						'forms.css',
-						'icons.css',
-						'normalize.css',
-						'pupload.css',
-						'print.css',
-						'responsive.css',
-						'tweaks.css',
-						'utilities.css',
-					]
-	browserSupport = 'last 2 versions, IE >= 10',
-	minify         = true,
-	suf            = '';
+var theme			= 'prosilver',
+	srcDir			= './build/src/',
+	cssDir			= './phpbb/styles/' + theme + '/theme/',
+	css				= [
+						'base.scss',
+						'bidi.scss',
+						'buttons.scss',
+						'colours.scss',
+						'common.scss',
+						'content.scss',
+						'cp.scss',
+						'forms.scss',
+						'icons.scss',
+						'normalize.scss',
+						'pupload.scss',
+						'print.scss',
+						'responsive.scss',
+						'tweaks.scss',
+						'utilities.scss',
+					],
+	browserSupport	= 'last 2 versions, IE >= 10',
+	minify			= false,
+	suf				= '';
 
 // Tasks
 gulp.task('build:css', function () {
 	var processors = [
-		require('precss'),
-		require('autoprefixer')(),
-
+		require('autoprefixer')()
 	];
 
 	if (minify) {
 		processors.push(require('csswring')());
-		css = 'stylesheet.css'
+		css = ['stylesheet.scss', 'print.scss', 'pupload.scss', 'tweaks.scss', 'bidi.scss'];
 		suf = '.min';
 	}
 
-	return gulp.src(css)
+	return gulp.src(srcDir + css)
+				.pipe(sass().on('error', sass.logError))
 				.pipe(postcss(processors))
 				.pipe(rename({suffix: suf}))
 				.pipe(gulp.dest(cssDir));
-
 });
 
 gulp.task('watch', function () {
-	gulp.watch('*.css', ['build:css']);
+	gulp.watch(srcDir + '*.scss', ['build:css']);
 });
 
 gulp.task('default', ['build:css', 'watch']);

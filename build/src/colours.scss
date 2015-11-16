@@ -1,8 +1,7 @@
 @import _vars.css;
-/*
---------------------------------------------------------------
-Colours
--------------------------------------------------------------- */
+/*--------------------------------------------------------------
+	Colours
+--------------------------------------------------------------*/
 
 /* Covor Variables
 //------------------------------------------------------------
@@ -106,10 +105,9 @@ hr {
 	border-top-color: $color-black-20;
 }
 
-/*
---------------------------------------------------------------
-Colours and backgrounds for links.css
--------------------------------------------------------------- */
+/*--------------------------------------------------------------
+	Colours and backgrounds for links.css
+--------------------------------------------------------------*/
 
 a {
 	color: $color-link;
@@ -407,7 +405,7 @@ ul.forums {
 	background-color: $color-bg-1;
 	background-image: -webkit-linear-gradient(top, $color-bg-3 0%, $color-bg-1 100%);
 	background-image: linear-gradient(to bottom, $color-bg-3 0%,$color-bg-1 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$color-bg-3', endColorstr='$color-bg-1',GradientType=0 );
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{$color-bg-3}', endColorstr='#{$color-bg-1}',GradientType=0 );
 }
 
 ul.topiclist li {
