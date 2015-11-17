@@ -162,7 +162,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 }
 
 // Assign index specific vars
-$template->assign_vars(array(
+$template_data = array(
 	'TOTAL_POSTS'	=> $user->lang('TOTAL_POSTS_COUNT', (int) $config['num_posts']),
 	'TOTAL_TOPICS'	=> $user->lang('TOTAL_TOPICS', (int) $config['num_topics']),
 	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
@@ -182,7 +182,7 @@ $template->assign_vars(array(
 	'S_INDEX'					=> true,
 
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
-	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
+	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : ''
 );
 
 $page_title = ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['INDEX'];
@@ -192,9 +192,11 @@ $page_title = ($config['board_index_text'] !== '') ? $config['board_index_text']
 *
 * @event core.index_modify_page_title
 * @var	string	page_title		Title of the index page
+* @var	array	template_data		Array with the board statistics, legend and birthday list
+* @changed 3.1.7	added template_data
 * @since 3.1.0-a1
 */
-$vars = array('page_title');
+$vars = array('page_title', 'template_data');
 extract($phpbb_dispatcher->trigger_event('core.index_modify_page_title', compact($vars)));
 
 // Output page
