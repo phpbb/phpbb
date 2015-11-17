@@ -36,7 +36,7 @@ Colours
 @color-secondary-dark:			#29363D
 
 // Background Colors
-@color-bg:						#EEF4F7
+@color-bg:						#F5F8FA
 @color-bg-1:					#EDF4F7
 @color-bg-2:					#DBE9F0
 @color-bg-3:					#C8DEEA
@@ -86,7 +86,7 @@ Colours
 html,
 body {
 	color: #5C7A8A;
-	background-color: #EEF4F7;
+	background-color: #F5F8FA;
 }
 
 h1 {
