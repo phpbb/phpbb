@@ -406,9 +406,9 @@ Colours and backgrounds for content.css
 -------------------------------------------------------------- */
 ul.forums {
 	background-color: #EDF4F7;
-	background-image: -webkit-linear-gradient(top, #C8DEEA 0%, #EDF4F7 100%);
-	background-image: linear-gradient(to bottom, #C8DEEA 0%,#EDF4F7 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#C8DEEA', endColorstr='#EDF4F7',GradientType=0 );
+	background-image: -webkit-linear-gradient(top, #DBE9F0 0%, #EDF4F7 100%);
+	background-image: linear-gradient(to bottom, #DBE9F0 0%,#EDF4F7 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#DBE9F0', endColorstr='#EDF4F7',GradientType=0 );
 }
 
 ul.topiclist li {
