@@ -226,8 +226,8 @@ $page_title = ($config['board_index_text'] !== '') ? $config['board_index_text']
 * @event core.index_modify_page_title
 * @var	string	page_title		Title of the index page
 * @var	array	template_data		Array with the board statistics, legend and birthday list
-* @changed 3.1.7	added template_data
 * @since 3.1.0-a1
+* @changed 3.1.7 Added template_data
 */
 $vars = array('page_title', 'template_data');
 extract($phpbb_dispatcher->trigger_event('core.index_modify_page_title', compact($vars)));
