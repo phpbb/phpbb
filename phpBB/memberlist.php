@@ -1149,17 +1149,21 @@ switch ($mode)
 			}
 			// include modules for manage groups link display or not
 			// need to ensure the module is active
-			if (!class_exists('p_master'))
-			{
-				include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
-			}
-			$module = new p_master;
-			$module->list_modules('ucp');
-
 			$can_manage_group = false;
-			if ($module->is_active('ucp_groups', 'manage') && ($group_row['group_leader'] || ($group_row['group_founder_manage'] && $user->data['user_type'] == USER_FOUNDER)))
+			if ($user->data['is_registered'])
 			{
-				$can_manage_group = true;
+				if (!class_exists('p_master'))
+				{
+					include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+				}
+				$module = new p_master;
+				$module->list_modules('ucp');
+
+				if ($module->is_active('ucp_groups', 'manage') && $group_row['group_leader'])
+				{
+					$can_manage_group = true;
+				}
+				unset($module);
 			}
 
 			$template->assign_vars(array(
