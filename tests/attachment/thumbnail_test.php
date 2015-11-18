@@ -58,16 +58,16 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 	public function data_get_size()
 	{
 		return array(
-			array('foobar', 'meh', 'image/png', false),
-			array('../tests/upload/fixture/png', 'meh', 'image/png', false,
+			array('foobar', '../tests/upload/fixture/meh', 'image/png', false),
+			array('../tests/upload/fixture/png', '../tests/upload/fixture/meh', 'image/png', false,
 				array('img_min_thumb_filesize' => 500)
 			),
-			array('../tests/upload/fixture/png', 'meh', 'image/png', false,
+			array('../tests/upload/fixture/png', '../tests/upload/fixture/meh', 'image/png', false,
 				array('img_min_thumb_filesize' => 0),
 				true,
 				false
 			),
-			array('../tests/upload/fixture/png', 'meh', 'image/png', false,
+			array('../tests/upload/fixture/png', '../tests/upload/fixture/meh', 'image/png', false,
 				array(
 					'img_min_thumb_filesize'	=> 0,
 					'img_max_thumb_width'		=> 200,
@@ -80,7 +80,7 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 					'type'		=> IMAGETYPE_PNG,
 				)
 			),
-			array('../tests/upload/fixture/png', 'meh', 'image/png', true,
+			array('../tests/upload/fixture/png', '../tests/upload/fixture/meh', 'image/png', true,
 				array(
 					'img_min_thumb_filesize'	=> 0,
 					'img_max_thumb_width'		=> 200,
@@ -117,8 +117,13 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 
 		$this->get_thumbnail();
 
-		$this->assertSame($expected, $this->thumbnail->create($this->phpbb_root_path . $source, $destination, $type));
+		$this->assertSame($expected, $this->thumbnail->create($this->phpbb_root_path . $source, $this->phpbb_root_path . $destination, $type));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
+
+		if (file_exists($this->phpbb_root_path . $destination))
+		{
+			unlink($this->phpbb_root_path . $destination);
+		}
 	}
 }
