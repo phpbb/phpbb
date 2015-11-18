@@ -41,7 +41,7 @@ $color-secondary-accent:					darken(desaturate($color-secondary, 30%), 5%);   //
 $color-secondary-dark:						darken(desaturate($color-secondary, 30%), 30%);  // hsl(200, 20%, 20%)  #29363D
 
 // Background Colors
-$color-bg:									lighten(desaturate($color-primary, 50%), 45%);    // hsl(200, 35%, 95%)  #EEF4F7
+$color-bg:									lighten(desaturate($color-primary, 50%), 47%);    // hsl(200, 35%, 95%)  #EEF4F7
 $color-bg-1:								saturate($color-bg, 5%);                          // hsl(200, 40%, 95%)  #EDF4F7
 $color-bg-2:								darken(saturate($color-bg, 5%), 5%);              // hsl(200, 40%, 90%)  #DBE9F0
 $color-bg-3:								darken(saturate($color-bg, 10%), 10%);            // hsl(200, 45%, 85%)  #C8DEEA
