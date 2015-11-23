@@ -81,4 +81,5 @@ $config_path = (file_exists($other_config_path . '/installer/config.yml')) ? $ot
 
 $phpbb_installer_container = $phpbb_installer_container_builder
 	->with_config_path($config_path)
+	->with_custom_parameters(array('cache.driver.class' => 'phpbb\cache\driver\file'))
 	->get_container();

@@ -9,6 +9,11 @@ imports:
     - { resource: ../../default/container/services_twig.yml }
 
 services:
+    cache.driver:
+        class: %cache.driver.class%
+        arguments:
+            - "%core.root_path%/cache/installer/"
+
     config:
         class: phpbb\config\config
         arguments:

@@ -295,7 +295,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'installer.create_config_file.options' => [
 					'debug' => true,
 					'environment' => 'test',
-				]
+				],
+				'cache.driver.class' => 'phpbb\cache\driver\file'
 			])
 			->without_compiled_container()
 			->get_container();

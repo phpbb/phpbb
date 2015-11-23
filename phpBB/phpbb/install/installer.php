@@ -13,6 +13,7 @@
 
 namespace phpbb\install;
 
+use phpbb\cache\driver\driver_interface;
 use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\installer_config_not_writable_exception;
 use phpbb\install\exception\jump_to_restart_point_exception;
@@ -25,6 +26,11 @@ use phpbb\path_helper;
 
 class installer
 {
+	/**
+	 * @var driver_interface
+	 */
+	protected $cache;
+
 	/**
 	 * @var config
 	 */
@@ -55,11 +61,13 @@ class installer
 	/**
 	 * Constructor
 	 *
-	 * @param config		$config			Installer config handler
-	 * @param path_helper	$path_helper	Path helper
+	 * @param driver_interface	$cache			Cache service
+	 * @param config			$config			Installer config handler
+	 * @param path_helper		$path_helper	Path helper
 	 */
-	public function __construct(config $config, path_helper $path_helper)
+	public function __construct(driver_interface $cache, config $config, path_helper $path_helper)
 	{
+		$this->cache				= $cache;
 		$this->install_config		= $config;
 		$this->installer_modules	= null;
 		$this->web_root				= $path_helper->get_web_root_path();
@@ -235,6 +243,7 @@ class installer
 			if ($install_finished || $fail_cleanup)
 			{
 				$this->install_config->clean_up_config_file();
+				$this->cache->purge();
 			}
 			else
 			{
