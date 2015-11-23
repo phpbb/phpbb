@@ -116,7 +116,7 @@ class install extends \phpbb\console\command\command
 
 		if (!is_file($config_file))
 		{
-			$iohandler->add_error_message(array('MISSING_FILE', array($config_file)));
+			$iohandler->add_error_message(array('MISSING_FILE', $config_file));
 
 			return 1;
 		}
@@ -127,7 +127,7 @@ class install extends \phpbb\console\command\command
 		}
 		catch (ParseException $e)
 		{
-			$iohandler->add_error_message('INVALID_YAML_FILE');
+			$iohandler->add_error_message(array('INVALID_YAML_FILE', $config_file));
 
 			return 1;
 		}

@@ -12,6 +12,8 @@
 *
 */
 
+use Symfony\Component\Console\Input\ArgvInput;
+
 if (php_sapi_name() !== 'cli')
 {
 	echo 'This program must be run from the command line.' . PHP_EOL;
@@ -30,6 +32,8 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 $startup_new_path = $phpbb_root_path . 'install/update/update/new/install/startup.' . $phpEx;
 $startup_path = (file_exists($startup_new_path)) ? $startup_new_path : $phpbb_root_path . 'install/startup.' . $phpEx;
 require($startup_path);
+
+$input = new ArgvInput();
 
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
