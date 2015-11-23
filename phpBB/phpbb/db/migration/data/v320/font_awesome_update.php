@@ -15,6 +15,13 @@ namespace phpbb\db\migration\data\v320;
 
 class font_awesome_update extends \phpbb\db\migration\migration
 {
+	static public function depends_on()
+	{
+		return array(
+			'\phpbb\db\migration\data\v320\dev',
+		);
+	}
+
 	public function effectively_installed()
 	{
 		return isset($this->config['load_font_awesome_url']);
