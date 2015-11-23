@@ -1130,7 +1130,7 @@ fieldset.quick-login input.inputbox {
 
 .inputbox:focus {
 	border-color: #0B95DA;
-	color: #0B95DA;
+	color: #0F618A;
 }
 
 .inputbox:focus:-moz-placeholder {
