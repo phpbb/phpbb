@@ -70,7 +70,7 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 		$admin_name		= $this->io_handler->get_input('admin_name', '', true);
 		$admin_pass1	= $this->io_handler->get_input('admin_pass1', '', true);
 		$admin_pass2	= $this->io_handler->get_input('admin_pass2', '', true);
-		$board_email	= $this->io_handler->get_input('board_email', '');
+		$board_email	= $this->io_handler->get_input('board_email', '', true);
 
 		$admin_data_valid = $this->check_admin_data($admin_name, $admin_pass1, $admin_pass2, $board_email);
 
