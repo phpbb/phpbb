@@ -85,7 +85,7 @@ Colours
 
 html,
 body {
-	color: #5C7A8A;
+	color: #29363D;
 	background-color: #F5F8FA;
 }
 
@@ -1062,7 +1062,7 @@ select {
 }
 
 label {
-	color: #5C7A8A;
+	color: inherit;
 }
 
 option.disabled-option {
@@ -1154,6 +1154,8 @@ a.button1,
 input.button1 {
 	border-color: #666666;
 }
+
+[Define New Theme] 8. Utilize Font Awesome icons where icons are needed to simplify server requests. 
 
 input.button3 {
 	background-image: none;
