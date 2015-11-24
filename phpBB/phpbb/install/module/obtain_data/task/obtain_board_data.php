@@ -76,8 +76,8 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 	{
 		// Board data
 		$default_lang	= $this->io_handler->get_input('default_lang', '');
-		$board_name		= $this->io_handler->get_input('board_name', '');
-		$board_desc		= $this->io_handler->get_input('board_description', '');
+		$board_name		= $this->io_handler->get_input('board_name', '', true);
+		$board_desc		= $this->io_handler->get_input('board_description', '', true);
 
 		// Check default lang
 		$langs = $this->language_helper->get_available_languages();
@@ -116,8 +116,8 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 	{
 		if ($use_request_data)
 		{
-			$board_name		= $this->io_handler->get_input('board_name', '');
-			$board_desc		= $this->io_handler->get_input('board_description', '');
+			$board_name		= $this->io_handler->get_input('board_name', '', true);
+			$board_desc		= $this->io_handler->get_input('board_description', '', true);
 		}
 		else
 		{
