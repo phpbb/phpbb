@@ -830,7 +830,7 @@ abstract class driver implements driver_interface
 	{
 		$operation = $operations_ary[self::LOGICAL_OP];
 
-		foreach ($operations_ary[self::LOGICAL_OP] as &$condition)
+		foreach ($operations_ary[self::STATEMENTS] as &$condition)
 		{
 			switch ($condition[self::LOGICAL_OP])
 			{
