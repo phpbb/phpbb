@@ -10,7 +10,7 @@
 	<p>{L_ATTACHMENTS_EXPLAIN}</p>
 
 	<!-- IF .attachrow -->
-		<div class="action-bar bar-top">
+		<div class="action-bar top">
 			<div class="pagination">
 				{NUM_ATTACHMENTS}
 				<!-- IF .pagination --> 
@@ -50,16 +50,10 @@
 		<!-- END attachrow -->
 		</ul>
 
-		<fieldset class="display-options">
-			<label for="sk">{L_SORT_BY}{L_COLON} <select name="sk" id="sk">{S_SORT_OPTIONS}</select></label> 
-			<label><select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
-			<input class="button2" type="submit" name="sort" value="{L_SORT}" />
+		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
 			{S_FORM_TOKEN}
-		</fieldset>
 
-		<hr />
-
-		<div class="action-bar bar-bottom">
 			<div class="pagination">
 				{TOTAL_ATTACHMENTS} {L_TITLE}
 				<!-- IF .pagination --> 

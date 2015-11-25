@@ -248,20 +248,6 @@
 	<!-- ENDIF -->
 <!-- END topicrow -->
 
-<!-- IF S_SELECT_SORT_DAYS and not S_DISPLAY_ACTIVE -->
-	<form method="post" action="{S_FORUM_ACTION}">
-		<fieldset class="display-options">
-	<!-- IF not S_IS_BOT -->
-			<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
-			<label>{S_SELECT_SORT_DIR}</label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
-	<!-- ENDIF -->
-		</fieldset>
-	</form>
-	<hr />
-<!-- ENDIF -->
-
 <!-- IF .topicrow and not S_DISPLAY_ACTIVE -->
 	<div class="action-bar bar-bottom">
 		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
@@ -276,6 +262,24 @@
 			</a>
 
 			<!-- EVENT viewforum_buttons_bottom_after -->
+		<!-- ENDIF -->
+
+		<!-- IF S_SELECT_SORT_DAYS and not S_IS_BOT -->
+			<form method="post" action="{S_FORUM_ACTION}">
+			<!-- INCLUDE display_options.html -->
+			</form>
+		<!-- ENDIF -->
+
+		<!-- IF S_SELECT_SORT_DAYS and not S_IS_BOT -->
+			<form method="post" action="{S_FORUM_ACTION}">
+			<!-- INCLUDE display_options.html -->
+			</form>
+		<!-- ENDIF -->
+
+		<!-- IF S_SELECT_SORT_DAYS and not S_IS_BOT -->
+			<form method="post" action="{S_FORUM_ACTION}">
+			<!-- INCLUDE display_options.html -->
+			</form>
 		<!-- ENDIF -->
 
 		<div class="pagination">
