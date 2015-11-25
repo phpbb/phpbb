@@ -1150,7 +1150,7 @@ switch ($mode)
 			// include modules for manage groups link display or not
 			// need to ensure the module is active
 			$can_manage_group = false;
-			if ($user->data['is_registered'])
+			if ($user->data['is_registered'] && $group_row['group_leader'])
 			{
 				if (!class_exists('p_master'))
 				{
@@ -1159,7 +1159,7 @@ switch ($mode)
 				$module = new p_master;
 				$module->list_modules('ucp');
 
-				if ($module->is_active('ucp_groups', 'manage') && $group_row['group_leader'])
+				if ($module->is_active('ucp_groups', 'manage'))
 				{
 					$can_manage_group = true;
 				}
