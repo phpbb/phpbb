@@ -295,6 +295,7 @@
 			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice unapproved">
+					<span><i class="icon fa-question icon-red fa-fw" aria-hidden="true"></i></span>
 					<strong>{L_POST_UNAPPROVED_ACTION}</strong>
 					<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 					<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
@@ -318,7 +319,7 @@
 
 			<!-- IF postrow.S_POST_REPORTED -->
 			<p class="post-notice reported">
-				<a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+				<a href="{postrow.U_MCP_REPORT}"><i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><strong>{L_POST_REPORTED}</strong></a>
 			</p>
 			<!-- ENDIF -->
 

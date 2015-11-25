@@ -1004,21 +1004,8 @@ div.rules ul, div.rules ol {
 p.post-notice {
 	position: relative;
 	padding: 5px;
-	padding-left: 26px;
 	min-height: 14px;
 	margin-bottom: 1em;
-}
-
-p.post-notice:before {
-	content: '';
-	display: block;
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	width: 28px;
-	background: transparent none 50% 50% no-repeat;
-	pointer-events: none;
 }
 
 form > p.post-notice strong {
