@@ -1088,7 +1088,7 @@ switch ($mode)
 		if ($mode == 'group')
 		{
 			// We JOIN here to save a query for determining membership for hidden groups. ;)
-			$sql = 'SELECT g.*, ug.user_id
+			$sql = 'SELECT g.*, ug.user_id, ug.group_leader
 				FROM ' . GROUPS_TABLE . ' g
 				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.user_pending = 0 AND ug.user_id = ' . $user->data['user_id'] . " AND ug.group_id = $group_id)
 				WHERE g.group_id = $group_id";
@@ -1147,6 +1147,24 @@ switch ($mode)
 					$user_rank_data['img'] .= '<br />';
 				}
 			}
+			// include modules for manage groups link display or not
+			// need to ensure the module is active
+			$can_manage_group = false;
+			if ($user->data['is_registered'] && $group_row['group_leader'])
+			{
+				if (!class_exists('p_master'))
+				{
+					include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+				}
+				$module = new p_master;
+				$module->list_modules('ucp');
+
+				if ($module->is_active('ucp_groups', 'manage'))
+				{
+					$can_manage_group = true;
+				}
+				unset($module);
+			}
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
@@ -1159,7 +1177,8 @@ switch ($mode)
 				'RANK_IMG'		=> $user_rank_data['img'],
 				'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
 
-				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
+				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',
+				'U_MANAGE'		=> ($can_manage_group) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_groups&amp;mode=manage') : false,)
 			);
 
 			$sql_select = ', ug.group_leader';
