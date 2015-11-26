@@ -1822,7 +1822,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	);
 
 	// Only display the quote button if the post is quotable.  Posts not approved are not quotable.
-	$quote_allowed = ($quote_allowed && $row['post_visibility']) ? true : false;
+	$quote_allowed = ($quote_allowed && $row['post_visibility'] == ITEM_APPROVED) ? true : false;
 
 	$delete_allowed = $force_delete_allowed || ($user->data['is_registered'] && (
 		($auth->acl_get('m_delete', $forum_id) || ($auth->acl_get('m_softdelete', $forum_id) && $row['post_visibility'] != ITEM_DELETED)) ||
