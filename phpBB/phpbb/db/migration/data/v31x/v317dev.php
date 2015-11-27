@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v31x;
 
-class v317rc1 extends \phpbb\db\migration\migration
+class v317dev extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -25,7 +25,7 @@ class v317rc1 extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.update', array('version', '3.1.7-RC1')),
+			array('config.update', array('version', '3.1.7-dev')),
 		);
 	}
 	
