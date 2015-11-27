@@ -25,9 +25,10 @@ class v317rc1 extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.update', array('version', '3.1.6-RC1')),
+			array('config.update', array('version', '3.1.7-RC1')),
 		);
 	}
+	
 	public function update_schema() {
         return array(
             'change_columns' => array(
