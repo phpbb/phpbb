@@ -86,7 +86,7 @@ class ucp_prefs
 					}
 
 					$error = array_merge(validate_data($data, array(
-						'dateformat'	=> array('string', false, 1, 30),
+						'dateformat'	=> array('string', false, 1, 64),
 						'lang'			=> array('language_iso_name'),
 						'tz'			=> array('timezone'),
 					)), $error);
