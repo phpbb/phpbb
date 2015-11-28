@@ -33,7 +33,7 @@ class v317dev extends \phpbb\db\migration\migration
         return array(
             'change_columns' => array(
                 $this->table_prefix . 'users' => array(
-                    'user_dateformat' => array('VCHAR:64', ''),
+                    'user_dateformat' => array('VCHAR:64', 'd M Y H:i'),
                 ),
             ),
         );
