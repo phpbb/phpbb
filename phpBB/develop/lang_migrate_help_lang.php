@@ -11,18 +11,13 @@
  *
  */
 
-//
-// Security message:
-//
-// This script is potentially dangerous.
-// Remove or comment the next line (die(".... ) to enable this script.
-// Do NOT FORGET to either remove this script or disable it after you have used it.
-//
-#die("Please read the first lines of this script for instructions on how to enable it");
+define('LANGUAGE_TO_MIGRATE', 'en');
+
+# NO CHANGES BELOW THIS LINE
 
 define('IN_PHPBB', true);
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-$phpbb_root_path='./../';
+$phpbb_root_path = './../';
 include($phpbb_root_path . 'common.'.$phpEx);
 
 $help_bbcode = load_help('bbcode');
@@ -239,7 +234,7 @@ trigger_error('Successfully migrated help_bbcode and help_faq to help/bbcode and
 function load_help($help)
 {
 	global $phpbb_root_path;
-	include($phpbb_root_path . 'language/en/help_' . $help . '.php');
+	include($phpbb_root_path . 'language/' . LANGUAGE_TO_MIGRATE . '/help_' . $help . '.php');
 	return $help;
 }
 
@@ -250,7 +245,7 @@ function load_help($help)
 function write_help($help, array $lang)
 {
 	global $phpbb_root_path;
-	$fp = fopen($phpbb_root_path . 'language/en/help/' . $help . '.php', 'wb');
+	$fp = fopen($phpbb_root_path . 'language/' . LANGUAGE_TO_MIGRATE . '/help/' . $help . '.php', 'wb');
 	fwrite($fp, get_language_file_header());
 	fwrite($fp, '$lang = array_merge($lang, array(' . "\n");
 
