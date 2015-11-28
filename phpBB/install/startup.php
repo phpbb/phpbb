@@ -47,6 +47,36 @@ function phpbb_include_updated($path, $phpbb_root_path, $optional = false)
 	}
 }
 
+function installer_msg_handler($errno, $msg_text, $errfile, $errline)
+{
+	switch ($errno)
+	{
+		case E_NOTICE:
+		case E_WARNING:
+		case E_USER_WARNING:
+		case E_USER_NOTICE:
+			$msg = '[phpBB debug] "' . $msg_text . '" in file ' . $errfile . ' on line ' . $errline;
+			throw new \phpbb\exception\runtime_exception($msg);
+		break;
+		case E_USER_ERROR:
+			$msg = '<b>General Error:</b><br />' . $msg_text . '<br /> in file ' . $errfile . ' on line ' . $errline;
+
+			$backtrace = get_backtrace();
+			if ($backtrace)
+			{
+				$msg .= '<br /><br />BACKTRACE<br />' . $backtrace;
+			}
+
+			throw new \phpbb\exception\runtime_exception($msg);
+		break;
+		case E_DEPRECATED:
+			return true;
+		break;
+	}
+
+	return false;
+}
+
 phpbb_require_updated('includes/startup.' . $phpEx, $phpbb_root_path);
 phpbb_require_updated('phpbb/class_loader.' . $phpEx, $phpbb_root_path);
 
@@ -69,7 +99,7 @@ phpbb_require_updated('includes/functions_user.' . $phpEx, $phpbb_root_path);
 phpbb_require_updated('includes/utf/utf_tools.' . $phpEx, $phpbb_root_path);
 
 // Set PHP error handler to ours
-set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
+set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'installer_msg_handler');
 
 $phpbb_installer_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_installer_container_builder
