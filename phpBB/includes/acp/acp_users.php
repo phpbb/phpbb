@@ -1587,7 +1587,7 @@ class acp_users
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'dateformat'	=> array('string', false, 1, 30),
+						'dateformat'	=> array('string', false, 1, 64),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('timezone'),
 
