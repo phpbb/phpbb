@@ -197,7 +197,7 @@ class helper
 			$this->language_cookie = $lang;
 		}
 
-		$lang = (!empty($lang) && strpos($lang, '/')) ? $lang : null;
+		$lang = (!empty($lang) && strpos($lang, '/') === false) ? $lang : null;
 
 		$this->render_language_select($lang);
 
