@@ -1725,8 +1725,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	* Modify sql query data for post submitting
 	*
 	* @event core.submit_post_modify_sql_data
-	* @var	array	data_ary			Array with the data for the post
-	* @var	array	poll_ary			Array with the poll data for the post
+	* @var	array	data				Array with the data for the post
+	* @var	array	poll				Array with the poll data for the post
 	* @var	string	post_mode			Variable containing posting mode value
 	* @var	bool	sql_data			Array with the data for the posting SQL query
 	* @var	string	subject				Variable containing post subject value

@@ -1949,7 +1949,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 	* @event core.submit_pm_after
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
-	* @var	array	data_ary	The whole row data of the PM.
+	* @var	array	data	The whole row data of the PM.
 	* @var	array	pm_data	The data sent to notification class
 	* @since 3.1.0-b5
 	*/
