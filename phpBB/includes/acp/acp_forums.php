@@ -944,63 +944,62 @@ class acp_forums
 	/**
 	* Update forum data
 	*/
-	function update_forum_data(&$forum_data)
+	function update_forum_data(&$forum_data_ary)
 	{
 		global $db, $user, $cache, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
 		$errors = array();
 
-		$forum_data_ary = $forum_data;
+		$forum_data = $forum_data_ary;
 		/**
 		* Validate the forum data before we create/update the forum
 		*
 		* @event core.acp_manage_forums_validate_data
-		* @var	array	forum_data_ary	Array with new forum data
+		* @var	array	forum_data	Array with new forum data
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
-		* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 		*/
-		$vars = array('forum_data_ary', 'errors');
+		$vars = array('forum_data', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_validate_data', compact($vars)));
-		$forum_data = $forum_data_ary;
-		unset($forum_data_ary);
+		$forum_data_ary = $forum_data;
+		unset($forum_data);
 
-		if ($forum_data['forum_name'] == '')
+		if ($forum_data_ary['forum_name'] == '')
 		{
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}
 
-		if (utf8_strlen($forum_data['forum_desc']) > 4000)
+		if (utf8_strlen($forum_data_ary['forum_desc']) > 4000)
 		{
 			$errors[] = $user->lang['FORUM_DESC_TOO_LONG'];
 		}
 
-		if (utf8_strlen($forum_data['forum_rules']) > 4000)
+		if (utf8_strlen($forum_data_ary['forum_rules']) > 4000)
 		{
 			$errors[] = $user->lang['FORUM_RULES_TOO_LONG'];
 		}
 
-		if ($forum_data['forum_password'] || $forum_data['forum_password_confirm'])
+		if ($forum_data_ary['forum_password'] || $forum_data_ary['forum_password_confirm'])
 		{
-			if ($forum_data['forum_password'] != $forum_data['forum_password_confirm'])
+			if ($forum_data_ary['forum_password'] != $forum_data_ary['forum_password_confirm'])
 			{
-				$forum_data['forum_password'] = $forum_data['forum_password_confirm'] = '';
+				$forum_data_ary['forum_password'] = $forum_data_ary['forum_password_confirm'] = '';
 				$errors[] = $user->lang['FORUM_PASSWORD_MISMATCH'];
 			}
 		}
 
-		if ($forum_data['prune_days'] < 0 || $forum_data['prune_viewed'] < 0 || $forum_data['prune_freq'] < 0)
+		if ($forum_data_ary['prune_days'] < 0 || $forum_data_ary['prune_viewed'] < 0 || $forum_data_ary['prune_freq'] < 0)
 		{
-			$forum_data['prune_days'] = $forum_data['prune_viewed'] = $forum_data['prune_freq'] = 0;
+			$forum_data_ary['prune_days'] = $forum_data_ary['prune_viewed'] = $forum_data_ary['prune_freq'] = 0;
 			$errors[] = $user->lang['FORUM_DATA_NEGATIVE'];
 		}
 
 		$range_test_ary = array(
-			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
+			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data_ary['forum_topics_per_page'], 'column_type' => 'TINT:0'),
 		);
 
-		if (!empty($forum_data['forum_image']) && !file_exists($phpbb_root_path . $forum_data['forum_image']))
+		if (!empty($forum_data_ary['forum_image']) && !file_exists($phpbb_root_path . $forum_data_ary['forum_image']))
 		{
 			$errors[] = $user->lang['FORUM_IMAGE_NO_EXIST'];
 		}
@@ -1014,17 +1013,17 @@ class acp_forums
 		// 8 = prune stickies
 		// 16 = show active topics
 		// 32 = enable post review
-		$forum_data['forum_flags'] = 0;
-		$forum_data['forum_flags'] += ($forum_data['forum_link_track']) ? FORUM_FLAG_LINK_TRACK : 0;
-		$forum_data['forum_flags'] += ($forum_data['prune_old_polls']) ? FORUM_FLAG_PRUNE_POLL : 0;
-		$forum_data['forum_flags'] += ($forum_data['prune_announce']) ? FORUM_FLAG_PRUNE_ANNOUNCE : 0;
-		$forum_data['forum_flags'] += ($forum_data['prune_sticky']) ? FORUM_FLAG_PRUNE_STICKY : 0;
-		$forum_data['forum_flags'] += ($forum_data['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
-		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? FORUM_FLAG_POST_REVIEW : 0;
-		$forum_data['forum_flags'] += ($forum_data['enable_quick_reply']) ? FORUM_FLAG_QUICK_REPLY : 0;
+		$forum_data_ary['forum_flags'] = 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['forum_link_track']) ? FORUM_FLAG_LINK_TRACK : 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['prune_old_polls']) ? FORUM_FLAG_PRUNE_POLL : 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['prune_announce']) ? FORUM_FLAG_PRUNE_ANNOUNCE : 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['prune_sticky']) ? FORUM_FLAG_PRUNE_STICKY : 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['show_active']) ? FORUM_FLAG_ACTIVE_TOPICS : 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['enable_post_review']) ? FORUM_FLAG_POST_REVIEW : 0;
+		$forum_data_ary['forum_flags'] += ($forum_data_ary['enable_quick_reply']) ? FORUM_FLAG_QUICK_REPLY : 0;
 
 		// Unset data that are not database fields
-		$forum_data_sql = $forum_data;
+		$forum_data_sql = $forum_data_ary;
 
 		unset($forum_data_sql['forum_link_track']);
 		unset($forum_data_sql['prune_old_polls']);
@@ -1062,22 +1061,21 @@ class acp_forums
 		}
 		unset($forum_data_sql['forum_password_unset']);
 
-		$forum_data_ary = $forum_data;
+		$forum_data = $forum_data_ary;
 		/**
 		* Remove invalid values from forum_data_sql that should not be updated
 		*
 		* @event core.acp_manage_forums_update_data_before
-		* @var	array	forum_data_ary		Array with forum data
+		* @var	array	forum_data		Array with forum data
 		* @var	array	forum_data_sql	Array with data we are going to update
 		*						If forum_data_sql[forum_id] is set, we update
 		*						that forum, otherwise a new one is created.
 		* @since 3.1.0-a1
-		* @change 3.2.0-a1 Replaced forum_data by forum_data_ary
 		*/
-		$vars = array('forum_data_ary', 'forum_data_sql');
+		$vars = array('forum_data', 'forum_data_sql');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_before', compact($vars)));
-		$forum_data = $forum_data_ary;
-		unset($forum_data_ary);
+		$forum_data_ary = $forum_data;
+		unset($forum_data);
 
 		$is_new_forum = !isset($forum_data_sql['forum_id']);
 
@@ -1134,9 +1132,9 @@ class acp_forums
 			$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $forum_data_sql);
 			$db->sql_query($sql);
 
-			$forum_data['forum_id'] = $db->sql_nextid();
+			$forum_data_ary['forum_id'] = $db->sql_nextid();
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_ADD', false, array($forum_data['forum_name']));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_ADD', false, array($forum_data_ary['forum_name']));
 		}
 		else
 		{
@@ -1351,17 +1349,17 @@ class acp_forums
 			$db->sql_query($sql);
 
 			// Add it back
-			$forum_data['forum_id'] = $forum_id;
+			$forum_data_ary['forum_id'] = $forum_id;
 
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_EDIT', false, array($forum_data['forum_name']));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_EDIT', false, array($forum_data_ary['forum_name']));
 		}
 
-		$forum_data_ary = $forum_data;
+		$forum_data = $forum_data_ary;
 		/**
 		* Event after a forum was updated or created
 		*
 		* @event core.acp_manage_forums_update_data_after
-		* @var	array	forum_data_ary		Array with forum data
+		* @var	array	forum_data		Array with forum data
 		* @var	array	forum_data_sql	Array with data we updated
 		* @var	bool	is_new_forum	Did we create a forum or update one
 		*								If you want to overwrite this value,
@@ -1369,12 +1367,11 @@ class acp_forums
 		* @var	array	errors		Array of errors, should be strings and not
 		*							language key.
 		* @since 3.1.0-a1
-		* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 		*/
-		$vars = array('forum_data_ary', 'forum_data_sql', 'is_new_forum', 'errors');
+		$vars = array('forum_data', 'forum_data_sql', 'is_new_forum', 'errors');
 		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_update_data_after', compact($vars)));
-		$forum_data = $forum_data_ary;
-		unset($forum_data_ary);
+		$forum_data_ary = $forum_data;
+		unset($forum_data);
 
 		return $errors;
 	}

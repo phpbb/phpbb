@@ -957,10 +957,10 @@ function smiley_text($text, $force_option = false)
 * @param mixed $forum_id The forum id the attachments are displayed in (false if in private message)
 * @param string &$message The post/private message
 * @param array &$attachments The attachments to parse for (inline) display. The attachments array will hold templated data after parsing.
-* @param array &$update_count The attachment counts to be updated - will be filled
+* @param array &$update_count_ary The attachment counts to be updated - will be filled
 * @param bool $preview If set to true the attachments are parsed for preview. Within preview mode the comments are fetched from the given $attachments array and not fetched from the database.
 */
-function parse_attachments($forum_id, &$message, &$attachments, &$update_count, $preview = false)
+function parse_attachments($forum_id, &$message, &$attachments, &$update_count_ary, $preview = false)
 {
 	if (!sizeof($attachments))
 	{
@@ -1159,7 +1159,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'U_INLINE_LINK'		=> $inline_link,
 					);
 
-					$update_count[] = $attachment['attach_id'];
+					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
 				// Images, but display Thumbnail
@@ -1172,7 +1172,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
 
-					$update_count[] = $attachment['attach_id'];
+					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
 				// Macromedia Flash Files
@@ -1187,7 +1187,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					);
 
 					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
+					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
 				default:
@@ -1210,7 +1210,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			);
 		}
 
-		$update_count_ary = $update_count;
+		$update_count = $update_count_ary;
 		/**
 		* Use this event to modify the attachment template data.
 		*
@@ -1224,9 +1224,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		* @var array	extensions		Array with attachment extensions data
 		* @var mixed 	forum_id 		The forum id the attachments are displayed in (false if in private message)
 		* @var bool		preview			Flag indicating if we are in post preview mode
-		* @var array	update_count_ary	Array with attachment ids to update download count
+		* @var array	update_count	Array with attachment ids to update download count
 		* @since 3.1.0-RC5
-		* @change 3.2.0-a1 Replaced update_count with update_count_ary
 		*/
 		$vars = array(
 			'attachment',
@@ -1236,11 +1235,11 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			'extensions',
 			'forum_id',
 			'preview',
-			'update_count_ary',
+			'update_count',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.parse_attachments_modify_template_data', compact($vars)));
-		$update_count = $update_count_ary;
-		unset($update_count_ary);
+		$update_count_ary = $update_count;
+		unset($update_count);
 
 		$template->assign_block_vars('_file', $block_array);
 

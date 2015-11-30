@@ -1608,7 +1608,7 @@ function get_folder_status($folder_id, $folder)
 /**
 * Submit PM
 */
-function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
+function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 {
 	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
 
@@ -1620,21 +1620,20 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 	$current_time = time();
 
-	$data_ary = $data;
+	$data = $data_ary;
 	/**
 	* Get all parts of the PM that are to be submited to the DB.
 	*
 	* @event core.submit_pm_before
 	* @var	string	mode	PM Post mode - post|reply|quote|quotepost|forward|edit
 	* @var	string	subject	Subject of the private message
-	* @var	array	data_ary	The whole row data of the PM.
+	* @var	array	data	The whole row data of the PM.
 	* @since 3.1.0-b3
-	* @change 3.2.0-a1 Replaced data with data_ary
 	*/
-	$vars = array('mode', 'subject', 'data_ary');
+	$vars = array('mode', 'subject', 'data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_pm_before', compact($vars)));
-	$data = $data_ary;
-	unset($data_ary);
+	$data_ary = $data;
+	unset($data);
 
 	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
@@ -1650,9 +1649,9 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		$_types = array('u', 'g');
 		foreach ($_types as $ug_type)
 		{
-			if (isset($data['address_list'][$ug_type]) && sizeof($data['address_list'][$ug_type]))
+			if (isset($data_ary['address_list'][$ug_type]) && sizeof($data_ary['address_list'][$ug_type]))
 			{
-				foreach ($data['address_list'][$ug_type] as $id => $field)
+				foreach ($data_ary['address_list'][$ug_type] as $id => $field)
 				{
 					$id = (int) $id;
 
@@ -1672,7 +1671,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			}
 		}
 
-		if (isset($data['address_list']['g']) && sizeof($data['address_list']['g']))
+		if (isset($data_ary['address_list']['g']) && sizeof($data_ary['address_list']['g']))
 		{
 			// We need to check the PM status of group members (do they want to receive PM's?)
 			// Only check if not a moderator or admin, since they are allowed to override this user setting
@@ -1680,7 +1679,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 			$sql = 'SELECT u.user_type, ug.group_id, ug.user_id
 				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
-				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
+				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data_ary['address_list']['g'])) . '
 					AND ug.user_pending = 0
 					AND u.user_id = ug.user_id
 					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' .
@@ -1689,7 +1688,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$field = ($data['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
+				$field = ($data_ary['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
 				$recipients[$row['user_id']] = $field;
 			}
 			$db->sql_freeresult($result);
@@ -1712,13 +1711,13 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	{
 		case 'reply':
 		case 'quote':
-			$root_level = ($data['reply_from_root_level']) ? $data['reply_from_root_level'] : $data['reply_from_msg_id'];
+			$root_level = ($data_ary['reply_from_root_level']) ? $data_ary['reply_from_root_level'] : $data_ary['reply_from_msg_id'];
 
 			// Set message_replied switch for this user
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 				SET pm_replied = 1
-				WHERE user_id = ' . $data['from_user_id'] . '
-					AND msg_id = ' . $data['reply_from_msg_id'];
+				WHERE user_id = ' . $data_ary['from_user_id'] . '
+					AND msg_id = ' . $data_ary['reply_from_msg_id'];
 
 		// no break
 
@@ -1727,19 +1726,19 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		case 'quotepost':
 			$sql_data = array(
 				'root_level'		=> $root_level,
-				'author_id'			=> $data['from_user_id'],
-				'icon_id'			=> $data['icon_id'],
-				'author_ip'			=> $data['from_user_ip'],
+				'author_id'			=> $data_ary['from_user_id'],
+				'icon_id'			=> $data_ary['icon_id'],
+				'author_ip'			=> $data_ary['from_user_ip'],
 				'message_time'		=> $current_time,
-				'enable_bbcode'		=> $data['enable_bbcode'],
-				'enable_smilies'	=> $data['enable_smilies'],
-				'enable_magic_url'	=> $data['enable_urls'],
-				'enable_sig'		=> $data['enable_sig'],
+				'enable_bbcode'		=> $data_ary['enable_bbcode'],
+				'enable_smilies'	=> $data_ary['enable_smilies'],
+				'enable_magic_url'	=> $data_ary['enable_urls'],
+				'enable_sig'		=> $data_ary['enable_sig'],
 				'message_subject'	=> $subject,
-				'message_text'		=> $data['message'],
-				'message_attachment'=> (!empty($data['attachment_data'])) ? 1 : 0,
-				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-				'bbcode_uid'		=> $data['bbcode_uid'],
+				'message_text'		=> $data_ary['message'],
+				'message_attachment'=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data_ary['bbcode_bitfield'],
+				'bbcode_uid'		=> $data_ary['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
 				'bcc_address'		=> implode(':', $bcc),
 				'message_reported'	=> 0,
@@ -1748,17 +1747,17 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		case 'edit':
 			$sql_data = array(
-				'icon_id'			=> $data['icon_id'],
+				'icon_id'			=> $data_ary['icon_id'],
 				'message_edit_time'	=> $current_time,
-				'enable_bbcode'		=> $data['enable_bbcode'],
-				'enable_smilies'	=> $data['enable_smilies'],
-				'enable_magic_url'	=> $data['enable_urls'],
-				'enable_sig'		=> $data['enable_sig'],
+				'enable_bbcode'		=> $data_ary['enable_bbcode'],
+				'enable_smilies'	=> $data_ary['enable_smilies'],
+				'enable_magic_url'	=> $data_ary['enable_urls'],
+				'enable_sig'		=> $data_ary['enable_sig'],
 				'message_subject'	=> $subject,
-				'message_text'		=> $data['message'],
-				'message_attachment'=> (!empty($data['attachment_data'])) ? 1 : 0,
-				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
-				'bbcode_uid'		=> $data['bbcode_uid']
+				'message_text'		=> $data_ary['message'],
+				'message_attachment'=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
+				'bbcode_bitfield'	=> $data_ary['bbcode_bitfield'],
+				'bbcode_uid'		=> $data_ary['bbcode_uid']
 			);
 		break;
 	}
@@ -1770,13 +1769,13 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward')
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
-			$data['msg_id'] = $db->sql_nextid();
+			$data_ary['msg_id'] = $db->sql_nextid();
 		}
 		else if ($mode == 'edit')
 		{
 			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 				SET message_edit_count = message_edit_count + 1, ' . $db->sql_build_array('UPDATE', $sql_data) . '
-				WHERE msg_id = ' . $data['msg_id'];
+				WHERE msg_id = ' . $data_ary['msg_id'];
 			$db->sql_query($sql);
 		}
 	}
@@ -1793,9 +1792,9 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		foreach ($recipients as $user_id => $type)
 		{
 			$sql_ary[] = array(
-				'msg_id'		=> (int) $data['msg_id'],
+				'msg_id'		=> (int) $data_ary['msg_id'],
 				'user_id'		=> (int) $user_id,
-				'author_id'		=> (int) $data['from_user_id'],
+				'author_id'		=> (int) $data_ary['from_user_id'],
 				'folder_id'		=> PRIVMSGS_NO_BOX,
 				'pm_new'		=> 1,
 				'pm_unread'		=> 1,
@@ -1814,9 +1813,9 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		if ($put_in_outbox)
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'msg_id'		=> (int) $data['msg_id'],
-				'user_id'		=> (int) $data['from_user_id'],
-				'author_id'		=> (int) $data['from_user_id'],
+				'msg_id'		=> (int) $data_ary['msg_id'],
+				'user_id'		=> (int) $data_ary['from_user_id'],
+				'author_id'		=> (int) $data_ary['from_user_id'],
 				'folder_id'		=> PRIVMSGS_OUTBOX,
 				'pm_new'		=> 0,
 				'pm_unread'		=> 0,
@@ -1830,17 +1829,17 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_lastpost_time = $current_time
-			WHERE user_id = " . $data['from_user_id'];
+			WHERE user_id = " . $data_ary['from_user_id'];
 		$db->sql_query($sql);
 	}
 
 	// Submit Attachments
-	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
+	if (!empty($data_ary['attachment_data']) && $data_ary['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
 	{
 		$space_taken = $files_added = 0;
 		$orphan_rows = array();
 
-		foreach ($data['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
 		{
 			$orphan_rows[(int) $attach_row['attach_id']] = array();
 		}
@@ -1863,7 +1862,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			$db->sql_freeresult($result);
 		}
 
-		foreach ($data['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
 		{
 			if ($attach_row['is_orphan'] && !isset($orphan_rows[$attach_row['attach_id']]))
 			{
@@ -1891,10 +1890,10 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				$files_added++;
 
 				$attach_sql = array(
-					'post_msg_id'		=> $data['msg_id'],
+					'post_msg_id'		=> $data_ary['msg_id'],
 					'topic_id'			=> 0,
 					'is_orphan'			=> 0,
-					'poster_id'			=> $data['from_user_id'],
+					'poster_id'			=> $data_ary['from_user_id'],
 					'attach_comment'	=> $attach_row['attach_comment'],
 				);
 
@@ -1919,14 +1918,14 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	{
 		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
 			WHERE draft_id = $draft_id
-				AND user_id = " . $data['from_user_id'];
+				AND user_id = " . $data_ary['from_user_id'];
 		$db->sql_query($sql);
 	}
 
 	$db->sql_transaction('commit');
 
 	// Send Notifications
-	$pm_data = array_merge($data, array(
+	$pm_data = array_merge($data_ary, array(
 		'message_subject'		=> $subject,
 		'recipients'			=> $recipients,
 	));
@@ -1943,7 +1942,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		$phpbb_notifications->add_notifications('notification.type.pm', $pm_data);
 	}
 
-	$data_ary = $data;
+	$data = $data_ary;
 	/**
 	* Get PM message ID after submission to DB
 	*
@@ -1953,14 +1952,13 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 	* @var	array	data_ary	The whole row data of the PM.
 	* @var	array	pm_data	The data sent to notification class
 	* @since 3.1.0-b5
-	* @change 3.2.0-a1 Replaced data with data_ary
 	*/
-	$vars = array('mode', 'subject', 'data_ary', 'pm_data');
+	$vars = array('mode', 'subject', 'data', 'pm_data');
 	extract($phpbb_dispatcher->trigger_event('core.submit_pm_after', compact($vars)));
-	$data = $data_ary;
-	unset($data_ary);
+	$data_ary = $data;
+	unset($data);
 
-	return $data['msg_id'];
+	return $data_ary['msg_id'];
 }
 
 /**

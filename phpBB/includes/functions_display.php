@@ -750,12 +750,12 @@ function generate_forum_rules(&$forum_data)
 * Create forum navigation links for given forum, create parent
 * list if currently null, assign basic forum info to template
 */
-function generate_forum_nav(&$forum_data)
+function generate_forum_nav(&$forum_data_ary)
 {
 	global $db, $user, $template, $auth, $config;
 	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
-	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
+	if (!$auth->acl_get('f_list', $forum_data_ary['forum_id']))
 	{
 		return;
 	}
@@ -763,7 +763,7 @@ function generate_forum_nav(&$forum_data)
 	$navlinks = $navlinks_parents = $forum_template_data = array();
 
 	// Get forum parents
-	$forum_parents = get_forum_parents($forum_data);
+	$forum_parents = get_forum_parents($forum_data_ary);
 
 	$microdata_attr = 'data-forum-id';
 
@@ -793,46 +793,45 @@ function generate_forum_nav(&$forum_data)
 	}
 
 	$navlinks = array(
-		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
-		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
-		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
-		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_ID'		=> $forum_data['forum_id'],
-		'MICRODATA'		=> $microdata_attr . '="' . $forum_data['forum_id'] . '"',
-		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']),
+		'S_IS_CAT'		=> ($forum_data_ary['forum_type'] == FORUM_CAT) ? true : false,
+		'S_IS_LINK'		=> ($forum_data_ary['forum_type'] == FORUM_LINK) ? true : false,
+		'S_IS_POST'		=> ($forum_data_ary['forum_type'] == FORUM_POST) ? true : false,
+		'FORUM_NAME'	=> $forum_data_ary['forum_name'],
+		'FORUM_ID'		=> $forum_data_ary['forum_id'],
+		'MICRODATA'		=> $microdata_attr . '="' . $forum_data_ary['forum_id'] . '"',
+		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data_ary['forum_id']),
 	);
 
 	$forum_template_data = array(
-		'FORUM_ID' 		=> $forum_data['forum_id'],
-		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
+		'FORUM_ID' 		=> $forum_data_ary['forum_id'],
+		'FORUM_NAME'	=> $forum_data_ary['forum_name'],
+		'FORUM_DESC'	=> generate_text_for_display($forum_data_ary['forum_desc'], $forum_data_ary['forum_desc_uid'], $forum_data_ary['forum_desc_bitfield'], $forum_data_ary['forum_desc_options']),
 
-		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
+		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && $forum_data_ary['forum_type'] == FORUM_POST && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data_ary['forum_options'])) ? true : false,
 	);
 
-	$forum_data_ary = $forum_data;
+	$forum_data = $forum_data_ary;
 	/**
 	* Event to modify the navlinks text
 	*
 	* @event core.generate_forum_nav
-	* @var	array	forum_data_ary				Array with the forum data
+	* @var	array	forum_data				Array with the forum data
 	* @var	array	forum_template_data		Array with generic forum template data
 	* @var	string	microdata_attr			The microdata attribute
 	* @var	array	navlinks_parents		Array with the forum parents navlinks data
 	* @var	array	navlinks				Array with the forum navlinks data
 	* @since 3.1.5-RC1
-	* @change 3.2.0-a1 Replaced forum_data with forum_data_ary
 	*/
 	$vars = array(
-		'forum_data_ary',
+		'forum_data',
 		'forum_template_data',
 		'microdata_attr',
 		'navlinks_parents',
 		'navlinks',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.generate_forum_nav', compact($vars)));
-	$forum_data = $forum_data_ary;
-	unset($forum_data_ary);
+	$forum_data_ary = $forum_data;
+	unset($forum_data);
 
 	$template->assign_block_vars_array('navlinks', $navlinks_parents);
 	$template->assign_block_vars('navlinks', $navlinks);
@@ -1164,14 +1163,14 @@ function display_reasons($reason_id = 0)
 /**
 * Display user activity (action forum/topic)
 */
-function display_user_activity(&$userdata)
+function display_user_activity(&$userdata_ary)
 {
 	global $auth, $template, $db, $user;
 	global $phpbb_root_path, $phpEx;
 	global $phpbb_container, $phpbb_dispatcher;
 
 	// Do not display user activity for users having more than 5000 posts...
-	if ($userdata['user_posts'] > 5000)
+	if ($userdata_ary['user_posts'] > 5000)
 	{
 		return;
 	}
@@ -1198,7 +1197,7 @@ function display_user_activity(&$userdata)
 		// Obtain active forum
 		$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $userdata['user_id'] . '
+			WHERE poster_id = ' . $userdata_ary['user_id'] . '
 				AND post_postcount = 1
 				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
 			GROUP BY forum_id
@@ -1220,7 +1219,7 @@ function display_user_activity(&$userdata)
 		// Obtain active topic
 		$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $userdata['user_id'] . '
+			WHERE poster_id = ' . $userdata_ary['user_id'] . '
 				AND post_postcount = 1
 				AND ' . $phpbb_content_visibility->get_forums_visibility_sql('post', $forum_ary) . '
 			GROUP BY topic_id
@@ -1240,24 +1239,23 @@ function display_user_activity(&$userdata)
 		}
 	}
 
-	$userdata_ary = $userdata;
+	$userdata = $userdata_ary;
 	/**
 	* Alter list of forums and topics to display as active
 	*
 	* @event core.display_user_activity_modify_actives
-	* @var	array	userdata_ary					User's data
+	* @var	array	userdata						User's data
 	* @var	array	active_f_row					List of active forums
 	* @var	array	active_t_row					List of active posts
 	* @since 3.1.0-RC3
-	* @change 3.2.0-a1 Replaced userdata with userdata_ary
 	*/
-	$vars = array('userdata_ary', 'active_f_row', 'active_t_row');
+	$vars = array('userdata', 'active_f_row', 'active_t_row');
 	extract($phpbb_dispatcher->trigger_event('core.display_user_activity_modify_actives', compact($vars)));
-	$userdata = $userdata_ary;
-	unset($userdata_ary);
+	$userdata_ary = $userdata;
+	unset($userdata);
 
-	$userdata['active_t_row'] = $active_t_row;
-	$userdata['active_f_row'] = $active_f_row;
+	$userdata_ary['active_t_row'] = $active_t_row;
+	$userdata_ary['active_f_row'] = $active_f_row;
 
 	$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
 	if (!empty($active_f_row['num_posts']))
@@ -1265,7 +1263,7 @@ function display_user_activity(&$userdata)
 		$active_f_name = $active_f_row['forum_name'];
 		$active_f_id = $active_f_row['forum_id'];
 		$active_f_count = $active_f_row['num_posts'];
-		$active_f_pct = ($userdata['user_posts']) ? ($active_f_count / $userdata['user_posts']) * 100 : 0;
+		$active_f_pct = ($userdata_ary['user_posts']) ? ($active_f_count / $userdata_ary['user_posts']) * 100 : 0;
 	}
 
 	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
@@ -1274,10 +1272,10 @@ function display_user_activity(&$userdata)
 		$active_t_name = $active_t_row['topic_title'];
 		$active_t_id = $active_t_row['topic_id'];
 		$active_t_count = $active_t_row['num_posts'];
-		$active_t_pct = ($userdata['user_posts']) ? ($active_t_count / $userdata['user_posts']) * 100 : 0;
+		$active_t_pct = ($userdata_ary['user_posts']) ? ($active_t_count / $userdata_ary['user_posts']) * 100 : 0;
 	}
 
-	$l_active_pct = ($userdata['user_id'] != ANONYMOUS && $userdata['user_id'] == $user->data['user_id']) ? $user->lang['POST_PCT_ACTIVE_OWN'] : $user->lang['POST_PCT_ACTIVE'];
+	$l_active_pct = ($userdata_ary['user_id'] != ANONYMOUS && $userdata_ary['user_id'] == $user->data['user_id']) ? $user->lang['POST_PCT_ACTIVE_OWN'] : $user->lang['POST_PCT_ACTIVE'];
 
 	$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
