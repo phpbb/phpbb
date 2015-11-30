@@ -164,20 +164,20 @@ class update_files extends task_base
 					{
 						case 'delete':
 							$this->file_updater->delete_file($path);
-							break;
+						break;
 						case 'new':
 							$this->file_updater->create_new_file($path, $new_path . $path);
-							break;
+						break;
 						case 'update_without_diff':
 							$this->file_updater->update_file($path, $new_path . $path);
-							break;
+						break;
 						case 'update_with_diff':
 							$this->file_updater->update_file(
 								$path,
-								$this->cache->get('_file_' . md5($path)),
+								base64_decode($this->cache->get('_file_' . md5($path))),
 								true
 							);
-							break;
+						break;
 					}
 
 					// Save progress

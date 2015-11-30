@@ -100,7 +100,7 @@ class show_file_status extends task_base
 				{
 					$this->file_updater->create_new_file(
 						$filename,
-						$this->cache->get('_file_' . md5($filename)),
+						base64_decode($this->cache->get('_file_' . md5($filename))),
 						true
 					);
 				}
