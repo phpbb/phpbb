@@ -49,6 +49,8 @@ function phpbb_include_updated($path, $phpbb_root_path, $optional = false)
 
 function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 {
+	global $phpbb_installer_container;
+
 	switch ($errno)
 	{
 		case E_NOTICE:
@@ -56,7 +58,17 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_USER_WARNING:
 		case E_USER_NOTICE:
 			$msg = '[phpBB debug] "' . $msg_text . '" in file ' . $errfile . ' on line ' . $errline;
-			throw new \phpbb\exception\runtime_exception($msg);
+
+			try
+			{
+				/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
+				$iohandler = $phpbb_installer_container->get('installer.helper.iohandler');
+				$iohandler->add_warning_message($msg);
+			}
+			catch (\phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception $e)
+			{
+				print ($msg);
+			}
 		break;
 		case E_USER_ERROR:
 			$msg = '<b>General Error:</b><br />' . $msg_text . '<br /> in file ' . $errfile . ' on line ' . $errline;
