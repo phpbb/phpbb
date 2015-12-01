@@ -203,9 +203,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$topic_list = $topic_tracking_info = array();
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row_ary = $db->sql_fetchrow($result))
 	{
-		$topic_list[] = $row['topic_id'];
+		$topic_list[] = $row_ary['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
@@ -214,9 +214,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		WHERE " . $db->sql_in_set('t.topic_id', $topic_list, false, true);
 
 	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
+	while ($row_ary = $db->sql_fetchrow($result))
 	{
-		$topic_rows[$row['topic_id']] = $row;
+		$topic_rows[$row_ary['topic_id']] = $row_ary;
 	}
 	$db->sql_freeresult($result);
 
@@ -243,111 +243,110 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		$topic_title = '';
 
-		$row = &$topic_rows[$topic_id];
+		$row_ary = &$topic_rows[$topic_id];
 
-		$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
+		$replies = $phpbb_content_visibility->get_count('topic_posts', $row_ary, $forum_id) - 1;
 
-		if ($row['topic_status'] == ITEM_MOVED)
+		if ($row_ary['topic_status'] == ITEM_MOVED)
 		{
 			$unread_topic = false;
 		}
 		else
 		{
-			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row_ary['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 		}
 
 		// Get folder img, topic status/type related information
 		$folder_img = $folder_alt = $topic_type = '';
-		topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
+		topic_status($row_ary, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 
-		$topic_title = censor_text($row['topic_title']);
+		$topic_title = censor_text($row_ary['topic_title']);
 
-		$topic_unapproved = (($row['topic_visibility'] == ITEM_UNAPPROVED || $row['topic_visibility'] == ITEM_REAPPROVE)  && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
-		$posts_unapproved = ($row['topic_visibility'] == ITEM_APPROVED && $row['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
-		$topic_deleted = $row['topic_visibility'] == ITEM_DELETED;
-		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
+		$topic_unapproved = (($row_ary['topic_visibility'] == ITEM_UNAPPROVED || $row_ary['topic_visibility'] == ITEM_REAPPROVE)  && $auth->acl_get('m_approve', $row_ary['forum_id'])) ? true : false;
+		$posts_unapproved = ($row_ary['topic_visibility'] == ITEM_APPROVED && $row_ary['topic_posts_unapproved'] && $auth->acl_get('m_approve', $row_ary['forum_id'])) ? true : false;
+		$topic_deleted = $row_ary['topic_visibility'] == ITEM_DELETED;
+		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row_ary['topic_id'] : '';
 		$u_mcp_queue = (!$u_mcp_queue && $topic_deleted) ? $url . '&amp;i=queue&amp;mode=deleted_topics&amp;t=' . $topic_id : $u_mcp_queue;
 
 		$topic_row = array(
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row_ary['forum_id']) && $row_ary['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
-			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
-			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
+			'TOPIC_ICON_IMG'		=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['img'] : '',
+			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['width'] : '',
+			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['height'] : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 			'DELETED_IMG'			=> ($topic_deleted) ? $user->img('icon_topic_deleted', 'POSTS_DELETED') : '',
 
-			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-			'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-			'U_TOPIC_AUTHOR'			=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
+			'TOPIC_AUTHOR'				=> get_username_string('username', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
+			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
+			'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
+			'U_TOPIC_AUTHOR'			=> get_username_string('profile', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
 
-			'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
-			'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR'			=> get_username_string('username', $row_ary['topic_last_poster_id'], $row_ary['topic_last_poster_name'], $row_ary['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row_ary['topic_last_poster_id'], $row_ary['topic_last_poster_name'], $row_ary['topic_last_poster_colour']),
+			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row_ary['topic_last_poster_id'], $row_ary['topic_last_poster_name'], $row_ary['topic_last_poster_colour']),
+			'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row_ary['topic_last_poster_id'], $row_ary['topic_last_poster_name'], $row_ary['topic_last_poster_colour']),
 
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
-			'REPLIES'			=> $phpbb_content_visibility->get_count('topic_posts', $row, $row['forum_id']) - 1,
-			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
-			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],
-			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
+			'REPLIES'			=> $phpbb_content_visibility->get_count('topic_posts', $row_ary, $row_ary['forum_id']) - 1,
+			'LAST_POST_TIME'	=> $user->format_date($row_ary['topic_last_post_time']),
+			'FIRST_POST_TIME'	=> $user->format_date($row_ary['topic_time']),
+			'LAST_POST_SUBJECT'	=> $row_ary['topic_last_post_subject'],
+			'LAST_VIEW_TIME'	=> $user->format_date($row_ary['topic_last_view_time']),
 
-			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && empty($row['topic_moved_id']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
+			'S_TOPIC_REPORTED'		=> (!empty($row_ary['topic_reported']) && empty($row_ary['topic_moved_id']) && $auth->acl_get('m_report', $row_ary['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 			'S_TOPIC_DELETED'		=> $topic_deleted,
 			'S_UNREAD_TOPIC'		=> $unread_topic,
 		);
 
-		if ($row['topic_status'] == ITEM_MOVED)
+		if ($row_ary['topic_status'] == ITEM_MOVED)
 		{
 			$topic_row = array_merge($topic_row, array(
-				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_moved_id']}"),
-				'U_DELETE_TOPIC'	=> ($auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;topic_id_list[]={$row['topic_id']}&amp;mode=forum_view&amp;action=delete_topic") : '',
+				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row_ary['topic_moved_id']}"),
+				'U_DELETE_TOPIC'	=> ($auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;topic_id_list[]={$row_ary['topic_id']}&amp;mode=forum_view&amp;action=delete_topic") : '',
 				'S_MOVED_TOPIC'		=> true,
-				'TOPIC_ID'			=> $row['topic_moved_id'],
+				'TOPIC_ID'			=> $row_ary['topic_moved_id'],
 			));
 		}
 		else
 		{
 			if ($action == 'merge_topic' || $action == 'merge_topics')
 			{
-				$u_select_topic = $url . "&amp;i=$id&amp;mode=forum_view&amp;action=$action&amp;to_topic_id=" . $row['topic_id'] . $selected_ids;
+				$u_select_topic = $url . "&amp;i=$id&amp;mode=forum_view&amp;action=$action&amp;to_topic_id=" . $row_ary['topic_id'] . $selected_ids;
 			}
 			else
 			{
-				$u_select_topic = $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids;
+				$u_select_topic = $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row_ary['topic_id'] . $selected_ids;
 			}
 			$topic_row = array_merge($topic_row, array(
-				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view"),
+				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row_ary['topic_id']}&amp;mode=topic_view"),
 
-				'S_SELECT_TOPIC'	=> ($merge_select && !in_array($row['topic_id'], $source_topic_ids)) ? true : false,
+				'S_SELECT_TOPIC'	=> ($merge_select && !in_array($row_ary['topic_id'], $source_topic_ids)) ? true : false,
 				'U_SELECT_TOPIC'	=> $u_select_topic,
 				'U_MCP_QUEUE'		=> $u_mcp_queue,
-				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
-				'TOPIC_ID'			=> $row['topic_id'],
-				'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? true : false,
+				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row_ary['topic_id'] . '&amp;action=reports') : '',
+				'TOPIC_ID'			=> $row_ary['topic_id'],
+				'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row_ary['topic_id'], $topic_id_list)) ? true : false,
 			));
 		}
 
-		$row_ary = $row;
+		$row = $row_ary;
 		/**
 		* Modify the topic data before it is assigned to the template in MCP
 		*
 		* @event core.mcp_view_forum_modify_topicrow
-		* @var	array	row_ary		Array with topic data
+		* @var	array	row		Array with topic data
 		* @var	array	topic_row	Template array with topic data
 		* @since 3.1.0-a1
-		* @change 3.2.0-a1 Replace row with row_ary
 		*/
-		$vars = array('row_ary', 'topic_row');
+		$vars = array('row', 'topic_row');
 		extract($phpbb_dispatcher->trigger_event('core.mcp_view_forum_modify_topicrow', compact($vars)));
-		$row = $row_ary;
-		unset($row_ary);
+		$row_ary = $row;
+		unset($row);
 
 		$template->assign_block_vars('topicrow', $topic_row);
 	}
