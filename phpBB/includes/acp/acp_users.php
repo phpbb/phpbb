@@ -1809,10 +1809,11 @@ class acp_users
 			case 'avatar':
 
 				$avatars_enabled = false;
+				/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
+				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
 				if ($config['allow_avatar'])
 				{
-					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the user_ prefix

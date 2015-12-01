@@ -462,9 +462,11 @@ class ucp_groups
 						$avatar_data = null;
 						$avatar_error = array();
 
+						/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
+						$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+
 						if ($config['allow_avatar'])
 						{
-							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 							// This is normalised data, without the group_ prefix
