@@ -651,6 +651,14 @@ class ucp_groups
 							$avatars_enabled = false;
 							$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
 
+							// Assign min and max values before generating avatar driver html
+							$template->assign_vars(array(
+									'AVATAR_MIN_WIDTH'		=> $config['avatar_min_width'],
+									'AVATAR_MAX_WIDTH'		=> $config['avatar_max_width'],
+									'AVATAR_MIN_HEIGHT'		=> $config['avatar_min_height'],
+									'AVATAR_MAX_HEIGHT'		=> $config['avatar_max_height'],
+							));
+
 							foreach ($avatar_drivers as $current_driver)
 							{
 								$driver = $phpbb_avatar_manager->get_driver($current_driver);
