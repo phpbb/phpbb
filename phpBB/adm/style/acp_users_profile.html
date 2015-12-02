@@ -8,7 +8,7 @@
 		<dd><input type="email" id="jabber" name="jabber" value="{JABBER}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="birthday">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
+		<dt><label for="birthday">{L_BIRTHDAY}{L_COLON}</label><br><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
 		<dd>{L_DAY}{L_COLON} <select id="birthday" name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> {L_MONTH}{L_COLON} <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> {L_YEAR}{L_COLON} <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></dd>
 	</dl>
 	<!-- EVENT acp_users_profile_after -->
@@ -19,7 +19,7 @@
 			<legend>{L_USER_CUSTOM_PROFILE_FIELDS}</legend>
 		<!-- BEGIN profile_fields -->
 		<dl>
-			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}</label><!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}</label><!-- IF profile_fields.LANG_EXPLAIN --><br><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
 			<dd>{profile_fields.FIELD}</dd>
 			<!-- IF profile_fields.ERROR -->
 				<dd><span class="small" style="color: red;">{profile_fields.ERROR}</span></dd>

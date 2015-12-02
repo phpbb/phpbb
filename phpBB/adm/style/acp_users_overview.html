@@ -3,7 +3,7 @@
 <fieldset>
 	<legend>{L_ACP_USER_OVERVIEW}</legend>
 <dl>
-	<dt><label for="user">{L_USERNAME}{L_COLON}</label><br /><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
+	<dt><label for="user">{L_USERNAME}{L_COLON}</label><br><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
 	<dd><input type="text" id="user" name="user" value="{USER}" /></dd>
 	<!-- IF U_SWITCH_PERMISSIONS --><dd>[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</dd><!-- ENDIF -->
 </dl>
@@ -50,7 +50,7 @@
 	<dd><strong>{USER_WARNINGS}</strong></dd>
 </dl>
 <dl>
-	<dt><label for="user_founder">{L_FOUNDER}{L_COLON}</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
+	<dt><label for="user_founder">{L_FOUNDER}{L_COLON}</label><br><span>{L_FOUNDER_EXPLAIN}</span></dt>
 	<dd><label><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_YES}</label>
 		<label><input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
@@ -59,11 +59,11 @@
 	<dd><input class="text medium" type="email" id="user_email" name="user_email" value="{USER_EMAIL}" autocomplete="off" /></dd>
 </dl>
 <dl>
-	<dt><label for="new_password">{L_NEW_PASSWORD}{L_COLON}</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
+	<dt><label for="new_password">{L_NEW_PASSWORD}{L_COLON}</label><br><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
 	<dd><input type="password" id="new_password" name="new_password" value="" autocomplete="off" /></dd>
 </dl>
 <dl>
-	<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}{L_COLON}</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
+	<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}{L_COLON}</label><br><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
 	<dd><input type="password" id="password_confirm" name="password_confirm" value="" autocomplete="off" /></dd>
 </dl>
 <!-- EVENT acp_users_overview_options_append -->
@@ -149,7 +149,7 @@
 			<fieldset>
 				<legend>{L_DELETE_USER}</legend>
 				<dl>
-					<dt><label for="delete_type">{L_DELETE_USER}{L_COLON}</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
+					<dt><label for="delete_type">{L_DELETE_USER}{L_COLON}</label><br><span>{L_DELETE_USER_EXPLAIN}</span></dt>
 					<dd>
 					<!-- IF USER_HAS_POSTS -->
 						<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select>

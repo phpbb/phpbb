@@ -72,7 +72,7 @@
 	<fieldset>
 		<legend>{L_GENERAL_OPTIONS}</legend>
 	<dl>
-		<dt><label for="module_langname">{L_MODULE_LANGNAME}{L_COLON}</label><br />
+		<dt><label for="module_langname">{L_MODULE_LANGNAME}{L_COLON}</label><br>
 		<span>{L_MODULE_LANGNAME_EXPLAIN}</span></dt>
 		<dd><input name="module_langname" type="text" class="text medium" id="module_langname" value="{MODULE_LANGNAME}" /></dd>
 	</dl>
@@ -92,17 +92,17 @@
 	</dl>
 	<div id="modoptions"<!-- IF S_IS_CAT --> style="display: none;"<!-- ENDIF -->>
 		<dl>
-			<dt><label for="module_display">{L_MODULE_DISPLAYED}{L_COLON}</label><br /><span>{L_MODULE_DISPLAYED_EXPLAIN}</span></dt>
+			<dt><label for="module_display">{L_MODULE_DISPLAYED}{L_COLON}</label><br><span>{L_MODULE_DISPLAYED_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="module_display" id="module_display" value="1"<!-- IF MODULE_DISPLAY --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="module_display" value="0"<!-- IF not MODULE_DISPLAY --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="module_basename">{L_CHOOSE_MODULE}{L_COLON}</label><br />
+			<dt><label for="module_basename">{L_CHOOSE_MODULE}{L_COLON}</label><br>
 			<span>{L_CHOOSE_MODULE_EXPLAIN}</span></dt>
 			<dd><select name="module_basename" id="module_basename" onchange="display_modes(this.value);">{S_MODULE_NAMES}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="module_mode">{L_CHOOSE_MODE}{L_COLON}</label><br />
+			<dt><label for="module_mode">{L_CHOOSE_MODE}{L_COLON}</label><br>
 			<span>{L_CHOOSE_MODE_EXPLAIN}</span></dt>
 			<dd><select name="module_mode" id="module_mode">{S_MODULE_MODES}</select></dd>
 		</dl>

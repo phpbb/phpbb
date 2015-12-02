@@ -31,7 +31,7 @@
 	<tr>
 		<td style="vertical-align: top;">
 			{inactive.USERNAME_FULL}
-			<!-- IF inactive.POSTS --><br />{L_POSTS}{L_COLON} <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
+			<!-- IF inactive.POSTS --><br>{L_POSTS}{L_COLON} <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
 		</td>
 		<td style="vertical-align: top;">{inactive.USER_EMAIL}</td>
 		<td style="vertical-align: top;">{inactive.JOINED}</td>
@@ -39,7 +39,7 @@
 		<td style="vertical-align: top;">{inactive.LAST_VISIT}</td>
 		<td style="vertical-align: top;">
 			{inactive.REASON}
-			<!-- IF inactive.REMINDED --><br />{inactive.REMINDED_EXPLAIN}<!-- ENDIF -->
+			<!-- IF inactive.REMINDED --><br>{inactive.REMINDED_EXPLAIN}<!-- ENDIF -->
 		</td>
 		<td>&nbsp;<input type="checkbox" class="radio" name="mark[]" value="{inactive.USER_ID}" />&nbsp;</td>
 	</tr>

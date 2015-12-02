@@ -28,7 +28,7 @@
 
 	<p>{L_EXPLAIN}</p>
 
-	<br />
+	<br>
 	<a href="#acl">&raquo; {L_SET_ROLE_PERMISSIONS}</a>
 
 	<form id="acp_roles" method="post" action="{U_ACTION}">
@@ -40,7 +40,7 @@
 		<dd><input name="role_name" type="text" id="role_name" value="{ROLE_NAME}" maxlength="255" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="role_description">{L_ROLE_DESCRIPTION}{L_COLON}</label><br /><span>{L_ROLE_DESCRIPTION_EXPLAIN}</span></dt>
+		<dt><label for="role_description">{L_ROLE_DESCRIPTION}{L_COLON}</label><br><span>{L_ROLE_DESCRIPTION_EXPLAIN}</span></dt>
 		<dd><textarea id="role_description" name="role_description" rows="3" cols="45">{ROLE_DESCRIPTION}</textarea></dd>
 	</dl>
 
@@ -62,8 +62,8 @@
 
 	<a id="acl"></a>
 
-	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br />
-	<br /><br />
+	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br>
+	<br><br>
 
 	</p>
 
@@ -131,8 +131,8 @@
 	</fieldset>
 	</form>
 
-	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br />
-	<br />
+	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br>
+	<br>
 
 <!-- ELSE -->
 
@@ -154,7 +154,7 @@
 	<!-- BEGIN roles -->
 	<tr>
 		<td style="vertical-align: top;"><strong>{roles.ROLE_NAME}</strong>
-			<!-- IF roles.ROLE_DESCRIPTION --><br /><span>{roles.ROLE_DESCRIPTION}</span><!-- ENDIF -->
+			<!-- IF roles.ROLE_DESCRIPTION --><br><span>{roles.ROLE_DESCRIPTION}</span><!-- ENDIF -->
 		</td>
 		<td style="width: 30%; text-align: center; vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
 		<td class="actions">
@@ -171,7 +171,7 @@
 	</table>
 
 	<fieldset class="quick">
-		{L_CREATE_ROLE}{L_COLON} <input type="text" name="role_name" value="" maxlength="255" /><!-- IF S_ROLE_OPTIONS --> <select name="options_from"><option value="0" selected="selected">{L_CREATE_ROLE_FROM}</option>{S_ROLE_OPTIONS}</select><!-- ENDIF --> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" /><br />
+		{L_CREATE_ROLE}{L_COLON} <input type="text" name="role_name" value="" maxlength="255" /><!-- IF S_ROLE_OPTIONS --> <select name="options_from"><option value="0" selected="selected">{L_CREATE_ROLE_FROM}</option>{S_ROLE_OPTIONS}</select><!-- ENDIF --> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" /><br>
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
