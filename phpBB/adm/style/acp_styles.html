@@ -114,15 +114,15 @@
 			<!-- ENDIF -->
 			<!-- IF styles_list.DEFAULT or styles_list.SHOW_COPYRIGHT -->
 				<strong>{styles_list.STYLE_NAME}</strong>
-				<!-- IF styles_list.SHOW_COPYRIGHT and styles_list.COMMENT == '' --><span><br />{styles_list.STYLE_COPYRIGHT}</span><!-- ENDIF -->
+				<!-- IF styles_list.SHOW_COPYRIGHT and styles_list.COMMENT == '' --><span><br>{styles_list.STYLE_COPYRIGHT}</span><!-- ENDIF -->
 			<!-- ELSE -->
 				<span>{styles_list.STYLE_NAME}</span>
 			<!-- ENDIF -->
 			<!-- IF styles_list.COMMENT != '' -->
-				<span class="error"><br />{styles_list.COMMENT}</span>
+				<span class="error"><br>{styles_list.COMMENT}</span>
 			<!-- ENDIF -->
 			<!-- IF not styles_list.STYLE_ID and styles_list.COMMENT == '' -->
-				<span class="style-path"><br />{L_STYLE_PATH}{L_COLON} {styles_list.STYLE_PATH_FULL}</span>
+				<span class="style-path"><br>{L_STYLE_PATH}{L_COLON} {styles_list.STYLE_PATH_FULL}</span>
 			<!-- ENDIF -->
 		</td>
 		<!-- IF not STYLES_LIST_HIDE_COUNT -->

@@ -34,7 +34,7 @@
 	</dl>
 	<!-- IF not S_SPECIAL_GROUP -->
 		<dl>
-			<dt><label for="group_type">{L_GROUP_TYPE}{L_COLON}</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
+			<dt><label for="group_type">{L_GROUP_TYPE}{L_COLON}</label><br><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
 			<dd>
 				<label><input name="group_type" type="radio" class="radio" id="group_type" value="{GROUP_TYPE_FREE}"{GROUP_FREE} /> {L_GROUP_OPEN}</label>
 				<label><input name="group_type" type="radio" class="radio" value="{GROUP_TYPE_OPEN}"{GROUP_OPEN} /> {L_GROUP_REQUEST}</label>
@@ -48,7 +48,7 @@
 
 	<!-- IF S_ADD_GROUP and S_GROUP_PERM -->
 		<dl>
-			<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}{L_COLON}</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+			<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}{L_COLON}</label><br><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
 			<dd><select id="group_perm_from" name="group_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_GROUP_OPTIONS}</select></dd>
 		</dl>
 	<!-- ENDIF -->
@@ -59,12 +59,12 @@
 	<!-- EVENT acp_group_options_before -->
 	<!-- IF S_USER_FOUNDER -->
 	<dl>
-		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}{L_COLON}</label><br /><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
+		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}{L_COLON}</label><br><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
 		<dd><input name="group_founder_manage" type="checkbox" value="1" class="radio" id="group_founder_manage"{GROUP_FOUNDER_MANAGE} /></dd>
 	</dl>
 	<!-- ENDIF -->
 	<dl>
-		<dt><label for="group_skip_auth">{L_GROUP_SKIP_AUTH}{L_COLON}</label><br /><span>{L_GROUP_SKIP_AUTH_EXPLAIN}</span></dt>
+		<dt><label for="group_skip_auth">{L_GROUP_SKIP_AUTH}{L_COLON}</label><br><span>{L_GROUP_SKIP_AUTH_EXPLAIN}</span></dt>
 		<dd><input name="group_skip_auth" type="checkbox" value="1" class="radio" id="group_skip_auth"{GROUP_SKIP_AUTH} /></dd>
 	</dl>
 	<dl>
@@ -76,7 +76,7 @@
 		<dd><input name="group_teampage" type="checkbox" value="1" class="radio" id="group_teampage"{GROUP_TEAMPAGE} /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}{L_COLON}</label><br /><span>{L_GROUP_RECEIVE_PM_EXPLAIN}</span></dt>
+		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}{L_COLON}</label><br><span>{L_GROUP_RECEIVE_PM_EXPLAIN}</span></dt>
 		<dd><input name="group_receive_pm" type="checkbox" value="1" class="radio" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
 	</dl>
 	<!-- EVENT acp_group_options_after -->
@@ -85,15 +85,15 @@
 	<fieldset>
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
 	<dl>
-		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}{L_COLON}</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
+		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}{L_COLON}</label><br><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
 		<dd><input name="group_message_limit" type="number" id="group_message_limit" maxlength="4" size="4" min="0" max="9999" value="{GROUP_MESSAGE_LIMIT}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_max_recipients">{L_GROUP_MAX_RECIPIENTS}{L_COLON}</label><br /><span>{L_GROUP_MAX_RECIPIENTS_EXPLAIN}</span></dt>
+		<dt><label for="group_max_recipients">{L_GROUP_MAX_RECIPIENTS}{L_COLON}</label><br><span>{L_GROUP_MAX_RECIPIENTS_EXPLAIN}</span></dt>
 		<dd><input name="group_max_recipients" type="number" id="group_max_recipients" maxlength="10" size="4" value="{GROUP_MAX_RECIPIENTS}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
+		<dt><label for="group_colour">{L_GROUP_COLOR}{L_COLON}</label><br><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
 		<dd>
 			<input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />
 			<!-- IF GROUP_COLOUR -->&nbsp;<span style="background-color: #{GROUP_COLOUR}">&nbsp; &nbsp;</span><!-- ENDIF -->&nbsp;&nbsp;<span>
@@ -110,7 +110,7 @@
 	<fieldset>
 		<legend>{L_GROUP_AVATAR}</legend>
 	<dl>
-		<dt><label>{L_CURRENT_IMAGE}{L_COLON}</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+		<dt><label>{L_CURRENT_IMAGE}{L_COLON}</label><br><span>{L_AVATAR_EXPLAIN}</span></dt>
 		<dd>{AVATAR}</dd>
 		<dd><label for="avatar_delete"><input type="checkbox" name="avatar_delete" id="avatar_delete" /> {L_DELETE_AVATAR}</label></dd>
 	</dl>
@@ -229,12 +229,12 @@
 			<label><input name="leader" type="radio" class="radio" id="leader" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="default">{L_USER_GROUP_DEFAULT}{L_COLON}</label><br /><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
+		<dt><label for="default">{L_USER_GROUP_DEFAULT}{L_COLON}</label><br><span>{L_USER_GROUP_DEFAULT_EXPLAIN}</span></dt>
 		<dd><label><input name="default" type="radio" class="radio" value="1" /> {L_YES}</label>
 			<label><input name="default" type="radio" class="radio" id="default" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="usernames">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
+		<dt><label for="usernames">{L_USERNAME}{L_COLON}</label><br><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
 		<dd><!-- EVENT acp_groups_find_username_prepend -->[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]<!-- EVENT acp_groups_find_username_append --></dd>
 	</dl>

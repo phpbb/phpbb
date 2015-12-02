@@ -125,10 +125,10 @@
 		<h1>{L_PERFORM_DATABASE_UPDATE}</h1>
 
 		<p>
-			{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br />
+			{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br>
 		</p>
 
-		<br /><br />
+		<br><br>
 
 		<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
 
@@ -175,7 +175,7 @@
 			<div class="errorbox">
 				<h3>{L_NO_UPDATE_FILES}</h3>
 
-				<p>{L_NO_UPDATE_FILES_EXPLAIN}</p><br />
+				<p>{L_NO_UPDATE_FILES_EXPLAIN}</p><br>
 
 				<strong>{NO_UPDATE_FILES}</strong>
 
@@ -193,7 +193,7 @@
 				<legend><img src="{T_IMAGE_PATH}icon_delete.gif" alt="{L_STATUS_DELETED}" /></legend>
 				<!-- BEGIN deleted -->
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<br /><!-- ENDIF -->{deleted.FILE_PART}</strong></dt>
+					<dt style="width: 60%;"><strong><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<br><!-- ENDIF -->{deleted.FILE_PART}</strong></dt>
 					<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 60%;">
 						<!-- IF not deleted.S_BINARY -->[<a href="{deleted.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{deleted.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 					</dd>
@@ -212,12 +212,12 @@
 			<fieldset id="conflict">
 				<legend><img src="{T_IMAGE_PATH}file_conflict.gif" alt="{L_STATUS_CONFLICT}" /></legend>
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<br /><!-- ENDIF -->{conflict.FILE_PART}</strong>
-						<!-- IF conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
-						<!-- IF conflict.NUM_CONFLICTS --><br /><span>{L_NUM_CONFLICTS}{L_COLON} {conflict.NUM_CONFLICTS}</span><!-- ENDIF -->
+					<dt style="width: 60%;"><strong><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<br><!-- ENDIF -->{conflict.FILE_PART}</strong>
+						<!-- IF conflict.S_CUSTOM --><br><span><em>{L_FILE_USED}{L_COLON} </em>{conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+						<!-- IF conflict.NUM_CONFLICTS --><br><span>{L_NUM_CONFLICTS}{L_COLON} {conflict.NUM_CONFLICTS}</span><!-- ENDIF -->
 					</dt>
 					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
-						<!-- IF not conflict.S_BINARY -->[<a href="{conflict.U_SHOW_DIFF}">{L_DOWNLOAD_CONFLICTS}</a>]<br />{L_DOWNLOAD_CONFLICTS_EXPLAIN}
+						<!-- IF not conflict.S_BINARY -->[<a href="{conflict.U_SHOW_DIFF}">{L_DOWNLOAD_CONFLICTS}</a>]<br>{L_DOWNLOAD_CONFLICTS_EXPLAIN}
 						<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
 					</dd>
 					<!-- IF conflict.S_CUSTOM -->
@@ -261,8 +261,8 @@
 				<legend><img src="{T_IMAGE_PATH}file_new_conflict.gif" alt="{L_STATUS_NEW_CONFLICT}" /></legend>
 			<!-- BEGIN new_conflict -->
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF new_conflict.DIR_PART -->{new_conflict.DIR_PART}<br /><!-- ENDIF -->{new_conflict.FILE_PART}</strong>
-					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<dt style="width: 60%;"><strong><!-- IF new_conflict.DIR_PART -->{new_conflict.DIR_PART}<br><!-- ENDIF -->{new_conflict.FILE_PART}</strong>
+					<!-- IF new_conflict.S_CUSTOM --><br><span><em>{L_FILE_USED}{L_COLON} </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
 				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
 					<!-- IF not new_conflict.S_BINARY -->[<a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
@@ -285,8 +285,8 @@
 			<fieldset id="modified">
 				<legend><img src="{T_IMAGE_PATH}file_modified.gif" alt="{L_STATUS_MODIFIED}" /></legend>
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF modified.DIR_PART -->{modified.DIR_PART}<br /><!-- ENDIF -->{modified.FILE_PART}</strong>
-					<!-- IF modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<dt style="width: 60%;"><strong><!-- IF modified.DIR_PART -->{modified.DIR_PART}<br><!-- ENDIF -->{modified.FILE_PART}</strong>
+					<!-- IF modified.S_CUSTOM --><br><span><em>{L_FILE_USED}{L_COLON} </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
 				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">&nbsp;</dd>
 				<!-- IF modified.S_CUSTOM -->
@@ -319,8 +319,8 @@
 				<legend><img src="{T_IMAGE_PATH}file_new.gif" alt="{L_STATUS_NEW}" /></legend>
 			<!-- BEGIN new -->
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF new.DIR_PART -->{new.DIR_PART}<br /><!-- ENDIF -->{new.FILE_PART}</strong>
-					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<dt style="width: 60%;"><strong><!-- IF new.DIR_PART -->{new.DIR_PART}<br><!-- ENDIF -->{new.FILE_PART}</strong>
+					<!-- IF new.S_CUSTOM --><br><span><em>{L_FILE_USED}{L_COLON} </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 				</dt>
 				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;">
 					<!-- IF not new.S_BINARY -->[<a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
@@ -343,8 +343,8 @@
 				<legend><img src="{T_IMAGE_PATH}file_not_modified.gif" alt="{L_STATUS_NOT_MODIFIED}" /></legend>
 			<!-- BEGIN not_modified -->
 				<dl>
-					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br /><!-- ENDIF -->{not_modified.FILE_PART}</strong>
-						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}{L_COLON} </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br><!-- ENDIF -->{not_modified.FILE_PART}</strong>
+						<!-- IF not_modified.S_CUSTOM --><br><span><em>{L_FILE_USED}{L_COLON} </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
 					</dt>
 					<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 					<!-- IF not_modified.S_CUSTOM -->
@@ -372,13 +372,13 @@
 
 		<!-- ENDIF -->
 
-		<br />
+		<br>
 
 		<fieldset class="quick">
 			<input class="button1" type="submit" name="check_again" value="{L_CHECK_FILES_AGAIN}" />
 		</fieldset>
 
-		<br />
+		<br>
 
 		<h1>{L_UPDATE_METHOD}</h1>
 
@@ -415,7 +415,7 @@
 
 	</form>
 
-	<br /><br />
+	<br><br>
 
 	<p>{L_MAPPING_FILE_STRUCTURE}</p>
 
@@ -459,7 +459,7 @@
 		</div>
 
 		<div class="errorbox">
-			<p>{L_CONNECTION_FAILED}<br />{ERROR_MSG}</p>
+			<p>{L_CONNECTION_FAILED}<br>{ERROR_MSG}</p>
 		</div>
 	<!-- ENDIF -->
 
@@ -471,7 +471,7 @@
 	</dl>
 	<!-- BEGIN data -->
 	<dl>
-		<dt><label for="{data.DATA}">{data.NAME}{L_COLON}</label><br /><span>{data.EXPLAIN}</span></dt>
+		<dt><label for="{data.DATA}">{data.NAME}{L_COLON}</label><br><span>{data.EXPLAIN}</span></dt>
 		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
 	</dl>
 	<!-- END data -->

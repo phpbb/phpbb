@@ -37,12 +37,12 @@
 			<td>
 				{log.USERNAME}
 				<!-- IF log.REPORTEE_USERNAME -->
-				<br />&raquo; {log.REPORTEE_USERNAME}
+				<br>&raquo; {log.REPORTEE_USERNAME}
 				<!-- ENDIF -->
 			</td>
 			<td style="text-align: center;">{log.IP}</td>
 			<td style="text-align: center;">{log.DATE}</td>
-			<td>{log.ACTION}<!-- IF log.DATA --><br /><span>{log.DATA}</span><!-- ENDIF --></td>
+			<td>{log.ACTION}<!-- IF log.DATA --><br><span>{log.DATA}</span><!-- ENDIF --></td>
 			<!-- IF S_CLEARLOGS -->
 				<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{log.ID}" /></td>
 			<!-- ENDIF -->
@@ -80,7 +80,7 @@
 <!-- IF .log and S_CLEARLOGS -->
 	<fieldset class="quick">
 		<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
-		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" /><br />
+		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" /><br>
 		<p class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>
 	</fieldset>
 <!-- ENDIF -->

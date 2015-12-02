@@ -143,7 +143,7 @@
 	</dl>
 	<!-- IF S_CAN_COPY_PERMISSIONS -->
 		<dl>
-			<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}{L_COLON}</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+			<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}{L_COLON}</label><br><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
 			<dd><select id="forum_perm_from" name="forum_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_FORUM_OPTIONS}</select></dd>
 		</dl>
 	<!-- ENDIF -->
@@ -152,30 +152,30 @@
 		<dd><input class="text medium" type="text" id="forum_name" name="forum_name" value="{FORUM_NAME}" maxlength="255" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="forum_desc">{L_FORUM_DESC}{L_COLON}</label><br /><span>{L_FORUM_DESC_EXPLAIN}</span></dt>
+		<dt><label for="forum_desc">{L_FORUM_DESC}{L_COLON}</label><br><span>{L_FORUM_DESC_EXPLAIN}</span></dt>
 		<dd><textarea id="forum_desc" name="forum_desc" rows="5" cols="45" data-bbcode="true">{FORUM_DESC}</textarea></dd>
 		<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
 			<label><input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="forum_image">{L_FORUM_IMAGE}{L_COLON}</label><br /><span>{L_FORUM_IMAGE_EXPLAIN}</span></dt>
+		<dt><label for="forum_image">{L_FORUM_IMAGE}{L_COLON}</label><br><span>{L_FORUM_IMAGE_EXPLAIN}</span></dt>
 		<dd><input class="text medium" type="text" id="forum_image" name="forum_image" value="{FORUM_IMAGE}" maxlength="255" /></dd>
 		<!-- IF FORUM_IMAGE_SRC -->
 			<dd><img src="{FORUM_IMAGE_SRC}" alt="{L_FORUM_IMAGE}" /></dd>
 		<!-- ENDIF -->
 	</dl>
 	<dl>
-		<dt><label for="forum_password">{L_FORUM_PASSWORD}{L_COLON}</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
+		<dt><label for="forum_password">{L_FORUM_PASSWORD}{L_COLON}</label><br><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
 		<dd><input type="password" id="forum_password" name="forum_password" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" autocomplete="off" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}{L_COLON}</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
+		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}{L_COLON}</label><br><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
 		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" autocomplete="off" /></dd>
 	</dl>
 	<!-- IF S_FORUM_PASSWORD_SET -->
 	<dl>
-		<dt><label for="forum_password_unset">{L_FORUM_PASSWORD_UNSET}{L_COLON}</label><br /><span>{L_FORUM_PASSWORD_UNSET_EXPLAIN}</span></dt>
+		<dt><label for="forum_password_unset">{L_FORUM_PASSWORD_UNSET}{L_COLON}</label><br><span>{L_FORUM_PASSWORD_UNSET_EXPLAIN}</span></dt>
 		<dd><input id="forum_password_unset" name="forum_password_unset" type="checkbox" /></dd>
 	</dl>
 	<!-- ENDIF -->
@@ -190,7 +190,7 @@
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
-			<dt><label for="display_active">{L_DISPLAY_ACTIVE_TOPICS}{L_COLON}</label><br /><span>{L_DISPLAY_ACTIVE_TOPICS_EXPLAIN}</span></dt>
+			<dt><label for="display_active">{L_DISPLAY_ACTIVE_TOPICS}{L_COLON}</label><br><span>{L_DISPLAY_ACTIVE_TOPICS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_active" value="1"<!-- IF S_ENABLE_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_active" value="0"<!-- IF not S_ENABLE_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
@@ -206,27 +206,27 @@
 			<dd><select id="forum_status" name="forum_status">{S_STATUS_OPTIONS}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="display_subforum_list">{L_LIST_SUBFORUMS}{L_COLON}</label><br /><span>{L_LIST_SUBFORUMS_EXPLAIN}</span></dt>
+			<dt><label for="display_subforum_list">{L_LIST_SUBFORUMS}{L_COLON}</label><br><span>{L_LIST_SUBFORUMS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_subforum_list" value="1"<!-- IF S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_subforum_list" value="0"<!-- IF not S_DISPLAY_SUBFORUM_LIST --> id="display_subforum_list" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="display_on_index">{L_LIST_INDEX}{L_COLON}</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
+			<dt><label for="display_on_index">{L_LIST_INDEX}{L_COLON}</label><br><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="enable_post_review">{L_ENABLE_POST_REVIEW}{L_COLON}</label><br /><span>{L_ENABLE_POST_REVIEW_EXPLAIN}</span></dt>
+			<dt><label for="enable_post_review">{L_ENABLE_POST_REVIEW}{L_COLON}</label><br><span>{L_ENABLE_POST_REVIEW_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_post_review" value="1"<!-- IF S_ENABLE_POST_REVIEW --> id="enable_post_review" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="enable_post_review" value="0"<!-- IF not S_ENABLE_POST_REVIEW --> id="enable_post_review" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="enable_quick_reply">{L_ENABLE_QUICK_REPLY}{L_COLON}</label><br /><span>{L_ENABLE_QUICK_REPLY_EXPLAIN}</span></dt>
+			<dt><label for="enable_quick_reply">{L_ENABLE_QUICK_REPLY}{L_COLON}</label><br><span>{L_ENABLE_QUICK_REPLY_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_quick_reply" value="1"<!-- IF S_ENABLE_QUICK_REPLY --> id="enable_quick_reply" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="enable_quick_reply" value="0"<!-- IF not S_ENABLE_QUICK_REPLY --> id="enable_quick_reply" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="enable_indexing">{L_ENABLE_INDEXING}{L_COLON}</label><br /><span>{L_ENABLE_INDEXING_EXPLAIN}</span></dt>
+			<dt><label for="enable_indexing">{L_ENABLE_INDEXING}{L_COLON}</label><br><span>{L_ENABLE_INDEXING_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_indexing" value="1"<!-- IF S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="enable_indexing" value="0"<!-- IF not S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
@@ -236,12 +236,12 @@
 				<label><input type="radio" class="radio" name="enable_icons" value="0"<!-- IF not S_TOPIC_ICONS --> id="enable_icons" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="display_recent">{L_ENABLE_RECENT}{L_COLON}</label><br /><span>{L_ENABLE_RECENT_EXPLAIN}</span></dt>
+			<dt><label for="display_recent">{L_ENABLE_RECENT}{L_COLON}</label><br><span>{L_ENABLE_RECENT_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_recent" value="1"<!-- IF S_DISPLAY_ACTIVE_TOPICS --> id="display_recent" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_recent" value="0"<!-- IF not S_DISPLAY_ACTIVE_TOPICS --> id="display_recent" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}{L_COLON}</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
+			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}{L_COLON}</label><br><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
 			<dd><input type="number" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" min="0" max="9999" /></dd>
 		</dl>
 		<!-- EVENT acp_forums_normal_settings_append -->
@@ -251,24 +251,24 @@
 			<legend>{L_FORUM_PRUNE_SETTINGS}</legend>
 		<!-- EVENT acp_forums_prune_settings_prepend -->
 		<dl>
-			<dt><label for="enable_prune">{L_FORUM_AUTO_PRUNE}{L_COLON}</label><br /><span>{L_FORUM_AUTO_PRUNE_EXPLAIN}</span></dt>
+			<dt><label for="enable_prune">{L_FORUM_AUTO_PRUNE}{L_COLON}</label><br><span>{L_FORUM_AUTO_PRUNE_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_prune" value="1"<!-- IF S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="enable_prune" value="0"<!-- IF not S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
+			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}{L_COLON}</label><br><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
 			<dd><input type="number" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
-			<dt><label for="prune_days">{L_AUTO_PRUNE_DAYS}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_DAYS_EXPLAIN}</span></dt>
+			<dt><label for="prune_days">{L_AUTO_PRUNE_DAYS}{L_COLON}</label><br><span>{L_AUTO_PRUNE_DAYS_EXPLAIN}</span></dt>
 			<dd><input type="number" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
-			<dt><label for="prune_viewed">{L_AUTO_PRUNE_VIEWED}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_VIEWED_EXPLAIN}</span></dt>
+			<dt><label for="prune_viewed">{L_AUTO_PRUNE_VIEWED}{L_COLON}</label><br><span>{L_AUTO_PRUNE_VIEWED_EXPLAIN}</span></dt>
 			<dd><input type="number" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
-			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}{L_COLON}</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
+			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}{L_COLON}</label><br><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="prune_old_polls" value="1"<!-- IF S_PRUNE_OLD_POLLS --> id="prune_old_polls" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="prune_old_polls" value="0"<!-- IF not S_PRUNE_OLD_POLLS --> id="prune_old_polls" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
@@ -283,16 +283,16 @@
 				<label><input type="radio" class="radio" name="prune_sticky" value="0"<!-- IF not S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="enable_shadow_prune">{L_FORUM_PRUNE_SHADOW}{L_COLON}</label><br /><span>{L_FORUM_PRUNE_SHADOW_EXPLAIN}</span></dt>
+			<dt><label for="enable_shadow_prune">{L_FORUM_PRUNE_SHADOW}{L_COLON}</label><br><span>{L_FORUM_PRUNE_SHADOW_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="enable_shadow_prune" value="1"<!-- IF S_PRUNE_SHADOW_ENABLE --> id="enable_shadow_prune" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="enable_shadow_prune" value="0"<!-- IF not S_PRUNE_SHADOW_ENABLE --> id="enable_shadow_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="prune_shadow_freq">{L_AUTO_PRUNE_SHADOW_FREQ}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_SHADOW_FREQ_EXPLAIN}</span></dt>
+			<dt><label for="prune_shadow_freq">{L_AUTO_PRUNE_SHADOW_FREQ}{L_COLON}</label><br><span>{L_AUTO_PRUNE_SHADOW_FREQ_EXPLAIN}</span></dt>
 			<dd><input type="number" id="prune_shadow_freq" name="prune_shadow_freq" value="{PRUNE_SHADOW_FREQ}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
-			<dt><label for="prune_shadow_days">{L_AUTO_PRUNE_SHADOW_DAYS}{L_COLON}</label><br /><span>{L_AUTO_PRUNE_SHADOW_DAYS_EXPLAIN}</span></dt>
+			<dt><label for="prune_shadow_days">{L_AUTO_PRUNE_SHADOW_DAYS}{L_COLON}</label><br><span>{L_AUTO_PRUNE_SHADOW_DAYS_EXPLAIN}</span></dt>
 			<dd><input type="number" id="prune_shadow_days" name="prune_shadow_days" value="{PRUNE_SHADOW_DAYS}" maxlength="4" size="4" min="0" max="9999" /> {L_DAYS}</dd>
 		</dl>
 		<!-- EVENT acp_forums_prune_settings_append -->
@@ -303,16 +303,16 @@
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
-			<dt><label for="link_display_on_index">{L_LIST_INDEX}{L_COLON}</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
+			<dt><label for="link_display_on_index">{L_LIST_INDEX}{L_COLON}</label><br><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="link_display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="link_display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="forum_link">{L_FORUM_LINK}{L_COLON}</label><br /><span>{L_FORUM_LINK_EXPLAIN}</span></dt>
+			<dt><label for="forum_link">{L_FORUM_LINK}{L_COLON}</label><br><span>{L_FORUM_LINK_EXPLAIN}</span></dt>
 			<dd><input class="text medium" type="text" id="forum_link" name="forum_link" value="{FORUM_DATA_LINK}" maxlength="255" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="forum_link_track">{L_FORUM_LINK_TRACK}{L_COLON}</label><br /><span>{L_FORUM_LINK_TRACK_EXPLAIN}</span></dt>
+			<dt><label for="forum_link_track">{L_FORUM_LINK_TRACK}{L_COLON}</label><br><span>{L_FORUM_LINK_TRACK_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="forum_link_track" value="1"<!-- IF S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="forum_link_track" value="0"<!-- IF not S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
@@ -324,7 +324,7 @@
 			<legend>{L_FORUM_RULES}</legend>
 		<!-- EVENT acp_forums_rules_settings_prepend -->
 		<dl>
-			<dt><label for="forum_rules_link">{L_FORUM_RULES_LINK}{L_COLON}</label><br /><span>{L_FORUM_RULES_LINK_EXPLAIN}</span></dt>
+			<dt><label for="forum_rules_link">{L_FORUM_RULES_LINK}{L_COLON}</label><br><span>{L_FORUM_RULES_LINK_EXPLAIN}</span></dt>
 			<dd><input class="text medium" type="text" id="forum_rules_link" name="forum_rules_link" value="{FORUM_RULES_LINK}" maxlength="255" /></dd>
 		</dl>
 	<!-- IF FORUM_RULES_PREVIEW -->
@@ -334,7 +334,7 @@
 		</dl>
 	<!-- ENDIF -->
 		<dl>
-			<dt><label for="forum_rules">{L_FORUM_RULES}{L_COLON}</label><br /><span>{L_FORUM_RULES_EXPLAIN}</span></dt>
+			<dt><label for="forum_rules">{L_FORUM_RULES}{L_COLON}</label><br><span>{L_FORUM_RULES_EXPLAIN}</span></dt>
 			<dd><textarea id="forum_rules" name="forum_rules" rows="4" cols="70" data-bbcode="true">{FORUM_RULES_PLAIN}</textarea></dd>
 			<dd><label><input type="checkbox" class="radio" name="rules_parse_bbcode"<!-- IF S_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
 				<label><input type="checkbox" class="radio" name="rules_parse_smilies"<!-- IF S_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
@@ -471,8 +471,8 @@
 				<td class="forum-desc">
 					<!-- IF forums.FORUM_IMAGE --><div style="float: {S_CONTENT_FLOW_BEGIN}; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
 					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
-					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
-					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}{L_COLON} <strong>{forums.FORUM_TOPICS}</strong> / {L_POSTS}{L_COLON} <strong>{forums.FORUM_POSTS}</strong></span><!-- ENDIF -->
+					<!-- IF forums.FORUM_DESCRIPTION --><br><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
+					<!-- IF forums.S_FORUM_POST --><br><br><span>{L_TOPICS}{L_COLON} <strong>{forums.FORUM_TOPICS}</strong> / {L_POSTS}{L_COLON} <strong>{forums.FORUM_POSTS}</strong></span><!-- ENDIF -->
 				</td>
 				<td class="actions">
 					<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>

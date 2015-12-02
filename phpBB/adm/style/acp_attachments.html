@@ -28,9 +28,9 @@
 	<h2>{L_UPLOADING_FILES}</h2>
 
 	<!-- BEGIN upload -->
-		:: {upload.FILE_INFO}<br />
+		:: {upload.FILE_INFO}<br>
 		<!-- IF upload.S_DENIED --><span class="error">{upload.DENIED}</span><!-- ELSEIF upload.ERROR_MSG --><span class="error">{upload.ERROR_MSG}</span><!-- ELSE --><span class="success">{L_SUCCESSFULLY_UPLOADED}</span><!-- ENDIF -->
-		<br /><br />
+		<br><br>
 	<!-- END upload -->
 
 <!-- ENDIF -->
@@ -54,7 +54,7 @@
 		<!-- ELSE -->
 
 			<dl>
-				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 				<dd>{options.CONTENT}</dd>
 			</dl>
 
@@ -82,7 +82,7 @@
 		<dd><textarea id="ip_hostname" cols="40" rows="3" name="ips"></textarea></dd>
 	</dl>
 	<dl>
-		<dt><label for="exclude">{L_IP_EXCLUDE}{L_COLON}</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
+		<dt><label for="exclude">{L_IP_EXCLUDE}{L_COLON}</label><br><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
 		<dd><label><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES}</label>
 			<label><input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</label></dd>
 	</dl>
@@ -176,7 +176,7 @@
 			<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="category">{L_SPECIAL_CATEGORY}{L_COLON}</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
+			<dt><label for="category">{L_SPECIAL_CATEGORY}{L_COLON}</label><br><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
 			<dd>{S_CATEGORY_SELECT}</dd>
 		</dl>
 		<dl>
@@ -204,7 +204,7 @@
 			<dd><select name="extensions[]" id="assigned_extensions" class="narrow" onchange="show_extensions(this);" multiple="multiple" size="8">{S_EXTENSION_OPTIONS}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}{L_COLON}</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
+			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}{L_COLON}</label><br><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_ALL_FORUMS}</label></dd>
 			<dd><label><input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_SELECTED_FORUMS}</label></dd>
 			<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
@@ -242,10 +242,10 @@
 			<!-- ENDIF -->
 			<tr>
 				<td><strong>{groups.GROUP_NAME}</strong>
-					<!-- IF groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM}</span>
-					<!-- ELSEIF groups.S_ALLOWED_IN_PM and not groups.S_GROUP_ALLOWED --><br /><span>&raquo; {L_ONLY_ALLOWED_IN_PM}</span>
-					<!-- ELSEIF not groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM_POST}</span>
-					<!-- ELSE --><br /><span>&raquo; {L_ALLOWED_IN_PM_POST}</span><!-- ENDIF -->
+					<!-- IF groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br><span>&raquo; {L_NOT_ALLOWED_IN_PM}</span>
+					<!-- ELSEIF groups.S_ALLOWED_IN_PM and not groups.S_GROUP_ALLOWED --><br><span>&raquo; {L_ONLY_ALLOWED_IN_PM}</span>
+					<!-- ELSEIF not groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br><span>&raquo; {L_NOT_ALLOWED_IN_PM_POST}</span>
+					<!-- ELSE --><br><span>&raquo; {L_ALLOWED_IN_PM_POST}</span><!-- ENDIF -->
 				</td>
 				<td>{groups.CATEGORY}</td>
 				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{groups.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>&nbsp;</td>
@@ -359,7 +359,7 @@
 	</tbody>
 	</table>
 
-	<br />
+	<br>
 
 	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
@@ -401,10 +401,10 @@
 	<!-- BEGIN attachments -->
 		<tr>
 			<td>
-				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br />{attachments.L_DOWNLOAD_COUNT}<br />{L_IN} {L_PRIVATE_MESSAGE}
-				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br /><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br /><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br />{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
+				<!-- IF attachments.S_IN_MESSAGE -->{L_EXTENSION_GROUP}{L_COLON} <strong><!-- IF attachments.EXT_GROUP_NAME -->{attachments.EXT_GROUP_NAME}<!-- ELSE -->{L_NO_EXT_GROUP}<!-- ENDIF --></strong><br>{attachments.L_DOWNLOAD_COUNT}<br>{L_IN} {L_PRIVATE_MESSAGE}
+				<!-- ELSE --><a href="{attachments.U_FILE}" style="font-weight: bold;">{attachments.REAL_FILENAME}</a><br><!-- IF attachments.COMMENT -->{attachments.COMMENT}<br><!-- ENDIF -->{attachments.L_DOWNLOAD_COUNT}<br>{L_TOPIC}{L_COLON} <a href="{attachments.U_VIEW_TOPIC}">{attachments.TOPIC_TITLE}</a><!-- ENDIF -->
 			</td>
-			<td>{attachments.FILETIME}<br />{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
+			<td>{attachments.FILETIME}<br>{L_POST_BY_AUTHOR} {attachments.ATTACHMENT_POSTER}</td>
 			<td class="centered-text">{attachments.FILESIZE}</td>
 			<td class="centered-text"><input type="checkbox" class="radio" name="delete[{attachments.ATTACH_ID}]" /></td>
 		</tr>
@@ -437,7 +437,7 @@
 
 <!-- IF .attachments -->
 	<fieldset class="quick">
-		<input class="button2" type="submit" name="submit" value="{L_DELETE_MARKED}" /><br />
+		<input class="button2" type="submit" name="submit" value="{L_DELETE_MARKED}" /><br>
 		<p class="small">
 			<a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> &bull;
 			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>		
@@ -453,7 +453,7 @@
 		<legend>{L_RESYNC_STATS}</legend>
 		<form id="action_stats_form" method="post" action="{U_ACTION}">
 			<dl>
-				<dt><label for="action_stats">{L_RESYNC_FILES_STATS}</label><br /><span>{L_RESYNC_FILES_STATS_EXPLAIN}</span></dt>
+				<dt><label for="action_stats">{L_RESYNC_FILES_STATS}</label><br><span>{L_RESYNC_FILES_STATS_EXPLAIN}</span></dt>
 				<dd><input type="hidden" name="action" value="stats" /><input class="button2" type="submit" id="action_stats" name="action_stats" value="{L_RUN}" /></dd>
 			</dl>
 		</form>
