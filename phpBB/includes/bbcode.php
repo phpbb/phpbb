@@ -140,7 +140,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper, $phpbb_container, $phpbb_filesystem;
+		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
 
 		if (empty($this->template_filename))
 		{

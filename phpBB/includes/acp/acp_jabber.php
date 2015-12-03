@@ -29,8 +29,8 @@ class acp_jabber
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $phpbb_log, $request;
+		global $config, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('acp/board');
 
@@ -39,7 +39,6 @@ class acp_jabber
 			include($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
 		}
 
-		$action	= $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
 		if ($mode != 'settings')
@@ -67,8 +66,6 @@ class acp_jabber
 			{
 				trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 			}
-
-			$error = array();
 
 			$message = $user->lang['JAB_SETTINGS_CHANGED'];
 			$log = 'JAB_SETTINGS_CHANGED';

@@ -19,7 +19,7 @@ if (!headers_sent())
 function unicode_to_utf8($string)
 {
 	$utf8 = '';
-	$chars = array();
+
 	for ($i = 0; $i < strlen($string); $i++)
 	{
 		if (isset($string[$i + 5]) && substr($string, $i, 2) == '\\u' && ctype_xdigit(substr($string, $i + 2, 4)))

@@ -35,8 +35,7 @@ class mcp_warn
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $request;
-		global $config, $phpbb_root_path, $phpEx;
+		global $request;
 
 		$action = $request->variable('action', array('' => ''));
 
@@ -78,8 +77,8 @@ class mcp_warn
 	*/
 	function mcp_warn_front_view()
 	{
-		global $phpEx, $phpbb_root_path, $config;
-		global $template, $db, $user, $auth;
+		global $phpEx, $phpbb_root_path;
+		global $template, $db, $user;
 
 		$template->assign_vars(array(
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
@@ -132,7 +131,7 @@ class mcp_warn
 	function mcp_warn_list_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config, $phpbb_container;
-		global $template, $db, $user, $auth, $request;
+		global $template, $user, $auth, $request;
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');

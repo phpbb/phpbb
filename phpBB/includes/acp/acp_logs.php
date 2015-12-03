@@ -25,8 +25,8 @@ class acp_logs
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $auth, $template, $phpbb_container;
+		global $config;
 		global $request;
 
 		$user->add_lang('mcp');
@@ -34,7 +34,6 @@ class acp_logs
 		// Set up general vars
 		$action		= $request->variable('action', '');
 		$forum_id	= $request->variable('f', 0);
-		$topic_id	= $request->variable('t', 0);
 		$start		= $request->variable('start', 0);
 		$deletemark = $request->variable('delmarked', false, false, \phpbb\request\request_interface::POST);
 		$deleteall	= $request->variable('delall', false, false, \phpbb\request\request_interface::POST);

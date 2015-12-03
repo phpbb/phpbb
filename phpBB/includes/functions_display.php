@@ -30,7 +30,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
-	$sql_from = '';
 
 	// Mark forums read?
 	$mark_read = $request->variable('mark', '');

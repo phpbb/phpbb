@@ -35,8 +35,8 @@ class mcp_main
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $action;
-		global $config, $phpbb_root_path, $phpEx, $request;
+		global $auth, $user, $action;
+		global $phpbb_root_path, $phpEx, $request;
 		global $phpbb_dispatcher;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;

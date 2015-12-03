@@ -26,7 +26,7 @@ class acp_groups
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		$user->add_lang('acp/groups');

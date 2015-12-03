@@ -50,7 +50,6 @@ class parser implements \phpbb\textformatter\parser_interface
 
 		$this->dispatcher = $dispatcher;
 		$this->parser = $parser;
-		$parser = $this;
 
 		/**
 		* Configure the parser service
@@ -73,8 +72,6 @@ class parser implements \phpbb\textformatter\parser_interface
 	*/
 	public function parse($text)
 	{
-		$parser = $this;
-
 		/**
 		* Modify a text before it is parsed
 		*

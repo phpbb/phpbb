@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function adm_page_header($page_title)
 {
-	global $config, $db, $user, $template;
+	global $config, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
 	global $phpbb_dispatcher;
 
@@ -140,8 +140,8 @@ function adm_page_header($page_title)
 */
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $user, $auth, $cache;
-	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+	global $db, $config, $template, $user, $auth;
+	global $phpbb_root_path;
 	global $request, $phpbb_dispatcher;
 
 	// A listener can set this variable to `true` when it overrides this function

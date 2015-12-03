@@ -128,7 +128,6 @@ function mcp_post_details($id, $mode, $action)
 	$users_ary = $usernames_ary = array();
 	$attachments = $extensions = array();
 	$post_id = $post_info['post_id'];
-	$topic_tracking_info = array();
 
 	// Get topic tracking info
 	if ($config['load_db_lastread'])
@@ -150,8 +149,6 @@ function mcp_post_details($id, $mode, $action)
 
 	if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 	{
-		$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id = ' . $post_id . '

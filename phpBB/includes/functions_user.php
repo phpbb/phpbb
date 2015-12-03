@@ -166,7 +166,7 @@ function user_update_name($old_name, $new_name)
 */
 function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
-	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
+	global $db, $config;
 	global $phpbb_dispatcher, $phpbb_container;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))

@@ -117,7 +117,7 @@ class validate extends \phpbb\console\command\command
 
 		try
 		{
-			$config = $processor->processConfiguration($configuration, $config);
+			$processor->processConfiguration($configuration, $config);
 		}
 		catch (Exception $e)
 		{

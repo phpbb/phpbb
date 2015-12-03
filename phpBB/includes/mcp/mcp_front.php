@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_front_view($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path;
 	global $template, $db, $user, $auth, $module;
 	global $phpbb_dispatcher, $request;
 

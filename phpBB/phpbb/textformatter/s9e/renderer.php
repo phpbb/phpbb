@@ -104,7 +104,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		}
 		$this->dispatcher = $dispatcher;
 		$this->renderer = $renderer;
-		$renderer = $this;
 
 		/**
 		* Configure the renderer service

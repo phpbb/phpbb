@@ -66,7 +66,7 @@ class report_handler_post extends report_handler
 			'reported_post_enable_magic_url'	=> $this->report_data['enable_magic_url'],
 		);
 
-		$report_id = $this->create_report($report_data);
+		$this->create_report($report_data);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET post_reported = 1

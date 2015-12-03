@@ -54,7 +54,7 @@ function phpbb_forum_flags()
 */
 function phpbb_insert_forums()
 {
-	global $db, $src_db, $same_db, $convert, $user, $config;
+	global $db, $src_db, $same_db, $convert, $user;
 
 	$db->sql_query($convert->truncate_statement . FORUMS_TABLE);
 

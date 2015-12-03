@@ -38,8 +38,6 @@ class ucp_groups
 
 		$mark_ary	= $request->variable('mark', array(0));
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
-		$error = $data = array();
 
 		/** @var \phpbb\group\helper $group_helper */
 		$group_helper = $phpbb_container->get('group_helper');
@@ -462,10 +460,7 @@ class ucp_groups
 							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
-						$file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
 						$user->add_lang(array('acp/groups', 'acp/common'));
-
-						$data = $submit_ary = array();
 
 						$update	= (isset($_POST['update'])) ? true : false;
 

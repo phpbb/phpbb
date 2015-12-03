@@ -156,8 +156,6 @@ function mcp_topic_view($id, $mode, $action)
 	}
 	$db->sql_freeresult($result);
 
-	$topic_tracking_info = array();
-
 	// Get topic tracking info
 	if ($config['load_db_lastread'])
 	{

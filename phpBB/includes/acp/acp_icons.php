@@ -28,8 +28,8 @@ class acp_icons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $cache;
+		global $config, $phpbb_root_path;
 		global $request, $phpbb_container;
 
 		$user->add_lang('acp/posting');

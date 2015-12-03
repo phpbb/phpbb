@@ -33,8 +33,8 @@ class acp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $config, $db, $user, $template;
+		global $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 		if (!function_exists('generate_smilies'))
@@ -55,7 +55,6 @@ class acp_profile
 		$action = (isset($_POST['create'])) ? 'create' : $request->variable('action', '');
 
 		$error = array();
-		$s_hidden_fields = '';
 
 		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
 		{

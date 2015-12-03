@@ -25,7 +25,7 @@ class acp_prune
 
 	function main($id, $mode)
 	{
-		global $user, $phpEx, $phpbb_admin_path, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_root_path;
 
 		$user->add_lang('acp/prune');
 
@@ -55,8 +55,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $phpbb_log, $request;
 
 		$all_forums = $request->variable('all_forums', 0);
 		$forum_id = $request->variable('f', array(0));
