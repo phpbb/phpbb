@@ -192,8 +192,6 @@ class oracle_extractor extends base_extractor
 			$ary_name[$i] = ocicolumnname($result, $i + 1);
 		}
 
-		$sql_data = '';
-
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$schema_vals = $schema_fields = array();

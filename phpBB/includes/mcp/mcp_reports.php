@@ -182,7 +182,7 @@ class mcp_reports
 					));
 				}
 
-				$topic_tracking_info = $extensions = $attachments = array();
+				$attachments = array();
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
 				{
@@ -351,8 +351,6 @@ class mcp_reports
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$global_id = $forum_list[0];
-
 					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
@@ -391,7 +389,6 @@ class mcp_reports
 				$sort_by_sql = $sort_order_sql = array();
 				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				if ($mode == 'reports')

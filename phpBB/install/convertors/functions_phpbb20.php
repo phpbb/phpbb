@@ -179,7 +179,6 @@ function phpbb_insert_forums()
 		$db->sql_query($sql);
 
 		$cats_added[$unknown_cat_id] = $max_forum_id;
-		$max_forum_id++;
 	}
 
 	// Now insert the forums
@@ -421,8 +420,6 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 			unset($lang);
 		}
 	}
-
-	$encoding = $lang_enc_array[$get_lang];
 
 	return utf8_recode($text, $lang_enc_array[$get_lang]);
 }

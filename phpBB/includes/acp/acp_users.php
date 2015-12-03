@@ -298,13 +298,11 @@ class acp_users
 								case 'banuser':
 									$ban[] = $user_row['username'];
 									$reason = 'USER_ADMIN_BAN_NAME_REASON';
-									$log = 'LOG_USER_BAN_USER';
 								break;
 
 								case 'banemail':
 									$ban[] = $user_row['user_email'];
 									$reason = 'USER_ADMIN_BAN_EMAIL_REASON';
-									$log = 'LOG_USER_BAN_EMAIL';
 								break;
 
 								case 'banip':
@@ -322,7 +320,6 @@ class acp_users
 									$db->sql_freeresult($result);
 
 									$reason = 'USER_ADMIN_BAN_IP_REASON';
-									$log = 'LOG_USER_BAN_IP';
 								break;
 							}
 

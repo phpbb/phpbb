@@ -226,7 +226,7 @@ function get_folder($user_id, $folder_id = false)
 */
 function clean_sentbox($num_sentbox_messages)
 {
-	global $db, $user, $config;
+	global $db, $user;
 
 	// Check Message Limit
 	if ($user->data['message_limit'] && $num_sentbox_messages > $user->data['message_limit'])
@@ -255,8 +255,6 @@ function clean_sentbox($num_sentbox_messages)
 */
 function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 {
-	global $user, $config;
-
 	if (!isset($rules[$rule_row['rule_check']][$rule_row['rule_connection']]))
 	{
 		return false;
@@ -335,7 +333,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		break;
 
 		case ACTION_DELETE_MESSAGE:
-			global $db, $auth;
+			global $db;
 
 			// Check for admins/mods - users are not allowed to remove those messages...
 			// We do the check here to make sure the data we use is consistent

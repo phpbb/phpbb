@@ -221,7 +221,6 @@ class ucp_main
 					{
 						$forums = array_keys($request->variable('f', array(0 => 0)));
 						$topics = array_keys($request->variable('t', array(0 => 0)));
-						$msg = '';
 
 						if (sizeof($forums) || sizeof($topics))
 						{

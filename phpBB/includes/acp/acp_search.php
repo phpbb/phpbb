@@ -232,8 +232,8 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $phpbb_log, $request;
+		global $config, $phpbb_admin_path, $phpEx;
 
 		$action = $request->variable('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);

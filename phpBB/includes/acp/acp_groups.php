@@ -306,8 +306,6 @@ class acp_groups
 					include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 				}
 
-				$data = $submit_ary = array();
-
 				if ($action == 'edit' && !$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);

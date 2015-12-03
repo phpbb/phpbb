@@ -206,7 +206,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $config, $phpbb_root_path, $user;
 
 		$this->setup_template();
 
@@ -349,7 +349,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config, $request, $phpbb_log;
+		global $user, $config, $request, $phpbb_log;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -359,7 +359,6 @@ class messenger
 
 		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
-		$message = '';
 		switch ($type)
 		{
 			case 'EMAIL':

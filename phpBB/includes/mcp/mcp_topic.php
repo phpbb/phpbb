@@ -171,11 +171,9 @@ function mcp_topic_view($id, $mode, $action)
 	$has_unapproved_posts = $has_deleted_posts = false;
 
 	// Grab extensions
-	$extensions = $attachments = array();
+	$attachments = array();
 	if ($topic_info['topic_attachment'] && sizeof($post_id_list))
 	{
-		$extensions = $cache->obtain_attach_extensions($topic_info['forum_id']);
-
 		// Get attachments...
 		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))
 		{
@@ -268,8 +266,6 @@ function mcp_topic_view($id, $mode, $action)
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 		);
-
-		$current_row_number = $i;
 
 		/**
 		* Event to modify the template data block for topic reviews in the MCP

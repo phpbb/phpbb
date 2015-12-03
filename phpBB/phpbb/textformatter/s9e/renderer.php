@@ -232,7 +232,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		{
 			$xml = $this->quote_helper->inject_metadata($xml);
 		}
-		$renderer = $this;
 
 		/**
 		* Modify a parsed text before it is rendered

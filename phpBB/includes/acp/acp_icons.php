@@ -194,7 +194,6 @@ class acp_icons
 
 				$data = array();
 				$after = false;
-				$display = 0;
 				$order_lists = array('', '');
 				$add_order_lists = array('', '');
 				$display_count = 0;
@@ -209,7 +208,6 @@ class acp_icons
 					if ($row[$fields . '_id'] == $icon_id)
 					{
 						$after = true;
-						$display = $row['display_on_posting'];
 						$data[$row[$fields . '_url']] = $row;
 					}
 					else

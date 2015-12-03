@@ -182,7 +182,7 @@ class ucp_login_link
 	*/
 	protected function process_login_result($result)
 	{
-		global $config, $request, $template, $user, $phpbb_container;
+		global $config, $template, $user, $phpbb_container;
 
 		$login_error = null;
 

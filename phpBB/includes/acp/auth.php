@@ -266,7 +266,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx, $phpbb_container;
+		global $template, $user, $db, $phpbb_container;
 
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');

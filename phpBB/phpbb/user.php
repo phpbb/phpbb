@@ -281,7 +281,7 @@ class user extends \phpbb\session
 		// User has wrong style
 		if (!$this->style && $style_id == $this->data['user_style'])
 		{
-			$style_id = $this->data['user_style'] = $config['default_style'];
+			$this->data['user_style'] = $config['default_style'];
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
 				SET user_style = $style_id

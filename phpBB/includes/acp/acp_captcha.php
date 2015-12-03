@@ -178,7 +178,7 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $db, $user, $config, $phpbb_container;
+		global $phpbb_container;
 
 		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
 		$captcha->init(CONFIRM_REG);

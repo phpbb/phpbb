@@ -404,7 +404,7 @@ class fulltext_sphinx
 					$variable = $section->get_variable_by_name($key);
 					if (!$variable)
 					{
-						$variable = $section->create_variable($key, $value);
+						$section->create_variable($key, $value);
 					}
 					else
 					{
@@ -413,7 +413,7 @@ class fulltext_sphinx
 				}
 				else
 				{
-					$variable = $section->create_variable($key, $value);
+					$section->create_variable($key, $value);
 				}
 			}
 		}
@@ -437,7 +437,6 @@ class fulltext_sphinx
 			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#', '#@#');
 			$replace	= array(' & ', ' | ', '  - ', ' +', ' -', ' |', '');
 
-			$replacements = 0;
 			$keywords = preg_replace($match, $replace, $keywords);
 			$this->sphinx->SetMatchMode(SPH_MATCH_EXTENDED);
 		}

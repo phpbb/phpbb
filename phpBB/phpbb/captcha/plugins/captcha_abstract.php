@@ -191,7 +191,7 @@ abstract class captcha_abstract
 
 	function validate()
 	{
-		global $config, $db, $user;
+		global $user;
 
 		if (!$user->is_setup())
 		{

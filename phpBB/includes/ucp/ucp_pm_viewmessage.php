@@ -50,9 +50,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
 	}
 
-	// Grab icons
-	$cache->obtain_icons();
-
 	// Load the custom profile fields
 	if ($config['load_cpf_pm'])
 	{
@@ -357,7 +354,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function get_user_information($user_id, $user_row)
 {
-	global $db, $auth, $user, $cache;
+	global $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
 
 	if (!$user_id)

@@ -190,7 +190,7 @@ class mcp_warn
 	function mcp_warn_post_view($action)
 	{
 		global $phpEx, $phpbb_root_path, $config, $request;
-		global $template, $db, $user, $auth, $phpbb_dispatcher;
+		global $template, $db, $user, $phpbb_dispatcher;
 
 		$post_id = $request->variable('p', 0);
 		$forum_id = $request->variable('f', 0);
@@ -369,8 +369,8 @@ class mcp_warn
 	*/
 	function mcp_warn_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config, $module, $request;
-		global $template, $db, $user, $auth, $phpbb_dispatcher;
+		global $phpEx, $phpbb_root_path, $config, $request;
+		global $template, $db, $user, $phpbb_dispatcher;
 
 		$user_id = $request->variable('u', 0);
 		$username = $request->variable('username', '', true);

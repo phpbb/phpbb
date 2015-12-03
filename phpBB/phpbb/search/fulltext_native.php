@@ -352,9 +352,6 @@ class fulltext_native extends \phpbb\search\base
 		$this->must_not_contain_ids = array();
 		$this->must_exclude_one_ids = array();
 
-		$mode = '';
-		$ignore_no_id = true;
-
 		foreach ($query as $word)
 		{
 			if (empty($word))

@@ -195,7 +195,7 @@ class mcp_queue
 					));
 				}
 
-				$extensions = $attachments = $topic_tracking_info = array();
+				$attachments = $topic_tracking_info = array();
 
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
@@ -217,8 +217,6 @@ class mcp_queue
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
-					$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $post_id . '
@@ -417,7 +415,6 @@ class mcp_queue
 				$sort_by_sql = $sort_order_sql = array();
 				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				$forum_names = array();

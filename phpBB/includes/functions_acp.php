@@ -273,7 +273,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'number':
-			$min = $max = $maxlength = '';
+			$max = $maxlength = '';
 			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
 			if ( isset($tpl_type[2]) )
 			{
@@ -285,7 +285,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'dimension':
-			$min = $max = $maxlength = $size = '';
+			$max = $maxlength = $size = '';
 
 			$min = (int) $tpl_type[1];
 
@@ -320,8 +320,6 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 		case 'select':
 		case 'custom':
-
-			$return = '';
 
 			if (isset($vars['method']))
 			{

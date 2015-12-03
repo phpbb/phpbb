@@ -423,7 +423,7 @@ function remote_avatar_dims()
 
 function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false)
 {
-	global $config, $convert, $phpbb_root_path, $user;
+	global $config, $convert, $user;
 
 	$relative_path = empty($convert->convertor['source_path_absolute']);
 
