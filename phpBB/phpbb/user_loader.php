@@ -189,12 +189,7 @@ class user_loader
 			return '';
 		}
 
-		if (!function_exists('get_user_avatar'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
-		}
-
-		return get_user_avatar($user['user_avatar'], $user['user_avatar_type'], $user['user_avatar_width'], $user['user_avatar_height'], 'USER_AVATAR', false, $lazy);
+		return phpbb_get_avatar(\phpbb\avatar\manager::clean_row($user, 'user'), 'USER_AVATAR', false, $lazy);
 	}
 
 	/**
