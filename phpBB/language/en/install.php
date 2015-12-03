@@ -83,8 +83,8 @@ $lang = array_merge($lang, array(
 
 	'ACP_LINK'	=> 'Take me to <a href="%1$s">the ACP</a>',
 
-	'INSTALL_PHPBB_IS_ALREADY_INSTALLED'	=> 'phpBB is already installed.',
-	'INSTALL_PHPBB_IS_NOT_INSTALLED'		=> 'phpBB is not installed yet.'
+	'INSTALL_PHPBB_INSTALLED'		=> 'phpBB is already installed.',
+	'INSTALL_PHPBB_NOT_INSTALLED'	=> 'phpBB is not installed yet.'
 ));
 
 // Requirements translation

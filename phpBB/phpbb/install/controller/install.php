@@ -105,7 +105,7 @@ class install
 	{
 		if ($this->install_helper->is_phpbb_installed())
 		{
-			throw new http_exception(404, 'INSTALL_PHPBB_IS_ALREADY_INSTALLED');
+			throw new http_exception(404, 'INSTALL_PHPBB_INSTALLED');
 		}
 
 		$this->template->assign_vars(array(

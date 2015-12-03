@@ -112,9 +112,9 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	}
 
 	/**
-	 * Returns an array of the events the object is subscribed to
+	 * Returns an array of events the object is subscribed to
 	 *
-	 * @return array	Array of the events the object is subscribed to
+	 * @return array	Array of events the object is subscribed to
 	 */
 	static public function getSubscribedEvents()
 	{
