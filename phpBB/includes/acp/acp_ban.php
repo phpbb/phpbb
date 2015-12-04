@@ -194,7 +194,7 @@ class acp_ban
 		{
 			case 'user':
 
-				$field = 'username';;
+				$field = 'username';
 
 				$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
 					FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u
