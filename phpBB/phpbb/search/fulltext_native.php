@@ -594,7 +594,6 @@ class fulltext_native extends \phpbb\search\base
 		$id_ary = array();
 
 		$sql_where = array();
-		$group_by = false;
 		$m_num = 0;
 		$w_num = 0;
 

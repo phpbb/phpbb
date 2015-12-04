@@ -610,7 +610,7 @@ function define_check_option($hardcoded, $check_option, $check_lang)
 */
 function define_action_option($hardcoded, $action_option, $action_lang, $folder)
 {
-	global $db, $template, $user;
+	global $template;
 
 	$l_action = $s_action_options = '';
 	if ($hardcoded)
@@ -721,7 +721,6 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 	// Define Condition
 	$condition = $global_rule_conditions[$rule_option];
-	$current_value = '';
 
 	switch ($condition)
 	{

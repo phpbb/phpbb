@@ -607,7 +607,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function display_role_mask(&$hold_ary)
 	{
-		global $db, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $template, $user, $phpbb_root_path, $phpEx;
 		global $phpbb_container;
 
 		if (!sizeof($hold_ary))

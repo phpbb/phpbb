@@ -747,8 +747,6 @@ class user extends \phpbb\session
 	*/
 	function leave_newly_registered()
 	{
-		global $db;
-
 		if (empty($this->data['user_new']))
 		{
 			return false;

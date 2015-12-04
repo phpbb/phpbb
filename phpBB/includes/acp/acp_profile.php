@@ -549,11 +549,7 @@ class acp_profile
 					}
 				}
 
-				if (sizeof($error))
-				{
-					$submit = false;
-				}
-				else
+				if (!sizeof($error))
 				{
 					$step = (isset($_REQUEST['next'])) ? $step + 1 : ((isset($_REQUEST['prev'])) ? $step - 1 : $step);
 				}
@@ -775,7 +771,7 @@ class acp_profile
 	*/
 	function build_language_options(&$cp, $field_type, $action = 'create')
 	{
-		global $user, $config, $db, $phpbb_container, $request;
+		global $user, $config, $db, $request;
 
 		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
 

@@ -530,7 +530,6 @@ class ucp_groups
 							{
 								// Handle avatar
 								$driver_name = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', ''));
-								$config_name = preg_replace('#^avatar\.driver.#', '', $driver_name);
 
 								if (in_array($driver_name, $avatar_drivers) && !$request->is_set_post('avatar_delete'))
 								{
@@ -619,7 +618,6 @@ class ucp_groups
 						}
 						else if (!$group_id)
 						{
-							$group_name = $request->variable('group_name', '', true);
 							$group_desc_data = array(
 								'text'			=> '',
 								'allow_bbcode'	=> true,

@@ -492,7 +492,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 
 function import_attachment_files($category_name = '')
 {
-	global $config, $convert, $phpbb_root_path, $db, $user;
+	global $config, $convert, $db, $user;
 
 	$sql = 'SELECT config_value AS upload_path
 		FROM ' . CONFIG_TABLE . "
@@ -590,7 +590,7 @@ function import_attachment($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $config, $user;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['upload_path'], '/') === '')
@@ -632,7 +632,7 @@ function import_rank($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['ranks_path']))
 	{
@@ -650,7 +650,7 @@ function import_smiley($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['smilies_path'], '/') === '')
@@ -671,7 +671,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 		return;
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $config, $user;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['avatar_path'], '/') === '')
@@ -684,7 +684,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 		$use_target = $config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
 	}
 
-	$result = _import_check('avatar_path', $source, $use_target);
+	_import_check('avatar_path', $source, $use_target);
 
 	return ((!empty($user_id)) ? $user_id : $use_target) . '.' . substr(strrchr($source, '.'), 1);
 }
@@ -750,7 +750,7 @@ function get_smiley_dim($source, $axis)
 		return $smiley_cache[$source][$axis];
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	$orig_source = $source;
 
@@ -858,14 +858,12 @@ function get_upload_avatar_dim($source, $axis)
 		return $cachedims[$axis];
 	}
 
-	$orig_source = $source;
-
 	if (substr($source, 0, 7) == 'upload:')
 	{
 		$source = substr($source, 7);
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['avatar_path']))
 	{

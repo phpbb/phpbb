@@ -598,7 +598,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$enable_urls	= true;
 	}
 
-	$enable_magic_url = $drafts = false;
+	$drafts = false;
 
 	// User own some drafts?
 	if ($auth->acl_get('u_savedrafts') && $action != 'delete')
@@ -738,16 +738,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
-
-		if ($submit)
-		{
-			$status_switch	= (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
-			$status_switch = ($status_switch != $check_value);
-		}
-		else
-		{
-			$status_switch = 1;
-		}
 
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);

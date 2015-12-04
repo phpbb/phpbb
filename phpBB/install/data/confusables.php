@@ -628,7 +628,6 @@ function utf8_new_case_fold_nfkc($text, $option = 'full')
 		"\xF0\x9D\x9E\xBB"	=> "\xCF\x83",
 		"\xF0\x9D\x9F\x8A"	=> "\xCF\x9D",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// do the case fold
 	$text = utf8_new_case_fold($text, $option);

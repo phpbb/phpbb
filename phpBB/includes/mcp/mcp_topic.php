@@ -637,7 +637,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log, $request;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $phpbb_log, $request;
 
 	if (!$to_topic_id)
 	{
@@ -689,7 +689,7 @@ function merge_posts($topic_id, $to_topic_id)
 		'redirect'		=> $redirect,
 		't'				=> $topic_id)
 	);
-	$success_msg = $return_link = '';
+	$return_link = '';
 
 	if (confirm_box(true))
 	{

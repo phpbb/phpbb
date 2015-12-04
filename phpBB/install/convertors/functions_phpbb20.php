@@ -561,7 +561,7 @@ function phpbb_copy_table_fields()
 */
 function phpbb_convert_authentication($mode)
 {
-	global $db, $src_db, $same_db, $convert, $user, $config, $cache;
+	global $db, $src_db, $same_db, $convert, $config;
 
 	if ($mode == 'start')
 	{

@@ -618,7 +618,7 @@ class mcp_queue
 	*/
 	static public function approve_posts($action, $post_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config, $request, $phpbb_container, $phpbb_dispatcher;
+		global $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
@@ -628,7 +628,7 @@ class mcp_queue
 
 		$redirect = $request->variable('redirect', build_url(array('quickmod')));
 		$redirect = reapply_sid($redirect);
-		$success_msg = $post_url = '';
+		$post_url = '';
 		$approve_log = array();
 		$num_topics = 0;
 

@@ -544,7 +544,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	}
 
 	// We place actions into arrays, to save queries.
-	$sql = $unread_ids = $delete_ids = $important_ids = array();
+	$unread_ids = $delete_ids = $important_ids = array();
 
 	foreach ($action_ary as $msg_id => $msg_ary)
 	{

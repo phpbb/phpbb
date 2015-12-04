@@ -798,8 +798,6 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_quote($in)
 	{
-		global $config, $user;
-
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)

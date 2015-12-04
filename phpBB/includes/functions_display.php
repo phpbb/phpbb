@@ -731,7 +731,7 @@ function generate_forum_rules(&$forum_data)
 		return;
 	}
 
-	global $template, $phpbb_root_path, $phpEx;
+	global $template;
 
 	if ($forum_data['forum_rules'])
 	{
@@ -751,7 +751,7 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data_ary)
 {
-	global $db, $user, $template, $auth, $config;
+	global $template, $auth, $config;
 	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
 	if (!$auth->acl_get('f_list', $forum_data_ary['forum_id']))
@@ -759,7 +759,7 @@ function generate_forum_nav(&$forum_data_ary)
 		return;
 	}
 
-	$navlinks = $navlinks_parents = $forum_template_data = array();
+	$navlinks_parents = $forum_template_data = array();
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data_ary);

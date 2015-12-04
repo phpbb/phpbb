@@ -551,7 +551,7 @@ class acp_search
 
 	function get_search_types()
 	{
-		global $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+		global $phpbb_extension_manager;
 
 		$finder = $phpbb_extension_manager->get_finder();
 

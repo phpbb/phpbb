@@ -650,8 +650,6 @@ function validate_range($value_ary, &$error)
 	foreach ($value_ary as $value)
 	{
 		$column = explode(':', $value['column_type']);
-		$max = $min = 0;
-		$type = 0;
 		if (!isset($column_types[$column[0]]))
 		{
 			continue;

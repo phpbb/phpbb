@@ -550,7 +550,7 @@ class messenger
 	*/
 	function msg_jabber()
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $user, $phpbb_root_path, $phpEx;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
@@ -622,7 +622,7 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
@@ -714,7 +714,7 @@ class queue
 	*/
 	function process()
 	{
-		global $db, $config, $phpEx, $phpbb_root_path, $user;
+		global $config, $phpEx, $phpbb_root_path, $user;
 
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();

@@ -709,8 +709,6 @@ class acp_attachments
 							$forum_ids = array();
 						}
 
-						$extensions = array();
-
 						$sql = 'SELECT *
 							FROM ' . EXTENSIONS_TABLE . "
 							WHERE group_id = $group_id

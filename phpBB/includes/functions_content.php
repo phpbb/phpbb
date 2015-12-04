@@ -651,7 +651,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $phpbb_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is decoded for editing
@@ -763,8 +763,6 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 		// set last_char to empty here, so the variable can be used later to
 		// check whether a character was removed
 		default:
-			$last_char = '';
-		break;
 	}
 
 	$short_url = (utf8_strlen($url) > 55) ? utf8_substr($url, 0, 39) . ' ... ' . utf8_substr($url, -10) : $url;

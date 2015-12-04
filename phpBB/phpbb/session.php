@@ -494,7 +494,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_container, $phpbb_dispatcher;
 
 		$this->data = array();
 

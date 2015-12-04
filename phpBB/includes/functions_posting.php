@@ -833,7 +833,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	foreach ($draft_rows as $draft)
 	{
 		$link_topic = $link_forum = $link_pm = false;
-		$insert_url = $view_url = $title = '';
+		$view_url = $title = '';
 
 		if (isset($topic_rows[$draft['topic_id']])
 			&& (

@@ -523,7 +523,7 @@ class mcp_warn
 function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 {
 	global $phpEx, $phpbb_root_path, $config, $phpbb_log;
-	global $template, $db, $user, $auth;
+	global $db, $user;
 
 	if ($send_pm)
 	{

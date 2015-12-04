@@ -489,8 +489,6 @@ class fulltext_sphinx
 
 		$id_ary = array();
 
-		$join_topic = ($type != 'posts');
-
 		// Sorting
 
 		if ($type == 'topics')
