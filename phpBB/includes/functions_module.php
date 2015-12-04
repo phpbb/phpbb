@@ -387,7 +387,8 @@ class p_master
 	*/
 	static function module_auth($module_auth, $forum_id)
 	{
-		global $phpbb_dispatcher;
+		global $auth, $config;
+		global $request, $phpbb_extension_manager, $phpbb_dispatcher;
 
 		$module_auth = trim($module_auth);
 

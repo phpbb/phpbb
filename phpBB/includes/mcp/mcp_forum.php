@@ -477,7 +477,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		'redirect'		=> $redirect,
 		'topic_id_list'	=> $topic_ids)
 	);
-	$success_msg = $return_link = '';
+	$return_link = '';
 
 	if (confirm_box(true))
 	{

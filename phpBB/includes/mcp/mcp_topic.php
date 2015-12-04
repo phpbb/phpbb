@@ -475,7 +475,6 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		'to_forum_id'	=> $to_forum_id,
 		'icon'			=> $request->variable('icon', 0))
 	);
-	$success_msg = $return_link = '';
 
 	if (confirm_box(true))
 	{
