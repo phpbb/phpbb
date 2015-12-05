@@ -332,8 +332,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		}
 
 		// Load the magic links plugins. We do that after BBCodes so that they use the same tags
-		$configurator->plugins->load('Autoemail');
-		$configurator->plugins->load('Autolink', array('matchWww' => true));
+		$this->configure_autolink($configurator);
 
 		// Register some vars with a default value. Those should be set at runtime by whatever calls
 		// the parser
@@ -392,6 +391,31 @@ class factory implements \phpbb\textformatter\cache_interface
 		$this->cache->put($this->cache_key_renderer, $renderer_data);
 
 		return array('parser' => $parser, 'renderer' => $renderer);
+	}
+
+	/**
+	* Configure the Autolink / Autoemail plugins used to linkify text
+	*
+	* @param  \s9e\TextFormatter\Configurator $configurator
+	* @return void
+	*/
+	protected function configure_autolink(Configurator $configurator)
+	{
+		$configurator->plugins->load('Autoemail');
+		$configurator->plugins->load('Autolink', array('matchWww' => true));
+
+		// Create a tag that will be used to display the truncated text by replacing the original
+		// content with the content of the @text attribute
+		$tag = $configurator->tags->add('AUTOLINK_TEXT');
+		$tag->attributes->add('text');
+		$tag->template = '<xsl:value-of select="@text"/>';
+
+		// Add a tag filter that replaces the text of links that were created by the Autolink plugin
+		$configurator->Autolink->getTag()->filterChain
+			->add(__NAMESPACE__ . '\\parser::generate_autolink_text')
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByName('parser');
 	}
 
 	/**

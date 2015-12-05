@@ -393,4 +393,44 @@ class parser implements \phpbb\textformatter\parser_interface
 
 		return $url;
 	}
+
+	/**
+	* Replace the content displayed inside of a URL tag
+	*
+	* Will only apply to URL tags that do not use any markup (e.g. not "[url]") on the assumption
+	* that those tags were created by the Autolink plugin to linkify URLs found in plain text
+	*
+	* @param  \s9e\TextFormatter\Parser\Tag $url_tag URL tag (start tag)
+	* @param  \s9e\TextFormatter\Parser     $parser  Parser
+	* @return bool                                   Always TRUE to indicate that the tag is valid
+	*/
+	public static function generate_autolink_text(\s9e\TextFormatter\Parser\Tag $url_tag, \s9e\TextFormatter\Parser $parser)
+	{
+		// If the tag consumes any text then we ignore it because it's not a linkified URL. Same if
+		// it's not paired with an end tag that doesn't consume any text either
+		if ($url_tag->getLen() > 0 || !$url_tag->getEndTag())
+		{
+			return true;
+		}
+
+		// Capture the text between the start tag and its end tag
+		$start  = $url_tag->getPos();
+		$end    = $url_tag->getEndTag()->getPos();
+		$length = $end - $start;
+		$text   = substr($parser->getText(), $start, $length);
+
+		if ($length <= 55 || utf8_strlen($text) <= 55)
+		{
+			// Do not do anything if the text is not longer than 55 characters
+			return true;
+		}
+
+		$tag = $parser->addSelfClosingTag('AUTOLINK_TEXT', $start, $length);
+		$url_tag->cascadeInvalidationTo($tag);
+
+		$text = utf8_substr($text, 0, 39) . ' ... ' . utf8_substr($text, -10);
+		$tag->setAttribute('text', $text);
+
+		return true;
+	}
 }
