@@ -1271,7 +1271,7 @@ class acp_users
 				$deletemark	= (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$confirm	= (isset($_POST['confirm'])) ? true : false;
-				$marked		= $request->variable('mark', array(0));;
+				$marked		= $request->variable('mark', array(0));
 
 				// Delete entries if requested and able
 				if ($deletemark || $deleteall || $confirm)
