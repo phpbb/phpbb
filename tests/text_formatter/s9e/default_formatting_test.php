@@ -236,6 +236,14 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'<a href="http://www.phpbb.com/community/path/to/long/url/file.ext#section" class="postlink">http://www.phpbb.com/community/path/to/ ... xt#section</a>'
 			),
 			array(
+				'http://localhost/ http://localhost/viewforum.php?f=1',
+				'<a href="http://localhost/" class="postlink">http://localhost/</a> <a href="http://localhost/viewforum.php?f=1" class="postlink">viewforum.php?f=1</a>'
+			),
+			array(
+				'http://localhost/viewforum.php?f=1#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+				'<a href="http://localhost/viewforum.php?f=1#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">viewforum.php?f=1#xxxxxxxxxxxxxxxxxxxxx ... xxxxxxxxxx</a>'
+			),
+			array(
 				'[quote="[url=http://example.org]xxx[/url]"]...[/quote]',
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">xxx</a> wrote:</cite>...</div></blockquote>'
 			),

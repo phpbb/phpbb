@@ -400,11 +400,12 @@ class parser implements \phpbb\textformatter\parser_interface
 	* Will only apply to URL tags that do not use any markup (e.g. not "[url]") on the assumption
 	* that those tags were created by the Autolink plugin to linkify URLs found in plain text
 	*
-	* @param  \s9e\TextFormatter\Parser\Tag $url_tag URL tag (start tag)
-	* @param  \s9e\TextFormatter\Parser     $parser  Parser
-	* @return bool                                   Always TRUE to indicate that the tag is valid
+	* @param  \s9e\TextFormatter\Parser\Tag $url_tag   URL tag (start tag)
+	* @param  \s9e\TextFormatter\Parser     $parser    Parser
+	* @param  string                        $board_url Forum's root URL (with trailing slash)
+	* @return bool                                     Always TRUE to indicate that the tag is valid
 	*/
-	public static function generate_autolink_text(\s9e\TextFormatter\Parser\Tag $url_tag, \s9e\TextFormatter\Parser $parser)
+	public static function generate_autolink_text(\s9e\TextFormatter\Parser\Tag $url_tag, \s9e\TextFormatter\Parser $parser, $board_url)
 	{
 		// If the tag consumes any text then we ignore it because it's not a linkified URL. Same if
 		// it's not paired with an end tag that doesn't consume any text either
@@ -419,16 +420,20 @@ class parser implements \phpbb\textformatter\parser_interface
 		$length = $end - $start;
 		$text   = substr($parser->getText(), $start, $length);
 
-		if ($length <= 55 || utf8_strlen($text) <= 55)
+		// Remove the board's root URL from the link if applicable
+		if (stripos($text, $board_url) === 0 && strlen($text) > strlen($board_url))
 		{
-			// Do not do anything if the text is not longer than 55 characters
-			return true;
+			$text = substr($text, strlen($board_url));
 		}
 
-		$tag = $parser->addSelfClosingTag('AUTOLINK_TEXT', $start, $length);
-		$url_tag->cascadeInvalidationTo($tag);
+		// Truncate the text if it's longer than 55 characters
+		if (utf8_strlen($text) > 55)
+		{
+			$text = utf8_substr($text, 0, 39) . ' ... ' . utf8_substr($text, -10);
+		}
 
-		$text = utf8_substr($text, 0, 39) . ' ... ' . utf8_substr($text, -10);
+		// Create a tag that consumes the link's text
+		$tag = $parser->addSelfClosingTag('AUTOLINK_TEXT', $start, $length);
 		$tag->setAttribute('text', $text);
 
 		return true;

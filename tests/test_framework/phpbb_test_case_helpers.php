@@ -315,7 +315,7 @@ class phpbb_test_case_helpers
 	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
-		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $user;
+		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
 
 		$cache_dir = __DIR__ . '/../tmp/';
 
@@ -490,6 +490,12 @@ class phpbb_test_case_helpers
 			}
 		}
 
+		// Create a fake request
+		if (!isset($request))
+		{
+			$request = new phpbb_mock_request;
+		}
+
 		// Create and register the text_formatter.s9e.factory service
 		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, $cache_dir, $cache_key_parser, $cache_key_renderer);
 		$container->set('text_formatter.s9e.factory', $factory);
@@ -513,6 +519,7 @@ class phpbb_test_case_helpers
 			     ->will($this->test_case->returnCallback(__CLASS__ . '::format_date'));
 
 			$user->date_format = 'Y-m-d H:i:s';
+			$user->host = 'localhost';
 			$user->optionset('viewcensors', true);
 			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);

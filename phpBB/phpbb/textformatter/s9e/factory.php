@@ -415,7 +415,8 @@ class factory implements \phpbb\textformatter\cache_interface
 			->add(__NAMESPACE__ . '\\parser::generate_autolink_text')
 			->resetParameters()
 			->addParameterByName('tag')
-			->addParameterByName('parser');
+			->addParameterByName('parser')
+			->addParameterByValue(generate_board_url() . '/');
 	}
 
 	/**
