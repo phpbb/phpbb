@@ -66,6 +66,15 @@ abstract class driver implements driver_interface
 	*/
 	var $sql_server_version = false;
 
+	const LOGICAL_OP = 0;
+	const STATEMENTS = 1;
+	const LEFT_STMT = 0;
+	const COMPARE_OP = 1;
+	const RIGHT_STMT = 2;
+	const SUBQUERY_OP = 3;
+	const SUBQUERY_SELECT_TYPE = 4;
+	const SUBQUERY_BUILD = 5;
+
 	/**
 	* Constructor
 	*/
@@ -809,21 +818,21 @@ abstract class driver implements driver_interface
 	{
 		// In cases where an array exists but there is no head condition,
 		// it should be because there's only 1 WHERE clause. This seems the best way to deal with it.
-		if ($operations_ary[0] !== 'AND' &&
-			$operations_ary[0] !== 'OR')
+		if ($operations_ary[self::LOGICAL_OP] !== 'AND' &&
+			$operations_ary[self::LOGICAL_OP] !== 'OR')
 		{
-			$operations_ary = array('AND', $operations_ary);
+			$operations_ary = array('AND', array($operations_ary));
 		}
 		return $this->_process_boolean_tree($operations_ary) . "\n";
 	}
 
 	protected function _process_boolean_tree($operations_ary)
 	{
-		$operation = array_shift($operations_ary);
+		$operation = $operations_ary[self::LOGICAL_OP];
 
-		foreach ($operations_ary as &$condition)
+		foreach ($operations_ary[self::STATEMENTS] as &$condition)
 		{
-			switch ($condition[0])
+			switch ($condition[self::LOGICAL_OP])
 			{
 				case 'AND':
 				case 'OR':
@@ -844,40 +853,40 @@ abstract class driver implements driver_interface
 						case 3:
 
 							// Typical 3 element clause with {left hand} {operator} {right hand}
-							switch ($condition[1])
+							switch ($condition[self::COMPARE_OP])
 							{
 								case 'IN':
 								case 'NOT_IN':
 
 									// As this is used with an IN, assume it is a set of elements for sql_in_set()
-									$condition = $this->sql_in_set($condition[0], $condition[2], $condition[1] === 'NOT_IN', true);
+									$condition = $this->sql_in_set($condition[self::LEFT_STMT], $condition[self::RIGHT_STMT], $condition[self::COMPARE_OP] === 'NOT_IN', true);
 
 								break;
 
 								case 'LIKE':
 
-									$condition = $condition[0] . ' ' . $this->sql_like_expression($condition[2]) . ' ';
+									$condition = $condition[self::LEFT_STMT] . ' ' . $this->sql_like_expression($condition[self::RIGHT_STMT]) . ' ';
 
 								break;
 
 								case 'NOT_LIKE':
 
-									$condition = $condition[0] . ' ' . $this->sql_not_like_expression($condition[2]) . ' ';
+									$condition = $condition[self::LEFT_STMT] . ' ' . $this->sql_not_like_expression($condition[self::RIGHT_STMT]) . ' ';
 
 								break;
 
 								case 'IS_NOT':
 
-									$condition[1] = 'IS NOT';
+									$condition[self::COMPARE_OP] = 'IS NOT';
 
 								// no break
 								case 'IS':
 
 									// If the value is NULL, the string of it is the empty string ('') which is not the intended result.
 									// this should solve that
-									if ($condition[2] === null)
+									if ($condition[self::RIGHT_STMT] === null)
 									{
-										$condition[2] = 'NULL';
+										$condition[self::RIGHT_STMT] = 'NULL';
 									}
 
 									$condition = implode(' ', $condition);
@@ -897,8 +906,8 @@ abstract class driver implements driver_interface
 
 							// Subquery with {left hand} {operator} {compare kind} {SELECT Kind } {Sub Query}
 
-							$condition = $condition[0] . ' ' . $condition[1] . ' ' . $condition[2] . ' ( ';
-							$condition .= $this->sql_build_query($condition[3], $condition[4]);
+							$condition = $condition[self::LEFT_STMT] . ' ' . $condition[self::COMPARE_OP] . ' ' . $condition[self::SUBQUERY_OP] . ' ( ';
+							$condition .= $this->sql_build_query($condition[self::SUBQUERY_SELECT_TYPE], $condition[self::SUBQUERY_BUILD]);
 							$condition .= ' )';
 
 						break;
@@ -917,11 +926,11 @@ abstract class driver implements driver_interface
 
 		if ($operation === 'NOT')
 		{
-			$operations_ary =  implode("", $operations_ary);
+			$operations_ary =  implode("", $operations_ary[self::STATEMENTS]);
 		}
 		else
 		{
-			$operations_ary = implode(" \n	$operation ", $operations_ary);
+			$operations_ary = implode(" \n	$operation ", $operations_ary[self::STATEMENTS]);
 		}
 
 		return $operations_ary;
