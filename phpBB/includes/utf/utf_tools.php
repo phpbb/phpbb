@@ -1153,7 +1153,6 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 		"\xF0\x9D\x9E\xBB"	=> "\xCF\x83",
 		"\xF0\x9D\x9F\x8A"	=> "\xCF\x9D",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// do the case fold
 	$text = utf8_case_fold($text, $option);
@@ -1244,7 +1243,6 @@ function utf8_case_fold_nfc($text, $option = 'full')
 		"\xE1\xBF\xB7"	=> "\xE1\xBF\xB6\xCD\x85",
 		"\xE1\xBF\xBC"	=> "\xCE\xA9\xCD\x85",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// perform a small trick, avoid further normalization on composed points that contain U+0345 in their decomposition
 	$text = strtr($text, $ypogegrammeni);

@@ -35,7 +35,7 @@ class mcp_queue
 
 	public function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache, $request;
+		global $auth, $db, $user, $template, $request;
 		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container;
 		global $phpbb_dispatcher;
 
@@ -400,7 +400,6 @@ class mcp_queue
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$forum_info = $forum_info[$forum_id];
 					$forum_list = $forum_id;
 				}
 
@@ -873,7 +872,7 @@ class mcp_queue
 	*/
 	static public function approve_topics($action, $topic_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config, $phpbb_log;
+		global $db, $template, $user, $phpbb_log;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_dispatcher;
 
 		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
@@ -1070,7 +1069,7 @@ class mcp_queue
 	*/
 	static public function disapprove_posts($post_id_list, $id, $mode)
 	{
-		global $db, $template, $user, $config, $phpbb_container, $phpbb_dispatcher;
+		global $db, $template, $user, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_log;
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
@@ -1082,7 +1081,7 @@ class mcp_queue
 		$redirect = reapply_sid($redirect);
 		$reason = $request->variable('reason', '', true);
 		$reason_id = $request->variable('reason_id', 0);
-		$success_msg = $additional_msg = '';
+		$additional_msg = '';
 
 		$s_hidden_fields = build_hidden_fields(array(
 			'i'				=> $id,
@@ -1140,7 +1139,7 @@ class mcp_queue
 
 		if (confirm_box(true))
 		{
-			$disapprove_log = $disapprove_log_topics = $disapprove_log_posts = array();
+			$disapprove_log_topics = $disapprove_log_posts = array();
 			$topic_posts_unapproved = $post_disapprove_list = $topic_information = array();
 
 			// Build a list of posts to be disapproved and get the related topics real replies count

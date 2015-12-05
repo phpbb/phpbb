@@ -905,7 +905,7 @@ function get_gallery_avatar_dim($source, $axis)
 		return $avatar_cache[$source][$axis];
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	$orig_source = $source;
 
@@ -1120,7 +1120,7 @@ function words_unique(&$words)
 */
 function add_user_group($group_id, $user_id, $group_leader = false)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $db;
 
 	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 		'group_id'		=> $group_id,
@@ -1140,7 +1140,7 @@ function add_user_group($group_id, $user_id, $group_leader = false)
 */
 function user_group_auth($group, $select_query, $use_src_db)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db, $src_db, $same_db;
+	global $convert, $user, $db, $src_db, $same_db;
 
 	if (!in_array($group, array('guests', 'registered', 'registered_coppa', 'global_moderators', 'administrators', 'bots')))
 	{
@@ -1196,7 +1196,7 @@ function get_config()
 		return $convert_config;
 	}
 
-	global $src_db, $same_db, $phpbb_root_path, $config;
+	global $src_db, $same_db;
 	global $convert;
 
 	if ($convert->config_schema['table_format'] != 'file')
@@ -1275,7 +1275,7 @@ function get_config()
 */
 function restore_config($schema)
 {
-	global $db, $config;
+	global $config;
 
 	$convert_config = get_config();
 
@@ -2037,7 +2037,7 @@ function update_dynamic_config()
 */
 function update_topics_posted()
 {
-	global $db, $config;
+	global $db;
 
 	switch ($db->get_sql_layer())
 	{
@@ -2178,7 +2178,7 @@ function fix_empty_primary_groups()
 */
 function remove_invalid_users()
 {
-	global $convert, $db, $phpEx, $phpbb_root_path;
+	global $db, $phpEx, $phpbb_root_path;
 
 	// username_clean is UNIQUE
 	$sql = 'SELECT user_id
@@ -2201,7 +2201,7 @@ function remove_invalid_users()
 
 function convert_bbcode($message, $convert_size = true, $extended_bbcodes = false)
 {
-	static $orig, $repl, $origx, $replx, $str_from, $str_to;
+	static $orig, $repl, $origx, $replx;
 
 	if (empty($orig))
 	{
@@ -2314,7 +2314,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+	global $convert, $phpbb_root_path, $user, $phpbb_filesystem;
 
 	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
 	$filesystem = $phpbb_filesystem;
@@ -2371,7 +2371,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+	global $convert, $phpbb_root_path, $config, $user, $phpbb_filesystem;
 
 	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
 	$filesystem = $phpbb_filesystem;
@@ -2483,7 +2483,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 
 function relative_base($path, $is_relative = true, $line = false, $file = false)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $user;
 
 	if (!$is_relative)
 	{

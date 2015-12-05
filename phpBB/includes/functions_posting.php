@@ -959,11 +959,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$db->sql_freeresult($result);
 
 	// Grab extensions
-	$extensions = $attachments = array();
+	$attachments = array();
 	if ($has_attachments && $auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
 	{
-		$extensions = $cache->obtain_attach_extensions($forum_id);
-
 		// Get attachments...
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -1101,7 +1099,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $softdelete_reason = '')
 {
-	global $db, $user, $auth, $phpbb_container;
+	global $db, $user, $phpbb_container;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
@@ -1190,7 +1188,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 			if ($is_soft)
 			{
-				$topic_row = array();
 				$phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason);
 			}
 			else
@@ -1589,7 +1586,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 		break;
 	}
-	$topic_row = array();
 
 	// And the topic ladies and gentlemen
 	switch ($post_mode)

@@ -875,7 +875,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 
 		if (!$is_soft)
 		{
-			$return = delete_topics('topic_id', $topic_ids);
+			delete_topics('topic_id', $topic_ids);
 		}
 	}
 	else

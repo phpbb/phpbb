@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 function mcp_post_details($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config, $request;
-	global $template, $db, $user, $auth, $cache;
+	global $template, $db, $user, $auth;
 	global $phpbb_dispatcher;
 
 	$user->add_lang('posting');

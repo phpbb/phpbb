@@ -452,7 +452,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config, $user;
+		global $config;
 
 		if (empty($config['email_enable']))
 		{
@@ -1257,8 +1257,6 @@ class smtp_class
 	{
 		global $user;
 
-		$err_msg = '';
-
 		// Here we try to determine the *real* hostname (reverse DNS entry preferrably)
 		$local_host = $user->host;
 
@@ -1735,7 +1733,7 @@ function mail_encode($str, $eol = "\r\n")
 */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
-	global $config, $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx;
 
 	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
 	// Reference: http://bugs.php.net/bug.php?id=15841

@@ -1106,7 +1106,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $s_view, $show_trace = false)
 	{
-		global $template, $user, $phpbb_admin_path, $phpEx, $phpbb_container;
+		global $template, $phpbb_admin_path, $phpEx, $phpbb_container;
 
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');
@@ -1195,7 +1195,7 @@ class auth_admin extends \phpbb\auth\auth
 	*/
 	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
 	{
-		global $user, $phpbb_container;
+		global $phpbb_container;
 
 		/* @var $phpbb_permissions \phpbb\permissions */
 		$phpbb_permissions = $phpbb_container->get('acl.permissions');

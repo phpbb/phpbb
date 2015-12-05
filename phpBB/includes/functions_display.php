@@ -886,7 +886,7 @@ function get_forum_parents(&$forum_data)
 */
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $config, $template, $db, $phpbb_root_path, $phpEx, $user, $auth;
+	global $db, $phpbb_root_path, $phpEx, $user, $auth;
 	global $phpbb_container;
 
 	$forum_id_ary = array();
@@ -1001,8 +1001,6 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$folder_alt, &$topic_type)
 {
 	global $user, $config;
-
-	$folder = $folder_new = '';
 
 	if ($topic_row['topic_status'] == ITEM_MOVED)
 	{

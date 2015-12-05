@@ -955,7 +955,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 */
 function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
 {
-	global $config, $user;
+	global $user;
 
 	$last_read = array();
 
@@ -1260,7 +1260,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user, $config, $auth, $request, $phpbb_container;
+	global $db, $tracking_topics, $user, $config, $request, $phpbb_container;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
@@ -1719,9 +1719,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path, $phpbb_filesystem, $phpbb_path_helper, $phpEx, $phpbb_dispatcher;
-
-	$failover_flag = false;
+	global $user, $phpbb_path_helper, $phpbb_dispatcher;
 
 	if (!$user->is_setup())
 	{
@@ -2241,7 +2239,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
+	global $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 	global $request, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 	$err = '';
@@ -3213,7 +3211,7 @@ function phpbb_checkdnsrr($host, $type = 'MX')
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user, $request;
-	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
+	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
 
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
@@ -3545,7 +3543,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 */
 function obtain_users_online($item_id = 0, $item = 'forum')
 {
-	global $db, $config, $user;
+	global $db, $config;
 
 	$reading_sql = '';
 	if ($item_id !== 0)
@@ -3611,7 +3609,6 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 {
 	global $config, $db, $user, $auth, $phpbb_dispatcher;
 
-	$guests_online = $hidden_online = $l_online_users = $online_userlist = $visible_online = '';
 	$user_online_link = $rowset = array();
 	// Need caps version of $item for language-strings
 	$item_caps = strtoupper($item);
@@ -4008,8 +4005,7 @@ function phpbb_get_group_avatar($user_row, $alt = 'GROUP_AVATAR', $ignore_config
 */
 function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 {
-	global $user, $config, $cache, $phpbb_root_path, $phpEx;
-	global $request;
+	global $user, $config;
 	global $phpbb_container, $phpbb_dispatcher;
 
 	if (!$config['allow_avatar'] && !$ignore_config)
@@ -4560,7 +4556,7 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 */
 function page_footer($run_cron = true, $display_template = true, $exit_handler = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
+	global $db, $config, $template, $user, $auth, $cache, $phpEx;
 	global $request, $phpbb_dispatcher, $phpbb_admin_path;
 
 	// A listener can set this variable to `true` when it overrides this function
@@ -4701,7 +4697,7 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook, $config;
+	global $phpbb_hook;
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{

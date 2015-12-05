@@ -1052,7 +1052,6 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		}
 
 		// Now Build the address list
-		$plain_address_field = '';
 		foreach ($address_list as $type => $adr_ary)
 		{
 			foreach ($adr_ary as $id => $field)

@@ -1218,7 +1218,7 @@ function phpbb_replace_size($matches)
 */
 function phpbb_prepare_message($message)
 {
-	global $phpbb_root_path, $phpEx, $db, $convert, $user, $config, $cache, $convert_row, $message_parser;
+	global $convert, $user, $convert_row, $message_parser;
 
 	if (!$message)
 	{
@@ -1247,9 +1247,6 @@ function phpbb_prepare_message($message)
 		$message = str_replace('\"', '&quot;', $message);
 		$message = str_replace('\&quot;', '&quot;', $message);
 	}
-
-	// Already the new user id ;)
-	$user_id = $convert->row['poster_id'];
 
 	$message = str_replace('<br />', "\n", $message);
 	$message = str_replace('<', '&lt;', $message);
@@ -1608,8 +1605,6 @@ function phpbb_get_avatar_width($user_avatar)
 */
 function phpbb_privmsgs_to_userid($to_userid)
 {
-	global $config;
-
 	return 'u_' . phpbb_user_id($to_userid);
 }
 
@@ -1656,7 +1651,7 @@ function phpbb_get_savebox_id($user_id)
 */
 function phpbb_import_attach_config()
 {
-	global $db, $src_db, $same_db, $convert, $config;
+	global $src_db, $same_db, $convert, $config;
 
 	if ($convert->mysql_convert && $same_db)
 	{
@@ -1762,9 +1757,8 @@ function phpbb_disallowed_username($username)
 */
 function phpbb_create_userconv_table()
 {
-	global $db, $src_db, $convert, $table_prefix, $user, $lang;
+	global $db;
 
-	$map_dbms = '';
 	switch ($db->get_sql_layer())
 	{
 		case 'mysql':
@@ -1853,7 +1847,7 @@ function phpbb_create_userconv_table()
 
 function phpbb_check_username_collisions()
 {
-	global $db, $src_db, $convert, $table_prefix, $user, $lang;
+	global $db, $src_db, $convert, $user, $lang;
 
 	// now find the clean version of the usernames that collide
 	$sql = 'SELECT username_clean
@@ -1966,7 +1960,7 @@ function phpbb_add_notification_options($user_notify_pm)
 		);
 	}
 
-	$sql = $db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
+	$db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
 }
 
 function phpbb_convert_password_hash($hash)

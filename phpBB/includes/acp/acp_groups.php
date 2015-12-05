@@ -1092,7 +1092,6 @@ class acp_groups
 			ORDER BY group_legend ASC, group_type DESC, group_name ASC';
 		$result = $db->sql_query($sql);
 
-		$s_group_select_legend = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = $group_helper->get_name($row['group_name']);
@@ -1130,7 +1129,6 @@ class acp_groups
 			ORDER BY t.teampage_position ASC';
 		$result = $db->sql_query($sql);
 
-		$category_data = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ($row['teampage_id'] == $category_id)
@@ -1173,7 +1171,6 @@ class acp_groups
 			ORDER BY g.group_type DESC, g.group_name ASC';
 		$result = $db->sql_query($sql);
 
-		$s_group_select_teampage = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$group_name = $group_helper->get_name($row['group_name']);

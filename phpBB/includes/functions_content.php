@@ -1054,7 +1054,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -1096,7 +1095,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 		if (!$denied)
 		{
-			$l_downloaded_viewed = $download_link = '';
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)

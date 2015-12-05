@@ -1268,17 +1268,10 @@ class acp_users
 				$user->add_lang('mcp');
 
 				// Set up general vars
-				$start		= $request->variable('start', 0);
 				$deletemark	= (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$confirm	= (isset($_POST['confirm'])) ? true : false;
-				$marked		= $request->variable('mark', array(0));
-				$message	= $request->variable('message', '', true);
-
-				// Sort keys
-				$sort_days	= $request->variable('st', 0);
-				$sort_key	= $request->variable('sk', 't');
-				$sort_dir	= $request->variable('sd', 'd');
+				$marked		= $request->variable('mark', array(0));;
 
 				// Delete entries if requested and able
 				if ($deletemark || $deleteall || $confirm)
@@ -2292,10 +2285,6 @@ class acp_users
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
-				}
-				else
-				{
-					$founder_manage = 0;
 				}
 
 				switch ($action)

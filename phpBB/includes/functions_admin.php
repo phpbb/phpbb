@@ -2009,7 +2009,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					AND u.user_id = p.poster_id';
 			$result = $db->sql_query($sql);
 
-			$post_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$topic_id = intval($row['topic_id']);
@@ -2082,7 +2081,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 							AND u.user_id = p.poster_id';
 					$result = $db->sql_query($sql);
 
-					$post_ids = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$topic_id = (int) $row['topic_id'];
@@ -2377,7 +2375,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	}
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
-	$hold_ary = $ug_id_ary = $sql_ary = array();
+	$sql_ary = array();
 
 	// Grab all users having moderative options...
 	$hold_ary = $auth->acl_user_raw_data(false, 'm_%', false);

@@ -939,8 +939,6 @@ class acp_board
 	*/
 	function board_disable($value, $key)
 	{
-		global $user;
-
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
@@ -1050,8 +1048,6 @@ class acp_board
 	*/
 	function select_news_forums($value, $key)
 	{
-		global $user, $config;
-
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
@@ -1069,8 +1065,6 @@ class acp_board
 
 	function select_exclude_forums($value, $key)
 	{
-		global $user, $config;
-
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
@@ -1126,7 +1120,7 @@ class acp_board
 	*/
 	function enable_mod_rewrite($value, $key)
 	{
-		global $user, $config;
+		global $user;
 
 		// Determine whether mod_rewrite is enabled on the server
 		// NOTE: This only works on Apache servers on which PHP is NOT

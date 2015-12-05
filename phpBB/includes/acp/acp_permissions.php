@@ -690,8 +690,6 @@ class acp_permissions
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$forum_id = 0;
-
 		// We loop through the auth settings defined in our submit
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);

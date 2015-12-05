@@ -1264,8 +1264,6 @@ class acp_forums
 							return array($user->lang['NO_FORUM']);
 						}
 
-						$subforums_to_name = $_row['forum_name'];
-
 						$sql = 'SELECT forum_id
 							FROM ' . FORUMS_TABLE . "
 							WHERE parent_id = {$row['forum_id']}";

@@ -367,7 +367,6 @@ class mcp_reports
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$forum_info = $forum_info[$forum_id];
 					$forum_list = array($forum_id);
 				}
 
@@ -457,7 +456,6 @@ class mcp_reports
 						ORDER BY ' . $sort_order_sql;
 					$result = $db->sql_query($sql);
 
-					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$template->assign_block_vars('postrow', array(
