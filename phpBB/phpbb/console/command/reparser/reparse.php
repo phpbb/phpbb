@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\reparser;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,11 +22,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class reparse extends \phpbb\console\command\command
 {
-	/**
-	* @var \phpbb\config\db_text
-	*/
-	protected $config_text;
-
 	/**
 	* @var InputInterface
 	*/
@@ -42,12 +38,22 @@ class reparse extends \phpbb\console\command\command
 	protected $output;
 
 	/**
+	 * @var \phpbb\lock\db
+	 */
+	protected $reparse_lock;
+
+	/**
+	 * @var \phpbb\textreparser\manager
+	 */
+	protected $reparser_manager;
+
+	/**
 	* @var \phpbb\di\service_collection
 	*/
 	protected $reparsers;
 
 	/**
-	* @var array Reparser names as keys, and their last $current ID as values
+	* @var array The reparser's last $current ID as values
 	*/
 	protected $resume_data;
 
@@ -55,14 +61,16 @@ class reparse extends \phpbb\console\command\command
 	* Constructor
 	*
 	* @param \phpbb\user $user
+	* @param \phpbb\lock\db $reparse_lock
+	* @param \phpbb\textreparser\manager $reparser_manager
 	* @param \phpbb\di\service_collection $reparsers
-	* @param \phpbb\config\db_text $config_text
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\di\service_collection $reparsers, \phpbb\config\db_text $config_text)
+	public function __construct(\phpbb\user $user, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
 	{
 		require_once __DIR__ . '/../../../../includes/functions_content.php';
 
-		$this->config_text = $config_text;
+		$this->reparse_lock = $reparse_lock;
+		$this->reparser_manager = $reparser_manager;
 		$this->reparsers = $reparsers;
 		parent::__construct($user);
 	}
@@ -163,7 +171,11 @@ class reparse extends \phpbb\console\command\command
 		$this->input = $input;
 		$this->output = $output;
 		$this->io = new SymfonyStyle($input, $output);
-		$this->load_resume_data();
+
+		if (!$this->reparse_lock->acquire())
+		{
+			throw new runtime_exception('REPARSE_LOCK_ERROR', array(), null, 1);
+		}
 
 		$name = $input->getArgument('reparser-name');
 		if (isset($name))
@@ -185,6 +197,8 @@ class reparse extends \phpbb\console\command\command
 
 		$this->io->success($this->user->lang('CLI_REPARSER_REPARSE_SUCCESS'));
 
+		$this->reparse_lock->release();
+
 		return 0;
 	}
 
@@ -194,36 +208,18 @@ class reparse extends \phpbb\console\command\command
 	* Will use the last saved value if --resume is set and the option was not specified
 	* on the command line
 	*
-	* @param  string  $reparser_name Reparser name
 	* @param  string  $option_name   Option name
 	* @return integer
 	*/
-	protected function get_option($reparser_name, $option_name)
+	protected function get_option($option_name)
 	{
 		// Return the option from the resume_data if applicable
-		if ($this->input->getOption('resume') && isset($this->resume_data[$reparser_name][$option_name]) && !$this->input->hasParameterOption('--' . $option_name))
+		if ($this->input->getOption('resume') && isset($this->resume_data[$option_name]) && !$this->input->hasParameterOption('--' . $option_name))
 		{
-			return $this->resume_data[$reparser_name][$option_name];
+			return $this->resume_data[$option_name];
 		}
 
-		$value = $this->input->getOption($option_name);
-
-		// range-max has no default value, it must be computed for each reparser
-		if ($option_name === 'range-max' && $value === null)
-		{
-			$value = $this->reparsers[$reparser_name]->get_max_id();
-		}
-
-		return $value;
-	}
-
-	/**
-	* Load the resume data from the database
-	*/
-	protected function load_resume_data()
-	{
-		$resume_data = $this->config_text->get('reparser_resume');
-		$this->resume_data = (empty($resume_data)) ? array() : unserialize($resume_data);
+		return $this->input->getOption($option_name);
 	}
 
 	/**
@@ -234,6 +230,7 @@ class reparse extends \phpbb\console\command\command
 	protected function reparse($name)
 	{
 		$reparser = $this->reparsers[$name];
+		$this->resume_data = $this->reparser_manager->get_resume_data($name);
 		if ($this->input->getOption('dry-run'))
 		{
 			$reparser->disable_save();
@@ -244,9 +241,15 @@ class reparse extends \phpbb\console\command\command
 		}
 
 		// Start at range-max if specified or at the highest ID otherwise
-		$max  = $this->get_option($name, 'range-max');
-		$min  = $this->get_option($name, 'range-min');
-		$size = $this->get_option($name, 'range-size');
+		$max  = $this->get_option('range-max');
+		$min  = $this->get_option('range-min');
+		$size = $this->get_option('range-size');
+
+		// range-max has no default value, it must be computed for each reparser
+		if ($max == null)
+		{
+			$max = $reparser->get_max_id();
+		}
 
 		if ($max < $min)
 		{
@@ -272,34 +275,10 @@ class reparse extends \phpbb\console\command\command
 			$current = $start - 1;
 			$progress->setProgress($max + 1 - $start);
 
-			$this->update_resume_data($name, $current);
+			$this->reparser_manager->update_resume_data($name, $min, $current, $size, !$this->input->getOption('dry-run'));
 		}
 		$progress->finish();
 
 		$this->io->newLine(2);
-	}
-
-	/**
-	* Save the resume data to the database
-	*/
-	protected function save_resume_data()
-	{
-		$this->config_text->set('reparser_resume', serialize($this->resume_data));
-	}
-
-	/**
-	* Save the resume data to the database
-	*
-	* @param string $name    Reparser name
-	* @param string $current Current ID
-	*/
-	protected function update_resume_data($name, $current)
-	{
-		$this->resume_data[$name] = array(
-			'range-min'  => $this->get_option($name, 'range-min'),
-			'range-max'  => $current,
-			'range-size' => $this->get_option($name, 'range-size'),
-		);
-		$this->save_resume_data();
 	}
 }

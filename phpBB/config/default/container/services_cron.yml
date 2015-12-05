@@ -146,3 +146,73 @@ services:
             - [set_name, [cron.task.core.tidy_warnings]]
         tags:
             - { name: cron.task }
+
+    cron.task.text_reparser.pm_text:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - @config
+            - @config_text
+            - @text_reparser.lock
+            - @text_reparser.manager
+            - @text_reparser_collection
+        calls:
+            - [set_name, [cron.task.text_reparser.pm_text]]
+            - [set_reparser, [text_reparser.pm_text]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.poll_option:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - @config
+            - @config_text
+            - @text_reparser.lock
+            - @text_reparser.manager
+            - @text_reparser_collection
+        calls:
+            - [set_name, [cron.task.text_reparser.poll_option]]
+            - [set_reparser, [text_reparser.poll_option]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.poll_title:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - @config
+            - @config_text
+            - @text_reparser.lock
+            - @text_reparser.manager
+            - @text_reparser_collection
+        calls:
+            - [set_name, [cron.task.text_reparser.poll_title]]
+            - [set_reparser, [text_reparser.poll_title]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.post_text:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - @config
+            - @config_text
+            - @text_reparser.lock
+            - @text_reparser.manager
+            - @text_reparser_collection
+        calls:
+            - [set_name, [cron.task.text_reparser.post_text]]
+            - [set_reparser, [text_reparser.post_text]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.user_signature:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - @config
+            - @config_text
+            - @text_reparser.lock
+            - @text_reparser.manager
+            - @text_reparser_collection
+        calls:
+            - [set_name, [cron.task.text_reparser.user_signature]]
+            - [set_reparser, [text_reparser.user_signature]]
+        tags:
+            - { name: cron.task }

@@ -292,6 +292,7 @@ $lang = array_merge($lang, array(
 
 	'RELEASE_ANNOUNCEMENT'		=> 'Announcement',
 	'REMIND'							=> 'Remind',
+	'REPARSE_LOCK_ERROR'				=> 'Reparsing is already in progress by another process.',
 	'RESYNC'							=> 'Resynchronise',
 
 	'RUNNING_TASK'			=> 'Running task: %s.',
