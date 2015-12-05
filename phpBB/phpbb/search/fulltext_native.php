@@ -1324,7 +1324,6 @@ class fulltext_native extends \phpbb\search\base
 		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
 
 		$min = $this->word_length['min'];
-		$max = $this->word_length['max'];
 
 		$isset_min = $min - 1;
 

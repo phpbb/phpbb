@@ -1289,7 +1289,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $auth, $cache, $phpbb_log;
+	global $db, $user, $cache, $phpbb_log;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '

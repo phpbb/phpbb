@@ -1391,8 +1391,6 @@ function phpbb_delete_users_pms($user_ids)
 */
 function rebuild_header($check_ary)
 {
-	global $db;
-
 	$address = array();
 
 	foreach ($check_ary as $check_type => $address_field)

@@ -1312,8 +1312,6 @@ function extension_allowed($forum_id, $extension, &$extensions)
 */
 function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = false, $append = '')
 {
-	$chars = array();
-
 	$strip_reply = false;
 	$stripped = false;
 	if ($allow_reply && strpos($string, 'Re: ') === 0)

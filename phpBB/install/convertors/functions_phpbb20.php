@@ -1299,7 +1299,7 @@ function get_bbcode_bitfield()
 */
 function phpbb_post_edit_user()
 {
-	global $convert_row, $config;
+	global $convert_row;
 
 	if (isset($convert_row['post_edit_count']))
 	{
@@ -1320,7 +1320,7 @@ function phpbb_get_files_dir()
 		return;
 	}
 
-	global $src_db, $same_db, $convert, $user, $config, $cache;
+	global $src_db, $same_db, $convert, $user;
 
 	if ($convert->mysql_convert && $same_db)
 	{
@@ -1359,7 +1359,7 @@ function phpbb_get_files_dir()
 */
 function phpbb_copy_thumbnails()
 {
-	global $db, $convert, $user, $config, $cache, $phpbb_root_path;
+	global $convert, $config, $phpbb_root_path;
 
 	$src_path = $convert->options['forum_path'] . '/' . phpbb_get_files_dir() . '/thumbs/';
 

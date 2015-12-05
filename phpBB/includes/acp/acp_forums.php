@@ -1381,7 +1381,7 @@ class acp_forums
 	{
 		global $db, $user, $phpbb_dispatcher;
 
-		$to_data = $moved_ids = $errors = array();
+		$errors = array();
 
 		// Check if we want to move to a parent with link type
 		if ($to_id > 0)

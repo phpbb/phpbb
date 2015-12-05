@@ -1344,8 +1344,6 @@ function mcp_fork_topic($topic_ids)
 
 			if ($topic_row['poll_start'])
 			{
-				$poll_rows = array();
-
 				$sql = 'SELECT *
 					FROM ' . POLL_OPTIONS_TABLE . "
 					WHERE topic_id = $topic_id";

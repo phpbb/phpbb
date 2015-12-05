@@ -1318,8 +1318,6 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		// Get information from cookie
-		$row = false;
-
 		if (!isset($tracking_topics['tf'][$forum_id]))
 		{
 			// We do not need to mark read, this happened before. Therefore setting this to true

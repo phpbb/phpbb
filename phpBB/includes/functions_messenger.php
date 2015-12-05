@@ -1291,7 +1291,7 @@ class smtp_class
 			$this->server_send("QUIT");
 			fclose($this->socket);
 
-			$result = $this->pop_before_smtp($hostname, $username, $password);
+			$this->pop_before_smtp($hostname, $username, $password);
 			$username = $password = $default_auth_method = '';
 
 			// We need to close the previous session, else the server is not

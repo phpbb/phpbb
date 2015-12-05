@@ -1403,7 +1403,7 @@ class session
 	*/
 	function set_login_key($user_id = false, $key = false, $user_ip = false)
 	{
-		global $config, $db;
+		global $db;
 
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
@@ -1413,7 +1413,7 @@ class session
 
 		$sql_ary = array(
 			'key_id'		=> (string) md5($key_id),
-			'last_ip'		=> (string) $this->ip,
+			'last_ip'		=> (string) $user_id,
 			'last_login'	=> (int) time()
 		);
 
@@ -1450,7 +1450,7 @@ class session
 	*/
 	function reset_login_keys($user_id = false)
 	{
-		global $config, $db;
+		global $db;
 
 		$user_id = ($user_id === false) ? (int) $this->data['user_id'] : (int) $user_id;
 

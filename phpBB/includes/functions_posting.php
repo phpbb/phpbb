@@ -886,7 +886,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $cache;
+	global $user, $auth, $db, $template;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
@@ -1359,7 +1359,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data_ary, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
+	global $db, $auth, $user, $config, $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
 	$poll = $poll_ary;
 	$data = $data_ary;

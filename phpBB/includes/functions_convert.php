@@ -1320,7 +1320,7 @@ function restore_config($schema)
 */
 function update_folder_pm_count()
 {
-	global $db, $convert, $user;
+	global $db;
 
 	$sql = 'SELECT user_id, folder_id, COUNT(msg_id) as num_messages
 		FROM ' . PRIVMSGS_TO_TABLE . '
@@ -1379,7 +1379,7 @@ function extract_variables_from_file($_filename)
 
 function get_path($src_path, $src_url, $test_file)
 {
-	global $config, $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx;
 
 	$board_config = get_config();
 
@@ -1490,7 +1490,7 @@ function compare_table($tables, $tablename, &$prefixes)
 */
 function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 {
-	global $db, $convert, $user, $config;
+	global $db;
 	static $acl_option_ids, $group_ids;
 
 	if (($ug_type == 'group' || $ug_type == 'group_role') && is_string($ug_id))

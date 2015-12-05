@@ -1536,7 +1536,6 @@ class acp_users
 					$selected = ($i == $data['bday_month']) ? ' selected="selected"' : '';
 					$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
 				}
-				$s_birthday_year_options = '';
 
 				$now = getdate();
 				$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';

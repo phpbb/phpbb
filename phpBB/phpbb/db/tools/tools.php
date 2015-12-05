@@ -1116,7 +1116,7 @@ class tools implements tools_interface
 		}
 
 		// Get type
-		list($column_type, $orig_column_type) = $this->get_column_type($column_data[0]);
+		list($column_type) = $this->get_column_type($column_data[0]);
 
 		// Adjust default value if db-dependent specified
 		if (is_array($column_data[1]))
