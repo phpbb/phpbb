@@ -32,5 +32,4 @@ class increase_size_of_dateformat  extends \phpbb\db\migration\migration
 			),
 		);
 	}
-
 }
