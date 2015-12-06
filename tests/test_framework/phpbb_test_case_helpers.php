@@ -469,16 +469,13 @@ class phpbb_test_case_helpers
 		}
 
 		// Set up the a minimum config
-		if (!isset($config))
+		if ($container->has('config'))
 		{
-			if ($container->has('config'))
-			{
-				$config = $container->get('config');
-			}
-			else
-			{
-				$config = new \phpbb\config\config(array());
-			}
+			$config = $container->get('config');
+		}
+		elseif (!isset($config))
+		{
+			$config = new \phpbb\config\config(array());
 		}
 		$default_config = array(
 			'allow_nocensors'       => false,
@@ -504,7 +501,7 @@ class phpbb_test_case_helpers
 		}
 
 		// Create and register the text_formatter.s9e.factory service
-		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, new \phpbb\textformatter\s9e\autolink_helper, $cache_dir, $cache_key_parser, $cache_key_renderer);
 		$container->set('text_formatter.s9e.factory', $factory);
 
 		// Create a user if none was provided, and add the common lang strings

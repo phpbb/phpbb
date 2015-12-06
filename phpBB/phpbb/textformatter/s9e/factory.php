@@ -23,6 +23,11 @@ use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 class factory implements \phpbb\textformatter\cache_interface
 {
 	/**
+	* @var \phpbb\textformatter\s9e\autolink_helper
+	*/
+	protected $autolink_helper;
+
+	/**
 	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $cache;
@@ -133,12 +138,14 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @param \phpbb\cache\driver\driver_interface $cache
 	* @param \phpbb\event\dispatcher_interface $dispatcher
 	* @param \phpbb\config\config $config
+	* @param \phpbb\textformatter\s9e\autolink_helper $autolink_helper
 	* @param string $cache_dir          Path to the cache dir
 	* @param string $cache_key_parser   Cache key used for the parser
 	* @param string $cache_key_renderer Cache key used for the renderer
 	*/
-	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, $cache_dir, $cache_key_parser, $cache_key_renderer)
+	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, \phpbb\textformatter\s9e\autolink_helper $autolink_helper, $cache_dir, $cache_key_parser, $cache_key_renderer)
 	{
+		$this->autolink_helper = $autolink_helper;
 		$this->cache = $cache;
 		$this->cache_dir = $cache_dir;
 		$this->cache_key_parser = $cache_key_parser;
@@ -404,19 +411,35 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->plugins->load('Autoemail');
 		$configurator->plugins->load('Autolink', array('matchWww' => true));
 
-		// Create a tag that will be used to display the truncated text by replacing the original
-		// content with the content of the @text attribute
-		$tag = $configurator->tags->add('AUTOLINK_TEXT');
-		$tag->attributes->add('text');
-		$tag->template = '<xsl:value-of select="@text"/>';
-
-		// Add a tag filter that replaces the text of links that were created by the Autolink plugin
+		// Add a tag filter that creates a tag that stores and replace the
+		// content of a link created by the Autolink plugin
 		$configurator->Autolink->getTag()->filterChain
-			->add(__NAMESPACE__ . '\\parser::generate_autolink_text')
+			->add(array($this->autolink_helper, 'generate_autolink_text_tag'))
 			->resetParameters()
 			->addParameterByName('tag')
-			->addParameterByName('parser')
+			->addParameterByName('parser');
+
+		// Create a tag that will be used to display the truncated text by
+		// replacing the original content with the content of the @text attribute
+		$tag = $configurator->tags->add('AUTOLINK_TEXT');
+		$tag->attributes->add('text');
+		$tag->attributes->add('url', array('required' => false))->filterChain->add('#url');
+		$tag->template = '<xsl:value-of select="@text"/>';
+
+		$tag->filterChain
+			->add(array($this->autolink_helper, 'truncate_local_url'))
+			->resetParameters()
+			->addParameterByName('tag')
 			->addParameterByValue(generate_board_url() . '/');
+		$tag->filterChain
+			->add(array($this->autolink_helper, 'truncate_text'))
+			->resetParameters()
+			->addParameterByName('tag');
+		$tag->filterChain
+			->add(array($this->autolink_helper, 'cleanup_tag'))
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByName('parser');
 	}
 
 	/**
