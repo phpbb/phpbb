@@ -315,7 +315,7 @@ class phpbb_test_case_helpers
 	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
-		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
+		global $config, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
 
 		$cache_dir = __DIR__ . '/../tmp/';
 
@@ -469,18 +469,25 @@ class phpbb_test_case_helpers
 		}
 
 		// Set up the a minimum config
-		if ($container->has('config'))
+		if (!isset($config))
 		{
-			$config = $container->get('config');
-		}
-		else
-		{
-			$config = new \phpbb\config\config(array());
+			if ($container->has('config'))
+			{
+				$config = $container->get('config');
+			}
+			else
+			{
+				$config = new \phpbb\config\config(array());
+			}
 		}
 		$default_config = array(
-			'allow_nocensors' => false,
+			'allow_nocensors'       => false,
 			'allowed_schemes_links' => 'http,https,ftp',
-			'smilies_path' => 'images/smilies',
+			'script_path'           => '/phpbb',
+			'server_name'           => 'localhost',
+			'server_port'           => 80,
+			'server_protocol'       => 'http://',
+			'smilies_path'          => 'images/smilies',
 		);
 		foreach ($default_config as $config_name => $config_value)
 		{
@@ -519,7 +526,6 @@ class phpbb_test_case_helpers
 			     ->will($this->test_case->returnCallback(__CLASS__ . '::format_date'));
 
 			$user->date_format = 'Y-m-d H:i:s';
-			$user->host = 'localhost';
 			$user->optionset('viewcensors', true);
 			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);
