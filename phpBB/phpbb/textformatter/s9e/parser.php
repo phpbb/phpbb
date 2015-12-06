@@ -397,18 +397,20 @@ class parser implements \phpbb\textformatter\parser_interface
 	/**
 	* Replace the content displayed inside of a URL tag
 	*
-	* Will only apply to URL tags that do not use any markup (e.g. not "[url]") on the assumption
-	* that those tags were created by the Autolink plugin to linkify URLs found in plain text
+	* Will only apply to URL tags that do not use any markup (e.g. not "[url]")
+	* on the assumption that those tags were created by the Autolink plugin to
+	* linkify URLs found in plain text
 	*
 	* @param  \s9e\TextFormatter\Parser\Tag $url_tag   URL tag (start tag)
 	* @param  \s9e\TextFormatter\Parser     $parser    Parser
 	* @param  string                        $board_url Forum's root URL (with trailing slash)
-	* @return bool                                     Always TRUE to indicate that the tag is valid
+	* @return bool                                     Always true to indicate that the tag is valid
 	*/
 	public static function generate_autolink_text(\s9e\TextFormatter\Parser\Tag $url_tag, \s9e\TextFormatter\Parser $parser, $board_url)
 	{
-		// If the tag consumes any text then we ignore it because it's not a linkified URL. Same if
-		// it's not paired with an end tag that doesn't consume any text either
+		// If the tag consumes any text then we ignore it because it's not a
+		// linkified URL. Same if it's not paired with an end tag that doesn't
+		// consume any text either
 		if ($url_tag->getLen() > 0 || !$url_tag->getEndTag())
 		{
 			return true;
