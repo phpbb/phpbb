@@ -13,6 +13,7 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\exception\http_exception;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\navigation\navigation_provider;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -97,12 +98,14 @@ class install
 	 * Controller logic
 	 *
 	 * @return Response|StreamedResponse
+	 *
+	 * @throws http_exception When phpBB is already installed
 	 */
 	public function handle()
 	{
 		if ($this->install_helper->is_phpbb_installed())
 		{
-			die ('phpBB is already installed');
+			throw new http_exception(403, 'INSTALL_PHPBB_INSTALLED');
 		}
 
 		$this->template->assign_vars(array(

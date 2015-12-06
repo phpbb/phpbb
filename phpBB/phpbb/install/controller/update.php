@@ -13,6 +13,7 @@
 
 namespace phpbb\install\controller;
 
+use phpbb\exception\http_exception;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\iohandler\factory;
 use phpbb\install\helper\navigation\navigation_provider;
@@ -93,12 +94,16 @@ class update
 
 	/**
 	 * Controller entry point
+	 *
+	 * @return Response|StreamedResponse
+	 *
+	 * @throws http_exception When phpBB is not installed
 	 */
 	public function handle()
 	{
 		if (!$this->install_helper->is_phpbb_installed())
 		{
-			die ('phpBB is not installed');
+			throw new http_exception(403, 'INSTALL_PHPBB_NOT_INSTALLED');
 		}
 
 		$this->template->assign_vars(array(
