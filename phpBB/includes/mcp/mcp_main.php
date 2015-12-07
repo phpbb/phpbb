@@ -322,6 +322,22 @@ function lock_unlock($action, $ids)
 			add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_' . strtoupper($action), $row['topic_title']);
 		}
 
+		/**
+		 * Perform additional actions after locking/unlocking posts/topics
+		 *
+		 * @event core.mcp_lock_unlock_after
+		 * @var	string	action				Variable containing the action we perform on the posts/topics ('lock', 'unlock', 'lock_post' or 'unlock_post')
+		 * @var	array	ids					Array containing the post/topic IDs that have been locked/unlocked
+		 * @var	array	data				Array containing posts/topics data
+		 * @since 3.1.7-RC1
+		 */
+		$vars = array(
+			'action',
+			'ids',
+			'data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_lock_unlock_after', compact($vars)));
+
 		$success_msg = $l_prefix . ((sizeof($ids) == 1) ? '' : 'S') . '_' . (($action == 'lock' || $action == 'lock_post') ? 'LOCKED' : 'UNLOCKED') . '_SUCCESS';
 
 		meta_refresh(2, $redirect);
