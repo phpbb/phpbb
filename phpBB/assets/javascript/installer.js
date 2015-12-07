@@ -191,12 +191,12 @@
 				$progressText.attr('id', 'progress-bar-text');
 				$progressFiller = $('<span />');
 				$progressFiller.attr('id', 'progress-bar-filler');
+				$progressFiller.html($progressText);
 
 				$statusText = $('<p />');
 				$statusText.attr('id', 'progress-status-text');
 
 				$progressBar.append($progressFiller);
-				$progressBar.append($progressText);
 
 				$progressBarWrapper.append($statusText);
 				$progressBarWrapper.append($progressBar);
