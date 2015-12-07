@@ -306,7 +306,7 @@ class acp_icons
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
 
-						'IMG_SRC'			=> $phpbb_root_path . '/' . $default_row['smiley_url'],
+						'IMG_SRC'			=> $phpbb_root_path . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 
 						'CODE'				=> $default_row['code'],
@@ -947,7 +947,7 @@ class acp_icons
 			$template->assign_block_vars('items', array(
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,
 				'ALT_TEXT'		=> $alt_text,
-				'IMG_SRC'		=> $phpbb_root_path . '/' . $row[$fields . '_url'],
+				'IMG_SRC'		=> $phpbb_root_path . $row[$fields . '_url'],
 				'WIDTH'			=> $row[$fields . '_width'],
 				'HEIGHT'		=> $row[$fields . '_height'],
 				'CODE'			=> (isset($row['code'])) ? $row['code'] : '',
