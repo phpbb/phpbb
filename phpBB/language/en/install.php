@@ -301,6 +301,7 @@ $lang = array_merge($lang, array(
 	'TASK_ADD_MODULES'		=> 'Installing modules',
 
 	// Install finish tasks
+	'TASK_INSTALL_VIGLINK'		=> 'Installing viglink extension',
 	'TASK_NOTIFY_USER'			=> 'Sending notification e-mail',
 	'TASK_POPULATE_MIGRATIONS'	=> 'Populating migrations',
 

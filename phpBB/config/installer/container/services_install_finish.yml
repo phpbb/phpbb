@@ -18,6 +18,15 @@ services:
         tags:
             - { name: install_finish, order: 20 }
 
+    installer.install_finish.install_viglink:
+        class: phpbb\install\module\install_finish\task\install_viglink
+        arguments:
+            - @installer.helper.container_factory
+            - @installer.helper.config
+            - @installer.helper.iohandler
+        tags:
+            - { name: install_finish, order: 15 }
+
     installer.module.install_finish_collection:
         class: phpbb\di\ordered_service_collection
         arguments:
