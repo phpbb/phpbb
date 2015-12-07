@@ -101,6 +101,10 @@ abstract class iohandler_base implements iohandler_interface
 	 */
 	public function add_error_message($error_title, $error_description = false)
 	{
+		if (strpos($error_title, '<br />') !== false)
+		{
+			$error_title = strip_tags(htmlspecialchars_decode($error_title));
+		}
 		$this->errors[] = $this->translate_message($error_title, $error_description);
 	}
 
