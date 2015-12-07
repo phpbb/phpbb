@@ -2,45 +2,45 @@ services:
     notification_manager:
         class: phpbb\notification\manager
         arguments:
-            - @notification.type_collection
-            - @notification.method_collection
-            - @service_container
-            - @user_loader
-            - @dispatcher
-            - @dbal.conn
-            - @cache
-            - @language
-            - @user
-            - %tables.notification_types%
-            - %tables.user_notifications%
+            - '@notification.type_collection'
+            - '@notification.method_collection'
+            - '@service_container'
+            - '@user_loader'
+            - '@dispatcher'
+            - '@dbal.conn'
+            - '@cache'
+            - '@language'
+            - '@user'
+            - '%tables.notification_types%'
+            - '%tables.user_notifications%'
 
 # ----- Notification's types -----
 # Scope MUST be prototype for all the plugins to work.
     notification.type_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: notification.type }
 
     notification.type.base:
         abstract: true
         arguments:
-            - @dbal.conn
-            - @language
-            - @user
-            - @auth
-            - %core.root_path%
-            - %core.php_ext%
-            - %tables.user_notifications%
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '@auth'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.user_notifications%'
 
     notification.type.admin_activate_user:
         class: phpbb\notification\type\admin_activate_user
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, [@user_loader]]
-            - [set_config, [@config]]
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
         tags:
             - { name: notification.type }
 
@@ -84,7 +84,7 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, [@user_loader]]
+            - [set_user_loader, ['@user_loader']]
         tags:
             - { name: notification.type }
 
@@ -100,8 +100,8 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, [@user_loader]]
-            - [set_config, [@config]]
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
         tags:
             - { name: notification.type }
 
@@ -110,8 +110,8 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, [@user_loader]]
-            - [set_config, [@config]]
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
         tags:
             - { name: notification.type }
 
@@ -127,7 +127,7 @@ services:
         scope: prototype
         parent: notification.type.post
         calls:
-            - [set_utils, [@text_formatter.utils]]
+            - [set_utils, ['@text_formatter.utils']]
         tags:
             - { name: notification.type }
 
@@ -164,8 +164,8 @@ services:
         scope: prototype
         parent: notification.type.base
         calls:
-            - [set_user_loader, [@user_loader]]
-            - [set_config, [@config]]
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
         tags:
             - { name: notification.type }
 
@@ -181,7 +181,7 @@ services:
     notification.method_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: notification.method }
 
@@ -189,13 +189,13 @@ services:
         class: phpbb\notification\method\board
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
-            - @user_loader
-            - @dbal.conn
-            - @cache.driver
-            - @user
-            - @config
-            - %tables.notification_types%
-            - %tables.notifications%
+            - '@user_loader'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@config'
+            - '%tables.notification_types%'
+            - '%tables.notifications%'
         tags:
             - { name: notification.method }
 
@@ -203,11 +203,11 @@ services:
         class: phpbb\notification\method\email
         scope: prototype
         arguments:
-            - @user_loader
-            - @user
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
+            - '@user_loader'
+            - '@user'
+            - '@config'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: notification.method }
 
@@ -215,10 +215,10 @@ services:
         class: phpbb\notification\method\jabber
         scope: prototype
         arguments:
-            - @user_loader
-            - @user
-            - @config
-            - %core.root_path%
-            - %core.php_ext%
+            - '@user_loader'
+            - '@user'
+            - '@config'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: notification.method }

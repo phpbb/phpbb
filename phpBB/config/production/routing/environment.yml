@@ -1,2 +1,2 @@
 core.default:
-    resource: "../../default/routing/routing.yml"
+    resource: ../../default/routing/routing.yml

@@ -2,90 +2,90 @@ services:
     text_reparser.manager:
         class: phpbb\textreparser\manager
         arguments:
-            - @config
-            - @config_text
-            - @text_reparser_collection
+            - '@config'
+            - '@config_text'
+            - '@text_reparser_collection'
 
     text_reparser.lock:
         class: phpbb\lock\db
         arguments:
             - reparse_lock
-            - @config
-            - @dbal.conn
+            - '@config'
+            - '@dbal.conn'
 
     text_reparser_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: text_reparser.plugin }
 
     text_reparser.contact_admin_info:
         class: phpbb\textreparser\plugins\contact_admin_info
         arguments:
-            - @config_text
+            - '@config_text'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.forum_description:
         class: phpbb\textreparser\plugins\forum_description
         arguments:
-            - @dbal.conn
-            - %tables.forums%
+            - '@dbal.conn'
+            - '%tables.forums%'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.forum_rules:
         class: phpbb\textreparser\plugins\forum_rules
         arguments:
-            - @dbal.conn
-            - %tables.forums%
+            - '@dbal.conn'
+            - '%tables.forums%'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.group_description:
         class: phpbb\textreparser\plugins\group_description
         arguments:
-            - @dbal.conn
-            - %tables.groups%
+            - '@dbal.conn'
+            - '%tables.groups%'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.pm_text:
         class: phpbb\textreparser\plugins\pm_text
         arguments:
-            - @dbal.conn
-            - %tables.privmsgs%
+            - '@dbal.conn'
+            - '%tables.privmsgs%'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.poll_option:
         class: phpbb\textreparser\plugins\poll_option
         arguments:
-            - @dbal.conn
+            - '@dbal.conn'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.poll_title:
         class: phpbb\textreparser\plugins\poll_title
         arguments:
-            - @dbal.conn
-            - %tables.topics%
+            - '@dbal.conn'
+            - '%tables.topics%'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.post_text:
         class: phpbb\textreparser\plugins\post_text
         arguments:
-            - @dbal.conn
-            - %tables.posts%
+            - '@dbal.conn'
+            - '%tables.posts%'
         tags:
             - { name: text_reparser.plugin }
 
     text_reparser.user_signature:
         class: phpbb\textreparser\plugins\user_signature
         arguments:
-            - @dbal.conn
-            - %tables.users%
+            - '@dbal.conn'
+            - '%tables.users%'
         tags:
             - { name: text_reparser.plugin }

@@ -3,7 +3,7 @@ phpbb_report_pm_controller:
     methods:          [GET, POST]
     defaults:
         _controller:  phpbb.report.controller:handle
-        mode:         "pm"
+        mode:         'pm'
     requirements:
         id:           \d+
 
@@ -12,6 +12,6 @@ phpbb_report_post_controller:
     methods:          [GET, POST]
     defaults:
         _controller:  phpbb.report.controller:handle
-        mode:         "post"
+        mode:         'post'
     requirements:
         id:           \d+
