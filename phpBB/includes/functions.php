@@ -4583,6 +4583,8 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 		return;
 	}
 
+	$user->update_session_infos();
+
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 
 	$template->assign_vars(array(
