@@ -2,6 +2,6 @@ services:
     hook_finder:
         class: phpbb\hook\finder
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @cache.driver
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@cache.driver'

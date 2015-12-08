@@ -2,13 +2,13 @@ services:
     dispatcher:
         class: phpbb\event\dispatcher
         arguments:
-            - @service_container
+            - '@service_container'
 
     kernel_exception_subscriber:
         class: phpbb\event\kernel_exception_subscriber
         arguments:
-            - @template
-            - @language
+            - '@template'
+            - '@language'
         tags:
             - { name: kernel.event_subscriber }
 

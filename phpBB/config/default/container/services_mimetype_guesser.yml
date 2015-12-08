@@ -2,7 +2,7 @@ services:
     mimetype.guesser_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: mimetype.guessers }
 
@@ -19,18 +19,18 @@ services:
     mimetype.content_guesser:
         class: phpbb\mimetype\content_guesser
         calls:
-            - [set_priority, [%mimetype.guesser.priority.low%]]
+            - [set_priority, ['%mimetype.guesser.priority.low%']]
         tags:
             - { name: mimetype.guessers }
 
     mimetype.extension_guesser:
         class: phpbb\mimetype\extension_guesser
         calls:
-            - [set_priority, [%mimetype.guesser.priority.lowest%]]
+            - [set_priority, ['%mimetype.guesser.priority.lowest%']]
         tags:
             - { name: mimetype.guessers }
 
     mimetype.guesser:
         class: phpbb\mimetype\guesser
         arguments:
-            - @mimetype.guesser_collection
+            - '@mimetype.guesser_collection'

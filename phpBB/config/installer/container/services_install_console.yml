@@ -2,26 +2,26 @@ services:
     console.installer.command_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: console.installer.command }
 
     console.installer.command.install:
         class: phpbb\install\console\command\install\install
         arguments:
-            - @language
-            - @installer.helper.iohandler_factory
-            - @installer.installer.install
-            - @installer.helper.install_helper
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.installer.install'
+            - '@installer.helper.install_helper'
         tags:
             - { name: console.installer.command }
 
     console.installer.command.config.show:
         class: phpbb\install\console\command\install\config\show
         arguments:
-            - @language
-            - @installer.helper.iohandler_factory
-            - @installer.installer.install
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.installer.install'
         tags:
             - { name: console.installer.command }
 
@@ -29,8 +29,8 @@ services:
     console.installer.command.config.validate:
         class: phpbb\install\console\command\install\config\validate
         arguments:
-            - @language
-            - @installer.helper.iohandler_factory
-            - @installer.installer.install
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.installer.install'
         tags:
             - { name: console.installer.command }

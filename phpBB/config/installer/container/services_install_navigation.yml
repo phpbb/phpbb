@@ -2,12 +2,12 @@ services:
     installer.navigation.provider:
         class: phpbb\install\helper\navigation\navigation_provider
         arguments:
-            - @installer.navigation.service_collection
+            - '@installer.navigation.service_collection'
 
     installer.navigation.service_collection:
             class: phpbb\di\service_collection
             arguments:
-                - @service_container
+                - '@service_container'
             tags:
                 - { name: service_collection, tag: installer.navigation }
 
@@ -20,7 +20,7 @@ services:
     installer.navigation.install_navigation:
         class: phpbb\install\helper\navigation\install_navigation
         arguments:
-            - @installer.helper.install_helper
+            - '@installer.helper.install_helper'
         scope: prototype
         tags:
             - { name: installer.navigation }
@@ -28,7 +28,7 @@ services:
     installer.navigation.update_navigation:
         class: phpbb\install\helper\navigation\update_navigation
         arguments:
-            - @installer.helper.install_helper
+            - '@installer.helper.install_helper'
         scope: prototype
         tags:
             - { name: installer.navigation }

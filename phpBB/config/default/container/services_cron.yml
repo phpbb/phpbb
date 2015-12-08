@@ -2,32 +2,32 @@ services:
     cron.manager:
         class: phpbb\cron\manager
         arguments:
-            - @cron.task_collection
-            - %core.root_path%
-            - %core.php_ext%
+            - '@cron.task_collection'
+            - '%core.root_path%'
+            - '%core.php_ext%'
 
     cron.lock_db:
         class: phpbb\lock\db
         arguments:
             - cron_lock
-            - @config
-            - @dbal.conn
+            - '@config'
+            - '@dbal.conn'
 
 # ----- Cron tasks -----
     cron.task_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: cron.task }
 
     cron.task.core.prune_all_forums:
         class: phpbb\cron\task\core\prune_all_forums
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @dbal.conn
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '@dbal.conn'
         calls:
             - [set_name, [cron.task.core.prune_all_forums]]
         tags:
@@ -36,10 +36,10 @@ services:
     cron.task.core.prune_forum:
         class: phpbb\cron\task\core\prune_forum
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @dbal.conn
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '@dbal.conn'
         calls:
             - [set_name, [cron.task.core.prune_forum]]
         tags:
@@ -48,12 +48,12 @@ services:
     cron.task.core.prune_shadow_topics:
         class: phpbb\cron\task\core\prune_shadow_topics
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
-            - @dbal.conn
-            - @log
-            - @user
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '@dbal.conn'
+            - '@log'
+            - '@user'
         calls:
             - [set_name, [cron.task.core.prune_shadow_topics]]
         tags:
@@ -62,8 +62,8 @@ services:
     cron.task.core.prune_notifications:
         class: phpbb\cron\task\core\prune_notifications
         arguments:
-            - @config
-            - @notification_manager
+            - '@config'
+            - '@notification_manager'
         calls:
             - [set_name, [cron.task.core.prune_notifications]]
         tags:
@@ -72,9 +72,9 @@ services:
     cron.task.core.queue:
         class: phpbb\cron\task\core\queue
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
         calls:
             - [set_name, [cron.task.core.queue]]
         tags:
@@ -83,8 +83,8 @@ services:
     cron.task.core.tidy_cache:
         class: phpbb\cron\task\core\tidy_cache
         arguments:
-            - @config
-            - @cache.driver
+            - '@config'
+            - '@cache.driver'
         calls:
             - [set_name, [cron.task.core.tidy_cache]]
         tags:
@@ -93,9 +93,9 @@ services:
     cron.task.core.tidy_database:
         class: phpbb\cron\task\core\tidy_database
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
         calls:
             - [set_name, [cron.task.core.tidy_database]]
         tags:
@@ -104,8 +104,8 @@ services:
     cron.task.core.tidy_plupload:
         class: phpbb\cron\task\core\tidy_plupload
         arguments:
-            - %core.root_path%
-            - @config
+            - '%core.root_path%'
+            - '@config'
         calls:
             - [set_name, [cron.task.core.tidy_plupload]]
         tags:
@@ -114,13 +114,13 @@ services:
     cron.task.core.tidy_search:
         class: phpbb\cron\task\core\tidy_search
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @auth
-            - @config
-            - @dbal.conn
-            - @user
-            - @dispatcher
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@user'
+            - '@dispatcher'
         calls:
             - [set_name, [cron.task.core.tidy_search]]
         tags:
@@ -129,8 +129,8 @@ services:
     cron.task.core.tidy_sessions:
         class: phpbb\cron\task\core\tidy_sessions
         arguments:
-            - @config
-            - @user
+            - '@config'
+            - '@user'
         calls:
             - [set_name, [cron.task.core.tidy_sessions]]
         tags:
@@ -139,9 +139,9 @@ services:
     cron.task.core.tidy_warnings:
         class: phpbb\cron\task\core\tidy_warnings
         arguments:
-            - %core.root_path%
-            - %core.php_ext%
-            - @config
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
         calls:
             - [set_name, [cron.task.core.tidy_warnings]]
         tags:
@@ -150,11 +150,11 @@ services:
     cron.task.text_reparser.pm_text:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser.manager
-            - @text_reparser_collection
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
         calls:
             - [set_name, [cron.task.text_reparser.pm_text]]
             - [set_reparser, [text_reparser.pm_text]]
@@ -164,11 +164,11 @@ services:
     cron.task.text_reparser.poll_option:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser.manager
-            - @text_reparser_collection
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
         calls:
             - [set_name, [cron.task.text_reparser.poll_option]]
             - [set_reparser, [text_reparser.poll_option]]
@@ -178,11 +178,11 @@ services:
     cron.task.text_reparser.poll_title:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser.manager
-            - @text_reparser_collection
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
         calls:
             - [set_name, [cron.task.text_reparser.poll_title]]
             - [set_reparser, [text_reparser.poll_title]]
@@ -192,11 +192,11 @@ services:
     cron.task.text_reparser.post_text:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser.manager
-            - @text_reparser_collection
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
         calls:
             - [set_name, [cron.task.text_reparser.post_text]]
             - [set_reparser, [text_reparser.post_text]]
@@ -206,11 +206,11 @@ services:
     cron.task.text_reparser.user_signature:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
-            - @config
-            - @config_text
-            - @text_reparser.lock
-            - @text_reparser.manager
-            - @text_reparser_collection
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
         calls:
             - [set_name, [cron.task.text_reparser.user_signature]]
             - [set_reparser, [text_reparser.user_signature]]

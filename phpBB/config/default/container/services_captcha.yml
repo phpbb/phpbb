@@ -2,15 +2,15 @@ services:
     captcha.factory:
         class: phpbb\captcha\factory
         arguments:
-            - @service_container
-            - @captcha.plugins.service_collection
+            - '@service_container'
+            - '@captcha.plugins.service_collection'
 
 # ----- Captcha plugins -----
 # Scope MUST be prototype for all the plugins to work.
     captcha.plugins.service_collection:
         class: phpbb\di\service_collection
         arguments:
-            - @service_container
+            - '@service_container'
         tags:
             - { name: service_collection, tag: captcha.plugins }
 
@@ -42,9 +42,9 @@ services:
         class: phpbb\captcha\plugins\qa
         scope: prototype
         arguments:
-            - %tables.captcha_qa_questions%
-            - %tables.captcha_qa_answers%
-            - %tables.captcha_qa_confirm%
+            - '%tables.captcha_qa_questions%'
+            - '%tables.captcha_qa_answers%'
+            - '%tables.captcha_qa_confirm%'
         calls:
             - [set_name, [core.captcha.plugins.qa]]
         tags:

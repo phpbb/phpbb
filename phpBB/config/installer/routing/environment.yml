@@ -1,2 +1,2 @@
 core.default:
-    resource: "installer.yml"
+    resource: installer.yml
