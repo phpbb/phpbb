@@ -2635,7 +2635,7 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $db, $auth, $user, $phpbb_container, $phpbb_log, $phpbb_dispatcher;;
+	global $db, $auth, $user, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
