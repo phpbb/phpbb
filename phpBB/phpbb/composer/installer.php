@@ -20,10 +20,10 @@ use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Package\BasePackage;
 use Composer\Package\CompletePackage;
-use Composer\Package\LinkConstraint\LinkConstraintInterface;
 use Composer\Package\PackageInterface;
 use Composer\Repository\ComposerRepository;
 use Composer\Repository\RepositoryInterface;
+use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Util\RemoteFilesystem;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
@@ -85,7 +85,7 @@ class installer
 		{
 			$repositories        = json_decode($config['exts_composer_repositories'], true);
 
-			if (!is_array($repositories) && !empty($repositories))
+			if (is_array($repositories) && !empty($repositories))
 			{
 				$this->repositories = (array) $repositories;
 			}
@@ -296,7 +296,7 @@ class installer
 			$io = new NullIO();
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
-			/** @var LinkConstraintInterface $core_constraint */
+			/** @var ConstraintInterface $core_constraint */
 			$core_constraint = $composer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
 			$core_stability = $composer->getPackage()->getMinimumStability();
 
@@ -430,14 +430,14 @@ class installer
 	 * Updates $compatible_packages with the versions of $versions compatibles with the $core_constraint
 	 *
 	 * @param array						$compatible_packages	List of compatibles versions
-	 * @param LinkConstraintInterface	$core_constraint		Constraint against the phpBB version
+	 * @param ConstraintInterface	$core_constraint		Constraint against the phpBB version
 	 * @param string $core_stability Core stability
 	 * @param string					$package_name			Considered package
 	 * @param array						$versions				List of available versions
 	 *
 	 * @return array
 	 */
-	private function get_compatible_versions(array $compatible_packages, LinkConstraintInterface $core_constraint, $core_stability, $package_name, array $versions)
+	private function get_compatible_versions(array $compatible_packages, ConstraintInterface $core_constraint, $core_stability, $package_name, array $versions)
 	{
 		$core_stability_value = BasePackage::$stabilities[$core_stability];
 		//VersionParser::parseStability($version['version'])
@@ -451,7 +451,7 @@ class installer
 
 			if (array_key_exists('phpbb/phpbb', $version->getRequires()))
 			{
-				/** @var LinkConstraintInterface $package_constraint */
+				/** @var ConstraintInterface $package_constraint */
 				$package_constraint = $version->getRequires()['phpbb/phpbb']->getConstraint();
 
 				if (!$package_constraint->matches($core_constraint))

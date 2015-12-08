@@ -18,8 +18,10 @@ class extensions_composer extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.add', array('exts_composer_repositories', json_encode([], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))),
-			array('config.add', array('exts_composer_packagist', true)),
+			array('config.add', array('exts_composer_repositories', json_encode([
+				'https://www.phpbb.com/customise/db/composer/',
+			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))),
+			array('config.add', array('exts_composer_packagist', false)),
 			array('config.add', array('exts_composer_json_file', 'composer-ext.json')),
 			array('config.add', array('exts_composer_vendor_dir', 'vendor-ext/')),
 			array('config.add', array('exts_composer_enable_on_install', false)),
