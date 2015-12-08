@@ -125,6 +125,10 @@ class cli_iohandler extends iohandler_base
 	{
 		$this->io->newLine();
 
+		if (strpos($error_title, '<br />') !== false)
+		{
+			$error_title = strip_tags(str_replace('<br />', "\n", $error_title));
+		}
 		$message = $this->translate_message($error_title, $error_description);
 		$message_string = $message['title'] . (!empty($message['description']) ? "\n" . $message['description'] : '');
 		$this->io->error($message_string);
