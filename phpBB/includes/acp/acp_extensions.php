@@ -62,10 +62,10 @@ class acp_extensions
 		{
 			case 'catalog':
 				$this->catalog_mode($id, $mode);
-				break;
+			break;
 			default:
 				$this->main_mode($id, $mode);
-				break;
+			break;
 		}
 	}
 
@@ -155,7 +155,7 @@ class acp_extensions
 					$this->config->set('extension_force_unstable', false);
 					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				}
-				break;
+			break;
 
 			case 'list':
 			default:
@@ -464,7 +464,7 @@ class acp_extensions
 					)
 				);
 
-				break;
+			break;
 			case 'remove':
 				$this->page_title = 'ACP_EXTENSIONS_REMOVE';
 
@@ -503,7 +503,7 @@ class acp_extensions
 					)
 				);
 
-				break;
+			break;
 			case 'update':
 				$this->page_title = 'ACP_EXTENSIONS_UPDATE';
 
@@ -542,7 +542,7 @@ class acp_extensions
 					)
 				);
 
-				break;
+			break;
 			case 'manage':
 				$this->page_title = 'ACP_EXTENSIONS_MANAGE';
 
@@ -581,7 +581,7 @@ class acp_extensions
 					)
 				);
 
-				break;
+			break;
 			case 'list':
 			default:
 				if (!$this->config['exts_composer_packagist'] && $this->request->is_set('enable_packagist') && confirm_box(true))
@@ -676,7 +676,7 @@ class acp_extensions
 
 				add_form_key('catalog_settings');
 
-				break;
+			break;
 		}
 	}
 

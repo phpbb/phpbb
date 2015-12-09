@@ -76,14 +76,14 @@ class installer
 	private $ext_json_file_backup;
 
 	/**
-	 * @param \phpbb\config\config	$config		Config object
-	 * @param string				$root_path	phpBB root path
+	 * @param string	$root_path	phpBB root path
+	 * @param config	$config		Config object
 	 */
 	public function __construct($root_path, config $config = null)
 	{
 		if ($config)
 		{
-			$repositories        = json_decode($config['exts_composer_repositories'], true);
+			$repositories = json_decode($config['exts_composer_repositories'], true);
 
 			if (is_array($repositories) && !empty($repositories))
 			{

@@ -41,15 +41,15 @@ $lang = array_merge($lang, array(
 	'EXTENSION_ALREADY_MANAGED'					=> 'The “%s” extension is already managed.',
 	'EXTENSION_CANNOT_MANAGE_FILESYSTEM_ERROR'	=> 'The “%s” extension cannot be managed because the existing files could not be removed from the filesystem.',
 	'EXTENSION_CANNOT_MANAGE_INSTALL_ERROR'		=> 'The “%s” extension could not be installed. The prior installation of this extension has been restored.',
-	'EXTENSION_MANAGED_WITH_CLEAN_ERROR'		=> 'The “%1$s” extension has been installed but an error occurred and the old files have not been removed. You might want to delete the “%2$s” files manually.',
-	'EXTENSION_MANAGED_WITH_ENABLE_ERROR'		=> 'The “%s” extension has been installed but an error occurred when enabling it.',
+	'EXTENSION_MANAGED_WITH_CLEAN_ERROR'		=> 'The “%1$s” extension has been installed but an error occurred and the old files could not be removed. You might want to delete the “%2$s” files manually.',
+	'EXTENSION_MANAGED_WITH_ENABLE_ERROR'		=> 'The “%s” extension has been installed but an error occurred while enabling it.',
 	'EXTENSION_NOT_INSTALLED'					=> 'The “%s” extension is not installed.',
 
 	'ENABLING_EXTENSIONS'	=> 'Enabling extensions',
 	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
 
 	'EXTENSIONS_CATALOG'			=> 'Extensions Catalog',
-	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all of the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the Settings to allow instant enabling and purging of extensions.',
+	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all of the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the settings to allow instant enabling and purging of extensions.',
 
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',
