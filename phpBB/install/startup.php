@@ -51,6 +51,11 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $phpbb_installer_container;
 
+	if (error_reporting() == 0)
+	{
+		return true;
+	}
+
 	switch ($errno)
 	{
 		case E_NOTICE:
