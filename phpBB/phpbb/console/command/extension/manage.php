@@ -15,7 +15,6 @@ namespace phpbb\console\command\extension;
 
 use phpbb\composer\exception\managed_with_error_exception;
 use phpbb\composer\io\console_io;
-use phpbb\composer\manager;
 use phpbb\composer\manager_interface;
 use phpbb\language\language;
 use Symfony\Component\Console\Input\InputArgument;

@@ -58,13 +58,20 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 	protected function formatHtml($matches)
 	{
 		$out = '<span style="';
-		foreach (explode(';', $matches[1]) as $code) {
-			if (isset(self::$availableForegroundColors[$code])) {
+		foreach (explode(';', $matches[1]) as $code)
+		{
+			if (isset(self::$availableForegroundColors[$code]))
+			{
 				$out .= 'color:'.self::$availableForegroundColors[$code].';';
-			} elseif (isset(self::$availableBackgroundColors[$code])) {
+			}
+			elseif (isset(self::$availableBackgroundColors[$code]))
+			{
 				$out .= 'background-color:'.self::$availableBackgroundColors[$code].';';
-			} elseif (isset(self::$availableOptions[$code])) {
-				switch (self::$availableOptions[$code]) {
+			}
+			elseif (isset(self::$availableOptions[$code]))
+			{
+				switch (self::$availableOptions[$code])
+				{
 					case 'bold':
 						$out .= 'font-weight:bold;';
 						break;

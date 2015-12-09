@@ -70,8 +70,7 @@ trait translate_composer_trait
 				$parameters = [$elements[1]];
 			}
 
-			//$translated_message = $this->language->lang_array($lang_key, $parameters);
-			$translated_message = call_user_func_array([$this->language, 'lang'], array_merge((array)$lang_key, $parameters));
+			$translated_message = $this->language->lang_array($lang_key, $parameters);
 
 			switch ($level)
 			{
@@ -226,8 +225,7 @@ trait translate_composer_trait
 		$error = '';
 		foreach ($this->composer_error as $error_line)
 		{
-			// $error .= $this->language->lang_array($error_line[0], $error_line[1]);
-			$error .= call_user_func_array([$this->language, 'lang'], array_merge((array)$error_line[0], $error_line[1]));
+			$error .= $this->language->lang_array($error_line[0], $error_line[1]);
 			$error .= "\n";
 		}
 

@@ -13,13 +13,7 @@
 
 namespace phpbb\console\command\extension;
 
-use Composer\Package\CompletePackage;
-use Composer\Package\PackageInterface;
-use phpbb\composer\installer;
-use phpbb\composer\manager;
 use phpbb\composer\manager_interface;
-use Symfony\Component\Console\Formatter\OutputFormatter;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
