@@ -287,6 +287,28 @@
 			</else>
 		</if>
 
+		<!-- Checkout latest viglink to ext folder -->
+		<available file="${dir}/ext" type="dir" property="add-viglink-ext" />
+		<if>
+			<and>
+				<equals arg1="${add-viglink-ext}" arg2="1" trim="true" />
+				<equals arg1="${revision}" arg2="HEAD" trim="true" />
+			</and>
+			<then>
+				<exec dir="${dir}/ext" command="mkdir phpbb" passthru="true" />
+
+				<exec dir="${dir}/ext/phpbb" command="git clone https://github.com/phpbb-extensions/viglink.git viglink" passthru="true" checkreturn="true" />
+				<exec dir="${dir}/ext/phpbb/viglink" command="git checkout master" />
+				<delete dir="${dir}/ext/phpbb/viglink/.git" />
+				<delete dir="${dir}/ext/phpbb/viglink/tests" />
+				<delete dir="${dir}/ext/phpbb/viglink/travis" />
+				<delete file="${dir}/ext/phpbb/viglink/.gitattributes" />
+				<delete file="${dir}/ext/phpbb/viglink/.travis.yml" />
+				<delete file="${dir}/ext/phpbb/viglink/phpunit.xml.dist" />
+				<delete file="${dir}/ext/phpbb/viglink/README.md" />
+			</then>
+		</if>
+
 		<!-- Create schema.json -->
 		<exec dir="${dir}" command="php develop/create_schema_files.php" />
 
