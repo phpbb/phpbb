@@ -453,7 +453,7 @@ class acp_extensions
 					$this->display_composer_exception($language, $e, $composer_io);
 					return;
 				}
-				$this->tpl_name = 'detailled_message_body';
+				$this->tpl_name = 'detailed_message_body';
 
 				$this->template->assign_vars(array(
 						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_INSTALL'),
@@ -492,7 +492,7 @@ class acp_extensions
 					$this->display_composer_exception($language, $e, $composer_io);
 					return;
 				}
-				$this->tpl_name = 'detailled_message_body';
+				$this->tpl_name = 'detailed_message_body';
 
 				$this->template->assign_vars(array(
 						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_REMOVE'),
@@ -531,7 +531,7 @@ class acp_extensions
 					$this->display_composer_exception($language, $e, $composer_io);
 					return;
 				}
-				$this->tpl_name = 'detailled_message_body';
+				$this->tpl_name = 'detailed_message_body';
 
 				$this->template->assign_vars(array(
 						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_UPDATE'),
@@ -570,7 +570,7 @@ class acp_extensions
 					$this->display_composer_exception($language, $e, $composer_io);
 					return;
 				}
-				$this->tpl_name = 'detailled_message_body';
+				$this->tpl_name = 'detailed_message_body';
 
 				$this->template->assign_vars(array(
 						'MESSAGE_TITLE'			=> $language->lang('ACP_EXTENSIONS_MANAGE'),
@@ -689,7 +689,7 @@ class acp_extensions
 	 */
 	private function display_composer_exception(\phpbb\language\language $language, \phpbb\exception\runtime_exception $e, \phpbb\composer\io\web_io $composer_io)
 	{
-		$this->tpl_name = 'detailled_message_body';
+		$this->tpl_name = 'detailed_message_body';
 
 		if ($e->getPrevious())
 		{

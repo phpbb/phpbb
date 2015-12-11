@@ -2969,3 +2969,10 @@ fieldset.permissions .permissions-switch {
 /* stylelint-enable selector-no-qualifying-type */
 /* stylelint-enable declaration-property-unit-blacklist */
 /* stylelint-enable declaration-property-unit-whitelist */
+
+.console-output {
+	background-color: #2a2a2a;
+	color: #f1f1f1;
+	font-family: monospace;
+	overflow-x:scroll;
+}

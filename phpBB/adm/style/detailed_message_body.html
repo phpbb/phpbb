@@ -5,11 +5,8 @@
 	<p>{{ MESSAGE_TEXT }}</p>
 </div>
 
-<div style="overflow-x:scroll">
-	<fieldset>
-		{%- if MESSAGE_DETAIL_LEGEND -%}
-			<legend>{{ MESSAGE_DETAIL_LEGEND|nl2br }}</legend>
-		{%- endif -%}
+<div>
+	<fieldset class="console-output">
 		<pre>{{ MESSAGE_DETAIL }}</pre>
 	</fieldset>
 </div>
