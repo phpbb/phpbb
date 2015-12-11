@@ -90,7 +90,7 @@ class container_builder
 	 *
 	 * @var array
 	 */
-	protected $custom_parameters = null;
+	protected $custom_parameters = [];
 
 	/**
 	 * @var \phpbb\config_php_file
@@ -126,67 +126,80 @@ class container_builder
 	 */
 	public function get_container()
 	{
-		$container_filename = $this->get_container_filename();
-		$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
-		if ($this->use_cache && $config_cache->isFresh())
-		{
-			require($config_cache->getPath());
-			$this->container = new \phpbb_cache_container();
-		}
-		else
-		{
-			$this->container_extensions = array(new extension\core($this->get_config_path()));
-
-			if ($this->use_extensions)
+		try {
+			$container_filename = $this->get_container_filename();
+			$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
+			if ($this->use_cache && $config_cache->isFresh())
 			{
-				$this->load_extensions();
+				require($config_cache->getPath());
+				$this->container = new \phpbb_cache_container();
 			}
-
-			// Inject the config
-			if ($this->config_php_file)
+			else
 			{
-				$this->container_extensions[] = new extension\config($this->config_php_file);
-			}
+				$this->container_extensions = array(new extension\core($this->get_config_path()));
 
-			$this->container = $this->create_container($this->container_extensions);
-
-			// Easy collections through tags
-			$this->container->addCompilerPass(new pass\collection_pass());
-
-			// Event listeners "phpBB style"
-			$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
-
-			// Event listeners "Symfony style"
-			$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
-
-			if ($this->use_extensions)
-			{
-				$this->register_ext_compiler_pass();
-			}
-
-			$filesystem = new filesystem();
-			$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
-			$loader->load($this->container->getParameter('core.environment') . '/config.yml');
-
-			$this->inject_custom_parameters();
-
-			if ($this->compile_container)
-			{
-				$this->container->compile();
-
-				if ($this->use_cache)
+				if ($this->use_extensions)
 				{
-					$this->dump_container($config_cache);
+					$this->load_extensions();
+				}
+
+				// Inject the config
+				if ($this->config_php_file)
+				{
+					$this->container_extensions[] = new extension\config($this->config_php_file);
+				}
+
+				$this->container = $this->create_container($this->container_extensions);
+
+				// Easy collections through tags
+				$this->container->addCompilerPass(new pass\collection_pass());
+
+				// Event listeners "phpBB style"
+				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
+
+				// Event listeners "Symfony style"
+				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
+
+				if ($this->use_extensions)
+				{
+					$this->register_ext_compiler_pass();
+				}
+
+				$filesystem = new filesystem();
+				$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
+				$loader->load($this->container->getParameter('core.environment') . '/config.yml');
+
+				$this->inject_custom_parameters();
+
+				if ($this->compile_container)
+				{
+					$this->container->compile();
+
+					if ($this->use_cache)
+					{
+						$this->dump_container($config_cache);
+					}
 				}
 			}
-		}
 
-		if ($this->compile_container && $this->config_php_file)
+			if ($this->compile_container && $this->config_php_file)
+			{
+				$this->container->set('config.php', $this->config_php_file);
+			}
+
+			return $this->container;
+		}
+		catch (\Exception $e)
 		{
-			$this->container->set('config.php', $this->config_php_file);
+			return $this
+				->without_extensions()
+				->without_cache()
+				->with_custom_parameters(array_merge($this->custom_parameters, [
+					'container_exception' => $e,
+				]))
+				->get_container()
+			;
 		}
-
-		return $this->container;
 	}
 
 	/**
@@ -451,13 +464,11 @@ class container_builder
 	 */
 	protected function inject_custom_parameters()
 	{
-		if ($this->custom_parameters !== null)
+		foreach ($this->custom_parameters as $key => $value)
 		{
-			foreach ($this->custom_parameters as $key => $value)
-			{
-				$this->container->setParameter($key, $value);
-			}
+			$this->container->setParameter($key, $value);
 		}
+
 	}
 
 	/**
