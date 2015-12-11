@@ -14,13 +14,12 @@
 namespace phpbb\debug;
 
 use Symfony\Component\Debug\ErrorHandler;
-use Symfony\Component\Filesystem\Exception\IOException;
 
 class error_handler extends ErrorHandler
 {
 	public function handleError($type, $message, $file, $line, array $context, array $backtrace = null)
 	{
-		if ($type === E_USER_WARNING|| $type === E_USER_NOTICE)
+		if ($type === E_USER_WARNING || $type === E_USER_NOTICE)
 		{
 			$handler = defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler';
 

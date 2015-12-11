@@ -16,14 +16,13 @@ namespace phpbb\debug;
 use Symfony\Component\Debug\BufferingLogger;
 use Symfony\Component\Debug\DebugClassLoader;
 use Symfony\Component\Debug\ExceptionHandler;
-use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Registers all the debug tools.
 
  * @see Symfony\Component\Debug\Debug
  */
-class Debug
+class debug
 {
 	private static $enabled = false;
 
@@ -40,28 +39,39 @@ class Debug
 	 */
 	public static function enable($errorReportingLevel = null, $displayErrors = true)
 	{
-		if (static::$enabled) {
+		if (static::$enabled)
+		{
 			return;
 		}
 
 		static::$enabled = true;
 
-		if (null !== $errorReportingLevel) {
+		if ($errorReportingLevel !== null)
+		{
 			error_reporting($errorReportingLevel);
-		} else {
+		}
+		else
+		{
 			error_reporting(-1);
 		}
 
-		if ('cli' !== php_sapi_name()) {
+		if ('cli' !== php_sapi_name())
+		{
 			ini_set('display_errors', 0);
 			ExceptionHandler::register();
-		} elseif ($displayErrors && (!ini_get('log_errors') || ini_get('error_log'))) {
+		}
+		else if ($displayErrors && (!ini_get('log_errors') || ini_get('error_log')))
+		{
 			// CLI - display errors only if they're not already logged to STDERR
 			ini_set('display_errors', 1);
 		}
-		if ($displayErrors) {
+
+		if ($displayErrors)
+		{
 			error_handler::register(new error_handler(new BufferingLogger()));
-		} else {
+		}
+		else
+		{
 			error_handler::register()->throwAt(0, true);
 		}
 
