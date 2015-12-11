@@ -399,7 +399,7 @@ class installer
 
 			usort($available, function($a, $b)
 			{
-				return strcmp($a['display_name'], $b['display_name']);
+				return strcasecmp($a['display_name'], $b['display_name']);
 			});
 
 			return $available;
