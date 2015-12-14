@@ -188,8 +188,8 @@ services:
         arguments:
             - '@user'
             - '@text_reparser.lock'
-            - '@text_reparser_collection'
             - '@text_reparser.manager'
+            - '@text_reparser_collection'
         tags:
             - { name: console.command }
 
