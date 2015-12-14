@@ -38,6 +38,7 @@ define('IN_PHPBB', true);
 $phpbb_root_path = dirname(__FILE__) . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
+include($phpbb_root_path . 'vendor/autoload.php');
 include($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
