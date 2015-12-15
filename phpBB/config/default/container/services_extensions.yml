@@ -15,6 +15,7 @@ services:
         class: phpbb\composer\installer
         arguments:
             - '%core.root_path%'
+            - '@filesystem'
             - '@config'
 
     ext.composer.manager:

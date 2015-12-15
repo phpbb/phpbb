@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
+ * @license       GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -16,34 +16,35 @@ namespace phpbb\composer\io;
 class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 {
 	protected static $availableForegroundColors = [
-		30 => 'black',
-		31 => 'red',
-		32 => 'green',
-		33 => 'orange',
-		34 => 'blue',
-		35 => 'magenta',
-		36 => 'cyan',
-		37 => 'white'
-	];
+			30 => 'black',
+			31 => 'red',
+			32 => 'green',
+			33 => 'orange',
+			34 => 'blue',
+			35 => 'magenta',
+			36 => 'cyan',
+			37 => 'white',
+		];
 
 	protected static $availableBackgroundColors = [
-		40 => 'black',
-		41 => 'red',
-		42 => 'green',
-		43 => 'yellow',
-		44 => 'blue',
-		45 => 'magenta',
-		46 => 'cyan',
-		47 => 'white'
-	];
+			40 => 'black',
+			41 => 'red',
+			42 => 'green',
+			43 => 'yellow',
+			44 => 'blue',
+			45 => 'magenta',
+			46 => 'cyan',
+			47 => 'white',
+		];
 
-	protected static $availableOptions = [
-		1 => 'bold',
-		4 => 'underscore',
-		//5 => 'blink',
-		//7 => 'reverse',
-		//8 => 'conceal'
-	];
+	protected static $availableOptions
+		= [
+			1 => 'bold',
+			4 => 'underscore',
+			//5 => 'blink',
+			//7 => 'reverse',
+			//8 => 'conceal'
+		];
 
 	/**
 	 * {@inheritdoc}
@@ -52,7 +53,7 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 	{
 		$formatted = parent::format($message);
 
-		return preg_replace_callback("{[\033\e]\[([0-9;]+)m(.*?)[\033\e]\[[0-9;]+m}s", array($this, 'formatHtml'), $formatted);
+		return preg_replace_callback("{[\033\e]\[([0-9;]+)m(.*?)[\033\e]\[[0-9;]+m}s", [$this, 'formatHtml'], $formatted);
 	}
 
 	protected function formatHtml($matches)
@@ -62,13 +63,13 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 		{
 			if (isset(self::$availableForegroundColors[$code]))
 			{
-				$out .= 'color:'.self::$availableForegroundColors[$code].';';
+				$out .= 'color:' . self::$availableForegroundColors[$code] . ';';
 			}
-			elseif (isset(self::$availableBackgroundColors[$code]))
+			else if (isset(self::$availableBackgroundColors[$code]))
 			{
-				$out .= 'background-color:'.self::$availableBackgroundColors[$code].';';
+				$out .= 'background-color:' . self::$availableBackgroundColors[$code] . ';';
 			}
-			elseif (isset(self::$availableOptions[$code]))
+			else if (isset(self::$availableOptions[$code]))
 			{
 				switch (self::$availableOptions[$code])
 				{
@@ -83,6 +84,6 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 			}
 		}
 
-		return $out.'">'.$matches[2].'</span>';
+		return $out . '">' . $matches[2] . '</span>';
 	}
 }

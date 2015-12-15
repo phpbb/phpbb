@@ -2975,4 +2975,5 @@ fieldset.permissions .permissions-switch {
 	color: #f1f1f1;
 	font-family: monospace;
 	overflow-x:scroll;
+	line-height: 1.5em;
 }

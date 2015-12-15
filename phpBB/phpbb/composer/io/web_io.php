@@ -18,7 +18,7 @@ use phpbb\language\language;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 
-class web_io extends BufferIO
+class web_io extends BufferIO implements io_interface
 {
 	use translate_composer_trait;
 

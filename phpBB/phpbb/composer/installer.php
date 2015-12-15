@@ -20,6 +20,7 @@ use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Package\BasePackage;
 use Composer\Package\CompletePackage;
+use Composer\Package\Link;
 use Composer\Package\PackageInterface;
 use Composer\Repository\ComposerRepository;
 use Composer\Repository\RepositoryInterface;
@@ -27,6 +28,7 @@ use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Util\RemoteFilesystem;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
+use phpbb\filesystem\filesystem;
 
 /**
  * Class to install packages through composer while freezing core dependencies.
@@ -76,10 +78,11 @@ class installer
 	private $ext_json_file_backup;
 
 	/**
-	 * @param string	$root_path	phpBB root path
-	 * @param config	$config		Config object
+	 * @param string		$root_path	phpBB root path
+	 * @param filesystem	$filesystem	Filesystem object
+	 * @param config		$config		Config object
 	 */
-	public function __construct($root_path, config $config = null)
+	public function __construct($root_path, filesystem $filesystem, config $config = null)
 	{
 		if ($config)
 		{
@@ -90,13 +93,15 @@ class installer
 				$this->repositories = (array) $repositories;
 			}
 
-			$this->packagist           = (bool) $config['exts_composer_packagist'];
-			$this->composer_filename   = $config['exts_composer_json_file'];
-			$this->packages_vendor_dir = $config['exts_composer_vendor_dir'];
-			$this->minimum_stability   = $config['exts_composer_minimum_stability'];
+			$this->packagist			= (bool) $config['exts_composer_packagist'];
+			$this->composer_filenam		= $config['exts_composer_json_file'];
+			$this->packages_vendor_dir	= $config['exts_composer_vendor_dir'];
+			$this->minimum_stability	= $config['exts_composer_minimum_stability'];
 		}
 
 		$this->root_path = $root_path;
+
+		putenv('COMPOSER_HOME=' . $filesystem->realpath($root_path) . 'store/composer');
 	}
 
 	/**
@@ -119,7 +124,7 @@ class installer
 			$this->do_install($packages, $whitelist, $io);
 			$this->restore_cwd();
 		}
-		catch (\Exception $e)
+		catch (runtime_exception $e)
 		{
 			$this->restore_cwd();
 			throw $e;
@@ -175,6 +180,7 @@ class installer
 		{
 			$this->restore_ext_json_file();
 			$this->restore_cwd();
+
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
 
@@ -182,6 +188,7 @@ class installer
 		{
 			$this->restore_ext_json_file();
 			$this->restore_cwd();
+
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
 	}
@@ -192,6 +199,8 @@ class installer
 	 * @param string|array $types Returns only the packages with the given type(s)
 	 *
 	 * @return array The installed packages associated to their version.
+	 *
+	 * @throws runtime_exception
 	 */
 	public function get_installed_packages($types)
 	{
@@ -203,7 +212,7 @@ class installer
 			$result = $this->do_get_installed_packages($types);
 			$this->restore_cwd();
 		}
-		catch (\Exception $e)
+		catch (runtime_exception $e)
 		{
 			$this->restore_cwd();
 			throw $e;
@@ -231,6 +240,8 @@ class installer
 			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
 
 			$installed = [];
+
+			/** @var Link[] $required_links */
 			$required_links = $composer->getPackage()->getRequires();
 			$installed_packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
 
@@ -260,6 +271,8 @@ class installer
 	 * @param string $type Returns only the packages with the given type
 	 *
 	 * @return array The name of the available packages, associated to their definition. Ordered by name.
+	 *
+	 * @throws runtime_exception
 	 */
 	public function get_available_packages($type)
 	{
@@ -271,7 +284,7 @@ class installer
 			$result = $this->do_get_available_packages($type);
 			$this->restore_cwd();
 		}
-		catch (\Exception $e)
+		catch (runtime_exception $e)
 		{
 			$this->restore_cwd();
 			throw $e;
@@ -488,7 +501,6 @@ class installer
 			'replace' => $core_packages,
 			'repositories' => $this->get_composer_repositories(),
 			'config' => [
-				'cache-dir' => 'store/composer',
 				'vendor-dir'=> $this->packages_vendor_dir,
 			],
 			'minimum-stability' => $this->minimum_stability,

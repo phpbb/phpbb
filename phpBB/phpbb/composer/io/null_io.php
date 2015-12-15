@@ -14,27 +14,19 @@
 namespace phpbb\composer\io;
 
 use Composer\IO\ConsoleIO;
+use Composer\IO\NullIO;
 use phpbb\language\language;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class console_io extends ConsoleIO implements io_interface
+class console_io extends NullIO implements io_interface
 {
-	use translate_composer_trait;
-
 	/**
-	 * Constructor.
-	 *
-	 * @param InputInterface	$input		The input instance
-	 * @param OutputInterface	$output		The output instance
-	 * @param HelperSet			$helperSet	The helperSet instance
-	 * @param language			$language	Language object
+	 * {@inheritdoc}
 	 */
-	public function __construct(InputInterface $input, OutputInterface $output, HelperSet $helperSet, language $language)
+	public function get_composer_error()
 	{
-		$this->language = $language;
-
-		parent::__construct($input, $output, $helperSet);
+		return '';
 	}
 }
