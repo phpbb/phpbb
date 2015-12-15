@@ -20,12 +20,10 @@ use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Package\BasePackage;
 use Composer\Package\CompletePackage;
-use Composer\Package\Link;
-use Composer\Package\PackageInterface;
 use Composer\Repository\ComposerRepository;
-use Composer\Repository\RepositoryInterface;
 use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Util\RemoteFilesystem;
+use phpbb\composer\io\null_io;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
@@ -147,7 +145,7 @@ class installer
 	{
 		if (!$io)
 		{
-			$io = new NullIO();
+			$io = new null_io();
 		}
 
 		$this->generate_ext_json_file($packages);
@@ -241,7 +239,7 @@ class installer
 
 			$installed = [];
 
-			/** @var Link[] $required_links */
+			/** @var \Composer\Package\Link[] $required_links */
 			$required_links = $composer->getPackage()->getRequires();
 			$installed_packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
 
@@ -318,7 +316,7 @@ class installer
 			$compatible_packages = [];
 			$repositories = $composer->getRepositoryManager()->getRepositories();
 
-			/** @var RepositoryInterface $repository */
+			/** @var \Composer\Repository\RepositoryInterface $repository */
 			foreach ($repositories as $repository)
 			{
 				try
@@ -339,7 +337,7 @@ class installer
 							$hostname = parse_url($url, PHP_URL_HOST) ?: $url;
 							$json     = $rfs->getContents($hostname, $url, false);
 
-							/** @var PackageInterface $package */
+							/** @var \Composer\Package\PackageInterface $package */
 							foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
 							{
 								$versions            = $repository->findPackages($package);
@@ -351,7 +349,7 @@ class installer
 					{
 						// Pre-filter repo packages by their type
 						$packages = [];
-						/** @var PackageInterface $package */
+						/** @var \Composer\Package\PackageInterface $package */
 						foreach ($repository->getPackages() as $package)
 						{
 							if ($package->getType() === $type)
@@ -454,7 +452,7 @@ class installer
 	{
 		$core_stability_value = BasePackage::$stabilities[$core_stability];
 		//VersionParser::parseStability($version['version'])
-		/** @var PackageInterface $version */
+		/** @var \Composer\Package\PackageInterface $version */
 		foreach ($versions as $version)
 		{
 			if (BasePackage::$stabilities[$version->getStability()] > $core_stability_value)

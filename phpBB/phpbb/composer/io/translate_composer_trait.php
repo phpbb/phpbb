@@ -13,7 +13,6 @@
 
 namespace phpbb\composer\io;
 
-use phpbb\language\language;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -22,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 trait translate_composer_trait
 {
 	/**
-	 * @var language
+	 * @var \phpbb\language\language
 	 */
 	protected $language;
 

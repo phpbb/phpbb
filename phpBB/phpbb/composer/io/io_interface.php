@@ -13,13 +13,7 @@
 
 namespace phpbb\composer\io;
 
-use Composer\IO\ConsoleIO;
 use Composer\IO\IOInterface;
-use Composer\IO\NullIO;
-use phpbb\language\language;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 interface io_interface extends IOInterface
 {

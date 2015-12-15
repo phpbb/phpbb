@@ -13,14 +13,9 @@
 
 namespace phpbb\composer\io;
 
-use Composer\IO\ConsoleIO;
 use Composer\IO\NullIO;
-use phpbb\language\language;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class console_io extends NullIO implements io_interface
+class null_io extends NullIO implements io_interface
 {
 	/**
 	 * {@inheritdoc}
