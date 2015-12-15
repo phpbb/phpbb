@@ -113,7 +113,7 @@ class container_builder
 	 * @param string $phpbb_root_path Path to the phpbb includes directory.
 	 * @param string $php_ext php file extension
 	 */
-	function __construct($phpbb_root_path, $php_ext)
+	public function __construct($phpbb_root_path, $php_ext)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -191,14 +191,26 @@ class container_builder
 		}
 		catch (\Exception $e)
 		{
-			return $this
-				->without_extensions()
-				->without_cache()
-				->with_custom_parameters(array_merge($this->custom_parameters, [
-					'container_exception' => $e,
-				]))
-				->get_container()
-			;
+			// Don't try to recover if we are in the development environment
+			if ($this->get_environment() === 'development') {
+				throw $e;
+			}
+
+			try
+			{
+				return $this
+					->without_extensions()
+					->without_cache()
+					->with_custom_parameters(array_merge($this->custom_parameters, [
+						'container_exception' => $e,
+					]))
+					->get_container();
+			}
+			catch (\Exception $_)
+			{
+				// Rethrow the original exception if it's still failing
+				throw $e;
+			}
 		}
 	}
 
