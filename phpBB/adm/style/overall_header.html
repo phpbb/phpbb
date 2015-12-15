@@ -149,8 +149,7 @@ function popup(url, width, height, name)
 							<!-- IF CONTAINER_EXCEPTION !== false -->
 							<div class="errorbox">
 								<p>{L_CONTAINER_EXCEPTION}</p>
-								<p>{L_CONTAINER_EXCEPTION_DETAIL}</p>
-								<p>Exception message: {{ CONTAINER_EXCEPTION.getMessage() }}</p>
+								<p>{L_EXCEPTION}{L_COLON} {{ CONTAINER_EXCEPTION.getMessage() }}</p>
 								<pre>{{ CONTAINER_EXCEPTION.getTraceAsString() }}</pre>
 							</div>
 							<!-- ENDIF -->

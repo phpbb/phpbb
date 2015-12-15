@@ -192,7 +192,8 @@ class container_builder
 		catch (\Exception $e)
 		{
 			// Don't try to recover if we are in the development environment
-			if ($this->get_environment() === 'development') {
+			if ($this->get_environment() === 'development')
+			{
 				throw $e;
 			}
 
