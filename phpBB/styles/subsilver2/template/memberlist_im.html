@@ -7,6 +7,11 @@
 	<tr>
 		<th colspan="2">{L_SEND_IM}</th>
 	</tr>
+	<!-- IF S_SENT_JABBER -->
+        <tr>
+            <td class="row1" colspan="2" align="center"><span class="gen">{L_IM_SENT_JABBER}</span></td>
+        </tr>
+	<!-- ENDIF -->
 	<tr>
 		<td class="row3" colspan="2"><span class="gensmall">{L_SEND_IM_EXPLAIN}</span></td>
 	</tr>
@@ -22,12 +27,6 @@
 		</tr>
 		<tr>
 			<td class="cat" colspan="2" align="center"><input class="btnmain" name="submit" type="submit" value="{L_IM_SEND}" /></td>
-		</tr>
-		<tr>
-			<td class="row1" colspan="2" align="center"><span class="gen">{L_IM_SENT_JABBER}</span></td>
-		</tr>
-		<tr>
-			<td class="cat" colspan="2" align="center"></td>
 		</tr>
 	<!-- ELSEIF S_NO_SEND_JABBER -->
 		<tr>
