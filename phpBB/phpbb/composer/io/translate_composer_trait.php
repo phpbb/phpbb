@@ -28,7 +28,7 @@ trait translate_composer_trait
 	/**
 	 * @var array
 	 */
-	protected $composer_error;
+	protected $composer_error = [];
 
 	/**
 	 * {@inheritdoc}
