@@ -696,7 +696,6 @@ Colours and backgrounds for buttons.css
 	background-image: linear-gradient(#FFFFFF, #E6E6E6);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FFFFFF', endColorstr='#E6E6E6', GradientType=0 );
 	box-shadow: 0 0 0 1px #FFFFFF inset;
-	-webkit-box-shadow: 0 0 0 1px #FFFFFF inset;
 	color: #D31141;
 }
 
@@ -746,9 +745,9 @@ Colours and backgrounds for buttons.css
 	border-color: #BFBFBF;
 	color: #5C7A8A;
 	background-image: none;
-	filter: none;
-	-webkit-box-shadow: none;
-			box-shadow: none;
+	-webkit-filter: none;
+	        filter: none;
+	box-shadow: none;
 }
 
 .pagination li.ellipsis span {
@@ -770,7 +769,8 @@ Colours and backgrounds for buttons.css
 	border-color: #2D9BD2;
 	color: #FFFFFF;
 	background-image: none;
-	filter: none;
+	-webkit-filter: none;
+	        filter: none;
 	text-shadow: none;
 }
 
