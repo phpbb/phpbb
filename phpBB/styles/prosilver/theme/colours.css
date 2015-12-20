@@ -761,9 +761,9 @@ Colours and backgrounds for buttons.css
 	color: #FFFFFF;
 }
 
-.pagination li a:hover, 
-.pagination li a:hover .icon, 
-.pagination .dropdown-visible a.dropdown-trigger, 
+.pagination li a:hover,
+.pagination li a:hover .icon,
+.pagination .dropdown-visible a.dropdown-trigger,
 .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
 	background-color: #2D9BD2;
 	border-color: #2D9BD2;
