@@ -90,8 +90,14 @@ include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-// Set PHP error handler to ours
-set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
+if (PHPBB_ENVIRONMENT === 'development')
+{
+	\phpbb\debug\debug::enable();
+}
+else
+{
+	set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
+}
 
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
@@ -104,10 +110,17 @@ try
 }
 catch (InvalidArgumentException $e)
 {
-	trigger_error(
-		'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
-		E_USER_ERROR
-	);
+	if (PHPBB_ENVIRONMENT !== 'development')
+	{
+		trigger_error(
+			'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
+			E_USER_ERROR
+		);
+	}
+	else
+	{
+		throw $e;
+	}
 }
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
