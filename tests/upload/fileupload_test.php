@@ -13,34 +13,88 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions.php';
 require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_upload.php';
 require_once __DIR__ . '/../mock/filespec.php';
 
 class phpbb_fileupload_test extends phpbb_test_case
 {
 	private $path;
 
+	private $filesystem;
+
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
+	protected $container;
+
+	/** @var \phpbb\files\factory */
+	protected $factory;
+
+	/** @var \bantu\IniGetWrapper\IniGetWrapper */
+	protected $php_ini;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\request\request_interface */
+	protected $request;
+
+	/** @var string phpBB root path */
+	protected $phpbb_root_path;
+
 	protected function setUp()
 	{
 		// Global $config required by unique_id
-		// Global $user required by several functions dealing with translations
-		// Global $request required by form_upload, local_upload and is_valid
-		global $config, $user, $request;
+		global $config, $phpbb_root_path, $phpEx;
 
 		if (!is_array($config))
 		{
-			$config = array();
+			$config = new \phpbb\config\config(array());
 		}
 
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
+		$this->request = $this->getMock('\phpbb\request\request');
+		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
-		$request = new phpbb_mock_request();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$guessers = array(
+			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
+			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
+			new \phpbb\mimetype\content_guesser(),
+			new \phpbb\mimetype\extension_guesser(),
+		);
+		$guessers[2]->set_priority(-2);
+		$guessers[3]->set_priority(-2);
+		$this->mimetype_guesser = new \phpbb\mimetype\guesser($guessers);
+
+		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
+		$this->container->set('files.filespec', new \phpbb\files\filespec(
+			$this->filesystem,
+			$this->language,
+			$this->php_ini,
+			new \FastImageSize\FastImageSize(),
+			$phpbb_root_path,
+			new \phpbb\mimetype\guesser(array(
+				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
+			))));
+		$this->factory = new \phpbb\files\factory($this->container);
+		$plupload = new \phpbb\plupload\plupload($phpbb_root_path, $config, $this->request, new \phpbb\user($this->language, '\phpbb\datetime'), $this->php_ini, $this->mimetype_guesser);
+		$this->container->set('files.types.form', new \phpbb\files\types\form(
+			$this->factory,
+			$this->language,
+			$this->php_ini,
+			$plupload,
+			$this->request
+		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$this->container->set('files.types.local', new \phpbb\files\types\local(
+			$this->factory,
+			$this->language,
+			$this->php_ini,
+			$this->request
+		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
 
 		$this->path = __DIR__ . '/fixture/';
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	private function gen_valid_filespec()
@@ -65,15 +119,38 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_invalid_extension()
 	{
-		$upload = new fileupload('', array('png'), 100);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('png'))
+			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
 		$this->assertEquals('DISALLOWED_EXTENSION', $file->error[0]);
 	}
 
+	public function test_common_checks_disallowed_content()
+	{
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
+		$file = new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \FastImageSize\FastImageSize(), $this->phpbb_root_path);
+		$file->set_upload_ary(array(
+				'size'	=> 50,
+				'tmp_name'	=> dirname(__FILE__) . '/fixture/disallowed',
+				'name'		=> 'disallowed.jpg',
+				'type'		=> 'image/jpg'
+			))
+			->set_upload_namespace($upload);
+		file_put_contents(dirname(__FILE__) . '/fixture/disallowed', '<body>' . file_get_contents(dirname(__FILE__) . '/fixture/jpg'));
+		$upload->common_checks($file);
+		$this->assertEquals('DISALLOWED_CONTENT', $file->error[0]);
+		unlink(dirname(__FILE__) . '/fixture/disallowed');
+	}
+
 	public function test_common_checks_invalid_filename()
 	{
-		$upload = new fileupload('', array('jpg'), 100);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
 		$file->realname = 'invalid?';
 		$upload->common_checks($file);
@@ -82,7 +159,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_too_large()
 	{
-		$upload = new fileupload('', array('jpg'), 100);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(100);
 		$file = $this->gen_valid_filespec();
 		$file->filesize = 1000;
 		$upload->common_checks($file);
@@ -91,7 +170,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_common_checks_valid_file()
 	{
-		$upload = new fileupload('', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
 		$this->assertEquals(0, sizeof($file->error));
@@ -99,33 +180,41 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_local_upload()
 	{
-		$upload = new fileupload('', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
-		$file = $upload->local_upload($this->path . 'jpg.jpg');
+		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
-		unlink($this->path . 'jpg.jpg');
+		$this->assertFalse($file->additional_checks());
+		$this->assertTrue($file->move_file('../tests/upload/fixture/copies', true));
+		$file->remove();
 	}
 
 	public function test_move_existent_file()
 	{
-		$upload = new fileupload('', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
-		$file = $upload->local_upload($this->path . 'jpg.jpg');
+		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
 		$this->assertFalse($file->move_file('../tests/upload/fixture'));
-		$this->assertFalse($file->file_moved);
+		$this->assertFalse($file->get('file_moved'));
 		$this->assertEquals(1, sizeof($file->error));
 	}
 
 	public function test_move_existent_file_overwrite()
 	{
-		$upload = new fileupload('', array('jpg'), 1000);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(array('jpg'))
+			->set_max_filesize(1000);
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		copy($this->path . 'jpg', $this->path . 'copies/jpg.jpg');
-		$file = $upload->local_upload($this->path . 'jpg.jpg');
+		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
 		$this->assertEquals(0, sizeof($file->error));
 		$file->move_file('../tests/upload/fixture/copies', true);
 		$this->assertEquals(0, sizeof($file->error));
@@ -134,7 +223,10 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 	public function test_valid_dimensions()
 	{
-		$upload = new fileupload('', false, false, 1, 1, 100, 100);
+		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload->set_allowed_extensions(false)
+			->set_max_filesize(false)
+			->set_allowed_dimensions(1, 1, 100, 100);
 
 		$file1 = $this->gen_valid_filespec();
 		$file2 = $this->gen_valid_filespec();

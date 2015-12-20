@@ -120,8 +120,9 @@ directory (above phpBB):
 Slow tests
 --------------
 
-Certain tests, such as the UTF-8 normalizer or the DNS tests tend to be slow.
-Thus these tests are in the `slow` group, which is excluded by default. If you
+Certain tests, such as the DNS tests tend to be slow.
+Thus these tests are in the `slow` group, which is excluded by default. You can
+enable slow tests by copying the phpunit.xml.all file to phpunit.xml. If you
 only want the slow tests, run:
 
     $ phpBB/vendor/bin/phpunit --group slow

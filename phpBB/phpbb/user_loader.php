@@ -175,7 +175,7 @@ class user_loader
 	/**
 	* Get avatar
 	*
-	* @param int $user_id User ID of the user you want to retreive the avatar for
+	* @param int $user_id User ID of the user you want to retrieve the avatar for
 	* @param bool $query Should we query the database if this user has not yet been loaded?
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()
@@ -189,7 +189,14 @@ class user_loader
 			return '';
 		}
 
-		return phpbb_get_avatar(\phpbb\avatar\manager::clean_row($user, 'user'), 'USER_AVATAR', false, $lazy);
+		$row = array(
+			'avatar'		=> $user['user_avatar'],
+			'avatar_type'	=> $user['user_avatar_type'],
+			'avatar_width'	=> $user['user_avatar_width'],
+			'avatar_height'	=> $user['user_avatar_height'],
+		);
+
+		return phpbb_get_avatar($row, 'USER_AVATAR', false, $lazy);
 	}
 
 	/**

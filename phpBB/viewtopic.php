@@ -27,34 +27,35 @@ $user->session_begin();
 $auth->acl($user->data);
 
 // Initial var setup
-$forum_id	= request_var('f', 0);
-$topic_id	= request_var('t', 0);
-$post_id	= request_var('p', 0);
-$voted_id	= request_var('vote_id', array('' => 0));
+$forum_id	= $request->variable('f', 0);
+$topic_id	= $request->variable('t', 0);
+$post_id	= $request->variable('p', 0);
+$voted_id	= $request->variable('vote_id', array('' => 0));
 
 $voted_id = (sizeof($voted_id) > 1) ? array_unique($voted_id) : $voted_id;
 
 
-$start		= request_var('start', 0);
-$view		= request_var('view', '');
+$start		= $request->variable('start', 0);
+$view		= $request->variable('view', '');
 
 $default_sort_days	= (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0;
 $default_sort_key	= (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't';
 $default_sort_dir	= (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a';
 
-$sort_days	= request_var('st', $default_sort_days);
-$sort_key	= request_var('sk', $default_sort_key);
-$sort_dir	= request_var('sd', $default_sort_dir);
+$sort_days	= $request->variable('st', $default_sort_days);
+$sort_key	= $request->variable('sk', $default_sort_key);
+$sort_dir	= $request->variable('sd', $default_sort_dir);
 
-$update		= request_var('update', false);
+$update		= $request->variable('update', false);
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
 $s_can_vote = false;
 /**
 * @todo normalize?
 */
-$hilit_words	= request_var('hilit', '', true);
+$hilit_words	= $request->variable('hilit', '', true);
 
 // Do we have a topic or post id?
 if (!$topic_id && !$post_id)
@@ -62,6 +63,7 @@ if (!$topic_id && !$post_id)
 	trigger_error('NO_TOPIC');
 }
 
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // Find topic id if user requested a newer or older topic
@@ -496,9 +498,9 @@ if ($config['allow_topic_notify'])
 }
 
 // Bookmarks
-if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('bookmark', 0))
+if ($config['allow_bookmarks'] && $user->data['is_registered'] && $request->variable('bookmark', 0))
 {
-	if (check_link_hash(request_var('hash', ''), "topic_$topic_id"))
+	if (check_link_hash($request->variable('hash', ''), "topic_$topic_id"))
 	{
 		if (!$topic_data['bookmarked'])
 		{
@@ -581,10 +583,10 @@ $quickmod_array = array(
 	'merge'					=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
 	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id)),
 	'fork'					=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
-	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)),
+	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', 'f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)),
 	'make_sticky'		=> array('MAKE_STICKY', ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)),
 	'make_announce'	=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
-	'make_global'		=> array('MAKE_GLOBAL', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
+	'make_global'		=> array('MAKE_GLOBAL', ($allow_change_type && $auth->acl_get('f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
 	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
 );
 
@@ -1404,6 +1406,7 @@ $db->sql_freeresult($result);
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
 {
+	/* @var $cp \phpbb\profilefields\manager */
 	$cp = $phpbb_container->get('profilefields.manager');
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
@@ -1891,6 +1894,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_ICON_IMG'			=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['img'] : '',
 		'POST_ICON_IMG_WIDTH'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['width'] : '',
 		'POST_ICON_IMG_HEIGHT'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
+		'POST_ICON_IMG_ALT' 	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['alt'] : '',
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
@@ -1905,7 +1909,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f=$forum_id&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
-		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
+		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $phpbb_container->get('controller.helper')->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_RESTORE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_data['topic_visibility'] != ITEM_DELETED) ? 'deleted_posts' : 'deleted_topics') . '&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
@@ -1918,6 +1922,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_ID'			=> $row['post_id'],
 		'POST_NUMBER'		=> $i + $start + 1,
 		'POSTER_ID'			=> $poster_id,
+		'MINI_POST'			=> ($post_unread) ? $user->lang['UNREAD_POST'] : $user->lang['POST'],
+
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 		'S_MULTIPLE_ATTACHMENTS'	=> !empty($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]) > 1,
@@ -2199,13 +2205,13 @@ if ($s_can_vote || $s_quick_reply)
 // We overwrite $_REQUEST['f'] if there is no forum specified
 // to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
-if (!request_var('f', 0))
+if (!$request->variable('f', 0))
 {
 	$request->overwrite('f', $forum_id);
 }
 
 // We need to do the same with the topic_id. See #53025.
-if (!request_var('t', 0) && !empty($topic_id))
+if (!$request->variable('t', 0) && !empty($topic_id))
 {
 	$request->overwrite('t', $topic_id);
 }

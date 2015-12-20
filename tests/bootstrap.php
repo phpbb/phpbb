@@ -12,8 +12,12 @@
 */
 
 define('IN_PHPBB', true);
+define('PHPBB_ENVIRONMENT', 'test');
+
 $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
+
+global $table_prefix;
 require_once $phpbb_root_path . 'includes/startup.php';
 
 $table_prefix = 'phpbb_';

@@ -71,8 +71,8 @@ class mssql extends \phpbb\db\driver\driver
 			$row = false;
 			if ($result_id)
 			{
-				$row = @mssql_fetch_assoc($result_id);
-				@mssql_free_result($result_id);
+				$row = mssql_fetch_assoc($result_id);
+				mssql_free_result($result_id);
 			}
 
 			$this->sql_server_version = ($row) ? trim(implode(' ', $row)) : 0;
@@ -161,12 +161,17 @@ class mssql extends \phpbb\db\driver\driver
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
+				if (!$this->query_result)
+				{
+					return false;
+				}
+
 				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0 && $this->query_result !== true)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
@@ -241,12 +246,12 @@ class mssql extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		if ($query_id === false)
+		if (!$query_id || $query_id === true)
 		{
 			return false;
 		}
 
-		$row = @mssql_fetch_assoc($query_id);
+		$row = mssql_fetch_assoc($query_id);
 
 		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
 		if ($row)
@@ -272,12 +277,17 @@ class mssql extends \phpbb\db\driver\driver
 			$query_id = $this->query_result;
 		}
 
+		if ($query_id === true)
+		{
+			return false;
+		}
+
 		if ($cache && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id !== false) ? @mssql_data_seek($query_id, $rownum) : false;
+		return ($query_id) ? @mssql_data_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -288,12 +298,12 @@ class mssql extends \phpbb\db\driver\driver
 		$result_id = @mssql_query('SELECT SCOPE_IDENTITY()', $this->db_connect_id);
 		if ($result_id)
 		{
-			if ($row = @mssql_fetch_assoc($result_id))
+			if ($row = mssql_fetch_assoc($result_id))
 			{
-				@mssql_free_result($result_id);
+				mssql_free_result($result_id);
 				return $row['computed'];
 			}
-			@mssql_free_result($result_id);
+			mssql_free_result($result_id);
 		}
 
 		return false;
@@ -311,6 +321,11 @@ class mssql extends \phpbb\db\driver\driver
 			$query_id = $this->query_result;
 		}
 
+		if ($query_id === true)
+		{
+			return false;
+		}
+
 		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
 		{
 			return $cache->sql_freeresult($query_id);
@@ -319,7 +334,7 @@ class mssql extends \phpbb\db\driver\driver
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return @mssql_free_result($query_id);
+			return mssql_free_result($query_id);
 		}
 
 		return false;
@@ -376,9 +391,9 @@ class mssql extends \phpbb\db\driver\driver
 			$result_id = @mssql_query('SELECT @@ERROR as code', $this->db_connect_id);
 			if ($result_id)
 			{
-				$row = @mssql_fetch_assoc($result_id);
+				$row = mssql_fetch_assoc($result_id);
 				$error['code'] = $row['code'];
-				@mssql_free_result($result_id);
+				mssql_free_result($result_id);
 			}
 
 			// Get full error message if possible
@@ -389,12 +404,12 @@ class mssql extends \phpbb\db\driver\driver
 
 			if ($result_id)
 			{
-				$row = @mssql_fetch_assoc($result_id);
+				$row = mssql_fetch_assoc($result_id);
 				if (!empty($row['message']))
 				{
 					$error['message'] .= '<br />' . $row['message'];
 				}
-				@mssql_free_result($result_id);
+				mssql_free_result($result_id);
 			}
 		}
 		else
@@ -440,13 +455,13 @@ class mssql extends \phpbb\db\driver\driver
 				if ($result = @mssql_query($query, $this->db_connect_id))
 				{
 					@mssql_next_result($result);
-					while ($row = @mssql_fetch_row($result))
+					while ($row = mssql_fetch_row($result))
 					{
 						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 					}
 				}
 				@mssql_query('SET SHOWPLAN_TEXT OFF;', $this->db_connect_id);
-				@mssql_free_result($result);
+				mssql_free_result($result);
 
 				if ($html_table)
 				{
@@ -459,11 +474,14 @@ class mssql extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @mssql_query($query, $this->db_connect_id);
-				while ($void = @mssql_fetch_assoc($result))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+					while ($void = mssql_fetch_assoc($result))
+					{
+						// Take the time spent on parsing rows into account
+					}
+					mssql_free_result($result);
 				}
-				@mssql_free_result($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

@@ -30,13 +30,13 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-		global $cache, $phpbb_container, $phpbb_dispatcher;
+		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 		$user->add_lang('acp/board');
 
-		$action	= request_var('action', '');
+		$action	= $request->variable('action', '');
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
 
 		$form_key = 'acp_board';
@@ -94,6 +94,7 @@ class acp_board
 						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_board_notifications'		=> array('lang' => 'ALLOW_BOARD_NOTIFICATIONS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_birthdays'		=> array('lang' => 'ALLOW_BIRTHDAYS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -115,6 +116,7 @@ class acp_board
 			break;
 
 			case 'avatar':
+				/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 				$avatar_drivers = $phpbb_avatar_manager->get_all_drivers();
 
@@ -446,6 +448,7 @@ class acp_board
 						'board_email'			=> array('lang' => 'ADMIN_EMAIL',			'validate' => 'email',	'type' => 'email:25:100', 'explain' => true),
 						'board_email_sig'		=> array('lang' => 'EMAIL_SIG',				'validate' => 'string',	'type' => 'textarea:5:30', 'explain' => true),
 						'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'send_test_email'		=> array('lang' => 'SEND_TEST_EMAIL',		'validate' => 'bool',	'type' => 'custom', 'method' => 'send_test_email', 'explain' => true),
 
 						'legend2'				=> 'SMTP_SETTINGS',
 						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -483,7 +486,7 @@ class acp_board
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if wished
@@ -539,7 +542,7 @@ class acp_board
 					// send the password to the output
 					continue;
 				}
-				set_config($config_name, $config_value);
+				$config->set($config_name, $config_value);
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
 				{
@@ -561,6 +564,7 @@ class acp_board
 		if ($mode == 'auth')
 		{
 			// Retrieve a list of auth plugins and check their config values
+			/* @var $auth_providers \phpbb\auth\provider_collection */
 			$auth_providers = $phpbb_container->get('auth.provider_collection');
 
 			$updated_auth_settings = false;
@@ -575,7 +579,7 @@ class acp_board
 					{
 						if (!isset($config[$field]))
 						{
-							set_config($field, '');
+							$config->set($field, '');
 						}
 
 						if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
@@ -598,7 +602,7 @@ class acp_board
 						if ($submit)
 						{
 							$updated_auth_settings = true;
-							set_config($field, $config_value);
+							$config->set($field, $config_value);
 						}
 					}
 				}
@@ -615,11 +619,11 @@ class acp_board
 					{
 						foreach ($old_auth_config as $config_name => $config_value)
 						{
-							set_config($config_name, $config_value);
+							$config->set($config_name, $config_value);
 						}
 						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					set_config('auth_method', basename($cfg_array['auth_method']));
+					$config->set('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{
@@ -628,9 +632,30 @@ class acp_board
 			}
 		}
 
+		if ($mode == 'email' && $request->is_set_post('send_test_email'))
+		{
+			if ($config['email_enable'])
+			{
+				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+				$messenger = new messenger(false);
+				$messenger->template('test');
+				$messenger->set_addresses($user->data);
+				$messenger->anti_abuse_headers($config, $user);
+				$messenger->send(NOTIFY_EMAIL);
+
+				trigger_error($user->lang('TEST_EMAIL_SENT') . adm_back_link($this->u_action));
+			}
+			else
+			{
+				$user->add_lang('memberlist');
+				trigger_error($user->lang('EMAIL_DISABLED') . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+
 		if ($submit)
 		{
-			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_' . strtoupper($mode));
 
 			$message = $user->lang('CONFIG_UPDATED');
 			$message_type = E_USER_NOTICE;
@@ -737,8 +762,9 @@ class acp_board
 	{
 		global $phpbb_root_path, $phpEx, $phpbb_container;
 
-		$auth_plugins = array();
+		/* @var $auth_providers \phpbb\auth\provider_collection */
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
+		$auth_plugins = array();
 
 		foreach ($auth_providers as $key => $value)
 		{
@@ -1063,10 +1089,10 @@ class acp_board
 
 	function store_feed_forums($option, $key)
 	{
-		global $db, $cache;
+		global $db, $cache, $request;
 
 		// Get key
-		$values = request_var($key, array(0 => 0));
+		$values = $request->variable($key, array(0 => 0));
 
 		// Empty option bit for all forums
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
@@ -1134,5 +1160,12 @@ class acp_board
 
 		return h_radio($field_name, array(1 => 'YES', 0 => 'NO'), $value) .
 			($message !== false ? '<br /><span>' . $user->lang($message) . '</span>' : '');
+	}
+
+	function send_test_email($value, $key)
+	{
+		global $user;
+
+		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang['SEND_TEST_EMAIL'] . '" />';
 	}
 }

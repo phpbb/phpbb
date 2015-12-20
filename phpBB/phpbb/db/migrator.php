@@ -13,6 +13,8 @@
 
 namespace phpbb\db;
 
+use phpbb\db\output_handler\migrator_output_handler_interface;
+use phpbb\db\output_handler\null_migrator_output_handler;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -32,7 +34,7 @@ class migrator
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools */
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
 
 	/** @var \phpbb\db\migration\helper */
@@ -92,7 +94,7 @@ class migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
+	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
 		$this->container = $container;
 		$this->config = $config;
@@ -122,7 +124,7 @@ class migrator
 	/**
 	 * Set the output handler.
 	 *
-	 * @param migrator_output_handler $handler The output handler
+	 * @param migrator_output_handler_interface $handler The output handler
 	 */
 	public function set_output_handler(migrator_output_handler_interface $handler)
 	{
@@ -416,6 +418,9 @@ class migrator
 
 		if ($state['migration_data_done'])
 		{
+			$this->output_handler->write(array('MIGRATION_REVERT_DATA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+			$elapsed_time = microtime(true);
+
 			if ($state['migration_data_state'] !== 'revert_data')
 			{
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state'], true);
@@ -431,9 +436,22 @@ class migrator
 			}
 
 			$this->set_migration_state($name, $state);
+
+			$elapsed_time = microtime(true) - $elapsed_time;
+			if ($state['migration_data_done'])
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_DATA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_DATA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 		else if ($state['migration_schema_done'])
 		{
+			$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+			$elapsed_time = microtime(true);
+
 			$steps = $this->helper->get_schema_steps($migration->revert_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
@@ -448,6 +466,9 @@ class migrator
 
 				unset($this->migration_state[$name]);
 			}
+
+			$elapsed_time = microtime(true) - $elapsed_time;
+			$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 		}
 
 		return true;

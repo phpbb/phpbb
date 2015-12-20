@@ -1782,7 +1782,7 @@ li.pagination ul {
 
 /* Action Highlighting
 ---------------------------------------- */
-.successbox, .errorbox {
+.successbox, .errorbox, .warningbox {
 	padding: 8px;
 	margin: 10px 0;
 	color: #FFFFFF;
@@ -1804,6 +1804,10 @@ li.pagination ul {
 
 .errorbox {
 	background-color: #BC2A4D;
+}
+
+.warningbox {
+	background-color: #fca600;
 }
 
 .successbox h3, .errorbox h3 {
@@ -1832,8 +1836,31 @@ li.pagination ul {
 	font-weight: bold;
 }
 
+#log-container {
+	display: none;
+	max-height: 300px;
+	padding: 8px;
+	margin: 10px 0;
+	clear: both;
+	overflow-y: auto;
+	background-color: #FFFFFF;
+}
+
+#log-container.show_log_container {
+	display: block;
+	border: 1px solid #DBD7D1;
+}
+
+.log {
+	font-size: 0.8em;
+}
+
 .notice {
 	background-color: #62A5CC;
+}
+
+.download-box {
+	margin: 10px 0 10px 0;
 }
 
 /* Special cases for the error page */
@@ -1864,6 +1891,7 @@ li.pagination ul {
 	color: #000;
 	text-align: center;
 	border: 1px solid #AAA;
+	opacity: .95;
 }
 
 .tooltip span.top {
@@ -2441,6 +2469,39 @@ fieldset.permissions .padding {
 	display: none !important;
 }
 
+.roles-options > .dropdown {
+	left: auto;
+	top: 3em;
+	width: 250px;
+}
+
+.roles-options {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	width: 250px;
+}
+
+.roles-options > span {
+	border: 1px solid #DEDEDE;
+	border-radius: 3px;
+	padding: 4px;
+	width: 250px;
+	display: block;
+	background: url('../images/arrow_down.gif') no-repeat 245px .7em;
+}
+
+.roles-options li {
+	list-style: none;
+}
+
+.roles-highlight {
+	background-color: #1e90ff;
+	color: #fff;
+}
+
 
 /* Classes for additional tasks
 ---------------------------------------- */
@@ -2488,4 +2549,32 @@ fieldset.permissions .padding {
 	content: '';
 	clear: both;
 	display: block;
+}
+
+#progress-bar {
+	position: relative;
+	width: 90%;
+	height: 25px;
+	margin: 20px auto;
+	border: 1px solid #cecece;
+}
+
+#progress-bar #progress-bar-text {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	text-align: center;
+	line-height: 25px;
+	font-weight: bold;
+	color: #fff;
+}
+
+#progress-bar #progress-bar-filler {
+	display: block;
+	position: relative;
+	top: 0;
+	left: 0;
+	background-color: #3c84ad;
+	width: 0;
+	height: 25px;
 }

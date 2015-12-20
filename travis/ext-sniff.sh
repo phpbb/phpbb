@@ -10,7 +10,7 @@
 #
 set -e
 set -x
- 
+
 DB=$1
 TRAVIS_PHP_VERSION=$2
 EXTNAME=$3

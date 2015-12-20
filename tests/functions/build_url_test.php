@@ -29,7 +29,7 @@ class phpbb_build_url_test extends phpbb_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			'php'

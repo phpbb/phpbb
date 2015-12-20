@@ -28,7 +28,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.1.8-dev');
+@define('PHPBB_VERSION', '3.2.0-a3-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -171,11 +171,11 @@ define('CONFIRM_REPORT', 4);
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);
 define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
-define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming
-define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming
+define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming - @deprecated 3.2
+define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
 define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files
-define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files
+define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files - @deprecated 3.2
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 8);
@@ -221,6 +221,9 @@ define('CAPTCHA_MAX_CHARS', 7);
 // Additional constants
 define('VOTE_CONVERTED', 127);
 
+// BC global FTW
+global $table_prefix;
+
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');
 define('ACL_OPTIONS_TABLE',			$table_prefix . 'acl_options');
@@ -232,7 +235,7 @@ define('BANLIST_TABLE',				$table_prefix . 'banlist');
 define('BBCODES_TABLE',				$table_prefix . 'bbcodes');
 define('BOOKMARKS_TABLE',			$table_prefix . 'bookmarks');
 define('BOTS_TABLE',				$table_prefix . 'bots');
-define('CONFIG_TABLE',				$table_prefix . 'config');
+@define('CONFIG_TABLE',				$table_prefix . 'config');
 define('CONFIG_TEXT_TABLE',			$table_prefix . 'config_text');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');

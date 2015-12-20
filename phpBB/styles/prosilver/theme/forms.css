@@ -96,7 +96,7 @@ fieldset.fields1 div {
 }
 
 /* Set it back to 0px for the reCaptcha divs: PHPBB3-9587 */
-fieldset.fields1 #recaptcha_widget_div div, fieldset.fields1 .live-search div {
+fieldset.fields1 .live-search div {
 	margin-bottom: 0;
 }
 
@@ -138,8 +138,14 @@ dd textarea {
 }
 
 /* Hover effects */
-#timezone {
+.timezone {
 	width: 95%;
+}
+
+/* Browser-specific tweaks */
+button::-moz-focus-inner {
+	padding: 0;
+	border: 0
 }
 
 /* Quick-login on index page */
@@ -175,6 +181,24 @@ fieldset.display-options label {
 
 fieldset.display-options a {
 	margin-top: 3px;
+}
+
+.dropdown fieldset.display-options {
+	font-size: 1em;
+	margin: 0;
+	padding: 0;
+}
+
+.dropdown fieldset.display-options label {
+	display: block;
+	margin: 4px;
+	padding: 0;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.dropdown fieldset.display-options select {
+	min-width: 120px;
 }
 
 /* Display actions for ucp and mcp pages */
@@ -214,28 +238,26 @@ fieldset.submit-buttons {
 
 fieldset.submit-buttons input {
 	vertical-align: middle;
-	padding-top: 3px;
-	padding-bottom: 3px;
 }
 
 /* Posting page styles
 ----------------------------------------*/
 
 /* Buttons used in the editor */
-#format-buttons {
+.format-buttons {
 	margin: 15px 0 2px 0;
 }
 
-#format-buttons input, #format-buttons select {
+.format-buttons input, .format-buttons select {
 	vertical-align: middle;
 }
 
 /* Main message box */
-#message-box {
+.message-box {
 	width: 80%;
 }
 
-#message-box textarea {
+.message-box textarea {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	width: 450px;
 	height: 270px;
@@ -253,12 +275,12 @@ fieldset.submit-buttons input {
 }
 
 /* Emoticons panel */
-#smiley-box {
+.smiley-box {
 	width: 18%;
 	float: right;
 }
 
-#smiley-box img {
+.smiley-box img {
 	margin: 3px;
 }
 
@@ -316,6 +338,7 @@ a.button1, input.button1, input.button3, a.button2, input.button2 {
 	padding-bottom: 1px;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	background: transparent none repeat-x top left;
+	line-height: 1.5;
 }
 
 a.button1, input.button1 {
@@ -342,18 +365,15 @@ a.button2, input.button2, input.button3 {
 }
 
 /* <a> button in the style of the form buttons */
-a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
+a.button1, a.button2 {
 	text-decoration: none;
-	padding: 2px 8px;
-	line-height: 250%;
+	padding: 0 3px;
 	vertical-align: text-bottom;
-	background-position: 0 1px;
 }
 
 /* Hover states */
 a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
 	border: 1px solid transparent;
-	background-position: 0 100%;
 }
 
 input.disabled {
@@ -382,26 +402,6 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	box-sizing: border-box;
 }
 
-.search-box button {
-	float: left;
-}
-
-.search-box button.search-icon {
-	border-radius: 0;
-	font-size: 0;
-	height: 24px;
-	margin: 0;
-	padding: 3px 5px;
-}
-
-.search-box a.button {
-	border-left-width: 0;
-	border-radius: 0 4px 4px 0;
-	font-size: 0;
-	margin: 0;
-	padding: 2px 5px 2px 3px;
-}
-
 /* Search box (header)
 --------------------------------------------- */
 .search-header {
@@ -414,16 +414,7 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 
 .search-header .inputbox { border: 0; }
 
-.search-header button {
-	border-top: 0;
-	border-bottom: 0;
-}
-
-.search-header a.button {
-	border: 0;
-	border-left: 1px;
-	padding: 3px 5px 3px 4px;
-}
+.navbar .linklist > li.responsive-search { display: none; }
 
 input.search {
 	background-image: none;

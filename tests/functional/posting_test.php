@@ -45,19 +45,45 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		self::create_post(2,
 			1,
-			'Unsupported characters',
-			"This is a test with these weird characters: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
-			array(),
-			'Your message contains the following unsupported characters'
-		);
-
-		self::create_post(2,
-			1,
 			"Unsupported: \xF0\x9F\x88\xB3 \xF0\x9F\x9A\xB6",
 			'This is a test with emoji characters in the topic title.',
 			array(),
 			'Your subject contains the following unsupported characters'
 		);
+	}
+
+	public function test_supported_unicode_characters()
+	{
+		$this->login();
+
+		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
+		$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', "This is a test with these weird characters: \xF0\x9F\x84\x90 \xF0\x9F\x84\x91");
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertContains("\xF0\x9F\x84\x90 \xF0\x9F\x84\x91", $crawler->text());
+	}
+
+	public function test_html_entities()
+	{
+		$this->login();
+
+		$post = $this->create_topic(2, 'Test Topic 1', 'This is a test topic posted by the testing framework.');
+		$this->create_post(2, $post['topic_id'], 'Re: Test Topic 1', '&#128512;');
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertContains('&#128512;', $crawler->text());
+	}
+
+	public function test_quote()
+	{
+		$text     = 'Test post </textarea>"\' &&amp;amp;';
+		$expected = "(\\[quote=admin[^\\]]*\\]\n" . preg_quote($text) . "\n\\[/quote\\])";
+
+		$this->login();
+		$topic = $this->create_topic(2, 'Test Topic 1', 'Test topic');
+		$post  = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
+
+		$crawler = self::request('GET', "posting.php?mode=quote&f=2&t={$post['topic_id']}&p={$post['post_id']}&sid={$this->sid}");
+
+		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
 	}
 
 	/**
@@ -67,10 +93,10 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	{
 		$text = '0[quote]1[quote]2[/quote]1[/quote]0';
 		$expected = array(
-			0 => '[quote="admin"]0[quote]1[quote]2[/quote]1[/quote]0[/quote]',
-			1 => '[quote="admin"]00[/quote]',
-			2 => '[quote="admin"]0[quote]11[/quote]0[/quote]',
-			3 => '[quote="admin"]0[quote]1[quote]2[/quote]1[/quote]0[/quote]',
+			0 => '0[quote]1[quote]2[/quote]1[/quote]0',
+			1 => '00',
+			2 => '0[quote]11[/quote]0',
+			3 => '0[quote]1[quote]2[/quote]1[/quote]0',
 		);
 
 		$this->login();
@@ -83,7 +109,10 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		{
 			$this->set_quote_depth($quote_depth);
 			$crawler = self::request('GET', $quote_url);
-			$this->assertContains($expected_text, $crawler->filter('textarea#message')->text());
+			$this->assertRegexp(
+				"(\\[quote=admin[^\\]]*\\]\n?" . preg_quote($expected_text) . "\n?\\[/quote\\])",
+				$crawler->filter('textarea#message')->text()
+			);
 		}
 	}
 
@@ -139,5 +168,41 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$form->setValues($values);
 		$crawler = self::submit($form);
 		$this->assertEquals(1, $crawler->filter('.successbox')->count());
+	}
+
+	public function test_ticket_8420()
+	{
+		$text = '[b][url=http://example.org] :arrow: here[/url][/b]';
+
+		$this->login();
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text
+		));
+		$crawler = self::submit($form);
+		$this->assertEquals($text, $crawler->filter('#message')->text());
+	}
+
+	public function test_old_signature_in_preview()
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_sig = '[b:2u8sdcwb]My signature[/b:2u8sdcwb]',
+				user_sig_bbcode_uid = '2u8sdcwb',
+				user_sig_bbcode_bitfield = 'QA=='
+			WHERE user_id = 2";
+		$this->get_db()->sql_query($sql);
+
+		$this->login();
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => 'My post',
+		));
+		$crawler = self::submit($form);
+		$this->assertContains(
+			'<span style="font-weight: bold">My signature</span>',
+			$crawler->filter('#preview .signature')->html()
+		);
 	}
 }

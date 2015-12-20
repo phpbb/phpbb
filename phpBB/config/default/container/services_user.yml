@@ -1,0 +1,20 @@
+services:
+    acl.permissions:
+        class: phpbb\permissions
+        arguments:
+            - '@dispatcher'
+            - '@user'
+
+    user:
+        class: phpbb\user
+        arguments:
+            - '@language'
+            - '%datetime.class%'
+
+    user_loader:
+        class: phpbb\user_loader
+        arguments:
+            - '@dbal.conn'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.users%'

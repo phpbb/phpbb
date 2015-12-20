@@ -67,6 +67,8 @@ class tidy_plupload extends \phpbb\cron\task\base
 	*/
 	public function run()
 	{
+		global $user, $phpbb_log;
+
 		// Remove old temporary file (perhaps failed uploads?)
 		$last_valid_timestamp = time() - $this->max_file_age;
 		try
@@ -88,13 +90,11 @@ class tidy_plupload extends \phpbb\cron\task\base
 		}
 		catch (\UnexpectedValueException $e)
 		{
-			add_log(
-				'critical',
-				'LOG_PLUPLOAD_TIDY_FAILED',
+			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_PLUPLOAD_TIDY_FAILED', false, array(
 				$this->plupload_upload_path,
 				$e->getMessage(),
 				$e->getTraceAsString()
-			);
+			));
 		}
 
 		$this->config->set('plupload_last_gc', time(), true);

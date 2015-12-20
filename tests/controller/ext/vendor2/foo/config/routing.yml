@@ -5,3 +5,7 @@ controller1:
 include_controller2:
     resource: "routing_2.yml"
     prefix:   /foo
+
+controller4:
+    path: /foo/%core.environment%
+    defaults: { _controller: foo.controller:handle }

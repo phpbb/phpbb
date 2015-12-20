@@ -50,7 +50,7 @@ class approve_post extends \phpbb\notification\type\post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'id'	=> 'moderation_queue',
 		'lang'	=> 'NOTIFICATION_TYPE_MODERATION_QUEUE',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
@@ -79,7 +79,7 @@ class approve_post extends \phpbb\notification\type\post
 		), $options);
 
 		$users = array();
-		$users[$post['poster_id']] = array('');
+		$users[$post['poster_id']] = $this->notification_manager->get_default_methods();
 
 		return $this->get_authorised_recipients(array_keys($users), $post['forum_id'], array_merge($options, array(
 			'item_type'		=> static::$notification_option['id'],
@@ -107,21 +107,24 @@ class approve_post extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->set_data('post_subject', $post['post_subject']);
 
-		$data = parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 
-		$this->notification_time = $data['notification_time'] = time();
+		$this->notification_time = time();
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_insert_array()
+	{
+		$data = parent::get_insert_array();
+		$data['notification_time'] = $this->notification_time;
 
 		return $data;
 	}

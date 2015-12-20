@@ -98,8 +98,8 @@ class gravatar extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		// Make sure getimagesize works...
-		if (function_exists('getimagesize') && ($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0))
+		// Get image dimensions if they are not set
+		if ($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0)
 		{
 			/**
 			* default to the minimum of the maximum allowed avatar size if the size
@@ -108,20 +108,20 @@ class gravatar extends \phpbb\avatar\driver\driver
 			$row['avatar_width'] = $row['avatar_height'] = min($this->config['avatar_max_width'], $this->config['avatar_max_height']);
 			$url = $this->get_gravatar_url($row);
 
-			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = getimagesize($url)) === false))
+			if (($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0) && (($image_data = $this->imagesize->getImageSize($url)) === false))
 			{
 				$error[] = 'UNABLE_GET_IMAGE_SIZE';
 				return false;
 			}
 
-			if (!empty($image_data) && ($image_data[0] <= 0 || $image_data[1] <= 0))
+			if (!empty($image_data) && ($image_data['width'] <= 0 || $image_data['width'] <= 0))
 			{
 				$error[] = 'AVATAR_NO_SIZE';
 				return false;
 			}
 
-			$row['avatar_width'] = ($row['avatar_width'] && $row['avatar_height']) ? $row['avatar_width'] : $image_data[0];
-			$row['avatar_height'] = ($row['avatar_width'] && $row['avatar_height']) ? $row['avatar_height'] : $image_data[1];
+			$row['avatar_width'] = ($row['avatar_width'] && $row['avatar_height']) ? $row['avatar_width'] : $image_data['width'];
+			$row['avatar_height'] = ($row['avatar_width'] && $row['avatar_height']) ? $row['avatar_height'] : $image_data['height'];
 		}
 
 		if ($row['avatar_width'] <= 0 || $row['avatar_height'] <= 0)

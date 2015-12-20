@@ -110,7 +110,18 @@ class bbcode
 							$undid_bbcode_specialchars = true;
 						}
 
-						$message = preg_replace($preg['search'], $preg['replace'], $message);
+						foreach ($preg['search'] as $key => $search)
+						{
+							if (is_callable($preg['replace'][$key]))
+							{
+								$message = preg_replace_callback($search, $preg['replace'][$key], $message);
+							}
+							else
+							{
+								$message = preg_replace($search, $preg['replace'][$key], $message);
+							}
+						}
+
 						$preg = array('search' => array(), 'replace' => array());
 					}
 				}
@@ -129,13 +140,33 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper;
+		global $phpbb_root_path, $phpEx, $config, $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_path_helper, $phpbb_container, $phpbb_filesystem;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
 
-			$template = new phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new phpbb\template\context(), $phpbb_extension_manager);
+			$template = new \phpbb\template\twig\twig(
+				$phpbb_container->get('path_helper'),
+				$phpbb_container->get('config'),
+				new \phpbb\template\context(),
+				new \phpbb\template\twig\environment(
+					$phpbb_container->get('config'),
+					$phpbb_container->get('filesystem'),
+					$phpbb_container->get('path_helper'),
+					$phpbb_container,
+					$phpbb_container->getParameter('core.root_path') . 'cache/',
+					$phpbb_container->get('ext.manager'),
+					new \phpbb\template\twig\loader(
+						$phpbb_filesystem
+					)
+				),
+				$phpbb_container->getParameter('core.root_path') . 'cache/',
+				$phpbb_container->get('user'),
+				$phpbb_container->get('template.twig.extensions.collection'),
+				$phpbb_extension_manager
+			);
+
 			$template->set_style();
 			$template->set_filenames(array('bbcode.html' => 'bbcode.html'));
 			$this->template_filename = $template->get_source_file_for_handle('bbcode.html');
@@ -194,7 +225,9 @@ class bbcode
 							'[/quote:$uid]'	=> $this->bbcode_tpl('quote_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;.*?&quot;)?:$uid\]).)?#ise'	=> "\$this->bbcode_second_pass_quote('\$1', '\$2')"
+							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;.*?&quot;)?:$uid\]).)?#is'	=> function ($match) {
+								return $this->bbcode_second_pass_quote($match[1], $match[2]);
+							},
 						)
 					);
 				break;
@@ -273,7 +306,9 @@ class bbcode
 				case 8:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#ise'	=> "\$this->bbcode_second_pass_code('\$1', '\$2')",
+							'#\[code(?:=([a-z]+))?:$uid\](.*?)\[/code:$uid\]#is'	=> function ($match) {
+								return $this->bbcode_second_pass_code($match[1], $match[2]);
+							},
 						)
 					);
 				break;
@@ -283,7 +318,9 @@ class bbcode
 						'preg' => array(
 							'#(\[\/?(list|\*):[mou]?:?$uid\])[\n]{1}#'	=> "\$1",
 							'#(\[list=([^\[]+):$uid\])[\n]{1}#'			=> "\$1",
-							'#\[list=([^\[]+):$uid\]#e'					=> "\$this->bbcode_list('\$1')",
+							'#\[list=([^\[]+):$uid\]#'					=> function ($match) {
+								return $this->bbcode_list($match[1]);
+							},
 						),
 						'str' => array(
 							'[list:$uid]'		=> $this->bbcode_tpl('ulist_open_default', $bbcode_id),
@@ -367,7 +404,9 @@ class bbcode
 						}
 
 						// Replace {L_*} lang strings
-						$bbcode_tpl = preg_replace('/{L_([A-Z0-9_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $bbcode_tpl);
+						$bbcode_tpl = preg_replace_callback('/{L_([A-Z0-9_]+)}/', function ($match) use ($user) {
+							return (!empty($user->lang[$match[1]])) ? $user->lang($match[1]) : ucwords(strtolower(str_replace('_', ' ', $match[1])));
+						}, $bbcode_tpl);
 
 						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
 						{
@@ -491,7 +530,9 @@ class bbcode
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);
 
-		$tpl = preg_replace('/{L_([A-Z0-9_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+		$tpl = preg_replace_callback('/{L_([A-Z0-9_]+)}/', function ($match) use ($user) {
+			return (!empty($user->lang[$match[1]])) ? $user->lang($match[1]) : ucwords(strtolower(str_replace('_', ' ', $match[1])));
+		}, $tpl);
 
 		if (!empty($replacements[$tpl_name]))
 		{

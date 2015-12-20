@@ -174,13 +174,15 @@ class local extends \phpbb\avatar\driver\driver
 				// Match all images in the gallery folder
 				if (preg_match('#^[^&\'"<>]+\.(?:' . implode('|', $this->allowed_extensions) . ')$#i', $image) && is_file($file_path . '/' . $image))
 				{
-					if (function_exists('getimagesize'))
+					$dims = $this->imagesize->getImageSize($file_path . '/' . $image);
+
+					if ($dims === false)
 					{
-						$dims = getimagesize($file_path . '/' . $image);
+						$dims = array(0, 0);
 					}
 					else
 					{
-						$dims = array(0, 0);
+						$dims = array($dims['width'], $dims['height']);
 					}
 					$cat = ($path == $file_path) ? $user->lang['NO_AVATAR_CATEGORY'] : str_replace("$path/", '', $file_path);
 					$avatar_list[$cat][$image] = array(

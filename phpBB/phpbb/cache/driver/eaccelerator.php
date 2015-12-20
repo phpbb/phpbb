@@ -44,9 +44,11 @@ class eaccelerator extends \phpbb\cache\driver\memory
 	*/
 	function tidy()
 	{
+		global $config;
+
 		eaccelerator_gc();
 
-		set_config('cache_last_gc', time(), true);
+		$config->set('cache_last_gc', time(), false);
 	}
 
 	/**

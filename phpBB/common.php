@@ -12,7 +12,7 @@
 */
 
 /**
-* Minimum Requirement: PHP 5.3.3
+* Minimum Requirement: PHP 5.3.9
 */
 
 if (!defined('IN_PHPBB'))
@@ -28,6 +28,11 @@ $phpbb_class_loader->register();
 
 $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
+
+if (!defined('PHPBB_ENVIRONMENT'))
+{
+	@define('PHPBB_ENVIRONMENT', 'production');
+}
 
 if (!defined('PHPBB_INSTALLED'))
 {
@@ -47,14 +52,14 @@ if (!defined('PHPBB_INSTALLED'))
 	}
 
 	// $phpbb_root_path accounts for redirects from e.g. /adm
-	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/index.' . $phpEx;
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/app.' . $phpEx;
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$phpbb_filesystem = new phpbb\filesystem();
+	$phpbb_filesystem = new phpbb\filesystem\filesystem();
 	$script_path = $phpbb_filesystem->clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
@@ -91,11 +96,19 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 
-phpbb_load_extensions_autoloaders($phpbb_root_path);
-
 // Set up container
-$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-$phpbb_container = $phpbb_container_builder->get_container();
+try
+{
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
+}
+catch (InvalidArgumentException $e)
+{
+	trigger_error(
+		'The requested environment ' . PHPBB_ENVIRONMENT . ' is not available.',
+		E_USER_ERROR
+	);
+}
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
@@ -105,6 +118,8 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+/* @var $phpbb_hook_finder \phpbb\hook\finder */
 $phpbb_hook_finder = $phpbb_container->get('hook_finder');
 
 foreach ($phpbb_hook_finder->find() as $hook)

@@ -232,7 +232,7 @@ function h_radio($name, $input_ary, $input_default = false, $id = false, $key = 
 /**
 * Build configuration template for acp configuration pages
 */
-function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
+function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 {
 	global $user, $module, $phpbb_dispatcher;
 
@@ -240,18 +240,18 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	$name = 'config[' . $config_key . ']';
 
 	// Make sure there is no notice printed out for non-existent config options (we simply set them)
-	if (!isset($new[$config_key]))
+	if (!isset($new_ary[$config_key]))
 	{
-		$new[$config_key] = '';
+		$new_ary[$config_key] = '';
 	}
 
 	switch ($tpl_type[0])
 	{
 		case 'password':
-			if ($new[$config_key] !== '')
+			if ($new_ary[$config_key] !== '')
 			{
 				// replace passwords with asterixes
-				$new[$config_key] = '********';
+				$new_ary[$config_key] = '********';
 			}
 		case 'text':
 		case 'url':
@@ -269,7 +269,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new_ary[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
 		break;
 
 		case 'number':
@@ -281,7 +281,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 				$maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (( $maxlength != '' ) ? $maxlength : 255) . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new[$config_key] . '" />';
+			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (( $maxlength != '' ) ? $maxlength : 255) . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
 		break;
 
 		case 'dimension':
@@ -295,19 +295,19 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 				$size = $maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number"' . (( $size != '' ) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" /> x <input type="number"' . (( $size != '' ) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" />';
+			$tpl = '<input id="' . $key . '" type="number"' . (( $size != '' ) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new_ary[$config_key . '_width'] . '" /> x <input type="number"' . (( $size != '' ) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new_ary[$config_key . '_height'] . '" />';
 		break;
 
 		case 'textarea':
 			$rows = (int) $tpl_type[1];
 			$cols = (int) $tpl_type[2];
 
-			$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new[$config_key] . '</textarea>';
+			$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new_ary[$config_key] . '</textarea>';
 		break;
 
 		case 'radio':
-			$key_yes	= ($new[$config_key]) ? ' checked="checked"' : '';
-			$key_no		= (!$new[$config_key]) ? ' checked="checked"' : '';
+			$key_yes	= ($new_ary[$config_key]) ? ' checked="checked"' : '';
+			$key_no		= (!$new_ary[$config_key]) ? ' checked="checked"' : '';
 
 			$tpl_type_cond = explode('_', $tpl_type[1]);
 			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
@@ -344,7 +344,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 					switch ($value)
 					{
 						case '{CONFIG_VALUE}':
-							$value = $new[$config_key];
+							$value = $new_ary[$config_key];
 						break;
 
 						case '{KEY}':
@@ -357,7 +357,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			}
 			else
 			{
-				$args = array($new[$config_key], $key);
+				$args = array($new_ary[$config_key], $key);
 			}
 
 			$return = call_user_func_array($call, $args);
@@ -385,6 +385,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		$tpl .= $vars['append'];
 	}
 
+	$new = $new_ary;
 	/**
 	* Overwrite the html code we display for the config value
 	*
@@ -402,6 +403,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	*/
 	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
+	$new_ary = $new;
+	unset($new);
 
 	return $tpl;
 }
@@ -412,7 +415,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $phpbb_root_path, $user, $phpbb_dispatcher;
+	global $phpbb_root_path, $user, $phpbb_dispatcher, $phpbb_filesystem;
 
 	$type	= 0;
 	$min	= 1;
@@ -593,7 +596,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				// Check if the path is writable
 				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath' || $config_definition['validate'] === 'absolute_path_writable')
 				{
-					if (file_exists($path) && !phpbb_is_writable($path))
+					if (file_exists($path) && !$phpbb_filesystem->is_writable($path))
 					{
 						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
 					}

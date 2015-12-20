@@ -11,7 +11,7 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
+require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_ui_test_case extends phpbb_test_case
 {
@@ -118,87 +118,97 @@ class phpbb_ui_test_case extends phpbb_test_case
 			}
 		}
 
+		$container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+		$container = $container_builder
+			->with_environment('installer')
+			->without_extensions()
+			->without_cache()
+			->with_custom_parameters([
+				'core.disable_super_globals' => false,
+				'installer.create_config_file.options' => [
+					'debug' => true,
+					'environment' => 'test',
+				],
+				'cache.driver.class' => 'phpbb\cache\driver\file'
+			])
+			->without_compiled_container()
+			->get_container();
+
+		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
+		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
+		$container->compile();
+
+		$language = $container->get('language');
+		$language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
+
+		$iohandler_factory = $container->get('installer.helper.iohandler_factory');
+		$iohandler_factory->set_environment('cli');
+		$iohandler = $iohandler_factory->get();
+
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		self::visit('install/index.php?mode=install&language=en');
-		self::assertContains('Welcome to Installation', self::find_element('id', 'main')->getText());
+		$output = new \Symfony\Component\Console\Output\NullOutput();
+		$style = new \Symfony\Component\Console\Style\SymfonyStyle(
+			new \Symfony\Component\Console\Input\ArrayInput(array()),
+			$output
+		);
+		$iohandler->set_style($style, $output);
 
-		// install/index.php?mode=install&sub=requirements
-		self::submit();
-		self::assertContains('Installation compatibility', self::find_element('id', 'main')->getText());
+		$installer = $container->get('installer.installer.install');
+		$installer->set_iohandler($iohandler);
 
-		// install/index.php?mode=install&sub=database
-		self::submit();
-		self::assertContains('Database configuration', self::find_element('id', 'main')->getText());
+		// Set data
+		$iohandler->set_input('admin_name', 'admin');
+		$iohandler->set_input('admin_pass1', 'adminadmin');
+		$iohandler->set_input('admin_pass2', 'adminadmin');
+		$iohandler->set_input('board_email', 'nobody@example.com');
+		$iohandler->set_input('submit_admin', 'submit');
 
-		self::find_element('id','dbms')->sendKeys(str_replace('phpbb\db\driver\\', '',  self::$config['dbms']));
-		self::find_element('id','dbhost')->sendKeys(self::$config['dbhost']);
-		self::find_element('id','dbport')->sendKeys(self::$config['dbport']);
-		self::find_element('id','dbname')->sendKeys(self::$config['dbname']);
-		self::find_element('id','dbuser')->sendKeys(self::$config['dbuser']);
-		self::find_element('id','dbpasswd')->sendKeys(self::$config['dbpasswd']);
+		$iohandler->set_input('default_lang', 'en');
+		$iohandler->set_input('board_name', 'yourdomain.com');
+		$iohandler->set_input('board_description', 'A short text to describe your forum');
+		$iohandler->set_input('submit_board', 'submit');
 
-		// Need to clear default phpbb_ prefix
-		self::find_element('id','table_prefix')->clear();
-		self::find_element('id','table_prefix')->sendKeys(self::$config['table_prefix']);
+		$iohandler->set_input('dbms', str_replace('phpbb\db\driver\\', '',  self::$config['dbms']));
+		$iohandler->set_input('dbhost', self::$config['dbhost']);
+		$iohandler->set_input('dbport', self::$config['dbport']);
+		$iohandler->set_input('dbuser', self::$config['dbuser']);
+		$iohandler->set_input('dbpasswd', self::$config['dbpasswd']);
+		$iohandler->set_input('dbname', self::$config['dbname']);
+		$iohandler->set_input('table_prefix', self::$config['table_prefix']);
+		$iohandler->set_input('submit_database', 'submit');
 
-		// install/index.php?mode=install&sub=database
-		self::submit();
-		self::assertContains('Successful connection', self::find_element('id','main')->getText());
+		$iohandler->set_input('email_enable', true);
+		$iohandler->set_input('smtp_delivery', '1');
+		$iohandler->set_input('smtp_host', 'nxdomain.phpbb.com');
+		$iohandler->set_input('smtp_auth', 'PLAIN');
+		$iohandler->set_input('smtp_user', 'nxuser');
+		$iohandler->set_input('smtp_pass', 'nxpass');
+		$iohandler->set_input('submit_email', 'submit');
 
-		// install/index.php?mode=install&sub=administrator
-		self::submit();
-		self::assertContains('Administrator configuration', self::find_element('id','main')->getText());
+		$iohandler->set_input('cookie_secure', '0');
+		$iohandler->set_input('server_protocol', '0');
+		$iohandler->set_input('force_server_vars', $parseURL['scheme'] . '://');
+		$iohandler->set_input('server_name', $parseURL['host']);
+		$iohandler->set_input('server_port', isset($parseURL['port']) ? (int) $parseURL['port'] : 80);
+		$iohandler->set_input('script_path', $parseURL['path']);
+		$iohandler->set_input('submit_server', 'submit');
 
-		self::find_element('id','admin_name')->sendKeys('admin');
-		self::find_element('id','admin_pass1')->sendKeys('adminadmin');
-		self::find_element('id','admin_pass2')->sendKeys('adminadmin');
-		self::find_element('id','board_email')->sendKeys('nobody@example.com');
-
-		// install/index.php?mode=install&sub=administrator
-		self::submit();
-		self::assertContains('Tests passed', self::find_element('id','main')->getText());
-
-		// install/index.php?mode=install&sub=config_file
-		self::submit();
-
-		// Installer has created a config.php file, we will overwrite it with a
-		// config file of our own in order to get the DEBUG constants defined
-		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, false, true);
-		$config_created = file_put_contents($config_file, $config_php_data) !== false;
-		if (!$config_created)
+		do
 		{
-			self::markTestSkipped("Could not write $config_file file.");
+			$installer->run();
 		}
-
-		if (strpos(self::find_element('id','main')->getText(), 'The configuration file has been written') === false)
-		{
-			self::submit('id', 'dldone');
-		}
-		self::assertContains('The configuration file has been written', self::find_element('id','main')->getText());
-
-		// install/index.php?mode=install&sub=advanced
-		self::submit();
-		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', self::find_element('id','main')->getText());
-
-		self::find_element('id','smtp_delivery')->sendKeys('1');
-		self::find_element('id','smtp_host')->sendKeys('nxdomain.phpbb.com');
-		self::find_element('id','smtp_user')->sendKeys('nxuser');
-		self::find_element('id','smtp_pass')->sendKeys('nxpass');
-		self::find_element('id','server_protocol')->sendKeys($parseURL['scheme'] . '://');
-		self::find_element('id','server_name')->sendKeys('localhost');
-		self::find_element('id','server_port')->sendKeys(isset($parseURL['port']) ? $parseURL['port'] : 80);
-		self::find_element('id','script_path')->sendKeys($parseURL['path']);
-
-		// install/index.php?mode=install&sub=create_table
-		self::submit();
-		self::assertContains('The database tables used by phpBB', self::find_element('id','main')->getText());
-		self::assertContains('have been created and populated with some initial data.', self::find_element('id','main')->getText());
-
-		// install/index.php?mode=install&sub=final
-		self::submit();
-		self::assertContains('You have successfully installed', self::find_element('id', 'main')->getText());
+		while (file_exists($phpbb_root_path . 'store/install_config.php'));
 
 		copy($config_file, $config_file_test);
+
+		if (file_exists($phpbb_root_path . 'cache/install_lock'))
+		{
+			unlink($phpbb_root_path . 'cache/install_lock');
+		}
+
+		global $phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;
+		$phpbb_container->reset();
+		unset($phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template);
 	}
 }

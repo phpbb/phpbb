@@ -171,7 +171,10 @@ function size_select_options($size_compare)
 */
 function group_select_options($group_id, $exclude_ids = false, $manage_founder = false)
 {
-	global $db, $user, $config;
+	global $db, $config, $phpbb_container;
+
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
 	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
@@ -189,7 +192,7 @@ function group_select_options($group_id, $exclude_ids = false, $manage_founder =
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$selected = ($row['group_id'] == $group_id) ? ' selected="selected"' : '';
-		$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . $selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . $selected . '>' . $group_helper->get_name($row['group_name']) . '</option>';
 	}
 	$db->sql_freeresult($result);
 
@@ -316,7 +319,7 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 */
 function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perms = true, $add_log = true)
 {
-	global $db;
+	global $db, $user, $phpbb_log;
 
 	// Only one forum id specified
 	if (!is_array($dest_forum_ids))
@@ -439,7 +442,7 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 
 	if ($add_log)
 	{
-		add_log('admin', 'LOG_FORUM_COPIED_PERMISSIONS', $src_forum_name, implode(', ', $dest_forum_names));
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_FORUM_COPIED_PERMISSIONS', false, array($src_forum_name, implode(', ', $dest_forum_names)));
 	}
 
 	$db->sql_transaction('commit');
@@ -803,9 +806,10 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($approved_topics)
 	{
-		set_config_count('num_topics', $approved_topics * (-1), true);
+		$config->increment('num_topics', $approved_topics * (-1), false);
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications(array(
@@ -1021,7 +1025,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
 
-	delete_attachments('post', $post_ids, false);
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$attachment_manager->delete('post', $post_ids, false);
+	unset($attachment_manager);
 
 	/**
 	* Perform additional actions during post(s) deletion
@@ -1088,7 +1095,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	if ($approved_posts && $post_count_sync)
 	{
-		set_config_count('num_posts', $approved_posts * (-1), true);
+		$config->increment('num_posts', $approved_posts * (-1), false);
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
@@ -1097,6 +1104,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync, false);
 	}
 
+	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 	$phpbb_notifications->delete_notifications($delete_notifications_types, $post_ids);
@@ -1107,329 +1115,21 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 /**
 * Delete Attachments
 *
+* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
+*
 * @param string $mode can be: post|message|topic|attach|user
 * @param mixed $ids can be: post_ids, message_ids, topic_ids, attach_ids, user_ids
 * @param bool $resync set this to false if you are deleting posts or topics
 */
 function delete_attachments($mode, $ids, $resync = true)
 {
-	global $db, $config, $phpbb_dispatcher;
+	global $phpbb_container;
 
-	// 0 is as bad as an empty array
-	if (empty($ids))
-	{
-		return false;
-	}
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$num_deleted = $attachment_manager->delete($mode, $ids, $resync);
 
-	if (is_array($ids))
-	{
-		$ids = array_unique($ids);
-		$ids = array_map('intval', $ids);
-	}
-	else
-	{
-		$ids = array((int) $ids);
-	}
-
-	$sql_where = '';
-
-	switch ($mode)
-	{
-		case 'post':
-		case 'message':
-			$sql_id = 'post_msg_id';
-			$sql_where = ' AND in_message = ' . ($mode == 'message' ? 1 : 0);
-		break;
-
-		case 'topic':
-			$sql_id = 'topic_id';
-		break;
-
-		case 'user':
-			$sql_id = 'poster_id';
-		break;
-
-		case 'attach':
-		default:
-			$sql_id = 'attach_id';
-			$mode = 'attach';
-		break;
-	}
-
-	$post_ids = $message_ids = $topic_ids = $physical = array();
-
-	/**
-	* Perform additional actions before collecting data for attachment(s) deletion
-	*
-	* @event core.delete_attachments_collect_data_before
-	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
-	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
-	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
-	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
-	* @since 3.1.7-RC1
-	*/
-	$vars = array(
-		'mode',
-		'ids',
-		'resync',
-		'sql_id',
-	);
-	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_collect_data_before', compact($vars)));
-
-	// Collect post and topic ids for later use if we need to touch remaining entries (if resync is enabled)
-	$sql = 'SELECT post_msg_id, topic_id, in_message, physical_filename, thumbnail, filesize, is_orphan
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set($sql_id, $ids);
-
-	$sql .= $sql_where;
-
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		// We only need to store post/message/topic ids if resync is enabled and the file is not orphaned
-		if ($resync && !$row['is_orphan'])
-		{
-			if (!$row['in_message'])
-			{
-				$post_ids[] = $row['post_msg_id'];
-				$topic_ids[] = $row['topic_id'];
-			}
-			else
-			{
-				$message_ids[] = $row['post_msg_id'];
-			}
-		}
-
-		$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail'], 'filesize' => $row['filesize'], 'is_orphan' => $row['is_orphan']);
-	}
-	$db->sql_freeresult($result);
-
-	/**
-	* Perform additional actions before attachment(s) deletion
-	*
-	* @event core.delete_attachments_before
-	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
-	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
-	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
-	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
-	* @var	array	post_ids		Array with post ids for deleted attachment(s)
-	* @var	array	topic_ids		Array with topic ids for deleted attachment(s)
-	* @var	array	message_ids		Array with private message ids for deleted attachment(s)
-	* @var	array	physical		Array with deleted attachment(s) physical file(s) data
-	* @since 3.1.7-RC1
-	*/
-	$vars = array(
-		'mode',
-		'ids',
-		'resync',
-		'sql_id',
-		'post_ids',
-		'topic_ids',
-		'message_ids',
-		'physical',
-	);
-	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_before', compact($vars)));
-
-	// Delete attachments
-	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
-		WHERE ' . $db->sql_in_set($sql_id, $ids);
-
-	$sql .= $sql_where;
-
-	$db->sql_query($sql);
-	$num_deleted = $db->sql_affectedrows();
-
-	/**
-	* Perform additional actions after attachment(s) deletion from the database
-	*
-	* @event core.delete_attachments_from_database_after
-	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
-	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
-	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
-	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
-	* @var	array	post_ids		Array with post ids for deleted attachment(s)
-	* @var	array	topic_ids		Array with topic ids for deleted attachment(s)
-	* @var	array	message_ids		Array with private message ids for deleted attachment(s)
-	* @var	array	physical		Array with deleted attachment(s) physical file(s) data
-	* @var	int		num_deleted		The number of deleted attachment(s) from the database
-	* @since 3.1.7-RC1
-	*/
-	$vars = array(
-		'mode',
-		'ids',
-		'resync',
-		'sql_id',
-		'post_ids',
-		'topic_ids',
-		'message_ids',
-		'physical',
-		'num_deleted',
-	);
-	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_from_database_after', compact($vars)));
-
-	if (!$num_deleted)
-	{
-		return 0;
-	}
-
-	// Delete attachments from filesystem
-	$space_removed = $files_removed = 0;
-	foreach ($physical as $file_ary)
-	{
-		if (phpbb_unlink($file_ary['filename'], 'file', true) && !$file_ary['is_orphan'])
-		{
-			// Only non-orphaned files count to the file size
-			$space_removed += $file_ary['filesize'];
-			$files_removed++;
-		}
-
-		if ($file_ary['thumbnail'])
-		{
-			phpbb_unlink($file_ary['filename'], 'thumbnail', true);
-		}
-	}
-
-	/**
-	* Perform additional actions after attachment(s) deletion from the filesystem
-	*
-	* @event core.delete_attachments_from_filesystem_after
-	* @var	string	mode			Variable containing attachments deletion mode, can be: post|message|topic|attach|user
-	* @var	mixed	ids				Array or comma separated list of ids corresponding to the mode
-	* @var	bool	resync			Flag indicating if posts/messages/topics should be synchronized
-	* @var	string	sql_id			The field name to collect/delete data for depending on the mode
-	* @var	array	post_ids		Array with post ids for deleted attachment(s)
-	* @var	array	topic_ids		Array with topic ids for deleted attachment(s)
-	* @var	array	message_ids		Array with private message ids for deleted attachment(s)
-	* @var	array	physical		Array with deleted attachment(s) physical file(s) data
-	* @var	int		num_deleted		The number of deleted attachment(s) from the database
-	* @var	int		space_removed	The size of deleted files(s) from the filesystem
-	* @var	int		files_removed	The number of deleted file(s) from the filesystem
-	* @since 3.1.7-RC1
-	*/
-	$vars = array(
-		'mode',
-		'ids',
-		'resync',
-		'sql_id',
-		'post_ids',
-		'topic_ids',
-		'message_ids',
-		'physical',
-		'num_deleted',
-		'space_removed',
-		'files_removed',
-	);
-	extract($phpbb_dispatcher->trigger_event('core.delete_attachments_from_filesystem_after', compact($vars)));
-
-	if ($space_removed || $files_removed)
-	{
-		set_config_count('upload_dir_size', $space_removed * (-1), true);
-		set_config_count('num_files', $files_removed * (-1), true);
-	}
-
-	// If we do not resync, we do not need to adjust any message, post, topic or user entries
-	if (!$resync)
-	{
-		return $num_deleted;
-	}
-
-	// No more use for the original ids
-	unset($ids);
-
-	// Now, we need to resync posts, messages, topics. We go through every one of them
-	$post_ids = array_unique($post_ids);
-	$message_ids = array_unique($message_ids);
-	$topic_ids = array_unique($topic_ids);
-
-	// Update post indicators for posts now no longer having attachments
-	if (sizeof($post_ids))
-	{
-		// Just check which posts are still having an assigned attachment not orphaned by querying the attachments table
-		$sql = 'SELECT post_msg_id
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_msg_id', $post_ids) . '
-				AND in_message = 0
-				AND is_orphan = 0';
-		$result = $db->sql_query($sql);
-
-		$remaining_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$remaining_ids[] = $row['post_msg_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// Now only unset those ids remaining
-		$post_ids = array_diff($post_ids, $remaining_ids);
-
-		if (sizeof($post_ids))
-		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 0
-				WHERE ' . $db->sql_in_set('post_id', $post_ids);
-			$db->sql_query($sql);
-		}
-	}
-
-	// Update message table if messages are affected
-	if (sizeof($message_ids))
-	{
-		// Just check which messages are still having an assigned attachment not orphaned by querying the attachments table
-		$sql = 'SELECT post_msg_id
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_msg_id', $message_ids) . '
-				AND in_message = 1
-				AND is_orphan = 0';
-		$result = $db->sql_query($sql);
-
-		$remaining_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$remaining_ids[] = $row['post_msg_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// Now only unset those ids remaining
-		$message_ids = array_diff($message_ids, $remaining_ids);
-
-		if (sizeof($message_ids))
-		{
-			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-				SET message_attachment = 0
-				WHERE ' . $db->sql_in_set('msg_id', $message_ids);
-			$db->sql_query($sql);
-		}
-	}
-
-	// Now update the topics. This is a bit trickier, because there could be posts still having attachments within the topic
-	if (sizeof($topic_ids))
-	{
-		// Just check which topics are still having an assigned attachment not orphaned by querying the attachments table (much less entries expected)
-		$sql = 'SELECT topic_id
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
-				AND is_orphan = 0';
-		$result = $db->sql_query($sql);
-
-		$remaining_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$remaining_ids[] = $row['topic_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// Now only unset those ids remaining
-		$topic_ids = array_diff($topic_ids, $remaining_ids);
-
-		if (sizeof($topic_ids))
-		{
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 0
-				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-			$db->sql_query($sql);
-		}
-	}
+	unset($attachment_manager);
 
 	return $num_deleted;
 }
@@ -1547,27 +1247,19 @@ function update_posted_info(&$topic_ids)
 
 /**
 * Delete attached file
+*
+* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
 */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $db, $phpbb_root_path, $config;
+	global $phpbb_container;
 
-	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
-	$sql = 'SELECT COUNT(attach_id) AS num_entries
-		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE physical_filename = '" . $db->sql_escape(utf8_basename($filename)) . "'";
-	$result = $db->sql_query($sql);
-	$num_entries = (int) $db->sql_fetchfield('num_entries');
-	$db->sql_freeresult($result);
+	/** @var \phpbb\attachment\manager $attachment_manager */
+	$attachment_manager = $phpbb_container->get('attachment.manager');
+	$unlink = $attachment_manager->unlink($filename, $mode, $entry_removed);
+	unset($attachment_manager);
 
-	// Do not remove file if at least one additional entry with the same name exist.
-	if (($entry_removed && $num_entries > 0) || (!$entry_removed && $num_entries > 1))
-	{
-		return false;
-	}
-
-	$filename = ($mode == 'thumbnail') ? 'thumb_' . utf8_basename($filename) : utf8_basename($filename);
-	return @unlink($phpbb_root_path . $config['upload_path'] . '/' . $filename);
+	return $unlink;
 }
 
 /**
@@ -2629,7 +2321,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 */
 function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq)
 {
-	global $db;
+	global $db, $user, $phpbb_log;
 
 	$sql = 'SELECT forum_name
 		FROM ' . FORUMS_TABLE . "
@@ -2650,7 +2342,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 			WHERE forum_id = $forum_id";
 		$db->sql_query($sql);
 
-		add_log('admin', 'LOG_AUTO_PRUNE', $row['forum_name']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_AUTO_PRUNE', false, array($row['forum_name']));
 	}
 
 	return;
@@ -3217,25 +2909,6 @@ function get_database_size()
 	return $database_size;
 }
 
-/**
-* Retrieve contents from remotely stored file
-*
-* @deprecated	3.1.2	Use file_downloader instead
-*/
-function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 6)
-{
-	global $phpbb_container;
-
-	// Get file downloader and assign $errstr and $errno
-	$file_downloader = $phpbb_container->get('file_downloader');
-
-	$file_data = $file_downloader->get($host, $directory, $filename, $port, $timeout);
-	$errstr = $file_downloader->get_error_string();
-	$errno = $file_downloader->get_error_number();
-
-	return $file_data;
-}
-
 /*
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
@@ -3279,7 +2952,7 @@ function tidy_warnings()
 		$db->sql_transaction('commit');
 	}
 
-	set_config('warnings_last_gc', time(), true);
+	$config->set('warnings_last_gc', time(), false);
 }
 
 /**
@@ -3287,7 +2960,7 @@ function tidy_warnings()
 */
 function tidy_database()
 {
-	global $db;
+	global $config, $db;
 
 	// Here we check permission consistency
 
@@ -3312,7 +2985,7 @@ function tidy_database()
 		WHERE ' . $db->sql_in_set('forum_id', $forum_ids, true);
 	$db->sql_query($sql);
 
-	set_config('database_last_gc', time(), true);
+	$config->set('database_last_gc', time(), false);
 }
 
 /**

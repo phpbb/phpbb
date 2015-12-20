@@ -2,12 +2,10 @@ language: php
 
 matrix:
   include:
-    - php: 5.3.3
-      env: DB=mysqli
-    - php: 5.3
-      env: DB=mysqli # MyISAM
     - php: 5.4
-      env: DB=mysqli
+      env: DB=none;NOTESTS=1
+    - php: 5.4
+      env: DB=mysqli # MyISAM
     - php: 5.4
       env: DB=mysql
     - php: 5.4
@@ -27,7 +25,6 @@ matrix:
     - php: hhvm
       env: DB=mysqli
   allow_failures:
-    - php: 7.0
     - php: hhvm
   fast_finish: true
 
@@ -35,18 +32,18 @@ services:
   - redis-server
 
 install:
-  - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION
+  - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
 
 before_script:
-  - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION
+  - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
   - phantomjs --webdriver=8910 > /dev/null &
 
 script:
-  - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION
-  - travis/check-sami-parse-errors.sh $DB $TRAVIS_PHP_VERSION
-  - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION
-  - travis/check-executable-files.sh $DB $TRAVIS_PHP_VERSION ./
+  - travis/phing-sniff.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
+  - travis/check-sami-parse-errors.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
+  - travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION $NOTESTS
+  - travis/check-executable-files.sh $DB $TRAVIS_PHP_VERSION $NOTESTS ./
   - sh -c "if [ '$SLOWTESTS' != '1' -a '$DB' = 'mysqli' ]; then phpBB/vendor/bin/phpunit tests/lint_test.php; fi"
-  - sh -c "if [ '$SLOWTESTS' != '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml; fi"
+  - sh -c "if [ '$NOTESTS' != '1' -a '$SLOWTESTS' != '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml; fi"
   - sh -c "if [ '$SLOWTESTS' = '1' ]; then phpBB/vendor/bin/phpunit --configuration travis/phpunit-$DB-travis.xml --group slow; fi"
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.3.3' -a '$DB' = 'mysqli' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"
+  - sh -c "set -x;if [ '$NOTESTS' = '1' -a '$TRAVIS_PULL_REQUEST' != 'false' ]; then git-tools/commit-msg-hook-range.sh origin/$TRAVIS_BRANCH..FETCH_HEAD; fi"

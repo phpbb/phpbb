@@ -57,6 +57,7 @@ class ucp_login_link
 		}
 
 		// Use the auth_provider requested even if different from configured
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$auth_provider = $provider_collection->get_provider($request->variable('auth_provider', ''));
 

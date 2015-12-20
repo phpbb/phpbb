@@ -134,7 +134,9 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 			->method('acl_getf')
 			->with($this->stringContains('_'), $this->anything())
 			->will($this->returnValueMap($permissions));
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$config = new phpbb\config\config(array());
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);

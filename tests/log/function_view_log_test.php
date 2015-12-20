@@ -46,6 +46,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 0,
 				'topic_id'			=> 0,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> 'LOG_INSTALL_INSTALLED 3.1.0-dev',
@@ -65,6 +66,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 0,
 				'topic_id'			=> 0,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> '{LOG KEY NOT EXISTS}<br />additional_data',
@@ -84,6 +86,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 0,
 				'topic_id'			=> 0,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> '{LOG CRITICAL}<br />critical data',
@@ -103,10 +106,12 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 12,
 				'topic_id'			=> 34,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> '',
+				'viewpost'			=> '',
 				'viewlogs'			=> '',
 			),
 			5 => array(
@@ -124,10 +129,12 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 12,
 				'topic_id'			=> 45,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> '',
+				'viewpost'			=> '',
 				'viewlogs'			=> '',
 			),
 			6 => array(
@@ -145,10 +152,12 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 23,
 				'topic_id'			=> 56,
+				'post_id'			=> 0,
 
 				'viewforum'			=> append_sid("phpBB/viewforum.$phpEx", 'f=23'),
 				'action'			=> '{LOG MOD}',
 				'viewtopic'			=> append_sid("phpBB/viewtopic.$phpEx", 'f=23&amp;t=56'),
+				'viewpost'			=> '',
 				'viewlogs'			=> append_sid("phpBB/mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=56'),
 			),
 			7 => array(
@@ -166,10 +175,12 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 12,
 				'topic_id'			=> 45,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> 'LOG_MOD2',
 				'viewtopic'			=> '',
+				'viewpost'			=> '',
 				'viewlogs'			=> '',
 			),
 			8 => array(
@@ -187,6 +198,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 0,
 				'topic_id'			=> 0,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> 'LOG_USER admin',
@@ -206,6 +218,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 0,
 				'topic_id'			=> 0,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> 'LOG_USER guest',
@@ -225,6 +238,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 0,
 				'topic_id'			=> 0,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> 'LOG_SINGULAR_PLURAL 2',
@@ -244,10 +258,12 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				'time'				=> 1,
 				'forum_id'			=> 15,
 				'topic_id'			=> 3,
+				'post_id'			=> 0,
 
 				'viewforum'			=> '',
 				'action'			=> 'LOG_MOD3 guest ',
 				'viewtopic'			=> '',
+				'viewpost'			=> '',
 				'viewlogs'			=> '',
 			),
 		);

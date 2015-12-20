@@ -1,0 +1,102 @@
+services:
+    profilefields.manager:
+        class: phpbb\profilefields\manager
+        arguments:
+            - '@auth'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@request'
+            - '@template'
+            - '@profilefields.type_collection'
+            - '@user'
+            - '%tables.profile_fields%'
+            - '%tables.profile_fields_language%'
+            - '%tables.profile_fields_data%'
+
+    profilefields.lang_helper:
+        class: phpbb\profilefields\lang_helper
+        arguments:
+            - '@dbal.conn'
+            - '%tables.profile_fields_options_language%'
+
+# ----- Profile fields types -----
+    profilefields.type_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: profilefield.type }
+
+    profilefields.type.bool:
+        class: phpbb\profilefields\type\type_bool
+        arguments:
+            - '@profilefields.lang_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.date:
+        class: phpbb\profilefields\type\type_date
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.dropdown:
+        class: phpbb\profilefields\type\type_dropdown
+        arguments:
+            - '@profilefields.lang_helper'
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.googleplus:
+        class: phpbb\profilefields\type\type_googleplus
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.int:
+        class: phpbb\profilefields\type\type_int
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.string:
+        class: phpbb\profilefields\type\type_string
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.text:
+        class: phpbb\profilefields\type\type_text
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }
+
+    profilefields.type.url:
+        class: phpbb\profilefields\type\type_url
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: profilefield.type }

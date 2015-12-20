@@ -62,14 +62,17 @@ echo "USE $dbname;$newline$newline";
 
 @set_time_limit(0);
 
-$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path);
+$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
 $classes = $finder->core_path('phpbb/')
 	->directory('/db/migration/data')
 	->get_classes();
 
-$schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+$factory = new \phpbb\db\tools\factory();
+$db_tools = $factory->get($db, true);
+
+$schema_generator = new \phpbb\db\migration\schema_generator($classes, $config, $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 $schema_data = $schema_generator->get_schema();
-$dbms_type_map = \phpbb\db\tools::get_dbms_type_map();
+$dbms_type_map = \phpbb\db\tools\tools::get_dbms_type_map();
 
 foreach ($schema_data as $table_name => $table_data)
 {

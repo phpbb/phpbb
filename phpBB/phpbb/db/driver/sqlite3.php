@@ -102,7 +102,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 			break;
 
 			case 'rollback':
-				return $this->dbo->exec('ROLLBACK');
+				return @$this->dbo->exec('ROLLBACK');
 			break;
 		}
 
@@ -134,9 +134,26 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 			if ($this->query_result === false)
 			{
+				if ($this->transaction === true && strpos($query, 'INSERT') === 0)
+				{
+					$query = preg_replace('/^INSERT INTO/', 'INSERT OR ROLLBACK INTO', $query);
+				}
+
 				if (($this->query_result = @$this->dbo->query($query)) === false)
 				{
-					$this->sql_error($query);
+					// Try to recover a lost database connection
+					if ($this->dbo && !@$this->dbo->lastErrorMsg())
+					{
+						if ($this->sql_connect($this->server, $this->user, '', $this->dbname))
+						{
+							$this->query_result = @$this->dbo->query($query);
+						}
+					}
+
+					if ($this->query_result === false)
+					{
+						$this->sql_error($query);
+					}
 				}
 
 				if (defined('DEBUG'))
@@ -146,6 +163,11 @@ class sqlite3 extends \phpbb\db\driver\driver
 				else if (defined('PHPBB_DISPLAY_LOAD_TIME'))
 				{
 					$this->sql_time += microtime(true) - $this->curtime;
+				}
+
+				if (!$this->query_result)
+				{
+					return false;
 				}
 
 				if ($cache && $cache_ttl)
@@ -208,6 +230,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 		if ($query_id === false)
 		{
+			/** @var \SQLite3Result $query_id */
 			$query_id = $this->query_result;
 		}
 
@@ -216,7 +239,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return is_object($query_id) ? $query_id->fetchArray(SQLITE3_ASSOC) : false;
+		return is_object($query_id) ? @$query_id->fetchArray(SQLITE3_ASSOC) : false;
 	}
 
 	/**
@@ -389,9 +412,12 @@ class sqlite3 extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = $this->dbo->query($query);
-				while ($void = $result->fetchArray(SQLITE3_ASSOC))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+						while ($void = $result->fetchArray(SQLITE3_ASSOC))
+						{
+							// Take the time spent on parsing rows into account
+						}
 				}
 
 				$splittime = explode(' ', microtime());

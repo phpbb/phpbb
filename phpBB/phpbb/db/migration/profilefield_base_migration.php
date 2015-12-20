@@ -237,6 +237,7 @@ abstract class profilefield_base_migration extends container_aware_migration
 
 		if ($profile_row === null)
 		{
+			/* @var $manager \phpbb\profilefields\manager */
 			$manager = $this->container->get('profilefields.manager');
 			$profile_row = $manager->build_insert_sql_array(array());
 		}

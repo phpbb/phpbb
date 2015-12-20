@@ -30,10 +30,10 @@ class ucp_resend
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $request;
 
-		$username	= request_var('username', '', true);
-		$email		= strtolower(request_var('email', ''));
+		$username	= $request->variable('username', '', true);
+		$email		= strtolower($request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		add_form_key('ucp_resend');

@@ -480,13 +480,15 @@ class p_master
 	*/
 	function set_active($id = false, $mode = false)
 	{
+		global $request;
+
 		$icat = false;
 		$this->active_module = false;
 
-		if (request_var('icat', ''))
+		if ($request->variable('icat', ''))
 		{
 			$icat = $id;
-			$id = request_var('icat', '');
+			$id = $request->variable('icat', '');
 		}
 
 		// Restore the backslashes in class names
@@ -553,10 +555,10 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template, $request;
 
 		$module_path = $this->include_path . $this->p_class;
-		$icat = request_var('icat', '');
+		$icat = $request->variable('icat', '');
 
 		if ($this->active_module === false)
 		{

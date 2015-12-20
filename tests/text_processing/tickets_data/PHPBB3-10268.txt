@@ -1,0 +1,4 @@
+[quote="http://phpbb.com"]...[/quote]
+[quote=" http://phpbb.com"]...[/quote]
+[b]http://phpbb.com[/b]
+[b] http://phpbb.com[/b]

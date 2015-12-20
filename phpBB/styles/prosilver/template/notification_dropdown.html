@@ -32,7 +32,9 @@
 						</div>
 					<!-- IF notifications.URL --></a><!-- ENDIF -->
 					<!-- IF notifications.UNREAD -->
-						<a href="{notifications.U_MARK_READ}" class="mark_read icon-mark" data-ajax="notification.mark_read" title="{L_MARK_READ}"></a>
+						<a href="{notifications.U_MARK_READ}" class="mark_read icon-mark" data-ajax="notification.mark_read" title="{L_MARK_READ}">
+							 <i class="icon fa-check-circle icon-xl fa-fw" aria-hidden="true"></i><span class="sr-only">{L_MARK_READ}</span>
+						</a>
 					<!-- ENDIF -->
 				</li>
 			<!-- END notifications -->

@@ -23,7 +23,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 					'event' => 'acp_bbcodes_actions_append',
 					'files' => array(
 						'prosilver' => array(),
-						'subsilver2' => array(),
 						'adm' => array('acp_bbcodes.html'),
 					),
 					'since' => '3.1.0-a3',
@@ -36,7 +35,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 					'event' => 'acp_bbcodes_actions_prepend',
 					'files' => array(
 						'prosilver' => array(),
-						'subsilver2' => array(),
 						'adm' => array('acp_bbcodes.html'),
 					),
 					'since' => '3.1.0-a5',
@@ -47,7 +45,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 					'event' => 'acp_bbcodes_actions_prepend2',
 					'files' => array(
 						'prosilver' => array(),
-						'subsilver2' => array(),
 						'adm' => array('acp_bbcodes.html'),
 					),
 					'since' => '3.1.0-a4',
@@ -63,7 +60,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 					'event' => 'acp_bbcodes_actions_prepend',
 					'files' => array(
 						'prosilver' => array(),
-						'subsilver2' => array(),
 						'adm' => array('acp_bbcodes.html'),
 					),
 					'since' => '3.1.0-a5',
@@ -74,7 +70,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 					'event' => 'acp_bbcodes_actions_prepend2',
 					'files' => array(
 						'prosilver' => array(),
-						'subsilver2' => array(),
 						'adm' => array('acp_bbcodes.html'),
 					),
 					'since' => '3.1.0-a4',
@@ -130,7 +125,6 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 		$styles = array(
 			'adm/style/' => 'adm',
 			'styles/prosilver/template/' => 'styles',
-			'styles/subsilver2/template/' => 'styles',
 		);
 		foreach ($styles as $path => $filter)
 		{

@@ -58,7 +58,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		$setup_extensions = static::setup_extensions();
 
-		$finder = new \phpbb\finder(new \phpbb\filesystem(), $phpbb_root_path, null, $phpEx);
+		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
 		$finder->core_path('phpbb/db/migration/data/');
 		if (!empty($setup_extensions))
 		{
@@ -77,7 +77,10 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite();
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, new \phpbb\db\tools($db, true), $phpbb_root_path, $phpEx, $table_prefix);
+			$factory = new \phpbb\db\tools\factory();
+			$db_tools = $factory->get($db, true);
+
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
 		}
 

@@ -35,10 +35,6 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		);
 		$this->generate_route_objects();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$this->user = new \phpbb\user('\phpbb\datetime');
-
-		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $this->user, new \phpbb\template\context());
 	}
 
 	protected function get_phpbb_root_path()
@@ -78,7 +74,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->symfony_request = new \phpbb\symfony_request(
 			$this->request
 		);
-		$this->filesystem = new \phpbb\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			$this->symfony_request,
 			$this->filesystem,
@@ -87,15 +83,51 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			$phpEx
 		);
 
-		$finder = new \phpbb\finder(
-			new \phpbb\filesystem(),
-			dirname(__FILE__) . '/',
-			new phpbb_mock_cache()
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
+
+		$container = new phpbb_mock_container_builder();
+		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+		$cache_path = $phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader($this->filesystem, '');
+		$twig = new \phpbb\template\twig\environment(
+			$this->config,
+			$this->filesystem,
+			$this->phpbb_path_helper,
+			$container,
+			$cache_path,
+			null,
+			$loader,
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
 		);
-		$finder->set_extensions(array_keys($this->extension_manager->all_enabled()));
-		$this->provider = new \phpbb\controller\provider();
-		$this->provider->find_routing_files($finder);
-		$this->provider->find(dirname(__FILE__) . '/');
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+
+		$this->extension_manager = new phpbb_mock_extension_manager(
+			dirname(__FILE__) . '/',
+			array(
+				'vendor2/foo' => array(
+					'ext_name' => 'vendor2/foo',
+					'ext_active' => '1',
+					'ext_path' => 'ext/vendor2/foo/',
+				),
+			)
+		);
+
+		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
+			new \phpbb\routing\file_locator($this->filesystem, dirname(__FILE__) . '/')
+		);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
+		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+
 		// Set correct current phpBB root path
 		$this->root_path = $this->get_phpbb_root_path();
 	}
@@ -127,6 +159,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '/' . $this->path_to_app() . 'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -135,8 +170,10 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	*/
 	public function test_helper_url_no_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id));
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id), $description);
 	}
 
 	public function helper_url_data_with_rewrite()
@@ -166,6 +203,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '/' . $this->path_to_app() . 'foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -175,8 +215,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id), $description);
 	}
 
 	public function helper_url_data_absolute()
@@ -206,6 +247,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -215,8 +259,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_absolute($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::ABSOLUTE_URL));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::ABSOLUTE_URL), $description);
 	}
 
 	public function helper_url_data_relative_path()
@@ -246,6 +291,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false,  'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -255,8 +303,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_relative_path($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::RELATIVE_PATH));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::RELATIVE_PATH), $description);
 	}
 
 	public function helper_url_data_network()
@@ -286,6 +335,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '//localhost/' . $this->path_to_app() . 'app.php/foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -295,10 +347,11 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_network($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH), $description);
 	}
-//TODO
+
 	public function helper_url_data_absolute_with_rewrite()
 	{
 		return array(
@@ -326,6 +379,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, 'http://localhost/' . $this->path_to_app() . 'foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -335,8 +391,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_absolute_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::ABSOLUTE_URL));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::ABSOLUTE_URL), $description);
 	}
 
 	public function helper_url_data_relative_path_with_rewrite()
@@ -375,8 +432,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_relative_path_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::RELATIVE_PATH));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::RELATIVE_PATH), $description);
 	}
 
 	public function helper_url_data_network_with_rewrite()
@@ -406,6 +464,9 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			array('controller2', array(), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller2', array(), false, false, '//localhost/' . $this->path_to_app() . 'foo/bar', 'no params using empty array'),
 			array('controller3', array('p' => 3), true, false, '//localhost/' . $this->path_to_app() . 'foo/bar/p-3', 'no params using empty array'),
+
+			// Resolves DI parameters
+			array('controller4', array(), true, false, '//localhost/' . $this->path_to_app() . 'foo/' . PHPBB_ENVIRONMENT, 'di parameter'),
 		);
 	}
 
@@ -415,7 +476,8 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function test_helper_url_network_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
-		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH));
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->symfony_request, $this->request, $this->routing_helper);
+		$this->assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH), $description);
 	}
 }

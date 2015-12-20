@@ -42,14 +42,16 @@ function output_image()
 //
 // Attempt to alleviate the problem by doing setup outside of the lock as much as possible.
 
-$cron_type = request_var('cron_type', '');
+$cron_type = $request->variable('cron_type', '');
 
 // Comment this line out for debugging so the page does not return an image.
 output_image();
 
+/* @var $cron_lock \phpbb\lock\db */
 $cron_lock = $phpbb_container->get('cron.lock_db');
 if ($cron_lock->acquire())
 {
+	/* @var $cron \phpbb\cron\manager */
 	$cron = $phpbb_container->get('cron.manager');
 
 	$task = $cron->find_task($cron_type);

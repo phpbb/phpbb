@@ -930,6 +930,7 @@ class auth
 		global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
 		global $phpbb_dispatcher;
 
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 
 		$provider = $provider_collection->get_provider();

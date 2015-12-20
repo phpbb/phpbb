@@ -16,7 +16,6 @@
 						<!-- BEGIN notification_methods -->
 							<th class="mark">{notification_methods.NAME}</th>
 						<!-- END notification_methods -->
-						<th class="mark">{L_NOTIFICATIONS}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,7 +33,6 @@
 							<!-- BEGIN notification_methods -->
 								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 							<!-- END notification_methods -->
-							<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 						</tr>
 					<!-- ENDIF -->
 				<!-- END notification_types -->
@@ -42,7 +40,7 @@
 			</table>
 		<!-- ELSE -->
 			<!-- IF .notification_list -->
-				<div class="action-bar top">
+				<div class="action-bar bar-top">
 					<div class="pagination">
 						<!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}" class="mark">{L_NOTIFICATIONS_MARK_ALL_READ}</a> &bull; <!-- ENDIF -->
 						{L_NOTIFICATIONS} [<strong>{TOTAL_COUNT}</strong>]
@@ -88,7 +86,7 @@
 				</ul>
 			</div>
 
-			<div class="action-bar bottom">
+			<div class="action-bar bar-bottom">
 				<div class="pagination">
 					{L_NOTIFICATIONS} [<strong>{TOTAL_COUNT}</strong>]
 					<!-- IF .pagination -->

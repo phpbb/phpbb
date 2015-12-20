@@ -365,13 +365,13 @@ function parseDocument($container) {
 	/**
 	* Adjust HTML code for IE8 and older versions
 	*/
-	if (oldBrowser) {
-		// Fix .linklist.bulletin lists
-		$container
-			.find('ul.linklist.bulletin > li')
-			.filter(':first-child, .rightside:last-child')
-			.addClass('no-bulletin');
-	}
+	// if (oldBrowser) {
+	// 	// Fix .linklist.bulletin lists
+	// 	$container
+	// 		.find('ul.linklist.bulletin > li')
+	// 		.filter(':first-child, .rightside:last-child')
+	// 		.addClass('no-bulletin');
+	// }
 
 	/**
 	* Resize navigation (breadcrumbs) block to keep all links on same line
@@ -492,7 +492,7 @@ function parseDocument($container) {
 			$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
 			$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
 			persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
-			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="responsive-menu-link">&nbsp;</a><div class="dropdown hidden"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
+			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
 			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
 
 		// Add a hidden drop-down menu to each links list (except those that already have one)
@@ -581,8 +581,10 @@ function parseDocument($container) {
 				$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
 				if ($this.hasClass('post-buttons')) {
-					$('.button', $menuContents).removeClass('button icon-button');
-					$('.responsive-menu-link', $menu).addClass('button icon-button').prepend('<span></span>');
+					$('.button', $menuContents).removeClass('button');
+					$('.sr-only', $menuContents).removeClass('sr-only');
+					$('.js-responsive-menu-link').addClass('button').addClass('button-icon-only');
+					$('.js-responsive-menu-link .icon').removeClass('fa-bars').addClass('fa-ellipsis-h');
 				}
 				copied1 = true;
 			}
@@ -636,7 +638,7 @@ function parseDocument($container) {
 		}
 
 		if (!persistent) {
-			phpbb.registerDropdown($menu.find('a.responsive-menu-link'), $menu.find('.dropdown'), false);
+			phpbb.registerDropdown($menu.find('a.js-responsive-menu-link'), $menu.find('.dropdown'), false);
 		}
 
 		// If there are any images in the links list, run the check again after they have loaded

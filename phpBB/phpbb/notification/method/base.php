@@ -21,67 +21,12 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
-	/** @var \phpbb\user_loader */
-	protected $user_loader;
-
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
-
-	/** @var \phpbb\cache\driver\driver_interface */
-	protected $cache;
-
-	/** @var \phpbb\template\template */
-	protected $template;
-
-	/** @var \phpbb\extension\manager */
-	protected $extension_manager;
-
-	/** @var \phpbb\user */
-	protected $user;
-
-	/** @var \phpbb\auth\auth */
-	protected $auth;
-
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $php_ext;
-
 	/**
 	* Queue of messages to be sent
 	*
 	* @var array
 	*/
 	protected $queue = array();
-
-	/**
-	* Notification Method Base Constructor
-	*
-	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\db\driver\driver_interface $db
-	* @param \phpbb\cache\driver\driver_interface $cache
-	* @param \phpbb\user $user
-	* @param \phpbb\auth\auth $auth
-	* @param \phpbb\config\config $config
-	* @param string $phpbb_root_path
-	* @param string $php_ext
-	* @return \phpbb\notification\method\base
-	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
-	{
-		$this->user_loader = $user_loader;
-		$this->db = $db;
-		$this->cache = $cache;
-		$this->user = $user;
-		$this->auth = $auth;
-		$this->config = $config;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
-	}
 
 	/**
 	* Set notification manager (required)
@@ -94,6 +39,36 @@ abstract class base implements \phpbb\notification\method\method_interface
 	}
 
 	/**
+	* Is the method enable by default?
+	*
+	* @return bool
+	*/
+	public function is_enabled_by_default()
+	{
+		return false;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_notified_users($notification_type_id, array $options)
+	{
+		return array();
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function load_notifications(array $options = array())
+	{
+		return array(
+			'notifications'		=> array(),
+			'unread_count'		=> 0,
+			'total_count'		=> 0,
+		);
+	}
+
+	/**
 	* Add a notification to the queue
 	*
 	* @param \phpbb\notification\type\type_interface $notification
@@ -101,6 +76,55 @@ abstract class base implements \phpbb\notification\method\method_interface
 	public function add_to_queue(\phpbb\notification\type\type_interface $notification)
 	{
 		$this->queue[] = $notification;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function update_notification($notification, array $data, array $options)
+	{
+	}
+
+	/**
+	* {@inheritdoc
+	*/
+	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function delete_notifications($notification_type_id, $item_id, $parent_id = false, $user_id = false)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function prune_notifications($timestamp, $only_read = true)
+	{
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function purge_notifications($notification_type_id)
+	{
 	}
 
 	/**
