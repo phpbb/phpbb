@@ -296,33 +296,33 @@ dl.details dd {
 
 /* Icon styles
 ---------------------------------------- */
-.icon.icon-blue, 
-a:hover .icon.icon-blue {
+.icon-blue,
+a:hover .icon-blue {
 	color: #0B95DA;
 }
 
-.icon.icon-red, 
-a:hover .icon.icon-red {
+.icon-red,
+a:hover .icon-red {
 	color: #D31141;
 }
 
-.icon.icon-bluegray, 
-a:hover .icon.icon-bluegray {
+.icon-bluegray,
+a:hover .icon-bluegray {
 	color: #5C7A8A;
 }
 
-.icon.icon-gray, 
-a:hover .icon.icon-gray {
+.icon-gray,
+a:hover .icon-gray {
 	color: #7F7F7F;
 }
 
-.icon.icon-lightgray, 
-a:hover .icon.icon-lightgray {
+.icon-lightgray,
+a:hover .icon-lightgray {
 	color: #999999;
 }
 
-.icon.icon-black, 
-a:hover .icon.icon-black {
+.icon-black,
+a:hover .icon-black {
 	color: #333333;
 }
 
