@@ -341,7 +341,7 @@ a:hover .icon-black {
 	color: #FFFFFF;
 }
 
-.jumpbox-cat-link:hover { 
+.jumpbox-cat-link:hover {
 	background-color: #13A4EC;
 	border-top-color: #13A4EC;
 	color: #FFFFFF;
@@ -511,7 +511,7 @@ blockquote {
 	background-image: url("./images/quote_rtl.gif");
 }
 
-blockquote blockquote {	
+blockquote blockquote {
 	background-color: #F0F0DB;
 }
 
@@ -730,7 +730,7 @@ Colours and backgrounds for buttons.css
 }
 
 .caret {
-	border-color: #CCCCCC; 
+	border-color: #CCCCCC;
 }
 
 .contact-icons a:hover {
@@ -950,7 +950,7 @@ ul.cplist {
 /* Link styles for the sub-section links */
 .navigation a {
 	color: #333333;
-	backgroun-color: #AFC5CF;
+	background-color: #AFC5CF;
 	background-image: -webkit-linear-gradient(left, #AFC5CF 50%, #C8DEEA 100%);
 	background-image: linear-gradient(to right, #AFC5CF 50%, #C8DEEA 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#AFC5CF', endColorstr='#C8DEEA', GradientType=1);
@@ -1159,8 +1159,6 @@ a.button1,
 input.button1 {
 	border-color: #666666;
 }
-
-[Define New Theme] 8. Utilize Font Awesome icons where icons are needed to simplify server requests. 
 
 input.button3 {
 	background-image: none;
