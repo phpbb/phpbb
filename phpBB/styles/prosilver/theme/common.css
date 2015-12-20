@@ -280,7 +280,7 @@ ul.rightside {
 
 ul.linklist li.responsive-menu {
 	position: relative;
-	margin: 0 5px;
+	margin: 0 5px 0 0;
 }
 
 .hasjs ul.linklist.leftside, .hasjs ul.linklist.rightside {
