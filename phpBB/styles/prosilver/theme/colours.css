@@ -807,23 +807,23 @@ Colours and backgrounds for buttons.css
 .phpbb_yahoo-icon					{ background-position: -224px 0; }
 
 /* Forum icons & Topic icons */
+.announce_read,
 .global_read						{ background-image: url("./images/announce_read.gif"); }
+.announce_read_mine,
 .global_read_mine					{ background-image: url("./images/announce_read_mine.gif"); }
+.announce_read_locked,
 .global_read_locked					{ background-image: url("./images/announce_read_locked.gif"); }
+.announce_read_locked_mine,
 .global_read_locked_mine			{ background-image: url("./images/announce_read_locked_mine.gif"); }
+.announce_unread,
 .global_unread						{ background-image: url("./images/announce_unread.gif"); }
+.announce_unread_mine,
 .global_unread_mine					{ background-image: url("./images/announce_unread_mine.gif"); }
+.announce_unread_locked,
 .global_unread_locked				{ background-image: url("./images/announce_unread_locked.gif"); }
+.announce_unread_locked_mine,
 .global_unread_locked_mine			{ background-image: url("./images/announce_unread_locked_mine.gif"); }
 
-.announce_read						{ background-image: url("./images/announce_read.gif"); }
-.announce_read_mine					{ background-image: url("./images/announce_read_mine.gif"); }
-.announce_read_locked				{ background-image: url("./images/announce_read_locked.gif"); }
-.announce_read_locked_mine			{ background-image: url("./images/announce_read_locked_mine.gif"); }
-.announce_unread					{ background-image: url("./images/announce_unread.gif"); }
-.announce_unread_mine				{ background-image: url("./images/announce_unread_mine.gif"); }
-.announce_unread_locked				{ background-image: url("./images/announce_unread_locked.gif"); }
-.announce_unread_locked_mine		{ background-image: url("./images/announce_unread_locked_mine.gif"); }
 
 .forum_link							{ background-image: url("./images/forum_link.gif"); }
 .forum_read							{ background-image: url("./images/forum_read.gif"); }
