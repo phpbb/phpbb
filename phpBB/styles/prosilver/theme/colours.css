@@ -385,10 +385,13 @@ a:hover .icon-black {
 li.reported:hover {
 	background-color: #F0DBE0 !important;
 }
-.sticky, 
+
+/* you can add a background for stickies and announcements
+.sticky,
 .announce {
-	/* you can add a background for stickies and announcements*/
+
 }
+*/
 
 div.rules {
 	background-color: #F0DBE0;
@@ -478,10 +481,12 @@ dl.faq dt {
 	color: #D31141;
 }
 
+/* Highlight the announcements & unread posts box
 .announce,
 .unreadpost {
-	/* Highlight the announcements & unread posts box */
+
 }
+*/
 
 /* Post signature */
 .signature {
