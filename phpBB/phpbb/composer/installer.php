@@ -99,7 +99,7 @@ class installer
 
 		$this->root_path = $root_path;
 
-		putenv('COMPOSER_HOME=' . $filesystem->realpath($root_path) . 'store/composer');
+		putenv('COMPOSER_HOME=' . $filesystem->realpath($root_path) . '/store/composer');
 	}
 
 	/**

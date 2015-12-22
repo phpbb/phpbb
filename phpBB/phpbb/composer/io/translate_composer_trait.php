@@ -121,9 +121,14 @@ trait translate_composer_trait
 
 			$message = trim($this->strip_format($lang_key), "\n\r");
 
-			if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_DEBUG)
+			if ($message === 'Your requirements could not be resolved to an installable set of packages.')
 			{
-				// Do nothing
+				$this->composer_error[] = ['COMPOSER_ERROR_CONFLICT', []];
+
+				if ($this->output->getVerbosity() < OutputInterface::VERBOSITY_DEBUG)
+				{
+					continue;
+				}
 			}
 			else if (strpos($message, '  Problem ') === 0)
 			{
@@ -144,11 +149,6 @@ trait translate_composer_trait
 			{
 				$lang_key = 'COMPOSER_LOADING_REPOSITORIES';
 				$level = 1;
-			}
-			else if ($message === 'Your requirements could not be resolved to an installable set of packages.')
-			{
-				$this->composer_error[] = ['COMPOSER_ERROR_CONFLICT', []];
-				continue;
 			}
 			else if (strpos($message, 'could not be fully loaded, package information was loaded from the local cache and may be out of date') !== false)
 			{
