@@ -22,6 +22,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 class container_builder
@@ -157,6 +158,11 @@ class container_builder
 
 			// Event listeners "Symfony style"
 			$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
+
+			if ($this->use_extensions)
+			{
+				$this->register_ext_compiler_pass();
+			}
 
 			$filesystem = new filesystem();
 			$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
@@ -511,5 +517,35 @@ class container_builder
 	protected function get_environment()
 	{
 		return $this->environment ?: PHPBB_ENVIRONMENT;
+	}
+
+	private function register_ext_compiler_pass()
+	{
+		$finder = new Finder();
+		$finder
+			->name('*_pass.php')
+			->path('di/pass')
+			->files()
+			->ignoreDotFiles(true)
+			->ignoreUnreadableDirs(true)
+			->ignoreVCS(true)
+			->followLinks()
+			->in($this->phpbb_root_path . 'ext/')
+		;
+
+		/** @var \SplFileInfo $pass */
+		foreach ($finder as $pass)
+		{
+			$filename = $pass->getPathname();
+			$filename = substr($filename, 0, -strlen('.' . $pass->getExtension()));
+			$filename = str_replace(DIRECTORY_SEPARATOR, '/', $filename);
+			$className = preg_replace('#^.*ext/#', '', $filename);
+			$className = '\\' . str_replace('/', '\\', $className);
+
+			if (class_exists($className) && in_array('Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface', class_implements($className), true))
+			{
+				$this->container->addCompilerPass(new $className());
+			}
+		}
 	}
 }
