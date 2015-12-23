@@ -33,12 +33,18 @@ class acp_bbcodes
 		// Set up general vars
 		$action	= request_var('action', '');
 		$bbcode_id = request_var('bbcode', 0);
+		$submit = $request->is_set_post('submit');
 
 		$this->tpl_name = 'acp_bbcodes';
 		$this->page_title = 'ACP_BBCODES';
 		$form_key = 'acp_bbcodes';
 
 		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		// Set up mode-specific vars
 		switch ($action)
