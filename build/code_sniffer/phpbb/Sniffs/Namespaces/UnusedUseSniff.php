@@ -87,6 +87,11 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 				$old_simple_statement = $simple_statement;
 
 				$simple_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($simple_statement + 1));
+
+				if ($simple_class_name_start === false) {
+					continue;
+				}
+
 				$simple_class_name_end = $phpcsFile->findNext($find, ($simple_statement + 1), null, true);
 
 				$simple_class_name = trim($phpcsFile->getTokensAsString($simple_class_name_start, ($simple_class_name_end - $simple_class_name_start)));
