@@ -9,6 +9,10 @@
 
 	<p>{L_SEND_IM_EXPLAIN}</p>
 
+	<!-- IF S_SENT_JABBER -->
+		<p>{L_IM_SENT_JABBER}</p>
+	<!-- ENDIF -->
+
 	<fieldset>
 	<dl class="fields2">
 		<dt><label>{L_IM_RECIPIENT}{L_COLON}</label></dt>
@@ -23,10 +27,6 @@
 		<dl class="fields2">
 			<dt>&nbsp;</dt>
 			<dd><input class="button1" name="submit" type="submit" value="{L_IM_SEND}" /></dd>
-		</dl>
-		<dl class="fields2">
-			<dt>&nbsp;</dt>
-			<dd>{L_IM_SENT_JABBER}</dd>
 		</dl>
 	<!-- ELSE IF S_NO_SEND_JABBER -->
 		<dl class="fields2">
