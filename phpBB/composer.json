@@ -51,5 +51,10 @@
 		"symfony/finder": "2.3.*",
 		"symfony/http-foundation": "2.3.*",
 		"symfony/process": "2.3.*"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.1.x-dev"
+		}
 	}
 }
