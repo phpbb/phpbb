@@ -95,6 +95,7 @@
 				--ignore=${project.basedir}/phpBB/install/database_update.php
 				--ignore=${project.basedir}/phpBB/phpbb/*
 				--ignore=${project.basedir}/phpBB/vendor/*
+				--ignore=${project.basedir}/phpBB/vendor-ext/*
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
