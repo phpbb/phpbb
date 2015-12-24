@@ -720,6 +720,7 @@ class diff_renderer_side_by_side extends diff_renderer
 				if (!empty($current_context))
 				{
 					$line = $current_context;
+					$current_context = '';
 
 					$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td>';
 					$output .= '<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';

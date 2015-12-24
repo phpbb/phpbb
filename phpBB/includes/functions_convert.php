@@ -2201,7 +2201,7 @@ function remove_invalid_users()
 
 function convert_bbcode($message, $convert_size = true, $extended_bbcodes = false)
 {
-	static $orig, $repl, $origx, $replx;
+	static $orig, $repl, $origx, $replx, $str_from, $str_to;
 
 	if (empty($orig))
 	{

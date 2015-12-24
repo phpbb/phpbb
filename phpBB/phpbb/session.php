@@ -1413,7 +1413,7 @@ class session
 
 		$sql_ary = array(
 			'key_id'		=> (string) md5($key_id),
-			'last_ip'		=> (string) $user_id,
+			'last_ip'		=> (string) $user_ip,
 			'last_login'	=> (int) time()
 		);
 

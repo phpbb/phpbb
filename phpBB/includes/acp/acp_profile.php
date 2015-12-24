@@ -549,7 +549,11 @@ class acp_profile
 					}
 				}
 
-				if (!sizeof($error))
+				if (sizeof($error))
+				{
+					$submit = false;
+				}
+				else
 				{
 					$step = (isset($_REQUEST['next'])) ? $step + 1 : ((isset($_REQUEST['prev'])) ? $step - 1 : $step);
 				}
