@@ -18,6 +18,9 @@ class autolink_helper
 	/**
 	* Clean up and invalidate an AUTOLINK_TEXT tag if applicable
 	*
+	* Will invalidate the tag if its replacement text is the same as the original
+	* text and would have no visible effect
+	*
 	* @param  \s9e\TextFormatter\Parser\Tag $tag    AUTOLINK_TEXT tag
 	* @param  \s9e\TextFormatter\Parser     $parser Parser
 	* @return bool                                  Whether the tag is valid
