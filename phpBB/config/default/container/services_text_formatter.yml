@@ -26,9 +26,6 @@ services:
     text_formatter.utils:
         alias: text_formatter.s9e.utils
 
-    text_formatter.s9e.autolink_helper:
-        class: phpbb\textformatter\s9e\autolink_helper
-
     text_formatter.s9e.factory:
         class: phpbb\textformatter\s9e\factory
         arguments:
@@ -36,10 +33,13 @@ services:
             - '@cache.driver'
             - '@dispatcher'
             - '@config'
-            - '@text_formatter.s9e.autolink_helper'
+            - '@text_formatter.s9e.link_helper'
             - '%text_formatter.cache.dir%'
             - '%text_formatter.cache.parser.key%'
             - '%text_formatter.cache.renderer.key%'
+
+    text_formatter.s9e.link_helper:
+        class: phpbb\textformatter\s9e\link_helper
 
     text_formatter.s9e.parser:
         class: phpbb\textformatter\s9e\parser

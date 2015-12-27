@@ -501,7 +501,7 @@ class phpbb_test_case_helpers
 		}
 
 		// Create and register the text_formatter.s9e.factory service
-		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, new \phpbb\textformatter\s9e\autolink_helper, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, new \phpbb\textformatter\s9e\link_helper, $cache_dir, $cache_key_parser, $cache_key_renderer);
 		$container->set('text_formatter.s9e.factory', $factory);
 
 		// Create a user if none was provided, and add the common lang strings

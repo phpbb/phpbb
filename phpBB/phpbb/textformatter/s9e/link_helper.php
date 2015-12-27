@@ -13,23 +13,20 @@
 
 namespace phpbb\textformatter\s9e;
 
-class autolink_helper
+class link_helper
 {
 	/**
-	* Clean up and invalidate an AUTOLINK_TEXT tag if applicable
+	* Clean up and invalidate a LINK_TEXT tag if applicable
 	*
 	* Will invalidate the tag if its replacement text is the same as the original
 	* text and would have no visible effect
 	*
-	* @param  \s9e\TextFormatter\Parser\Tag $tag    AUTOLINK_TEXT tag
+	* @param  \s9e\TextFormatter\Parser\Tag $tag    LINK_TEXT tag
 	* @param  \s9e\TextFormatter\Parser     $parser Parser
 	* @return bool                                  Whether the tag is valid
 	*/
 	public function cleanup_tag(\s9e\TextFormatter\Parser\Tag $tag, \s9e\TextFormatter\Parser $parser)
 	{
-		// Remove the url attribute because it's not needed.
-		$tag->removeAttribute('url');
-
 		// Invalidate if the content of the tag matches the text attribute
 		$text = substr($parser->getText(), $tag->getPos(), $tag->getLen());
 
@@ -37,34 +34,32 @@ class autolink_helper
 	}
 
 	/**
-	* Create an AUTOLINK_TEXT tag inside of a link created by the Autolink plugin
+	* Create a LINK_TEXT tag inside of a link
 	*
-	* Will only apply to URL tags that do not use any markup (e.g. not "[url]")
-	* on the assumption that those tags were created by the Autolink plugin to
-	* linkify URLs found in plain text
+	* Meant to only apply to linkified URLs and [url] BBCodes without a parameter
 	*
 	* @param  \s9e\TextFormatter\Parser\Tag $tag    URL tag (start tag)
 	* @param  \s9e\TextFormatter\Parser     $parser Parser
 	* @return bool                                  Always true to indicate that the tag is valid
 	*/
-	public function generate_autolink_text_tag(\s9e\TextFormatter\Parser\Tag $tag, \s9e\TextFormatter\Parser $parser)
+	public function generate_link_text_tag(\s9e\TextFormatter\Parser\Tag $tag, \s9e\TextFormatter\Parser $parser)
 	{
-		// If the tag consumes any text then we ignore it because it's not a
-		// linkified URL. Same if it's not paired with an end tag that doesn't
-		// consume any text either
-		if ($tag->getLen() > 0 || !$tag->getEndTag())
+		// Only create a LINK_TEXT tag if the start tag is paired with an end
+		// tag, which is the case with tags from the Autolink plugins and with
+		// the [url] BBCode when its content is used for the URL
+		if (!$tag->getEndTag())
 		{
 			return true;
 		}
 
 		// Capture the text between the start tag and its end tag
-		$start  = $tag->getPos();
+		$start  = $tag->getPos() + $tag->getLen();
 		$end    = $tag->getEndTag()->getPos();
 		$length = $end - $start;
 		$text   = substr($parser->getText(), $start, $length);
 
 		// Create a tag that consumes the link's text
-		$parser->addSelfClosingTag('AUTOLINK_TEXT', $start, $length)->setAttribute('text', $text);
+		$parser->addSelfClosingTag('LINK_TEXT', $start, $length)->setAttribute('text', $text);
 
 		return true;
 	}
@@ -72,7 +67,7 @@ class autolink_helper
 	/**
 	* Remove the board's root URL from a the start of a string
 	*
-	* @param  \s9e\TextFormatter\Parser\Tag $tag       AUTOLINK_TEXT tag
+	* @param  \s9e\TextFormatter\Parser\Tag $tag       LINK_TEXT tag
 	* @param  string                        $board_url Forum's root URL (with trailing slash)
 	* @return bool                                     Always true to indicate that the tag is valid
 	*/
@@ -88,9 +83,9 @@ class autolink_helper
 	}
 
 	/**
-	* Truncate the replacement text set in an AUTOLINK_TEXT tag
+	* Truncate the replacement text set in a LINK_TEXT tag
 	*
-	* @param  \s9e\TextFormatter\Parser\Tag $tag AUTOLINK_TEXT tag
+	* @param  \s9e\TextFormatter\Parser\Tag $tag LINK_TEXT tag
 	* @return bool                               Always true to indicate that the tag is valid
 	*/
 	public function truncate_text(\s9e\TextFormatter\Parser\Tag $tag)
