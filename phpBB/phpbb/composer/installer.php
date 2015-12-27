@@ -547,28 +547,7 @@ class installer
 			$core_deps[$package->getName()] = $package->getPrettyVersion();
 		}
 
-		$core_deps['phpbb/phpbb'] = $composer->getPackage()->getPrettyVersion();
-
-		return $core_deps;
-	}
-
-	/**
-	 * Get the core installed packages
-	 *
-	 * @param Composer $composer Composer object to load the dependencies
-	 * @return array The core packages with their version
-	 */
-	protected function get_core_version(Composer $composer)
-	{
-		$core_deps = [];
-		$packages = $composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
-
-		foreach ($packages as $package)
-		{
-			$core_deps[$package->getName()] = $package->getPrettyVersion();
-		}
-
-		$core_deps['phpbb/phpbb'] = $composer->getPackage()->getPrettyVersion();
+		$core_deps['phpbb/phpbb'] = PHPBB_VERSION;
 
 		return $core_deps;
 	}
