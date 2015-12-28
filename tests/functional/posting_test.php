@@ -205,4 +205,29 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			$crawler->filter('#preview .signature')->html()
 		);
 	}
+
+	/**
+	* @ticket PHPBB3-10628
+	*/
+	public function test_www_links_preview()
+	{
+		$text = 'www.example.org';
+		$url  = 'http://' . $text;
+
+		$this->add_lang('posting');
+		$this->login();
+
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text
+		));
+		$crawler = self::submit($form);
+
+		// Test that the textarea remains unchanged
+		$this->assertEquals($text, $crawler->filter('#message')->text());
+
+		// Test that the preview contains the correct link
+		$this->assertEquals($url, $crawler->filter('#preview a')->attr('href'));
+	}
 }
