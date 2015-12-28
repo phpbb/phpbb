@@ -248,6 +248,10 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'<a href="http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0" class="postlink">http://example.org/0xxxxxxxxxxxxxxxxxxx ... xxxxxxxxx0</a>'
 			),
 			array(
+				'[URL]http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0[/url]',
+				'<a href="http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0" class="postlink">http://example.org/0xxxxxxxxxxxxxxxxxxx ... xxxxxxxxx0</a>'
+			),
+			array(
 				'[url=http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx[/url]',
 				'<a href="http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</a>'
 			),

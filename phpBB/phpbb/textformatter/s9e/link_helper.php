@@ -47,7 +47,7 @@ class link_helper
 		// Only create a LINK_TEXT tag if the start tag is paired with an end
 		// tag, which is the case with tags from the Autolink plugins and with
 		// the [url] BBCode when its content is used for the URL
-		if (!$tag->getEndTag())
+		if (!$tag->getEndTag() || !$this->should_shorten($tag, $parser->getText()))
 		{
 			return true;
 		}
@@ -62,6 +62,21 @@ class link_helper
 		$parser->addSelfClosingTag('LINK_TEXT', $start, $length)->setAttribute('text', $text);
 
 		return true;
+	}
+
+	/**
+	* Test whether we should shorten this tag's text
+	*
+	* Will test whether the tag either does not use any markup or uses a single
+	* [url] BBCode
+	*
+	* @param  \s9e\TextFormatter\Parser\Tag $tag  URL tag
+	* @param  string                        $text Original text
+	* @return bool
+	*/
+	protected function should_shorten(\s9e\TextFormatter\Parser\Tag $tag, $text)
+	{
+		return ($tag->getLen() === 0 || strtolower(substr($text, $tag->getPos(), $tag->getLen())) === '[url]');
 	}
 
 	/**
