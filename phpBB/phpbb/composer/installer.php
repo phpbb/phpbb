@@ -455,23 +455,30 @@ class installer
 		/** @var \Composer\Package\PackageInterface $version */
 		foreach ($versions as $version)
 		{
-			if (BasePackage::$stabilities[$version->getStability()] > $core_stability_value)
+			try
 			{
-				continue;
-			}
-
-			if (array_key_exists('phpbb/phpbb', $version->getRequires()))
-			{
-				/** @var ConstraintInterface $package_constraint */
-				$package_constraint = $version->getRequires()['phpbb/phpbb']->getConstraint();
-
-				if (!$package_constraint->matches($core_constraint))
+				if (BasePackage::$stabilities[$version->getStability()] > $core_stability_value)
 				{
 					continue;
 				}
-			}
 
-			$compatible_packages[$package_name][] = $version;
+				if (array_key_exists('phpbb/phpbb', $version->getRequires()))
+				{
+					/** @var ConstraintInterface $package_constraint */
+					$package_constraint = $version->getRequires()['phpbb/phpbb']->getConstraint();
+
+					if (!$package_constraint->matches($core_constraint))
+					{
+						continue;
+					}
+				}
+
+				$compatible_packages[$package_name][] = $version;
+			}
+			catch (\Exception $e)
+			{
+				// Do nothing (to log when a true debug logger is available)
+			}
 		}
 
 		return $compatible_packages;

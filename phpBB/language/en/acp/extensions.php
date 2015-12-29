@@ -164,7 +164,7 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS_REMOVED'			=> 'Extensions successfully removed.',
 	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated.',
 
-	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'In order to use the catalog, the following files and directories must be writable: ext/ vendor-ext/ composer-ext.json and composer-ext.json.lock',
+	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'In order to use the catalog, the following files and directories must be writable: ext/ vendor-ext/ composer-ext.json and composer-ext.lock',
 
 	'STABILITY_STABLE'	=> 'stable',
 	'STABILITY_RC'		=> 'RC',
