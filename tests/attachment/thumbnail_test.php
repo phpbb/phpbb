@@ -229,4 +229,37 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 	{
 		$this->assertSame($expected, $this->thumbnail->get_supported_image_types($input));
 	}
+
+	public function data_create_gd()
+	{
+		return array(
+			array('image/iff', IMAGETYPE_IFF, 'png', false),
+			array('image/gif', IMAGETYPE_GIF, 'png', false),
+			array('image/gif', IMAGETYPE_GIF, 'gif', true),
+			array('image/jpg', IMAGETYPE_JPEG, 'jpg', true),
+			array('image/wbmp', IMAGETYPE_WBMP, 'wbmp', true),
+		);
+	}
+
+	/**
+	 * @dataProvider data_create_gd
+	 */
+	public function test_create_gd($mimetype, $type, $source, $expected)
+	{
+		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
+		$this->image_size->expects($this->any())
+			->method('getImageSize')
+			->with($this->anything())
+			->willReturn(array(
+				'width'		=> 500,
+				'height'	=> 500,
+				'type'		=> $type,
+			));
+
+		$this->get_thumbnail();
+
+		$this->assertEquals($expected, $this->thumbnail->create($this->phpbb_root_path . '../tests/upload/fixture/' . $source, $this->phpbb_root_path . '../tests/upload/fixture/meh', $mimetype));
+
+		$this->image_size = new \FastImageSize\FastImageSize();
+	}
 }
