@@ -191,6 +191,75 @@ class thumbnail
 	}
 
 	/**
+	 * Get supported image types
+	 *
+	 * @param bool|int $type Image type constant
+	 * @return array An Array containing whether gd is enabled and supported
+	 *		image types
+	 */
+	public function get_supported_image_types($type = false)
+	{
+		if (@extension_loaded('gd'))
+		{
+			$format = imagetypes();
+			$new_type = 0;
+
+			if ($type !== false)
+			{
+				// Type is one of the IMAGETYPE constants - it is fetched from getimagesize()
+				switch ($type)
+				{
+					// GIF
+					case IMAGETYPE_GIF:
+						$new_type = ($format & IMG_GIF) ? IMG_GIF : false;
+					break;
+
+					// JPG, JPC, JP2
+					case IMAGETYPE_JPEG:
+					case IMAGETYPE_JPC:
+					case IMAGETYPE_JPEG2000:
+					case IMAGETYPE_JP2:
+					case IMAGETYPE_JPX:
+					case IMAGETYPE_JB2:
+						$new_type = ($format & IMG_JPG) ? IMG_JPG : false;
+					break;
+
+					// PNG
+					case IMAGETYPE_PNG:
+						$new_type = ($format & IMG_PNG) ? IMG_PNG : false;
+					break;
+
+					// WBMP
+					case IMAGETYPE_WBMP:
+						$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
+					break;
+				}
+			}
+			else
+			{
+				$new_type = array();
+				$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP);
+
+				foreach ($go_through_types as $check_type)
+				{
+					if ($format & $check_type)
+					{
+						$new_type[] = $check_type;
+					}
+				}
+			}
+
+			return array(
+				'gd'		=> ($new_type) ? true : false,
+				'format'	=> $new_type,
+				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1
+			);
+		}
+
+		return array('gd' => false);
+	}
+
+	/**
 	 * Create thumbnail using GD
 	 *
 	 * @return bool True if thumbnail might have been created, false if not
@@ -202,7 +271,7 @@ class thumbnail
 			return true;
 		}
 
-		$type = get_supported_image_types($this->type);
+		$type = $this->get_supported_image_types($this->type);
 
 		if ($type['gd'])
 		{
