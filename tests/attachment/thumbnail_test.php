@@ -182,5 +182,51 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 			->willReturn(true);
 
 		$this->assertSame(false, $thumbnail_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+
+		$this->image_size = new \FastImageSize\FastImageSize();
+	}
+
+	public function data_get_supported_image_types()
+	{
+		return array(
+			array(-1, array(
+				'gd'		=> false,
+				'format'	=> 0,
+				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1,
+			)),
+			array(false, array(
+				'gd'		=> true,
+				'format'	=> array(
+					IMG_GIF,
+					IMG_JPG,
+					IMG_PNG,
+					IMG_WBMP,
+				),
+				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1,
+			)),
+			array(IMAGETYPE_GIF, array(
+				'gd'		=> true,
+				'format'	=> IMG_GIF,
+				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1,
+			)),
+			array(IMAGETYPE_JPEG, array(
+				'gd'		=> true,
+				'format'	=> IMG_JPEG,
+				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1,
+			)),
+			array(IMAGETYPE_WBMP, array(
+				'gd'		=> true,
+				'format'	=> IMG_WBMP,
+				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1,
+			)),
+		);
+	}
+
+	/**
+	 * @dataProvider data_get_supported_image_types
+	 */
+	public function test_get_supported_image_types($input, $expected)
+	{
+		$this->assertSame($expected, $this->thumbnail->get_supported_image_types($input));
 	}
 }
