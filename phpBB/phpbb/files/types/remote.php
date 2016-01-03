@@ -200,8 +200,7 @@ class remote extends base
 			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
 
-		$tmp_path = (!$this->php_ini->getBool('safe_mode')) ? false : $this->phpbb_root_path . 'cache';
-		$filename = tempnam($tmp_path, unique_id() . '-');
+		$filename = tempnam(sys_get_temp_dir(), unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{
