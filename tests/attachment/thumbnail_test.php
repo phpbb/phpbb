@@ -126,4 +126,61 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 			unlink($this->phpbb_root_path . $destination);
 		}
 	}
+
+	public function test_create_fail()
+	{
+		$this->config->set('img_min_thumb_filesize', 0);
+		$this->config->set('img_max_thumb_width', 200);
+		$this->config->set('img_max_thumb_height', 200);
+
+		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
+		$this->image_size->expects($this->any())
+			->method('getImageSize')
+			->with($this->anything())
+			->willReturn(array(
+				'width'		=> 500,
+				'height'	=> 500,
+				'type'		=> IMAGETYPE_PNG,
+			));
+
+		/** @var \phpbb\attachment\thumbnail $thumbnail_mock */
+		$thumbnail_mock = $this->getMock(
+			'\phpbb\attachment\thumbnail',
+			array('get_supported_image_types'),
+			array(
+				$this->config,
+				$this->filesystem,
+				$this->php_ini,
+				$this->image_size
+			)
+		);
+
+		// Pretend get_supported_image_types returns non-supported GD
+		$thumbnail_mock->expects($this->any())
+			->method('get_supported_image_types')
+			->with($this->anything())
+			->willReturn(array('gd' => false));
+
+		$this->assertSame(false, $thumbnail_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+
+		/** @var \phpbb\attachment\thumbnail $thumbnail_mock */
+		$thumbnail_mock = $this->getMock(
+			'\phpbb\attachment\thumbnail',
+			array('create_gd'),
+			array(
+				$this->config,
+				$this->filesystem,
+				$this->php_ini,
+				$this->image_size
+			)
+		);
+
+		// Pretend create_gd fails creating the file but returns true
+		$thumbnail_mock->expects($this->any())
+			->method('create_gd')
+			->with()
+			->willReturn(true);
+
+		$this->assertSame(false, $thumbnail_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+	}
 }
