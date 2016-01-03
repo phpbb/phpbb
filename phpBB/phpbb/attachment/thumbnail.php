@@ -266,11 +266,6 @@ class thumbnail
 	 */
 	protected function create_gd()
 	{
-		if ($this->thumbnail_created)
-		{
-			return true;
-		}
-
 		$type = $this->get_supported_image_types($this->type);
 
 		if ($type['gd'])
