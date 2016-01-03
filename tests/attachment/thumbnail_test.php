@@ -262,4 +262,34 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 	}
+
+	public function test_create_imagick()
+	{
+		if (!file_exists('/usr/bin/convert'))
+		{
+			$this->markTestSkipped('Unable to test imagick which non-existent imagick');
+		}
+
+		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
+		$this->image_size->expects($this->any())
+			->method('getImageSize')
+			->with($this->anything())
+			->willReturn(array(
+				'width'		=> 500,
+				'height'	=> 500,
+				'type'		=> IMAGETYPE_PNG,
+			));
+		$this->config->set('img_imagick', '/usr/bin');
+
+		$this->get_thumbnail();
+
+		$this->assertEquals(true, $this->thumbnail->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+
+		$this->image_size = new \FastImageSize\FastImageSize();
+
+		if (file_exists($this->phpbb_root_path . '../tests/upload/fixture/meh'))
+		{
+			unlink($this->phpbb_root_path . '../tests/upload/fixture/meh');
+		}
+	}
 }
