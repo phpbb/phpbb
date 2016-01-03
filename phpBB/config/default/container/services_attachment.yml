@@ -27,10 +27,10 @@ services:
         class: phpbb\attachment\thumbnail
         scope: prototype
         arguments:
-            - @config
-            - @filesystem
-            - @php_ini
-            - @upload_imagesize
+            - '@config'
+            - '@filesystem'
+            - '@php_ini'
+            - '@upload_imagesize'
 
     attachment.upload:
         class: phpbb\attachment\upload
@@ -46,4 +46,5 @@ services:
             - '@plupload'
             - '@storage.attachment'
             - '@filesystem.temp'
+            - '@attachment.thumbnail'
             - '@user'

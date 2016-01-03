@@ -488,165 +488,17 @@ function get_supported_image_types($type = false)
 
 /**
 * Create Thumbnail
+*
+* @deprecated 3.3.0-a1 (To be removed: 3.4.0)
 */
 function create_thumbnail($source, $destination, $mimetype)
 {
-	global $config, $phpbb_filesystem;
+	global $phpbb_container;
 
-	$min_filesize = (int) $config['img_min_thumb_filesize'];
-	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
+	/** @var \phpbb\attachment\thumbnail $attachment_thumbnail */
+	$attachment_thumbnail = $phpbb_container->get('attachment.thumbnail');
 
-	if (!$img_filesize || $img_filesize <= $min_filesize)
-	{
-		return false;
-	}
-
-	$dimension = @getimagesize($source);
-
-	if ($dimension === false)
-	{
-		return false;
-	}
-
-	list($width, $height, $type, ) = $dimension;
-
-	if (empty($width) || empty($height))
-	{
-		return false;
-	}
-
-	list($new_width, $new_height) = get_img_size_format($width, $height);
-
-	// Do not create a thumbnail if the resulting width/height is bigger than the original one
-	if ($new_width >= $width && $new_height >= $height)
-	{
-		return false;
-	}
-
-	$used_imagick = false;
-
-	// Only use ImageMagick if defined and the passthru function not disabled
-	if ($config['img_imagick'] && function_exists('passthru'))
-	{
-		if (substr($config['img_imagick'], -1) !== '/')
-		{
-			$config['img_imagick'] .= '/';
-		}
-
-		@passthru(escapeshellcmd($config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -geometry ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" "' . str_replace('\\', '/', $destination) . '"');
-
-		if (file_exists($destination))
-		{
-			$used_imagick = true;
-		}
-	}
-
-	if (!$used_imagick)
-	{
-		$type = get_supported_image_types($type);
-
-		if ($type['gd'])
-		{
-			// If the type is not supported, we are not able to create a thumbnail
-			if ($type['format'] === false)
-			{
-				return false;
-			}
-
-			switch ($type['format'])
-			{
-				case IMG_GIF:
-					$image = @imagecreatefromgif($source);
-				break;
-
-				case IMG_JPG:
-					@ini_set('gd.jpeg_ignore_warning', 1);
-					$image = @imagecreatefromjpeg($source);
-				break;
-
-				case IMG_PNG:
-					$image = @imagecreatefrompng($source);
-				break;
-
-				case IMG_WBMP:
-					$image = @imagecreatefromwbmp($source);
-				break;
-			}
-
-			if (empty($image))
-			{
-				return false;
-			}
-
-			if ($type['version'] == 1)
-			{
-				$new_image = imagecreate($new_width, $new_height);
-
-				if ($new_image === false)
-				{
-					return false;
-				}
-
-				imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-			}
-			else
-			{
-				$new_image = imagecreatetruecolor($new_width, $new_height);
-
-				if ($new_image === false)
-				{
-					return false;
-				}
-
-				// Preserve alpha transparency (png for example)
-				@imagealphablending($new_image, false);
-				@imagesavealpha($new_image, true);
-
-				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-			}
-
-			switch ($type['format'])
-			{
-				case IMG_GIF:
-					imagegif($new_image, $destination);
-				break;
-
-				case IMG_JPG:
-					imagejpeg($new_image, $destination, 90);
-				break;
-
-				case IMG_PNG:
-					imagepng($new_image, $destination);
-				break;
-
-				case IMG_WBMP:
-					imagewbmp($new_image, $destination);
-				break;
-			}
-
-			imagedestroy($new_image);
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	if (!file_exists($destination))
-	{
-		return false;
-	}
-
-	try
-	{
-		$phpbb_filesystem->phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
-	}
-	catch (\phpbb\filesystem\exception\filesystem_exception $e)
-	{
-		// Do nothing
-	}
-
-	return true;
+	return $attachment_thumbnail->create($source, $destination, $mimetype);
 }
 
 /**
