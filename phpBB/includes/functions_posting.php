@@ -430,10 +430,10 @@ function get_supported_image_types($type = false)
 {
 	global $phpbb_container;
 
-	/** @var \phpbb\attachment\thumbnail $attachment_thumbnail */
-	$attachment_thumbnail = $phpbb_container->get('attachment.thumbnail');
+	/** @var \phpbb\attachment\resize $attachment_resize */
+	$attachment_resize = $phpbb_container->get('attachment.resize');
 
-	return $attachment_thumbnail->get_supported_image_types($type);
+	return $attachment_resize->get_supported_image_types($type);
 }
 
 /**
@@ -445,10 +445,10 @@ function create_thumbnail($source, $destination, $mimetype)
 {
 	global $phpbb_container;
 
-	/** @var \phpbb\attachment\thumbnail $attachment_thumbnail */
-	$attachment_thumbnail = $phpbb_container->get('attachment.thumbnail');
+	/** @var \phpbb\attachment\resize $attachment_resize */
+	$attachment_resize = $phpbb_container->get('attachment.resize');
 
-	return $attachment_thumbnail->create($source, $destination, $mimetype);
+	return $attachment_resize->create($source, $destination, $mimetype);
 }
 
 /**

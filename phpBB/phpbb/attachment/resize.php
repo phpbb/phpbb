@@ -21,7 +21,7 @@ use FastImageSize\FastImageSize;
 /**
  * Attachment thumbnail class
  */
-class thumbnail
+class resize
 {
 	/** @var config phpBB config */
 	protected $config;

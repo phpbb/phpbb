@@ -13,10 +13,10 @@
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
 
-class phpbb_attachment_thumbnail_test extends \phpbb_test_case
+class phpbb_attachment_resize_test extends \phpbb_test_case
 {
-	/** @var \phpbb\attachment\thumbnail */
-	protected $thumbnail;
+	/** @var \phpbb\attachment\resize */
+	protected $resize;
 
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -34,6 +34,11 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 	{
 		global $phpbb_root_path;
 
+		if (!@extension_loaded('gd'))
+		{
+			$this->markTestSkipped('Attachment resize tests require gd extension.');
+		}
+
 		parent::setUp();
 
 		$this->config = new \phpbb\config\config(array());
@@ -42,12 +47,12 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 		$this->image_size = new \FastImageSize\FastImageSize();
 		$this->phpbb_root_path = $phpbb_root_path;
 
-		$this->get_thumbnail();
+		$this->get_resize();
 	}
 
-	private function get_thumbnail()
+	private function get_resize()
 	{
-		$this->thumbnail = new \phpbb\attachment\thumbnail(
+		$this->resize = new \phpbb\attachment\resize(
 			$this->config,
 			$this->filesystem,
 			$this->php_ini,
@@ -115,9 +120,9 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 				->willReturn($mock_image_size_return);
 		}
 
-		$this->get_thumbnail();
+		$this->get_resize();
 
-		$this->assertSame($expected, $this->thumbnail->create($this->phpbb_root_path . $source, $this->phpbb_root_path . $destination, $type));
+		$this->assertSame($expected, $this->resize->create($this->phpbb_root_path . $source, $this->phpbb_root_path . $destination, $type));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 
@@ -143,8 +148,8 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 				'type'		=> IMAGETYPE_PNG,
 			));
 
-		/** @var \phpbb\attachment\thumbnail $thumbnail_mock */
-		$thumbnail_mock = $this->getMock(
+		/** @var \phpbb\attachment\resize $resize_mock */
+		$resize_mock = $this->getMock(
 			'\phpbb\attachment\thumbnail',
 			array('get_supported_image_types'),
 			array(
@@ -156,15 +161,15 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 		);
 
 		// Pretend get_supported_image_types returns non-supported GD
-		$thumbnail_mock->expects($this->any())
+		$resize_mock->expects($this->any())
 			->method('get_supported_image_types')
 			->with($this->anything())
 			->willReturn(array('gd' => false));
 
-		$this->assertSame(false, $thumbnail_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+		$this->assertSame(false, $resize_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
 
-		/** @var \phpbb\attachment\thumbnail $thumbnail_mock */
-		$thumbnail_mock = $this->getMock(
+		/** @var \phpbb\attachment\resize $thumbnail_mock */
+		$resize_mock = $this->getMock(
 			'\phpbb\attachment\thumbnail',
 			array('create_gd'),
 			array(
@@ -176,12 +181,12 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 		);
 
 		// Pretend create_gd fails creating the file but returns true
-		$thumbnail_mock->expects($this->any())
+		$resize_mock->expects($this->any())
 			->method('create_gd')
 			->with()
 			->willReturn(true);
 
-		$this->assertSame(false, $thumbnail_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+		$this->assertSame(false, $resize_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 	}
@@ -227,7 +232,7 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 	 */
 	public function test_get_supported_image_types($input, $expected)
 	{
-		$this->assertSame($expected, $this->thumbnail->get_supported_image_types($input));
+		$this->assertSame($expected, $this->resize->get_supported_image_types($input));
 	}
 
 	public function data_create_gd()
@@ -256,9 +261,9 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 				'type'		=> $type,
 			));
 
-		$this->get_thumbnail();
+		$this->get_resize();
 
-		$this->assertEquals($expected, $this->thumbnail->create($this->phpbb_root_path . '../tests/upload/fixture/' . $source, $this->phpbb_root_path . '../tests/upload/fixture/meh', $mimetype));
+		$this->assertEquals($expected, $this->resize->create($this->phpbb_root_path . '../tests/upload/fixture/' . $source, $this->phpbb_root_path . '../tests/upload/fixture/meh', $mimetype));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 	}
@@ -267,7 +272,7 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 	{
 		if (!file_exists('/usr/bin/convert'))
 		{
-			$this->markTestSkipped('Unable to test imagick which non-existent imagick');
+			$this->markTestSkipped('Unable to test imagick if its location is unknown');
 		}
 
 		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
@@ -281,9 +286,9 @@ class phpbb_attachment_thumbnail_test extends \phpbb_test_case
 			));
 		$this->config->set('img_imagick', '/usr/bin');
 
-		$this->get_thumbnail();
+		$this->get_resize();
 
-		$this->assertEquals(true, $this->thumbnail->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+		$this->assertEquals(true, $this->resize->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 

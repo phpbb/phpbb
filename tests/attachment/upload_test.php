@@ -42,8 +42,8 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/** @var \phpbb\storage\storage */
 	protected $storage;
 
-	/** @var \phpbb\attachment\thumbnail */
-	protected $thumbnail;
+	/** @var \phpbb\attachment\resize */
+	protected $resize;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -149,7 +149,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->temp = new \phpbb\filesystem\temp($this->filesystem, '');
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
-		$this->thumbnail = new \phpbb\attachment\thumbnail($this->config, new \phpbb\filesystem\filesystem(), $this->php_ini, new \FastImageSize\FastImageSize());
+		$this->resize = new \phpbb\attachment\resize($this->config, new \phpbb\filesystem\filesystem(), $this->php_ini, new \FastImageSize\FastImageSize());
 
 		$this->upload = new \phpbb\attachment\upload(
 			$this->auth,
@@ -162,7 +162,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->plupload,
 			$this->storage,
 			$this->temp,
-			$this->thumbnail,
+			$this->resize,
 			$this->user,
 			$this->phpbb_root_path
 		);
@@ -257,7 +257,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->plupload,
 			$this->storage,
 			$this->temp,
-			$this->thumbnail,
+			$this->resize,
 			$this->user,
 			$this->phpbb_root_path
 		);
@@ -424,7 +424,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$plupload,
 			$this->storage,
 			$this->temp,
-			$this->thumbnail,
+			$this->resize,
 			$this->user,
 			$this->phpbb_root_path
 		);

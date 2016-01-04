@@ -23,14 +23,20 @@ services:
         arguments:
             - '@dbal.conn'
 
-    attachment.thumbnail:
-        class: phpbb\attachment\thumbnail
+    attachment.resize:
+        class: phpbb\attachment\resize
         scope: prototype
         arguments:
             - '@config'
             - '@filesystem'
             - '@php_ini'
             - '@upload_imagesize'
+
+    attachment.resync:
+        class: phpbb\attachment\resync
+        scope: prototype
+        arguments:
+            - '@dbal.conn'
 
     attachment.upload:
         class: phpbb\attachment\upload
@@ -46,5 +52,5 @@ services:
             - '@plupload'
             - '@storage.attachment'
             - '@filesystem.temp'
-            - '@attachment.thumbnail'
+            - '@attachment.resize'
             - '@user'
