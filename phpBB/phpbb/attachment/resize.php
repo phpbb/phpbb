@@ -19,7 +19,7 @@ use bantu\IniGetWrapper\IniGetWrapper;
 use FastImageSize\FastImageSize;
 
 /**
- * Attachment thumbnail class
+ * Attachment resize class
  */
 class resize
 {
@@ -57,10 +57,10 @@ class resize
 	protected $new_width;
 
 	/** @var bool Flag whether thumbnail was created */
-	private $thumbnail_created = false;
+	private $resize_created = false;
 
 	/**
-	 * Thumbnail constructor
+	 * Resize constructor
 	 *
 	 * @param config $config phpBB config
 	 * @param filesystem_interface $filesystem phpBB filesystem
@@ -76,7 +76,7 @@ class resize
 	}
 
 	/**
-	 * Create Thumbnail
+	 * Create resized image
 	 *
 	 * @param string $source Source file path
 	 * @param string $destination Destination file path
@@ -87,7 +87,7 @@ class resize
 	public function create($source, $destination, $mime_type)
 	{
 		$this->set_paths($source, $destination);
-		$this->thumbnail_created = false;
+		$this->resize_created = false;
 
 		if (!$this->set_size($mime_type))
 		{
@@ -96,7 +96,7 @@ class resize
 
 		$this->create_imagick();
 
-		if (!$this->thumbnail_created && !$this->create_gd())
+		if (!$this->resize_created && !$this->create_gd())
 		{
 			return false;
 		}
@@ -169,7 +169,7 @@ class resize
 	}
 
 	/**
-	 * Create thumbnail using imagemagick
+	 * Create resized image using imagemagick
 	 */
 	protected function create_imagick()
 	{
@@ -185,7 +185,7 @@ class resize
 
 			if (file_exists($this->destination))
 			{
-				$this->thumbnail_created = true;
+				$this->resize_created = true;
 			}
 		}
 	}
@@ -260,7 +260,7 @@ class resize
 	}
 
 	/**
-	 * Create thumbnail using GD
+	 * Create resized image using GD
 	 *
 	 * @return bool True if thumbnail might have been created, false if not
 	 */

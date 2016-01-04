@@ -150,7 +150,7 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 
 		/** @var \phpbb\attachment\resize $resize_mock */
 		$resize_mock = $this->getMock(
-			'\phpbb\attachment\thumbnail',
+			'\phpbb\attachment\resize',
 			array('get_supported_image_types'),
 			array(
 				$this->config,
@@ -170,7 +170,7 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 
 		/** @var \phpbb\attachment\resize $thumbnail_mock */
 		$resize_mock = $this->getMock(
-			'\phpbb\attachment\thumbnail',
+			'\phpbb\attachment\resize',
 			array('create_gd'),
 			array(
 				$this->config,
