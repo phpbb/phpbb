@@ -9,6 +9,9 @@ services:
             - '@attachment.resync'
             - '@storage.attachment'
 
+    attachment.image_helper:
+        class: phpbb\attachment\image_helper
+
     attachment.manager:
         class: phpbb\attachment\manager
         shared: false
@@ -27,8 +30,8 @@ services:
         class: phpbb\attachment\resize
         scope: prototype
         arguments:
-            - '@config'
             - '@filesystem'
+            - '@attachment.image_helper'
             - '@php_ini'
             - '@upload_imagesize'
 

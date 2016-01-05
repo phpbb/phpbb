@@ -21,6 +21,9 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\attachment\image_helper */
+	protected $image_helper;
+
 	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
@@ -46,6 +49,7 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper();
 		$this->image_size = new \FastImageSize\FastImageSize();
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->image_helper = new \phpbb\attachment\image_helper();
 
 		$this->get_resize();
 	}
@@ -53,11 +57,18 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 	private function get_resize()
 	{
 		$this->resize = new \phpbb\attachment\resize(
-			$this->config,
 			$this->filesystem,
+			$this->image_helper,
 			$this->php_ini,
 			$this->image_size
 		);
+		$this->resize
+			->set_imagick_path($this->config['img_imagick'])
+			->set_min_file_size($this->config['img_min_thumb_filesize'])
+			->set_target_size(
+				$this->config['img_max_thumb_width'],
+				$this->config['imag_max_thumb_height']
+			);
 	}
 
 	public function data_get_size()
@@ -147,24 +158,13 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 				'height'	=> 500,
 				'type'		=> IMAGETYPE_PNG,
 			));
+		$image_helper = $this->getMock('\phpbb\attachment\image_helper', array('get_supported_image_types'));
+		$image_helper->expects($this->any())
+		->method('get_supported_image_types')
+		->with($this->anything())
+		->willReturn(array('gd' => false));
 
-		/** @var \phpbb\attachment\resize $resize_mock */
-		$resize_mock = $this->getMock(
-			'\phpbb\attachment\resize',
-			array('get_supported_image_types'),
-			array(
-				$this->config,
-				$this->filesystem,
-				$this->php_ini,
-				$this->image_size
-			)
-		);
-
-		// Pretend get_supported_image_types returns non-supported GD
-		$resize_mock->expects($this->any())
-			->method('get_supported_image_types')
-			->with($this->anything())
-			->willReturn(array('gd' => false));
+		$resize_mock = new \phpbb\attachment\resize($this->filesystem, $image_helper, $this->php_ini, $this->image_size);
 
 		$this->assertSame(false, $resize_mock->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
 
@@ -173,8 +173,8 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 			'\phpbb\attachment\resize',
 			array('create_gd'),
 			array(
-				$this->config,
 				$this->filesystem,
+				$this->image_helper,
 				$this->php_ini,
 				$this->image_size
 			)
@@ -232,7 +232,7 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 	 */
 	public function test_get_supported_image_types($input, $expected)
 	{
-		$this->assertSame($expected, $this->resize->get_supported_image_types($input));
+		$this->assertSame($expected, $this->image_helper->get_supported_image_types($input));
 	}
 
 	public function data_create_gd()
@@ -260,6 +260,9 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 				'height'	=> 500,
 				'type'		=> $type,
 			));
+		$this->config->set('img_min_thumb_filesize', 0);
+		$this->config->set('img_max_thumb_width', 200);
+		$this->config->set('img_max_thumb_height', 200);
 
 		$this->get_resize();
 
@@ -268,7 +271,20 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 		$this->image_size = new \FastImageSize\FastImageSize();
 	}
 
-	public function test_create_imagick()
+	public function data_create_imagick()
+	{
+		return array(
+			array(true, '/usr/bin'),
+			array(true, '/usr/bin/'),
+			// will still work as GD exists
+			array(true, '/usr/does/not/have/this/dir/that/should/not/exist'),
+		);
+	}
+
+	/**
+	 * @dataProvider data_create_imagick
+	 */
+	public function test_create_imagick($expected, $imagick_path)
 	{
 		if (!file_exists('/usr/bin/convert'))
 		{
@@ -284,11 +300,12 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 				'height'	=> 500,
 				'type'		=> IMAGETYPE_PNG,
 			));
-		$this->config->set('img_imagick', '/usr/bin');
+		$this->config->set('img_imagick', $imagick_path);
+		$this->config->set('img_max_thumb_width', 200);
 
 		$this->get_resize();
 
-		$this->assertEquals(true, $this->resize->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+		$this->assertEquals($expected, $this->resize->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 

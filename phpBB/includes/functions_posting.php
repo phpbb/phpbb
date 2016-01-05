@@ -397,28 +397,19 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 //
 /**
 * Calculate the needed size for Thumbnail
+*
+* @deprecated 3.2.0-a3 (To be removed: 3.4.0)
 */
 function get_img_size_format($width, $height)
 {
 	global $config;
 
+	$image_helper = new \phpbb\attachment\image_helper();
+
 	// Maximum Width the Image can take
 	$max_width = ($config['img_max_thumb_width']) ? $config['img_max_thumb_width'] : 400;
 
-	if ($width > $height)
-	{
-		return array(
-			round($width * ($max_width / $width)),
-			round($height * ($max_width / $width))
-		);
-	}
-	else
-	{
-		return array(
-			round($width * ($max_width / $height)),
-			round($height * ($max_width / $height))
-		);
-	}
+	return $image_helper->get_img_size_format($width, $height, $max_width);
 }
 
 /**
@@ -430,10 +421,10 @@ function get_supported_image_types($type = false)
 {
 	global $phpbb_container;
 
-	/** @var \phpbb\attachment\resize $attachment_resize */
-	$attachment_resize = $phpbb_container->get('attachment.resize');
+	/** @var \phpbb\attachment\image_helper $attachment_resize */
+	$image_helper = $phpbb_container->get('attachment.image_helper');
 
-	return $attachment_resize->get_supported_image_types($type);
+	return $image_helper->get_supported_image_types($type);
 }
 
 /**

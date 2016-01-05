@@ -13,7 +13,6 @@
 
 namespace phpbb\attachment;
 
-use phpbb\config\config;
 use phpbb\filesystem\filesystem_interface;
 use bantu\IniGetWrapper\IniGetWrapper;
 use FastImageSize\FastImageSize;
@@ -23,11 +22,11 @@ use FastImageSize\FastImageSize;
  */
 class resize
 {
-	/** @var config phpBB config */
-	protected $config;
-
 	/** @var filesystem_interface phpBB filesystem */
 	protected $filesystem;
+
+	/** @var \phpbb\attachment\image_helper Image helper class */
+	protected $image_helper;
 
 	/** @var IniGetWrapper */
 	protected $php_ini;
@@ -50,29 +49,82 @@ class resize
 	/** @var string Source image type */
 	protected $type;
 
-	/** @var int Source image height */
+	/** @var int New image height */
 	protected $new_height;
 
-	/** @var int Source image width */
+	/** @var int New image width */
 	protected $new_width;
+
+	/** @var int Target width */
+	protected $target_width;
+
+	/** @var int Target height */
+	protected $target_height;
+
+	/** @var int Minimum target file size */
+	protected $target_min_size;
 
 	/** @var bool Flag whether thumbnail was created */
 	private $resize_created = false;
 
+	/** @var string Imagemagick path */
+	private $imagick_path = '';
+
 	/**
 	 * Resize constructor
 	 *
-	 * @param config $config phpBB config
 	 * @param filesystem_interface $filesystem phpBB filesystem
+	 * @param image_helper $image_helper Image helper class
 	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param FastImageSize $image_size FastImageSize library
 	 */
-	public function __construct(config $config, filesystem_interface $filesystem, IniGetWrapper $php_ini, FastImageSize $image_size)
+	public function __construct(filesystem_interface $filesystem, image_helper $image_helper, IniGetWrapper $php_ini, FastImageSize $image_size)
 	{
-		$this->config = $config;
 		$this->filesystem = $filesystem;
+		$this->image_helper = $image_helper;
 		$this->php_ini = $php_ini;
 		$this->image_size = $image_size;
+	}
+
+	/**
+	 * Set target size limits
+	 *
+	 * @param int $target_width
+	 * @param int $target_height
+	 * @return resize Returns self for allowing chained calls
+	 */
+	public function set_target_size($target_width, $target_height)
+	{
+		$this->target_width = $target_width;
+		$this->target_height = $target_height;
+
+		return $this;
+	}
+
+	/**
+	 * Set target minimum file size in bytes
+	 *
+	 * @param int $min_size
+	 * @return resize Returns self for allowing chained calls
+	 */
+	public function set_min_file_size($min_size)
+	{
+		$this->target_min_size = $min_size;
+
+		return $this;
+	}
+
+	/**
+	 * Enable imagemagick support
+	 *
+	 * @param string $path Imagemagick path
+	 * @return resize Returns self for allowing chained calls
+	 */
+	public function set_imagick_path($path)
+	{
+		$this->imagick_path = $path;
+
+		return $this;
 	}
 
 	/**
@@ -141,7 +193,7 @@ class resize
 	{
 		$img_filesize = (file_exists($this->source)) ? @filesize($this->source) : false;
 
-		if (!$img_filesize || $img_filesize <= (int) $this->config['img_min_thumb_filesize'])
+		if (!$img_filesize || $img_filesize <= (int) $this->target_min_size)
 		{
 			return false;
 		}
@@ -157,7 +209,12 @@ class resize
 		$this->height = $dimension['height'];
 		$this->type = $dimension['type'];
 
-		list($this->new_width, $this->new_height) = get_img_size_format($this->width, $this->height);
+		list($this->new_width, $this->new_height) = $this->image_helper->get_img_size_format(
+			$this->width,
+			$this->height,
+			$this->target_width,
+			$this->target_height
+		);
 
 		// Do not create a thumbnail if the resulting width/height is bigger than the original one
 		if ($this->new_width >= $this->width && $this->new_height >= $this->height)
@@ -174,14 +231,20 @@ class resize
 	protected function create_imagick()
 	{
 		// Only use imagemagick if defined and the passthru function not disabled
-		if ($this->config['img_imagick'] && function_exists('passthru'))
+		if ($this->imagick_path && function_exists('passthru'))
 		{
-			if (substr($this->config['img_imagick'], -1) !== '/')
+			if (substr($this->imagick_path, -1) !== '/')
 			{
-				$this->config['img_imagick'] .= '/';
+				$this->imagick_path .= '/';
 			}
 
-			@passthru(escapeshellcmd($this->config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -geometry ' . $this->new_width . 'x' . $this->new_height . ' "' . str_replace('\\', '/', $this->source) . '" "' . str_replace('\\', '/', $this->destination) . '"');
+			// Make sure we don't try to use bogus here
+			if (!is_dir($this->imagick_path))
+			{
+				return;
+			}
+
+			@passthru(escapeshellcmd($this->imagick_path) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -geometry ' . $this->new_width . 'x' . $this->new_height . ' "' . str_replace('\\', '/', $this->source) . '" "' . str_replace('\\', '/', $this->destination) . '"');
 
 			if (file_exists($this->destination))
 			{
@@ -191,82 +254,13 @@ class resize
 	}
 
 	/**
-	 * Get supported image types
-	 *
-	 * @param bool|int $type Image type constant
-	 * @return array An Array containing whether gd is enabled and supported
-	 *		image types
-	 */
-	public function get_supported_image_types($type = false)
-	{
-		if (@extension_loaded('gd'))
-		{
-			$format = imagetypes();
-			$new_type = 0;
-
-			if ($type !== false)
-			{
-				// Type is one of the IMAGETYPE constants - it is fetched from getimagesize()
-				switch ($type)
-				{
-					// GIF
-					case IMAGETYPE_GIF:
-						$new_type = ($format & IMG_GIF) ? IMG_GIF : false;
-					break;
-
-					// JPG, JPC, JP2
-					case IMAGETYPE_JPEG:
-					case IMAGETYPE_JPC:
-					case IMAGETYPE_JPEG2000:
-					case IMAGETYPE_JP2:
-					case IMAGETYPE_JPX:
-					case IMAGETYPE_JB2:
-						$new_type = ($format & IMG_JPG) ? IMG_JPG : false;
-					break;
-
-					// PNG
-					case IMAGETYPE_PNG:
-						$new_type = ($format & IMG_PNG) ? IMG_PNG : false;
-					break;
-
-					// WBMP
-					case IMAGETYPE_WBMP:
-						$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
-					break;
-				}
-			}
-			else
-			{
-				$new_type = array();
-				$go_through_types = array(IMG_GIF, IMG_JPG, IMG_PNG, IMG_WBMP);
-
-				foreach ($go_through_types as $check_type)
-				{
-					if ($format & $check_type)
-					{
-						$new_type[] = $check_type;
-					}
-				}
-			}
-
-			return array(
-				'gd'		=> ($new_type) ? true : false,
-				'format'	=> $new_type,
-				'version'	=> (function_exists('imagecreatetruecolor')) ? 2 : 1
-			);
-		}
-
-		return array('gd' => false);
-	}
-
-	/**
 	 * Create resized image using GD
 	 *
 	 * @return bool True if thumbnail might have been created, false if not
 	 */
 	protected function create_gd()
 	{
-		$type = $this->get_supported_image_types($this->type);
+		$type = $this->image_helper->get_supported_image_types($this->type);
 
 		if ($type['gd'])
 		{
