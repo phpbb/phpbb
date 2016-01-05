@@ -13,11 +13,6 @@
 
 namespace phpbb\attachment;
 
-use phpbb\config\config;
-use phpbb\filesystem\filesystem_interface;
-use bantu\IniGetWrapper\IniGetWrapper;
-use FastImageSize\FastImageSize;
-
 /**
  * Attachment image helper class
  */
