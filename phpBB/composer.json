@@ -34,6 +34,7 @@
 		"s9e/text-formatter": "^0.4.2",
 		"symfony/config": "2.8.*",
 		"symfony/console": "2.8.*",
+		"symfony/debug": "2.8.*",
 		"symfony/dependency-injection": "2.8.*",
 		"symfony/event-dispatcher": "2.8.*",
 		"symfony/filesystem": "2.8.*",
