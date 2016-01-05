@@ -249,6 +249,32 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 	/**
 	 * @dataProvider data_create_gd
 	 */
+	public function test_create_thumbnail($mimetype, $type, $source, $expected)
+	{
+		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
+		$this->image_size->expects($this->any())
+			->method('getImageSize')
+			->with($this->anything())
+			->willReturn(array(
+				'width'		=> 500,
+				'height'	=> 500,
+				'type'		=> $type,
+			));
+		$this->config->set('img_min_thumb_filesize', 0);
+		$this->config->set('img_max_thumb_width', 200);
+		$this->config->set('img_max_thumb_height', 200);
+
+		$this->get_resize();
+		$thumbnail_class = new \phpbb\attachment\thumbnail($this->config, $this->resize);
+
+		$this->assertEquals($expected, $thumbnail_class->create($this->phpbb_root_path . '../tests/upload/fixture/' . $source, $this->phpbb_root_path . '../tests/upload/fixture/meh', $mimetype));
+
+		$this->image_size = new \FastImageSize\FastImageSize();
+	}
+
+	/**
+	 * @dataProvider data_create_gd
+	 */
 	public function test_create_gd($mimetype, $type, $source, $expected)
 	{
 		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
@@ -306,6 +332,30 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 		$this->get_resize();
 
 		$this->assertEquals($expected, $this->resize->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
+
+		$this->image_size = new \FastImageSize\FastImageSize();
+	}
+
+	public function test_create_thumbnail_imagick()
+	{
+		$this->image_size = $this->getMock('\FastImageSize\FastImageSize', array('getImageSize'));
+		$this->image_size->expects($this->any())
+			->method('getImageSize')
+			->with($this->anything())
+			->willReturn(array(
+				'width'		=> 500,
+				'height'	=> 500,
+				'type'		=> IMAGETYPE_PNG,
+			));
+		$this->config->set('img_min_thumb_filesize', 0);
+		$this->config->set('img_max_thumb_width', 200);
+		$this->config->set('img_max_thumb_height', 200);
+		$this->config->set('img_imagick', '/usr/bin');
+
+		$this->get_resize();
+		$thumbnail_class = new \phpbb\attachment\thumbnail($this->config, $this->resize);
+
+		$this->assertEquals(true, $thumbnail_class->create($this->phpbb_root_path . '../tests/upload/fixture/png', $this->phpbb_root_path . '../tests/upload/fixture/meh', 'image/png'));
 
 		$this->image_size = new \FastImageSize\FastImageSize();
 
