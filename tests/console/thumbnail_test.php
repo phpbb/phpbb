@@ -67,10 +67,11 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
-		$this->resize = new \phpbb\attachment\resize($config, $phpbb_filesystem, new \bantu\IniGetWrapper\IniGetWrapper(), new \FastImageSize\FastImageSize());
+		$this->resize = new \phpbb\attachment\resize($phpbb_filesystem, new \phpbb\attachment\image_helper(), new \bantu\IniGetWrapper\IniGetWrapper(), new \FastImageSize\FastImageSize());
+		$this->thumbnail = new \phpbb\attachment\thumbnail($config, $this->resize);
 
 		$this->application = new Application();
-		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->resize, $this->phpbb_root_path, $this->phpEx));
+		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->thumbnail, $this->phpbb_root_path, $this->phpEx));
 		$this->application->add(new delete($this->user, $this->db, $this->phpbb_root_path));
 		$this->application->add(new recreate($this->user));
 

@@ -55,5 +55,5 @@ services:
             - '@plupload'
             - '@storage.attachment'
             - '@filesystem.temp'
-            - '@attachment.resize'
+            - '@attachment.thumbnail'
             - '@user'

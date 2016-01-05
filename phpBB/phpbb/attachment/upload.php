@@ -59,8 +59,8 @@ class upload
 	/** @var temp */
 	protected $temp;
 
-	/** @var resize Resize class */
-	protected $resize;
+	/** @var thumbnail Resize class */
+	protected $thumbnail;
 
 	/** @var user */
 	protected $user;
@@ -89,10 +89,10 @@ class upload
 	 * @param plupload $plupload
 	 * @param storage $storage
 	 * @param temp $temp
-	 * @param resize $resize
+	 * @param thumbnail $thumbnail
 	 * @param user $user
 	 */
-	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, temp $temp, resize $resize, user $user)
+	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, temp $temp, thumbnail $thumbnail, user $user)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -104,7 +104,7 @@ class upload
 		$this->plupload = $plupload;
 		$this->storage = $storage;
 		$this->temp = $temp;
-		$this->resize = $resize;
+		$this->thumbnail = $thumbnail;
 		$this->user = $user;
 	}
 
@@ -249,7 +249,7 @@ class upload
 			$destination_name = 'thumb_' . $this->file->get('realname');
 			$destination = $this->temp->get_dir() . '/' . $destination_name;
 
-			if ($this->resize->create($source, $destination, $this->file->get('mimetype')))
+			if ($this->thumbnail->create($source, $destination, $this->file->get('mimetype')))
 			{
 				// Move the thumbnail from temp folder to the storage
 				$fp = fopen($destination, 'rb');

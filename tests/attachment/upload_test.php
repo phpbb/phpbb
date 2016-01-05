@@ -72,6 +72,9 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/** @var \bantu\IniGetWrapper\IniGetWrapper */
 	protected $php_ini;
 
+	/** @var \phpbb\attachment\thumbnail */
+	protected $thumbnail;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
@@ -149,7 +152,8 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->temp = new \phpbb\filesystem\temp($this->filesystem, '');
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
-		$this->resize = new \phpbb\attachment\resize($this->config, new \phpbb\filesystem\filesystem(), $this->php_ini, new \FastImageSize\FastImageSize());
+		$this->resize = new \phpbb\attachment\resize(new \phpbb\filesystem\filesystem(), new \phpbb\attachment\image_helper(), $this->php_ini, new \FastImageSize\FastImageSize());
+		$this->thumbnail = new \phpbb\attachment\thumbnail($this->config, $this->resize);
 
 		$this->upload = new \phpbb\attachment\upload(
 			$this->auth,
@@ -162,7 +166,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->plupload,
 			$this->storage,
 			$this->temp,
-			$this->resize,
+			$this->thumbnail,
 			$this->user,
 			$this->phpbb_root_path
 		);
@@ -257,7 +261,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->plupload,
 			$this->storage,
 			$this->temp,
-			$this->resize,
+			$this->thumbnail,
 			$this->user,
 			$this->phpbb_root_path
 		);
@@ -424,7 +428,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$plupload,
 			$this->storage,
 			$this->temp,
-			$this->resize,
+			$this->thumbnail,
 			$this->user,
 			$this->phpbb_root_path
 		);

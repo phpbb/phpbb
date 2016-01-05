@@ -265,7 +265,7 @@ services:
             - '@user'
             - '@dbal.conn'
             - '@cache'
-            - '@attachment.resize'
+            - '@attachment.thumbnail'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
