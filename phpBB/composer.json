@@ -43,9 +43,7 @@
 		"symfony/routing": "2.8.*",
 		"symfony/twig-bridge": "2.8.*",
 		"symfony/yaml": "2.8.*",
-		"twig/twig": "1.*",
-
-		"symfony/debug": "2.8.*"
+		"twig/twig": "1.*"
 	},
 	"require-dev": {
 		"fabpot/goutte": "1.0.*",
@@ -55,10 +53,8 @@
 		"phpunit/phpunit": "4.1.*",
 		"sami/sami": "1.*",
 		"squizlabs/php_codesniffer": "2.*",
-		"symfony/browser-kit": "2.8.*@dev",
-		"symfony/dom-crawler": "2.8.*@dev",
-
-		"symfony/css-selector": "2.8.*@dev",
-		"symfony/process": "2.8.*@dev"
+		"symfony/browser-kit": "2.8.*",
+		"symfony/css-selector": "2.8.*",
+		"symfony/dom-crawler": "2.8.*"
 	}
 }
