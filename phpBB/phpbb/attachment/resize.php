@@ -200,7 +200,7 @@ class resize
 
 		$dimension = $this->image_size->getImageSize($this->source, $mime_type);
 
-		if ($dimension === false || empty($dimension['width'] || empty($dimension['height'])))
+		if ($dimension === false || empty($dimension['width']) || empty($dimension['height']))
 		{
 			return false;
 		}
