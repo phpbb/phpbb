@@ -28,7 +28,6 @@ services:
 
     attachment.resize:
         class: phpbb\attachment\resize
-        scope: prototype
         arguments:
             - '@filesystem'
             - '@attachment.image_helper'
@@ -40,6 +39,12 @@ services:
         scope: prototype
         arguments:
             - '@dbal.conn'
+
+    attachment.thumbnail:
+        class: phpbb\attachment\thumbnail
+        arguments:
+            - '@config'
+            - '@attachment.resize'
 
     attachment.upload:
         class: phpbb\attachment\upload

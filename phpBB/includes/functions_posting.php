@@ -419,10 +419,8 @@ function get_img_size_format($width, $height)
 */
 function get_supported_image_types($type = false)
 {
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\image_helper $attachment_resize */
-	$image_helper = $phpbb_container->get('attachment.image_helper');
+	/** @var \phpbb\attachment\image_helper $image_helper */
+	$image_helper = new \phpbb\attachment\image_helper();
 
 	return $image_helper->get_supported_image_types($type);
 }

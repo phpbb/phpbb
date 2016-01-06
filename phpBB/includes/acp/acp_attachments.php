@@ -243,9 +243,9 @@ class acp_attachments
 					}
 				}
 
-				/** @var \phpbb\attachment\resize $attachment_resize */
-				$attachment_resize = $phpbb_container->get('attachment.resize');
-				$supported_types = $attachment_resize->get_supported_image_types();
+				/** @var \phpbb\attachment\image_helper $image_helper */
+				$image_helper = new \phpbb\attachment\image_helper();
+				$supported_types = $image_helper->get_supported_image_types();
 
 				// Check Thumbnail Support
 				if (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !count($supported_types['format'])))
