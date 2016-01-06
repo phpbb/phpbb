@@ -30,6 +30,7 @@ class thumbnail
 	 * Thumbnail constructor
 	 *
 	 * @param config $config phpBB config
+	 * @param resize $resize Resize class
 	 */
 	public function __construct(config $config, resize $resize)
 	{
