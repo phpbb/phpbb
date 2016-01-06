@@ -64,7 +64,7 @@ class resize
 	/** @var int Minimum target file size */
 	protected $target_min_size;
 
-	/** @var bool Flag whether thumbnail was created */
+	/** @var bool Flag whether image was resized */
 	private $resize_created = false;
 
 	/** @var string Imagemagick path */
@@ -91,6 +91,7 @@ class resize
 	 *
 	 * @param int $target_width
 	 * @param int $target_height
+	 *
 	 * @return resize Returns self for allowing chained calls
 	 */
 	public function set_target_size($target_width, $target_height)
@@ -105,6 +106,7 @@ class resize
 	 * Set target minimum file size in bytes
 	 *
 	 * @param int $min_size
+	 *
 	 * @return resize Returns self for allowing chained calls
 	 */
 	public function set_min_file_size($min_size)
@@ -118,6 +120,7 @@ class resize
 	 * Enable imagemagick support
 	 *
 	 * @param string $path Imagemagick path
+	 *
 	 * @return resize Returns self for allowing chained calls
 	 */
 	public function set_imagick_path($path)
@@ -134,7 +137,7 @@ class resize
 	 * @param string $destination Destination file path
 	 * @param string $mime_type File mime type
 	 *
-	 * @return bool True if thumbnail was created, false if not
+	 * @return bool True if image was resized, false if not
 	 */
 	public function create($source, $destination, $mime_type)
 	{
@@ -216,7 +219,7 @@ class resize
 			$this->target_height
 		);
 
-		// Do not create a thumbnail if the resulting width/height is bigger than the original one
+		// Do not resize image if the resulting width/height is bigger than the original one
 		if ($this->new_width >= $this->width && $this->new_height >= $this->height)
 		{
 			return false;
@@ -230,7 +233,6 @@ class resize
 	 */
 	protected function create_imagick()
 	{
-		// Only use imagemagick if defined and the passthru function not disabled
 		if ($this->imagick_path && function_exists('passthru'))
 		{
 			if (substr($this->imagick_path, -1) !== '/')
@@ -238,7 +240,7 @@ class resize
 				$this->imagick_path .= '/';
 			}
 
-			// Make sure we don't try to use bogus here
+			// Make sure we only use existing paths here
 			if (!is_dir($this->imagick_path))
 			{
 				return;
@@ -256,7 +258,7 @@ class resize
 	/**
 	 * Create resized image using GD
 	 *
-	 * @return bool True if thumbnail might have been created, false if not
+	 * @return bool True if image was resized, false if not
 	 */
 	protected function create_gd()
 	{
@@ -264,7 +266,7 @@ class resize
 
 		if ($type['gd'])
 		{
-			// If the type is not supported, we are not able to create a thumbnail
+			// If the type is not supported, we are not able to resize an image
 			if ($type['format'] === false)
 			{
 				return false;

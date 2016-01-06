@@ -39,7 +39,7 @@ class thumbnail
 	}
 
 	/**
-	 * Create resized image
+	 * Create thumbnail for image
 	 *
 	 * @param string $source Source file path
 	 * @param string $destination Destination file path

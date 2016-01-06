@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-
 class phpbb_attachment_resize_test extends \phpbb_test_case
 {
 	/** @var \phpbb\attachment\resize */

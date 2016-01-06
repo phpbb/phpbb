@@ -117,11 +117,6 @@ class generate extends \phpbb\console\command\command
 			WHERE thumbnail = 0';
 		$result = $this->db->sql_query($sql);
 
-		if (!function_exists('get_img_size_format'))
-		{
-			require($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
-		}
-
 		$progress = $this->create_progress_bar($nb_missing_thumbnails, $io, $output);
 
 		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_GENERATING'));

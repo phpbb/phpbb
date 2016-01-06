@@ -59,7 +59,7 @@ class upload
 	/** @var temp */
 	protected $temp;
 
-	/** @var thumbnail Resize class */
+	/** @var thumbnail Thumbnail class */
 	protected $thumbnail;
 
 	/** @var user */
