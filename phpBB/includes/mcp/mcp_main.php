@@ -262,7 +262,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_log;
+	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_log, $phpbb_dispatcher;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
