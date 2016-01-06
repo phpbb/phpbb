@@ -362,4 +362,34 @@ class phpbb_attachment_resize_test extends \phpbb_test_case
 			unlink($this->phpbb_root_path . '../tests/upload/fixture/meh');
 		}
 	}
+
+	public function data_get_img_size_format()
+	{
+		return array(
+			array(200, 100, 50, 20, array(
+				40.0,
+				20.0,
+			)),
+			array(200, 100, 50, '', array(
+				50.0,
+				25.0,
+			)),
+			array(200, 100, 50, 40, array(
+				50.0,
+				25.0,
+			)),
+			array(200, 100, 50, 25, array(
+				50.0,
+				25.0,
+			)),
+		);
+	}
+
+	/**
+	 * @dataProvider data_get_img_size_format
+	 */
+	public function test_get_img_size_format($width, $height, $target_width, $target_height, $expected)
+	{
+		$this->assertSame($expected, $this->image_helper->get_img_size_format($width, $height, $target_width, $target_height));
+	}
 }
