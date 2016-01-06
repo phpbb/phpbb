@@ -120,6 +120,22 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	}
 
 	/**
+	* {@inheritdoc}
+	*/
+	public function get_config_name()
+	{
+		return preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this));
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_acp_template_name()
+	{
+		return 'acp_avatar_options_' . $this->get_config_name() . '.html';
+	}
+
+	/**
 	* Sets the name of the driver.
 	*
 	* @param string	$name Driver name
