@@ -67,10 +67,13 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
 		// barfoo driver can't be mocked with constructor arguments
-		$this->avatar_barfoo = $this->getMock('\phpbb\avatar\driver\barfoo', array('get_name'));
+		$this->avatar_barfoo = $this->getMock('\phpbb\avatar\driver\barfoo', array('get_name', 'get_config_name'));
 		$this->avatar_barfoo->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.barfoo'));
+		$this->avatar_barfoo->expects($this->any())
+			->method('get_config_name')
+			->will($this->returnValue('barfoo'));
 		$avatar_drivers = array($this->avatar_foobar, $this->avatar_barfoo);
 
 		$files_factory = new \phpbb\files\factory($phpbb_container);
