@@ -322,12 +322,6 @@ class resize
 				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $this->new_width, $this->new_height, $this->width, $this->height);
 			}
 
-			// If we are in safe mode create the destination file prior to using the gd functions to circumvent a PHP bug
-			if ($this->php_ini->getBool('safe_mode'))
-			{
-				$this->filesystem->touch($this->destination);
-			}
-
 			switch ($type['format'])
 			{
 				case IMG_GIF:
