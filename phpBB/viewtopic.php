@@ -588,14 +588,6 @@ $quickmod_array = array(
 	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
 );
 
-foreach ($quickmod_array as $option => $qm_ary)
-{
-	if (!empty($qm_ary[1]))
-	{
-		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
-	}
-}
-
 // Navigation links
 generate_forum_nav($topic_data);
 
@@ -666,6 +658,14 @@ $vars = array(
 	'viewtopic_url',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_before', compact($vars)));
+
+foreach ($quickmod_array as $option => $qm_ary)
+{
+	if (!empty($qm_ary[1]))
+	{
+		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
+	}
+}
 
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
