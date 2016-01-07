@@ -41,6 +41,8 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	{
 		parent::setUp();
 
+		$this->purge_cache();
+
 		$this->get_db();
 
 		// Clear the phpbb_ext table
