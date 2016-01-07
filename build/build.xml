@@ -303,9 +303,25 @@
 
 	<target name="clean-vendor-dir">
 		<!-- Delete unrelated files from vendor/, see PHPBB3-12390 -->
+		<delete dir="${dir}/vendor/bantu/ini-get-wrapper/tests" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/.gitignore" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/.scrutinizer.yml" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/.travis.yml" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/README.md" />
+
+		<delete dir="${dir}/vendor/google/recaptcha/examples" />
+		<delete dir="${dir}/vendor/google/recaptcha/tests" />
+		<delete file="${dir}/vendor/google/recaptcha/.gitignore" />
+		<delete file="${dir}/vendor/google/recaptcha/.travis.yml" />
+		<delete file="${dir}/vendor/google/recaptcha/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/google/recaptcha/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/google/recaptcha/README.md" />
+
 		<delete dir="${dir}/vendor/lusitanian/oauth/examples" />
 		<delete dir="${dir}/vendor/lusitanian/oauth/tests" />
 		<delete file="${dir}/vendor/lusitanian/oauth/.gitignore" />
+		<delete file="${dir}/vendor/lusitanian/oauth/.scrutinizer.yml" />
 		<delete file="${dir}/vendor/lusitanian/oauth/.travis.yml" />
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
@@ -391,12 +407,19 @@
 		<delete file="${dir}/vendor/symfony/routing/README.md" />
 		<delete file="${dir}/vendor/symfony/routing/phpunit.xml.dist" />
 
+		<delete dir="${dir}/vendor/symfony/twig-bridge/.git" />
+		<delete dir="${dir}/vendor/symfony/twig-bridge/Tests" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/.gitignore" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/README.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/yaml/.git" />
-		<delete dir="${dir}/vendor/symfony/yaml/Symfony/Tests" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/.gitignore" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/README.md" />
-		<delete file="${dir}/vendor/symfony/yaml/Symfony/phpunit.xml.dist" />
+		<delete dir="${dir}/vendor/symfony/yaml/Tests" />
+		<delete file="${dir}/vendor/symfony/yaml/.gitignore" />
+		<delete file="${dir}/vendor/symfony/yaml/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/yaml/README.md" />
+		<delete file="${dir}/vendor/symfony/yaml/phpunit.xml.dist" />
 
 		<delete dir="${dir}/vendor/twig/twig/doc" />
 		<delete dir="${dir}/vendor/twig/twig/ext" />
@@ -404,38 +427,9 @@
 		<delete file="${dir}/vendor/twig/twig/.editorconfig" />
 		<delete file="${dir}/vendor/twig/twig/.gitignore" />
 		<delete file="${dir}/vendor/twig/twig/.travis.yml" />
-		<delete file="${dir}/vendor/twig/twig/AUTHORS" />
 		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
-		<delete file="${dir}/vendor/twig/twig/README.markdown" />
-
-		<delete dir="${dir}/vendor/symfony/security-core/.git" />
-		<delete dir="${dir}/vendor/symfony/security-core/Core/Tests" />
-		<delete file="${dir}/vendor/symfony/security-core/Core/.gitignore" />
-		<delete file="${dir}/vendor/symfony/security-core/Core/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/security-core/Core/README.md" />
-		<delete file="${dir}/vendor/symfony/security-core/Core/phpunit.xml.dist" />
-
-		<delete dir="${dir}/vendor/symfony/security-csrf/.git" />
-		<delete dir="${dir}/vendor/symfony/security-csrf/Csrf/Tests" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/.gitignore" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/README.md" />
-		<delete file="${dir}/vendor/symfony/security-csrf/Csrf/phpunit.xml.dist" />
-
-		<delete dir="${dir}/vendor/symfony/twig-bridge/.git" />
-		<delete dir="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Tests" />
-		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/.gitignore" />
-		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/README.md" />
-		<delete file="${dir}/vendor/symfony/twig-bridge/Symfony/Bridge/Twig/phpunit.xml.dist" />
-
-		<delete dir="${dir}/vendor/symfony/security/.git" />
-		<delete dir="${dir}/vendor/symfony/security/Tests" />
-		<delete file="${dir}/vendor/symfony/security/.gitignore" />
-		<delete file="${dir}/vendor/symfony/security/CHANGELOG.md" />
-		<delete file="${dir}/vendor/symfony/security/README.md" />
-		<delete file="${dir}/vendor/symfony/security/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/twig/twig/README.rst" />
 	</target>
 
 	<target name="clean-diff-dir">

@@ -68,6 +68,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$request,
 			$user,
 			'phpbb_oauth_tokens',
+			'phpbb_oauth_states',
 			'phpbb_oauth_accounts',
 			$oauth_provider_collection,
 			'phpbb_users',

@@ -6,6 +6,7 @@ parameters:
     tables.acl_users: '%core.table_prefix%acl_users'
     tables.attachments: '%core.table_prefix%attachments'
     tables.auth_provider_oauth_token_storage: '%core.table_prefix%oauth_tokens'
+    tables.auth_provider_oauth_states: '%core.table_prefix%oauth_states'
     tables.auth_provider_oauth_account_assoc: '%core.table_prefix%oauth_accounts'
     tables.banlist: '%core.table_prefix%banlist'
     tables.bbcodes: '%core.table_prefix%bbcodes'
