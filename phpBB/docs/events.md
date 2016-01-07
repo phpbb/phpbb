@@ -2225,6 +2225,34 @@ viewtopic_body_post_subject_before
 * Since: 3.1.7-RC1
 * Purpose: Add data before post icon and subject
 
+viewtopic_body_postrow_back2top_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.8-RC1
+* Purpose: Add content to the post's bottom after the back to top link 
+
+viewtopic_body_postrow_back2top_append
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.8-RC1
+* Purpose: Add content to the post's bottom directly before the back to top link 
+
+viewtopic_body_postrow_back2top_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.8-RC1
+* Purpose: Add content to the post's bottom before the back to top link 
+
+viewtopic_body_postrow_back2top_prepend
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.1.8-RC1
+* Purpose: Add content to the post's bottom directly before the back to top link 
+
 viewtopic_body_postrow_custom_fields_after
 ===
 * Locations:
