@@ -1137,11 +1137,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	* @var	int		cur_post_id			Post offset ID
 	* @var	int		forum_id			The topic's forum ID
 	* @var	string	mode				The topic review mode
-	* @var	array	post_list			Aray with the post IDs
+	* @var	array	post_list			Array with the post IDs
 	* @var	array	rowset				Array with the posts data
 	* @var	bool	show_quote_button	Flag indicating if the quote button should be displayed
 	* @var	int		topic_id			The topic ID that is being reviewed
-	* @since 3.1.8-RC1
+	* @since 3.1.9-RC1
 	*/
 	$vars = array(
 		'attachments',
