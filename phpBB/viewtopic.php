@@ -611,7 +611,7 @@ $vars = array(
 	'topic_id',
 	'topic_tracking_info',
 	'viewtopic_url',
-  'allow_change_type',
+	'allow_change_type',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_add_quickmod_option_after', compact($vars)));
 
