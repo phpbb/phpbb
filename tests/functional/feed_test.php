@@ -22,6 +22,12 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	static public $init_values = array();
 
+	public function setUp()
+	{
+		parent::setUp();
+		$this->purge_cache();
+	}
+
 	public function __construct($name = null, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);

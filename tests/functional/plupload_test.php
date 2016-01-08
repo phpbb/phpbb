@@ -33,6 +33,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 	public function setUp()
 	{
 		parent::setUp();
+		$this->purge_cache();
 		$this->set_extension_group_permission(1);
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
