@@ -389,7 +389,7 @@ class ucp_prefs
 				* @var	string	s_limit_post_days	Sort limit post by days select box
 				* @var	string	s_sort_post_key		Sort post key select box
 				* @var	string	s_sort_post_dir		Sort post dir select box
-				* @since 3.1.7-RC1
+				* @since 3.1.8-RC1
 				*/
 				$vars = array(
 					'submit',
