@@ -24,6 +24,13 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		'foo/bar/',
 	);
 
+	public function tearDown()
+	{
+		$this->purge_cache();
+
+		parent::tearDown();
+	}
+
 	static public function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();

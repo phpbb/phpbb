@@ -52,6 +52,13 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
+	public function tearDown()
+	{
+		parent::tearDown();
+
+		$this->purge_cache();
+	}
+
 	public function test_load_extension_lang_globally()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
