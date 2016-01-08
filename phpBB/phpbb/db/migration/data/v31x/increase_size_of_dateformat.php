@@ -18,7 +18,7 @@ class increase_size_of_dateformat  extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v31x\v316',
+			'\phpbb\db\migration\data\v31x\v317',
 		);
 	}
 
@@ -27,7 +27,7 @@ class increase_size_of_dateformat  extends \phpbb\db\migration\migration
 		return array(
 			'change_columns' => array(
 				$this->table_prefix . 'users' => array(
-					'user_dateformat' => array('VCHAR:64', 'd M Y H:i'),
+					'user_dateformat' => array('VCHAR_UNI:64', 'd M Y H:i'),
 				),
 			),
 		);
