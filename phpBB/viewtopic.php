@@ -592,7 +592,7 @@ $quickmod_array = array(
 * Event to modify data in the quickmod_array before it gets sent to the
 * phpbb_add_quickmod_option function.
 *
-* @event core.viewtopic_add_quickmod_option_before
+* @event core.viewtopic_add_quickmod_option_after
 * @var	int		forum_id			Forum ID
 * @var	int		post_id				Post ID
 * @var	array	quickmod_array		Array with quick moderation options data
