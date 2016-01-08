@@ -588,6 +588,41 @@ $quickmod_array = array(
 	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
 );
 
+/**
+* Event to modify data in the quickmod_array before it gets sent to the
+* phpbb_add_quickmod_option function.
+*
+* @event core.viewtopic_add_quickmod_option_before
+* @var	int		forum_id			Forum ID
+* @var	int		post_id				Post ID
+* @var	array	quickmod_array		Array with quick moderation options data
+* @var	array	topic_data			Array with topic data
+* @var	int		topic_id			Topic ID
+* @var	array	topic_tracking_info	Array with topic tracking data
+* @var	string	viewtopic_url		URL to the topic page
+* @var  bool  allow_change_type   Topic change permissions check
+* @since 3.1.8-RC1
+*/
+$vars = array(
+	'forum_id',
+	'post_id',
+	'quickmod_array',
+	'topic_data',
+	'topic_id',
+	'topic_tracking_info',
+	'viewtopic_url',
+  'allow_change_type',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_add_quickmod_option_after', compact($vars)));
+
+foreach ($quickmod_array as $option => $qm_ary)
+{
+	if (!empty($qm_ary[1]))
+	{
+		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
+	}
+}
+
 // Navigation links
 generate_forum_nav($topic_data);
 
@@ -658,14 +693,6 @@ $vars = array(
 	'viewtopic_url',
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_before', compact($vars)));
-
-foreach ($quickmod_array as $option => $qm_ary)
-{
-	if (!empty($qm_ary[1]))
-	{
-		phpbb_add_quickmod_option($s_quickmod_action, $option, $qm_ary[0]);
-	}
-}
 
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
