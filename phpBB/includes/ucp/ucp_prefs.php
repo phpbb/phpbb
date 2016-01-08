@@ -368,6 +368,49 @@ class ucp_prefs
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
+				/**
+				* Run code before view form is displayed
+				*
+				* @event core.ucp_prefs_view_after
+				* @var	bool	submit				Do we display the form only
+				*									or did the user press submit
+				* @var	array	data				Array with current ucp options data
+				* @var	array	sort_dir_text		Array with sort dir language strings
+				* @var	array	limit_topic_days	Topic ordering options
+				* @var	array	sort_by_topic_text	Topic ordering language strings
+				* @var	array	sort_by_topic_sql	Topic ordering sql
+				* @var	array	limit_post_days		Post ordering options
+				* @var	array	sort_by_post_text	Post ordering language strings
+				* @var	array	sort_by_post_sql	Post ordering sql
+				* @var	array	_options			Sort options
+				* @var	string	s_limit_topic_days	Sort limit topic by days select box
+				* @var	string	s_sort_topic_key	Sort topic key select box
+				* @var	string	s_sort_topic_dir	Sort topic dir select box
+				* @var	string	s_limit_post_days	Sort limit post by days select box
+				* @var	string	s_sort_post_key		Sort post key select box
+				* @var	string	s_sort_post_dir		Sort post dir select box
+				* @since 3.1.7-RC1
+				*/
+				$vars = array(
+					'submit',
+					'data',
+					'sort_dir_text',
+					'limit_topic_days',
+					'sort_by_topic_text',
+					'sort_by_topic_sql',
+					'limit_post_days',
+					'sort_by_post_text',
+					'sort_by_post_sql',
+					'_options',
+					's_limit_topic_days',
+					's_sort_topic_key',
+					's_sort_topic_dir',
+					's_limit_post_days',
+					's_sort_post_key',
+					's_sort_post_dir',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_after', compact($vars)));
+
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
