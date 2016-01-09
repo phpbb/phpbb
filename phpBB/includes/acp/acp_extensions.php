@@ -169,14 +169,21 @@ class acp_extensions
 				$this->list_disabled_exts();
 				$this->list_available_exts();
 
+				/** @var \phpbb\composer\manager $composer_manager */
 				$composer_manager = $phpbb_container->get('ext.composer.manager');
+
+				$managed_packages = [];
+				if ($composer_manager->check_requirements())
+				{
+					$managed_packages = array_keys($composer_manager->get_managed_packages());
+				}
 
 				$this->request->enable_super_globals();
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
-					'MANAGED_EXTENSIONS'	=> array_keys($composer_manager->get_managed_packages()),
+					'MANAGED_EXTENSIONS'	=> $managed_packages,
 					'U_CATALOG_ACTION' 		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=catalog"),
 				));
 				$this->request->disable_super_globals();
@@ -424,6 +431,19 @@ class acp_extensions
 		/** @var \phpbb\extension\manager $extensions_manager */
 		$extensions_manager = $phpbb_container->get('ext.manager');
 
+		if (!$composer_manager->check_requirements())
+		{
+			$this->page_title = 'ACP_EXTENSIONS_CATALOG';
+			$this->tpl_name = 'message_body';
+
+			$this->template->assign_vars([
+				'MESSAGE_TITLE'	=> $language->lang('EXTENSIONS_CATALOG_NOT_AVAILABLE'),
+				'MESSAGE_TEXT'	=> $language->lang('EXTENSIONS_COMPOSER_NOT_WRITABLE'),
+			]);
+
+			return;
+		}
+
 		switch ($action)
 		{
 			case 'install':
@@ -659,7 +679,6 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_catalog';
 
 				$this->template->assign_vars([
-					'enabled'				=> $manager->check_requirements(),
 					'extensions'			=> $extensions,
 					'managed_extensions'	=> array_keys($managed_packages),
 					'installed_extensions'	=> array_keys($extensions_manager->all_available()),

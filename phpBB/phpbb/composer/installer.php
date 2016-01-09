@@ -92,7 +92,7 @@ class installer
 			}
 
 			$this->packagist			= (bool) $config['exts_composer_packagist'];
-			$this->composer_filenam		= $config['exts_composer_json_file'];
+			$this->composer_filename	= $config['exts_composer_json_file'];
 			$this->packages_vendor_dir	= $config['exts_composer_vendor_dir'];
 			$this->minimum_stability	= $config['exts_composer_minimum_stability'];
 		}
@@ -451,7 +451,7 @@ class installer
 	private function get_compatible_versions(array $compatible_packages, ConstraintInterface $core_constraint, $core_stability, $package_name, array $versions)
 	{
 		$core_stability_value = BasePackage::$stabilities[$core_stability];
-		//VersionParser::parseStability($version['version'])
+
 		/** @var \Composer\Package\PackageInterface $version */
 		foreach ($versions as $version)
 		{

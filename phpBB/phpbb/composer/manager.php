@@ -253,6 +253,7 @@ class manager implements manager_interface
 		if ($this->available_packages === null)
 		{
 			$this->available_packages = $this->cache->get('_composer_' . $this->package_type . '_available');
+
 			if (!$this->available_packages)
 			{
 				$this->available_packages = $this->installer->get_available_packages($this->package_type);
