@@ -107,6 +107,9 @@ class container_builder
 	 */
 	private $container_extensions;
 
+	/** @var \Exception */
+	private $build_exception;
+
 	/**
 	 * Constructor
 	 *
@@ -126,7 +129,8 @@ class container_builder
 	 */
 	public function get_container()
 	{
-		try {
+		try
+		{
 			$container_filename = $this->get_container_filename();
 			$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
 			if ($this->use_cache && $config_cache->isFresh())
@@ -197,8 +201,10 @@ class container_builder
 				throw $e;
 			}
 
-			try
+			if ($this->build_exception === null)
 			{
+				$this->build_exception = $e;
+
 				return $this
 					->without_extensions()
 					->without_cache()
@@ -207,10 +213,10 @@ class container_builder
 					]))
 					->get_container();
 			}
-			catch (\Exception $_)
+			else
 			{
 				// Rethrow the original exception if it's still failing
-				throw $e;
+				throw $this->build_exception;
 			}
 		}
 	}
