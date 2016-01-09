@@ -226,7 +226,7 @@ function get_folder($user_id, $folder_id = false)
 */
 function clean_sentbox($num_sentbox_messages)
 {
-	global $db, $user, $config;
+	global $db, $user;
 
 	// Check Message Limit
 	if ($user->data['message_limit'] && $num_sentbox_messages > $user->data['message_limit'])
@@ -255,8 +255,6 @@ function clean_sentbox($num_sentbox_messages)
 */
 function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 {
-	global $user, $config;
-
 	if (!isset($rules[$rule_row['rule_check']][$rule_row['rule_connection']]))
 	{
 		return false;
@@ -335,7 +333,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		break;
 
 		case ACTION_DELETE_MESSAGE:
-			global $db, $auth;
+			global $db;
 
 			// Check for admins/mods - users are not allowed to remove those messages...
 			// We do the check here to make sure the data we use is consistent
@@ -546,7 +544,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	}
 
 	// We place actions into arrays, to save queries.
-	$sql = $unread_ids = $delete_ids = $important_ids = array();
+	$unread_ids = $delete_ids = $important_ids = array();
 
 	foreach ($action_ary as $msg_id => $msg_ary)
 	{
@@ -942,7 +940,6 @@ function handle_mark_actions($user_id, $mark_action)
 
 	$msg_ids		= $request->variable('marked_msg_id', array(0));
 	$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
-	$confirm		= (isset($_POST['confirm'])) ? true : false;
 
 	if (!sizeof($msg_ids))
 	{
@@ -1007,7 +1004,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
+	global $db, $user, $phpbb_container, $phpbb_dispatcher;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -1177,8 +1174,6 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 */
 function phpbb_delete_user_pms($user_id)
 {
-	global $db, $user, $phpbb_root_path, $phpEx;
-
 	$user_id = (int) $user_id;
 
 	if (!$user_id)
@@ -1198,7 +1193,7 @@ function phpbb_delete_user_pms($user_id)
 */
 function phpbb_delete_users_pms($user_ids)
 {
-	global $db, $user, $phpbb_root_path, $phpEx, $phpbb_container;
+	global $db, $phpbb_container;
 
 	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
 	$author_id_sql = $db->sql_in_set('author_id', $user_ids);
@@ -1396,8 +1391,6 @@ function phpbb_delete_users_pms($user_ids)
 */
 function rebuild_header($check_ary)
 {
-	global $db;
-
 	$address = array();
 
 	foreach ($check_ary as $check_type => $address_field)
@@ -1577,7 +1570,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 */
 function get_folder_status($folder_id, $folder)
 {
-	global $db, $user, $config;
+	global $user;
 
 	if (isset($folder[$folder_id]))
 	{
@@ -1610,7 +1603,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
+	global $db, $auth, $config, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1764,8 +1757,6 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 
 	if (sizeof($sql_data))
 	{
-		$query = '';
-
 		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward')
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
@@ -1966,7 +1957,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 */
 function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
 {
-	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth;
+	global $db, $user, $template, $phpbb_root_path, $phpEx, $auth;
 
 	// Select all receipts and the author from the pm we currently view, to only display their pm-history
 	$sql = 'SELECT author_id, user_id

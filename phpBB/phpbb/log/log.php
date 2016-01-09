@@ -420,7 +420,7 @@ class log implements \phpbb\log\log_interface
 		$this->entry_count = 0;
 		$this->last_page_offset = $offset;
 
-		$post_id_list = $topic_id_list = $reportee_id_list = array();
+		$topic_id_list = $reportee_id_list = array();
 
 		$profile_url = ($this->get_is_admin() && $this->phpbb_admin_path) ? append_sid("{$this->phpbb_admin_path}index.{$this->php_ext}", 'i=users&amp;mode=overview') : append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=viewprofile');
 

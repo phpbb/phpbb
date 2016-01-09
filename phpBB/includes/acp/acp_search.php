@@ -50,8 +50,8 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template, $phpbb_log, $request;
+		global $config, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
@@ -232,8 +232,8 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $phpbb_log, $request;
+		global $config, $phpbb_admin_path, $phpEx;
 
 		$action = $request->variable('action', '');
 		$this->state = explode(',', $config['search_indexing_state']);
@@ -551,7 +551,7 @@ class acp_search
 
 	function get_search_types()
 	{
-		global $phpbb_root_path, $phpEx, $phpbb_extension_manager;
+		global $phpbb_extension_manager;
 
 		$finder = $phpbb_extension_manager->get_finder();
 

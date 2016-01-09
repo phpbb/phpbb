@@ -84,8 +84,6 @@ class oracle extends \phpbb\db\driver\driver
 		* but I assume its because the Oracle extension provides a direct method to access it
 		* without a query.
 		*/
-
-		$use_cache = false;
 /*
 		global $cache;
 

@@ -206,7 +206,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '')
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $config, $phpbb_root_path, $user;
 
 		$this->setup_template();
 
@@ -349,7 +349,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config, $request, $phpbb_log;
+		global $user, $config, $request, $phpbb_log;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -359,7 +359,6 @@ class messenger
 
 		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
-		$message = '';
 		switch ($type)
 		{
 			case 'EMAIL':
@@ -453,7 +452,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config, $user;
+		global $config;
 
 		if (empty($config['email_enable']))
 		{
@@ -551,7 +550,7 @@ class messenger
 	*/
 	function msg_jabber()
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $user, $phpbb_root_path, $phpEx;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
@@ -623,7 +622,7 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
@@ -715,7 +714,7 @@ class queue
 	*/
 	function process()
 	{
-		global $db, $config, $phpEx, $phpbb_root_path, $user;
+		global $config, $phpEx, $phpbb_root_path, $user;
 
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -1258,8 +1257,6 @@ class smtp_class
 	{
 		global $user;
 
-		$err_msg = '';
-
 		// Here we try to determine the *real* hostname (reverse DNS entry preferrably)
 		$local_host = $user->host;
 
@@ -1294,7 +1291,7 @@ class smtp_class
 			$this->server_send("QUIT");
 			fclose($this->socket);
 
-			$result = $this->pop_before_smtp($hostname, $username, $password);
+			$this->pop_before_smtp($hostname, $username, $password);
 			$username = $password = $default_auth_method = '';
 
 			// We need to close the previous session, else the server is not
@@ -1736,7 +1733,7 @@ function mail_encode($str, $eol = "\r\n")
 */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
-	global $config, $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx;
 
 	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
 	// Reference: http://bugs.php.net/bug.php?id=15841

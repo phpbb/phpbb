@@ -28,8 +28,8 @@ class acp_icons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $cache;
+		global $config, $phpbb_root_path;
 		global $request, $phpbb_container;
 
 		$user->add_lang('acp/posting');
@@ -194,7 +194,6 @@ class acp_icons
 
 				$data = array();
 				$after = false;
-				$display = 0;
 				$order_lists = array('', '');
 				$add_order_lists = array('', '');
 				$display_count = 0;
@@ -209,7 +208,6 @@ class acp_icons
 					if ($row[$fields . '_id'] == $icon_id)
 					{
 						$after = true;
-						$display = $row['display_on_posting'];
 						$data[$row[$fields . '_url']] = $row;
 					}
 					else

@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function adm_page_header($page_title)
 {
-	global $config, $db, $user, $template;
+	global $config, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
 	global $phpbb_dispatcher;
 
@@ -140,8 +140,8 @@ function adm_page_header($page_title)
 */
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $user, $auth, $cache;
-	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+	global $db, $config, $template, $user, $auth;
+	global $phpbb_root_path;
 	global $request, $phpbb_dispatcher;
 
 	// A listener can set this variable to `true` when it overrides this function
@@ -273,7 +273,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'number':
-			$min = $max = $maxlength = '';
+			$max = $maxlength = '';
 			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
 			if ( isset($tpl_type[2]) )
 			{
@@ -285,7 +285,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'dimension':
-			$min = $max = $maxlength = $size = '';
+			$max = $maxlength = $size = '';
 
 			$min = (int) $tpl_type[1];
 
@@ -320,8 +320,6 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 		case 'select':
 		case 'custom':
-
-			$return = '';
 
 			if (isset($vars['method']))
 			{
@@ -652,8 +650,6 @@ function validate_range($value_ary, &$error)
 	foreach ($value_ary as $value)
 	{
 		$column = explode(':', $value['column_type']);
-		$max = $min = 0;
-		$type = 0;
 		if (!isset($column_types[$column[0]]))
 		{
 			continue;

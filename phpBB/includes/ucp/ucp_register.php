@@ -29,7 +29,7 @@ class ucp_register
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $template, $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
 
 		//
@@ -484,7 +484,6 @@ class ucp_register
 			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
 		}
 		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
-		$confirm_image = '';
 
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'])
@@ -507,7 +506,9 @@ class ucp_register
 			break;
 		}
 
-		$timezone_selects = phpbb_timezone_select($template, $user, $data['tz'], true);
+		// Assign template vars for timezone select
+		phpbb_timezone_select($template, $user, $data['tz'], true);
+
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],

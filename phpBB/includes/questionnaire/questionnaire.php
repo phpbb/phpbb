@@ -257,7 +257,7 @@ class phpbb_questionnaire_phpbb_data_provider
 	*/
 	function get_data()
 	{
-		global $phpbb_root_path, $phpEx, $phpbb_config_php_file;
+		global $phpbb_config_php_file;
 
 		extract($phpbb_config_php_file->get_all());
 		unset($dbhost, $dbport, $dbname, $dbuser, $dbpasswd); // Just a precaution

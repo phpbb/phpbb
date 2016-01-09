@@ -35,8 +35,8 @@ class mcp_main
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $action;
-		global $config, $phpbb_root_path, $phpEx, $request;
+		global $auth, $user, $action;
+		global $phpbb_root_path, $phpEx, $request;
 		global $phpbb_dispatcher;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
@@ -262,7 +262,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_log, $phpbb_dispatcher;
+	global $user, $db, $request, $phpbb_log, $phpbb_dispatcher;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
@@ -306,7 +306,6 @@ function lock_unlock($action, $ids)
 		'action'			=> $action,
 		'redirect'			=> $redirect)
 	);
-	$success_msg = '';
 
 	if (confirm_box(true))
 	{
@@ -367,7 +366,7 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_log;
+	global $user, $db, $request, $phpbb_log;
 
 	switch ($action)
 	{
@@ -412,7 +411,6 @@ function change_topic_type($action, $topic_ids)
 		'action'		=> $action,
 		'redirect'		=> $redirect,
 	);
-	$success_msg = '';
 
 	if (confirm_box(true))
 	{
@@ -729,7 +727,7 @@ function mcp_move_topic($topic_ids)
 */
 function mcp_restore_topic($topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_log;
+	global $user, $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_log;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_approve')))
 	{
@@ -877,7 +875,7 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 
 		if (!$is_soft)
 		{
-			$return = delete_topics('topic_id', $topic_ids);
+			delete_topics('topic_id', $topic_ids);
 		}
 	}
 	else
@@ -1346,8 +1344,6 @@ function mcp_fork_topic($topic_ids)
 
 			if ($topic_row['poll_start'])
 			{
-				$poll_rows = array();
-
 				$sql = 'SELECT *
 					FROM ' . POLL_OPTIONS_TABLE . "
 					WHERE topic_id = $topic_id";

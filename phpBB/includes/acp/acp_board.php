@@ -30,13 +30,12 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template, $request;
+		global $config, $phpbb_root_path, $phpEx;
 		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
 		$user->add_lang('acp/board');
 
-		$action	= $request->variable('action', '');
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
 
 		$form_key = 'acp_board';
@@ -760,7 +759,7 @@ class acp_board
 	*/
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $phpbb_root_path, $phpEx, $phpbb_container;
+		global $phpbb_container;
 
 		/* @var $auth_providers \phpbb\auth\provider_collection */
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
@@ -940,8 +939,6 @@ class acp_board
 	*/
 	function board_disable($value, $key)
 	{
-		global $user;
-
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
@@ -1051,8 +1048,6 @@ class acp_board
 	*/
 	function select_news_forums($value, $key)
 	{
-		global $user, $config;
-
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
@@ -1070,8 +1065,6 @@ class acp_board
 
 	function select_exclude_forums($value, $key)
 	{
-		global $user, $config;
-
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
@@ -1127,7 +1120,7 @@ class acp_board
 	*/
 	function enable_mod_rewrite($value, $key)
 	{
-		global $user, $config;
+		global $user;
 
 		// Determine whether mod_rewrite is enabled on the server
 		// NOTE: This only works on Apache servers on which PHP is NOT

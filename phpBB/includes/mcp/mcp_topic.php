@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 function mcp_topic_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config, $request;
-	global $template, $db, $user, $auth, $cache, $phpbb_container, $phpbb_dispatcher;
+	global $template, $db, $user, $auth, $phpbb_container, $phpbb_dispatcher;
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
@@ -156,8 +156,6 @@ function mcp_topic_view($id, $mode, $action)
 	}
 	$db->sql_freeresult($result);
 
-	$topic_tracking_info = array();
-
 	// Get topic tracking info
 	if ($config['load_db_lastread'])
 	{
@@ -173,11 +171,9 @@ function mcp_topic_view($id, $mode, $action)
 	$has_unapproved_posts = $has_deleted_posts = false;
 
 	// Grab extensions
-	$extensions = $attachments = array();
+	$attachments = array();
 	if ($topic_info['topic_attachment'] && sizeof($post_id_list))
 	{
-		$extensions = $cache->obtain_attach_extensions($topic_info['forum_id']);
-
 		// Get attachments...
 		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))
 		{
@@ -270,8 +266,6 @@ function mcp_topic_view($id, $mode, $action)
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 		);
-
-		$current_row_number = $i;
 
 		/**
 		* Event to modify the template data block for topic reviews in the MCP
@@ -481,7 +475,6 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		'to_forum_id'	=> $to_forum_id,
 		'icon'			=> $request->variable('icon', 0))
 	);
-	$success_msg = $return_link = '';
 
 	if (confirm_box(true))
 	{
@@ -644,7 +637,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log, $request;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $phpbb_log, $request;
 
 	if (!$to_topic_id)
 	{
@@ -696,7 +689,7 @@ function merge_posts($topic_id, $to_topic_id)
 		'redirect'		=> $redirect,
 		't'				=> $topic_id)
 	);
-	$success_msg = $return_link = '';
+	$return_link = '';
 
 	if (confirm_box(true))
 	{

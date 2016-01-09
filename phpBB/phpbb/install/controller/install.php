@@ -19,7 +19,6 @@ use phpbb\install\helper\navigation\navigation_provider;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
 use phpbb\install\helper\iohandler\factory;
-use phpbb\install\controller\helper;
 use phpbb\template\template;
 use phpbb\request\request_interface;
 use phpbb\install\installer;

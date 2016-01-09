@@ -99,7 +99,7 @@ class ucp_login_link
 					else
 					{
 						// Finish login
-						$result = $user->session_create($login_result['user_row']['user_id'], false, false, true);
+						$user->session_create($login_result['user_row']['user_id'], false, false, true);
 
 						// Perform a redirect as the account has been linked
 						$this->perform_redirect();
@@ -182,7 +182,7 @@ class ucp_login_link
 	*/
 	protected function process_login_result($result)
 	{
-		global $config, $request, $template, $user, $phpbb_container;
+		global $config, $template, $user, $phpbb_container;
 
 		$login_error = null;
 

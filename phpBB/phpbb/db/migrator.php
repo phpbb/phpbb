@@ -535,7 +535,7 @@ class migrator
 					}
 
 					// Reverse the step that was run
-					$result = $this->run_step($reverse_step, false, !$revert);
+					$this->run_step($reverse_step, false, !$revert);
 				}
 
 				// rethrow the exception

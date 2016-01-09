@@ -82,8 +82,8 @@ class p_master
 	*/
 	function list_modules($p_class)
 	{
-		global $auth, $db, $user, $cache;
-		global $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+		global $db, $user, $cache;
+		global $phpbb_dispatcher;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
@@ -729,8 +729,6 @@ class p_master
 	*/
 	function get_parents($parent_id, $left_id, $right_id, &$all_parents)
 	{
-		global $db;
-
 		$parents = array();
 
 		if ($parent_id > 0)
@@ -822,7 +820,7 @@ class p_master
 		// Make sure the module_url has a question mark set, effectively determining the delimiter to use
 		$delim = (strpos($module_url, '?') === false) ? '?' : '&amp;';
 
-		$current_padding = $current_depth = 0;
+		$current_depth = 0;
 		$linear_offset 	= 'l_block1';
 		$tabular_offset = 't_block2';
 

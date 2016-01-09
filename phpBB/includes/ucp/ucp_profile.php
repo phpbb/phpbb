@@ -31,13 +31,12 @@ class ucp_profile
 
 	function main($id, $mode)
 	{
-		global $cache, $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 		$user->add_lang('posting');
 
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$delete		= $request->variable('delete', false, false, \phpbb\request\request_interface::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 
@@ -430,7 +429,6 @@ class ucp_profile
 						$selected = ($i == $data['bday_month']) ? ' selected="selected"' : '';
 						$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
 					}
-					$s_birthday_year_options = '';
 
 					$now = getdate();
 					$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';

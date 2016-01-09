@@ -36,7 +36,7 @@ class ucp_confirm
 
 	function main($id, $mode)
 	{
-		global $db, $user, $phpbb_root_path, $config, $phpEx, $phpbb_container, $request;
+		global $config, $phpbb_container, $request;
 
 		$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
 		$captcha->init($request->variable('type', 0));

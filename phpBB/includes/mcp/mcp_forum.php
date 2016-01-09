@@ -241,8 +241,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	foreach ($topic_list as $topic_id)
 	{
-		$topic_title = '';
-
 		$row_ary = &$topic_rows[$topic_id];
 
 		$replies = $phpbb_content_visibility->get_count('topic_posts', $row_ary, $forum_id) - 1;
@@ -358,7 +356,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 */
 function mcp_resync_topics($topic_ids)
 {
-	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path, $phpbb_log, $request;
+	global $db, $user, $phpbb_log, $request;
 
 	if (!sizeof($topic_ids))
 	{
@@ -406,7 +404,7 @@ function mcp_resync_topics($topic_ids)
 */
 function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_log, $request;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $phpbb_log, $request;
 
 	if (!sizeof($topic_ids))
 	{
@@ -479,7 +477,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		'redirect'		=> $redirect,
 		'topic_id_list'	=> $topic_ids)
 	);
-	$success_msg = $return_link = '';
+	$return_link = '';
 
 	if (confirm_box(true))
 	{

@@ -54,7 +54,7 @@ function phpbb_forum_flags()
 */
 function phpbb_insert_forums()
 {
-	global $db, $src_db, $same_db, $convert, $user, $config;
+	global $db, $src_db, $same_db, $convert, $user;
 
 	$db->sql_query($convert->truncate_statement . FORUMS_TABLE);
 
@@ -179,7 +179,6 @@ function phpbb_insert_forums()
 		$db->sql_query($sql);
 
 		$cats_added[$unknown_cat_id] = $max_forum_id;
-		$max_forum_id++;
 	}
 
 	// Now insert the forums
@@ -422,8 +421,6 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 		}
 	}
 
-	$encoding = $lang_enc_array[$get_lang];
-
 	return utf8_recode($text, $lang_enc_array[$get_lang]);
 }
 
@@ -564,7 +561,7 @@ function phpbb_copy_table_fields()
 */
 function phpbb_convert_authentication($mode)
 {
-	global $db, $src_db, $same_db, $convert, $user, $config, $cache;
+	global $db, $src_db, $same_db, $convert, $config;
 
 	if ($mode == 'start')
 	{
@@ -1221,7 +1218,7 @@ function phpbb_replace_size($matches)
 */
 function phpbb_prepare_message($message)
 {
-	global $phpbb_root_path, $phpEx, $db, $convert, $user, $config, $cache, $convert_row, $message_parser;
+	global $convert, $user, $convert_row, $message_parser;
 
 	if (!$message)
 	{
@@ -1250,9 +1247,6 @@ function phpbb_prepare_message($message)
 		$message = str_replace('\"', '&quot;', $message);
 		$message = str_replace('\&quot;', '&quot;', $message);
 	}
-
-	// Already the new user id ;)
-	$user_id = $convert->row['poster_id'];
 
 	$message = str_replace('<br />', "\n", $message);
 	$message = str_replace('<', '&lt;', $message);
@@ -1305,7 +1299,7 @@ function get_bbcode_bitfield()
 */
 function phpbb_post_edit_user()
 {
-	global $convert_row, $config;
+	global $convert_row;
 
 	if (isset($convert_row['post_edit_count']))
 	{
@@ -1326,7 +1320,7 @@ function phpbb_get_files_dir()
 		return;
 	}
 
-	global $src_db, $same_db, $convert, $user, $config, $cache;
+	global $src_db, $same_db, $convert, $user;
 
 	if ($convert->mysql_convert && $same_db)
 	{
@@ -1365,7 +1359,7 @@ function phpbb_get_files_dir()
 */
 function phpbb_copy_thumbnails()
 {
-	global $db, $convert, $user, $config, $cache, $phpbb_root_path;
+	global $convert, $config, $phpbb_root_path;
 
 	$src_path = $convert->options['forum_path'] . '/' . phpbb_get_files_dir() . '/thumbs/';
 
@@ -1611,8 +1605,6 @@ function phpbb_get_avatar_width($user_avatar)
 */
 function phpbb_privmsgs_to_userid($to_userid)
 {
-	global $config;
-
 	return 'u_' . phpbb_user_id($to_userid);
 }
 
@@ -1659,7 +1651,7 @@ function phpbb_get_savebox_id($user_id)
 */
 function phpbb_import_attach_config()
 {
-	global $db, $src_db, $same_db, $convert, $config;
+	global $src_db, $same_db, $convert, $config;
 
 	if ($convert->mysql_convert && $same_db)
 	{
@@ -1765,9 +1757,8 @@ function phpbb_disallowed_username($username)
 */
 function phpbb_create_userconv_table()
 {
-	global $db, $src_db, $convert, $table_prefix, $user, $lang;
+	global $db;
 
-	$map_dbms = '';
 	switch ($db->get_sql_layer())
 	{
 		case 'mysql':
@@ -1856,7 +1847,7 @@ function phpbb_create_userconv_table()
 
 function phpbb_check_username_collisions()
 {
-	global $db, $src_db, $convert, $table_prefix, $user, $lang;
+	global $db, $src_db, $convert, $user, $lang;
 
 	// now find the clean version of the usernames that collide
 	$sql = 'SELECT username_clean
@@ -1969,7 +1960,7 @@ function phpbb_add_notification_options($user_notify_pm)
 		);
 	}
 
-	$sql = $db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
+	$db->sql_multi_insert(USER_NOTIFICATIONS_TABLE, $rows);
 }
 
 function phpbb_convert_password_hash($hash)

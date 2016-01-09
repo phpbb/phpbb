@@ -333,7 +333,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 */
 function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 {
-	global $auth, $user, $template, $topic_type;
+	global $auth, $user, $template;
 
 	$toggle = false;
 
@@ -833,7 +833,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	foreach ($draft_rows as $draft)
 	{
 		$link_topic = $link_forum = $link_pm = false;
-		$insert_url = $view_url = $title = '';
+		$view_url = $title = '';
 
 		if (isset($topic_rows[$draft['topic_id']])
 			&& (
@@ -886,7 +886,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $cache;
+	global $user, $auth, $db, $template;
 	global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
 
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
@@ -959,11 +959,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$db->sql_freeresult($result);
 
 	// Grab extensions
-	$extensions = $attachments = array();
+	$attachments = array();
 	if ($has_attachments && $auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
 	{
-		$extensions = $cache->obtain_attach_extensions($forum_id);
-
 		// Get attachments...
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -1101,7 +1099,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $softdelete_reason = '')
 {
-	global $db, $user, $auth, $phpbb_container;
+	global $db, $user, $phpbb_container;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
@@ -1190,7 +1188,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 			if ($is_soft)
 			{
-				$topic_row = array();
 				$phpbb_content_visibility->set_topic_visibility(ITEM_DELETED, $topic_id, $forum_id, $user->data['user_id'], time(), $softdelete_reason);
 			}
 			else
@@ -1362,7 +1359,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data_ary, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
+	global $db, $auth, $user, $config, $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
 	$poll = $poll_ary;
 	$data = $data_ary;
@@ -1589,7 +1586,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 		break;
 	}
-	$topic_row = array();
 
 	// And the topic ladies and gentlemen
 	switch ($post_mode)

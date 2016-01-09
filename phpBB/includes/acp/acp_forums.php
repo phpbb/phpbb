@@ -27,7 +27,7 @@ class acp_forums
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
-		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log;
+		global $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log;
 
 		$user->add_lang('acp/forums');
 		$this->tpl_name = 'acp_forums';
@@ -1264,8 +1264,6 @@ class acp_forums
 							return array($user->lang['NO_FORUM']);
 						}
 
-						$subforums_to_name = $_row['forum_name'];
-
 						$sql = 'SELECT forum_id
 							FROM ' . FORUMS_TABLE . "
 							WHERE parent_id = {$row['forum_id']}";
@@ -1383,7 +1381,7 @@ class acp_forums
 	{
 		global $db, $user, $phpbb_dispatcher;
 
-		$to_data = $moved_ids = $errors = array();
+		$errors = array();
 
 		// Check if we want to move to a parent with link type
 		if ($to_id > 0)

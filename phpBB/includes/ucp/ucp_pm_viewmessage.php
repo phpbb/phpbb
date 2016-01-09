@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
-	global $user, $template, $auth, $db, $cache, $phpbb_container;
+	global $user, $template, $auth, $db, $phpbb_container;
 	global $phpbb_root_path, $request, $phpEx, $config, $phpbb_dispatcher;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
@@ -49,9 +49,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 		trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
 	}
-
-	// Grab icons
-	$icons = $cache->obtain_icons();
 
 	// Load the custom profile fields
 	if ($config['load_cpf_pm'])
@@ -357,7 +354,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function get_user_information($user_id, $user_row)
 {
-	global $db, $auth, $user, $cache;
+	global $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
 
 	if (!$user_id)

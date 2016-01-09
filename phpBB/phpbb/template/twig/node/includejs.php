@@ -28,8 +28,6 @@ class includejs extends \phpbb\template\twig\node\includeasset
 	*/
 	protected function append_asset(\Twig_Compiler $compiler)
 	{
-		$config = $this->environment->get_phpbb_config();
-
 		$compiler
 			->raw("<script type=\"text/javascript\" src=\"' . ")
 			->raw("\$asset_file")

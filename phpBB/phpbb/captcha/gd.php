@@ -97,13 +97,12 @@ class gd
 
 		if ($config['captcha_gd_3d_noise'])
 		{
-			$xoffset = mt_rand(0,9);
 			$noise_bitmaps = $this->captcha_noise_bg_bitmaps();
 			for ($i = 0; $i < $code_len; ++$i)
 			{
 				$noise[$i] = new char_cube3d($noise_bitmaps, mt_rand(1, sizeof($noise_bitmaps['data'])));
 
-				list($min, $max) = $noise[$i]->range();
+				$noise[$i]->range();
 				//$box = $noise[$i]->dimensions($sizes[$i]);
 			}
 			$xoffset = 0;
@@ -151,8 +150,6 @@ class gd
 	*/
 	function wave($img)
 	{
-		global $config;
-
 		$period_x = mt_rand(12,18);
 		$period_y = mt_rand(7,14);
 		$amp_x = mt_rand(5,10);

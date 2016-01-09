@@ -25,8 +25,8 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $request, $phpbb_log;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $config, $db, $user, $template, $cache, $request, $phpbb_log;
+		global $phpbb_root_path, $phpEx;
 
 		$action = $request->variable('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;

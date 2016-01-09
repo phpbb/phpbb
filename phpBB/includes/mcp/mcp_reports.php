@@ -35,7 +35,7 @@ class mcp_reports
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache, $request;
+		global $auth, $db, $user, $template, $request;
 		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container, $phpbb_dispatcher;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -182,7 +182,7 @@ class mcp_reports
 					));
 				}
 
-				$topic_tracking_info = $extensions = $attachments = array();
+				$attachments = array();
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
 				{
@@ -351,8 +351,6 @@ class mcp_reports
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$global_id = $forum_list[0];
-
 					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
@@ -369,7 +367,6 @@ class mcp_reports
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$forum_info = $forum_info[$forum_id];
 					$forum_list = array($forum_id);
 				}
 
@@ -391,7 +388,6 @@ class mcp_reports
 				$sort_by_sql = $sort_order_sql = array();
 				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				if ($mode == 'reports')
@@ -460,7 +456,6 @@ class mcp_reports
 						ORDER BY ' . $sort_order_sql;
 					$result = $db->sql_query($sql);
 
-					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$template->assign_block_vars('postrow', array(
@@ -522,7 +517,7 @@ class mcp_reports
 */
 function close_report($report_id_list, $mode, $action, $pm = false)
 {
-	global $db, $template, $user, $config, $auth, $phpbb_log, $request;
+	global $db, $user, $auth, $phpbb_log, $request;
 	global $phpEx, $phpbb_root_path, $phpbb_container;
 
 	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';

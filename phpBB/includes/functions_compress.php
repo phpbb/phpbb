@@ -56,7 +56,6 @@ class compress
 			// Clean up path, add closing / if not present
 			$src_path = ($src_path && substr($src_path, -1) != '/') ? $src_path . '/' : $src_path;
 
-			$filelist = array();
 			$filelist = filelist("$phpbb_root_path$src", '', '*');
 			krsort($filelist);
 

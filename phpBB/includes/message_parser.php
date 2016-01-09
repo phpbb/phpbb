@@ -798,8 +798,6 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_quote($in)
 	{
-		global $config, $user;
-
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
@@ -1009,8 +1007,6 @@ class bbcode_firstpass extends bbcode
 	*/
 	function validate_url($var1, $var2)
 	{
-		global $config;
-
 		$var1 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var1)));
 		$var2 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var2)));
 
@@ -1155,7 +1151,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
-		global $config, $db, $user, $phpbb_dispatcher, $phpbb_container;
+		global $config, $user, $phpbb_dispatcher, $phpbb_container;
 
 		$this->mode = $mode;
 
@@ -1770,7 +1766,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function get_submitted_attachment_data($check_user_id = false)
 	{
-		global $user, $db, $phpbb_root_path, $phpEx, $config;
+		global $user, $db;
 		global $request;
 
 		$this->filename_data['filecomment'] = $request->variable('filecomment', '', true);
@@ -1858,7 +1854,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_poll(&$poll)
 	{
-		global $auth, $user, $config;
+		global $user, $config;
 
 		$poll_max_options = $poll['poll_max_options'];
 

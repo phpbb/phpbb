@@ -201,7 +201,6 @@ class acp_styles
 		$messages = array();
 		$installed_names = array();
 		$installed_dirs = array();
-		$last_installed = false;
 		foreach ($dirs as $dir)
 		{
 			if (in_array($dir, $this->reserved_style_names))
@@ -224,7 +223,6 @@ class acp_styles
 					$style['style_id'] = $this->install_style($style);
 					$style['_installed'] = true;
 					$found = true;
-					$last_installed = $style['style_id'];
 					$installed_names[] = $style['style_name'];
 					$installed_dirs[] = $style['style_path'];
 					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));

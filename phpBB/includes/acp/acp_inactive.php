@@ -32,7 +32,7 @@ class acp_inactive
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_container, $phpbb_log, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		if (!function_exists('user_active_flip'))
 		{

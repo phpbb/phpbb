@@ -50,6 +50,7 @@ class parser implements \phpbb\textformatter\parser_interface
 
 		$this->dispatcher = $dispatcher;
 		$this->parser = $parser;
+
 		$parser = $this;
 
 		/**
@@ -195,7 +196,7 @@ class parser implements \phpbb\textformatter\parser_interface
 		$errors = array();
 		foreach ($this->parser->getLogger()->get() as $entry)
 		{
-			list($type, $msg, $context) = $entry;
+			list(, $msg, $context) = $entry;
 
 			if ($msg === 'Tag limit exceeded')
 			{

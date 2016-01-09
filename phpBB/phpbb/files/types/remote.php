@@ -97,7 +97,6 @@ class remote extends base
 
 		$url['path'] = implode('', $url['path']);
 		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
-		$filename = $url['path'];
 		$filesize = 0;
 
 		$remote_max_filesize = $this->get_max_file_size();

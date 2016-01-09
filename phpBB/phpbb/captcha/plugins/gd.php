@@ -53,17 +53,10 @@ class gd extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template, $phpbb_log, $request;
+		global $config;
 
 		$user->add_lang('acp/board');
-
-		$config_vars = array(
-			'enable_confirm'		=> 'REG_ENABLE',
-			'enable_post_confirm'	=> 'POST_ENABLE',
-			'confirm_refresh'		=> 'CONFIRM_REFRESH',
-			'captcha_gd'			=> 'CAPTCHA_GD',
-		);
 
 		$module->tpl_name = 'captcha_gd_acp';
 		$module->page_title = 'ACP_VC_SETTINGS';

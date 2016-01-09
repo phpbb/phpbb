@@ -34,7 +34,7 @@ abstract class captcha_abstract
 
 	function init($type)
 	{
-		global $config, $db, $user, $request;
+		global $config, $request;
 
 		// read input
 		$this->confirm_id = $request->variable('confirm_id', '');
@@ -56,8 +56,6 @@ abstract class captcha_abstract
 
 	function execute_demo()
 	{
-		global $user;
-
 		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 
@@ -117,7 +115,7 @@ abstract class captcha_abstract
 
 	function get_demo_template($id)
 	{
-		global $config, $user, $template, $request, $phpbb_admin_path, $phpEx;
+		global $config, $template, $request, $phpbb_admin_path, $phpEx;
 
 		$variables = '';
 
@@ -153,7 +151,7 @@ abstract class captcha_abstract
 
 	function garbage_collect($type)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT DISTINCT c.session_id
 			FROM ' . CONFIRM_TABLE . ' c
@@ -193,7 +191,7 @@ abstract class captcha_abstract
 
 	function validate()
 	{
-		global $config, $db, $user;
+		global $user;
 
 		if (!$user->is_setup())
 		{

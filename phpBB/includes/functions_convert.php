@@ -423,7 +423,7 @@ function remote_avatar_dims()
 
 function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false)
 {
-	global $config, $convert, $phpbb_root_path, $user;
+	global $config, $convert, $user;
 
 	$relative_path = empty($convert->convertor['source_path_absolute']);
 
@@ -492,7 +492,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 
 function import_attachment_files($category_name = '')
 {
-	global $config, $convert, $phpbb_root_path, $db, $user;
+	global $config, $convert, $db, $user;
 
 	$sql = 'SELECT config_value AS upload_path
 		FROM ' . CONFIG_TABLE . "
@@ -590,7 +590,7 @@ function import_attachment($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $config, $user;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['upload_path'], '/') === '')
@@ -632,7 +632,7 @@ function import_rank($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['ranks_path']))
 	{
@@ -650,7 +650,7 @@ function import_smiley($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['smilies_path'], '/') === '')
@@ -671,7 +671,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 		return;
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $config, $user;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['avatar_path'], '/') === '')
@@ -684,7 +684,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 		$use_target = $config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
 	}
 
-	$result = _import_check('avatar_path', $source, $use_target);
+	_import_check('avatar_path', $source, $use_target);
 
 	return ((!empty($user_id)) ? $user_id : $use_target) . '.' . substr(strrchr($source, '.'), 1);
 }
@@ -750,7 +750,7 @@ function get_smiley_dim($source, $axis)
 		return $smiley_cache[$source][$axis];
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	$orig_source = $source;
 
@@ -858,14 +858,12 @@ function get_upload_avatar_dim($source, $axis)
 		return $cachedims[$axis];
 	}
 
-	$orig_source = $source;
-
 	if (substr($source, 0, 7) == 'upload:')
 	{
 		$source = substr($source, 7);
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['avatar_path']))
 	{
@@ -907,7 +905,7 @@ function get_gallery_avatar_dim($source, $axis)
 		return $avatar_cache[$source][$axis];
 	}
 
-	global $convert, $phpbb_root_path, $config, $user;
+	global $convert, $user;
 
 	$orig_source = $source;
 
@@ -1122,7 +1120,7 @@ function words_unique(&$words)
 */
 function add_user_group($group_id, $user_id, $group_leader = false)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $db;
 
 	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 		'group_id'		=> $group_id,
@@ -1142,7 +1140,7 @@ function add_user_group($group_id, $user_id, $group_leader = false)
 */
 function user_group_auth($group, $select_query, $use_src_db)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db, $src_db, $same_db;
+	global $convert, $user, $db, $src_db, $same_db;
 
 	if (!in_array($group, array('guests', 'registered', 'registered_coppa', 'global_moderators', 'administrators', 'bots')))
 	{
@@ -1198,7 +1196,7 @@ function get_config()
 		return $convert_config;
 	}
 
-	global $src_db, $same_db, $phpbb_root_path, $config;
+	global $src_db, $same_db;
 	global $convert;
 
 	if ($convert->config_schema['table_format'] != 'file')
@@ -1277,7 +1275,7 @@ function get_config()
 */
 function restore_config($schema)
 {
-	global $db, $config;
+	global $config;
 
 	$convert_config = get_config();
 
@@ -1322,7 +1320,7 @@ function restore_config($schema)
 */
 function update_folder_pm_count()
 {
-	global $db, $convert, $user;
+	global $db;
 
 	$sql = 'SELECT user_id, folder_id, COUNT(msg_id) as num_messages
 		FROM ' . PRIVMSGS_TO_TABLE . '
@@ -1381,7 +1379,7 @@ function extract_variables_from_file($_filename)
 
 function get_path($src_path, $src_url, $test_file)
 {
-	global $config, $phpbb_root_path, $phpEx;
+	global $phpbb_root_path, $phpEx;
 
 	$board_config = get_config();
 
@@ -1492,7 +1490,7 @@ function compare_table($tables, $tablename, &$prefixes)
 */
 function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 {
-	global $db, $convert, $user, $config;
+	global $db;
 	static $acl_option_ids, $group_ids;
 
 	if (($ug_type == 'group' || $ug_type == 'group_role') && is_string($ug_id))
@@ -2039,7 +2037,7 @@ function update_dynamic_config()
 */
 function update_topics_posted()
 {
-	global $db, $config;
+	global $db;
 
 	switch ($db->get_sql_layer())
 	{
@@ -2180,7 +2178,7 @@ function fix_empty_primary_groups()
 */
 function remove_invalid_users()
 {
-	global $convert, $db, $phpEx, $phpbb_root_path;
+	global $db, $phpEx, $phpbb_root_path;
 
 	// username_clean is UNIQUE
 	$sql = 'SELECT user_id
@@ -2316,7 +2314,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+	global $convert, $phpbb_root_path, $user, $phpbb_filesystem;
 
 	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
 	$filesystem = $phpbb_filesystem;
@@ -2373,7 +2371,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db, $phpbb_filesystem;
+	global $convert, $phpbb_root_path, $config, $user, $phpbb_filesystem;
 
 	/** @var \phpbb\filesystem\filesystem_interface $filesystem */
 	$filesystem = $phpbb_filesystem;
@@ -2485,7 +2483,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 
 function relative_base($path, $is_relative = true, $line = false, $file = false)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $user;
 
 	if (!$is_relative)
 	{
