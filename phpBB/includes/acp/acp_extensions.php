@@ -121,8 +121,6 @@ class acp_extensions
 					'U_ACTION' 				=> $this->u_action,
 				));
 
-				add_form_key('version_check_settings');
-
 				$this->tpl_name = 'acp_ext_list';
 			break;
 
