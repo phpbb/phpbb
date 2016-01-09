@@ -19,6 +19,8 @@
 !/phpBB/styles/all
 node_modules
 /phpBB/vendor
+/phpBB/vendor-ext/*
+!/phpBB/vendor-ext/.git-keep
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*
