@@ -106,6 +106,8 @@ services:
         arguments:
             - '%core.root_path%'
             - '@config'
+            - '@log'
+            - '@user'
         calls:
             - [set_name, [cron.task.core.tidy_plupload]]
         tags:
