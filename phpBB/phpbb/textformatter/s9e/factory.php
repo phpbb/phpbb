@@ -94,7 +94,7 @@ class factory implements \phpbb\textformatter\cache_interface
 			]{TEXT2}[/QUOTE]",
 		'size'  => '[SIZE={FONTSIZE}]{TEXT}[/SIZE]',
 		'u'     => '[U]{TEXT}[/U]',
-		'url'   => '[URL={URL;useContent}]{TEXT}[/URL]',
+		'url'   => '[URL={URL;useContent} $forceLookahead=true]{TEXT}[/URL]',
 	);
 
 	/**
