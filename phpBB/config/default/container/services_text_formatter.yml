@@ -33,9 +33,13 @@ services:
             - '@cache.driver'
             - '@dispatcher'
             - '@config'
+            - '@text_formatter.s9e.link_helper'
             - '%text_formatter.cache.dir%'
             - '%text_formatter.cache.parser.key%'
             - '%text_formatter.cache.renderer.key%'
+
+    text_formatter.s9e.link_helper:
+        class: phpbb\textformatter\s9e\link_helper
 
     text_formatter.s9e.parser:
         class: phpbb\textformatter\s9e\parser

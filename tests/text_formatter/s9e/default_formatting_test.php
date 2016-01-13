@@ -226,6 +226,36 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 				'... <a href="http://www.example.org" class="postlink">www.example.org</a> ...'
 			),
 			array(
+				// From make_clickable_test.php
+				'www.phpbb.com/community/?',
+				'<a href="http://www.phpbb.com/community/" class="postlink">www.phpbb.com/community/</a>?'
+			),
+			array(
+				// From make_clickable_test.php
+				'http://www.phpbb.com/community/path/to/long/url/file.ext#section',
+				'<a href="http://www.phpbb.com/community/path/to/long/url/file.ext#section" class="postlink">http://www.phpbb.com/community/path/to/ ... xt#section</a>'
+			),
+			array(
+				'http://localhost/ http://localhost/phpbb/ http://localhost/phpbb/viewforum.php?f=1',
+				'<a href="http://localhost/" class="postlink">http://localhost/</a> <a href="http://localhost/phpbb/" class="postlink">http://localhost/phpbb/</a> <a href="http://localhost/phpbb/viewforum.php?f=1" class="postlink">viewforum.php?f=1</a>'
+			),
+			array(
+				'http://localhost/phpbb/viewforum.php?f=1#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+				'<a href="http://localhost/phpbb/viewforum.php?f=1#xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">viewforum.php?f=1#xxxxxxxxxxxxxxxxxxxxx ... xxxxxxxxxx</a>'
+			),
+			array(
+				'[url]http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0[/url]',
+				'<a href="http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0" class="postlink">http://example.org/0xxxxxxxxxxxxxxxxxxx ... xxxxxxxxx0</a>'
+			),
+			array(
+				'[URL]http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0[/url]',
+				'<a href="http://example.org/0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0" class="postlink">http://example.org/0xxxxxxxxxxxxxxxxxxx ... xxxxxxxxx0</a>'
+			),
+			array(
+				'[url=http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx[/url]',
+				'<a href="http://example.org/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" class="postlink">xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</a>'
+			),
+			array(
 				'[quote="[url=http://example.org]xxx[/url]"]...[/quote]',
 				'<blockquote><div><cite><a href="http://example.org" class="postlink">xxx</a> wrote:</cite>...</div></blockquote>'
 			),

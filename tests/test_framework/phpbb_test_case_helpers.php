@@ -315,7 +315,7 @@ class phpbb_test_case_helpers
 	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
-		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $user;
+		global $config, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
 
 		$cache_dir = __DIR__ . '/../tmp/';
 
@@ -473,14 +473,18 @@ class phpbb_test_case_helpers
 		{
 			$config = $container->get('config');
 		}
-		else
+		elseif (!isset($config))
 		{
 			$config = new \phpbb\config\config(array());
 		}
 		$default_config = array(
-			'allow_nocensors' => false,
+			'allow_nocensors'       => false,
 			'allowed_schemes_links' => 'http,https,ftp',
-			'smilies_path' => 'images/smilies',
+			'script_path'           => '/phpbb',
+			'server_name'           => 'localhost',
+			'server_port'           => 80,
+			'server_protocol'       => 'http://',
+			'smilies_path'          => 'images/smilies',
 		);
 		foreach ($default_config as $config_name => $config_value)
 		{
@@ -490,8 +494,14 @@ class phpbb_test_case_helpers
 			}
 		}
 
+		// Create a fake request
+		if (!isset($request))
+		{
+			$request = new phpbb_mock_request;
+		}
+
 		// Create and register the text_formatter.s9e.factory service
-		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, new \phpbb\textformatter\s9e\link_helper, $cache_dir, $cache_key_parser, $cache_key_renderer);
 		$container->set('text_formatter.s9e.factory', $factory);
 
 		// Create a user if none was provided, and add the common lang strings

@@ -35,7 +35,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 	public function get_factory()
 	{
-		global $phpbb_root_path;
+		global $config, $phpbb_root_path, $request, $user;
 		$this->cache = new phpbb_mock_cache;
 		$dal = new \phpbb\textformatter\data_access(
 			$this->new_dbal(),
@@ -50,10 +50,21 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			$this->cache,
 			$this->dispatcher,
 			new \phpbb\config\config(array('allowed_schemes_links' => 'http,https,ftp')),
+			new \phpbb\textformatter\s9e\link_helper,
 			$this->get_cache_dir(),
 			'_foo_parser',
 			'_foo_renderer'
 		);
+
+		// Global objects required by generate_board_url()
+		$config = new \phpbb\config\config(array(
+			'script_path'           => '/phpbb',
+			'server_name'           => 'localhost',
+			'server_port'           => 80,
+			'server_protocol'       => 'http://',
+		));
+		$request = new phpbb_mock_request;
+		$user = new phpbb_mock_user;
 
 		return $factory;
 	}
@@ -128,14 +139,14 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	public function test_local_url()
 	{
 		global $config, $user, $request;
-		$config = array(
+		$config = new \phpbb\config\config(array(
 			'force_server_vars' => true,
 			'server_protocol' => 'http://',
 			'server_name' => 'path',
 			'server_port' => 80,
 			'script_path' => '/to',
 			'cookie_secure' => false
-		);
+		));
 		$user = new phpbb_mock_user;
 		$request = new phpbb_mock_request;
 

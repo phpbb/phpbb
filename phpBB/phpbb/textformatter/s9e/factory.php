@@ -23,6 +23,11 @@ use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
 class factory implements \phpbb\textformatter\cache_interface
 {
 	/**
+	* @var \phpbb\textformatter\s9e\link_helper
+	*/
+	protected $link_helper;
+
+	/**
 	* @var \phpbb\cache\driver\driver_interface
 	*/
 	protected $cache;
@@ -133,12 +138,14 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @param \phpbb\cache\driver\driver_interface $cache
 	* @param \phpbb\event\dispatcher_interface $dispatcher
 	* @param \phpbb\config\config $config
+	* @param \phpbb\textformatter\s9e\link_helper $link_helper
 	* @param string $cache_dir          Path to the cache dir
 	* @param string $cache_key_parser   Cache key used for the parser
 	* @param string $cache_key_renderer Cache key used for the renderer
 	*/
-	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, $cache_dir, $cache_key_parser, $cache_key_renderer)
+	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, \phpbb\textformatter\s9e\link_helper $link_helper, $cache_dir, $cache_key_parser, $cache_key_renderer)
 	{
+		$this->link_helper = $link_helper;
 		$this->cache = $cache;
 		$this->cache_dir = $cache_dir;
 		$this->cache_key_parser = $cache_key_parser;
@@ -332,8 +339,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		}
 
 		// Load the magic links plugins. We do that after BBCodes so that they use the same tags
-		$configurator->plugins->load('Autoemail');
-		$configurator->plugins->load('Autolink', array('matchWww' => true));
+		$this->configure_autolink($configurator);
 
 		// Register some vars with a default value. Those should be set at runtime by whatever calls
 		// the parser
@@ -392,6 +398,47 @@ class factory implements \phpbb\textformatter\cache_interface
 		$this->cache->put($this->cache_key_renderer, $renderer_data);
 
 		return array('parser' => $parser, 'renderer' => $renderer);
+	}
+
+	/**
+	* Configure the Autolink / Autoemail plugins used to linkify text
+	*
+	* @param  \s9e\TextFormatter\Configurator $configurator
+	* @return void
+	*/
+	protected function configure_autolink(Configurator $configurator)
+	{
+		$configurator->plugins->load('Autoemail');
+		$configurator->plugins->load('Autolink', array('matchWww' => true));
+
+		// Add a tag filter that creates a tag that stores and replace the
+		// content of a link created by the Autolink plugin
+		$configurator->Autolink->getTag()->filterChain
+			->add(array($this->link_helper, 'generate_link_text_tag'))
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByName('parser');
+
+		// Create a tag that will be used to display the truncated text by
+		// replacing the original content with the content of the @text attribute
+		$tag = $configurator->tags->add('LINK_TEXT');
+		$tag->attributes->add('text');
+		$tag->template = '<xsl:value-of select="@text"/>';
+
+		$tag->filterChain
+			->add(array($this->link_helper, 'truncate_local_url'))
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByValue(generate_board_url() . '/');
+		$tag->filterChain
+			->add(array($this->link_helper, 'truncate_text'))
+			->resetParameters()
+			->addParameterByName('tag');
+		$tag->filterChain
+			->add(array($this->link_helper, 'cleanup_tag'))
+			->resetParameters()
+			->addParameterByName('tag')
+			->addParameterByName('parser');
 	}
 
 	/**
