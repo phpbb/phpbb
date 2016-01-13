@@ -77,4 +77,3 @@ CREATE OPERATOR =(
   SORT1= <);
 
 COMMIT;
-

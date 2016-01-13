@@ -46,6 +46,7 @@ class tools implements tools_interface
 			'mysql_41'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
+				'ULINT'		=> 'INT(10) UNSIGNED',
 				'UINT'		=> 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
@@ -76,6 +77,7 @@ class tools implements tools_interface
 			'mysql_40'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
+				'ULINT'		=> 'INT(10) UNSIGNED',
 				'UINT'		=> 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
@@ -106,6 +108,7 @@ class tools implements tools_interface
 			'oracle'	=> array(
 				'INT:'		=> 'number(%d)',
 				'BINT'		=> 'number(20)',
+				'ULINT'		=> 'number(10)',
 				'UINT'		=> 'number(8)',
 				'UINT:'		=> 'number(%d)',
 				'TINT:'		=> 'number(%d)',
@@ -136,11 +139,12 @@ class tools implements tools_interface
 			'sqlite'	=> array(
 				'INT:'		=> 'int(%d)',
 				'BINT'		=> 'bigint(20)',
-				'UINT'		=> 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
+				'ULINT'		=> 'INTEGER UNSIGNED', // 'int(10) UNSIGNED',
+				'UINT'		=> 'INTEGER UNSIGNED', // 'mediumint(8) UNSIGNED',
 				'UINT:'		=> 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
 				'TINT:'		=> 'tinyint(%d)',
-				'USINT'		=> 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
-				'BOOL'		=> 'INTEGER UNSIGNED', //'tinyint(1) UNSIGNED',
+				'USINT'		=> 'INTEGER UNSIGNED', // 'mediumint(4) UNSIGNED',
+				'BOOL'		=> 'INTEGER UNSIGNED', // 'tinyint(1) UNSIGNED',
 				'VCHAR'		=> 'varchar(255)',
 				'VCHAR:'	=> 'varchar(%d)',
 				'CHAR:'		=> 'char(%d)',
@@ -152,7 +156,7 @@ class tools implements tools_interface
 				'STEXT_UNI'	=> 'text(65535)',
 				'TEXT_UNI'	=> 'text(65535)',
 				'MTEXT_UNI'	=> 'mediumtext(16777215)',
-				'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
+				'TIMESTAMP'	=> 'INTEGER UNSIGNED', // 'int(11) UNSIGNED',
 				'DECIMAL'	=> 'decimal(5,2)',
 				'DECIMAL:'	=> 'decimal(%d,2)',
 				'PDECIMAL'	=> 'decimal(6,3)',
@@ -166,6 +170,7 @@ class tools implements tools_interface
 			'sqlite3'	=> array(
 				'INT:'		=> 'INT(%d)',
 				'BINT'		=> 'BIGINT(20)',
+				'ULINT'		=> 'INTEGER UNSIGNED',
 				'UINT'		=> 'INTEGER UNSIGNED',
 				'UINT:'		=> 'INTEGER UNSIGNED',
 				'TINT:'		=> 'TINYINT(%d)',
@@ -199,7 +204,7 @@ class tools implements tools_interface
 	* A list of types being unsigned for better reference in some db's
 	* @var array
 	*/
-	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
+	var $unsigned_types = array('ULINT', 'UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 	/**
 	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
