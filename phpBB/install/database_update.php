@@ -31,7 +31,6 @@ function phpbb_end_update($cache, $config)
 								</p>
 							</div>
 						</div>
-					<span class="corners-bottom"><span></span></span>
 				</div>
 			</div>
 		</div>
@@ -152,7 +151,6 @@ header('Content-type: text/html; charset=UTF-8');
 		<div id="page-body">
 			<div id="acp">
 				<div class="panel">
-					<span class="corners-top"><span></span></span>
 						<div id="content">
 							<div id="main" class="install-body">
 
