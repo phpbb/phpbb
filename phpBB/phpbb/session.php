@@ -1574,7 +1574,7 @@ class session
 
 	public function update_session_infos()
 	{
-		global $db, $request;
+		global $config, $db, $request;
 
 		// No need to update if it's a new session. Informations are already inserted by session_create()
 		if (isset($this->data['session_created']) && $this->data['session_created'])
