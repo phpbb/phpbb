@@ -92,5 +92,14 @@ class phpbb_log_add_test extends phpbb_database_test_case
 
 		// Invalid mode specified
 		$this->assertFalse($log->add('mode_does_not_exist', $user_id, $log_ip, $log_operation, $log_time));
+
+		// null user and null ip given
+		$this->assertEquals(3, $log->add($mode, null, null, $log_operation, $log_time), 'Adding log with null user_id and null user_ip failed');
+		$sql = 'SELECT user_id, log_ip FROM ' . LOG_TABLE . ' WHERE log_id = 3';
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		$this->assertEquals(ANONYMOUS, $row['user_id'], 'Adding log with null user_id failed');
+		$this->assertEquals('', $row['log_ip'], 'Adding log with null user_ip failed');
 	}
 }

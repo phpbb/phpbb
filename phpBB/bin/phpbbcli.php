@@ -70,6 +70,8 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 /* @var $user \phpbb\user */
 $user = $phpbb_container->get('user');
+$user->data['user_id'] = ANONYMOUS;
+$user->ip = '127.0.0.1';
 $user->add_lang('acp/common');
 $user->add_lang('cli');
 
