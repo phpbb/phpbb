@@ -76,7 +76,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	{
 		// Collect database data
 		$dbms			= $this->io_handler->get_input('dbms', '');
-		$dbhost			= $this->io_handler->get_input('dbhost', '');
+		$dbhost			= $this->io_handler->get_input('dbhost', '', true);
 		$dbport			= $this->io_handler->get_input('dbport', '');
 		$dbuser			= $this->io_handler->get_input('dbuser', '');
 		$dbpasswd		= $this->io_handler->get_input('dbpasswd', '', true);
@@ -115,7 +115,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 		if ($use_request_data)
 		{
 			$dbms			= $this->io_handler->get_input('dbms', '');
-			$dbhost			= $this->io_handler->get_input('dbhost', '');
+			$dbhost			= $this->io_handler->get_input('dbhost', '', true);
 			$dbport			= $this->io_handler->get_input('dbport', '');
 			$dbuser			= $this->io_handler->get_input('dbuser', '');
 			$dbname			= $this->io_handler->get_input('dbname', '');
