@@ -95,7 +95,7 @@ class mcp_reports
 				*
 				* @event core.mcp_reports_report_details_query_before
 				* @var	array	sql_ary			The array in the format of the query builder with the query
-				* @var	mixed	forum_id		The forum_id, the number in the f GET parameter
+				* @var	int		forum_id		The forum_id, the number in the f GET parameter
 				* @var	int		post_id			The post_id of the report being viewed (if 0, it is meaningless)
 				* @var	int		report_id		The report_id of the report being viewed
 				* @since 3.1.5-RC1
@@ -118,10 +118,10 @@ class mcp_reports
 				*
 				* @event core.mcp_reports_report_details_query_after
 				* @var	array	sql_ary		The array in the format of the query builder with the query that had been executted
-				* @var	mixed	forum_id	The forum_id, the number in the f GET parameter
+				* @var	int		forum_id	The forum_id, the number in the f GET parameter
 				* @var	int		post_id		The post_id of the report being viewed (if 0, it is meaningless)
 				* @var	int		report_id	The report_id of the report being viewed
-				* @var	int		report		The query's resulting row.
+				* @var	array	report		The query's resulting row.
 				* @since 3.1.5-RC1
 				*/
 				$vars = array(

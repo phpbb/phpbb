@@ -4283,7 +4283,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 		* @var	string	item			Restrict online users to a certain
 		*								session item, e.g. forum for
 		*								session_forum_id
-		* @var	string	sql_ary			SQL query to obtain users online data
+		* @var	array	sql_ary			SQL query array to obtain users online data
 		* @since 3.1.4-RC1
 		* @changed 3.1.7-RC1			Change sql query into array and adjust var accordingly. Allows extension authors the ability to adjust the sql_ary.
 		*/

@@ -370,7 +370,7 @@ class acp_bbcodes
 		*
 		* @event core.acp_bbcodes_display_form
 		* @var	string	action			Type of the action: modify|create
-		* @var	string	sql_ary			The SQL array to get custom bbcode data
+		* @var	array	sql_ary			The SQL array to get custom bbcode data
 		* @var	array	template_data	Array with form template data
 		* @var	string	u_action		The u_action link
 		* @since 3.1.0-a3
