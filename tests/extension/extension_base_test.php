@@ -74,6 +74,6 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 	public function test_suffix_get_classes($extension_name, $expected)
 	{
 		$extension = $this->extension_manager->get_extension($extension_name);
-		$this->assertEquals($expected, self::$reflection_method_get_migration_file_list->invoke($extension));
+		$this->assertEquals($expected, self::$reflection_method_get_migration_file_list->invoke($extension, false));
 	}
 }
