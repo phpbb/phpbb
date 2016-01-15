@@ -26,7 +26,7 @@ function adm_page_header($page_title)
 {
 	global $config, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $phpbb_container;
 
 	if (defined('HEADER_INC'))
 	{
@@ -105,6 +105,8 @@ function adm_page_header($page_title)
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
 		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+
+		'CONTAINER_EXCEPTION'	=> $phpbb_container->hasParameter('container_exception') ? $phpbb_container->getParameter('container_exception') : false,
 	));
 
 	// An array of http headers that phpbb will set. The following event may override these.
