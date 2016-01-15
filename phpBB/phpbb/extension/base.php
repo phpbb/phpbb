@@ -121,9 +121,11 @@ class base implements \phpbb\extension\extension_interface
 	/**
 	* Get the list of migration files from this extension
 	*
+	* @var bool $validate_classes Whether or not to check that the migration
+	*		class exists and extends the base migration class.
 	* @return array
 	*/
-	protected function get_migration_file_list()
+	protected function get_migration_file_list($validate_classes = true)
 	{
 		if ($this->migrations !== false)
 		{
@@ -136,6 +138,30 @@ class base implements \phpbb\extension\extension_interface
 			->find_from_extension($this->extension_name, $this->extension_path);
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
+
+		if ($validate_classes)
+		{
+			foreach ($migrations as $key => $migration)
+			{
+				// If the class exists and is a subclass of the
+				// \phpbb\db\migration\migration abstract class
+				// we skip it.
+
+				// Otherwise, i.e. if it doesn't exist or it is
+				// not an extend the abstract class, we unset it
+				if (class_exists($migration))
+				{
+					$reflector = new \ReflectionClass($migration);
+					if ($reflector->isSubclassOf('\phpbb\db\migration\migration') && $reflector->isInstantiable())
+					{
+						continue;
+					}
+
+				}
+
+				unset($migrations[$key]);
+			}
+		}
 
 		return $migrations;
 	}
