@@ -141,14 +141,10 @@ class base implements \phpbb\extension\extension_interface
 
 		if ($validate_classes)
 		{
+			// Unset classes that do not exist or do not extend the
+			// abstract class phpbb\db\migration\migration
 			foreach ($migrations as $key => $migration)
 			{
-				// If the class exists and is a subclass of the
-				// \phpbb\db\migration\migration abstract class
-				// we skip it.
-
-				// Otherwise, i.e. if it doesn't exist or it is
-				// not an extend the abstract class, we unset it
 				if (class_exists($migration))
 				{
 					$reflector = new \ReflectionClass($migration);
