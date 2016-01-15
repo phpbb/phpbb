@@ -98,9 +98,7 @@ class tidy_plupload extends \phpbb\cron\task\base
 		}
 		catch (\UnexpectedValueException $e)
 		{
-			$user_id = (empty($this->user->data)) ? ANONYMOUS : $this->user->data['user_id'];
-			$user_ip = (empty($this->user->ip)) ? '' : $this->user->ip;
-			$this->log->add('critical', $user_id, $user_ip, 'LOG_PLUPLOAD_TIDY_FAILED', false, array(
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_PLUPLOAD_TIDY_FAILED', false, array(
 				$this->plupload_upload_path,
 				$e->getMessage(),
 				$e->getTraceAsString()
