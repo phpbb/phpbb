@@ -54,7 +54,7 @@ class language_file_helper
 		foreach ($finder as $file)
 		{
 			$json = $file->getContents();
-			$data = json_decode($json, true);
+			$data = \phpbb\json_sanitizer::sanitize(json_decode($json, true));
 
 			$available_languages[] = $this->get_language_data_from_json($data);
 		}
