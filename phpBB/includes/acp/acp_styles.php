@@ -1154,7 +1154,7 @@ class acp_styles
 		}
 
 		$json = file_get_contents($this->styles_path . $dir . '/composer.json');
-		$style_data = json_decode($json, true);
+		$style_data = \phpbb\json_sanitizer::sanitize(json_decode($json, true));
 
 		if (!is_array($style_data) || !isset($style_data['type']) || $style_data['type'] !== 'phpbb-style')
 		{
