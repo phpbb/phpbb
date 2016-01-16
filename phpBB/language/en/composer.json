@@ -1,8 +1,8 @@
 {
-	"name": "en",
+	"name": "phpbb/phpbb-language-en",
 	"description": "phpBB Forum Software default style",
 	"type": "phpbb-language",
-	"version": "3.2.0-a1-dev",
+	"version": "3.2.0-a3-dev",
 	"homepage": "https://www.phpbb.com",
 	"license": "GPL-2.0",
 	"authors": [
@@ -22,6 +22,6 @@
 		"language-iso": "en",
 		"english-name": "British English",
 		"local-name": "British English",
-		"phpbb-version": "3.2.0-a1-dev"
+		"phpbb-version": "3.2.0-a3-dev"
 	}
 }
