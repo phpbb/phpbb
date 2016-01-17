@@ -1,5 +1,5 @@
 {
-	"name": "prosilver",
+	"name": "phpbb/phpbb-style-prosilver",
 	"description": "phpBB Forum Software default style",
 	"type": "phpbb-style",
 	"version": "3.2.0-a1-dev",
@@ -23,7 +23,6 @@
 	},
 	"extra": {
 		"display-name": "prosilver",
-		"parent-style": "prosilver",
-		"phpbb-version": "3.2.0-a1-dev"
+		"phpbb-version": "3.2.0-a3-dev"
 	}
 }

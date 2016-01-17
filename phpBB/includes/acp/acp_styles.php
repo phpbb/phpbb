@@ -802,7 +802,7 @@ class acp_styles
 			$parent = $style_data['extra']['parent-style'];
 			$style = array(
 				'style_id'			=> 0,
-				'style_name'		=> $style_data['name'],
+				'style_name'		=> $style_data['extra']['display-name'],
 				'style_copyright'	=> $style_data['license'],
 				'style_active'		=> 0,
 				'style_path'		=> $dir,
