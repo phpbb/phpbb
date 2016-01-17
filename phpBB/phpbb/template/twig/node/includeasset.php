@@ -49,33 +49,20 @@ abstract class includeasset extends \Twig_Node
 					->write("\$local_file = \$this->getEnvironment()->findTemplate(\$asset_path);\n")
 					->write("\$asset->set_path(\$local_file, true);\n")
 				->outdent()
-				->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
-				->write("\$asset_file = \$asset->get_url();\n")
 				->write("}\n")
+				->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
 			->outdent()
 			->write("}\n")
-			->write("\$context['definition']->append('{$this->get_definition_name()}', '")
-		;
-
-		$this->append_asset($compiler);
-
-		$compiler
-			->raw("\n');\n")
+			->write("\$context['definition']->set('STYLESHEETS', '__STYLESHEETS_PLACEHOLDER__');\n")
+			->write("\$context['definition']->set('SCRIPTS', '__SCRIPTS_PLACEHOLDER__');\n")
+			->write("\$this->getEnvironment()->get_assets_bag()->add_{$this->get_setters_name()}(\$asset);")
 		;
 	}
 
 	/**
-	* Get the definition name
+	* Get the name of the assets bag setter
 	*
-	* @return string (e.g. 'SCRIPTS')
+	* @return string (e.g. 'script')
 	*/
-	abstract public function get_definition_name();
-
-	/**
-	* Append the output code for the asset
-	*
-	* @param \Twig_Compiler A Twig_Compiler instance
-	* @return null
-	*/
-	abstract protected function append_asset(\Twig_Compiler $compiler);
+	abstract public function get_setters_name();
 }
