@@ -13,6 +13,8 @@
 
 namespace phpbb\template\twig;
 
+use phpbb\template\assets_bag;
+
 class environment extends \Twig_Environment
 {
 	/** @var \phpbb\config\config */
@@ -39,6 +41,9 @@ class environment extends \Twig_Environment
 	/** @var array **/
 	protected $namespace_look_up_order = array('__main__');
 
+	/** @var assets_bag */
+	protected $assets_bag;
+
 	/**
 	* Constructor
 	*
@@ -62,6 +67,8 @@ class environment extends \Twig_Environment
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
+
+		$this->assets_bag = new assets_bag();
 
 		$options = array_merge(array(
 			'cache'			=> (defined('IN_INSTALL')) ? false : $cache_path,
@@ -151,6 +158,16 @@ class environment extends \Twig_Environment
 	}
 
 	/**
+	 * Gets the assets bag
+	 *
+	 * @return assets_bag
+	 */
+	public function get_assets_bag()
+	{
+		return $this->assets_bag;
+	}
+
+	/**
 	* Get the namespace look up order
 	*
 	* @return array
@@ -171,6 +188,43 @@ class environment extends \Twig_Environment
 		$this->namespace_look_up_order = $namespace;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function render($name, array $context = [])
+	{
+		$output = parent::render($name, $context);
+
+		return $this->inject_assets($output);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function display($name, array $context = [])
+	{
+		ob_start();
+		parent::display($name, $context);
+		$output = ob_get_clean();
+
+		echo $this->inject_assets($output);
+	}
+
+	/**
+	 * Injects the assets (from INCLUDECSS/JS) in the output.
+	 *
+	 * @param string $output
+	 *
+	 * @return string
+	 */
+	private function inject_assets($output)
+	{
+		$output = str_replace('__STYLESHEETS_PLACEHOLDER__', $this->assets_bag->get_stylesheets_content(), $output);
+		$output = str_replace('__SCRIPTS_PLACEHOLDER__', $this->assets_bag->get_scripts_content(), $output);
+
+		return $output;
 	}
 
 	/**
