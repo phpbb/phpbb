@@ -711,6 +711,12 @@ class acp_styles
 		// Show styles
 		foreach ($styles as &$style)
 		{
+			if (!$style['_available'] && !empty($style['_invalid']))
+			{
+				$this->list_invalid($style);
+				continue;
+			}
+
 			// Check if style has a parent style in styles list
 			$has_parent = false;
 			if ($style['_inherit_name'] != '')
@@ -795,6 +801,13 @@ class acp_styles
 			catch (\DomainException $e)
 			{
 				// Invalid composer.json
+				$style = array(
+					'_available'	=> false,
+					'_invalid'		=> true,
+					'style_path'	=> $dir,
+				);
+				$styles[] = $style;
+
 				continue;
 			}
 
@@ -1073,6 +1086,42 @@ class acp_styles
 				);
 		}
 		$this->style_counters[$counter]++;
+		$this->style_counters['total']++;
+	}
+
+	/**
+	 * List invalid style
+	 *
+	 * @param array $style Array with info about style to display as invalid
+	 */
+	protected function list_invalid(&$style)
+	{
+		$style['_shown'] = true;
+
+		$row = array(
+			// Style data
+			'STYLE_INVALID'	=> true,
+			'STYLE_NAME'	=> $this->user->lang('INVALID_STYLE_MESSAGE', $style['style_path']),
+		);
+
+		$this->template->assign_block_vars('styles_list', $row);
+
+		$this->template->assign_block_vars('styles_list.actions', array(
+			'HTML'		=> $this->user->lang['CANNOT_BE_INSTALLED']
+		));
+
+		// Increase counters
+		if (!isset($this->style_counters))
+		{
+			$this->style_counters = array(
+				'total'		=> 0,
+				'active'	=> 0,
+				'inactive'	=> 0,
+				'caninstall'	=> 0,
+				'cannotinstall'	=> 0
+			);
+		}
+		$this->style_counters['cannotinstall']++;
 		$this->style_counters['total']++;
 	}
 
