@@ -1072,20 +1072,6 @@ navbar_header_logged_out_content
 * Since: 3.1.0-RC1
 * Purpose: Add text and HTML in place of the username when not logged in.
 
-navbar_header_user_profile_append
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.8-RC1
-* Purpose: Add links to the right of the user drop down area
-
-navbar_header_user_profile_prepend
-===
-* Locations:
-    + styles/prosilver/template/navbar_header.html
-* Since: 3.1.8-RC1
-* Purpose: Add links to the left of the notification area
-
 navbar_header_profile_list_after
 ===
 * Locations:
@@ -1113,6 +1099,20 @@ navbar_header_quick_links_before
     + styles/prosilver/template/navbar_header.html
 * Since: 3.1.0-RC2
 * Purpose: Add links to the top of the quick-links drop-down menu in the header
+
+navbar_header_user_profile_append
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.8-RC1
+* Purpose: Add links to the right of the user drop down area
+
+navbar_header_user_profile_prepend
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+* Since: 3.1.8-RC1
+* Purpose: Add links to the left of the notification area
 
 navbar_header_username_append
 ===
