@@ -1,6 +1,6 @@
 {
 	"name": "phpbb/phpbb-language-en",
-	"description": "phpBB Forum Software default style",
+	"description": "phpBB Forum Software default language",
 	"type": "phpbb-language",
 	"version": "3.2.0-a3-dev",
 	"homepage": "https://www.phpbb.com",
