@@ -36,6 +36,7 @@ class mssql extends tools
 			'mssql'		=> array(
 				'INT:'		=> '[int]',
 				'BINT'		=> '[float]',
+				'ULINT'		=> '[int]',
 				'UINT'		=> '[int]',
 				'UINT:'		=> '[int]',
 				'TINT:'		=> '[int]',
@@ -66,6 +67,7 @@ class mssql extends tools
 			'mssqlnative'	=> array(
 				'INT:'		=> '[int]',
 				'BINT'		=> '[float]',
+				'ULINT'		=> '[int]',
 				'UINT'		=> '[int]',
 				'UINT:'		=> '[int]',
 				'TINT:'		=> '[int]',

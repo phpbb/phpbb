@@ -30,6 +30,7 @@ class postgres extends tools
 			'postgres'	=> array(
 				'INT:'		=> 'INT4',
 				'BINT'		=> 'INT8',
+				'ULINT'		=> 'INT4', // unsigned
 				'UINT'		=> 'INT4', // unsigned
 				'UINT:'		=> 'INT4', // unsigned
 				'USINT'		=> 'INT2', // unsigned
