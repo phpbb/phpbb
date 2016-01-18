@@ -24,7 +24,7 @@ class base implements \phpbb\extension\extension_interface
 	protected $container;
 
 	/** @var \phpbb\finder */
-	protected $finder;
+	protected $extension_finder;
 
 	/** @var \phpbb\db\migrator */
 	protected $migrator;
@@ -148,7 +148,7 @@ class base implements \phpbb\extension\extension_interface
 				if (class_exists($migration))
 				{
 					$reflector = new \ReflectionClass($migration);
-					if ($reflector->isSubclassOf('\phpbb\db\migration\migration') && $reflector->isInstantiable())
+					if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
 					{
 						continue;
 					}
