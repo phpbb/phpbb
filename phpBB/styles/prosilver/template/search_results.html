@@ -78,27 +78,25 @@
 			<!-- EVENT search_results_topic_before -->
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="row-item {searchresults.TOPIC_IMG_STYLE}">
-					<dt <!-- IF searchresults.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+					<dt<!-- IF searchresults.TOPIC_ICON_IMG and S_TOPIC_ICONS --> style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
 						<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{searchresults.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
 						<div class="list-inner">
-
 							<!-- EVENT topiclist_row_prepend -->
 							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->
 								<a class="unread" href="{searchresults.U_NEWEST_POST}">
 									<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
-								</a> 
+								</a>
 							<!-- ENDIF -->
 							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
-
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
 									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
-								</a> 
+								</a>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_DELETED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{TOPIC_DELETED}">
 									<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{TOPIC_DELETED}</span>
-								</a> 
+								</a>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_REPORTED -->
 								<a href="{searchresults.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
@@ -106,8 +104,24 @@
 								</a>
 							<!-- ENDIF -->
 							<br />
+
+							<!-- IF not S_IS_BOT -->
+								<div class="responsive-show" style="display: none;">
+									{L_LAST_POST} {L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL} &laquo; <a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{searchresults.LAST_POST_TIME}</a>
+									<br />{L_POSTED} {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+								</div>
+							<!-- IF searchresults.TOPIC_REPLIES --><span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></span><!-- ENDIF -->
+							<!-- ENDIF -->
+
+							<div class="responsive-hide">
+								<!-- IF searchresults.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+								<!-- IF searchresults.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+								{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+							</div>
+
 							<!-- IF .searchresults.pagination -->
 							<div class="pagination">
+								<span><i class="icon fa-clone fa-fw" aria-hidden="true"></i></span>
 								<ul>
 								<!-- BEGIN pagination -->
 									<!-- IF searchresults.pagination.S_IS_PREV -->
@@ -120,26 +134,20 @@
 								</ul>
 							</div>
 							<!-- ENDIF -->
-							<!-- IF searchresults.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
-							<!-- IF searchresults.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
-							{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
-							<!-- EVENT topiclist_row_append -->
 
+							<!-- EVENT topiclist_row_append -->
 						</div>
 					</dt>
-					<dd class="posts">{searchresults.TOPIC_REPLIES}</dd>
-					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
+					<dd class="posts">{searchresults.TOPIC_REPLIES} <dfn>{L_REPLIES}</dfn></dd>
+					<dd class="views">{searchresults.TOPIC_VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 					<dd class="lastpost">
-						<span>
-							{L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL}
+						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL}
 							<!-- IF not S_IS_BOT -->
 								<a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 									<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
-								</a> 
+								</a>
 							<!-- ENDIF -->
-							<br />
-							{searchresults.LAST_POST_TIME}
-							<br />
+							<br />{searchresults.LAST_POST_TIME}
 						</span>
 					</dd>
 				</dl>
