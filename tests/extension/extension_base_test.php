@@ -11,6 +11,9 @@
 *
 */
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/ext/vendor2/bar/migrations/bar.php';
+require_once dirname(__FILE__) . '/ext/vendor2/bar/migrations/foo.php';
+require_once dirname(__FILE__) . '/ext/vendor2/bar/migrations/migration.php';
 
 class phpbb_extension_extension_base_test extends phpbb_test_case
 {
@@ -61,8 +64,18 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 		return array(
 			array(
 				'vendor2/bar',
+				false,
 				array(
+					'\vendor2\bar\migrations\bar',
+					'\vendor2\bar\migrations\foo',
 					'\vendor2\bar\migrations\migration',
+				),
+			),
+			array(
+				'vendor2/bar',
+				true,
+				array(
+					2	=> '\vendor2\bar\migrations\migration',
 				),
 			),
 		);
@@ -71,9 +84,9 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 	/**
 	* @dataProvider data_test_suffix_get_classes
 	*/
-	public function test_suffix_get_classes($extension_name, $expected)
+	public function test_suffix_get_classes($extension_name, $validate_classes, $expected)
 	{
 		$extension = $this->extension_manager->get_extension($extension_name);
-		$this->assertEquals($expected, self::$reflection_method_get_migration_file_list->invoke($extension, false));
+		$this->assertEquals($expected, self::$reflection_method_get_migration_file_list->invoke($extension, $validate_classes));
 	}
 }
