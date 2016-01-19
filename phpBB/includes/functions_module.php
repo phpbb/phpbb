@@ -953,7 +953,7 @@ class p_master
 	*/
 	function get_tpl_name()
 	{
-		return $this->module->tpl_name . '.html';
+		return strpos($this->module->tpl_name,'.twig')?$this->module->tpl_name:$this->module->tpl_name . '.html';
 	}
 
 	/**
