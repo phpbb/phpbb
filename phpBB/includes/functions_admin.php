@@ -2802,7 +2802,7 @@ function get_database_size()
 					$database_size = 0;
 					while ($row = $db->sql_fetchrow($result))
 					{
-						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
+						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB' || $row['Engine'] == 'Aria')))
 						{
 							if ($table_prefix != '')
 							{
