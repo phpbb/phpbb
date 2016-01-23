@@ -1229,21 +1229,19 @@ switch ($mode)
 		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
 
+		$user_types = array(USER_NORMAL, USER_FOUNDER);
+		if ($auth->acl_get('a_user'))
+		{
+			$user_types[] = USER_INACTIVE;
+		}
 		// Count the users ...
-		if ($sql_where)
-		{
-			$sql = 'SELECT COUNT(u.user_id) AS total_users
-				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where";
-			$result = $db->sql_query($sql);
-			$total_users = (int) $db->sql_fetchfield('total_users');
-			$db->sql_freeresult($result);
-		}
-		else
-		{
-			$total_users = $config['num_users'];
-		}
+		$sql = 'SELECT COUNT(u.user_id) AS total_users
+			FROM ' . USERS_TABLE . " u$sql_from
+			WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
+			$sql_where";
+		$result = $db->sql_query($sql);
+		$total_users = (int) $db->sql_fetchfield('total_users');
+		$db->sql_freeresult($result);
 
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
@@ -1409,13 +1407,7 @@ switch ($mode)
 			);
 		}
 
-		$user_types = array(USER_NORMAL, USER_FOUNDER);
-		if ($auth->acl_get('a_user'))
-		{
-			$user_types[] = USER_INACTIVE;
-		}
-
-		$start = $pagination->validate_start($start, $config['topics_per_page'], $config['num_users']);
+		$start = $pagination->validate_start($start, $config['topics_per_page'], $total_users);
 
 		// Get us some users :D
 		$sql = "SELECT u.user_id
