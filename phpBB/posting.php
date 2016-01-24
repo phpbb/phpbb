@@ -481,7 +481,7 @@ if ($mode == 'delete' || $mode == 'soft_delete')
 	}
 
 	$delete_reason = $request->variable('delete_reason', '', true);
-	phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete'), $delete_reason);
+	phpbb_handle_post_delete($forum_id, $topic_id, $post_id, $post_data, ($mode == 'soft_delete' && !$request->is_set_post('delete_permanent')), $delete_reason);
 	return;
 }
 
