@@ -950,7 +950,7 @@ phpbb.addAjaxCallback('toggle_link', function() {
 		updateAll = $(this).data('update-all') ,
 		toggleText,
 		toggleUrl,
-		toggleClass;
+		toggleIcon;
 
 	if (updateAll !== undefined && updateAll.length) {
 		$anchor = $(updateAll);
@@ -966,11 +966,17 @@ phpbb.addAjaxCallback('toggle_link', function() {
 		$this.attr('data-toggle-url', $this.attr('href'));
 		$this.attr('href', toggleUrl);
 
-		// Toggle class of link parent
-		toggleClass = $this.attr('data-toggle-class');
-		$this.attr('data-toggle-class', $this.children().attr('class'));
-		$this.children('.icon').attr('class', toggleClass);
-
+		toggleIcon = $this.attr('data-toggle-icon');
+		if($this.find('use')) {
+			// Toggle svg icon
+			$this.attr('data-toggle-icon', $this.find('use').attr('xlink:href'));
+			$this.find('use').attr('xlink:href', toggleIcon);
+		} else {
+			// Toggle class icon
+			$this.attr('data-toggle-icon', $this.children().attr('class'));
+			$this.children('.icon').attr('class', toggleIcon);
+		}
+		
 		// Toggle link text
 		toggleText = $this.attr('data-toggle-text');
 		$this.attr('data-toggle-text', $this.children('span').text());

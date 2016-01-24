@@ -834,7 +834,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	vertical-align: middle;
 }
 
-.pagination li a, .pagination li span {
+.pagination li span {
 	border-radius: 2px;
 	padding: 2px 5px;
 }
@@ -858,18 +858,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .pagination li.page-jump {
 	margin-right: 5px;
-}
-
-.pagination li.page-jump a {
-	padding: 0 8px;
-}
-
-.pagination li.page-jump a i {
-	font-size: 21px;
-}
-
-.pagination .arrow a {
-	padding: 2px 0;
 }
 
 /* Pagination in viewforum for multipage topics */

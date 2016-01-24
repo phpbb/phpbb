@@ -57,16 +57,21 @@
 .search-header .button-search-end {
 	border-top-width: 0;
 	border-bottom-width: 0;
-	padding: 3px 5px;
+	padding: 2px 5px 4px;
 }
 
 .search-header .button-search-end {
 	border-right-width: 0;
 }
 
+.button-paging {
+	border-radius: 2px;
+	padding: 2px 5px;
+}
+
 .button-icon-only {
-	padding-left: 3px;
-	padding-right: 3px;
+	padding-left: 4px;
+	padding-right: 4px;
 }
 
 /* Poster contact icons
@@ -122,11 +127,6 @@
 .post-buttons > li {
 	float: left;
 	margin-right: 3px;
-}
-
-.post-buttons .button, .format-buttons .button {
-	padding-left: 3px;
-	padding-right: 3px;
 }
 
 .hastouch .post-buttons {
