@@ -205,8 +205,23 @@ class environment extends \Twig_Environment
 	 */
 	public function display($name, array $context = [])
 	{
+		$level = ob_get_level();
 		ob_start();
-		parent::display($name, $context);
+
+		try
+		{
+			parent::display($name, $context);
+		}
+		catch (\Exception $e)
+		{
+			while (ob_get_level() > $level)
+			{
+				ob_end_clean();
+			}
+
+			throw $e;
+		}
+
 		$output = ob_get_clean();
 
 		echo $this->inject_assets($output);
