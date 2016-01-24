@@ -84,11 +84,18 @@ class phpbb_database_test_connection_manager
 			break;
 
 			default:
-				$dsn .= 'host=' . $this->config['dbhost'];
-
-				if ($this->config['dbport'])
+				if (!empty($this->config['dbport']) && !is_numeric($this->config['dbport']) && $this->dbms['PDO'] != 'pgsql')
 				{
-					$dsn .= ';port=' . $this->config['dbport'];
+					$dsn .= 'unix_socket=' . $this->config['dbport'];
+				}
+				else
+				{
+					$dsn .= 'host=' . $this->config['dbhost'];
+
+					if ($this->config['dbport'])
+					{
+						$dsn .= ';port=' . $this->config['dbport'];
+					}
 				}
 
 				if ($use_db)
