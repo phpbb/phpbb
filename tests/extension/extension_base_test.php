@@ -64,16 +64,6 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 		return array(
 			array(
 				'vendor2/bar',
-				false,
-				array(
-					'\vendor2\bar\migrations\bar',
-					'\vendor2\bar\migrations\foo',
-					'\vendor2\bar\migrations\migration',
-				),
-			),
-			array(
-				'vendor2/bar',
-				true,
 				array('\vendor2\bar\migrations\migration'),
 			),
 		);
@@ -82,10 +72,10 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 	/**
 	* @dataProvider data_test_suffix_get_classes
 	*/
-	public function test_suffix_get_classes($extension_name, $validate_classes, $expected)
+	public function test_suffix_get_classes($extension_name, $expected)
 	{
 		$extension = $this->extension_manager->get_extension($extension_name);
-		$migration_classes = self::$reflection_method_get_migration_file_list->invoke($extension, $validate_classes);
+		$migration_classes = self::$reflection_method_get_migration_file_list->invoke($extension);
 		sort($migration_classes);
 		$this->assertEquals($expected, $migration_classes);
 	}
