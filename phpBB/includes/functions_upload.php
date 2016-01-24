@@ -752,10 +752,11 @@ class fileupload
 	*
 	* @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
 	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
+	* @param int $redirect_count the current count of redirects
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null)
+	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null, $redirect_count = 0)
 	{
 		global $user, $phpbb_root_path;
 
@@ -776,9 +777,18 @@ class fileupload
 
 		$url = parse_url($upload_url);
 
+		$default_port = 80;
+		$hostname = $url['host'];
+
+		if ($url['scheme'] == 'https')
+		{
+			$default_port = 443;
+			$hostname = 'tls://' . $url['host'];
+		}
+
 		$host = $url['host'];
 		$path = $url['path'];
-		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
+		$port = (!empty($url['port'])) ? (int) $url['port'] : $default_port;
 
 		$upload_ary['type'] = 'application/octet-stream';
 
@@ -818,7 +828,7 @@ class fileupload
 		$errno = 0;
 		$errstr = '';
 
-		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
+		if (!($fsock = @fsockopen($hostname, $port, $errno, $errstr)))
 		{
 			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
 			return $file;
@@ -898,6 +908,21 @@ class fileupload
 					{
 						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
 						return $file;
+					}
+					else if (stripos($line, 'location: ') !== false)
+					{
+						//there is a redirect, follow up to 5
+						if ($redirect_count >= 5)
+						{
+							$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
+							return $file;
+						}
+
+						$upload_url = rtrim(str_replace('location: ', '', strtolower($line)));
+						//close the current connection, lets not leave dangeling connections open
+						@fclose($fsock);
+
+						return $this->remote_upload($upload_url, $mimetype_guesser, ++$redirect_count);
 					}
 				}
 			}
