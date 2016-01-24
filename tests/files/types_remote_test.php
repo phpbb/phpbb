@@ -85,8 +85,8 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 			array('500k', 'http://example.com/foo/bar.png'),
 			array('500M', 'http://example.com/foo/bar.png'),
 			array('500m', 'http://example.com/foo/bar.png'),
-			array('500k', 'http://google.com/.png', 'DISALLOWED_CONTENT'),
-			array('1', 'http://google.com/.png', 'WRONG_FILESIZE'),
+			array('500k', 'http://google.com/?.png', array('DISALLOWED_EXTENSION', 'DISALLOWED_CONTENT')),
+			array('1', 'http://google.com/?.png', array('WRONG_FILESIZE')),
 			array('500g', 'http://example.com/foo/bar.png'),
 			array('foobar', 'http://example.com/foo/bar.png'),
 			array('-5k', 'http://example.com/foo/bar.png'),
@@ -96,7 +96,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 	/**
 	 * @dataProvider data_get_max_file_size
 	 */
-	public function test_get_max_file_size($max_file_size, $link, $expected = 'URL_NOT_FOUND')
+	public function test_get_max_file_size($max_file_size, $link, $expected = array('URL_NOT_FOUND'))
 	{
 		$php_ini = $this->getMock('\bantu\IniGetWrapper\IniGetWrapper', array('getString'));
 		$php_ini->expects($this->any())
@@ -109,7 +109,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 
 		$file = $type_remote->upload($link);
 
-		$this->assertSame(array($expected), $file->error);
+		$this->assertSame($expected, $file->error);
 	}
 
 	public function test_upload_timeout()
@@ -120,7 +120,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$type_remote->set_upload($upload);
 		$upload->upload_timeout = -5;
 
-		$file = $type_remote->upload('http://google.com/.png');
+		$file = $type_remote->upload('http://google.com/?.png');
 
 		$this->assertSame(array('REMOTE_UPLOAD_TIMEOUT'), $file->error);
 	}
@@ -133,7 +133,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$type_remote->set_upload($upload);
 		$type_remote::$tempnam_path = $this->phpbb_root_path . 'cache/wrong/path';
 
-		$file = $type_remote->upload('http://google.com/.png');
+		$file = $type_remote->upload('http://google.com/?.png');
 
 		$this->assertSame(array('NOT_UPLOADED'), $file->error);
 		$type_remote::$tempnam_path = '';
