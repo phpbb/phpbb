@@ -24,7 +24,7 @@ class base implements \phpbb\extension\extension_interface
 	protected $container;
 
 	/** @var \phpbb\finder */
-	protected $finder;
+	protected $extension_finder;
 
 	/** @var \phpbb\db\migrator */
 	protected $migrator;
@@ -136,6 +136,22 @@ class base implements \phpbb\extension\extension_interface
 			->find_from_extension($this->extension_name, $this->extension_path);
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
+
+		// Unset classes that do not exist or do not extend the
+		// abstract class phpbb\db\migration\migration
+		foreach ($migrations as $key => $migration)
+		{
+			if (class_exists($migration))
+			{
+				$reflector = new \ReflectionClass($migration);
+				if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
+				{
+					continue;
+				}
+			}
+
+			unset($migrations[$key]);
+		}
 
 		return $migrations;
 	}
