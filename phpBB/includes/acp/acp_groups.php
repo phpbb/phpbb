@@ -930,11 +930,12 @@ class acp_groups
 			// used for easy access to the data within a group
 			$cached_group_data[$type][$row['group_id']] = $row;
 			$cached_group_data[$type][$row['group_id']]['total_members'] = 0;
+			$cached_group_data[$type][$row['group_id']]['pending_members'] = 0;
 		}
 		$db->sql_freeresult($result);
 
 		// How many people are in which group?
-		$sql = 'SELECT COUNT(ug.user_id) AS total_members, ug.group_id
+		$sql = 'SELECT COUNT(ug.user_id) AS total_members, SUM(ug.user_pending) AS pending_members, ug.group_id
 			FROM ' . USER_GROUP_TABLE . ' ug
 			WHERE ' . $db->sql_in_set('ug.group_id', array_keys($lookup)) . '
 			GROUP BY ug.group_id';
@@ -944,6 +945,7 @@ class acp_groups
 		{
 			$type = $lookup[$row['group_id']];
 			$cached_group_data[$type][$row['group_id']]['total_members'] = $row['total_members'];
+			$cached_group_data[$type][$row['group_id']]['pending_members'] = $row['pending_members'];
 		}
 		$db->sql_freeresult($result);
 
@@ -972,6 +974,7 @@ class acp_groups
 
 					'GROUP_NAME'	=> $group_name,
 					'TOTAL_MEMBERS'	=> $row['total_members'],
+					'PENDING_MEMBERS' => $row['pending_members']
 				));
 			}
 		}
