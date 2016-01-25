@@ -1418,7 +1418,7 @@ switch ($mode)
 		* @var	string	sort_dir		The sorting direction
 		* @var	string	sort_key		The sorting key
 		* @var	array	sort_key_sql	Arraty with the sorting conditions data
-		* @var	string	sql_from		SQL FROM clause condition
+		* @var	array	sql_from		SQL FROM clause condition
 		* @var	string	sql_select		SQL SELECT fields list
 		* @var	string	sql_where		SQL WHERE clause condition
 		* @var	string	sql_where_data	SQL WHERE clause additional conditions data
@@ -1437,37 +1437,27 @@ switch ($mode)
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
 
 		// Count the users ...
-		if ($sql_where)
+		$sql_array = array(
+			'SELECT'	=> 'COUNT(u.user_id) as total_users',
+			'FROM'		=> array(
+				USERS_TABLE	=> 'u',
+			),
+			'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
+		);
+		if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
 		{
-			$sql_array = array(
-				'SELECT'	=> 'COUNT(u.user_id) as total_users',
-				'FROM'		=> array(
-					USERS_TABLE	=> 'u',
-				),
-				'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
-			);
-			if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
-			{
-				$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
-				$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
-			}
-			if (!empty($sql_from))
-			{
-				$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
-			}
-			if(!empty($sql_join))
-			{
-				$sql_array['LEFT_JOIN'] = $sql_join;
-			}
-			$sql = $db->sql_build_query('SELECT', $sql_array);
+			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
+			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
 		}
-		else
+		if (!empty($sql_from))
 		{
-			$sql = 'SELECT COUNT(u.user_id) AS total_users
-				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
-				$sql_where";
+			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
+		if(!empty($sql_join))
+		{
+			$sql_array['LEFT_JOIN'] = $sql_join;
+		}
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query($sql);
 		$total_users = (int) $db->sql_fetchfield('total_users');
 		$db->sql_freeresult($result);
