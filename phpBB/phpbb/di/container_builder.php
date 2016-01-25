@@ -135,6 +135,11 @@ class container_builder
 			$config_cache = new ConfigCache($container_filename, defined('DEBUG'));
 			if ($this->use_cache && $config_cache->isFresh())
 			{
+				if ($this->use_extensions)
+				{
+					require($this->get_autoload_filename());
+				}
+
 				require($config_cache->getPath());
 				$this->container = new \phpbb_cache_container();
 			}
@@ -405,6 +410,15 @@ class container_builder
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
 
 			// Load each extension found
+			$autoloaders = '<?php
+/**
+ * Loads all extensions custom auto-loaders.
+ *
+ * This file has been auto-generated
+ * by phpBB while loading the extensions.
+ */
+
+';
 			foreach ($extensions as $ext_name => $path)
 			{
 				$extension_class = '\\' . str_replace('/', '\\', $ext_name) . '\\di\\extension';
@@ -420,9 +434,14 @@ class container_builder
 				$filename = $path . 'vendor/autoload.php';
 				if (file_exists($filename))
 				{
-					require $filename;
+					$autoloaders .= "require('{$filename}');\n";
 				}
 			}
+
+			$configCache = new ConfigCache($this->get_autoload_filename(), false);
+			$configCache->write($autoloaders);
+
+			require($this->get_autoload_filename());
 		}
 		else
 		{
@@ -537,6 +556,16 @@ class container_builder
 	protected function get_container_filename()
 	{
 		return $this->get_cache_dir() . 'container_' . md5($this->phpbb_root_path) . '.' . $this->php_ext;
+	}
+
+	/**
+	 * Get the filename under which the dumped extensions autoloader will be stored.
+	 *
+	 * @return string Path for dumped extensions autoloader
+	 */
+	protected function get_autoload_filename()
+	{
+		return $this->get_cache_dir() . 'autoload_' . md5($this->phpbb_root_path) . '.' . $this->php_ext;
 	}
 
 	/**
