@@ -11,3 +11,8 @@ services:
         decorates: http_kernel
         arguments:
             - "@legacy.http_kernel.inner"
+
+    legacy.response_exception_subscriber:
+        class: phpbb\legacy\event\response_exception_subscriber
+        tags:
+            - { name: kernel.event_subscriber }
