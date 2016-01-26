@@ -198,4 +198,10 @@ class phpbb_mock_container_builder implements ContainerInterface
 	{
 		return true;
 	}
+
+	public function reset()
+	{
+		$this->services = array();
+		$this->parameters = array();
+	}
 }
