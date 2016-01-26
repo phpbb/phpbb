@@ -94,6 +94,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		foreach (static::setup_extensions() as $extension)
 		{
+			$this->purge_cache();
+
 			$sql = 'SELECT ext_active
 				FROM ' . EXT_TABLE . "
 				WHERE ext_name = '" . $db->sql_escape($extension). "'";
