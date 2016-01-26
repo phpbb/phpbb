@@ -27,6 +27,10 @@ class response_exception_subscriber implements EventSubscriberInterface
 	*/
 	public function on_kernel_exception(GetResponseForExceptionEvent $event)
 	{
+		if (! $event->getException() instanceof exit_with_response_exception) {
+			return;
+		}
+
 		/** @var exit_with_response_exception $exception */
 		$exception = $event->getException();
 
