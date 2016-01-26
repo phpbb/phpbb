@@ -1816,12 +1816,12 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		echo '</body>';
 		echo '</html>';
 
-		exit;
+		return;
 	}
 
 	// Behave as per HTTP/1.1 spec for others
 	header('Location: ' . $url);
-	exit;
+	return;
 }
 
 /**
@@ -3375,7 +3375,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_USER_NOTICE:
 
 			define('IN_ERROR_HANDLER', true);
-
+/*
 			if (empty($user->data))
 			{
 				$user->session_begin();
@@ -3387,11 +3387,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (!$user->is_setup())
 			{
 				$user->setup();
-			}
+			}*/
 
 			if ($msg_text == 'ERROR_NO_ATTACHMENT' || $msg_text == 'NO_FORUM' || $msg_text == 'NO_TOPIC' || $msg_text == 'NO_USER')
 			{
-				send_status_line(404, 'Not Found');
+				throw new \phpbb\exception\http_exception(404, $msg_text);
+				//send_status_line(404, 'Not Found');
+			}
+			else
+			{
+				throw new \phpbb\exception\runtime_exception($msg_text);
 			}
 
 			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
@@ -4739,9 +4744,9 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	(ob_get_level() > 0) ? @ob_flush() : @flush();
+	//(ob_get_level() > 0) ? @ob_flush() : @flush();
 
-	exit;
+	return;
 }
 
 /**
