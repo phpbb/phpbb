@@ -77,8 +77,18 @@ class schema_generator
 		$check_dependencies = true;
 		while (!empty($migrations))
 		{
-			foreach ($migrations as $migration_class)
+			foreach ($migrations as $key => $migration_class)
 			{
+				if (class_exists($migration_class))
+				{
+					$reflector = new \ReflectionClass($migration_class);
+					if (!$reflector->implementsInterface('\phpbb\db\migration\migration_interface') || !$reflector->isInstantiable())
+					{
+						unset($migrations[$key]);
+						continue;
+					}
+				}
+
 				$open_dependencies = array_diff($migration_class::depends_on(), $tree);
 
 				if (empty($open_dependencies))
