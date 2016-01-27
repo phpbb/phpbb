@@ -226,7 +226,7 @@ class migrator
 	*/
 	protected function try_apply($name)
 	{
-		if (!class_exists($name) || !self::is_migration($name))
+		if (!self::is_migration($name))
 		{
 			$this->output_handler->write(array('MIGRATION_NOT_VALID', $name), migrator_output_handler_interface::VERBOSITY_DEBUG);
 			return false;
@@ -401,7 +401,7 @@ class migrator
 	*/
 	protected function try_revert($name)
 	{
-		if (!class_exists($name) || !self::is_migration($name))
+		if (!self::is_migration($name))
 		{
 			return false;
 		}
@@ -719,7 +719,7 @@ class migrator
 			return false;
 		}
 
-		if (!class_exists($name) || !self::is_migration($name))
+		if (!self::is_migration($name))
 		{
 			return $name;
 		}
