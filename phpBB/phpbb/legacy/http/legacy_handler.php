@@ -252,7 +252,7 @@ class legacy_handler
 	 */
 	private function handleNotFound(Request $request)
 	{
-		return $this->handleException(new NotFoundHttpException(), $request);
+		throw new NotFoundHttpException();
 	}
 
 	public function handleTrailingSlash(Request $request)

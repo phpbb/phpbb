@@ -59,7 +59,16 @@ catch (NotFoundHttpException $e)
 	// handle legacy
 	/** @var \phpbb\legacy\http\legacy_handler $legacyHandler */
 	$legacyHandler = $phpbb_kernel->get_container()->get('legacy.handler');
-	$response = $legacyHandler->parse($symfony_request);
+
+	try
+	{
+		$response = $legacyHandler->parse($symfony_request);
+	}
+	catch (NotFoundHttpException $_)
+	{
+		$response = $legacyHandler->handleException($e, $symfony_request);
+	}
+
 	if (!$response)
 	{
 		$legacyHandler->bootLegacy();

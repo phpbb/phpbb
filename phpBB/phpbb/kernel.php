@@ -224,7 +224,7 @@ class kernel implements kernel_interface, TerminableInterface
 	 */
 	public function get_cache_dir()
 	{
-		return $this->root_dir . '/cache/' . $this->environment;
+		return $this->root_dir . '/cache/' . $this->environment . '/';
 	}
 
 	/**
