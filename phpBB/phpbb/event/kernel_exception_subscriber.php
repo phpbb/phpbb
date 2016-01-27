@@ -76,6 +76,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{
+
 			page_header($this->language->lang('INFORMATION'));
 
 			$this->template->assign_vars(array(
