@@ -139,19 +139,7 @@ class base implements \phpbb\extension\extension_interface
 
 		// Unset classes that do not exist or do not extend the
 		// abstract class phpbb\db\migration\migration
-		foreach ($migrations as $key => $migration)
-		{
-			if (class_exists($migration))
-			{
-				$reflector = new \ReflectionClass($migration);
-				if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
-				{
-					continue;
-				}
-			}
-
-			unset($migrations[$key]);
-		}
+		\phpbb\db\migrator::is_migration($migrations);
 
 		return $migrations;
 	}

@@ -226,7 +226,7 @@ class migrator
 	*/
 	protected function try_apply($name)
 	{
-		if (!class_exists($name))
+		if (!class_exists($name) || !self::is_migration($name))
 		{
 			$this->output_handler->write(array('MIGRATION_NOT_VALID', $name), migrator_output_handler_interface::VERBOSITY_DEBUG);
 			return false;
@@ -401,7 +401,7 @@ class migrator
 	*/
 	protected function try_revert($name)
 	{
-		if (!class_exists($name))
+		if (!class_exists($name) || !self::is_migration($name))
 		{
 			return false;
 		}
@@ -719,7 +719,7 @@ class migrator
 			return false;
 		}
 
-		if (!class_exists($name))
+		if (!class_exists($name) || !self::is_migration($name))
 		{
 			return $name;
 		}
@@ -856,5 +856,43 @@ class migrator
 				'PRIMARY_KEY'	=> 'migration_name',
 			));
 		}
+	}
+
+	/**
+	 * Check if a class is a migration.
+	 *
+	 * @param mixed $migration An array of migration name strings, or
+	 *                         a single migration name string.
+	 * @return bool Returns true or false for a single migration.
+	 *              If an array was received, non-migrations will
+	 *              be removed from the array, and false is returned.
+	 */
+	static public function is_migration(&$migration)
+	{
+		if (is_array($migration))
+		{
+			foreach ($migration as $key => $name)
+			{
+				if (self::is_migration($name))
+				{
+					continue;
+				}
+
+				unset($migration[$key]);
+			}
+		}
+		else if (class_exists($migration))
+		{
+			// Migration classes should extend the abstract class
+			// phpbb\db\migration\migration which implements the
+			// migration_interface and be instantiable.
+			$reflector = new \ReflectionClass($migration);
+			if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

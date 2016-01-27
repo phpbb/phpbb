@@ -79,14 +79,12 @@ class schema_generator
 		{
 			foreach ($migrations as $key => $migration_class)
 			{
-				if (class_exists($migration_class))
+				// Unset classes that do not exist or do not extend the
+				// abstract class phpbb\db\migration\migration
+				if (\phpbb\db\migrator::is_migration($migration_class) === false)
 				{
-					$reflector = new \ReflectionClass($migration_class);
-					if (!$reflector->implementsInterface('\phpbb\db\migration\migration_interface') || !$reflector->isInstantiable())
-					{
-						unset($migrations[$key]);
-						continue;
-					}
+					unset($migrations[$key]);
+					continue;
 				}
 
 				$open_dependencies = array_diff($migration_class::depends_on(), $tree);
