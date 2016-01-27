@@ -51,7 +51,6 @@ else
 {
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
 }
 
 $phpbb_container = $phpbb_container_builder->get_container();

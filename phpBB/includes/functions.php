@@ -21,37 +21,6 @@ if (!defined('IN_PHPBB'))
 
 // Common global functions
 /**
-* Load the autoloaders added by the extensions.
-*
-* @param string $phpbb_root_path Path to the phpbb root directory.
-*/
-function phpbb_load_extensions_autoloaders($phpbb_root_path)
-{
-	$iterator = new \RecursiveIteratorIterator(
-		new \phpbb\recursive_dot_prefix_filter_iterator(
-			new \RecursiveDirectoryIterator(
-				$phpbb_root_path . 'ext/',
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
-			)
-		),
-		\RecursiveIteratorIterator::SELF_FIRST
-	);
-	$iterator->setMaxDepth(2);
-
-	foreach ($iterator as $file_info)
-	{
-		if ($file_info->getFilename() === 'vendor' && $iterator->getDepth() === 2)
-		{
-			$filename = $file_info->getRealPath() . '/autoload.php';
-			if (file_exists($filename))
-			{
-				require $filename;
-			}
-		}
-	}
-}
-
-/**
 * Casts a variable to the given type.
 *
 * @deprecated
