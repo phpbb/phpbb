@@ -49,6 +49,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 				$this->remove_dir($fileInfo->getPathname());
 			}
 			else if (strpos($filename, 'container_') === 0 ||
+				strpos($filename, 'autoload_') === 0 ||
 				strpos($filename, 'url_matcher') === 0 ||
 				strpos($filename, 'url_generator') === 0 ||
 				strpos($filename, 'sql_') === 0 ||
