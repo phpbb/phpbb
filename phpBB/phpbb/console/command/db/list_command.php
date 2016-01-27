@@ -39,6 +39,12 @@ class list_command extends \phpbb\console\command\db\migration_command
 
 		foreach ($this->load_migrations() as $name)
 		{
+			// Ignore non-migration files
+			if (\phpbb\db\migrator::is_migration($name) === false)
+			{
+				continue;
+			}
+
 			if ($this->migrator->migration_state($name) !== false)
 			{
 				$installed[] = $name;
