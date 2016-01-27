@@ -79,8 +79,7 @@ class schema_generator
 		{
 			foreach ($migrations as $key => $migration_class)
 			{
-				// Unset classes that do not exist or do not extend the
-				// abstract class phpbb\db\migration\migration
+				// Unset classes that are not a valid migration
 				if (\phpbb\db\migrator::is_migration($migration_class) === false)
 				{
 					unset($migrations[$key]);

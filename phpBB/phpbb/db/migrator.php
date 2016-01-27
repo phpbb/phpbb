@@ -861,31 +861,16 @@ class migrator
 	/**
 	 * Check if a class is a migration.
 	 *
-	 * @param mixed $migration An array of migration name strings, or
-	 *                         a single migration name string.
-	 * @return bool Returns true or false for a single migration.
-	 *              If an array was received, non-migrations will
-	 *              be removed from the array, and false is returned.
+	 * @param string $migration A migration class name
+	 * @return bool Return true if class is a migration, false otherwise
 	 */
-	static public function is_migration(&$migration)
+	static public function is_migration($migration)
 	{
-		if (is_array($migration))
-		{
-			foreach ($migration as $key => $name)
-			{
-				if (self::is_migration($name))
-				{
-					continue;
-				}
-
-				unset($migration[$key]);
-			}
-		}
-		else if (class_exists($migration))
+		if (class_exists($migration))
 		{
 			// Migration classes should extend the abstract class
-			// phpbb\db\migration\migration which implements the
-			// migration_interface and be instantiable.
+			// phpbb\db\migration\migration (which implements the
+			// migration_interface) and be instantiable.
 			$reflector = new \ReflectionClass($migration);
 			if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
 			{

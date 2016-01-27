@@ -137,9 +137,16 @@ class base implements \phpbb\extension\extension_interface
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
 
-		// Unset classes that do not exist or do not extend the
-		// abstract class phpbb\db\migration\migration
-		\phpbb\db\migrator::is_migration($migrations);
+		// Unset classes that are not a valid migration
+		foreach ($migrations as $key => $migration)
+		{
+			if (\phpbb\db\migrator::is_migration($migration) === true)
+			{
+				continue;
+ 			}
+
+ 			unset($migrations[$key]);
+ 		}
 
 		return $migrations;
 	}
