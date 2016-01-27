@@ -143,10 +143,10 @@ class base implements \phpbb\extension\extension_interface
 			if (\phpbb\db\migrator::is_migration($migration) === true)
 			{
 				continue;
- 			}
+			}
 
- 			unset($migrations[$key]);
- 		}
+			unset($migrations[$key]);
+		}
 
 		return $migrations;
 	}
