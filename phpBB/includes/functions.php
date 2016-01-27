@@ -1816,12 +1816,13 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		echo '</body>';
 		echo '</html>';
 
-		return;
+		throw new \phpbb\legacy\exception\exit_exception();
 	}
 
 	// Behave as per HTTP/1.1 spec for others
 	header('Location: ' . $url);
-	return;
+
+	throw new \phpbb\legacy\exception\exit_exception();
 }
 
 /**
@@ -4743,7 +4744,7 @@ function exit_handler()
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
 	//(ob_get_level() > 0) ? @ob_flush() : @flush();
 
-	return;
+	throw new \phpbb\legacy\exception\exit_exception();
 }
 
 /**
