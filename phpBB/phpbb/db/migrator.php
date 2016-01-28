@@ -170,7 +170,25 @@ class migrator
 	*/
 	public function set_migrations($class_names)
 	{
+		foreach ($class_names as $key => $class)
+		{
+			if (!self::is_migration($class))
+			{
+				unset($class_names[$key]);
+			}
+		}
+
 		$this->migrations = $class_names;
+	}
+
+	/**
+	 * Get the list of available migration class names
+	 *
+	 * @return array Array of all migrations available to be run
+	 */
+	public function get_migrations()
+	{
+		return $this->migrations;
 	}
 
 	/**
@@ -226,7 +244,7 @@ class migrator
 	*/
 	protected function try_apply($name)
 	{
-		if (!self::is_migration($name))
+		if (!class_exists($name))
 		{
 			$this->output_handler->write(array('MIGRATION_NOT_VALID', $name), migrator_output_handler_interface::VERBOSITY_DEBUG);
 			return false;
@@ -401,7 +419,7 @@ class migrator
 	*/
 	protected function try_revert($name)
 	{
-		if (!self::is_migration($name))
+		if (!class_exists($name))
 		{
 			return false;
 		}
@@ -719,7 +737,7 @@ class migrator
 			return false;
 		}
 
-		if (!self::is_migration($name))
+		if (!class_exists($name))
 		{
 			return $name;
 		}

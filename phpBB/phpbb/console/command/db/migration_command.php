@@ -45,7 +45,7 @@ abstract class migration_command extends \phpbb\console\command\command
 
 		$this->migrator->set_migrations($migrations);
 
-		return $migrations;
+		return $this->migrator->get_migrations();
 	}
 
 	protected function finalise_update()

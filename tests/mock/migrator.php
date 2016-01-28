@@ -21,10 +21,6 @@ class phpbb_mock_migrator extends \phpbb\db\migrator
 	{
 	}
 
-	public function set_migrations($class_names)
-	{
-	}
-
 	public function update()
 	{
 	}

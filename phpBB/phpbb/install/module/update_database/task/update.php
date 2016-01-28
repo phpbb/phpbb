@@ -139,17 +139,8 @@ class update extends task_base
 			->extension_directory('/migrations')
 			->get_classes();
 
-		// Unset classes that are not a valid migration
-		foreach ($migrations as $key => $migration_class)
-		{
-			if (\phpbb\db\migrator::is_migration($migration_class) === false)
-			{
-				unset($migrations[$key]);
-			}
-		}
-
 		$this->migrator->set_migrations($migrations);
-		$migration_count = count($migrations);
+		$migration_count = count($this->migrator->get_migrations());
 		$this->iohandler->set_task_count($migration_count, true);
 		$progress_count = $this->installer_config->get('database_update_count', 0);
 
