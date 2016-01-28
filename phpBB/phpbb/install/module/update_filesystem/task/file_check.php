@@ -138,6 +138,15 @@ class file_check extends task_base
 			$progress_count++;
 			$this->iohandler->set_progress('UPDATE_CHECK_FILES', $progress_count);
 
+			// Do not copy viglink again if the previous version was packaged
+			// with it but it does not exist (e.g. deleted by admin)
+			if (strpos($file, $this->phpbb_root_path . 'ext/phpbb/viglink') !== false &&
+				$this->update_helper->phpbb_version_compare($update_info['version']['from'], '3.2.0', '>=') &&
+				!$this->filesystem->exists($this->phpbb_root_path . 'ext/phpbb/viglink'))
+			{
+				continue;
+			}
+
 			if (!$this->filesystem->exists($file))
 			{
 				$file_update_info['new'][] = $filename;
