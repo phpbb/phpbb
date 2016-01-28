@@ -14,5 +14,7 @@
 $_SERVER['SCRIPT_NAME'] =  str_replace('ucp.php', 'app.php', $_SERVER['SCRIPT_NAME']);
 $_SERVER['PHP_SELF'] =  str_replace('ucp.php', 'app.php', $_SERVER['PHP_SELF']);
 $_SERVER['SCRIPT_FILENAME'] =  str_replace('ucp.php', 'app.php', $_SERVER['SCRIPT_FILENAME']);
+$_SERVER['REQUEST_URI'] = '/app.php'.$_SERVER['REQUEST_URI'];
+$_SERVER['DOCUMENT_URI'] = '/app.php'.$_SERVER['DOCUMENT_URI'];
 
 require 'app.php';

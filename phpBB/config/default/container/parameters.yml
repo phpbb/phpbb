@@ -19,4 +19,4 @@ parameters:
         - passwords.driver.salted_md5
         - passwords.driver.phpass
 
-    legacy.root_dir: legacy_front/
+    legacy.root_dir: legacy_front

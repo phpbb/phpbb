@@ -143,11 +143,11 @@ class legacy_handler
 		);
 
 		// Override some globals, to fake direct entry from the legcay
-		$url = $this->request->server->get('REDIRECT_SCRIPT_URL');
+		/*$url = $this->request->server->get('REDIRECT_SCRIPT_URL');
 		$this->request->server->set('SCRIPT_NAME', $url);
 		$this->request->server->set('PHP_SELF', $url);
 		$this->request->server->set('SCRIPT_FILENAME', $this->legacyPath);
-		$this->request->overrideGlobals(); // Do the same in phpBB object
+		$this->request->overrideGlobals(); // Do the same in phpBB object*/
 
 		// Change path to the script's path
 		//chdir(dirname($this->legacyPath));
