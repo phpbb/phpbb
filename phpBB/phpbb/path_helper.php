@@ -107,7 +107,14 @@ class path_helper
 
 		if (strpos($path, $this->phpbb_root_path) === 0)
 		{
-			$path = substr($path, strlen($this->phpbb_root_path));
+			if (strpos($path, $this->get_web_root_path()) === 0)
+			{
+				$path = substr($path, strlen($this->get_web_root_path()));
+			}
+			else
+			{
+				$path = substr($path, strlen($this->phpbb_root_path));
+			}
 
 			if (substr($web_root_path, -8) === 'app.php/' && substr($path, 0, 7) === 'app.php')
 			{
