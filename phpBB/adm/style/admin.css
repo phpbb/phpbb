@@ -2554,6 +2554,7 @@ fieldset.permissions .padding {
 #progress-bar {
 	position: relative;
 	width: 90%;
+	text-align: center;
 	height: 25px;
 	margin: 20px auto;
 	border: 1px solid #cecece;
@@ -2563,10 +2564,7 @@ fieldset.permissions .padding {
 	position: absolute;
 	top: 0;
 	width: 100%;
-	text-align: center;
-	line-height: 25px;
-	font-weight: bold;
-	color: #fff;
+	color: #000;
 }
 
 #progress-bar #progress-bar-filler {
@@ -2577,4 +2575,11 @@ fieldset.permissions .padding {
 	background-color: #3c84ad;
 	width: 0;
 	height: 25px;
+	overflow: hidden;
+	color: #fff;
+}
+
+#progress-bar p {
+	line-height: 25px;
+	font-weight: bold;
 }
