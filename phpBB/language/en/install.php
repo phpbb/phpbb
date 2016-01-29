@@ -458,6 +458,8 @@ $lang = array_merge($lang, array(
 	'STAGE_UPDATE_DATABASE'		=> 'Update database',
 
 	'INLINE_UPDATE_SUCCESSFUL'		=> 'The database update was successful.',
+
+	'TASK_UPDATE_EXTENSIONS'	=> 'Updating extensions',
 ));
 
 // Converter

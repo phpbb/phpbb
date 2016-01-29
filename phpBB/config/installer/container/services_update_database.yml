@@ -11,6 +11,17 @@ services:
         tags:
             - { name: update_database_task, order: 10 }
 
+    installer.update_database.update_extensions:
+        class: phpbb\install\module\update_database\task\update_extensions
+        arguments:
+            - '@installer.helper.container_factory'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.update_helper'
+            - '%core.root_path%'
+        tags:
+            - { name: update_database_task, order: 20 }
+
     installer.module.update_database_collection:
         class: phpbb\di\ordered_service_collection
         arguments:
@@ -26,4 +37,4 @@ services:
             - true
             - false
         tags:
-            - { name: installer_update_module, order: 40 }
+            - { name: installer_update_module, order: 60 }

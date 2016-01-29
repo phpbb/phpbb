@@ -91,7 +91,6 @@ class install_extensions extends \phpbb\install\task_base
 	{
 		$this->user->session_begin();
 		$this->user->setup(array('common', 'acp/common', 'cli'));
-		$name = 'phpbb/viglink';
 
 		// Find available extensions
 		foreach ($this->finder as $file)
@@ -122,7 +121,7 @@ class install_extensions extends \phpbb\install\task_base
 	 */
 	static public function get_step_count()
 	{
-		return 1;
+		return 0;
 	}
 
 	/**

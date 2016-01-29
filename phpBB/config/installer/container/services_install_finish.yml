@@ -7,7 +7,7 @@ services:
         tags:
             - { name: install_finish, order: 10 }
 
-    installer.install_finish.install_viglink:
+    installer.install_finish.install_extensions:
         class: phpbb\install\module\install_finish\task\install_extensions
         arguments:
             - '@installer.helper.container_factory'
@@ -41,4 +41,4 @@ services:
         arguments:
             - '@installer.module.install_finish_collection'
         tags:
-            - { name: installer_install_module, order: 60 }
+            - { name: installer_install_module, order: 80 }
