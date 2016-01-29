@@ -800,6 +800,7 @@ class convertor
 	private function setup_navigation($stage)
 	{
 		$active = true;
+		$completed = false;
 
 		switch ($stage)
 		{
@@ -808,16 +809,12 @@ class convertor
 					array('convert', 0, 'finish'),
 					array(
 						'selected'	=> $active,
-						'completed'	=> false,
+						'completed'	=> $completed,
 					)
 				);
 
 				$active = false;
-
-				$this->navigation_provider->set_nav_property(
-					array('convert', 0, 'convert'),
-					array('completed' => true)
-				);
+				$completed = true;
 			// no break;
 
 			case 'convert':
@@ -825,16 +822,12 @@ class convertor
 					array('convert', 0, 'convert'),
 					array(
 						'selected'	=> $active,
-						'completed'	=> false,
+						'completed'	=> $completed,
 					)
 				);
 
 				$active = false;
-
-				$this->navigation_provider->set_nav_property(
-					array('convert', 0, 'settings'),
-					array('completed' => true)
-				);
+				$completed = true;
 			// no break;
 
 			case 'settings':
@@ -842,19 +835,12 @@ class convertor
 					array('convert', 0, 'settings'),
 					array(
 						'selected'	=> $active,
-						'completed'	=> false,
+						'completed'	=> $completed,
 					)
 				);
 
 				$active = false;
-
-				$this->navigation_provider->set_nav_property(
-					array('convert', 0, 'intro'),
-					array(
-						'selected'	=> $active,
-						'completed'	=> false,
-					)
-				);
+				$completed = true;
 			// no break;
 
 			case 'intro':
@@ -862,7 +848,7 @@ class convertor
 					array('convert', 0, 'intro'),
 					array(
 						'selected'	=> $active,
-						'completed'	=> false,
+						'completed'	=> $completed,
 					)
 				);
 			break;
