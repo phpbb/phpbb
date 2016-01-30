@@ -451,7 +451,7 @@ class container_builder
 			$filename = $path . 'vendor/autoload.php';
 			if (file_exists($filename))
 			{
-				$autoloaders .= "require '{$filename}';\n";
+				$autoloaders .= "require('{$filename}');\n";
 			}
 		}
 		file_put_contents($autoload_filename, $autoloaders);
