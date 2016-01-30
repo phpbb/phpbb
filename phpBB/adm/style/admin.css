@@ -2583,3 +2583,64 @@ fieldset.permissions .padding {
 	line-height: 25px;
 	font-weight: bold;
 }
+
+.send-stats-row {
+	margin: 25px -15px 0;
+}
+
+.send-stats-row h3 {
+	margin: 0;
+	text-align: center;
+}
+
+.send-stats-row:before {
+	display: table;
+	content: " ";
+}
+
+.send-stats-col {
+	width: 50%;
+	float: left;
+	position: relative;
+	min-height: 1px;
+	padding-right: 15px;
+	padding-left: 15px;
+	box-sizing: border-box;
+}
+
+.send-stats-row > .send-stats-col:last-child {
+	padding-left: 0;
+}
+
+.send-stats-tile {
+	position: relative;
+	padding: 14px;
+	margin-bottom: 20px;
+	background-color: #eff0f2;
+	border-radius: 6px;
+	box-shadow: rgba(0,0,0,0.3) 1px 1px 5px;
+}
+
+.send-stats-tile h2 {
+	margin-top: 0;
+	text-align: center;
+}
+
+.send-stats-tile h2 > p {
+	display: inline-block;
+}
+
+.send-stats-tile i {
+	padding-right: 0.3em;
+}
+
+.viglink-header {
+	background: url('http://www.viglink.com/wp-content/uploads/2015/05/favicon-96x96.png') no-repeat 0 0;
+	padding-left: 30px;
+	background-size: 25px;
+}
+
+.icon {
+	font-family: FontAwesome;
+	font-style: normal;
+}

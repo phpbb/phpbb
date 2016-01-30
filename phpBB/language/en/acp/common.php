@@ -484,6 +484,7 @@ $lang = array_merge($lang, array(
 	'SEND_STATISTICS'			=> 'Send statistical information',
 	'SHOW_STATISTICS'			=> 'Show details',
 	'THANKS_SEND_STATISTICS'	=> 'Thank you for submitting your information.',
+	'EXPLAIN_ENABLE_VIGLINK'	=> 'Viglink is a non-invasive third-party service that will monetize existing links posted by users of your forum. When visitors click on those existing links and perform certain actions, such as shopping, the merchants pay VigLink a commission, of which a share is donated to the phpBB project. By agreeing to enable VigLink and donating proceeds to the phpBB project, you are supporting our open source organization and ensuring our continued financial security.<br /><br />You can change these settings at any time in VigLink settings panel.',
 ));
 
 // Log Entries

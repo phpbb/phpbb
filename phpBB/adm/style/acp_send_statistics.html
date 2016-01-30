@@ -4,8 +4,21 @@
 
 <h1>{L_SEND_STATISTICS}</h1>
 
-<p>{L_EXPLAIN_SEND_STATISTICS}</p>
-
+<div class="send-stats-row">
+	<div class="send-stats-col">
+		<div class="send-stats-tile">
+			<h2><p><i class="icon fa-bar-chart"></i>Send statistics</p></h2>
+			<p>{L_EXPLAIN_SEND_STATISTICS}</p>
+		</div>
+	</div>
+	<div class="send-stats-col">
+		<div class="send-stats-tile">
+			<h2><p class="viglink-header">VigLink</p></h2>
+			<p>{L_EXPLAIN_ENABLE_VIGLINK}</p>
+		</div>
+	</div>
+</div>
+<div style="clear: both; display: none;">
 <script type="text/javascript">
 //<![CDATA[
 var iframect = 0;
@@ -59,6 +72,7 @@ function iframe_updated()
 
 <div id="questionnaire-thanks" class="successbox">
 	<p><strong>{L_THANKS_SEND_STATISTICS}</strong><br /><br /><a href="{U_ACP_MAIN}">&laquo; {L_GO_ACP_MAIN}</a></p>
+</div>
 </div>
 
 <!-- INCLUDE overall_footer.html -->
