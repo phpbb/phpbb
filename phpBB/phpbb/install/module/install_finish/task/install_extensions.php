@@ -89,6 +89,11 @@ class install_extensions extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
+		if (defined('PHPBB_ENVIRONMENT') && PHPBB_ENVIRONMENT === 'test')
+		{
+			return;
+		}
+
 		$this->user->session_begin();
 		$this->user->setup(array('common', 'acp/common', 'cli'));
 
