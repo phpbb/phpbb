@@ -2585,31 +2585,12 @@ fieldset.permissions .padding {
 }
 
 .send-stats-row {
-	margin: 25px -15px 0;
-}
-
-.send-stats-row h3 {
-	margin: 0;
-	text-align: center;
+	margin: 15px 0;
 }
 
 .send-stats-row:before {
 	display: table;
 	content: " ";
-}
-
-.send-stats-col {
-	width: 50%;
-	float: left;
-	position: relative;
-	min-height: 1px;
-	padding-right: 15px;
-	padding-left: 15px;
-	box-sizing: border-box;
-}
-
-.send-stats-row > .send-stats-col:last-child {
-	padding-left: 0;
 }
 
 .send-stats-tile {
@@ -2624,10 +2605,7 @@ fieldset.permissions .padding {
 .send-stats-tile h2 {
 	margin-top: 0;
 	text-align: center;
-}
-
-.send-stats-tile h2 > p {
-	display: inline-block;
+    padding-bottom: 1em;
 }
 
 .send-stats-tile i {
@@ -2643,4 +2621,78 @@ fieldset.permissions .padding {
 .icon {
 	font-family: FontAwesome;
 	font-style: normal;
+}
+
+.send-stats-data-row {
+    background: #f9f9f9;
+    border-radius: 6px;
+    border: #DEDEDE 1px solid;
+    padding: 10px;
+    border-top-width: 0;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.send-stats-data-hidden .configlist {
+    display: none;
+}
+
+.send-stats-data-only-row {
+    border-radius: 6px !important;
+    border-bottom-width: 1px !important;
+}
+
+.send-stats-data-hidden {
+    padding: 0;
+    border: none;
+}
+
+.send-stats-row > .send-stats-data-row:first-child {
+    background-color: #d9edf7;
+    border-bottom-width: 0;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    border-top-width: 1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.send-stats-settings dt, .send-stats-settings dd {
+    min-width: 25px;
+}
+
+.send-stats-settings dd {
+    line-height: 1.5em;
+}
+
+.send-stats-settings input {
+    display: none;
+}
+
+.send-stats-settings input[type=checkbox] + label:before {
+    content: "\f096";
+    font-family: FontAwesome;
+    font-size: 1.5em;
+}
+
+.send-stats-settings input[type=checkbox]:checked + label:before {
+    content: "\f14a";
+    color: #3c763d;
+}
+
+.send-stats-data-row a:hover span {
+    text-decoration: underline;
+}
+
+.send-stats-data-row a {
+    text-decoration: none;
+}
+
+.send-stats-data-row i {
+    padding-left: 6px;
+}
+
+.configlist {
+	word-wrap: break-word;
+	word-break: break-all;
 }

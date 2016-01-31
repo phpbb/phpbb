@@ -243,8 +243,11 @@ function parse_document(container)
 
 		parse_document($('body'));
 
-		// Hide configlist and success message in send statistics page
-		phpbb.toggleDisplay('configlist', -1);
-		phpbb.toggleDisplay('questionnaire-thanks', -1);
+		$('#trigger-configlist').on('click', function () {
+			var $configlist = $('#configlist');
+			$configlist.closest('.send-stats-data-row').toggleClass('send-stats-data-hidden');
+			$configlist.closest('.send-stats-row').find('.send-stats-data-row:first-child').toggleClass('send-stats-data-only-row');
+			$(this).find('i').toggleClass('fa-angle-down fa-angle-up');
+		});
 	});
 })(jQuery);

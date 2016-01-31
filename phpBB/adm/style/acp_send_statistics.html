@@ -5,17 +5,47 @@
 <h1>{L_SEND_STATISTICS}</h1>
 
 <div class="send-stats-row">
-	<div class="send-stats-col">
-		<div class="send-stats-tile">
-			<h2><p><i class="icon fa-bar-chart"></i>Send statistics</p></h2>
-			<p>{L_EXPLAIN_SEND_STATISTICS}</p>
+	<div class="send-stats-tile">
+		<h2><i class="icon fa-bar-chart"></i>Send statistics</h2>
+		<p>{L_EXPLAIN_SEND_STATISTICS}</p>
+		<div class="send-stats-row">
+			<div class="send-stats-data-row send-stats-data-only-row">
+				<a id="trigger-configlist"><span>{L_SHOW_STATISTICS}</span><i class="icon fa-angle-down"></i></a>
+			</div>
+			<div class="send-stats-data-row send-stats-data-hidden">
+				<div class="configlist" id="configlist">
+					<!-- BEGIN providers -->
+					<fieldset>
+						<legend>{providers.NAME}</legend>
+						<!-- BEGIN values -->
+						<dl>
+							<dt>{providers.values.KEY}</dt>
+							<dd>{providers.values.VALUE}</dd>
+						</dl>
+						<!-- END values -->
+					</fieldset>
+					<!-- END providers -->
+				</div>
+			</div>
 		</div>
+		<dl class="send-stats-settings">
+			<dt>
+				<input id="enable-stats" type="checkbox" />
+				<label for="enable-stats"></label>
+			</dt>
+			<dd>{L_YES}</dd>
+		</dl>
 	</div>
-	<div class="send-stats-col">
-		<div class="send-stats-tile">
-			<h2><p class="viglink-header">VigLink</p></h2>
-			<p>{L_EXPLAIN_ENABLE_VIGLINK}</p>
-		</div>
+	<div class="send-stats-tile">
+		<h2><span class="viglink-header">VigLink</span></h2>
+		<p>{L_EXPLAIN_ENABLE_VIGLINK}</p>
+		<dl class="send-stats-settings">
+			<dt>
+				<input id="enable-viglink" type="checkbox" />
+				<label for="enable-viglink"></label>
+			</dt>
+			<dd>Enable</dd>
+		</dl>
 	</div>
 </div>
 <div style="clear: both; display: none;">
@@ -36,43 +66,6 @@ function iframe_updated()
 //]]>
 </script>
 
-<iframe onload="iframe_updated();" name="questionaire_result" style="display: none;"></iframe>
-
-<form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
-
-	<p><a href="{U_ACP_MAIN}">{L_DONT_SEND_STATISTICS}</a></p>
-
-	<p>{L_EXPLAIN_SHOW_STATISTICS}</p>
-
-	<p id="show-button"><input type="button" class="button2" onclick="phpbb.toggleDisplay('configlist', 1); phpbb.toggleDisplay('show-button', -1);" value="{L_SHOW_STATISTICS}" /></p>
-
-	<div id="configlist">
-		<input type="button" class="button2" onclick="phpbb.toggleDisplay('show-button', 1); phpbb.toggleDisplay('configlist', -1);" value="{L_HIDE_STATISTICS}" />
-		<p class="submit-buttons">
-			<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
-		</p>
-
-		<!-- BEGIN providers -->
-		<fieldset>
-			<legend>{providers.NAME}</legend>
-			<!-- BEGIN values -->
-			<dl>
-				<dt>{providers.values.KEY}</dt>
-				<dd>{providers.values.VALUE}</dd>
-			</dl>
-			<!-- END values -->
-		</fieldset>
-		<!-- END providers -->
-	</div>
-	<p class="submit-buttons">
-		<input type="hidden" name="systemdata" value="{RAW_DATA}" />
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
-	</p>
-</form>
-
-<div id="questionnaire-thanks" class="successbox">
-	<p><strong>{L_THANKS_SEND_STATISTICS}</strong><br /><br /><a href="{U_ACP_MAIN}">&laquo; {L_GO_ACP_MAIN}</a></p>
-</div>
 </div>
 
 <!-- INCLUDE overall_footer.html -->
