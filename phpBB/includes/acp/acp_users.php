@@ -1899,8 +1899,12 @@ class acp_users
 					}
 				}
 
-				// Replace "error" strings with their real, localised form
-				$error = $phpbb_avatar_manager->localize_errors($user, $error);
+				// Avatar manager is not initialized if avatars are disabled
+				if (isset($phpbb_avatar_manager))
+				{
+					// Replace "error" strings with their real, localised form
+					$error = $phpbb_avatar_manager->localize_errors($user, $error);
+				}
 
 				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
 
