@@ -17,9 +17,9 @@ class acp_help_phpbb_info
 	{
 		return array(
 			'filename'	=> 'acp_help_phpbb',
-			'title'		=> 'ACP_SEND_STATISTICS',
+			'title'		=> 'ACP_HELP_PHPBB',
 			'modes'		=> array(
-				'help_phpbb'	=> array('title' => 'ACP_SEND_STATISTICS', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),
+				'help_phpbb'	=> array('title' => 'ACP_HELP_PHPBB', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),
 			),
 		);
 	}

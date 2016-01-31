@@ -2,7 +2,7 @@
 
 <a id="maincontent"></a>
 
-<h1>{L_SEND_STATISTICS}</h1>
+<h1>{L_ACP_HELP_PHPBB}</h1>
 
 <div class="send-stats-row">
 	<div class="send-stats-tile">
@@ -10,7 +10,7 @@
 		<p>{L_EXPLAIN_SEND_STATISTICS}</p>
 		<div class="send-stats-row">
 			<div class="send-stats-data-row send-stats-data-only-row">
-				<a id="trigger-configlist"><span>{L_SHOW_STATISTICS}</span><i class="icon fa-angle-down"></i></a>
+				<a id="trigger-configlist" data-ajax="toggle_link" data-toggle-text="{L_HIDE_STATISTICS}"><span>{L_SHOW_STATISTICS}</span><i class="icon fa-angle-down"></i></a>
 			</div>
 			<div class="send-stats-data-row send-stats-data-hidden">
 				<div class="configlist" id="configlist">
@@ -33,7 +33,7 @@
 				<input id="enable-stats" type="checkbox" checked="checked" />
 				<label for="enable-stats"></label>
 			</dt>
-			<dd>{L_SEND_STATISTICS}</dd>
+			<dd>{L_SEND_STATISTICS_LONG}</dd>
 		</dl>
 	</div>
 	<div class="send-stats-tile">

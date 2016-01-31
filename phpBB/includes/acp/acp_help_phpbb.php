@@ -35,7 +35,7 @@ class acp_help_phpbb
 		$collect_url = "https://www.phpbb.com/stats/receive_stats.php";
 
 		$this->tpl_name = 'acp_help_phpbb';
-		$this->page_title = 'ACP_SEND_STATISTICS';
+		$this->page_title = 'ACP_HELP_PHPBB';
 
 		// generate a unique id if necessary
 		if (!isset($config['questionnaire_unique_id']))

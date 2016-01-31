@@ -108,6 +108,8 @@ $lang = array_merge($lang, array(
 	'ACP_GROUPS_PERMISSIONS'		=> 'Group permissions',
 	'ACP_GROUPS_POSITION'			=> 'Manage group positions',
 
+	'ACP_HELP_PHPBB'			=> 'Help support phpBB',
+
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
@@ -167,7 +169,6 @@ $lang = array_merge($lang, array(
 	'ACP_SEARCH_SETTINGS'		=> 'Search settings',
 
 	'ACP_SECURITY_SETTINGS'		=> 'Security settings',
-	'ACP_SEND_STATISTICS'		=> 'Send statistical information',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server settings',
 	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
@@ -474,14 +475,15 @@ $lang = array_merge($lang, array(
 	'USER_IS_INACTIVE'		=> 'User is inactive',
 ));
 
-// Send statistics page
+// Help support phpBB page
 $lang = array_merge($lang, array(
 	'EXPLAIN_SEND_STATISTICS'	=> 'Please send information about your server and board configurations to phpBB for statistical analysis. All information that could identify you or your website has been removed - the data is entirely <strong>anonymous</strong>. We base decisions about future phpBB versions on this information. The statistics are made available publically. We also share this data with the PHP project, the programming language phpBB is made with.',
 	'EXPLAIN_SHOW_STATISTICS'	=> 'Using the button below you can preview all variables that will be transmitted.',
 	'DONT_SEND_STATISTICS'		=> 'Return to the ACP if you do not wish to send statistical information to phpBB.',
 	'GO_ACP_MAIN'				=> 'Go to the ACP start page',
 	'HIDE_STATISTICS'			=> 'Hide details',
-	'SEND_STATISTICS'			=> 'Send statistical information',
+	'SEND_STATISTICS'			=> 'Send statistics',
+	'SEND_STATISTICS_LONG'		=> 'Send statistical information',
 	'SHOW_STATISTICS'			=> 'Show details',
 	'THANKS_SEND_STATISTICS'	=> 'Thank you for submitting your information.',
 	'EXPLAIN_ENABLE_VIGLINK'	=> 'Viglink is a non-invasive third-party service that will monetize existing links posted by users of your forum. When visitors click on those existing links and perform certain actions, such as shopping, the merchants pay VigLink a commission, of which a share is donated to the phpBB project. By agreeing to enable VigLink and donating proceeds to the phpBB project, you are supporting our open source organization and ensuring our continued financial security.<br /><br />You can change these settings at any time in VigLink settings panel.',
