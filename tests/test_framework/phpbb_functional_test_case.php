@@ -394,7 +394,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		global $phpbb_container;
-		$phpbb_container->reset();
+
+		if ($phpbb_container !== null)
+		{
+			$phpbb_container->reset();
+		}
+
 
 		$blacklist = ['phpbb_class_loader_mock', 'phpbb_class_loader_ext', 'phpbb_class_loader'];
 
