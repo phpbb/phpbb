@@ -30,10 +30,10 @@
 		</div>
 		<dl class="send-stats-settings">
 			<dt>
-				<input id="enable-stats" type="checkbox" />
+				<input id="enable-stats" type="checkbox" checked="checked" />
 				<label for="enable-stats"></label>
 			</dt>
-			<dd>{L_YES}</dd>
+			<dd>{L_SEND_STATISTICS}</dd>
 		</dl>
 	</div>
 	<div class="send-stats-tile">
@@ -47,25 +47,6 @@
 			<dd>Enable</dd>
 		</dl>
 	</div>
-</div>
-<div style="clear: both; display: none;">
-<script type="text/javascript">
-//<![CDATA[
-var iframect = 0;
-
-function iframe_updated()
-{
-	if (iframect++ == 0)
-	{
-		return;
-	}
-
-	phpbb.toggleDisplay('questionnaire-form', -1);
-	phpbb.toggleDisplay('questionnaire-thanks', 1);
-}
-//]]>
-</script>
-
 </div>
 
 <!-- INCLUDE overall_footer.html -->

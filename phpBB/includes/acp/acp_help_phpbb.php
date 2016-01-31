@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-class acp_send_statistics
+class acp_help_phpbb
 {
 	var $u_action;
 
@@ -34,7 +34,7 @@ class acp_send_statistics
 
 		$collect_url = "https://www.phpbb.com/stats/receive_stats.php";
 
-		$this->tpl_name = 'acp_send_statistics';
+		$this->tpl_name = 'acp_help_phpbb';
 		$this->page_title = 'ACP_SEND_STATISTICS';
 
 		// generate a unique id if necessary

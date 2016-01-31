@@ -2624,72 +2624,73 @@ fieldset.permissions .padding {
 }
 
 .send-stats-data-row {
-    background: #f9f9f9;
-    border-radius: 6px;
-    border: #DEDEDE 1px solid;
-    padding: 10px;
-    border-top-width: 0;
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
+	background: #f9f9f9;
+	border-radius: 6px;
+	border: #DEDEDE 1px solid;
+	padding: 10px;
+	border-top-width: 0;
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
 }
 
 .send-stats-data-hidden .configlist {
-    display: none;
+	display: none;
 }
 
 .send-stats-data-only-row {
-    border-radius: 6px !important;
-    border-bottom-width: 1px !important;
+	border-radius: 6px !important;
+	border-bottom-width: 1px !important;
 }
 
 .send-stats-data-hidden {
-    padding: 0;
-    border: none;
+	padding: 0;
+	border: none;
 }
 
 .send-stats-row > .send-stats-data-row:first-child {
-    background-color: #d9edf7;
-    border-bottom-width: 0;
-    border-top-right-radius: 6px;
-    border-top-left-radius: 6px;
-    border-top-width: 1px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+	background-color: #d9edf7;
+	border-bottom-width: 0;
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	border-top-width: 1px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 }
 
 .send-stats-settings dt, .send-stats-settings dd {
-    min-width: 25px;
+	min-width: 25px;
 }
 
 .send-stats-settings dd {
-    line-height: 1.5em;
+	line-height: 1.5em;
 }
 
 .send-stats-settings input {
-    display: none;
+	display: none;
 }
 
 .send-stats-settings input[type=checkbox] + label:before {
-    content: "\f096";
-    font-family: FontAwesome;
-    font-size: 1.5em;
+	content: "\f096";
+	font-family: FontAwesome;
+	font-size: 1.5em;
 }
 
 .send-stats-settings input[type=checkbox]:checked + label:before {
-    content: "\f14a";
-    color: #3c763d;
+	content: "\f14a";
+	color: #3c763d;
 }
 
 .send-stats-data-row a:hover span {
-    text-decoration: underline;
+	text-decoration: underline;
 }
 
 .send-stats-data-row a {
-    text-decoration: none;
+	text-decoration: none;
+	cursor: default;
 }
 
 .send-stats-data-row i {
-    padding-left: 6px;
+	padding-left: 6px;
 }
 
 .configlist {

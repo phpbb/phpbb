@@ -11,15 +11,15 @@
 *
 */
 
-class acp_send_statistics_info
+class acp_help_phpbb_info
 {
 	function module()
 	{
 		return array(
-			'filename'	=> 'acp_send_statistics',
+			'filename'	=> 'acp_help_phpbb',
 			'title'		=> 'ACP_SEND_STATISTICS',
 			'modes'		=> array(
-				'send_statistics'		=> array('title' => 'ACP_SEND_STATISTICS', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),
+				'help_phpbb'	=> array('title' => 'ACP_SEND_STATISTICS', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),
 			),
 		);
 	}
