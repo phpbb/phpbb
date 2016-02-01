@@ -13,11 +13,11 @@ fi
 
 if [ $res -eq 0 ]; then
   echo Send success
-  ./set-status.sh 'success' 'The Bamboo build is a success' ${step}
+  $(pwd)/set-status.sh 'success' 'The Bamboo build is a success' ${step}
 elif [ $res -eq 1 ]; then
   echo Send Failure
-  ./set-status.sh 'failure' 'The Bamboo build failed' ${step}
+  $(pwd)/set-status.sh 'failure' 'The Bamboo build failed' ${step}
 else
   echo Send error
-  ./set-status.sh 'error' 'The Bamboo build is in error' ${step}
+  $(pwd)/set-status.sh 'error' 'The Bamboo build is in error' ${step}
 fi
