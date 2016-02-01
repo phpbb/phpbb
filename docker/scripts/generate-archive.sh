@@ -12,6 +12,6 @@ docker run \
     --user $(id -u):$(id -g) \
     --volume ${WORKING_DIR}:/data \
     --workdir /data \
-    phpbb/build{IMAGES_TAG} sh generate-archive.sh
+    phpbb/build${IMAGES_TAG} sh generate-archive.sh
 
 rm generate-archive.sh

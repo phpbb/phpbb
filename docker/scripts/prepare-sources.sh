@@ -6,17 +6,17 @@ docker run \
     --volume ${WORKING_DIR}:/data \
     --volume ${COMPOSER_HOME}:/composer/ \
     --workdir /data \
-    phpbb/build{IMAGES_TAG} sh -c "COMPOSER_HOME=/composer php composer.phar config -g github-oauth.github.com ${GITHUB_TOKEN}"
+    phpbb/build${IMAGES_TAG} sh -c "COMPOSER_HOME=/composer php composer.phar config -g github-oauth.github.com ${GITHUB_TOKEN}"
 
 docker run \
     --user $(id -u):$(id -g) \
     --volume ${WORKING_DIR}:/data \
     --volume ${COMPOSER_HOME}:/composer/ \
     --workdir /data \
-    phpbb/build{IMAGES_TAG} sh -c 'cd phpBB; COMPOSER_HOME=/composer php ../composer.phar install --dev'
+    phpbb/build${IMAGES_TAG} sh -c 'cd phpBB; COMPOSER_HOME=/composer php ../composer.phar install --dev'
 
 docker run \
     --user $(id -u):$(id -g) \
     --volume ${WORKING_DIR}:/data \
     --workdir /data \
-    phpbb/build{IMAGES_TAG} sh -c 'cd build; ../phpBB/vendor/bin/phing clean prepare'
+    phpbb/build${IMAGES_TAG} sh -c 'cd build; ../phpBB/vendor/bin/phing clean prepare'
