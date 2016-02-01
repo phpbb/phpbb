@@ -17,7 +17,10 @@ class default_data_type_ids extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v320\v320a2');
+		return array(
+			'\phpbb\db\migration\data\v320\v320a2',
+			'\phpbb\db\migration\data\v320\oauth_states',
+		);
 	}
 
 	public function update_schema()
