@@ -1,4 +1,4 @@
-#!/usr/bin/env bas
+#!/usr/bin/env bash
 
 cat <<EOL > generate-archive.sh
 git remote set-url origin "https://github.com/phpbb/phpbb.git"
