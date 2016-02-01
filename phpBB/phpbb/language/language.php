@@ -246,14 +246,14 @@ class language
 	}
 
 	/**
-	 * Act like lang() but takes a key and an array of parameters instead of using variadic
+	 * Returns the raw value associated to a language key or the language key no translation is available.
+	 * No parameter substitution is performed, can be a string or an array.
 	 *
 	 * @param string|array	$key	Language key
-	 * @param array			$args	Parameters
 	 *
 	 * @return array|string
 	 */
-	public function lang_array($key, $args = array())
+	public function lang_raw($key)
 	{
 		// Load common language files if they not loaded yet
 		if (!$this->common_language_files_loaded)
@@ -277,6 +277,26 @@ class language
 
 		// Return if language string does not exist
 		if (!isset($lang) || (!is_string($lang) && !is_array($lang)))
+		{
+			return $key;
+		}
+
+		return $lang;
+	}
+
+	/**
+	 * Act like lang() but takes a key and an array of parameters instead of using variadic
+	 *
+	 * @param string|array	$key	Language key
+	 * @param array			$args	Parameters
+	 *
+	 * @return string
+	 */
+	public function lang_array($key, $args = array())
+	{
+		$lang = $this->lang_raw($key);
+
+		if ($lang === $key)
 		{
 			return $key;
 		}

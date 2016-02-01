@@ -53,6 +53,25 @@ class phpbb_language_test extends phpbb_test_case
 		$this->assertFalse($this->lang->is_set(array('PHPBB', 'PHP')));
 	}
 
+	public function test_lang_raw()
+	{
+		$this->assertEquals($this->lang->lang_raw('FOO'), 'BAR');
+		$this->assertEquals($this->lang->lang_raw('VOID'), 'VOID');
+		$this->assertEquals($this->lang->lang_raw('ARRY'), array(
+			0		=> 'No posts',		// 0
+			1		=> '1 post',		// 1
+			2		=> '%d posts',		// 2+
+		));
+	}
+
+	public function test_lang_array()
+	{
+		$this->assertEquals($this->lang->lang_array('FOO'), 'BAR');
+		$this->assertEquals($this->lang->lang_array('VOID'), 'VOID');
+		$this->assertEquals($this->lang->lang_array('ARRY', [0]), 'No posts');
+		$this->assertEquals($this->lang->lang_array('FOO', [2, 3, 'BARZ']), 'BAR');
+	}
+
 	public function test_lang()
 	{
 		// No param
