@@ -4,6 +4,7 @@
 
 <h1>{L_ACP_HELP_PHPBB}</h1>
 
+<form id="acp_board" method="post" action="{U_ACTION}">
 <div class="send-stats-row">
 	<div class="send-stats-tile">
 		<h2><i class="icon fa-bar-chart"></i>Send statistics</h2>
@@ -47,6 +48,13 @@
 			<dd>Enable</dd>
 		</dl>
 	</div>
+	<fieldset>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
+		</p>
+		{S_FORM_TOKEN}
+	</fieldset>
 </div>
+</form>
 
 <!-- INCLUDE overall_footer.html -->

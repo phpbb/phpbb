@@ -25,7 +25,7 @@ class acp_help_phpbb
 
 	function main($id, $mode)
 	{
-		global $config, $template, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+		global $config, $request, $template, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		if (!class_exists('phpbb_questionnaire_data_collector'))
 		{
@@ -36,6 +36,22 @@ class acp_help_phpbb
 
 		$this->tpl_name = 'acp_help_phpbb';
 		$this->page_title = 'ACP_HELP_PHPBB';
+
+		$submit = ($request->is_set_post('submit')) ? true : false;
+
+		$form_key = 'acp_help_phpbb';
+		add_form_key($form_key);
+		$error = array();
+
+		if ($submit && !check_form_key($form_key))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
+		// Do not write values if there is an error
+		if (sizeof($error))
+		{
+			$submit = false;
+		}
 
 		// generate a unique id if necessary
 		if (!isset($config['questionnaire_unique_id']))
@@ -54,6 +70,31 @@ class acp_help_phpbb
 		$collector->add_data_provider(new phpbb_questionnaire_php_data_provider());
 		$collector->add_data_provider(new phpbb_questionnaire_system_data_provider());
 		$collector->add_data_provider(new phpbb_questionnaire_phpbb_data_provider($config));
+
+		if ($submit)
+		{
+			$client = new \Guzzle\Http\Client(
+				$this->u_action,
+				array(
+					'timeout'			=> 6,
+					'connect_timeout'	=> 6,
+				)
+			);
+
+			$collect_request = $client->post($collect_url, [], [
+				'systemdata'	=> $collector->get_data_for_form(),
+			]);
+
+			$response = $collect_request->send();
+			if ($response->isSuccessful())
+			{
+				trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
+			}
+			else
+			{
+				trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action));
+			}
+		}
 
 		$template->assign_vars(array(
 			'U_COLLECT_STATS'	=> $collect_url,
