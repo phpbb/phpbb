@@ -841,7 +841,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static public function assert_response_html($status_code = 200)
 	{
 		// Any output before the doc type means there was an error
-		$content = (string) self::$client->getResponse()->getContent();
+		$content = self::get_content();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 
@@ -862,7 +862,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static public function assert_response_xml($status_code = 200)
 	{
 		// Any output before the xml opening means there was an error
-		$content = (string) self::$client->getResponse()->getContent();
+		$content = self::get_content();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
 
