@@ -13,7 +13,11 @@ docker run \
     --volume ${WORKING_DIR}:/data \
     --volume ${COMPOSER_HOME}:/composer/ \
     --workdir /data \
-    phpbb/build${IMAGES_TAG} sh -c 'cd phpBB; COMPOSER_HOME=/composer php ../composer.phar install --dev'
+    phpbb/build${IMAGES_TAG} sh -c '
+    cd phpBB &&
+    git config user.email "no-reply@phpbb.com" &&
+    git config user.name "phpBB CI" &&
+    COMPOSER_HOME=/composer php ../composer.phar install --dev'
 
 docker run \
     --user $(id -u):$(id -g) \
