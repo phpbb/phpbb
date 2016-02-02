@@ -25,7 +25,7 @@ class acp_help_phpbb
 
 	function main($id, $mode)
 	{
-		global $config, $request, $template, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+		global $config, $request, $template, $user, $phpbb_dispatcher, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		if (!class_exists('phpbb_questionnaire_data_collector'))
 		{
@@ -71,33 +71,49 @@ class acp_help_phpbb
 		$collector->add_data_provider(new phpbb_questionnaire_system_data_provider());
 		$collector->add_data_provider(new phpbb_questionnaire_phpbb_data_provider($config));
 
+		/**
+		 * Event to add and/or modify acp_board configurations
+		 *
+		 * @event core.acp_help_phpbb_submit_before
+		 * @var	boolean	submit			Do we display the form or process the submission
+		 * @since 3.2.0-b2
+		 */
+		$vars = array('submit');
+		extract($phpbb_dispatcher->trigger_event('core.acp_help_phpbb_submit_before', compact($vars)));
+
 		if ($submit)
 		{
-			$client = new \Guzzle\Http\Client(
-				$this->u_action,
-				array(
-					'timeout'			=> 6,
-					'connect_timeout'	=> 6,
-				)
-			);
+			$config->set('help_send_statistics', $request->variable('help_send_statistics', false));
 
-			$collect_request = $client->post($collect_url, [], [
-				'systemdata'	=> $collector->get_data_for_form(),
-			]);
+			if ($config['help_send_statistics'])
+			{
+				$client = new \Guzzle\Http\Client(
+					$this->u_action,
+					array(
+						'timeout'			=> 6,
+						'connect_timeout'	=> 6,
+					)
+				);
 
-			$response = $collect_request->send();
-			if ($response->isSuccessful())
-			{
-				trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
-			}
-			else
-			{
-				trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action));
+				$collect_request = $client->post($collect_url, [], [
+					'systemdata'	=> $collector->get_data_for_form(),
+				]);
+
+				$response = $collect_request->send();
+				if ($response->isSuccessful())
+				{
+					trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
+				}
+				else
+				{
+					trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action));
+				}
 			}
 		}
 
 		$template->assign_vars(array(
 			'U_COLLECT_STATS'	=> $collect_url,
+			'S_COLLECT_STATS'	=> (!empty($config['help_send_statistics'])) ? true : false,
 			'RAW_DATA'			=> $collector->get_data_for_form(),
 			'U_ACP_MAIN'		=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		));

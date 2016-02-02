@@ -6,6 +6,7 @@
 
 <form id="acp_board" method="post" action="{U_ACTION}">
 <div class="send-stats-row">
+	<!-- EVENT acp_help_phpbb_stats_before -->
 	<div class="send-stats-tile">
 		<h2><i class="icon fa-bar-chart"></i>Send statistics</h2>
 		<p>{L_EXPLAIN_SEND_STATISTICS}</p>
@@ -31,23 +32,13 @@
 		</div>
 		<dl class="send-stats-settings">
 			<dt>
-				<input id="enable-stats" type="checkbox" checked="checked" />
-				<label for="enable-stats"></label>
+				<input id="help_send_statistics" type="checkbox"<!-- IF S_COLLECT_STATS --> checked="checked"<!-- ENDIF --> />
+				<label for="help_send_statistics"></label>
 			</dt>
 			<dd>{L_SEND_STATISTICS_LONG}</dd>
 		</dl>
 	</div>
-	<div class="send-stats-tile">
-		<h2><span class="viglink-header">VigLink</span></h2>
-		<p>{L_EXPLAIN_ENABLE_VIGLINK}</p>
-		<dl class="send-stats-settings">
-			<dt>
-				<input id="enable-viglink" type="checkbox" />
-				<label for="enable-viglink"></label>
-			</dt>
-			<dd>Enable</dd>
-		</dl>
-	</div>
+	<!-- EVENT acp_help_phpbb_stats_after -->
 	<fieldset>
 		<p class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />

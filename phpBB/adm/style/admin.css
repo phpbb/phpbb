@@ -2612,12 +2612,6 @@ fieldset.permissions .padding {
 	padding-right: 0.3em;
 }
 
-.viglink-header {
-	background: url('http://www.viglink.com/wp-content/uploads/2015/05/favicon-96x96.png') no-repeat 0 0;
-	padding-left: 30px;
-	background-size: 25px;
-}
-
 .icon {
 	font-family: FontAwesome;
 	font-style: normal;
