@@ -53,8 +53,6 @@ abstract class includeasset extends \Twig_Node
 				->write("\$asset->add_assets_version('{$config['assets_version']}');\n")
 			->outdent()
 			->write("}\n")
-			->write("\$context['definition']->set('STYLESHEETS', '__STYLESHEETS_PLACEHOLDER__');\n")
-			->write("\$context['definition']->set('SCRIPTS', '__SCRIPTS_PLACEHOLDER__');\n")
 			->write("\$this->getEnvironment()->get_assets_bag()->add_{$this->get_setters_name()}(\$asset);")
 		;
 	}
