@@ -40,7 +40,7 @@
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
 							<a href="{forumrow.U_LAST_POST}">
 								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
-							</a> 
+							</a>
 							<br />{forumrow.LAST_POST_TIME}</span>
 					<!-- ELSE -->
 						{L_NO_POSTS}<br />&nbsp;
@@ -89,7 +89,7 @@
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
 								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
-							</a>  
+							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
 							<a href="{topicrow.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
@@ -124,7 +124,7 @@
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 						<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
-					</a> 
+					</a>
 					<br />{topicrow.LAST_POST_TIME}</span>
 				</dd>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
@@ -136,9 +136,9 @@
 	<div class="action-bar bar-bottom">
 		<div class="pagination">
 			{TOTAL_TOPICS}
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
