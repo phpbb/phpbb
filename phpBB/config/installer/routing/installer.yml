@@ -35,3 +35,28 @@ phpbb_installer_update_conflict_download:
     path: /download/conflict
     defaults:
         _controller: phpbb.installer.controller.file_downloader:conflict_archive
+
+phpbb_convert_intro:
+    path: /convert/{start_new}
+    defaults:
+        _controller: phpbb.installer.controller.convert:intro
+        start_new: 0
+
+phpbb_convert_settings:
+    path: /convert/settings/{convertor}
+    defaults:
+        _controller: phpbb.installer.controller.convert:settings
+    requirements:
+        converter: "[a-zA-Z0-9_]+"
+
+phpbb_convert_convert:
+    path: /convert/in_progress/{converter}
+    defaults:
+        _controller: phpbb.installer.controller.convert:convert
+    requirements:
+        converter: "[a-zA-Z0-9_]+"
+
+phpbb_convert_finish:
+    path: /convert/finished
+    defaults:
+        _controller: phpbb.installer.controller.convert:finish

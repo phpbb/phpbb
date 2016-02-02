@@ -49,3 +49,18 @@ services:
         class: phpbb\install\controller\archive_download
         arguments:
             - '@installer.helper.config'
+
+    phpbb.installer.controller.convert:
+        class: phpbb\convert\controller\convertor
+        arguments:
+            - '@installer.helper.container_factory'
+            - '@installer.helper.database'
+            - '@phpbb.installer.controller.helper'
+            - '@installer.helper.install_helper'
+            - '@installer.helper.iohandler_factory'
+            - '@language'
+            - '@installer.navigation.provider'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'

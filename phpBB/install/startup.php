@@ -101,6 +101,8 @@ $phpbb_class_loader_new = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}
 $phpbb_class_loader_new->register();
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
+$phpbb_class_loader = new \phpbb\class_loader('phpbb\\convert\\', "{$phpbb_root_path}install/convert/", $phpEx);
+$phpbb_class_loader->register();
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
 

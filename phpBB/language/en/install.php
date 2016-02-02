@@ -439,3 +439,112 @@ $lang = array_merge($lang, array(
 
 	'INLINE_UPDATE_SUCCESSFUL'		=> 'The database update was successful.',
 ));
+
+// Converter
+$lang = array_merge($lang, array(
+	// Common converter messages
+	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist.',
+	'DEV_NO_TEST_FILE'			=> 'No value has been specified for the test_file variable in the convertor. If you are a user of this convertor, you should not be seeing this error, please report this message to the convertor author. If you are a convertor author, you must specify the name of a file which exists in the source board to allow the path to it to be verified.',
+	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former board. Please check your settings and try again.<br />» %s was specified as the source path.',
+	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB3 config variable for “%s” is empty.',
+
+	'MAKE_FOLDER_WRITABLE'		=> 'Please make sure that this folder exists and is writable by the webserver then try again:<br />»<strong>%s</strong>.',
+	'MAKE_FOLDERS_WRITABLE'		=> 'Please make sure that these folders exist and are writable by the webserver then try again:<br />»<strong>%s</strong>.',
+
+	'INSTALL_TEST'				=> 'Test again',
+
+	'NO_TABLES_FOUND'			=> 'No tables found.',
+	'TABLES_MISSING'			=> 'Could not find these tables<br />» <strong>%s</strong>.',
+	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
+
+	// Conversion in progress
+	'CONTINUE_CONVERT'			=> 'Continue conversion',
+	'CONTINUE_CONVERT_BODY'		=> 'A previous conversion attempt has been determined. You are now able to choose between starting a new conversion or continuing the conversion.',
+	'CONVERT_NEW_CONVERSION'	=> 'New conversion',
+	'CONTINUE_OLD_CONVERSION'	=> 'Continue previously started conversion',
+
+	// Start conversion
+	'SUB_INTRO'					=> 'Introduction',
+	'CONVERT_INTRO'				=> 'Welcome to the phpBB Unified Convertor Framework',
+	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) board systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the board software you wish to convert from, please check our website where further conversion modules may be available for download.',
+	'AVAILABLE_CONVERTORS'		=> 'Available convertors',
+	'NO_CONVERTORS'				=> 'No convertors are available for use.',
+	'CONVERT_OPTIONS'			=> 'Options',
+	'SOFTWARE'					=> 'Board software',
+	'VERSION'					=> 'Version',
+	'CONVERT'					=> 'Convert',
+
+	// Settings
+	'STAGE_SETTINGS'			=> 'Settings',
+	'TABLE_PREFIX_SAME'			=> 'The table prefix needs to be the one used by the software you are converting from.<br />» Specified table prefix was %s.',
+	'DEFAULT_PREFIX_IS'			=> 'The convertor was not able to find tables with the specified prefix. Please make sure you have entered the correct details for the board you are converting from. The default table prefix for %1$s is <strong>%2$s</strong>.',
+	'SPECIFY_OPTIONS'			=> 'Specify conversion options',
+	'FORUM_PATH'				=> 'Board path',
+	'FORUM_PATH_EXPLAIN'		=> 'This is the <strong>relative</strong> path on disk to your former board from the <strong>root of this phpBB3 installation</strong>.',
+	'REFRESH_PAGE'				=> 'Refresh page to continue conversion',
+	'REFRESH_PAGE_EXPLAIN'		=> 'If set to yes, the convertor will refresh the page to continue the conversion after having finished a step. If this is your first conversion for testing purposes and to determine any errors in advance, we suggest to set this to No.',
+
+	// Conversion
+	'STAGE_IN_PROGRESS'			=> 'Conversion in progress',
+
+	'AUTHOR_NOTES'				=> 'Author notes<br />» %s',
+	'STARTING_CONVERT'			=> 'Starting conversion process',
+	'CONFIG_CONVERT'			=> 'Converting the configuration',
+	'DONE'						=> 'Done',
+	'PREPROCESS_STEP'			=> 'Executing pre-processing functions/queries',
+	'FILLING_TABLE'				=> 'Filling table <strong>%s</strong>',
+	'FILLING_TABLES'			=> 'Filling tables',
+	'DB_ERR_INSERT'				=> 'Error while processing <code>INSERT</code> query.',
+	'DB_ERR_LAST'				=> 'Error while processing <var>query_last</var>.',
+	'DB_ERR_QUERY_FIRST'		=> 'Error while executing <var>query_first</var>.',
+	'DB_ERR_QUERY_FIRST_TABLE'	=> 'Error while executing <var>query_first</var>, %s (“%s”).',
+	'DB_ERR_SELECT'				=> 'Error while running <code>SELECT</code> query.',
+	'STEP_PERCENT_COMPLETED'	=> 'Step <strong>%d</strong> of <strong>%d</strong>',
+	'FINAL_STEP'				=> 'Process final step',
+	'SYNC_FORUMS'				=> 'Starting to synchronise forums',
+	'SYNC_POST_COUNT'			=> 'Synchronising post_counts',
+	'SYNC_POST_COUNT_ID'		=> 'Synchronising post_counts from <var>entry</var> %1$s to %2$s.',
+	'SYNC_TOPICS'				=> 'Starting to synchronise topics',
+	'SYNC_TOPIC_ID'				=> 'Synchronising topics from <var>topic_id</var> %1$s to %2$s.',
+	'PROCESS_LAST'					=> 'Processing last statements',
+	'UPDATE_TOPICS_POSTED'		=> 'Generating topics posted information',
+	'UPDATE_TOPICS_POSTED_ERR'	=> 'An error occurred while generating topics posted information. You can retry this step in the ACP after the conversion process is completed.',
+	'CONTINUE_LAST'				=> 'Continue last statements',
+	'CLEAN_VERIFY'				=> 'Cleaning up and verifying the final structure',
+	'NOT_UNDERSTAND'			=> 'Could not understand %s #%d, table %s (“%s”)',
+	'NAMING_CONFLICT'			=> 'Naming conflict: %s and %s are both aliases<br /><br />%s',
+
+	// Finish conversion
+	'CONVERT_COMPLETE'			=> 'Conversion completed',
+	'CONVERT_COMPLETE_EXPLAIN'	=> 'You have now successfully converted your board to phpBB 3.2. You can now login and <a href="../">access your board</a>. Please ensure that the settings were transferred correctly before enabling your board by deleting the install directory. Remember that help on using phpBB is available online via the <a href="https://www.phpbb.com/support/docs/en/3.2/ug/">Documentation</a> and the <a href="https://www.phpbb.com/community/viewforum.php?f=466">support forums</a>.',
+
+	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
+	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',
+	'CONV_ERROR_FORUM_ACCESS'			=> 'Unable to get forum access information.',
+	'CONV_ERROR_GET_CATEGORIES'			=> 'Unable to get categories.',
+	'CONV_ERROR_GET_CONFIG'				=> 'Could not retrieve your board configuration.',
+	'CONV_ERROR_COULD_NOT_READ'			=> 'Unable to access/read “%s”.',
+	'CONV_ERROR_GROUP_ACCESS'			=> 'Unable to get group authentication information.',
+	'CONV_ERROR_INCONSISTENT_GROUPS'	=> 'Inconsistency in groups table detected in add_bots() - you need to add all special groups if you do it manually.',
+	'CONV_ERROR_INSERT_BOT'				=> 'Unable to insert bot into users table.',
+	'CONV_ERROR_INSERT_BOTGROUP'		=> 'Unable to insert bot into bots table.',
+	'CONV_ERROR_INSERT_USER_GROUP'		=> 'Unable to insert user into user_group table.',
+	'CONV_ERROR_MESSAGE_PARSER'			=> 'Message parser error',
+	'CONV_ERROR_NO_AVATAR_PATH'			=> 'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
+	'CONV_ERROR_NO_FORUM_PATH'			=> 'The relative path to the source board has not been specified.',
+	'CONV_ERROR_NO_GALLERY_PATH'		=> 'Note to developer: you must specify $convertor[\'avatar_gallery_path\'] to use %s.',
+	'CONV_ERROR_NO_GROUP'				=> 'Group “%1$s” could not be found in %2$s.',
+	'CONV_ERROR_NO_RANKS_PATH'			=> 'Note to developer: you must specify $convertor[\'ranks_path\'] to use %s.',
+	'CONV_ERROR_NO_SMILIES_PATH'		=> 'Note to developer: you must specify $convertor[\'smilies_path\'] to use %s.',
+	'CONV_ERROR_NO_UPLOAD_DIR'			=> 'Note to developer: you must specify $convertor[\'upload_path\'] to use %s.',
+	'CONV_ERROR_PERM_SETTING'			=> 'Unable to insert/update permission setting.',
+	'CONV_ERROR_PM_COUNT'				=> 'Unable to select folder pm count.',
+	'CONV_ERROR_REPLACE_CATEGORY'		=> 'Unable to insert new forum replacing old category.',
+	'CONV_ERROR_REPLACE_FORUM'			=> 'Unable to insert new forum replacing old forum.',
+	'CONV_ERROR_USER_ACCESS'			=> 'Unable to get user authentication information.',
+	'CONV_ERROR_WRONG_GROUP'			=> 'Wrong group “%1$s” defined in %2$s.',
+	'CONV_OPTIONS_BODY'					=> 'This page collects the data required to access the source board. Enter the database details of your former board; the converter will not change anything in the database given below. The source board should be disabled to allow a consistent conversion.',
+	'CONV_SAVED_MESSAGES'				=> 'Saved messages',
+
+	'PRE_CONVERT_COMPLETE'			=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process. Please note that you may have to manually do and adjust several things. After conversion, especially check the permissions assigned, rebuild your search index which is not converted and also make sure files got copied correctly, for example avatars and smilies.',
+));

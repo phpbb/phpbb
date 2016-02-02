@@ -160,12 +160,13 @@ class helper
 	 * Returns path from route name
 	 *
 	 * @param string	$route_name
+	 * @param array		$parameters
 	 *
 	 * @return string
 	 */
-	public function route($route_name)
+	public function route($route_name, $parameters = array())
 	{
-		$url = $this->router->generate($route_name);
+		$url = $this->router->generate($route_name, $parameters);
 
 		return $url;
 	}

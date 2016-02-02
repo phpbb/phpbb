@@ -242,6 +242,22 @@
 		}
 	}
 
+	// Redirects user
+	function redirect(url, use_ajax) {
+		if (use_ajax) {
+			resetPolling();
+
+			var xhReq = createXhrObject();
+			xhReq.open('GET', url, true);
+			xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			xhReq.send();
+
+			startPolling(xhReq);
+		} else {
+			window.location.href = url;
+		}
+	}
+
 	/**
 	 * Parse messages from the response object
 	 *
@@ -307,6 +323,10 @@
 
 		if (responseObject.hasOwnProperty('refresh')) {
 			refreshRequested = true;
+		}
+
+		if (responseObject.hasOwnProperty('redirect')) {
+			redirect(responseObject.redirect.url, responseObject.redirect.use_ajax);
 		}
 	}
 
