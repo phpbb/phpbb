@@ -46,9 +46,9 @@ class archive_download
 	 */
 	public function conflict_archive()
 	{
-		$filename = $this->installer_config->get('update_file_conflict_archive', false);
+		$filename = $this->installer_config->get('update_file_conflict_archive', '');
 
-		if (!$filename)
+		if (empty($filename))
 		{
 			throw new http_exception(404, 'URL_NOT_FOUND');
 		}
@@ -65,7 +65,7 @@ class archive_download
 	{
 		$filename = $this->installer_config->get('update_file_archive', '');
 
-		if (!$filename)
+		if (empty($filename))
 		{
 			throw new http_exception(404, 'URL_NOT_FOUND');
 		}
