@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-last_commit=$(cat build/logs/last_commit) 
+last_commit=$(cat build/logs/last_commit)
 
 status=$1
 description=$2
