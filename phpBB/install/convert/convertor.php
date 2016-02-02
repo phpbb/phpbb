@@ -1591,9 +1591,10 @@ class convertor
 	 */
 	public function error($error, $line, $file, $skip = false)
 	{
-		//
-		// @todo
-		//
+		$this->template->assign_block_vars('errors', array(
+			'TITLE'	=> $error,
+			'DESCRIPTION' => 'In ' . $file . ' on line ' . $line,
+		));
 	}
 
 	/**
@@ -1609,8 +1610,9 @@ class convertor
 	 */
 	public function db_error($error, $sql, $line, $file, $skip = false)
 	{
-		//
-		// @todo
-		//
+		$this->template->assign_block_vars('errors', array(
+			'TITLE'	=> $error,
+			'DESCRIPTION' => 'In ' . $file . ' on line ' . $line . '<br /><br /><strong>SQL:</strong> ' . $sql,
+		));
 	}
 }

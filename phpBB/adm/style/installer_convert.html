@@ -6,6 +6,14 @@
 	<p>{ERROR_MSG}</p>
 </div>
 <!-- ENDIF -->
+<!-- IF .errors -->
+<div id="error-container">
+<!-- BEGIN errors -->
+	<strong>{errors.TITLE}</strong>
+	<!-- IF errors.DESCRIPTION --><p>{errors.DESCRIPTION}</p><!-- ENDIF -->
+<!-- END errors -->
+</div>
+<!-- ENDIF -->
 <!-- IF BODY --><p>{BODY}</p><!-- ENDIF -->
 <!-- IF CONTENT -->{CONTENT}<!-- ENDIF -->
 <!-- IF S_CONV_IN_PROGRESS -->
