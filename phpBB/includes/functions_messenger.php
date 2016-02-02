@@ -214,6 +214,8 @@ class messenger
 	{
 		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
 
+		$template_dir_prefix = (!$template_dir_prefix || substr($template_dir_prefix, 0, 1) === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
+
 		$this->setup_template();
 
 		if (!trim($template_file))
@@ -232,7 +234,7 @@ class messenger
 		if ($template_path)
 		{
 			$template_paths = array(
-				$template_path . '/' . $template_dir_prefix,
+				$template_path . $template_dir_prefix,
 			);
 		}
 		else
@@ -241,7 +243,7 @@ class messenger
 			$template_path .= $template_lang . '/email';
 
 			$template_paths = array(
-				$template_path . '/' . $template_dir_prefix,
+				$template_path . $template_dir_prefix,
 			);
 
 			// we can only specify default language fallback when the path is not a custom one for which we
@@ -251,14 +253,14 @@ class messenger
 				$fallback_template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
 				$fallback_template_path .= basename($config['default_lang']) . '/email';
 
-				$template_paths[] = $fallback_template_path . '/' . $template_dir_prefix;
+				$template_paths[] = $fallback_template_path . $template_dir_prefix;
 			}
 		}
 
 		$this->set_template_paths(array(
 			array(
 				'name' 		=> $template_lang . '_email',
-				'ext_path' 	=> 'language/' . $template_lang . '/email' . '/' . $template_dir_prefix,
+				'ext_path' 	=> 'language/' . $template_lang . '/email' . $template_dir_prefix,
 			),
 		), $template_paths);
 
