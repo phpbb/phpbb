@@ -28,5 +28,5 @@ EOL
         --env MYSQL_ALLOW_EMPTY_PASSWORD='yes' \
         mysql
 
-    docker run --rm --link mysql_test:mysql waisbrot/wait
+    docker run --rm --link mysql:mysql waisbrot/wait
 }
