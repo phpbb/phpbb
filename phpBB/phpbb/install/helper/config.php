@@ -157,10 +157,10 @@ class config
 	{
 		if ($this->system_data['max_execution_time'] <= 0)
 		{
-			return 1;
+			return PHP_INT_MAX;
 		}
 
-		return ($this->system_data['start_time'] + $this->system_data['max_execution_time']) - time();
+		return ($this->system_data['start_time'] + $this->system_data['max_execution_time']) - microtime(true);
 	}
 
 	/**
@@ -430,7 +430,7 @@ class config
 		$this->system_data['max_execution_time'] = $execution_time;
 
 		// Set start time
-		$this->system_data['start_time'] = time();
+		$this->system_data['start_time'] = microtime(true);
 
 		// Get memory limit
 		$this->system_data['memory_limit'] = $this->php_ini->getBytes('memory_limit');

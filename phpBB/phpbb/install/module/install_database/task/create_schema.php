@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+
 /**
  * Create database schema
  */
@@ -106,6 +108,17 @@ class create_schema extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
+		// As this task may take a large amount of time to complete refreshing the page might be necessary for some
+		// server configurations with limited resources
+		if (!$this->config->get('pre_schema_forced_refresh'))
+		{
+			if ($this->config->get_time_remaining() < 5)
+			{
+				$this->config->set('pre_schema_forced_refresh', true);
+				throw new resource_limit_reached_exception();
+			}
+		}
+
 		$this->db->sql_return_on_error(true);
 
 		$dbms = $this->config->get('dbms');
