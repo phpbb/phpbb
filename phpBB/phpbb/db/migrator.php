@@ -170,7 +170,25 @@ class migrator
 	*/
 	public function set_migrations($class_names)
 	{
+		foreach ($class_names as $key => $class)
+		{
+			if (!self::is_migration($class))
+			{
+				unset($class_names[$key]);
+			}
+		}
+
 		$this->migrations = $class_names;
+	}
+
+	/**
+	 * Get the list of available migration class names
+	 *
+	 * @return array Array of all migrations available to be run
+	 */
+	public function get_migrations()
+	{
+		return $this->migrations;
 	}
 
 	/**
@@ -856,5 +874,28 @@ class migrator
 				'PRIMARY_KEY'	=> 'migration_name',
 			));
 		}
+	}
+
+	/**
+	 * Check if a class is a migration.
+	 *
+	 * @param string $migration A migration class name
+	 * @return bool Return true if class is a migration, false otherwise
+	 */
+	static public function is_migration($migration)
+	{
+		if (class_exists($migration))
+		{
+			// Migration classes should extend the abstract class
+			// phpbb\db\migration\migration (which implements the
+			// migration_interface) and be instantiable.
+			$reflector = new \ReflectionClass($migration);
+			if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

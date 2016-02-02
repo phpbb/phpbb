@@ -73,9 +73,7 @@ class base implements \phpbb\extension\extension_interface
 	*/
 	public function enable_step($old_state)
 	{
-		$migrations = $this->get_migration_file_list();
-
-		$this->migrator->set_migrations($migrations);
+		$this->get_migration_file_list();
 
 		$this->migrator->update();
 
@@ -102,8 +100,6 @@ class base implements \phpbb\extension\extension_interface
 	public function purge_step($old_state)
 	{
 		$migrations = $this->get_migration_file_list();
-
-		$this->migrator->set_migrations($migrations);
 
 		foreach ($migrations as $migration)
 		{
@@ -137,21 +133,9 @@ class base implements \phpbb\extension\extension_interface
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
 
-		// Unset classes that do not exist or do not extend the
-		// abstract class phpbb\db\migration\migration
-		foreach ($migrations as $key => $migration)
-		{
-			if (class_exists($migration))
-			{
-				$reflector = new \ReflectionClass($migration);
-				if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
-				{
-					continue;
-				}
-			}
+		$this->migrator->set_migrations($migrations);
 
-			unset($migrations[$key]);
-		}
+		$migrations = $this->migrator->get_migrations();
 
 		return $migrations;
 	}

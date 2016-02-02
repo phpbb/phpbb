@@ -140,7 +140,7 @@ class update extends task_base
 			->get_classes();
 
 		$this->migrator->set_migrations($migrations);
-		$migration_count = count($migrations);
+		$migration_count = count($this->migrator->get_migrations());
 		$this->iohandler->set_task_count($migration_count, true);
 		$progress_count = $this->installer_config->get('database_update_count', 0);
 

@@ -77,8 +77,15 @@ class schema_generator
 		$check_dependencies = true;
 		while (!empty($migrations))
 		{
-			foreach ($migrations as $migration_class)
+			foreach ($migrations as $key => $migration_class)
 			{
+				// Unset classes that are not a valid migration
+				if (\phpbb\db\migrator::is_migration($migration_class) === false)
+				{
+					unset($migrations[$key]);
+					continue;
+				}
+
 				$open_dependencies = array_diff($migration_class::depends_on(), $tree);
 
 				if (empty($open_dependencies))
