@@ -1733,7 +1733,7 @@ function mail_encode($str, $eol = "\r\n")
 */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
-	global $phpbb_root_path, $phpEx;
+	global $config, $phpbb_root_path, $phpEx;
 
 	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
 	// Reference: http://bugs.php.net/bug.php?id=15841
