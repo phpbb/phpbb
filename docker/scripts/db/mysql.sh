@@ -29,4 +29,6 @@ EOL
         mysql
 
     docker run --rm --link mysql:mysql waisbrot/wait
+
+    echo 'Mysql UP'
 }
