@@ -16,6 +16,7 @@ require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
+	/** @var \Goutte\Client */
 	static protected $client;
 	static protected $cookieJar;
 	static protected $root_url;
@@ -81,9 +82,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		self::$cookieJar = new CookieJar;
 		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
-		// Reset the curl handle because it is 0 at this point and not a valid
-		// resource
-		self::$client->getClient()->getCurlMulti()->reset(true);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -169,7 +167,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function get_content()
 	{
-		return self::$client->getResponse()->getContent();
+		return (string) self::$client->getResponse()->getContent();
 	}
 
 	// bootstrap, called after board is set up
@@ -843,7 +841,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static public function assert_response_html($status_code = 200)
 	{
 		// Any output before the doc type means there was an error
-		$content = self::$client->getResponse()->getContent();
+		$content = self::get_content();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 
@@ -864,7 +862,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static public function assert_response_xml($status_code = 200)
 	{
 		// Any output before the xml opening means there was an error
-		$content = self::$client->getResponse()->getContent();
+		$content = self::get_content();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
 
