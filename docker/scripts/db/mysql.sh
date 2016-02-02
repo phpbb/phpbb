@@ -9,7 +9,7 @@ export PHPBB_TEST_DBPASSWD=''
 export PHPBB_TEST_TABLE_PREFIX='phpbb_'
 export DOCKER_LINK='--link mysql:mysql'
 
-function start {
+function start_db {
     cat <<EOL > /tmp/phpbb.cnf
 [mysqld]
 default-storage-engine=MyISAM
