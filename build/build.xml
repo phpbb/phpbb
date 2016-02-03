@@ -318,6 +318,35 @@
 		<delete file="${dir}/vendor/google/recaptcha/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/google/recaptcha/README.md" />
 
+		<delete dir="${dir}/vendor/guzzlehttp/guzzle/build" />
+		<delete dir="${dir}/vendor/guzzlehttp/guzzle/docs" />
+		<delete dir="${dir}/vendor/guzzlehttp/guzzle/tests" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/CHANGELOG.md" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/.editorconfig" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/.gitignore" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/Makefile" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/README.md" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/.travis.yml" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/UPGRADING.md" />
+
+		<delete dir="${dir}/vendor/guzzlehttp/ringphp/docs" />
+		<delete dir="${dir}/vendor/guzzlehttp/ringphp/tests" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/CHANGELOG.md" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/.gitignore" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/Makefile" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/README.rst" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/.travis.yml" />
+
+		<delete dir="${dir}/vendor/guzzlehttp/streams/tests" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/CHANGELOG.rst" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/.gitignore" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/Makefile" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/README.rst" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/.travis.yml" />
+
 		<delete dir="${dir}/vendor/lusitanian/oauth/examples" />
 		<delete dir="${dir}/vendor/lusitanian/oauth/tests" />
 		<delete file="${dir}/vendor/lusitanian/oauth/.gitignore" />
@@ -334,6 +363,13 @@
 		<delete dir="${dir}/vendor/psr/log/Psr/Log/Test" />
 		<delete file="${dir}/vendor/psr/log/.gitignore" />
 		<delete file="${dir}/vendor/psr/log/README.md" />
+
+		<delete dir="${dir}/vendor/react/promise/tests" />
+		<delete file="${dir}/vendor/react/promise/CHANGELOG.md" />
+		<delete file="${dir}/vendor/react/promise/.gitignore" />
+		<delete file="${dir}/vendor/react/promise/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/react/promise/README.md" />
+		<delete file="${dir}/vendor/react/promise/.travis.yml" />
 
 		<delete dir="${dir}/vendor/s9e/text-formatter/.git" />
 
