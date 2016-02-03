@@ -115,11 +115,17 @@ class remote extends base
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
 		}
 
-		if ($remote_max_filesize && $response->getContentType() > $remote_max_filesize)
+		$content_length = $response->getContentLength();
+		if ($remote_max_filesize && $content_length > $remote_max_filesize)
 		{
 			$max_filesize = get_formatted_filesize($remote_max_filesize, false);
 
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
+		}
+
+		if ($content_length == 0)
+		{
+			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
 
 		$data = $response->getBody();
