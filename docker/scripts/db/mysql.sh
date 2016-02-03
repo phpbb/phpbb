@@ -22,7 +22,7 @@ EOL
         -d \
         --volume /tmp/phpbb.cnf:/etc/mysql/conf.d/phpbb.cnf \
         --name mysql \
-        --shm-size=128M \
+        --shm-size=256M \
         --env MYSQL_ROOT_PASSWORD='' \
         --env MYSQL_DATABASE='phpbb_tests' \
         --env MYSQL_ALLOW_EMPTY_PASSWORD='yes' \
