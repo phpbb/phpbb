@@ -100,11 +100,17 @@ class path_helper
 	*/
 	public function update_web_root_path($path)
 	{
+		$web_root_path = $this->get_web_root_path();
+
+		if (strpos($path, $web_root_path) === 0)
+		{
+			$path = $this->phpbb_root_path . substr($path, strlen($web_root_path));
+		}
+
 		if (strpos($path, $this->phpbb_root_path) === 0)
 		{
 			$path = substr($path, strlen($this->phpbb_root_path));
 
-			$web_root_path = $this->get_web_root_path();
 			if (substr($web_root_path, -8) === 'app.php/' && substr($path, 0, 7) === 'app.php')
 			{
 				$path = substr($path, 8);
