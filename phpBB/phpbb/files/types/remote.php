@@ -93,29 +93,53 @@ class remote extends base
 
 		$url['path'] = implode('', $url['path']);
 		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
-		$filesize = 0;
 
 		$remote_max_filesize = $this->get_max_file_size();
 
-		$client = new \Guzzle\Http\Client([
+		$guzzle_options = [
 			'timeout' => $this->upload->upload_timeout,
 			'connect_timeout' => $this->upload->upload_timeout,
-		]);
+		];
+		$client = new \GuzzleHttp\Client($guzzle_options);
 
-		try {
-			$response = $client->get($upload_url)->send();
-		} catch (\Guzzle\Http\Exception\ClientErrorResponseException $responseException) {
+		try
+		{
+			$response = $client->get($upload_url, $guzzle_options);
+		}
+		catch (\GuzzleHttp\Exception\ClientException $clientException)
+		{
 			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'URL_NOT_FOUND');
-		} catch (\Guzzle\Http\Exception\CurlException $curlException) {
-			//curl exceptions are when the DNS fails etc
-			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
-		} catch (\Guzzle\Http\Exception\RequestException $requestException) {
-			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'REMOTE_UPLOAD_TIMEOUT');
+		}
+		catch (\GuzzleHttp\Exception\RequestException $requestException)
+		{
+			if (strpos($requestException->getMessage(), 'cURL error 28') !== false || preg_match('/408|504/', $requestException->getCode()))
+			{
+				return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'REMOTE_UPLOAD_TIMEOUT');
+			}
+			else
+			{
+				if (strpos($requestException->getMessage(), 'cURL error 60') !== false)
+				{
+					// Work around non existent CA file
+					try
+					{
+						$response = $client->get($upload_url, array_merge($guzzle_options, ['verify' => false]));
+					}
+					catch (\GuzzleHttp\Exception\RequestException $requestException)
+					{
+						return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
+					}
+				}
+				else
+				{
+					return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
+				}
+			}
 		} catch (\Exception $e) {
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
 		}
 
-		$content_length = $response->getContentLength();
+		$content_length = $response->getBody()->getSize();
 		if ($remote_max_filesize && $content_length > $remote_max_filesize)
 		{
 			$max_filesize = get_formatted_filesize($remote_max_filesize, false);

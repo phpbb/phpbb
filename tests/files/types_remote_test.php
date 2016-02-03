@@ -118,7 +118,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
-		$upload->upload_timeout = -5;
+		$upload->upload_timeout = 0.001;
 
 		$file = $type_remote->upload('http://google.com/?.png');
 
