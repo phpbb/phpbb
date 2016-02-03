@@ -86,9 +86,18 @@ class remote extends base
 
 		$url = parse_url($upload_url);
 
+		$default_port = 80;
+		$hostname = $url['host'];
+
+		if ($url['scheme'] == 'https')
+		{
+			$default_port = 443;
+			$hostname = 'tls://' . $url['host'];
+		}
+
 		$host = $url['host'];
 		$path = $url['path'];
-		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
+		$port = (!empty($url['port'])) ? (int) $url['port'] : $default_port;
 
 		$upload_ary['type'] = 'application/octet-stream';
 
@@ -104,7 +113,7 @@ class remote extends base
 		$errno = 0;
 		$errstr = '';
 
-		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
+		if (!($fsock = @fsockopen($hostname, $port, $errno, $errstr)))
 		{
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
 		}
