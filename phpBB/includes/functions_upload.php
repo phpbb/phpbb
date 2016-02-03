@@ -752,11 +752,10 @@ class fileupload
 	*
 	* @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
 	* @param \phpbb\mimetype\guesser $mimetype_guesser Mimetype guesser
-	* @param int $redirect_count the current count of redirects
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
 	* @access public
 	*/
-	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null, $redirect_count = 0)
+	function remote_upload($upload_url, \phpbb\mimetype\guesser $mimetype_guesser = null)
 	{
 		global $user, $phpbb_root_path;
 
@@ -908,21 +907,6 @@ class fileupload
 					{
 						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
 						return $file;
-					}
-					else if (stripos($line, 'location: ') !== false)
-					{
-						//there is a redirect, follow up to 5
-						if ($redirect_count >= 5)
-						{
-							$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
-							return $file;
-						}
-
-						$upload_url = rtrim(str_replace('location: ', '', strtolower($line)));
-						//close the current connection, lets not leave dangeling connections open
-						@fclose($fsock);
-
-						return $this->remote_upload($upload_url, $mimetype_guesser, ++$redirect_count);
 					}
 				}
 			}
