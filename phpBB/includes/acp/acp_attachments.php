@@ -1736,7 +1736,7 @@ class acp_attachments
 		$value = $filesize['value'];
 
 		// size and maxlength must not be specified for input of type number
-		return '<input type="number" id="' . $key . '" min="0" max="999999999999999" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
+		return '<input type="number" id="' . $key . '" min="0" max="999999999999999" step="any" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
 	}
 
 	/**
