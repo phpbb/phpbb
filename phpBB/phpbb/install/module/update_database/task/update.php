@@ -158,6 +158,7 @@ class update extends task_base
 				array_unshift($msg, $e->getMessage());
 
 				$this->iohandler->add_error_message($msg);
+				$this->iohandler->send_response();
 				throw new user_interaction_required_exception();
 			}
 
