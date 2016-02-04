@@ -116,6 +116,7 @@ class acp_help_phpbb
 			'S_COLLECT_STATS'	=> (!empty($config['help_send_statistics'])) ? true : false,
 			'RAW_DATA'			=> $collector->get_data_for_form(),
 			'U_ACP_MAIN'		=> append_sid("{$phpbb_admin_path}index.$phpEx"),
+			'U_ACTION'			=> $this->u_action,
 		));
 
 		$raw = $collector->get_data_raw();
