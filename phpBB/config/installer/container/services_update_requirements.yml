@@ -15,6 +15,7 @@ services:
         arguments:
             - '@installer.helper.container_factory'
             - '@filesystem'
+            - '@installer.helper.config'
             - '@installer.helper.iohandler'
             - '@installer.helper.update_helper'
             - '%core.root_path%'
