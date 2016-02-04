@@ -109,7 +109,7 @@ class install_extensions extends \phpbb\install\task_base
 		foreach ($this->finder as $file)
 		{
 			/** @var \SplFileInfo $file */
-			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])([^\\/\\\]+)[\\/\\\]([^\\/\\\]+)#', '$2/$3', dirname($file->getRealPath()));
+			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
 
 			if ($this->extension_manager->is_available($ext_name))
 			{
