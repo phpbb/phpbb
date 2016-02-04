@@ -49,6 +49,12 @@ class install_extensions extends \phpbb\install\task_base
 	/** @var \Symfony\Component\Finder\Finder */
 	protected $finder;
 
+	/** @var string Extension table */
+	protected $extension_table;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
 	/**
 	 * Constructor
 	 *
@@ -61,11 +67,13 @@ class install_extensions extends \phpbb\install\task_base
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
+		$this->extension_table = $container->get_parameter('tables.ext');
 
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->extension_manager = $container->get('ext.manager');
 		$this->config			= $container->get('config');
+		$this->db				= $container->get('dbal.conn');
 		$this->finder = new \Symfony\Component\Finder\Finder();
 		$this->finder->in($phpbb_root_path . 'ext/')
 			->ignoreUnreadableDirs()
@@ -101,14 +109,14 @@ class install_extensions extends \phpbb\install\task_base
 		foreach ($this->finder as $file)
 		{
 			/** @var \SplFileInfo $file */
-			$ext_name = preg_replace('#(.+ext[\\/\\\])#', '', dirname($file->getRealPath()));
+			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])([^\\/\\\]+)[\\/\\\]([^\\/\\\]+)#', '$2/$3', dirname($file->getRealPath()));
 
 			if ($this->extension_manager->is_available($ext_name))
 			{
 				$this->extension_manager->enable($ext_name);
-				$this->extension_manager->load_extensions();
+				$extensions = $this->get_extensions();
 
-				if (!$this->extension_manager->is_enabled($ext_name))
+				if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
 				{
 					// Create log
 					$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
@@ -116,7 +124,7 @@ class install_extensions extends \phpbb\install\task_base
 			}
 			else
 			{
-				$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
+				$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
 			}
 		}
 	}
@@ -135,5 +143,31 @@ class install_extensions extends \phpbb\install\task_base
 	public function get_task_lang_name()
 	{
 		return 'TASK_INSTALL_EXTENSIONS';
+	}
+
+	/**
+	 * Get extensions from database
+	 *
+	 * @return array List of extensions
+	 */
+	private function get_extensions()
+	{
+		$sql = 'SELECT *
+			FROM ' . $this->extension_table;
+
+		$result = $this->db->sql_query($sql);
+		$extensions_row = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$extensions = array();
+
+		foreach ($extensions_row as $extension)
+		{
+			$extensions[$extension['ext_name']] = $extension;
+		}
+
+		ksort($extensions);
+
+		return $extensions;
 	}
 }
