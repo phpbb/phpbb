@@ -49,6 +49,7 @@ services:
         class: phpbb\files\types\remote
         scope: prototype
         arguments:
+            - '@config'
             - '@files.factory'
             - '@language'
             - '@php_ini'

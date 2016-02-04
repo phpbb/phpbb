@@ -239,6 +239,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_expire_days', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('read_notification_gc', '86400');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('remote_upload_verify', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');

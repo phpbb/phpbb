@@ -14,6 +14,7 @@
 namespace phpbb\files\types;
 
 use bantu\IniGetWrapper\IniGetWrapper;
+use phpbb\config\config;
 use phpbb\files\factory;
 use phpbb\files\filespec;
 use phpbb\language\language;
@@ -21,6 +22,9 @@ use phpbb\request\request_interface;
 
 class remote extends base
 {
+	/** @var config phpBB config */
+	protected $config;
+
 	/** @var factory Files factory */
 	protected $factory;
 
@@ -42,14 +46,16 @@ class remote extends base
 	/**
 	 * Construct a form upload type
 	 *
+	 * @param config $config phpBB config
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
 	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request object
 	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
+	public function __construct(config $config, factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
 	{
+		$this->config = $config;
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
@@ -97,8 +103,9 @@ class remote extends base
 		$remote_max_filesize = $this->get_max_file_size();
 
 		$guzzle_options = [
-			'timeout' => $this->upload->upload_timeout,
-			'connect_timeout' => $this->upload->upload_timeout,
+			'timeout'			=> $this->upload->upload_timeout,
+			'connect_timeout'	=> $this->upload->upload_timeout,
+			'verify'			=> !empty($this->config['remote_upload_verify']),
 		];
 		$client = new \GuzzleHttp\Client($guzzle_options);
 
@@ -118,24 +125,11 @@ class remote extends base
 			}
 			else
 			{
-				if (strpos($requestException->getMessage(), 'cURL error 60') !== false)
-				{
-					// Work around non existent CA file
-					try
-					{
-						$response = $client->get($upload_url, array_merge($guzzle_options, ['verify' => false]));
-					}
-					catch (\GuzzleHttp\Exception\RequestException $requestException)
-					{
-						return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
-					}
-				}
-				else
-				{
-					return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
-				}
+				return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
 			}
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e)
+		{
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
 		}
 
