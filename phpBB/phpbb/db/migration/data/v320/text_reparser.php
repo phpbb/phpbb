@@ -17,7 +17,10 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 {
 	static public function depends_on()
 	{
-		return array('\phpbb\db\migration\data\v310\contact_admin_form');
+		return array(
+			'\phpbb\db\migration\data\v310\contact_admin_form',
+			'\phpbb\db\migration\data\v320\allowed_schemes_links',
+		);
 	}
 
 	public function effectively_installed()
