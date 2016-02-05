@@ -23,5 +23,4 @@ docker run \
     --env PHPBB_FUNCTIONAL_URL="http://localhost/" \
     --volume ${WORKING_DIR}:/data \
     --workdir /data \
-
     phpbb/php-ft-${php}-${db}${IMAGES_TAG} php -d memory_limit=-1 phpBB/vendor/bin/phpunit --group functional --log-junit build/logs/phpunit.xml
