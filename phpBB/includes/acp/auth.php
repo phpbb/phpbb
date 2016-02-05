@@ -466,9 +466,6 @@ class auth_admin extends \phpbb\auth\auth
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
-					// Output current role id to template
-					$template->assign_var('S_ROLE_ID', $current_role_id);
-
 					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
 					{
@@ -506,8 +503,9 @@ class auth_admin extends \phpbb\auth\auth
 						'NAME'				=> $ug_names_ary[$ug_id],
 						'UG_ID'				=> $ug_id,
 						'S_CUSTOM'			=> $s_custom_permissions,
-						'FORUM_ID'			=> $forum_id)
-					);
+						'FORUM_ID'			=> $forum_id,
+						'S_ROLE_ID'			=> $current_role_id,
+					));
 
 					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, ($mode == 'view'), $show_trace);
 

@@ -52,7 +52,7 @@
 								{% endfor %}
 							</ul>
 						</div>
-						<input type="hidden" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]"{% if S_ROLE_ID %}value="{{ S_ROLE_ID }}"{% endif %} />
+						<input type="hidden" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]"{% if p_mask.f_mask.S_ROLE_ID %}value="{{ p_mask.f_mask.S_ROLE_ID }}"{% endif %} />
 					</div>
 				</dd>
 			{% else %}
