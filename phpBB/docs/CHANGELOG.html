@@ -49,6 +49,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v320a2">Changes since 3.2.0-a2</a></li>
 		<li><a href="#v320a1">Changes since 3.2.0-a1</a></li>
 		<li><a href="#v31x">Changes since 3.1.x</a></li>
 		<li><a href="#v317">Changes since 3.1.7</a></li>
@@ -117,7 +118,54 @@
 
 		<div class="content">
 
-			<a name="v320a1"></a><h3>Changes since 3.2.0-a1</h3><h4>Bug</h4>
+			<a name="v320a2"></a><h3>Changes since 3.2.0-a2</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-10628">PHPBB3-10628</a>] - http:// prepended to &quot;www.&quot; urls (but not reflected in preview)</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11875">PHPBB3-11875</a>] - mediumint(8) too small for post_id</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12221">PHPBB3-12221</a>] - URLs Containing javascript: are Garbled</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14129">PHPBB3-14129</a>] - Adding custom extensions autoloaders feature slow downs the board</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14321">PHPBB3-14321</a>] - Fatal error on download the merged conflicts archive during update from 3.1.6 to 3.2-a1</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14323">PHPBB3-14323</a>] - Long urls are no longer shortened</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14368">PHPBB3-14368</a>] - Post Editors Text Should Be Black, Not Blue</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14371">PHPBB3-14371</a>] - Small fix for the aligment quick links</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14373">PHPBB3-14373</a>] - Do not use strpos() on arrays in iohandler_base::add_error_message()</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14378">PHPBB3-14378</a>] - Maintain consistent template var paths in 3.2 installer</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14380">PHPBB3-14380</a>] - Maintain consistent template var paths in 3.2 installer</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14402">PHPBB3-14402</a>] - Tidy plupload cron should not rely on user id/ip being available</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14403">PHPBB3-14403</a>] - phpbb\log should still work even when no user data is given</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14405">PHPBB3-14405</a>] - Text processor parses invalid use of url bbcode</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14419">PHPBB3-14419</a>] - Update composer dependencies and fix outdated composer lock file</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14420">PHPBB3-14420</a>] - Search Results pagination not up to date / broken</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14428">PHPBB3-14428</a>] - Use other links for files remote test</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14431">PHPBB3-14431</a>] - Remote avatar uploading does not support https</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14432">PHPBB3-14432</a>] - The lang() function needs to handle key array</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14434">PHPBB3-14434</a>] - Schema generator fails if extensions have non-migrations in migrations dir</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14436">PHPBB3-14436</a>] - Default data type migration misses oauth_states dependency</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14442">PHPBB3-14442</a>] - Use Goutte ~2.0 after allowing PHP &gt;= 5.4</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14444">PHPBB3-14444</a>] - Fatal error in functions_messenger.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14446">PHPBB3-14446</a>] - Add predefined placeholder variables to twig</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14452">PHPBB3-14452</a>] - Undefined $progressFillerText in installer.js</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14453">PHPBB3-14453</a>] - Missing dependency in the text_reparser migration</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13454">PHPBB3-13454</a>] - Remove unused variables, globals, parameters</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13733">PHPBB3-13733</a>] - Allow non-migration files inside migrations folder</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14177">PHPBB3-14177</a>] - Catch exceptions and display a nice error page</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14253">PHPBB3-14253</a>] - Show group requests pending aproval at the ACP groups summary</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14377">PHPBB3-14377</a>] - Allow extensions to register custom compiler pass</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14418">PHPBB3-14418</a>] - Add missing language string PM_TOOLS</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14445">PHPBB3-14445</a>] - Force page refresh before the installer generates the schema</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14250">PHPBB3-14250</a>] - Review/bump composer dependencies</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14262">PHPBB3-14262</a>] - Move converter code into a controller</li>
+			</ul>
+
+			<a name="v320a1"></a><h3>Changes since 3.2.0-a1</h3>
+			<h4>Bug</h4>
 			<ul>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-9791">PHPBB3-9791</a>] - invalid [] - chars on search URI</li>
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13451">PHPBB3-13451</a>] - A very long string inside message crashes PHP</li>
