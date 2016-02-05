@@ -46,7 +46,9 @@
 						<div class="dropdown hidden">
 							<ul class="dropdown-contents" id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" >
 								{% for role in loops.role_options %}
+									{% if role.UG_ID == p_mask.f_mask.UG_ID %}
 									<li data-id="{{ role.ID }}" data-target-id="advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" data-title="{{ role.TITLE }}"{% if role.SELECTED == true %} data-selected="{{ role.SELECTED }}"{% endif %}>{{ role.ROLE_NAME }}</li>
+									{% endif %}
 								{% endfor %}
 							</ul>
 						</div>

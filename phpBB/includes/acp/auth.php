@@ -477,6 +477,7 @@ class auth_admin extends \phpbb\auth\auth
 
 						$template->assign_block_vars('role_options', array(
 							'ID'	=> $role_id,
+							'UG_ID'	=> $ug_id,
 							'ROLE_NAME'	=> $role_name,
 							'TITLE'		=> $role_description,
 							'SELECTED'	=> $role_id == $current_role_id,
