@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 
 # Ensure the github oauth token is set
+echo docker run \
+    --user $(id -u):$(id -g) \
+    --volume ${WORKING_DIR}:/data \
+    --volume ${COMPOSER_HOME}:/composer/ \
+    --workdir /data \
+    phpbb/build${IMAGES_TAG} sh -c "COMPOSER_HOME=/composer php composer.phar config -g github-oauth.github.com ${GITHUB_TOKEN}"
+
+echo docker run \
+    --user $(id -u):$(id -g) \
+    --volume ${WORKING_DIR}:/data \
+    --volume ${COMPOSER_HOME}:/composer/ \
+    --workdir /data \
+    phpbb/build${IMAGES_TAG} sh -c '
+    git config user.email "no-reply@phpbb.com" &&
+    git config user.name "phpBB CI" &&
+    cd phpBB &&
+    COMPOSER_HOME=/composer php ../composer.phar install --dev'
 docker run \
     --user $(id -u):$(id -g) \
     --volume ${WORKING_DIR}:/data \
