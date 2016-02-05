@@ -2251,7 +2251,7 @@ viewtopic_body_postrow_back2top_append
 * Locations:
     + styles/prosilver/template/viewtopic_body.html
 * Since: 3.1.8-RC1
-* Purpose: Add content to the post's bottom directly before the back to top link 
+* Purpose: Add content to the post's bottom directly after the back to top link 
 
 viewtopic_body_postrow_back2top_before
 ===
