@@ -211,6 +211,7 @@
 				clearInterval(progressTimer);
 
 				$progressFiller = $('#progress-bar-filler');
+				$progressFillerText = $('#progress-bar-filler-text');
 				$progressText = $('#progress-bar-text');
 				$statusText = $('#progress-status-text');
 
