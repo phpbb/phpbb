@@ -91,14 +91,14 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	// Filesystem requirements
 	'FILE_NOT_EXISTS'			=> 'File not exists',
-	'FILE_NOT_EXISTS_EXPLAIN'	=> 'To be able to install phpBB %1$s file need to exist.',
+	'FILE_NOT_EXISTS_EXPLAIN'	=> 'To be able to install phpBB the %1$s file needs to exist.',
 	'FILE_NOT_WRITABLE'			=> 'File not writable',
-	'FILE_NOT_WRITABLE_EXPLAIN'	=> 'To be able to install phpBB %1$s file need to be writable.',
+	'FILE_NOT_WRITABLE_EXPLAIN'	=> 'To be able to install phpBB the %1$s file needs to be writable.',
 
 	'DIRECTORY_NOT_EXISTS'				=> 'Directory not exists',
-	'DIRECTORY_NOT_EXISTS_EXPLAIN'		=> 'To be able to install phpBB %1$s directory need to exist.',
+	'DIRECTORY_NOT_EXISTS_EXPLAIN'		=> 'To be able to install phpBB the %1$s directory needs to exist.',
 	'DIRECTORY_NOT_WRITABLE'			=> 'Directory not writable',
-	'DIRECTORY_NOT_WRITABLE_EXPLAIN'	=> 'To be able to install phpBB %1$s directory need to be writable.',
+	'DIRECTORY_NOT_WRITABLE_EXPLAIN'	=> 'To be able to install phpBB the %1$s directory needs to be writable.',
 
 	// Server requirements
 	'PHP_VERSION_REQD'					=> 'PHP version',
