@@ -81,7 +81,7 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 			$end = max(1, $resume_data['current']);
 			$reparser->reparse_range($start, $end);
 
-			$processed_records = $end - $start + 1;
+			$processed_records += $end - $start + 1;
 			$resume_data['current'] = $start - 1;
 
 			if ($start === 1)
