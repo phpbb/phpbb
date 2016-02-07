@@ -57,22 +57,35 @@ class obtain_update_settings extends task_base
 		}
 		else
 		{
+			if ($this->installer_config->get('disable_filesystem_update', false))
+			{
+				$options[] = array(
+					'value'		=> 'db_only',
+					'label'		=> 'UPDATE_TYPE_DB_ONLY',
+					'selected'	=> true,
+				);
+			}
+			else
+			{
+				$options = array(
+					array(
+						'value'		=> 'all',
+						'label'		=> 'UPDATE_TYPE_ALL',
+						'selected'	=> true,
+					),
+					array(
+						'value'		=> 'db_only',
+						'label'		=> 'UPDATE_TYPE_DB_ONLY',
+						'selected'	=> false,
+					),
+				);
+			}
+
 			$this->iohandler->add_user_form_group('UPDATE_TYPE', array(
 				'update_type' => array(
 					'label'		=> 'UPDATE_TYPE',
 					'type'		=> 'radio',
-					'options'	=> array(
-						array(
-							'value'		=> 'all',
-							'label'		=> 'UPDATE_TYPE_ALL',
-							'selected'	=> true,
-						),
-						array(
-							'value'		=> 'db_only',
-							'label'		=> 'UPDATE_TYPE_DB_ONLY',
-							'selected'	=> false,
-						),
-					),
+					'options'	=> $options,
 				),
 				'submit_update' => array(
 					'label'	=> 'SUBMIT',

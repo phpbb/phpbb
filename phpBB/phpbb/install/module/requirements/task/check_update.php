@@ -14,6 +14,7 @@
 namespace phpbb\install\module\requirements\task;
 
 use phpbb\filesystem\filesystem;
+use phpbb\install\helper\config;
 use phpbb\install\helper\container_factory;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\install\helper\update_helper;
@@ -33,6 +34,11 @@ class check_update extends task_base
 	 * @var filesystem
 	 */
 	protected $filesystem;
+
+	/**
+	 * @var config
+	 */
+	protected $installer_config;
 
 	/**
 	 * @var iohandler_interface
@@ -69,14 +75,16 @@ class check_update extends task_base
 	 *
 	 * @param container_factory		$container
 	 * @param filesystem			$filesystem
+	 * @param config				$config
 	 * @param iohandler_interface	$iohandler
 	 * @param update_helper			$update_helper
 	 * @param string				$phpbb_root_path
 	 * @param string				$php_ext
 	 */
-	public function __construct(container_factory $container, filesystem $filesystem, iohandler_interface $iohandler, update_helper $update_helper, $phpbb_root_path, $php_ext)
+	public function __construct(container_factory $container, filesystem $filesystem, config $config, iohandler_interface $iohandler, update_helper $update_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->filesystem		= $filesystem;
+		$this->installer_config	= $config;
 		$this->iohandler		= $iohandler;
 		$this->update_helper	= $update_helper;
 		$this->phpbb_root_path	= $phpbb_root_path;
@@ -117,8 +125,10 @@ class check_update extends task_base
 			$this->iohandler->add_error_message('UPDATE_FILES_NOT_FOUND');
 			$this->set_test_passed(false);
 
-			// If there are no update files, we can't check the version
-			return false;
+			// If there are no update files, we can't check the version etc
+			// However, we can let the users run migrations if they really want to...
+			$this->installer_config->set('disable_filesystem_update', true);
+			return true;
 		}
 
 		// Recover version numbers
