@@ -213,8 +213,11 @@ class environment extends \Twig_Environment
 	{
 		$placeholder_salt = unique_id();
 
-		$context['definition']->set('SCRIPTS', '__SCRIPTS_' . $placeholder_salt . '__');
-		$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
+		if (array_key_exists('definition', $context))
+		{
+			$context['definition']->set('SCRIPTS', '__SCRIPTS_' . $placeholder_salt . '__');
+			$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
+		}
 
 		$output = parent::render($name, $context);
 
