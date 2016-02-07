@@ -2,6 +2,16 @@
 RewriteEngine on
 
 #
+# Uncomment the statement below if URL rewriting doesn't
+# work properly. If you installed phpBB in a subdirectory
+# of your site, properly set the argument for the statement.
+# e.g.: if your domain is test.com and you installed phpBB
+# in http://www.test.com/phpBB/index.php you have to set
+# the statement RewriteBase /phpBB/
+#
+#RewriteBase /
+
+#
 # Uncomment the statement below if you want to make use of
 # HTTP authentication and it does not already work.
 # This could be required if you are for example using PHP via Apache CGI.
