@@ -17,7 +17,9 @@ services:
     config:
         class: phpbb\config\config
         arguments:
-            - []
+            -
+                rand_seed: 'installer_seed'
+                rand_seed_last_update: 0
 
     controller.resolver:
         class: phpbb\controller\resolver
