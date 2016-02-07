@@ -172,6 +172,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$expected = str_replace(array("\n", "\r", "\t"), '', $expected);
 		$output = str_replace(array("\n", "\r", "\t"), '', $this->display('test'));
+
 		$this->assertEquals($expected, $output, "Testing $file");
 	}
 }

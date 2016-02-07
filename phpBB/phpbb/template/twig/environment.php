@@ -230,8 +230,8 @@ class environment extends \Twig_Environment
 	 */
 	private function inject_assets($output, $placeholder_salt)
 	{
-		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
-		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
+		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
+		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
 
 		return $output;
 	}
