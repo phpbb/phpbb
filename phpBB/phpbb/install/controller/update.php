@@ -122,6 +122,7 @@ class update
 
 		// Set the appropriate input-output handler
 		$this->installer->set_iohandler($this->iohandler_factory->get());
+		$this->controller_helper->handle_language_select();
 
 		// Render the intro page
 		if ($this->request->is_ajax())
@@ -140,8 +141,6 @@ class update
 		}
 		else
 		{
-			$this->controller_helper->handle_language_select();
-
 			// Set active stage
 			$this->menu_provider->set_nav_property(
 				array('update', 0, 'introduction'),

@@ -75,7 +75,5 @@ class factory
 				throw new iohandler_not_implemented_exception();
 			break;
 		}
-
-		throw new iohandler_not_implemented_exception();
 	}
 }

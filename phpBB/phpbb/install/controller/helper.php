@@ -183,11 +183,6 @@ class helper
 		if (!empty($submit))
 		{
 			$lang = $this->phpbb_request->variable('language', '');
-
-			if (!empty($lang))
-			{
-				$this->language_cookie = $lang;
-			}
 		}
 
 		// Retrieve language from cookie
@@ -195,10 +190,10 @@ class helper
 		if (empty($lang) && !empty($lang_cookie))
 		{
 			$lang = $lang_cookie;
-			$this->language_cookie = $lang;
 		}
 
 		$lang = (!empty($lang) && strpos($lang, '/') === false) ? $lang : null;
+		$this->language_cookie = $lang;
 
 		$this->render_language_select($lang);
 

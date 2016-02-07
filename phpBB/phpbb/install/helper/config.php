@@ -227,18 +227,22 @@ class config
 		$file_content = @file_get_contents($this->install_config_file);
 		$serialized_data = trim(substr($file_content, 8));
 
-		$this->installer_config = array();
-		$this->progress_data = array();
-		$this->navigation_data = array();
+		$installer_config = array();
+		$progress_data = array();
+		$navigation_data = array();
 
 		if (!empty($serialized_data))
 		{
 			$unserialized_data = json_decode($serialized_data, true);
 
-			$this->installer_config = (is_array($unserialized_data['installer_config'])) ? $unserialized_data['installer_config'] : array();
-			$this->progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
-			$this->navigation_data = (is_array($unserialized_data['navigation_data'])) ? $unserialized_data['navigation_data'] : array();
+			$installer_config = (is_array($unserialized_data['installer_config'])) ? $unserialized_data['installer_config'] : array();
+			$progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
+			$navigation_data = (is_array($unserialized_data['navigation_data'])) ? $unserialized_data['navigation_data'] : array();
 		}
+
+		$this->installer_config = array_merge($this->installer_config, $installer_config);
+		$this->progress_data = array_merge($this->progress_data, $progress_data);
+		$this->navigation_data = array_merge($this->navigation_data, $navigation_data);
 	}
 
 	/**
