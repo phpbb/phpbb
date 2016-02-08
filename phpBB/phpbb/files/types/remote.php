@@ -105,7 +105,7 @@ class remote extends base
 		$guzzle_options = [
 			'timeout'			=> $this->upload->upload_timeout,
 			'connect_timeout'	=> $this->upload->upload_timeout,
-			'verify'			=> !empty($this->config['remote_upload_verify']),
+			'verify'			=> !empty($this->config['remote_upload_verify']) ? (bool) $this->config['remote_upload_verify'] : false,
 		];
 		$client = new \GuzzleHttp\Client($guzzle_options);
 
