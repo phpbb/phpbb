@@ -1032,7 +1032,7 @@ phpbb.resizeTextArea = function($items, options) {
 
 	function autoResize(item) {
 		function setHeight(height) {
-			height += parseInt($item.css('height'), 10) - $item.height();
+			height += parseInt($item.css('height'), 10) - $item.innerHeight();
 			$item
 				.css({ height: height + 'px', resize: 'none' })
 				.addClass('auto-resized');
@@ -1051,7 +1051,7 @@ phpbb.resizeTextArea = function($items, options) {
 				configuration.maxHeight
 			),
 			$item = $(item),
-			height = parseInt($item.height(), 10),
+			height = parseInt($item.innerHeight(), 10),
 			scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
 		if (height < 0) {
