@@ -167,23 +167,37 @@ class upload extends \phpbb\avatar\driver\driver
 			$destination = '';
 		}
 
+		$filedata = array(
+			'filename'			=> $file->get('filename'),
+			'filesize'			=> $file->get('filesize'),
+			'mimetype'			=> $file->get('mimetype'),
+			'extension'			=> $file->get('extension'),
+			'physical_filename'	=> $file->get('realname'),
+			'real_filename'		=> $file->get('uploadname'),
+		);
+
 		/**
 		* Before moving new file in place (and eventually overwriting the existing avatar with the newly uploaded avatar)
 		*
 		* @event core.avatar_driver_upload_move_file_before
+		* @var	array	filedata			Array containing uploaded file data
 		* @var	string	destination			Destination directory where the file is going to be moved
 		* @var	string	prefix				Prefix for the avatar filename
 		* @var	array	row					Array with avatar row data
 		* @var	array	error				Array of errors, if filled in by this event file will not be moved
 		* @since 3.1.6-RC1
+		* @changed 3.1.9-RC1 Added filedata
 		*/
 		$vars = array(
+			'filedata',
 			'destination',
 			'prefix',
 			'row',
 			'error',
 		);
 		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_move_file_before', compact($vars)));
+
+		unset($filedata);
 
 		if (!sizeof($error))
 		{
