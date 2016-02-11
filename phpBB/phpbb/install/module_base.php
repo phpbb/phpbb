@@ -105,47 +105,23 @@ abstract class module_base implements module_interface
 	public function run()
 	{
 		// Recover install progress
-		$task_name = $this->recover_progress();
-		$task_found = false;
+		$task_index	= $this->recover_progress();
+		$iterator	= $this->task_collection->getIterator();
 
-		/**
-		 * @var string							$name	ID of the service
-		 * @var \phpbb\install\task_interface	$task	Task object
-		 */
-		foreach ($this->task_collection as $name => $task)
+		if ($task_index < $iterator->count())
 		{
-			// Run until there are available resources
-			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
-			{
-				throw new resource_limit_reached_exception();
-			}
+			$iterator->seek($task_index);
+		}
+		else
+		{
+			$this->install_config->set_finished_task(0);
+			return;
+		}
 
-			// Skip forward until the next task is reached
-			if (!$task_found)
-			{
-				if ($name === $task_name || empty($task_name))
-				{
-					$task_found = true;
-
-					if ($name === $task_name)
-					{
-						continue;
-					}
-				}
-				else
-				{
-					continue;
-				}
-			}
-
-			// Send progress information
-			if ($this->allow_progress_bar)
-			{
-				$this->iohandler->set_progress(
-					$task->get_task_lang_name(),
-					$this->install_config->get_current_task_progress()
-				);
-			}
+		while ($iterator->valid())
+		{
+			$task = $iterator->current();
+			$name = $iterator->key();
 
 			// Check if we can run the task
 			if (!$task->is_essential() && !$task->check_requirements())
@@ -156,20 +132,33 @@ abstract class module_base implements module_interface
 				));
 
 				$this->install_config->increment_current_task_progress($this->task_step_count[$name]);
-				continue;
 			}
-
-			if ($this->allow_progress_bar)
+			else
 			{
-				// Only increment progress by one, as if a task has more than one steps
-				// then that should be incremented in the task itself
-				$this->install_config->increment_current_task_progress();
+				// Send progress information
+				if ($this->allow_progress_bar)
+				{
+					$this->iohandler->set_progress(
+						$task->get_task_lang_name(),
+						$this->install_config->get_current_task_progress()
+					);
+
+					$this->iohandler->send_response();
+				}
+
+				$task->run();
+
+				if ($this->allow_progress_bar)
+				{
+					// Only increment progress by one, as if a task has more than one steps
+					// then that should be incremented in the task itself
+					$this->install_config->increment_current_task_progress();
+				}
 			}
 
-			$task->run();
-
-			// Log install progress
-			$this->install_config->set_finished_task($name);
+			$task_index++;
+			$this->install_config->set_finished_task($task_index);
+			$iterator->next();
 
 			// Send progress information
 			if ($this->allow_progress_bar)
@@ -181,10 +170,16 @@ abstract class module_base implements module_interface
 			}
 
 			$this->iohandler->send_response();
+
+			// Run until there are available resources
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+			{
+				throw new resource_limit_reached_exception();
+			}
 		}
 
 		// Module finished, so clear task progress
-		$this->install_config->set_finished_task('');
+		$this->install_config->set_finished_task(0);
 	}
 
 	/**
@@ -195,7 +190,7 @@ abstract class module_base implements module_interface
 	protected function recover_progress()
 	{
 		$progress_array = $this->install_config->get_progress_data();
-		return $progress_array['last_task_name'];
+		return $progress_array['last_task_index'];
 	}
 
 	/**

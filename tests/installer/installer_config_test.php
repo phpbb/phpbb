@@ -52,8 +52,8 @@ class phpbb_installer_config_test extends phpbb_test_case
 
 	public function test_progress_tracking()
 	{
-		$this->config->set_finished_task('foo');
-		$this->config->set_active_module('bar');
+		$this->config->set_finished_task(0);
+		$this->config->set_active_module('bar', 5);
 		$this->config->set_task_progress_count(10);
 		$this->config->increment_current_task_progress();
 
@@ -66,7 +66,8 @@ class phpbb_installer_config_test extends phpbb_test_case
 		$result = $this->config->get_progress_data();
 		$expected_result = array(
 			'last_task_module_name'		=> 'bar',
-			'last_task_name'			=> 'foo',
+			'last_task_module_index'	=> 5,
+			'last_task_index'			=> 0,
 			'max_task_progress'			=> 10,
 			'current_task_progress'		=> 3,
 		);

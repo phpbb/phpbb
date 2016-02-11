@@ -188,7 +188,6 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 		$this->io_handler->add_user_form_group('DB_CONFIG', $database_form);
 
 		// Require user interaction
-		$this->io_handler->send_response();
 		throw new user_interaction_required_exception();
 	}
 

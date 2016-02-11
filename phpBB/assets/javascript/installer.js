@@ -12,6 +12,7 @@
 	var progressTimer = null;
 	var currentProgress = 0;
 	var refreshRequested = false;
+	var transmissionOver = false;
 
 	// Template related variables
 	var $contentWrapper = $('.install-body').find('.main');
@@ -329,6 +330,12 @@
 		if (responseObject.hasOwnProperty('redirect')) {
 			redirect(responseObject.redirect.url, responseObject.redirect.use_ajax);
 		}
+
+		if (responseObject.hasOwnProperty('over')) {
+			if (responseObject.over) {
+				transmissionOver = true;
+			}
+		}
 	}
 
 	/**
@@ -357,9 +364,20 @@
 			$('#loading_indicator').css('display', 'none');
 			resetPolling();
 
+			var timeoutDetected = !transmissionOver;
+
 			if (refreshRequested) {
 				refreshRequested = false;
 				doRefresh();
+			}
+
+			if (timeoutDetected) {
+				addMessage('error',
+					[{
+						title:'The installer detected a timeout.',
+						description: 'The installer has detected a timeout, you may try to refresh the page, that may lead to data corruption. We suggest that you either increase your timeout settings or try to use the CLI.'
+					}]
+				);
 			}
 		}
 	}
@@ -420,6 +438,7 @@
 	 */
 	function startPolling(xhReq) {
 		resetPolling();
+		transmissionOver = false;
 		pollTimer = setInterval(function () {
 			pollContent(xhReq);
 		}, 250);

@@ -13,6 +13,7 @@
 
 namespace phpbb\convert\controller;
 
+use phpbb\cache\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\install\controller\helper;
 use phpbb\install\helper\container_factory;
@@ -36,9 +37,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class convertor
 {
 	/**
-	 * @var \phpbb\cache\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $cache;
+
+	/**
+	 * @var driver_interface
+	 */
+	protected $installer_cache;
 
 	/**
 	 * @var \phpbb\config\db
@@ -123,6 +129,7 @@ class convertor
 	/**
 	 * Constructor
 	 *
+	 * @param driver_interface		$cache
 	 * @param container_factory		$container
 	 * @param database				$db_helper
 	 * @param helper				$controller_helper
@@ -135,8 +142,9 @@ class convertor
 	 * @param string				$phpbb_root_path
 	 * @param string				$php_ext
 	 */
-	public function __construct(container_factory $container, database $db_helper, helper $controller_helper, install_helper $install_helper, factory $iohandler, language $language, navigation_provider $nav, request_interface $request, template $template, $phpbb_root_path, $php_ext)
+	public function __construct(driver_interface $cache, container_factory $container, database $db_helper, helper $controller_helper, install_helper $install_helper, factory $iohandler, language $language, navigation_provider $nav, request_interface $request, template $template, $phpbb_root_path, $php_ext)
 	{
+		$this->installer_cache		= $cache;
 		$this->controller_helper	= $controller_helper;
 		$this->db_helper			= $db_helper;
 		$this->install_helper		= $install_helper;
@@ -379,6 +387,7 @@ class convertor
 		// If we reached this step (conversion completed) we want to purge the cache and log the user out.
 		// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 		$this->cache->purge();
+		$this->installer_cache->purge();
 
 		require_once($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 		require_once($this->phpbb_root_path . 'includes/functions_convert.' . $this->php_ext);

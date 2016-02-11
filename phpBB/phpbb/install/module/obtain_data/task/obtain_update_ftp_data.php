@@ -141,7 +141,6 @@ class obtain_update_ftp_data extends task_base
 				),
 			));
 
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 	}
