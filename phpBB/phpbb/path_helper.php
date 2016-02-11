@@ -102,6 +102,7 @@ class path_helper
 	{
 		$web_root_path = $this->get_web_root_path();
 
+		// Removes the web root path if it is already present
 		if (strpos($path, $web_root_path) === 0)
 		{
 			$path = $this->phpbb_root_path . substr($path, strlen($web_root_path));
