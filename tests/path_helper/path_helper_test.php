@@ -135,6 +135,43 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'/phpbb3-fork/phpBB/app.php',
 				'./../',
 			),
+
+			// No correction if the path is already prepend by the web root path
+			array(
+				'./../' . $this->phpbb_root_path . 'test.php',
+				'//',
+				null,
+				null,
+				'',
+			),
+			array(
+				'./../' . $this->phpbb_root_path . 'test.php',
+				'//',
+				'foo/bar.php',
+				'bar.php',
+				'',
+			),
+			array(
+				'./../../' . $this->phpbb_root_path . 'test.php',
+				'/foo/template',
+				'/phpbb3-fork/phpBB/app.php/foo/template',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
+			array(
+				'./../' . $this->phpbb_root_path . 'test.php',
+				'/foo/template',
+				'/phpbb3-fork/phpBB/foo/template',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
+			array(
+				'./../'.$this->phpbb_root_path . 'test.php',
+				'/',
+				'/phpbb3-fork/phpBB/app.php/',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
 		);
 	}
 
