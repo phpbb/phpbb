@@ -14,6 +14,7 @@
 namespace phpbb\files\types;
 
 use bantu\IniGetWrapper\IniGetWrapper;
+use phpbb\config\config;
 use phpbb\files\factory;
 use phpbb\files\filespec;
 use phpbb\language\language;
@@ -21,6 +22,9 @@ use phpbb\request\request_interface;
 
 class remote extends base
 {
+	/** @var config phpBB config */
+	protected $config;
+
 	/** @var factory Files factory */
 	protected $factory;
 
@@ -42,14 +46,16 @@ class remote extends base
 	/**
 	 * Construct a form upload type
 	 *
+	 * @param config $config phpBB config
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
 	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request object
 	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
+	public function __construct(config $config, factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
 	{
+		$this->config = $config;
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
@@ -86,19 +92,6 @@ class remote extends base
 
 		$url = parse_url($upload_url);
 
-		$default_port = 80;
-		$hostname = $url['host'];
-
-		if ($url['scheme'] == 'https')
-		{
-			$default_port = 443;
-			$hostname = 'tls://' . $url['host'];
-		}
-
-		$host = $url['host'];
-		$path = $url['path'];
-		$port = (!empty($url['port'])) ? (int) $url['port'] : $default_port;
-
 		$upload_ary['type'] = 'application/octet-stream';
 
 		$url['path'] = explode('.', $url['path']);
@@ -106,107 +99,54 @@ class remote extends base
 
 		$url['path'] = implode('', $url['path']);
 		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
-		$filesize = 0;
 
 		$remote_max_filesize = $this->get_max_file_size();
 
-		$errno = 0;
-		$errstr = '';
+		$guzzle_options = [
+			'timeout'			=> $this->upload->upload_timeout,
+			'connect_timeout'	=> $this->upload->upload_timeout,
+			'verify'			=> !empty($this->config['remote_upload_verify']) ? (bool) $this->config['remote_upload_verify'] : false,
+		];
+		$client = new \GuzzleHttp\Client($guzzle_options);
 
-		if (!($fsock = @fsockopen($hostname, $port, $errno, $errstr)))
+		try
+		{
+			$response = $client->get($upload_url, $guzzle_options);
+		}
+		catch (\GuzzleHttp\Exception\ClientException $clientException)
+		{
+			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'URL_NOT_FOUND');
+		}
+		catch (\GuzzleHttp\Exception\RequestException $requestException)
+		{
+			if (strpos($requestException->getMessage(), 'cURL error 28') !== false || preg_match('/408|504/', $requestException->getCode()))
+			{
+				return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'REMOTE_UPLOAD_TIMEOUT');
+			}
+			else
+			{
+				return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
+			}
+		}
+		catch (\Exception $e)
 		{
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'NOT_UPLOADED'));
 		}
 
-		// Make sure $path not beginning with /
-		if (strpos($path, '/') === 0)
+		$content_length = $response->getBody()->getSize();
+		if ($remote_max_filesize && $content_length > $remote_max_filesize)
 		{
-			$path = substr($path, 1);
+			$max_filesize = get_formatted_filesize($remote_max_filesize, false);
+
+			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
 		}
 
-		fputs($fsock, 'GET /' . $path . " HTTP/1.1\r\n");
-		fputs($fsock, "HOST: " . $host . "\r\n");
-		fputs($fsock, "Connection: close\r\n\r\n");
-
-		// Set a proper timeout for the socket
-		socket_set_timeout($fsock, $this->upload->upload_timeout);
-
-		$get_info = false;
-		$data = '';
-		$length = false;
-		$timer_stop = time() + $this->upload->upload_timeout;
-
-		while ((!$length || $filesize < $length) && !@feof($fsock))
-		{
-			if ($get_info)
-			{
-				if ($length)
-				{
-					// Don't attempt to read past end of file if server indicated length
-					$block = @fread($fsock, min($length - $filesize, 1024));
-				}
-				else
-				{
-					$block = @fread($fsock, 1024);
-				}
-
-				$filesize += strlen($block);
-
-				if ($remote_max_filesize && $filesize > $remote_max_filesize)
-				{
-					$max_filesize = get_formatted_filesize($remote_max_filesize, false);
-
-					return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
-				}
-
-				$data .= $block;
-			}
-			else
-			{
-				$line = @fgets($fsock, 1024);
-
-				if ($line == "\r\n")
-				{
-					$get_info = true;
-				}
-				else
-				{
-					if (stripos($line, 'content-type: ') !== false)
-					{
-						$upload_ary['type'] = rtrim(str_replace('content-type: ', '', strtolower($line)));
-					}
-					else if ($this->upload->max_filesize && stripos($line, 'content-length: ') !== false)
-					{
-						$length = (int) str_replace('content-length: ', '', strtolower($line));
-
-						if ($remote_max_filesize && $length && $length > $remote_max_filesize)
-						{
-							$max_filesize = get_formatted_filesize($remote_max_filesize, false);
-
-							return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
-						}
-					}
-					else if (stripos($line, '404 not found') !== false)
-					{
-						return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'URL_NOT_FOUND');
-					}
-				}
-			}
-
-			$stream_meta_data = stream_get_meta_data($fsock);
-
-			// Cancel upload if we exceed timeout
-			if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
-			{
-				return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'REMOTE_UPLOAD_TIMEOUT');
-			}
-		}
-		@fclose($fsock);
-
-		if (empty($data))
+		if ($content_length == 0)
 		{
 			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
+
+		$data = $response->getBody();
 
 		$filename = tempnam(sys_get_temp_dir(), unique_id() . '-');
 

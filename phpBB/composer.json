@@ -28,6 +28,7 @@
 		"php": ">=5.4,<7.1",
 		"bantu/ini-get-wrapper": "1.0.*",
 		"google/recaptcha": "~1.1",
+		"guzzlehttp/guzzle": "~5.3",
 		"lusitanian/oauth": "^0.8.1",
 		"marc1706/fast-image-size": "1.1.*",
 		"patchwork/utf8": "1.1.*",

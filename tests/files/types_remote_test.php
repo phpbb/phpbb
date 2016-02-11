@@ -20,6 +20,9 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 
 	private $filesystem;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
 	protected $container;
 
@@ -43,6 +46,8 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		global $config, $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array());
+		$this->config = $config;
+		$this->config->set('remote_upload_verify', 0);
 		$this->request = $this->getMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
@@ -67,7 +72,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 
 	public function test_upload_fsock_fail()
 	{
-		$type_remote = new \phpbb\files\types\remote($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
@@ -102,7 +107,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$php_ini->expects($this->any())
 			->method('getString')
 			->willReturn($max_file_size);
-		$type_remote = new \phpbb\files\types\remote($this->factory, $this->language, $php_ini, $this->request, $this->phpbb_root_path);
+		$type_remote = new \phpbb\files\types\remote($this->config, $this->factory, $this->language, $php_ini, $this->request, $this->phpbb_root_path);
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
@@ -112,22 +117,9 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$this->assertSame($expected, $file->error);
 	}
 
-	public function test_upload_timeout()
-	{
-		$type_remote = new \phpbb\files\types\remote($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
-		$upload->set_allowed_extensions(array('png'));
-		$type_remote->set_upload($upload);
-		$upload->upload_timeout = -5;
-
-		$file = $type_remote->upload('http://google.com/?.png');
-
-		$this->assertSame(array('REMOTE_UPLOAD_TIMEOUT'), $file->error);
-	}
-
 	public function test_upload_wrong_path()
 	{
-		$type_remote = new \phpbb\files\types\foo($this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$type_remote = new \phpbb\files\types\foo($this->config, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_allowed_extensions(array('png'));
 		$type_remote->set_upload($upload);
