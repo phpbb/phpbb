@@ -87,20 +87,19 @@ class acp_help_phpbb
 
 			if ($config['help_send_statistics'])
 			{
-				$client = new \Guzzle\Http\Client(
-					$this->u_action,
-					array(
+				$client = new \GuzzleHttp\Client([
 						'timeout'			=> 6,
 						'connect_timeout'	=> 6,
-					)
-				);
-
-				$collect_request = $client->post($collect_url, [], [
-					'systemdata'	=> $collector->get_data_for_form(),
 				]);
 
-				$response = $collect_request->send();
-				if ($response->isSuccessful())
+				$response = $client->post($collect_url, [
+					'body' => [
+						'systemdata'	=> $collector->get_data_for_form(),
+					]
+				]);
+				$response_status = $response->getStatusCode();
+
+				if ($response_status >= 200 && $response_status < 300)
 				{
 					trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
 				}
