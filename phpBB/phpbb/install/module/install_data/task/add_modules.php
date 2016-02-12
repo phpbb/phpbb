@@ -243,7 +243,7 @@ class add_modules extends \phpbb\install\task_base
 
 				$k++;
 
-				// Run until there are available resources
+				// Stop execution if resource limit is reached
 				if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
 				{
 					$timed_out = true;
@@ -300,7 +300,7 @@ class add_modules extends \phpbb\install\task_base
 
 				$k++;
 
-				// Run until there are available resources
+				// Stop execution if resource limit is reached
 				if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
 				{
 					$timed_out = true;
@@ -310,7 +310,7 @@ class add_modules extends \phpbb\install\task_base
 
 			$this->config->set('module_info_index', $k);
 
-			// Run until there are available resources
+			// Stop execution if resource limit is reached
 			if ($timed_out)
 			{
 				throw new resource_limit_reached_exception();
@@ -322,7 +322,7 @@ class add_modules extends \phpbb\install\task_base
 				$this->order_modules($module_class);
 				$this->config->set('modules_ordered', true);
 
-				// Run until there are available resources
+				// Stop execution if resource limit is reached
 				if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
 				{
 					throw new resource_limit_reached_exception();
@@ -348,7 +348,7 @@ class add_modules extends \phpbb\install\task_base
 			$this->config->set('modules_ordered', false);
 			$this->config->set('module_categories_array', array());
 
-			// Run until there are available resources
+			// Stop execution if resource limit is reached
 			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
 			{
 				break;

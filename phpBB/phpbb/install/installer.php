@@ -284,7 +284,7 @@ class installer
 				}
 				catch (cannot_build_container_exception $e)
 				{
-					// Do not do anything, this is just means there is no config.php yet
+					// Do not do anything, this just means there is no config.php yet
 				}
 			}
 			else

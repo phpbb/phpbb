@@ -114,7 +114,7 @@ class add_tables extends \phpbb\install\task_base
 				$table_data
 			);
 
-			// Run until there are available resources
+			// Stop execution if resource limit is reached
 			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
 			{
 				break;

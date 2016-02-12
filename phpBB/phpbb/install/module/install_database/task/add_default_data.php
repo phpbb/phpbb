@@ -112,7 +112,7 @@ class add_default_data extends \phpbb\install\task_base
 
 			$i++;
 
-			// Run until there are available resources
+			// Stop execution if resource limit is reached
 			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
 			{
 				break;
