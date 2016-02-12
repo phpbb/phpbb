@@ -95,7 +95,7 @@ class config
 		$this->installer_config	= array();
 		$this->system_data		= array();
 		$this->progress_data	= array(
-			'last_task_module_neme'		=> '', // Stores the service name of the latest finished module
+			'last_task_module_name'		=> '', // Stores the service name of the latest finished module
 			'last_task_module_index'	=> 0, // Stores the index of the latest finished module
 			'last_task_index'			=> 0, // Stores the index of the latest finished task
 			'max_task_progress'			=> 0,

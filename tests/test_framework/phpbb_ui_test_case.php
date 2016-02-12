@@ -94,7 +94,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			self::$db->sql_close();
 		}
 	}
-	
+
 	static public function visit($path)
 	{
 		self::$webDriver->get(self::$root_url . $path);
