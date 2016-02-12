@@ -13,8 +13,18 @@
 
 namespace phpbb\install\module\install_data\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+use phpbb\install\helper\config;
+use phpbb\install\helper\container_factory;
+use phpbb\install\helper\iohandler\iohandler_interface;
+
 class add_modules extends \phpbb\install\task_base
 {
+	/**
+	 * @var config
+	 */
+	protected $config;
+
 	/**
 	 * @var \phpbb\db\driver\driver_interface
 	 */
@@ -136,12 +146,13 @@ class add_modules extends \phpbb\install\task_base
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler	Installer's input-output handler
-	 * @param \phpbb\install\helper\container_factory				$container	Installer's DI container
+	 * @parma config				$config		Installer's config
+	 * @param iohandler_interface	$iohandler	Installer's input-output handler
+	 * @param container_factory		$container	Installer's DI container
 	 */
-	public function __construct(\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-								\phpbb\install\helper\container_factory $container)
+	public function __construct(config $config, iohandler_interface $iohandler, container_factory $container)
 	{
+		$this->config				= $config;
 		$this->db					= $container->get('dbal.conn');
 		$this->extension_manager	= $container->get('ext.manager');
 		$this->iohandler			= $iohandler;
@@ -158,11 +169,19 @@ class add_modules extends \phpbb\install\task_base
 		$this->db->sql_return_on_error(true);
 
 		$module_classes = array('acp', 'mcp', 'ucp');
+		$total = sizeof($module_classes);
+		$i = $this->config->get('module_class_index', 0);
+		$module_classes = array_slice($module_classes, $i);
+
 		foreach ($module_classes as $module_class)
 		{
-			$categories = array();
+			$categories = $this->config->get('module_categories_array', array());
 
-			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
+			$k = $this->config->get('module_categories_index', 0);
+			$module_categories = array_slice($this->module_categories[$module_class], $k);
+			$timed_out = false;
+
+			foreach ($module_categories as $cat_name => $subs)
 			{
 				// Check if this sub-category has a basename. If it has, use it.
 				$basename = (isset($this->module_categories_basenames[$cat_name])) ? $this->module_categories_basenames[$cat_name] : '';
@@ -221,10 +240,30 @@ class add_modules extends \phpbb\install\task_base
 						$categories[$level2_name]['parent_id'] = (int) $categories[$cat_name]['id'];
 					}
 				}
+
+				$k++;
+
+				// Run until there are available resources
+				if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
+				{
+					$timed_out = true;
+					break;
+				}
+			}
+
+			$this->config->set('module_categories_array', $categories);
+			$this->config->set('module_categories_index', $k);
+
+			if ($timed_out)
+			{
+				throw new resource_limit_reached_exception();
 			}
 
 			// Get the modules we want to add... returned sorted by name
 			$module_info = $this->module_manager->get_module_infos($module_class);
+
+			$k = $this->config->get('module_info_index', 0);
+			$module_info = array_slice($module_info, $k);
 
 			foreach ($module_info as $module_basename => $fileinfo)
 			{
@@ -258,137 +297,36 @@ class add_modules extends \phpbb\install\task_base
 						}
 					}
 				}
+
+				$k++;
+
+				// Run until there are available resources
+				if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
+				{
+					$timed_out = true;
+					break;
+				}
+			}
+
+			$this->config->set('module_info_index', $k);
+
+			// Run until there are available resources
+			if ($timed_out)
+			{
+				throw new resource_limit_reached_exception();
 			}
 
 			// Move some of the modules around since the code above will put them in the wrong place
-			if ($module_class === 'acp')
+			if (!$this->config->get('modules_ordered', false))
 			{
-				// Move main module 4 up...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'acp_main'
-						AND module_class = 'acp'
-						AND module_mode = 'main'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$this->order_modules($module_class);
+				$this->config->set('modules_ordered', true);
 
-				$this->module_manager->move_module_by($row, 'acp', 'move_up', 4);
-
-				// Move permissions intro screen module 4 up...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'acp_permissions'
-						AND module_class = 'acp'
-						AND module_mode = 'intro'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'acp', 'move_up', 4);
-
-				// Move manage users screen module 5 up...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'acp_users'
-						AND module_class = 'acp'
-						AND module_mode = 'overview'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'acp', 'move_up', 5);
-
-				// Move extension management module 1 up...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_langname = 'ACP_EXTENSION_MANAGEMENT'
-						AND module_class = 'acp'
-						AND module_mode = ''
-						AND module_basename = ''";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'acp', 'move_up', 1);
-			}
-
-			if ($module_class == 'mcp')
-			{
-				// Move pm report details module 3 down...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'mcp_pm_reports'
-						AND module_class = 'mcp'
-						AND module_mode = 'pm_report_details'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'mcp', 'move_down', 3);
-
-				// Move closed pm reports module 3 down...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'mcp_pm_reports'
-						AND module_class = 'mcp'
-						AND module_mode = 'pm_reports_closed'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'mcp', 'move_down', 3);
-
-				// Move open pm reports module 3 down...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'mcp_pm_reports'
-						AND module_class = 'mcp'
-						AND module_mode = 'pm_reports'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'mcp', 'move_down', 3);
-			}
-
-			if ($module_class == 'ucp')
-			{
-				// Move attachment module 4 down...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'ucp_attachments'
-						AND module_class = 'ucp'
-						AND module_mode = 'attachments'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'ucp', 'move_down', 4);
-
-				// Move notification options module 4 down...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'ucp_notifications'
-						AND module_class = 'ucp'
-						AND module_mode = 'notification_options'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'ucp', 'move_down', 4);
-
-				// Move OAuth module 5 down...
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'ucp_auth_link'
-						AND module_class = 'ucp'
-						AND module_mode = 'auth_link'";
-				$result = $this->db->sql_query($sql);
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$this->module_manager->move_module_by($row, 'ucp', 'move_down', 5);
+				// Run until there are available resources
+				if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
+				{
+					throw new resource_limit_reached_exception();
+				}
 			}
 
 			// And now for the special ones
@@ -396,51 +334,219 @@ class add_modules extends \phpbb\install\task_base
 			// to some for more control)
 			if (isset($this->module_extras[$module_class]))
 			{
-				foreach ($this->module_extras[$module_class] as $cat_name => $mods)
-				{
-					$sql = 'SELECT module_id, left_id, right_id
-						FROM ' . MODULES_TABLE . "
-						WHERE module_langname = '" . $this->db->sql_escape($cat_name) . "'
-							AND module_class = '" . $this->db->sql_escape($module_class) . "'";
-					$result = $this->db->sql_query_limit($sql, 1);
-					$row2 = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					foreach ($mods as $mod_name)
-					{
-						$sql = 'SELECT *
-							FROM ' . MODULES_TABLE . "
-							WHERE module_langname = '" . $this->db->sql_escape($mod_name) . "'
-								AND module_class = '" . $this->db->sql_escape($module_class) . "'
-								AND module_basename <> ''";
-						$result = $this->db->sql_query_limit($sql, 1);
-						$row = $this->db->sql_fetchrow($result);
-						$this->db->sql_freeresult($result);
-
-						$module_data = array(
-							'module_basename'	=> $row['module_basename'],
-							'module_enabled'	=> (int) $row['module_enabled'],
-							'module_display'	=> (int) $row['module_display'],
-							'parent_id'			=> (int) $row2['module_id'],
-							'module_class'		=> $row['module_class'],
-							'module_langname'	=> $row['module_langname'],
-							'module_mode'		=> $row['module_mode'],
-							'module_auth'		=> $row['module_auth'],
-						);
-
-						$this->module_manager->update_module_data($module_data);
-
-						// Check for last sql error happened
-						if ($this->db->get_sql_error_triggered())
-						{
-							$error = $this->db->sql_error($this->db->get_sql_error_sql());
-							$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
-						}
-					}
-				}
+				$this->add_module_extras($module_class);
 			}
 
 			$this->module_manager->remove_cache_file($module_class);
+
+			$i++;
+
+			$this->config->set('module_class_index', $i);
+			$this->config->set('module_categories_index', 0);
+			$this->config->set('module_info_index', 0);
+			$this->config->set('added_extra_modules', false);
+			$this->config->set('modules_ordered', false);
+			$this->config->set('module_categories_array', array());
+
+			// Run until there are available resources
+			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
+			{
+				break;
+			}
+		}
+
+		if ($i < $total)
+		{
+			throw new resource_limit_reached_exception();
+		}
+	}
+
+	/**
+	 * Move modules to their correct place
+	 *
+	 * @param string	$module_class
+	 */
+	protected function order_modules($module_class)
+	{
+		if ($module_class == 'acp')
+		{
+			// Move main module 4 up...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'acp_main'
+					AND module_class = 'acp'
+					AND module_mode = 'main'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'acp', 'move_up', 4);
+
+			// Move permissions intro screen module 4 up...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'acp_permissions'
+					AND module_class = 'acp'
+					AND module_mode = 'intro'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'acp', 'move_up', 4);
+
+			// Move manage users screen module 5 up...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'acp_users'
+					AND module_class = 'acp'
+					AND module_mode = 'overview'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'acp', 'move_up', 5);
+
+			// Move extension management module 1 up...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_langname = 'ACP_EXTENSION_MANAGEMENT'
+					AND module_class = 'acp'
+					AND module_mode = ''
+					AND module_basename = ''";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'acp', 'move_up', 1);
+		}
+
+		if ($module_class == 'mcp')
+		{
+			// Move pm report details module 3 down...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'mcp_pm_reports'
+					AND module_class = 'mcp'
+					AND module_mode = 'pm_report_details'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'mcp', 'move_down', 3);
+
+			// Move closed pm reports module 3 down...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'mcp_pm_reports'
+					AND module_class = 'mcp'
+					AND module_mode = 'pm_reports_closed'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'mcp', 'move_down', 3);
+
+			// Move open pm reports module 3 down...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'mcp_pm_reports'
+					AND module_class = 'mcp'
+					AND module_mode = 'pm_reports'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'mcp', 'move_down', 3);
+		}
+
+		if ($module_class == 'ucp')
+		{
+			// Move attachment module 4 down...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'ucp_attachments'
+					AND module_class = 'ucp'
+					AND module_mode = 'attachments'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'ucp', 'move_down', 4);
+
+			// Move notification options module 4 down...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'ucp_notifications'
+					AND module_class = 'ucp'
+					AND module_mode = 'notification_options'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'ucp', 'move_down', 4);
+
+			// Move OAuth module 5 down...
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = 'ucp_auth_link'
+					AND module_class = 'ucp'
+					AND module_mode = 'auth_link'";
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$this->module_manager->move_module_by($row, 'ucp', 'move_down', 5);
+		}
+	}
+
+	/**
+	 * Add extra modules
+	 *
+	 * @param string	$module_class
+	 */
+	protected function add_module_extras($module_class)
+	{
+		foreach ($this->module_extras[$module_class] as $cat_name => $mods)
+		{
+			$sql = 'SELECT module_id, left_id, right_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_langname = '" . $this->db->sql_escape($cat_name) . "'
+					AND module_class = '" . $this->db->sql_escape($module_class) . "'";
+			$result = $this->db->sql_query_limit($sql, 1);
+			$row2 = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			foreach ($mods as $mod_name)
+			{
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_langname = '" . $this->db->sql_escape($mod_name) . "'
+						AND module_class = '" . $this->db->sql_escape($module_class) . "'
+						AND module_basename <> ''";
+				$result = $this->db->sql_query_limit($sql, 1);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				$module_data = array(
+					'module_basename'	=> $row['module_basename'],
+					'module_enabled'	=> (int) $row['module_enabled'],
+					'module_display'	=> (int) $row['module_display'],
+					'parent_id'			=> (int) $row2['module_id'],
+					'module_class'		=> $row['module_class'],
+					'module_langname'	=> $row['module_langname'],
+					'module_mode'		=> $row['module_mode'],
+					'module_auth'		=> $row['module_auth'],
+				);
+
+				$this->module_manager->update_module_data($module_data);
+
+				// Check for last sql error happened
+				if ($this->db->get_sql_error_triggered())
+				{
+					$error = $this->db->sql_error($this->db->get_sql_error_sql());
+					$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
+				}
+			}
 		}
 	}
 

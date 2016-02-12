@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_data\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+
 class add_bots extends \phpbb\install\task_base
 {
 	/**
@@ -179,7 +181,10 @@ class add_bots extends \phpbb\install\task_base
 			$this->io_handler->add_error_message('NO_GROUP');
 		}
 
-		foreach ($this->bot_list as $bot_name => $bot_ary)
+		$i = $this->install_config->get('add_bot_index', 0);
+		$bot_list = array_slice($this->bot_list, $i);
+
+		foreach ($bot_list as $bot_name => $bot_ary)
 		{
 			$user_row = array(
 				'user_type'				=> USER_IGNORE,
@@ -221,6 +226,21 @@ class add_bots extends \phpbb\install\task_base
 			));
 
 			$this->db->sql_query($sql);
+
+			$i++;
+
+			// Run until there are available resources
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+			{
+				break;
+			}
+		}
+
+		$this->install_config->set('add_bot_index', $i);
+
+		if ($i < sizeof($this->bot_list))
+		{
+			throw new resource_limit_reached_exception();
 		}
 	}
 

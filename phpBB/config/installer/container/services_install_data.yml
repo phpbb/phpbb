@@ -23,6 +23,7 @@ services:
     installer.install_data.add_modules:
         class: phpbb\install\module\install_data\task\add_modules
         arguments:
+            - '@installer.helper.config'
             - '@installer.helper.iohandler'
             - '@installer.helper.container_factory'
         tags:
