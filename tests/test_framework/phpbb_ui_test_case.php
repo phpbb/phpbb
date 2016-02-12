@@ -223,11 +223,15 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		self::$install_success = true;
 
-		if (file_exists($phpbb_root_path . 'cache/install_lock') || file_exists($phpbb_root_path . 'store/install_config.php'))
+		if (file_exists($phpbb_root_path . 'store/install_config.php'))
 		{
 			self::$install_success = false;
-			unlink($phpbb_root_path . 'cache/install_lock');
-			unlink($phpbb_root_path . 'store/install_config.php');
+			@unlink($phpbb_root_path . 'store/install_config.php');
+		}
+
+		if (file_exists($phpbb_root_path . 'cache/install_lock'))
+		{
+			@unlink($phpbb_root_path . 'cache/install_lock');
 		}
 
 		global $phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;
