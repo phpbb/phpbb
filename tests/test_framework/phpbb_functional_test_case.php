@@ -20,6 +20,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $client;
 	static protected $cookieJar;
 	static protected $root_url;
+	static protected $install_success = false;
 
 	protected $cache = null;
 	protected $db = null;
@@ -77,6 +78,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	public function setUp()
 	{
 		parent::setUp();
+
+		if (!self::$install_success)
+		{
+			$this->fail('Installing phpBB has failed.');
+		}
 
 		$this->bootstrap();
 
@@ -360,17 +366,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('script_path', $parseURL['path']);
 		$iohandler->set_input('submit_server', 'submit');
 
-		do
-		{
-			$installer->run();
-		}
-		while (file_exists($phpbb_root_path . 'store/install_config.php'));
+		$installer->run();
 
 		copy($config_file, $config_file_test);
 
-		if (file_exists($phpbb_root_path . 'cache/install_lock'))
+		self::$install_success = true;
+
+		if (file_exists($phpbb_root_path . 'cache/install_lock') || file_exists($phpbb_root_path . 'store/install_config.php'))
 		{
+			self::$install_success = false;
 			unlink($phpbb_root_path . 'cache/install_lock');
+			unlink($phpbb_root_path . 'store/install_config.php');
 		}
 
 		global $phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;

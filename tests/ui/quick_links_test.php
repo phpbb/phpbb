@@ -16,7 +16,6 @@
 */
 class quick_links_test extends phpbb_ui_test_case
 {
-
 	public function test_quick_links()
 	{
 		$this->visit('index.php');
