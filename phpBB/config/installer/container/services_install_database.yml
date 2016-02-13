@@ -19,7 +19,7 @@ services:
             - '@installer.helper.iohandler'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 13 }
+            - { name: install_database_install, order: 20 }
 
     installer.install_database.add_tables:
         class: phpbb\install\module\install_database\task\add_tables
@@ -29,7 +29,7 @@ services:
             - '@filesystem'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 17 }
+            - { name: install_database_install, order: 30 }
 
     installer.install_database.add_default_data:
         class: phpbb\install\module\install_database\task\add_default_data
@@ -41,7 +41,7 @@ services:
             - '@language'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 20 }
+            - { name: install_database_install, order: 40 }
 
     installer.install_database.add_config_settings:
         class: phpbb\install\module\install_database\task\add_config_settings
@@ -53,7 +53,7 @@ services:
             - '@language'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 30 }
+            - { name: install_database_install, order: 50 }
 
     installer.module.install_database_collection:
         class: phpbb\di\ordered_service_collection
