@@ -120,7 +120,11 @@ $lang = array_merge($lang, array(
 // General error messages
 $lang = array_merge($lang, array(
 	'INST_ERR_MISSING_DATA'		=> 'You must fill out all fields in this block.',
-	'PHPBB_ALREADY_INSTALLED'	=> 'phpBB is already installed.'
+
+	'PHPBB_ALREADY_INSTALLED'	=> 'phpBB is already installed.',
+
+	'TIMEOUT_DETECTED_TITLE'	=> 'The installer detected a timeout',
+	'TIMEOUT_DETECTED_MESSAGE'	=> 'The installer has detected a timeout, you may try to refresh the page, which may lead to data corruption. We suggest that you either increase your timeout settings or try to use the CLI.',
 ));
 
 // Data obtaining translations

@@ -374,8 +374,8 @@
 			if (timeoutDetected) {
 				addMessage('error',
 					[{
-						title:'The installer detected a timeout.',
-						description: 'The installer has detected a timeout, you may try to refresh the page, that may lead to data corruption. We suggest that you either increase your timeout settings or try to use the CLI.'
+						title: installLang.title,
+						description: installLang.msg
 					}]
 				);
 			}
