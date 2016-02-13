@@ -55,6 +55,8 @@ function adm_page_header($page_title)
 		return;
 	}
 
+	$user->update_session_infos();
+
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
@@ -165,8 +167,6 @@ function adm_page_footer($copyright_html = true)
 	{
 		return;
 	}
-
-	$user->update_session_infos();
 
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 
