@@ -85,6 +85,8 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 	page_footer();
 }
 
+$user->update_session_infos();
+
 // Forum info
 $sql_ary = array(
 	'SELECT'	=> 'f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id',
