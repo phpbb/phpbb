@@ -1600,6 +1600,8 @@ class session
 
 			$db->sql_return_on_error(false);
 
+			$this->data = array_merge($this->data, $sql_ary);
+
 			if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
 			{
 				$this->leave_newly_registered();
