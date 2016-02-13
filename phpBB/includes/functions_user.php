@@ -2831,7 +2831,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 *
 * @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
-function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
+function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $log_action = true)
 {
 	global $db, $auth, $config, $phpbb_dispatcher, $phpbb_container;
 
@@ -2966,16 +2966,19 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
 	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_after', compact($vars)));
 
-	if (!$group_name)
+	if ($log_action)
 	{
-		$group_name = get_group_name($group_id);
-	}
+		if (!$group_name)
+		{
+			$group_name = get_group_name($group_id);
+		}
 
-	$log = 'LOG_GROUP_REMOVE';
+		$log = 'LOG_GROUP_REMOVE';
 
-	if ($group_name)
-	{
-		add_log('admin', $log, $group_name, implode(', ', $username_ary));
+		if ($group_name)
+		{
+			add_log('admin', $log, $group_name, implode(', ', $username_ary));
+		}
 	}
 
 	group_update_listings($group_id);
@@ -3619,8 +3622,8 @@ function remove_newly_registered($user_id, $user_data = false)
 	}
 
 	// We need to call group_user_del here, because this function makes sure everything is correctly changed.
-	// A downside for a call within the session handler is that the language is not set up yet - so no log entry
-	group_user_del($group_id, $user_id);
+	// Force function to not log the removal of users from newly registered users group
+	group_user_del($group_id, $user_id, false, false, false);
 
 	// Set user_new to 0 to let this not be triggered again
 	$sql = 'UPDATE ' . USERS_TABLE . '
