@@ -592,7 +592,7 @@ class convertor
 
 			$url = $this->controller_helper->route('phpbb_convert_convert', array('converter' => $convertor));
 			$this->iohandler->redirect($url);
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 		else
 		{
@@ -686,7 +686,7 @@ class convertor
 		if ($this->request->is_ajax())
 		{
 			$this->iohandler->add_user_form_group($form_title, $form_data);
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 		else
 		{
@@ -779,7 +779,7 @@ class convertor
 		if ($this->request->is_ajax())
 		{
 			$this->iohandler->add_error_message($msg, $desc);
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 		else
 		{
@@ -803,7 +803,7 @@ class convertor
 	public function redirect_to_html($url)
 	{
 		$this->iohandler->redirect($url);
-		$this->iohandler->send_response();
+		$this->iohandler->send_response(true);
 	}
 
 	private function setup_navigation($stage)
