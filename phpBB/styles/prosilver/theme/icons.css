@@ -2,11 +2,11 @@
 	$Icons
 -------------------------------------------------------------- */
 
-/* Global module setup 
+/* Global module setup
 --------------------------------*/
 
 /* Renamed version of .fa class for agnostic useage of icon fonts.
- * Just change the name of the font after the 14/1 to the name of 
+ * Just change the name of the font after the 14/1 to the name of
  * the font you wish to use.
  */
 .icon, .button .icon  {
@@ -31,7 +31,7 @@
 /* Icon size classes - Default size is 14px, use these for small variations */
 
 .icon.icon-xl {
-	font-size: 20px; 
+	font-size: 20px;
 }
 
 .icon.icon-lg {
@@ -61,7 +61,7 @@
 
 .arrow-right .icon {
 	float: right;
-} 
+}
 
 .arrow-right:hover .icon {
 	margin-left: 5px;

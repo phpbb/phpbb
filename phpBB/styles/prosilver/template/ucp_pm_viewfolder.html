@@ -104,18 +104,18 @@
 			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
 			<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>
 		</fieldset>
-	
+
 		<hr />
-	
+
 		<div class="action-bar bottom">
 			<!-- INCLUDE display_options.html -->
 			<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 
 			<div class="pagination">
 				{TOTAL_MESSAGES}
-				<!-- IF .pagination --> 
+				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
-				<!-- ELSE --> 
+				<!-- ELSE -->
 					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
 			</div>
