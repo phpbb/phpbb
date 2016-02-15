@@ -11,6 +11,11 @@
 *
 */
 
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\Exception\WebDriverCurlException;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+
 require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_ui_test_case extends phpbb_test_case
@@ -19,7 +24,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 	static protected $port = 8910;
 
 	/**
-	* @var \RemoteWebDriver
+	* @var RemoteWebDriver
 	*/
 	static protected $webDriver;
 
@@ -35,7 +40,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		{
 			self::markTestSkipped('UI test case requires at least PHP 5.3.19.');
 		}
-		else if (!class_exists('\RemoteWebDriver'))
+		else if (!class_exists('\Facebook\WebDriver\Remote\RemoteWebDriver'))
 		{
 			self::markTestSkipped(
 				'Could not find RemoteWebDriver class. ' .
@@ -60,7 +65,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		if (!self::$webDriver)
 		{
 			try {
-				$capabilities = array(\WebDriverCapabilityType::BROWSER_NAME => 'firefox');
+				$capabilities = DesiredCapabilities::firefox();
 				self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);
 			} catch (WebDriverCurlException $e) {
 				self::markTestSkipped('PhantomJS webserver is not running.');

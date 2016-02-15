@@ -34,7 +34,6 @@ fi
 if [ "$NOTESTS" != '1' ]
 then
 	travis/setup-webserver.sh
-	travis/install-phpbb-test-dependencies.sh
 fi
 
 cd phpBB
