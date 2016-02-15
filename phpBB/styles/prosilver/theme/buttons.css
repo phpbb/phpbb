@@ -158,7 +158,7 @@ button::-moz-focus-inner {
 	border: 0
 }
 
-/* Deprecated as of version 3.2 
+/* Deprecated as of version 3.2
 -------------------------------------------------*/
 .small-icon {
 	background-position: 0 50%;
@@ -178,7 +178,7 @@ button::-moz-focus-inner {
 ul.linklist.bulletin > li.small-icon:before {
 	display: none;
 }
- 
+
 .dropdown .small-icon > a {
 	display: block;
 }

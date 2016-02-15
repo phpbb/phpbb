@@ -8,7 +8,7 @@
 
 	<div class="content">
 		<p><!-- IF S_REPORT_POST -->{L_REPORT_POST_EXPLAIN}<!-- ELSE -->{L_REPORT_MESSAGE_EXPLAIN}<!-- ENDIF --></p>
-		
+
 		<fieldset>
 		<!-- IF ERROR --><dl><dd class="error">{ERROR}</dd></dl><!-- ENDIF -->
 		<dl class="fields2">
@@ -19,7 +19,7 @@
 			<dl class="fields2">
 				<dt><label for="notify1">{L_REPORT_NOTIFY}{L_COLON}</label><br /><span>{L_REPORT_NOTIFY_EXPLAIN}</span></dt>
 				<dd>
-					<label for="notify1"><input type="radio" name="notify" id="notify1" value="1" <!-- IF not S_NOTIFY -->checked="checked"<!-- ENDIF --> /> {L_YES}</label> 
+					<label for="notify1"><input type="radio" name="notify" id="notify1" value="1" <!-- IF not S_NOTIFY -->checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 					<label for="notify0"><input type="radio" name="notify" id="notify0" value="0" <!-- IF S_NOTIFY -->checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 				</dd>
 			</dl>

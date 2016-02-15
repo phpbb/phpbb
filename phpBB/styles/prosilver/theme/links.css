@@ -8,7 +8,7 @@ a {
 	text-decoration: none;
 	/* we use links inline more often then not so to address several bugs with
 	IE and some other browsers we render all links as inlineblock by default */
-	display: inline-block; 
+	display: inline-block;
 
 }
 
@@ -151,7 +151,7 @@ a.lastsubject:hover {
 }
 
 .arrow-up:hover {
-	
+
 }
 
 .arrow-down {
@@ -159,7 +159,7 @@ a.lastsubject:hover {
 }
 
 .arrow-down:hover {
-	
+
 }
 
 .arrow-left:hover {
