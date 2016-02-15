@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+
 /**
  * Create database schema
  */
@@ -96,6 +98,10 @@ class add_default_data extends \phpbb\install\task_base
 		$sql_query = $this->database_helper->remove_comments($sql_query);
 		$sql_query = $this->database_helper->split_sql_file($sql_query, $dbms_info[$dbms]['DELIM']);
 
+		$i = $this->config->get('add_default_data_index', 0);
+		$total = sizeof($sql_query);
+		$sql_query = array_slice($sql_query, $i);
+
 		foreach ($sql_query as $sql)
 		{
 			if (!$this->db->sql_query($sql))
@@ -103,6 +109,21 @@ class add_default_data extends \phpbb\install\task_base
 				$error = $this->db->sql_error($this->db->get_sql_error_sql());
 				$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
 			}
+
+			$i++;
+
+			// Stop execution if resource limit is reached
+			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
+			{
+				break;
+			}
+		}
+
+		$this->config->set('add_default_data_index', $i);
+
+		if ($i < $total)
+		{
+			throw new resource_limit_reached_exception();
 		}
 	}
 

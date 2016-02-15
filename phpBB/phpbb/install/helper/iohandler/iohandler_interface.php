@@ -20,8 +20,10 @@ interface iohandler_interface
 {
 	/**
 	 * Renders or returns response message
+	 *
+	 * @param bool	$no_more_output	Whether or not there will be more output in this output unit
 	 */
-	public function send_response();
+	public function send_response($no_more_output = false);
 
 	/**
 	 * Returns input variable

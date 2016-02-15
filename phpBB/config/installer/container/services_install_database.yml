@@ -1,15 +1,35 @@
 services:
-    installer.install_database.create_schema:
-        class: phpbb\install\module\install_database\task\create_schema
+    installer.install_database.create_schema_file:
+        class: phpbb\install\module\install_database\task\create_schema_file
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.database'
+            - '@filesystem'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: install_database_install, order: 10 }
+
+    installer.install_database.set_up_database:
+        class: phpbb\install\module\install_database\task\set_up_database
         arguments:
             - '@installer.helper.config'
             - '@installer.helper.database'
             - '@filesystem'
             - '@installer.helper.iohandler'
             - '%core.root_path%'
-            - '%core.php_ext%'
         tags:
-            - { name: install_database_install, order: 10 }
+            - { name: install_database_install, order: 20 }
+
+    installer.install_database.add_tables:
+        class: phpbb\install\module\install_database\task\add_tables
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.database'
+            - '@filesystem'
+            - '%core.root_path%'
+        tags:
+            - { name: install_database_install, order: 30 }
 
     installer.install_database.add_default_data:
         class: phpbb\install\module\install_database\task\add_default_data
@@ -21,7 +41,7 @@ services:
             - '@language'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 20 }
+            - { name: install_database_install, order: 40 }
 
     installer.install_database.add_config_settings:
         class: phpbb\install\module\install_database\task\add_config_settings
@@ -33,7 +53,7 @@ services:
             - '@language'
             - '%core.root_path%'
         tags:
-            - { name: install_database_install, order: 30 }
+            - { name: install_database_install, order: 50 }
 
     installer.module.install_database_collection:
         class: phpbb\di\ordered_service_collection

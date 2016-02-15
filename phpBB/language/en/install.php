@@ -120,7 +120,11 @@ $lang = array_merge($lang, array(
 // General error messages
 $lang = array_merge($lang, array(
 	'INST_ERR_MISSING_DATA'		=> 'You must fill out all fields in this block.',
-	'PHPBB_ALREADY_INSTALLED'	=> 'phpBB is already installed.'
+
+	'PHPBB_ALREADY_INSTALLED'	=> 'phpBB is already installed.',
+
+	'TIMEOUT_DETECTED_TITLE'	=> 'The installer detected a timeout',
+	'TIMEOUT_DETECTED_MESSAGE'	=> 'The installer has detected a timeout, you may try to refresh the page, which may lead to data corruption. We suggest that you either increase your timeout settings or try to use the CLI.',
 ));
 
 // Data obtaining translations
@@ -200,6 +204,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.6.15.',
 	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed on this machine requires you to set the <var>NLS_CHARACTERSET</var> parameter to <var>UTF8</var>. Either upgrade your installation to 9.2+ or change the parameter.',
 	'INST_ERR_DB_NO_POSTGRES'		=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding.',
+	'INST_SCHEMA_FILE_NOT_WRITABLE'	=> 'The schema file is not writable',
 
 	//
 	// Email data
@@ -275,9 +280,11 @@ $lang = array_merge($lang, array(
 	'TASK_CREATE_CONFIG_FILE'	=> 'Creating configuration file',
 
 	// Install database
-	'TASK_ADD_CONFIG_SETTINGS'		=> 'Adding configuration settings',
-	'TASK_ADD_DEFAULT_DATA'			=> 'Adding default settings to the database',
-	'TASK_CREATE_DATABASE_SCHEMA'	=> 'Creating database schema',
+	'TASK_ADD_CONFIG_SETTINGS'			=> 'Adding configuration settings',
+	'TASK_ADD_DEFAULT_DATA'				=> 'Adding default settings to the database',
+	'TASK_CREATE_DATABASE_SCHEMA_FILE'	=> 'Creating database schema file',
+	'TASK_SETUP_DATABASE'				=> 'Setting up database',
+	'TASK_CREATE_TABLES'				=> 'Creating tables',
 
 	// Install data
 	'TASK_ADD_BOTS'			=> 'Registering bots',

@@ -13,11 +13,20 @@
 
 namespace phpbb\install\module\install_finish\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+use phpbb\install\helper\config;
+use phpbb\install\helper\container_factory;
+
 /**
  * Populates migrations
  */
 class populate_migrations extends \phpbb\install\task_base
 {
+	/**
+	 * @var config
+	 */
+	protected $config;
+
 	/**
 	 * @var \phpbb\extension\manager
 	 */
@@ -31,10 +40,12 @@ class populate_migrations extends \phpbb\install\task_base
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\container_factory	$container	phpBB's DI contianer
+	 * @param config			$config		Installer's config
+	 * @param container_factory	$container	phpBB's DI contianer
 	 */
-	public function __construct(\phpbb\install\helper\container_factory $container)
+	public function __construct(config $config, container_factory $container)
 	{
+		$this->config				= $config;
 		$this->extension_manager	= $container->get('ext.manager');
 		$this->migrator				= $container->get('migrator');
 
@@ -46,6 +57,15 @@ class populate_migrations extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
+		if (!$this->config->get('populate_migration_refresh_before', false))
+		{
+			if ($this->config->get_time_remaining() < 1)
+			{
+				$this->config->set('populate_migration_refresh_before', true);
+				throw new resource_limit_reached_exception();
+			}
+		}
+
 		$finder = $this->extension_manager->get_finder();
 
 		$migrations = $finder

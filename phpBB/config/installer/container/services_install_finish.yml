@@ -2,6 +2,7 @@ services:
     installer.install_finish.populate_migrations:
         class: phpbb\install\module\install_finish\task\populate_migrations
         arguments:
+            - '@installer.helper.config'
             - '@installer.helper.container_factory'
         tags:
             - { name: install_finish, order: 10 }

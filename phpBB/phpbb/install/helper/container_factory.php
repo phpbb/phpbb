@@ -13,7 +13,6 @@
 
 namespace phpbb\install\helper;
 
-use phpbb\cache\driver\dummy;
 use phpbb\install\exception\cannot_build_container_exception;
 use phpbb\language\language;
 use phpbb\request\request;
@@ -157,24 +156,19 @@ class container_factory
 			->with_environment('production')
 			->with_config($phpbb_config_php_file)
 			->with_config_path($config_path)
-			->without_cache()
 			->without_compiled_container()
 			->get_container();
 
 		// Setting request is required for the compatibility globals as those are generated from
 		// this container
-		$this->container->register('request')->setSynthetic(true);
-		$this->container->set('request', $this->request);
-
-		$this->container->register('language')->setSynthetic(true);
-		$this->container->set('language', $this->language);
-
-		// Replace cache service, as config gets cached, and we don't want that when we are installing
-		if (!is_dir($other_config_path))
+		if (!$this->container->isFrozen())
 		{
-			$this->container->register('cache.driver')->setSynthetic(true);
-			$this->container->set('cache.driver', new dummy());
+			$this->container->register('request')->setSynthetic(true);
+			$this->container->register('language')->setSynthetic(true);
 		}
+
+		$this->container->set('request', $this->request);
+		$this->container->set('language', $this->language);
 
 		$this->container->compile();
 

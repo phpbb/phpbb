@@ -114,7 +114,7 @@ class cli_iohandler extends iohandler_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send_response()
+	public function send_response($no_more_output = false)
 	{
 	}
 
