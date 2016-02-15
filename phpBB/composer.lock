@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d4e2fb7ee961c4734df4e385db2e6995",
-    "content-hash": "b15dfee84d1e9f3e2f5a3cc290b0be58",
+    "hash": "2de20b0ffe0ca05fb62a7c685a25ca79",
+    "content-hash": "6e427257e82c0d33fc94040d9685f516",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1605,6 +1605,49 @@
                 "scraper"
             ],
             "time": "2015-05-05 21:14:57"
+        },
+        {
+            "name": "facebook/webdriver",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/facebook/php-webdriver.git",
+                "reference": "1c98108ba3eb435b681655764de11502a0653705"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/facebook/php-webdriver/zipball/1c98108ba3eb435b681655764de11502a0653705",
+                "reference": "1c98108ba3eb435b681655764de11502a0653705",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.19"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.6.*"
+            },
+            "suggest": {
+                "phpdocumentor/phpdocumentor": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Facebook\\WebDriver\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "A PHP client for WebDriver",
+            "homepage": "https://github.com/facebook/php-webdriver",
+            "keywords": [
+                "facebook",
+                "php",
+                "selenium",
+                "webdriver"
+            ],
+            "time": "2015-12-31 15:58:49"
         },
         {
             "name": "michelf/php-markdown",
