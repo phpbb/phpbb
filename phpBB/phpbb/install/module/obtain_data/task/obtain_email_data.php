@@ -144,7 +144,6 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 
 			$this->io_handler->add_user_form_group('EMAIL_CONFIG', $email_form);
 
-			$this->io_handler->send_response();
 			throw new user_interaction_required_exception();
 		}
 	}

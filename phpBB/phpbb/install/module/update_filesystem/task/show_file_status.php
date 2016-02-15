@@ -136,7 +136,6 @@ class show_file_status extends task_base
 			));
 
 			// Show results to the user
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 		else

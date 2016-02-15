@@ -89,6 +89,7 @@ services:
             - '@cache.driver'
             - '@installer.helper.config'
             - '@path_helper'
+            - '@installer.helper.container_factory'
 
     installer.install.module_collection:
         class: phpbb\di\ordered_service_collection
@@ -108,8 +109,10 @@ services:
         parent: installer.installer.abstract
         calls:
             - [set_modules, ['@installer.install.module_collection']]
+            - [set_purge_cache_before, [false]]
 
     installer.installer.update:
         parent: installer.installer.abstract
         calls:
             - [set_modules, ['@installer.update.module_collection']]
+            - [set_purge_cache_before, [true]]

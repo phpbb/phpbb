@@ -53,6 +53,7 @@ services:
     phpbb.installer.controller.convert:
         class: phpbb\convert\controller\convertor
         arguments:
+            - '@cache.driver'
             - '@installer.helper.container_factory'
             - '@installer.helper.database'
             - '@phpbb.installer.controller.helper'

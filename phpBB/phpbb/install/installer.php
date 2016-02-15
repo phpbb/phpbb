@@ -15,11 +15,13 @@ namespace phpbb\install;
 
 use phpbb\cache\driver\driver_interface;
 use phpbb\di\ordered_service_collection;
+use phpbb\install\exception\cannot_build_container_exception;
 use phpbb\install\exception\installer_config_not_writable_exception;
 use phpbb\install\exception\jump_to_restart_point_exception;
 use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
+use phpbb\install\helper\container_factory;
 use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\path_helper;
@@ -32,12 +34,17 @@ class installer
 	protected $cache;
 
 	/**
+	 * @var container_factory
+	 */
+	protected $container_factory;
+
+	/**
 	 * @var config
 	 */
 	protected $install_config;
 
 	/**
-	 * @var array
+	 * @var ordered_service_collection
 	 */
 	protected $installer_modules;
 
@@ -59,18 +66,26 @@ class installer
 	protected $module_step_count;
 
 	/**
+	 * @var bool
+	 */
+	protected $purge_cache_before;
+
+	/**
 	 * Constructor
 	 *
 	 * @param driver_interface	$cache			Cache service
 	 * @param config			$config			Installer config handler
 	 * @param path_helper		$path_helper	Path helper
+	 * @param container_factory	$container		Container
 	 */
-	public function __construct(driver_interface $cache, config $config, path_helper $path_helper)
+	public function __construct(driver_interface $cache, config $config, path_helper $path_helper, container_factory $container)
 	{
 		$this->cache				= $cache;
 		$this->install_config		= $config;
+		$this->container_factory	= $container;
 		$this->installer_modules	= null;
 		$this->web_root				= $path_helper->get_web_root_path();
+		$this->purge_cache_before	= false;
 	}
 
 	/**
@@ -97,6 +112,16 @@ class installer
 	}
 
 	/**
+	 * Sets whether to purge cache before the installation process
+	 *
+	 * @param bool	$purge_cache_before
+	 */
+	public function set_purge_cache_before($purge_cache_before)
+	{
+		$this->purge_cache_before = $purge_cache_before;
+	}
+
+	/**
 	 * Run phpBB installer
 	 */
 	public function run()
@@ -104,9 +129,16 @@ class installer
 		// Load install progress
 		$this->install_config->load_config();
 
+		if (!$this->install_config->get('cache_purged_before', false) && $this->purge_cache_before)
+		{
+			/** @var \phpbb\cache\driver\driver_interface $cache */
+			$cache = $this->container_factory->get('cache.driver');
+			$cache->purge();
+			$this->install_config->set('cache_purged_before', true);
+		}
+
 		// Recover install progress
-		$module_name = $this->recover_progress();
-		$module_found = false;
+		$module_index = $this->recover_progress();
 
 		// Variable used to check if the install process have been finished
 		$install_finished	= false;
@@ -141,29 +173,13 @@ class installer
 
 		try
 		{
-			foreach ($this->installer_modules as $name => $module)
+			$iterator = $this->installer_modules->getIterator();
+			$iterator->seek($module_index);
+
+			while ($iterator->valid())
 			{
-				// Skip forward until the current task is reached
-				if (!$module_found)
-				{
-					if ($module_name === $name || empty($module_name))
-					{
-						$module_found = true;
-					}
-					else
-					{
-						continue;
-					}
-				}
-
-				// Log progress
-				$this->install_config->set_active_module($name);
-
-				// Run until there are available resources
-				if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
-				{
-					throw new resource_limit_reached_exception();
-				}
+				$module	= $iterator->current();
+				$name	= $iterator->key();
 
 				// Check if module should be executed
 				if (!$module->is_essential() && !$module->check_requirements())
@@ -176,17 +192,31 @@ class installer
 						$name,
 					));
 					$this->install_config->increment_current_task_progress($this->module_step_count[$name]);
-					continue;
+				}
+				else
+				{
+					// Set the correct stage in the navigation bar
+					$this->install_config->set_active_navigation_stage($module->get_navigation_stage_path());
+					$this->iohandler->set_active_stage_menu($module->get_navigation_stage_path());
+
+					$this->iohandler->send_response();
+
+					$module->run();
+
+					$this->install_config->set_finished_navigation_stage($module->get_navigation_stage_path());
+					$this->iohandler->set_finished_stage_menu($module->get_navigation_stage_path());
 				}
 
-				// Set the correct stage in the navigation bar
-				$this->install_config->set_active_navigation_stage($module->get_navigation_stage_path());
-				$this->iohandler->set_active_stage_menu($module->get_navigation_stage_path());
+				$module_index++;
+				$iterator->next();
 
-				$module->run();
+				// Save progress
+				$this->install_config->set_active_module($name, $module_index);
 
-				$this->install_config->set_finished_navigation_stage($module->get_navigation_stage_path());
-				$this->iohandler->set_finished_stage_menu($module->get_navigation_stage_path());
+				if ($iterator->valid() && ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0))
+				{
+					throw new resource_limit_reached_exception();
+				}
 			}
 
 			// Installation finished
@@ -208,7 +238,7 @@ class installer
 		}
 		catch (user_interaction_required_exception $e)
 		{
-			// Do nothing
+			$this->iohandler->send_response(true);
 		}
 		catch (resource_limit_reached_exception $e)
 		{
@@ -222,7 +252,7 @@ class installer
 		catch (\Exception $e)
 		{
 			$this->iohandler->add_error_message($e->getMessage());
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 			$fail_cleanup = true;
 		}
 
@@ -230,11 +260,12 @@ class installer
 		{
 			// Send install finished message
 			$this->iohandler->set_progress('INSTALLER_FINISHED', $this->install_config->get_task_progress_count());
+			$this->iohandler->send_response(true);
 		}
 		else if ($send_refresh)
 		{
 			$this->iohandler->request_refresh();
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 
 		// Save install progress
@@ -244,6 +275,17 @@ class installer
 			{
 				$this->install_config->clean_up_config_file();
 				$this->cache->purge();
+
+				try
+				{
+					/** @var \phpbb\cache\driver\driver_interface $cache */
+					$cache = $this->container_factory->get('cache.driver');
+					$cache->purge();
+				}
+				catch (cannot_build_container_exception $e)
+				{
+					// Do not do anything, this just means there is no config.php yet
+				}
 			}
 			else
 			{
@@ -270,6 +312,6 @@ class installer
 	protected function recover_progress()
 	{
 		$progress_array = $this->install_config->get_progress_data();
-		return $progress_array['last_task_module_name'];
+		return $progress_array['last_task_module_index'];
 	}
 }

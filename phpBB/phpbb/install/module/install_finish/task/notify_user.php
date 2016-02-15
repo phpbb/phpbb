@@ -87,9 +87,13 @@ class notify_user extends \phpbb\install\task_base
 		$this->php_ext			= $php_ext;
 
 		// We need to reload config for cases when it doesn't have all values
+		/** @var \phpbb\cache\driver\driver_interface $cache */
+		$cache = $container->get('cache.driver');
+		$cache->destroy('config');
+
 		$this->config = new db(
 			$container->get('dbal.conn'),
-			$container->get('cache.driver'),
+			$cache,
 			$container->get_parameter('tables.config')
 		);
 

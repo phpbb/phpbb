@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+
 /**
  * Create database schema
  */
@@ -313,6 +315,10 @@ class add_config_settings extends \phpbb\install\task_base
 				WHERE config_name = 'allow_avatar_upload'";
 		}
 
+		$i = $this->install_config->get('add_config_settings_index', 0);
+		$total = sizeof($sql_ary);
+		$sql_ary = array_slice($sql_ary, $i);
+
 		foreach ($sql_ary as $sql)
 		{
 			if (!$this->db->sql_query($sql))
@@ -320,6 +326,20 @@ class add_config_settings extends \phpbb\install\task_base
 				$error = $this->db->sql_error($this->db->get_sql_error_sql());
 				$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
 			}
+
+			$i++;
+
+			// Stop execution if resource limit is reached
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+			{
+				break;
+			}
+		}
+
+		if ($i < $total)
+		{
+			$this->install_config->set('add_config_settings_index', $i);
+			throw new resource_limit_reached_exception();
 		}
 	}
 

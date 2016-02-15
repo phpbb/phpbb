@@ -93,7 +93,6 @@ class obtain_update_settings extends task_base
 				),
 			));
 
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 	}

@@ -13,7 +13,6 @@
 
 namespace phpbb\install\module\requirements;
 
-use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\module_base;
 
@@ -25,41 +24,8 @@ abstract class abstract_requirements_module extends module_base
 	public function run()
 	{
 		$tests_passed = true;
-
-		// Recover install progress
-		$task_name = $this->recover_progress();
-		$task_found = false;
-
-		/**
-		 * @var string							$name	ID of the service
-		 * @var \phpbb\install\task_interface	$task	Task object
-		 */
 		foreach ($this->task_collection as $name => $task)
 		{
-			// Run until there are available resources
-			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
-			{
-				throw new resource_limit_reached_exception();
-			}
-
-			// Skip forward until the next task is reached
-			if (!$task_found)
-			{
-				if ($name === $task_name || empty($task_name))
-				{
-					$task_found = true;
-
-					if ($name === $task_name)
-					{
-						continue;
-					}
-				}
-				else
-				{
-					continue;
-				}
-			}
-
 			// Check if we can run the task
 			if (!$task->is_essential() && !$task->check_requirements())
 			{
@@ -76,7 +42,7 @@ abstract class abstract_requirements_module extends module_base
 		}
 
 		// Module finished, so clear task progress
-		$this->install_config->set_finished_task('');
+		$this->install_config->set_finished_task(0);
 
 		// Check if tests have failed
 		if (!$tests_passed)
@@ -91,7 +57,6 @@ abstract class abstract_requirements_module extends module_base
 			));
 
 			// Send the response and quit
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 	}
