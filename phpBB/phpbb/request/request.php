@@ -325,7 +325,9 @@ class request implements \phpbb\request\request_interface
 	*/
 	public function is_secure()
 	{
-		return $this->server('HTTPS') == 'on';
+		$https = $this->server('HTTPS');
+		$https = $this->server('HTTP_X_FORWARDED_PROTO') === 'https' ? 'on' : $https;
+		return !empty($https) && $https !== 'off';
 	}
 
 	/**

@@ -271,7 +271,13 @@ class oauth extends \phpbb\auth\provider\base
 		}
 
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
-		$current_uri = $uri_factory->createFromSuperGlobalArray($this->request->get_super_global(\phpbb\request\request_interface::SERVER));
+		$super_globals = $this->request->get_super_global(\phpbb\request\request_interface::SERVER);
+		if (!empty($super_globals['HTTP_X_FORWARDED_PROTO']) && $super_globals['HTTP_X_FORWARDED_PROTO'] === 'https')
+		{
+			$super_globals['HTTPS'] = 'on';
+			$super_globals['SERVER_PORT'] = 443;
+		}
+		$current_uri = $uri_factory->createFromSuperGlobalArray($super_globals);
 		$current_uri->setQuery($query);
 
 		$this->current_uri = $current_uri;
