@@ -2234,6 +2234,12 @@ function generate_board_url($without_script_path = false)
 
 	$server_name = $user->host;
 	$server_port = $request->server('SERVER_PORT', 0);
+	$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
+
+	if (!empty($forwarded_proto) && $forwarded_proto === 'https')
+	{
+		$server_port = 443;
+	}
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
