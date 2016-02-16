@@ -142,6 +142,10 @@ phpbb.positionTooltip = function ($element) {
 phpbb.prepareRolesDropdown = function () {
 	var $options = $('.roles-options li');
 
+	// Display span and hide select
+	$('.roles-options > span').css('display', 'block');
+	$('.roles-options > select').hide();
+
 	// Prepare highlighting of select options and settings update
 	$options.each(function () {
 		var $this = $(this);

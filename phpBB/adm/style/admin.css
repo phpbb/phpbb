@@ -2489,7 +2489,7 @@ fieldset.permissions .padding {
 	border-radius: 3px;
 	padding: 4px;
 	width: 250px;
-	display: block;
+	display: none;
 	background: url('../images/arrow_down.gif') no-repeat 245px .7em;
 }
 

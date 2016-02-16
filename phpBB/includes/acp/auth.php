@@ -468,11 +468,17 @@ class auth_admin extends \phpbb\auth\auth
 
 					$role_options = array();
 
+					$s_role_options = '';
+					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
+
 					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
 					{
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+
+						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
+						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
 
 						$role_options[] = array(
 							'ID'	=> $role_id,
@@ -480,6 +486,11 @@ class auth_admin extends \phpbb\auth\auth
 							'TITLE'		=> $role_description,
 							'SELECTED'	=> $role_id == $current_role_id,
 						);
+					}
+
+					if ($s_role_options)
+					{
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -503,6 +514,7 @@ class auth_admin extends \phpbb\auth\auth
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> $ug_names_ary[$ug_id],
 						'UG_ID'				=> $ug_id,
+						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'S_CUSTOM'			=> $s_custom_permissions,
 						'FORUM_ID'			=> $forum_id,
 						'S_ROLE_ID'			=> $current_role_id,
@@ -555,11 +567,17 @@ class auth_admin extends \phpbb\auth\auth
 
 					$role_options = array();
 
+					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
+					$s_role_options = '';
+
 					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
 					{
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+
+						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
+						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_name . '</option>';
 
 						$role_options[] = array(
 							'ID'	=> $role_id,
@@ -567,6 +585,11 @@ class auth_admin extends \phpbb\auth\auth
 							'TITLE'		=> $role_description,
 							'SELECTED'	=> $role_id == $current_role_id,
 						);
+					}
+
+					if ($s_role_options)
+					{
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -592,6 +615,7 @@ class auth_admin extends \phpbb\auth\auth
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
 						'S_CUSTOM'			=> $s_custom_permissions,
 						'UG_ID'				=> $ug_id,
+						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'FORUM_ID'			=> $forum_id)
 					);
 
