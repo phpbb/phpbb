@@ -553,8 +553,7 @@ class auth_admin extends \phpbb\auth\auth
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
-					// Output current role id to template
-					$template->assign_var('S_ROLE_ID', $current_role_id);
+					$role_options = array();
 
 					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
@@ -562,12 +561,12 @@ class auth_admin extends \phpbb\auth\auth
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
 
-						$template->assign_block_vars('role_options', array(
+						$role_options[] = array(
 							'ID'	=> $role_id,
 							'ROLE_NAME'	=> $role_name,
 							'TITLE'		=> $role_description,
 							'SELECTED'	=> $role_id == $current_role_id,
-						));
+						);
 					}
 
 					if (!$current_role_id && $mode != 'view')
@@ -595,6 +594,8 @@ class auth_admin extends \phpbb\auth\auth
 						'UG_ID'				=> $ug_id,
 						'FORUM_ID'			=> $forum_id)
 					);
+
+					$template->assign_block_vars_array($tpl_pmask . '.' . $tpl_fmask . '.role_options', $role_options);
 
 					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, ($mode == 'view'), $show_trace);
 				}
