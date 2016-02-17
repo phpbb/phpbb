@@ -276,6 +276,16 @@ class phpbb_ui_test_case extends phpbb_test_case
 		return self::$db;
 	}
 
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assertContains($this->lang('REGISTER'), self::$webDriver->getPageSource());
+		unset($this->sid);
+
+	}
+
 	/**
 	 * Login to the ACP
 	 * You must run login() before calling this.
