@@ -93,25 +93,10 @@ function gen_rand_string_friendly($num_chars = 8)
 
 /**
 * Return unique id
-* @param string $extra additional entropy
 */
-function unique_id($extra = 'c')
+function unique_id()
 {
-	static $dss_seeded = false;
-	global $config;
-
-	$val = $config['rand_seed'] . microtime();
-	$val = md5($val);
-	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
-
-	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
-	{
-		$config->set('rand_seed_last_update', time(), false);
-		$config->set('rand_seed', $config['rand_seed'], false);
-		$dss_seeded = true;
-	}
-
-	return substr($val, 4, 16);
+	return bin2hex(random_bytes(6));
 }
 
 /**

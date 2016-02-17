@@ -355,6 +355,13 @@
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
 
+		<delete dir="${dir}/vendor/paragonie/random_compat/dist" />
+		<delete dir="${dir}/vendor/paragonie/random_compat/other" />
+		<delete file="${dir}/vendor/paragonie/random_compat/CHANGELOG.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/ERRATA.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/README.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/SECURITY.md" />
+
 		<delete file="${dir}/vendor/patchwork/utf8/.travis.yml" />
 		<delete file="${dir}/vendor/patchwork/utf8/CHANGELOG.md" />
 		<delete file="${dir}/vendor/patchwork/utf8/phpunit.xml.dist" />
