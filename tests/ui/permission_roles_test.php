@@ -26,18 +26,18 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 		$this->visit('adm/index.php?i=acp_permissions&mode=setting_forum_local&sid=' . $this->sid);
 
 		// Select forums
-		$elements = self::find_element('cssSelector', 'select[id=forum]')
+		$elements = self::find_element('cssSelector', 'select#forum')
 			->findElements(\Facebook\WebDriver\WebDriverBy::tagName('option'));
 		foreach ($elements as $element)
 		{
 			$element->click();
 		}
-		self::find_element('cssSelector', 'form[id=select_victim]')
+		self::find_element('cssSelector', 'form#select_victim')
 			->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('input[type=submit]'))
 			->click();
 
 		// Select administrators and guests
-		$groups_form = self::find_element('cssSelector', 'form[id=groups]');
+		$groups_form = self::find_element('cssSelector', 'form#groups');
 		$elements = $groups_form
 			->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('select'))
 			->findElements(\Facebook\WebDriver\WebDriverBy::tagName('option'));
