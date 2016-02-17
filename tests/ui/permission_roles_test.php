@@ -19,7 +19,6 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 
 	public function test_permission_roles()
 	{
-		$this->logout();
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/permissions');
@@ -28,6 +27,7 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 		// Select forums
 		$elements = self::find_element('cssSelector', 'select#forum')
 			->findElements(\Facebook\WebDriver\WebDriverBy::tagName('option'));
+
 		foreach ($elements as $element)
 		{
 			$element->click();

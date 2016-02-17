@@ -280,6 +280,11 @@ class phpbb_ui_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
+		if (empty($this->sid))
+		{
+			return;
+		}
+
 		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
 		$this->assertContains($this->lang('REGISTER'), self::$webDriver->getPageSource());
 		unset($this->sid);
@@ -301,6 +306,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 			return;
 		}
 
+		self::$webDriver->manage()->deleteAllCookies();
+
 		$this->visit('adm/index.php?sid=' . $this->sid);
 		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), self::$webDriver->getPageSource());
 
@@ -317,8 +324,12 @@ class phpbb_ui_test_case extends phpbb_test_case
 			if (substr($cookie['name'], -4) == '_sid')
 			{
 				$this->sid = $cookie['value'];
+
+				break;
 			}
 		}
+
+		$this->assertNotEmpty($this->sid);
 	}
 
 	protected function add_lang($lang_file)
@@ -428,52 +439,20 @@ class phpbb_ui_test_case extends phpbb_test_case
 				$this->sid = $cookie['value'];
 			}
 		}
+
+		$this->assertNotEmpty($this->sid);
 	}
 
 	/**
 	 * Take screenshot. Can be used for debug purposes.
 	 *
-	 * @param \Facebook\WebDriver\Remote\RemoteWebElement $element
-	 * @return string Element screenshot path
 	 * @throws Exception When screenshot can't be created
 	 */
-	public function takeScreenshot($element = null) {
+	public function take_screenshot()
+	{
 		// Change the Path to your own settings
 		$screenshot = time() . ".png";
 
-		// Change the driver instance
 		self::$webDriver->takeScreenshot($screenshot);
-		if(!file_exists($screenshot)) {
-			throw new Exception('Could not save screenshot');
-		}
-
-		if( ! (bool) $element) {
-			return $screenshot;
-		}
-
-		$element_screenshot = time() . ".png"; // Change the path here as well
-
-		$element_width = $element->getSize()->getWidth();
-		$element_height = $element->getSize()->getHeight();
-
-		$element_src_x = $element->getLocation()->getX();
-		$element_src_y = $element->getLocation()->getY();
-
-		// Create image instances
-		$src = imagecreatefrompng($screenshot);
-		$dest = imagecreatetruecolor($element_width, $element_height);
-
-		// Copy
-		imagecopy($dest, $src, 0, 0, $element_src_x, $element_src_y, $element_width, $element_height);
-
-		imagepng($dest, $element_screenshot);
-
-		// unlink($screenshot); // unlink function might be restricted in mac os x.
-
-		if( ! file_exists($element_screenshot)) {
-			throw new Exception('Could not save element screenshot');
-		}
-
-		return $element_screenshot;
 	}
 }
