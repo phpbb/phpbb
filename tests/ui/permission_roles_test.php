@@ -14,10 +14,10 @@
 /**
 * @group ui
 */
-class permission_roles_test extends phpbb_ui_test_case
+class ui_permission_roles_test extends phpbb_ui_test_case
 {
 
-	public function test_quick_links()
+	public function test_permission_roles()
 	{
 		$this->login();
 		$this->admin_login();

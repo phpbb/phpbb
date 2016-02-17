@@ -42,7 +42,7 @@
 			{% if p_mask.f_mask.role_options %}
 				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 20%">
 					<div class="dropdown-container dropdown-button-control roles-options" data-alt-text="{LA_ROLE_DESCRIPTION}">
-						<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" onchange="set_role_settings(this.options[selectedIndex].value, 'advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); init_colours('{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')">{p_mask.f_mask.S_ROLE_OPTIONS}</select>
+						<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]">{p_mask.f_mask.S_ROLE_OPTIONS}</select>
 						<span title="Roles" class="button icon-button tools-icon dropdown-trigger dropdown-select">{L_NO_ROLE_ASSIGNED}</span>
 						<div class="dropdown hidden">
 							<ul class="dropdown-contents" id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" >
@@ -51,7 +51,7 @@
 								{% endfor %}
 							</ul>
 						</div>
-						<input type="hidden" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]"{% if p_mask.f_mask.S_ROLE_ID %}value="{{ p_mask.f_mask.S_ROLE_ID }}"{% endif %} />
+						<input type="hidden" data-name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]"{% if p_mask.f_mask.S_ROLE_ID %}value="{{ p_mask.f_mask.S_ROLE_ID }}"{% endif %} />
 					</div>
 				</dd>
 			{% else %}

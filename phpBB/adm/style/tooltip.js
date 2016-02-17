@@ -145,6 +145,13 @@ phpbb.prepareRolesDropdown = function () {
 	// Display span and hide select
 	$('.roles-options > span').css('display', 'block');
 	$('.roles-options > select').hide();
+	$('.roles-options > input[type=hidden]').each(function () {
+		var $this = $(this);
+
+		if ($this.attr('data-name') && !$this.attr('name')) {
+			$this.attr('name', $this.attr('data-name'));
+		}
+	});
 
 	// Prepare highlighting of select options and settings update
 	$options.each(function () {
