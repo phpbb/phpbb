@@ -568,6 +568,11 @@ class file extends \phpbb\cache\driver\base
 
 			fclose($handle);
 
+			if (function_exists('opcache_invalidate'))
+			{
+				@opcache_invalidate($file);
+			}
+
 			if (!function_exists('phpbb_chmod'))
 			{
 				global $phpbb_root_path;
