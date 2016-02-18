@@ -141,20 +141,43 @@ phpbb.positionTooltip = function ($element) {
  */
 phpbb.prepareRolesDropdown = function () {
 	var $options = $('.roles-options li');
-	var $rolesOptions = $options.closest('.roles-options');
-	var $span = $rolesOptions.children('span');
+
+	// Display span and hide select
+	$('.roles-options > span').css('display', 'block');
+	$('.roles-options > select').hide();
+	$('.roles-options > input[type=hidden]').each(function () {
+		var $this = $(this);
+
+		if ($this.attr('data-name') && !$this.attr('name')) {
+			$this.attr('name', $this.attr('data-name'));
+		}
+	});
 
 	// Prepare highlighting of select options and settings update
 	$options.each(function () {
 		var $this = $(this);
+		var $rolesOptions = $this.closest('.roles-options');
+		var $span = $rolesOptions.children('span');
 
 		// Correctly show selected option
 		if (typeof $this.attr('data-selected') !== 'undefined') {
-			$rolesOptions.closest('.roles-options')
+			$rolesOptions
 				.children('span')
 				.text($this.text())
 				.attr('data-default', $this.text())
 				.attr('data-default-val', $this.attr('data-id'));
+
+			// Save default text of drop down if there is no default set yet
+			if (typeof $span.attr('data-default') === 'undefined') {
+				$span.attr('data-default', $span.text());
+			}
+
+			// Prepare resetting drop down on form reset
+			$this.closest('form').on('reset', function () {
+				$span.text($span.attr('data-default'));
+				$rolesOptions.children('input[type=hidden]')
+					.val($span.attr('data-default-val'));
+			});
 		}
 
 		$this.on('mouseover', function () {
@@ -163,6 +186,7 @@ phpbb.prepareRolesDropdown = function () {
 			$this.addClass('roles-highlight');
 		}).on('click', function () {
 			var $this = $(this);
+			var $rolesOptions = $this.closest('.roles-options');
 
 			// Update settings
 			set_role_settings($this.attr('data-id'), $this.attr('data-target-id'));
@@ -178,19 +202,6 @@ phpbb.prepareRolesDropdown = function () {
 			$('body').trigger('click');
 		});
 	});
-
-	// Save default text of drop down if there is no default set yet
-	if (typeof $span.attr('data-default') === 'undefined') {
-		$span.attr('data-default', $span.text());
-	}
-
-	// Prepare resetting drop down on form reset
-	$options.closest('form').on('reset', function () {
-		$span.text($span.attr('data-default'));
-		$rolesOptions.children('input[type=hidden]')
-			.val($span.attr('data-id'));
-	});
-
 };
 
 // Run onload functions for RolesDropdown and tooltips

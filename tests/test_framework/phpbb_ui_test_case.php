@@ -34,6 +34,18 @@ class phpbb_ui_test_case extends phpbb_test_case
 	static protected $install_success = false;
 	static protected $db;
 
+	/**
+	 * Session ID for current test's session (each test makes its own)
+	 * @var string
+	 */
+	protected $sid;
+
+	/**
+	 * Language array used by phpBB
+	 * @var array
+	 */
+	protected $lang = array();
+
 	static public function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();
@@ -87,6 +99,11 @@ class phpbb_ui_test_case extends phpbb_test_case
 		{
 			$this->fail('Installing phpBB has failed.');
 		}
+
+		// Clear the language array so that things
+		// that were added in other tests are gone
+		$this->lang = array();
+		$this->add_lang('common');
 	}
 
 	protected function tearDown()
@@ -257,5 +274,185 @@ class phpbb_ui_test_case extends phpbb_test_case
 			self::$db = $db;
 		}
 		return self::$db;
+	}
+
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		if (empty($this->sid))
+		{
+			return;
+		}
+
+		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assertContains($this->lang('REGISTER'), self::$webDriver->getPageSource());
+		unset($this->sid);
+
+	}
+
+	/**
+	 * Login to the ACP
+	 * You must run login() before calling this.
+	 */
+	protected function admin_login($username = 'admin')
+	{
+		$this->add_lang('acp/common');
+
+		// Requires login first!
+		if (empty($this->sid))
+		{
+			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			return;
+		}
+
+		self::$webDriver->manage()->deleteAllCookies();
+
+		$this->visit('adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), self::$webDriver->getPageSource());
+
+		self::find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);
+		self::find_element('cssSelector', 'input[type=password]')->sendKeys($username . $username);
+		self::find_element('cssSelector', 'input[name=login]')->click();
+		$this->assertContains($this->lang('ADMIN_PANEL'), $this->find_element('cssSelector', 'h1')->getText());
+
+		$cookies = self::$webDriver->manage()->getCookies();
+
+		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+		foreach ($cookies as $cookie)
+		{
+			if (substr($cookie['name'], -4) == '_sid')
+			{
+				$this->sid = $cookie['value'];
+
+				break;
+			}
+		}
+
+		$this->assertNotEmpty($this->sid);
+	}
+
+	protected function add_lang($lang_file)
+	{
+		if (is_array($lang_file))
+		{
+			foreach ($lang_file as $file)
+			{
+				$this->add_lang($file);
+			}
+		}
+
+		$lang_path = __DIR__ . "/../../phpBB/language/en/$lang_file.php";
+
+		$lang = array();
+
+		if (file_exists($lang_path))
+		{
+			include($lang_path);
+		}
+
+		$this->lang = array_merge($this->lang, $lang);
+	}
+
+	protected function add_lang_ext($ext_name, $lang_file)
+	{
+		if (is_array($lang_file))
+		{
+			foreach ($lang_file as $file)
+			{
+				$this->add_lang_ext($ext_name, $file);
+			}
+
+			return;
+		}
+
+		$lang_path = __DIR__ . "/../../phpBB/ext/{$ext_name}/language/en/$lang_file.php";
+
+		$lang = array();
+
+		if (file_exists($lang_path))
+		{
+			include($lang_path);
+		}
+
+		$this->lang = array_merge($this->lang, $lang);
+	}
+
+	protected function lang()
+	{
+		$args = func_get_args();
+		$key = $args[0];
+
+		if (empty($this->lang[$key]))
+		{
+			throw new RuntimeException('Language key "' . $key . '" could not be found.');
+		}
+
+		$args[0] = $this->lang[$key];
+
+		return call_user_func_array('sprintf', $args);
+	}
+
+	/**
+	 * assertContains for language strings
+	 *
+	 * @param string $needle	Search string
+	 * @param string $haystack	Search this
+	 * @param string $message	Optional failure message
+	 */
+	public function assertContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	/**
+	 * assertNotContains for language strings
+	 *
+	 * @param string $needle		Search string
+	 * @param string $haystack	Search this
+	 * @param string $message	Optional failure message
+	 */
+	public function assertNotContainsLang($needle, $haystack, $message = null)
+	{
+		$this->assertNotContains(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+	}
+
+	protected function login($username = 'admin')
+	{
+		$this->add_lang('ucp');
+
+		$this->visit('ucp.php');
+		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), self::$webDriver->getPageSource());
+
+		self::find_element('cssSelector', 'input[name=username]')->sendKeys($username);
+		self::find_element('cssSelector', 'input[name=password]')->sendKeys($username . $username);
+		self::find_element('cssSelector', 'input[name=login]')->click();
+		$this->assertNotContains($this->lang('LOGIN'), $this->find_element('className', 'navbar')->getText());
+
+		$cookies = self::$webDriver->manage()->getCookies();
+
+		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+		foreach ($cookies as $cookie)
+		{
+			if (substr($cookie['name'], -4) == '_sid')
+			{
+				$this->sid = $cookie['value'];
+			}
+		}
+
+		$this->assertNotEmpty($this->sid);
+	}
+
+	/**
+	 * Take screenshot. Can be used for debug purposes.
+	 *
+	 * @throws Exception When screenshot can't be created
+	 */
+	public function take_screenshot()
+	{
+		// Change the Path to your own settings
+		$screenshot = time() . ".png";
+
+		self::$webDriver->takeScreenshot($screenshot);
 	}
 }
