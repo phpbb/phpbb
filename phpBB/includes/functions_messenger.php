@@ -873,6 +873,11 @@ class queue
 				fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->queue_data), true) . ");\n\n?>");
 				fclose($fp);
 
+				if (function_exists('opcache_invalidate'))
+				{
+					@opcache_invalidate($this->cache_file);
+				}
+
 				try
 				{
 					$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
@@ -921,6 +926,11 @@ class queue
 		{
 			fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->data), true) . ");\n\n?>");
 			fclose($fp);
+
+			if (function_exists('opcache_invalidate'))
+			{
+				@opcache_invalidate($this->cache_file);
+			}
 
 			try
 			{

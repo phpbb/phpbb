@@ -574,6 +574,11 @@ class file extends \phpbb\cache\driver\base
 
 			fclose($handle);
 
+			if (function_exists('opcache_invalidate'))
+			{
+				@opcache_invalidate($this->cache_file);
+			}
+
 			try
 			{
 				$this->filesystem->phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
