@@ -237,9 +237,14 @@ class check extends \phpbb\console\command\command
 						$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 						if (!empty($updates_available))
 						{
+							$versions = array_map(function($entry)
+							{
+								return $entry['current'];
+							}, $updates_available);
+
 							$message .= sprintf(" | <comment>%-{$current_version_length}s</comment> | %s",
 								$metadata['version'],
-								implode(', ', array_keys($updates_available))
+								implode(', ', $versions)
 							);
 						}
 						else
