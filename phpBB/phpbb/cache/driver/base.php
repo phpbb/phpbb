@@ -61,6 +61,11 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 		unset($this->sql_rowset);
 		unset($this->sql_row_pointer);
 
+		if (function_exists('opcache_reset'))
+		{
+			@opcache_reset();
+		}
+
 		$this->vars = array();
 		$this->sql_rowset = array();
 		$this->sql_row_pointer = array();
