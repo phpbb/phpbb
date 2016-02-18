@@ -195,9 +195,7 @@ class environment extends \Twig_Environment
 	 */
 	public function render($name, array $context = [])
 	{
-		$output = parent::render($name, $context);
-
-		return $this->inject_assets($output);
+		return $this->display_with_assets($name, $context);
 	}
 
 	/**
@@ -205,26 +203,25 @@ class environment extends \Twig_Environment
 	 */
 	public function display($name, array $context = [])
 	{
-		$level = ob_get_level();
-		ob_start();
+		echo $this->display_with_assets($name, $context);
+	}
 
-		try
+	/**
+	 * {@inheritdoc}
+	 */
+	private function display_with_assets($name, array $context = [])
+	{
+		$placeholder_salt = unique_id();
+
+		if (array_key_exists('definition', $context))
 		{
-			parent::display($name, $context);
-		}
-		catch (\Exception $e)
-		{
-			while (ob_get_level() > $level)
-			{
-				ob_end_clean();
-			}
-
-			throw $e;
+			$context['definition']->set('SCRIPTS', '__SCRIPTS_' . $placeholder_salt . '__');
+			$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
 		}
 
-		$output = ob_get_clean();
+		$output = parent::render($name, $context);
 
-		echo $this->inject_assets($output);
+		return $this->inject_assets($output, $placeholder_salt);
 	}
 
 	/**
@@ -234,10 +231,10 @@ class environment extends \Twig_Environment
 	 *
 	 * @return string
 	 */
-	private function inject_assets($output)
+	private function inject_assets($output, $placeholder_salt)
 	{
-		$output = str_replace('__STYLESHEETS_PLACEHOLDER__', $this->assets_bag->get_stylesheets_content(), $output);
-		$output = str_replace('__SCRIPTS_PLACEHOLDER__', $this->assets_bag->get_scripts_content(), $output);
+		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
+		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
 
 		return $output;
 	}

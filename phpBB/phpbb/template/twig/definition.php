@@ -19,10 +19,7 @@ namespace phpbb\template\twig;
 class definition
 {
 	/** @var array **/
-	protected $definitions = array(
-		'SCRIPTS'		=> '__SCRIPTS_PLACEHOLDER__',
-		'STYLESHEETS'	=> '__STYLESHEETS_PLACEHOLDER__'
-	);
+	protected $definitions = array();
 
 	/**
 	* Get a DEFINE'd variable
