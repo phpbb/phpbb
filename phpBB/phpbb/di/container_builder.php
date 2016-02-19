@@ -589,7 +589,7 @@ class container_builder
 			->ignoreUnreadableDirs(true)
 			->ignoreVCS(true)
 			->followLinks()
-			->in($this->phpbb_root_path . 'ext/')
+			->in($this->phpbb_root_path . 'ext')
 		;
 
 		/** @var \SplFileInfo $pass */
