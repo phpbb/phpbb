@@ -84,23 +84,17 @@ class acp_help_phpbb
 		if ($submit)
 		{
 			$config->set('help_send_statistics', $request->variable('help_send_statistics', false));
+			$response = $request->variable('send_statistics_response', '');
 
-			if ($config['help_send_statistics'])
+			if (!empty($response))
 			{
-				$client = new \GuzzleHttp\Client([
-						'timeout'			=> 6,
-						'connect_timeout'	=> 6,
-				]);
-
-				$response = $client->post($collect_url, [
-					'body' => [
-						'systemdata'	=> $collector->get_data_for_form(),
-					]
-				]);
-				$response_status = $response->getStatusCode();
-
-				if ($response_status >= 200 && $response_status < 300)
+				if ((strpos($response, 'Thank you') !== false || strpos($response, 'Flood protection') !== false))
 				{
+					// Update time when statistics were actually sent
+					if (strpos($response, 'Thank you') !== false)
+					{
+						$config->set('help_send_statistics_time', time());
+					}
 					trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
 				}
 				else
@@ -108,14 +102,18 @@ class acp_help_phpbb
 					trigger_error($user->lang('FAIL_SEND_STATISTICS') . adm_back_link($this->u_action));
 				}
 			}
+
+			trigger_error($user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 		}
 
 		$template->assign_vars(array(
-			'U_COLLECT_STATS'	=> $collect_url,
-			'S_COLLECT_STATS'	=> (!empty($config['help_send_statistics'])) ? true : false,
-			'RAW_DATA'			=> $collector->get_data_for_form(),
-			'U_ACP_MAIN'		=> append_sid("{$phpbb_admin_path}index.$phpEx"),
-			'U_ACTION'			=> $this->u_action,
+			'U_COLLECT_STATS'		=> $collect_url,
+			'S_COLLECT_STATS'		=> (!empty($config['help_send_statistics'])) ? true : false,
+			'RAW_DATA'				=> $collector->get_data_for_form(),
+			'U_ACP_MAIN'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
+			'U_ACTION'				=> $this->u_action,
+			// Pass earliest time we should try to send stats again
+			'COLLECT_STATS_TIME'	=> intval($config['help_send_statistics_time']) + 86400,
 		));
 
 		$raw = $collector->get_data_raw();

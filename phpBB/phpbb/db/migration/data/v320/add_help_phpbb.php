@@ -31,6 +31,7 @@ class add_help_phpbb extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('help_send_statistics', true)),
+			array('config.add', array('help_send_statistics_time', 0)),
 			array('module.remove', array(
 				'acp',
 				false,
