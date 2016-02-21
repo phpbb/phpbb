@@ -975,7 +975,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	}
 
 	// Sort correctly
-	if ($config['display_order'])
+	if (!$config['display_order'])
 	{
 		// Ascending sort
 		krsort($attachments);
@@ -1233,7 +1233,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	foreach ($matches[0] as $num => $capture)
 	{
 		// Flip index if we are displaying the reverse way
-		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
+		$index = (!$config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
 		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
