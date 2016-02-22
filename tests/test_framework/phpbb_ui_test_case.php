@@ -424,6 +424,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->visit('ucp.php');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), self::$webDriver->getPageSource());
 
+		self::$webDriver->manage()->deleteAllCookies();
+
 		self::find_element('cssSelector', 'input[name=username]')->sendKeys($username);
 		self::find_element('cssSelector', 'input[name=password]')->sendKeys($username . $username);
 		self::find_element('cssSelector', 'input[name=login]')->click();
