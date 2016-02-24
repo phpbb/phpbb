@@ -157,7 +157,7 @@ class enable_extensions extends task_base
 	 */
 	static public function get_step_count()
 	{
-		return 0;
+		return 1;
 	}
 
 	/**
