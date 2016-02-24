@@ -11,14 +11,7 @@
 *
 */
 
-/**
-* @ignore
-*/
-define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+require_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 $mode = $request->variable('mode', '');
 
@@ -29,8 +22,6 @@ if ($mode === 'contactadmin')
 }
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
 // Setting a variable to let the style designer know where he is...

@@ -1,0 +1,13 @@
+services:
+    legacy.handler:
+        class: phpbb\legacy\http\legacy_handler
+        arguments:
+            - "@http_kernel"
+            - "%legacy.root_dir%"
+            - "@?debug.stopwatch"
+
+    legacy.http_kernel:
+        class: phpbb\legacy\httpkernel\legacy_http_kernel
+        decorates: http_kernel
+        arguments:
+            - "@legacy.http_kernel.inner"

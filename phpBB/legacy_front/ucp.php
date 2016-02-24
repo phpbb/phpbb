@@ -11,15 +11,8 @@
 *
 */
 
-/**
-* @ignore
-*/
-define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-require($phpbb_root_path . 'common.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+require_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+require_once($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 
 // Basic parameter data
 $id 	= $request->variable('i', '');
@@ -31,8 +24,6 @@ if (in_array($mode, array('login', 'login_link', 'logout', 'confirm', 'sendpassw
 }
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
 $user->setup('ucp');
 
 // Setting a variable to let the style designer know where he is...
