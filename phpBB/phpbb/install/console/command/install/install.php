@@ -80,6 +80,10 @@ class install extends \phpbb\console\command\command
 				'config-file',
 				InputArgument::REQUIRED,
 				$this->language->lang('CLI_CONFIG_FILE'))
+			->addArgument(
+				'install-extensions',
+				InputArgument::OPTIONAL,
+				$this->language->lang('CLI_INSTALL_EXTENSIONS'))
 			->setDescription($this->language->lang('CLI_INSTALL_BOARD'))
 		;
 	}
@@ -147,6 +151,7 @@ class install extends \phpbb\console\command\command
 		}
 
 		$this->register_configuration($iohandler, $config);
+		$this->register_install_extensions($iohandler, $input);
 
 		try
 		{
@@ -203,5 +208,18 @@ class install extends \phpbb\console\command\command
 		$iohandler->set_input('server_port', $config['server']['server_port']);
 		$iohandler->set_input('script_path', $config['server']['script_path']);
 		$iohandler->set_input('submit_server', 'submit');
+	}
+
+	/**
+	 * Register extensions to install during installation
+	 *
+	 * @param cli_iohandler $iohandler
+	 * @param InputInterface $input
+	 */
+	private function register_install_extensions(cli_iohandler $iohandler, InputInterface $input)
+	{
+		$install_extensions = $input->getArgument('install-extensions');
+		$install_extensions = !empty($install_extensions) ? explode(',', $install_extensions) : array();
+		$iohandler->set_input('install-extensions', $install_extensions);
 	}
 }

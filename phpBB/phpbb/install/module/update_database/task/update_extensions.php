@@ -18,6 +18,7 @@ use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\install\helper\update_helper;
 use phpbb\install\task_base;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -111,6 +112,9 @@ class enable_extensions extends task_base
 		$this->user->session_begin();
 		$this->user->setup(array('common', 'acp/common', 'cli'));
 
+		$input = new ArgvInput();
+		$update_extensions = explode(',', $input->getArgument('update-extensions'));
+
 		$update_info = $this->install_config->get('update_info_unprocessed', array());
 
 		if (!empty($update_info))
@@ -122,7 +126,8 @@ class enable_extensions extends task_base
 				$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
 
 				// Skip extensions that were not added or updated during update
-				if (!count(preg_grep('#ext/' . $ext_name . '#', $update_info['files'])))
+				if (!count(preg_grep('#ext/' . $ext_name . '#', $update_info['files'])) &&
+					!in_array($ext_name, $update_extensions) && $ext_name !== 'phpbb/viglink')
 				{
 					continue;
 				}

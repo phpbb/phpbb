@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_finish\task;
 
+use Symfony\Component\Console\Input\ArgvInput;
+
 /**
  * Installs extensions that exist in ext folder upon install
  */
@@ -100,11 +102,18 @@ class install_extensions extends \phpbb\install\task_base
 		$this->user->session_begin();
 		$this->user->setup(array('common', 'acp/common', 'cli'));
 
+		$install_extensions = $this->iohandler->get_input('install-extensions', array());
+
 		// Find available extensions
 		foreach ($this->finder as $file)
 		{
 			/** @var \SplFileInfo $file */
 			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
+
+			if (!empty($install_extensions) && !in_array($ext_name, $install_extensions))
+			{
+				continue;
+			}
 
 			if ($this->extension_manager->is_available($ext_name))
 			{
