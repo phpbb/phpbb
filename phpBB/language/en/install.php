@@ -121,8 +121,6 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'INST_ERR_MISSING_DATA'		=> 'You must fill out all fields in this block.',
 
-	'PHPBB_ALREADY_INSTALLED'	=> 'phpBB is already installed.',
-
 	'TIMEOUT_DETECTED_TITLE'	=> 'The installer detected a timeout',
 	'TIMEOUT_DETECTED_MESSAGE'	=> 'The installer has detected a timeout, you may try to refresh the page, which may lead to data corruption. We suggest that you either increase your timeout settings or try to use the CLI.',
 ));
@@ -319,6 +317,7 @@ $lang = array_merge($lang, array(
 // CLI messages
 $lang = array_merge($lang, array(
 	'CLI_INSTALL_BOARD'				=> 'Install phpBB',
+	'CLI_UPDATE_BOARD'				=> 'Update phpBB',
 	'CLI_INSTALL_SHOW_CONFIG'		=> 'Show the configuration which will be used',
 	'CLI_INSTALL_VALIDATE_CONFIG'	=> 'Validate a configuration file',
 	'CLI_CONFIG_FILE'				=> 'Config file to use',

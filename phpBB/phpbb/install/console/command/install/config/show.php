@@ -14,7 +14,6 @@
 namespace phpbb\install\console\command\install\config;
 
 use phpbb\install\helper\iohandler\factory;
-use phpbb\install\installer;
 use phpbb\install\installer_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
@@ -34,11 +33,6 @@ class show extends \phpbb\console\command\command
 	protected $iohandler_factory;
 
 	/**
-	 * @var installer
-	 */
-	protected $installer;
-
-	/**
 	 * @var language
 	 */
 	protected $language;
@@ -48,12 +42,10 @@ class show extends \phpbb\console\command\command
 	 *
 	 * @param language $language
 	 * @param factory $factory
-	 * @param installer $installer
 	 */
-	public function __construct(language $language, factory $factory, installer $installer)
+	public function __construct(language $language, factory $factory)
 	{
 		$this->iohandler_factory = $factory;
-		$this->installer = $installer;
 		$this->language = $language;
 
 		parent::__construct(new \phpbb\user($language, 'datetime'));
@@ -126,6 +118,6 @@ class show extends \phpbb\console\command\command
 			return;
 		}
 
-		$iohandler->add_log_message(Yaml::dump(array('installer' => $config), 10, 4, true, false));
+		$style->block(Yaml::dump(array('installer' => $config), 10, 4, true, false));
 	}
 }

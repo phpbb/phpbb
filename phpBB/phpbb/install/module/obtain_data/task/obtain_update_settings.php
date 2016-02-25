@@ -53,6 +53,14 @@ class obtain_update_settings extends task_base
 		if ($this->iohandler->get_input('submit_update', false))
 		{
 			$update_files = $this->iohandler->get_input('update_type', 'all') === 'all';
+
+			if ($this->installer_config->get('disable_filesystem_update', false) && $update_files)
+			{
+				$this->iohandler->add_error_message('UPDATE_FILES_NOT_FOUND');
+
+				throw new user_interaction_required_exception();
+			}
+
 			$this->installer_config->set('do_update_files', $update_files);
 		}
 		else
