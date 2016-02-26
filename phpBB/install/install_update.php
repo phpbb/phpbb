@@ -283,6 +283,7 @@ class install_update extends module
 
 				// Make sure the update list is destroyed.
 				$cache->destroy('_update_list');
+				$cache->destroy('_update_list_time');
 				$cache->destroy('_diff_files');
 				$cache->destroy('_expected_files');
 			break;
