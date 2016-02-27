@@ -531,10 +531,9 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 		// Okay we need to get the reason from the warned users language
-		// Only load up the language pack if the language is different to the current one
+		// Attempt to translate warning to language of user being warned if user's language differs from issuer's language
 		if ($user_row['user_lang'] != $user->lang_name)
 		{
-			// Load up the language pack
 			$lang = array();
 
 			$user_row['user_lang'] = (file_exists($phpbb_root_path . 'language/' . basename($user_row['user_lang']) . "/mcp." . $phpEx)) ? $user_row['user_lang'] : $config['default_lang'];
@@ -543,7 +542,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 			$warn_pm_subject = $lang['WARNING_PM_SUBJECT'];
 			$warn_pm_body = sprintf($lang['WARNING_PM_BODY'], $warning);
 
-			unset($lang); // Free memory
+			unset($lang);
 		}
 		else
 		{
