@@ -214,7 +214,7 @@ class messenger
 	{
 		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
 
-		$template_dir_prefix = (!$template_dir_prefix || substr($template_dir_prefix, 0, 1) === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
+		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
 		$this->setup_template();
 
