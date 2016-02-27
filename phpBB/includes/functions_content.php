@@ -434,7 +434,20 @@ function phpbb_clean_search_string($search_string)
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $phpbb_container;
+	global $phpbb_container, $phpbb_dispatcher;
+
+	/**
+	 * Use this event to modify the message before it is decoded
+	 *
+	 * @event core.decode_message_before
+	 * @var string	message_text	The message content
+	 * @var string	bbcode_uid		The message BBCode UID
+	 * @since 3.1.9-RC1
+	 */
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
+	extract($phpbb_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
+	$message = $message_text;
 
 	if (preg_match('#^<[rt][ >]#', $message))
 	{
@@ -460,6 +473,19 @@ function decode_message(&$message, $bbcode_uid = '')
 
 		$message = preg_replace($match, $replace, $message);
 	}
+
+	/**
+	* Use this event to modify the message after it is decoded
+	*
+	* @event core.decode_message_after
+	* @var string	message_text	The message content
+	* @var string	bbcode_uid		The message BBCode UID
+	* @since 3.1.9-RC1
+	*/
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
+	extract($phpbb_dispatcher->trigger_event('core.decode_message_after', compact($vars)));
+	$message = $message_text;
 }
 
 /**
