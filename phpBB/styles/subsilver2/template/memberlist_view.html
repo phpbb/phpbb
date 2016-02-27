@@ -53,6 +53,7 @@
 					<td class="genmed" align="center">[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- EVENT memberlist_view_zebra_before -->
 			<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 				<tr>
 					<td class="genmed" align="center">[
@@ -66,6 +67,7 @@
 					]</td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- EVENT memberlist_view_zebra_after -->
 			</table>
 		</td>
 		<td class="row1">
@@ -129,6 +131,7 @@
 				<td><!-- IF U_JABBER --><a href="{U_JABBER}" onclick="popup(this.href, 550, 320); return false" class="imageset">{JABBER_IMG}</a><!-- ELSEIF USER_JABBER -->{USER_JABBER_IMG}<!-- ENDIF --></td>
 			</tr>
 			<!-- ENDIF -->
+			<!-- EVENT memberlist_view_contact_custom_fields_before -->
 			<!-- BEGIN custom_fields -->
 				<!-- IF custom_fields.S_PROFILE_CONTACT -->
 				<tr>
@@ -141,6 +144,7 @@
 				</tr>
 				<!-- ENDIF -->
 			<!-- END custom_fields -->
+			<!-- EVENT memberlist_view_contact_custom_fields_after -->
 			</table>
 		</td>
 		<td class="row1">
@@ -162,6 +166,7 @@
 					<td><b class="genmed">{PROFILE_FIELD1_VALUE}</b></td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- EVENT memberlist_view_non_contact_custom_fields_before -->
 			<!-- BEGIN custom_fields -->
 				<!-- IF not custom_fields.S_PROFILE_CONTACT -->
 				<tr>
@@ -170,6 +175,7 @@
 				</tr>
 				<!-- ENDIF -->
 			<!-- END custom_fields -->
+			<!-- EVENT memberlist_view_non_contact_custom_fields_after -->
 			</table>
 		</td>
 	</tr>
