@@ -937,6 +937,20 @@ memberlist_view_contact_before
 * Since: 3.1.0-b2
 * Purpose: Add content before the user contact part of any user profile
 
+memberlist_view_contact_custom_fields_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.9-RC1
+* Purpose: Add content after the user contact related custom fields
+
+memberlist_view_contact_custom_fields_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.9-RC1
+* Purpose: Add content before the user contact related custom fields
+
 memberlist_view_content_append
 ===
 * Locations:
@@ -950,6 +964,20 @@ memberlist_view_content_prepend
     + styles/prosilver/template/memberlist_view.html
 * Since: 3.1.0-b3
 * Purpose: Add custom content to the user profile view before the main content
+
+memberlist_view_non_contact_custom_fields_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.9-RC1
+* Purpose: Add content after the user not contact related custom fields
+
+memberlist_view_non_contact_custom_fields_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.9-RC1
+* Purpose: Add content before the user not contact related custom fields
 
 memberlist_view_rank_avatar_after
 ===
@@ -992,6 +1020,20 @@ memberlist_view_user_statistics_before
     + styles/prosilver/template/memberlist_view.html
 * Since: 3.1.0-a1
 * Purpose: Add entries before the user statistics part of any user profile
+
+memberlist_view_zebra_after
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.9-RC1
+* Purpose: Add content after the user friends/foes links
+
+memberlist_view_zebra_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_view.html
+* Since: 3.1.9-RC1
+* Purpose: Add content before the user friends/foes links
 
 navbar_header_logged_out_content
 ===
