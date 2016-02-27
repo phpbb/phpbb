@@ -409,14 +409,14 @@ function decode_message(&$message, $bbcode_uid = '')
 	* Use this event to modify the message before it is decoded
 	*
 	* @event core.decode_message_before
-	* @var string	message			The message content
+	* @var string	message_text	The message content
 	* @var string	bbcode_uid		The message BBCode UID
-	* @var string	match			Match pattern to replace
-	* @var int		replace			Replacement for the matched text
-	* @since 3.1.8-RC1
+	* @since 3.1.9-RC1
 	*/
-	$vars = array('message', 'bbcode_uid', 'match', 'replace');
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
 	extract($phpbb_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
+	$message = $message_text;
 
 	$message = str_replace($match, $replace, $message);
 
@@ -429,14 +429,14 @@ function decode_message(&$message, $bbcode_uid = '')
 	* Use this event to modify the message after it is decoded
 	*
 	* @event core.decode_message_after
-	* @var string	message			The message content
+	* @var string	message_text	The message content
 	* @var string	bbcode_uid		The message BBCode UID
-	* @var string	match			Match pattern to replace
-	* @var int		replace			Replacement for the matched text
-	* @since 3.1.8-RC1
+	* @since 3.1.9-RC1
 	*/
-	$vars = array('message', 'bbcode_uid', 'match', 'replace');
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
 	extract($phpbb_dispatcher->trigger_event('core.decode_message_after', compact($vars)));
+	$message = $message_text;
 }
 
 /**
