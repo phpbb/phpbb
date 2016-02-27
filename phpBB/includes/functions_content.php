@@ -428,7 +428,7 @@ function phpbb_clean_search_string($search_string)
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $config;
+	global $config, $phpbb_dispatcher;
 
 	if ($bbcode_uid)
 	{
@@ -441,12 +441,38 @@ function decode_message(&$message, $bbcode_uid = '')
 		$replace = array("\n");
 	}
 
+	/**
+	* Use this event to modify the message before it is decoded
+	*
+	* @event core.decode_message_before
+	* @var string	message_text	The message content
+	* @var string	bbcode_uid		The message BBCode UID
+	* @since 3.1.9-RC1
+	*/
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
+	extract($phpbb_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
+	$message = $message_text;
+
 	$message = str_replace($match, $replace, $message);
 
 	$match = get_preg_expression('bbcode_htm');
 	$replace = array('\1', '\1', '\2', '\1', '', '');
 
 	$message = preg_replace($match, $replace, $message);
+
+	/**
+	* Use this event to modify the message after it is decoded
+	*
+	* @event core.decode_message_after
+	* @var string	message_text	The message content
+	* @var string	bbcode_uid		The message BBCode UID
+	* @since 3.1.9-RC1
+	*/
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
+	extract($phpbb_dispatcher->trigger_event('core.decode_message_after', compact($vars)));
+	$message = $message_text;
 }
 
 /**
