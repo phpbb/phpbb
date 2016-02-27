@@ -1129,6 +1129,32 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$db->sql_freeresult($result);
 	}
 
+	/**
+	* Event to modify the posts list for topic reviews
+	*
+	* @event core.topic_review_modify_post_list
+	* @var	array	attachments			Array with the post attachments data
+	* @var	int		cur_post_id			Post offset ID
+	* @var	int		forum_id			The topic's forum ID
+	* @var	string	mode				The topic review mode
+	* @var	array	post_list			Array with the post IDs
+	* @var	array	rowset				Array with the posts data
+	* @var	bool	show_quote_button	Flag indicating if the quote button should be displayed
+	* @var	int		topic_id			The topic ID that is being reviewed
+	* @since 3.1.9-RC1
+	*/
+	$vars = array(
+		'attachments',
+		'cur_post_id',
+		'forum_id',
+		'mode',
+		'post_list',
+		'rowset',
+		'show_quote_button',
+		'topic_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.topic_review_modify_post_list', compact($vars)));
+
 	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		// A non-existing rowset only happens if there was no user present for the entered poster_id
