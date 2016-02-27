@@ -13,6 +13,9 @@
 	var currentProgress = 0;
 	var refreshRequested = false;
 	var transmissionOver = false;
+	var status = '';
+	var statusCount = 0;
+	var statusTimeout = null;
 
 	// Template related variables
 	var $contentWrapper = $('.install-body').find('.main');
@@ -372,12 +375,45 @@
 			}
 
 			if (timeoutDetected) {
-				addMessage('error',
-					[{
-						title: installLang.title,
-						description: installLang.msg
-					}]
-				);
+				status = queryInstallerStatus();
+				statusCount = 0;
+
+				if (status === 'continue') {
+					refreshRequested = false;
+					doRefresh();
+				} else if (status === 'running')	{
+					statusTimeout = setTimeout(function() {
+						var s = queryInstallerStatus();
+						if (statusCount === 12) { // 1 minute hard cap
+							s = 'fail';
+						}
+
+						if (s === 'continue') {
+							refreshRequested = false;
+							doRefresh();
+							clearTimeout(statusTimeout);
+						} else if (s === 'fail') {
+							addMessage('error',
+								[{
+									title: installLang.title,
+									description: installLang.msg
+								}]
+							);
+							clearTimeout(statusTimeout);
+						}
+
+						statusCount++;
+						},
+						5000
+					);
+				} else {
+					addMessage('error',
+						[{
+							title: installLang.title,
+							description: installLang.msg
+						}]
+					);
+				}
 			}
 		}
 	}
@@ -563,5 +599,19 @@
 			event.preventDefault();
 			submitForm($form, $(this));
 		});
+	}
+
+	/**
+	 * Queries the installer's status
+	 */
+	function queryInstallerStatus()
+	{
+		var data = null;
+		$.ajax({url: "../installer/status", dataType: "json"})
+		.done(function(d) {
+			data = d;
+		});
+
+		return data.status;
 	}
 })(jQuery); // Avoid conflicts with other libraries

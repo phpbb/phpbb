@@ -26,7 +26,7 @@ services:
             - { name: service_collection, tag: install_finish, class_name_aware: true }
 
     installer.module.finish_install:
-        class: phpbb\install\module\install_filesystem\module
+        class: phpbb\install\module\install_finish\module
         parent: installer.module_base
         arguments:
             - '@installer.module.install_finish_collection'
