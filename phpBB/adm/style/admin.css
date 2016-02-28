@@ -1782,7 +1782,7 @@ li.pagination ul {
 
 /* Action Highlighting
 ---------------------------------------- */
-.successbox, .errorbox {
+.successbox, .errorbox, .infobox {
 	padding: 8px;
 	margin: 10px 0;
 	color: #FFFFFF;
@@ -1806,19 +1806,25 @@ li.pagination ul {
 	background-color: #BC2A4D;
 }
 
-.successbox h3, .errorbox h3 {
+.infobox {
+	background-color: #888888;
+	text-align: left;
+}
+
+.successbox h3, .errorbox, .infobox h3 {
 	color: #FFFFFF;
 	margin: 0 0 0.5em;
 	font-size: 1.10em;
 	font-family: "Lucida Grande",Verdana,Helvetica,Arial,sans-serif;
 }
 
-.successbox p, .errorbox p {
+.successbox p, .errorbox, .infobox p {
 	color: #FFFFFF;
 	font-size: 0.85em;
 	margin-bottom: 0;
 }
 
+.infobox a:link, .infobox a:active, .infobox a:visited,
 .errorbox a:link, .errorbox a:active, .errorbox a:visited,
 .successbox a:link, .successbox a:active, .successbox a:visited {
 	color: #DBD7D1;
@@ -1826,7 +1832,7 @@ li.pagination ul {
 	font-weight: bold;
 }
 
-.errorbox a:hover, .successbox a:hover {
+.errorbox a:hover, .successbox, infobox a:hover {
 	color: #FFFFFF;
 	text-decoration: none;
 	font-weight: bold;
