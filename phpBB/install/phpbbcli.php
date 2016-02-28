@@ -36,6 +36,9 @@ require($startup_path);
 
 $input = new ArgvInput();
 
+// Enable superglobals for cli support
+$phpbb_installer_container->get('request')->enable_super_globals();
+
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
 
