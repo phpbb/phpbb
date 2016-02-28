@@ -1,2 +1,2 @@
 udater:
-    type: db_only 
+    type: all

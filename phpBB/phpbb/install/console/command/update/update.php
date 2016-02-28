@@ -170,7 +170,10 @@ class update extends \phpbb\console\command\command
 		$iohandler->set_input('update_type', $config['type']);
 		$iohandler->set_input('submit_update', 'submit');
 
-		$iohandler->set_input('method', '.tar');
+		$iohandler->set_input('compression_method', '.tar');
+		$iohandler->set_input('method', 'direct_file');
 		$iohandler->set_input('submit_update_file', 'submit');
+
+		$iohandler->set_input('submit_continue_file_update', 'submit');
 	}
 }
