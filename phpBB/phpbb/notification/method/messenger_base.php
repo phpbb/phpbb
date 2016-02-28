@@ -97,7 +97,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
-			$messenger->template($template_dir_prefix . $notification->get_email_template(), $user['user_lang']);
+			$messenger->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
 
 			$messenger->set_addresses($user);
 
