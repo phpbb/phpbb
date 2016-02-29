@@ -123,6 +123,22 @@ class add extends \phpbb\console\command\command
 			);
 		}
 
+		$data = array(
+			'username'		=> $username,
+			'new_password'	=> $password,
+			'email'			=> $email,
+		);
+
+		try
+		{
+			$this->validate_user_data($data);
+		}
+		catch (runtime_exception $e)
+		{
+			$io->error($e->getMessage());
+			return 1;
+		}
+
 		try
 		{
 			$group_id = $this->get_group_id();
@@ -188,6 +204,38 @@ class add extends \phpbb\console\command\command
 			false,
 			null
 		);
+	}
+
+	/**
+	* Validate the submitted user data
+	*
+	* @param array $data The user data array
+	* @throws runtime_exception if any data fails validation
+	* @return null
+	*/
+	protected function validate_user_data($data)
+	{
+		if (!function_exists('validate_data'))
+		{
+			require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+		}
+
+		$error = validate_data($data, array(
+			'username'		=> array(
+				array('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
+				array('username', '')),
+			'new_password'		=> array(
+				array('string', false, $this->config['min_pass_chars'], $this->config['max_pass_chars']),
+				array('password')),
+			'email'			=> array(
+				array('string', false, 6, 60),
+				array('user_email')),
+		));
+
+		if ($error)
+		{
+			throw new runtime_exception(implode("\n", array_map(array($this->user, 'lang'), $error)));
+		}
 	}
 
 	/**

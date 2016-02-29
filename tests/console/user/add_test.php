@@ -49,6 +49,11 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 		$config = $this->config = new \phpbb\config\config(array(
 			'board_timezone'	=> 'UTC',
 			'default_lang'		=> 'en',
+			'min_name_chars'	=> 3,
+			'max_name_chars'	=> 10,
+			'min_pass_chars'	=> 3,
+			'max_pass_chars'	=> 10,
+			'pass_complex'		=> 'PASS_TYPE_ANY',
 		));
 
 		$db = $this->db = $this->new_dbal();
@@ -108,6 +113,24 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 		$this->assertNotEquals(null, $this->get_user_id('bar'));
 		$this->assertContains('SUCCESS_ADD_USER', $command_tester->getDisplay());
 
+	}
+
+	public function test_add_no_dialog_invalid()
+	{
+		$command_tester = $this->get_command_tester();
+
+		$this->assertEquals(3, $this->get_user_id('Test'));
+
+		$command_tester->execute(array(
+			'command'		=> $this->command_name,
+			'--username'	=> 'Test',
+			'--password'	=> '1',
+			'--email'		=> 'foo'
+		));
+
+		$this->assertContains('USERNAME_TAKEN', $command_tester->getDisplay());
+		$this->assertContains('TOO_SHORT', $command_tester->getDisplay());
+		$this->assertContains('EMAIL_INVALID', $command_tester->getDisplay());
 	}
 
 	public function get_command_tester()
