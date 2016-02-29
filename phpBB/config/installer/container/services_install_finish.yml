@@ -41,4 +41,4 @@ services:
         arguments:
             - '@installer.module.install_finish_collection'
         tags:
-            - { name: installer_install_module, order: 80 }
+            - { name: installer_install_module, order: 60 }
