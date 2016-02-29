@@ -68,7 +68,7 @@ class add extends \phpbb\console\command\command
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
-		$language->add_lang('ucp');
+		$this->language->add_lang('ucp');
 		parent::__construct($user);
 	}
 
