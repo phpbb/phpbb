@@ -125,9 +125,7 @@ class add extends \phpbb\console\command\command
 			$question->setValidator(function ($value) use ($self, $helper, $input, $output) {
 				$question = new Question($self->ask_user('CONFIRM_PASSWORD'));
 				$question->setHidden(true);
-
-				$confirm = $helper->ask($input, $output, $question);
-				if ($confirm != $value)
+				if ($helper->ask($input, $output, $question) != $value)
 				{
 					throw new runtime_exception($self->language->lang('NEW_PASSWORD_ERROR'));
 				}
@@ -148,15 +146,6 @@ class add extends \phpbb\console\command\command
 		try
 		{
 			$this->validate_user_data($data);
-		}
-		catch (runtime_exception $e)
-		{
-			$io->error($e->getMessage());
-			return 1;
-		}
-
-		try
-		{
 			$group_id = $this->get_group_id();
 		}
 		catch (runtime_exception $e)
