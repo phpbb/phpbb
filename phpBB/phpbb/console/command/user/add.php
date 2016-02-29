@@ -125,7 +125,6 @@ class add extends \phpbb\console\command\command
 			$question->setValidator(function ($value) use ($self, $helper, $input, $output) {
 				$question = new Question($self->ask_user('CONFIRM_PASSWORD'));
 				$question->setHidden(true);
-				$question->setHiddenFallback(false);
 
 				$confirm = $helper->ask($input, $output, $question);
 				if ($confirm != $value)
@@ -135,7 +134,6 @@ class add extends \phpbb\console\command\command
 				return $value;
 			});
 			$question->setHidden(true);
-			$question->setHiddenFallback(false);
 			$question->setMaxAttempts(5);
 
 			$data['new_password'] = $helper->ask($input, $output, $question);
@@ -223,7 +221,7 @@ class add extends \phpbb\console\command\command
 
 		if ($error)
 		{
-			throw new runtime_exception(implode("\n", array_map(array($this->user, 'lang'), $error)));
+			throw new runtime_exception(implode("\n", array_map(array($this->language, 'lang'), $error)));
 		}
 	}
 

@@ -24,9 +24,10 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 	protected $db;
 	protected $config;
 	protected $user;
+	protected $language;
 	protected $passwords_manager;
 	protected $command_name;
-	protected $dialog;
+	protected $question;
 	protected $phpbb_root_path;
 	protected $php_ext;
 
@@ -59,11 +60,16 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 
 		$db = $this->db = $this->new_dbal();
 
+		$this->language = $this->getMockBuilder('\phpbb\language\language')
+			->disableOriginalConstructor()
+			->getMock();
+		$this->language->expects($this->any())
+			->method('lang')
+			->will($this->returnArgument(0));
 		$user = $this->user = $this->getMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime')
-		);
-		$this->user->method('lang')->will($this->returnArgument(0));
+			$this->language,
+			'\phpbb\datetime'
+		));
 
 		$driver_helper = new \phpbb\passwords\driver\helper($this->config);
 		$passwords_drivers = array(
@@ -105,7 +111,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 
 		$this->assertEquals(2, $this->get_user_id('Admin'));
 
-		$this->dialog->setInputStream($this->getInputStream("bar\npassword\npassword\nbar@test.com\n"));
+		$this->question->setInputStream($this->getInputStream("bar\npassword\npassword\nbar@test.com\n"));
 
 		$command_tester->execute(array(
 			'command'		=> $this->command_name,
@@ -137,11 +143,11 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new add($this->user, $this->db, $this->config, $this->passwords_manager, $this->phpbb_root_path, $this->php_ext));
+		$application->add(new add($this->user, $this->db, $this->config, $this->language, $this->passwords_manager, $this->phpbb_root_path, $this->php_ext));
 
 		$command = $application->find('user:add');
 		$this->command_name = $command->getName();
-		$this->dialog = $command->getHelper('dialog');
+		$this->question = $command->getHelper('question');
 		return new CommandTester($command);
 	}
 
