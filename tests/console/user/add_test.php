@@ -49,6 +49,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 		$config = $this->config = new \phpbb\config\config(array(
 			'board_timezone'	=> 'UTC',
 			'default_lang'		=> 'en',
+			'email_enable'		=> false,
 			'min_name_chars'	=> 3,
 			'max_name_chars'	=> 10,
 			'min_pass_chars'	=> 3,

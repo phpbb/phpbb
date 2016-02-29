@@ -78,6 +78,7 @@ class add extends \phpbb\console\command\command
 			->addOption('username', null, InputOption::VALUE_REQUIRED, $this->user->lang('CLI_DESCRIPTION_USER_ADD_OPTION_USERNAME'))
 			->addOption('password', null, InputOption::VALUE_REQUIRED, $this->user->lang('CLI_DESCRIPTION_USER_ADD_OPTION_PASSWORD'))
 			->addOption('email', null, InputOption::VALUE_REQUIRED, $this->user->lang('CLI_DESCRIPTION_USER_ADD_OPTION_EMAIL'))
+			->addOption('send-email', null, InputOption::VALUE_NONE, $this->user->lang('CLI_CONFIG_PRINT_WITHOUT_NEWLINE'))
 		;
 	}
 
@@ -166,6 +167,12 @@ class add extends \phpbb\console\command\command
 		}
 
 		$user_id = user_add($user_row);
+
+		if ($input->getOption('send-email') && $this->config['email_enable'])
+		{
+			$this->send_activation_email($user_id, $data);
+		}
+
 		$io->success($this->user->lang('SUCCESS_ADD_USER', $username));
 
 		return 0;
@@ -262,5 +269,53 @@ class add extends \phpbb\console\command\command
 		}
 
 		return $row['group_id'];
+	}
+
+	/**
+	* Send account activation email
+	*
+	* @param int $user_id The new user's id
+	* @param array $data  The user data array
+	* @return null
+	*/
+	protected function send_activation_email($user_id, $data)
+	{
+		if ($this->config['require_activation'] == USER_ACTIVATION_SELF)
+		{
+			$email_template = 'user_welcome_inactive';
+			$user_actkey = gen_rand_string(mt_rand(6, 10));
+		}
+		else if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
+		{
+			$email_template = 'admin_welcome_inactive';
+			$user_actkey = gen_rand_string(mt_rand(6, 10));
+		}
+		else
+		{
+			$email_template = 'user_welcome';
+			$user_actkey = '';
+		}
+
+		if (!class_exists('messenger'))
+		{
+			require($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
+		}
+
+		$messenger = new \messenger(false);
+
+		$messenger->template($email_template, $this->user->lang_name);
+
+		$messenger->to($data['email'], $data['username']);
+
+		$messenger->anti_abuse_headers($this->config, $this->user);
+
+		$messenger->assign_vars(array(
+			'WELCOME_MSG'	=> htmlspecialchars_decode($this->user->lang('WELCOME_SUBJECT', $this->config['sitename'])),
+			'USERNAME'		=> htmlspecialchars_decode($data['username']),
+			'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
+			'U_ACTIVATE'	=> generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
+		);
+
+		$messenger->send(NOTIFY_EMAIL);
 	}
 }
