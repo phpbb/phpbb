@@ -125,10 +125,10 @@ class install_extensions extends \phpbb\install\task_base
 					// Create log
 					$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
-			}
-			else
-			{
-				$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
+				else
+				{
+					$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
+				}
 			}
 		}
 	}
