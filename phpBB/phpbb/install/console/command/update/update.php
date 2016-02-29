@@ -87,7 +87,7 @@ class update extends \phpbb\console\command\command
 	/**
 	 * Executes the command update.
 	 *
-	 * Install the board
+	 * Update the board
 	 *
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance

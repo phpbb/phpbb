@@ -324,6 +324,7 @@ $lang = array_merge($lang, array(
 	'MISSING_FILE'					=> 'Unable to access file %1$s',
 	'MISSING_DATA'					=> 'Config file is missing data or might contain invalid settings.',
 	'INVALID_YAML_FILE'				=> 'Could not parse YAML file %1$s',
+	'CONFIGURATION_VALID'			=> 'The configuration file is valid',
 ));
 
 // Common updater messages
