@@ -11,10 +11,10 @@
 *
 */
 
-namespace phpbb\install\console\command\install\config;
+namespace phpbb\install\console\command\update\config;
 
 use phpbb\install\helper\iohandler\factory;
-use phpbb\install\installer_configuration;
+use phpbb\install\updater_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Processor;
@@ -58,7 +58,7 @@ class validate extends \phpbb\console\command\command
 	protected function configure()
 	{
 		$this
-			->setName('install:config:validate')
+			->setName('update:config:validate')
 			->addArgument(
 				'config-file',
 				InputArgument::REQUIRED,
@@ -105,7 +105,7 @@ class validate extends \phpbb\console\command\command
 		}
 
 		$processor = new Processor();
-		$configuration = new installer_configuration();
+		$configuration = new updater_configuration();
 
 		try
 		{

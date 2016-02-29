@@ -11,14 +11,14 @@
 *
 */
 
-namespace phpbb\install\console\command\install;
+namespace phpbb\install\console\command\update;
 
 use phpbb\install\exception\installer_exception;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\factory;
 use phpbb\install\installer;
-use phpbb\install\installer_configuration;
+use phpbb\install\updater_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Processor;
@@ -29,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
-class install extends \phpbb\console\command\command
+class update extends \phpbb\console\command\command
 {
 	/**
 	 * @var factory
@@ -75,24 +75,24 @@ class install extends \phpbb\console\command\command
 	protected function configure()
 	{
 		$this
-			->setName('install')
+			->setName('update')
 			->addArgument(
 				'config-file',
 				InputArgument::REQUIRED,
 				$this->language->lang('CLI_CONFIG_FILE'))
-			->setDescription($this->language->lang('CLI_INSTALL_BOARD'))
+			->setDescription($this->language->lang('CLI_UPDATE_BOARD'))
 		;
 	}
 
 	/**
-	 * Executes the command install.
+	 * Executes the command update.
 	 *
-	 * Install the board
+	 * Update the board
 	 *
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 *
-	 * @return null
+	 * @return int
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -107,9 +107,9 @@ class install extends \phpbb\console\command\command
 
 		$config_file = $input->getArgument('config-file');
 
-		if ($this->install_helper->is_phpbb_installed())
+		if (!$this->install_helper->is_phpbb_installed())
 		{
-			$iohandler->add_error_message('INSTALL_PHPBB_INSTALLED');
+			$iohandler->add_error_message('INSTALL_PHPBB_NOT_INSTALLED');
 
 			return 1;
 		}
@@ -133,7 +133,7 @@ class install extends \phpbb\console\command\command
 		}
 
 		$processor = new Processor();
-		$configuration = new installer_configuration();
+		$configuration = new updater_configuration();
 
 		try
 		{
@@ -167,40 +167,13 @@ class install extends \phpbb\console\command\command
 	 */
 	private function register_configuration(cli_iohandler $iohandler, $config)
 	{
-		$iohandler->set_input('admin_name', $config['admin']['name']);
-		$iohandler->set_input('admin_pass1', $config['admin']['password']);
-		$iohandler->set_input('admin_pass2', $config['admin']['password']);
-		$iohandler->set_input('board_email', $config['admin']['email']);
-		$iohandler->set_input('submit_admin', 'submit');
+		$iohandler->set_input('update_type', $config['type']);
+		$iohandler->set_input('submit_update', 'submit');
 
-		$iohandler->set_input('default_lang', $config['board']['lang']);
-		$iohandler->set_input('board_name', $config['board']['name']);
-		$iohandler->set_input('board_description', $config['board']['description']);
-		$iohandler->set_input('submit_board', 'submit');
+		$iohandler->set_input('compression_method', '.tar');
+		$iohandler->set_input('method', 'direct_file');
+		$iohandler->set_input('submit_update_file', 'submit');
 
-		$iohandler->set_input('dbms', $config['database']['dbms']);
-		$iohandler->set_input('dbhost', $config['database']['dbhost']);
-		$iohandler->set_input('dbport', $config['database']['dbport']);
-		$iohandler->set_input('dbuser', $config['database']['dbuser']);
-		$iohandler->set_input('dbpasswd', $config['database']['dbpasswd']);
-		$iohandler->set_input('dbname', $config['database']['dbname']);
-		$iohandler->set_input('table_prefix', $config['database']['table_prefix']);
-		$iohandler->set_input('submit_database', 'submit');
-
-		$iohandler->set_input('email_enable', $config['email']['enabled']);
-		$iohandler->set_input('smtp_delivery', $config['email']['smtp_delivery']);
-		$iohandler->set_input('smtp_host', $config['email']['smtp_host']);
-		$iohandler->set_input('smtp_auth', $config['email']['smtp_auth']);
-		$iohandler->set_input('smtp_user', $config['email']['smtp_user']);
-		$iohandler->set_input('smtp_pass', $config['email']['smtp_pass']);
-		$iohandler->set_input('submit_email', 'submit');
-
-		$iohandler->set_input('cookie_secure', $config['server']['cookie_secure']);
-		$iohandler->set_input('server_protocol', $config['server']['server_protocol']);
-		$iohandler->set_input('force_server_vars', $config['server']['force_server_vars']);
-		$iohandler->set_input('server_name', $config['server']['server_name']);
-		$iohandler->set_input('server_port', $config['server']['server_port']);
-		$iohandler->set_input('script_path', $config['server']['script_path']);
-		$iohandler->set_input('submit_server', 'submit');
+		$iohandler->set_input('submit_continue_file_update', 'submit');
 	}
 }
