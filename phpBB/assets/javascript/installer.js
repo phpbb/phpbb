@@ -13,9 +13,7 @@
 	var currentProgress = 0;
 	var refreshRequested = false;
 	var transmissionOver = false;
-	var status = '';
 	var statusCount = 0;
-	var statusTimeout = null;
 
 	// Template related variables
 	var $contentWrapper = $('.install-body').find('.main');
@@ -342,6 +340,55 @@
 	}
 
 	/**
+	 * Processes status data
+	 *
+	 * @param status
+	 */
+	function processTimeoutResponse(status) {
+		if (statusCount === 12) { // 1 minute hard cap
+			status = 'fail';
+		}
+
+		if (status === 'continue') {
+			refreshRequested = false;
+			doRefresh();
+		} else if (status === 'running') {
+			statusCount++;
+			setTimeout(queryInstallerStatus, 5000);
+		} else {
+			addMessage('error',
+				[{
+					title: installLang.title,
+					description: installLang.msg
+				}]
+			);
+		}
+	}
+
+	/**
+	 * Queries the installer's status
+	 */
+	function queryInstallerStatus() {
+		var url = $(location).attr('pathname');
+		var lookUp = 'install/app.php';
+		var position = url.indexOf(lookUp);
+
+		if (position === -1) {
+			lookUp = 'install';
+			position = url.indexOf(lookUp);
+
+			if (position === -1) {
+				return false;
+			}
+		}
+
+		url = url.substring(0, position) + lookUp + '/installer/status';
+		$.getJSON(url, function(data) {
+			processTimeoutResponse(data.status);
+		});
+	}
+
+	/**
 	 * Process updates in streamed response
 	 *
 	 * @param xhReq   XHR object
@@ -375,45 +422,8 @@
 			}
 
 			if (timeoutDetected) {
-				status = queryInstallerStatus();
 				statusCount = 0;
-
-				if (status === 'continue') {
-					refreshRequested = false;
-					doRefresh();
-				} else if (status === 'running')	{
-					statusTimeout = setTimeout(function() {
-						var s = queryInstallerStatus();
-						if (statusCount === 12) { // 1 minute hard cap
-							s = 'fail';
-						}
-
-						if (s === 'continue') {
-							refreshRequested = false;
-							doRefresh();
-							clearTimeout(statusTimeout);
-						} else if (s === 'fail') {
-							addMessage('error',
-								[{
-									title: installLang.title,
-									description: installLang.msg
-								}]
-							);
-							clearTimeout(statusTimeout);
-						}
-
-						statusCount++;
-						},
-						5000
-					);
-				} else {
-					addMessage('error',
-						[{
-							title: installLang.title,
-							description: installLang.msg
-						}]
-					);
-				}
+				queryInstallerStatus();
 			}
 		}
 	}
@@ -599,19 +609,5 @@
 			event.preventDefault();
 			submitForm($form, $(this));
 		});
-	}
-
-	/**
-	 * Queries the installer's status
-	 */
-	function queryInstallerStatus()
-	{
-		var data = null;
-		$.ajax({url: "../installer/status", dataType: "json"})
-		.done(function(d) {
-			data = d;
-		});
-
-		return data.status;
 	}
 })(jQuery); // Avoid conflicts with other libraries
