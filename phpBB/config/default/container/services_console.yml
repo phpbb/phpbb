@@ -175,18 +175,6 @@ services:
         tags:
             - { name: console.command }
 
-    console.command.user.add:
-        class: phpbb\console\command\user\add
-        arguments:
-            - '@user'
-            - '@dbal.conn'
-            - '@config'
-            - '@passwords.manager'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-        tags:
-            - { name: console.command }
-
     console.command.reparser.list:
         class: phpbb\console\command\reparser\list_all
         arguments:
@@ -229,5 +217,18 @@ services:
         class: phpbb\console\command\thumbnail\recreate
         arguments:
             - '@user'
+        tags:
+            - { name: console.command }
+
+    console.command.user.add:
+        class: phpbb\console\command\user\add
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@language'
+            - '@passwords.manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: console.command }
