@@ -175,6 +175,16 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.user.add:
+        class: phpbb\console\command\user\add
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@passwords.manager'
+        tags:
+            - { name: console.command }
+
     console.command.reparser.list:
         class: phpbb\console\command\reparser\list_all
         arguments:
