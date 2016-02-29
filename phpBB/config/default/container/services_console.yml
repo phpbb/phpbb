@@ -182,6 +182,8 @@ services:
             - '@dbal.conn'
             - '@config'
             - '@passwords.manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: console.command }
 

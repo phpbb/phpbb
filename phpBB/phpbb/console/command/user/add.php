@@ -13,9 +13,11 @@
 
 namespace phpbb\console\command\user;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class add extends \phpbb\console\command\command
 {
@@ -29,18 +31,35 @@ class add extends \phpbb\console\command\command
 	protected $password_manager;
 
 	/**
+	* phpBB root path
+	* @var string
+	*/
+	protected $phpbb_root_path;
+
+	/**
+	* PHP extension.
+	*
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
 	* Construct method
 	*
 	* @param \phpbb\user $user The user object used for language information
 	* @param \phpbb\db\driver\driver_interface $db The database in wich will be inserted the user
 	* @param \phpbb\config\config $config The config object used to get default language and timezone
 	* @param \phpbb\passwords\manager $password_manager The password manager used to store the user's password
+	* @param string $phpbb_root_path Root path
+	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $password_manager)
+	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $password_manager, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->password_manager = $password_manager;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 
 		$user->add_lang('ucp');
 		parent::__construct($user);
@@ -75,6 +94,8 @@ class add extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$dialog = $this->getHelperSet()->get('dialog');
 
 		$username = $input->getOption('username');
@@ -106,9 +127,9 @@ class add extends \phpbb\console\command\command
 		{
 			$group_id = $this->get_group_id();
 		}
-		catch (\RunTimeException $e)
+		catch (runtime_exception $e)
 		{
-			$output->writeln($e->getMessage());
+			$io->error($e->getMessage());
 			return 1;
 		}
 
@@ -125,11 +146,12 @@ class add extends \phpbb\console\command\command
 
 		if (!function_exists('user_add'))
 		{
-			require_once dirname(__FILE__) . '/../../../../includes/functions_user.php';
+			require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 		}
-		user_add($user_row);
 
-		$output->writeln('<info>' . $this->user->lang('SUCCESS_ADD_USER', $username) . '</info>');
+		$user_id = user_add($user_row);
+		$io->success($this->user->lang('SUCCESS_ADD_USER', $username));
+
 		return 0;
 	}
 
@@ -137,7 +159,7 @@ class add extends \phpbb\console\command\command
 	* Get the password
 	*
 	* Asks a password to the user and asks for confirmation.
-	* This is repeted while the two are not the same
+	* This is repeated until the password match is confirmed.
 	*
 	* @param OutputInterface $output The output stream, where messages are printed
 	* @param \Symfony\Component\Console\Helper\DialogHelper $dialog The dialog helper used to get answers to questions asked to the user
@@ -159,7 +181,7 @@ class add extends \phpbb\console\command\command
 				);
 				if ($confirm != $answer)
 				{
-					throw new \RunTimeException($current_user->lang('NEW_PASSWORD_ERROR'));
+					throw new runtime_exception($current_user->lang('NEW_PASSWORD_ERROR'));
 				}
 				return $answer;
 			},
@@ -173,7 +195,7 @@ class add extends \phpbb\console\command\command
 	*
 	* Go and find in the database the group_id corresponding to 'REGISTERED'
 	*
-	* @throws \RunTimeException if the group id does not exist in database.
+	* @throws runtime_exception if the group id does not exist in database.
 	* @return null
 	*/
 	protected function get_group_id()
@@ -188,7 +210,7 @@ class add extends \phpbb\console\command\command
 
 		if (!$row || !$row['group_id'])
 		{
-			throw new \RunTimeException($this->user->lang('NO_GROUP'));
+			throw new runtime_exception($this->user->lang('NO_GROUP'));
 		}
 
 		return $row['group_id'];

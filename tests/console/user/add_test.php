@@ -27,6 +27,8 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 	protected $passwords_manager;
 	protected $command_name;
 	protected $dialog;
+	protected $phpbb_root_path;
+	protected $php_ext;
 
 	public function getDataSet()
 	{
@@ -35,22 +37,26 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 
 	public function setUp()
 	{
-		global $db, $config, $phpbb_dispatcher, $phpbb_container;
+		global $db, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', new phpbb_mock_cache());
+		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+
+		$cache = $phpbb_container->get('cache.driver');
 
 		$config = $this->config = new \phpbb\config\config(array(
 			'board_timezone'	=> 'UTC',
 			'default_lang'		=> 'en',
 		));
-		set_config(null, null, null, $this->config);
-		set_config_count(null, null, null, $this->config);
 
 		$db = $this->db = $this->new_dbal();
 
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime')
+		);
 		$this->user->method('lang')->will($this->returnArgument(0));
 
 		$driver_helper = new \phpbb\passwords\driver\helper($this->config);
@@ -63,6 +69,9 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 
 		$passwords_helper = new \phpbb\passwords\helper;
 		$this->passwords_manager = new \phpbb\passwords\manager($this->config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
+
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 
 		parent::setUp();
 	}
@@ -104,7 +113,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new add($this->user, $this->db, $this->config, $this->passwords_manager));
+		$application->add(new add($this->user, $this->db, $this->config, $this->passwords_manager, $this->phpbb_root_path, $this->php_ext));
 
 		$command = $application->find('user:add');
 		$this->command_name = $command->getName();
