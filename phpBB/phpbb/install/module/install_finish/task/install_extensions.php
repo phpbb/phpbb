@@ -13,8 +13,6 @@
 
 namespace phpbb\install\module\install_finish\task;
 
-use Symfony\Component\Console\Input\ArgvInput;
-
 /**
  * Installs extensions that exist in ext folder upon install
  */
