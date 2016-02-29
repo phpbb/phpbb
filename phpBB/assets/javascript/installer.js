@@ -354,8 +354,10 @@
 			doRefresh();
 		} else if (status === 'running') {
 			statusCount++;
+			$('#loading_indicator').css('display', 'block');
 			setTimeout(queryInstallerStatus, 5000);
 		} else {
+			$('#loading_indicator').css('display', 'none');
 			addMessage('error',
 				[{
 					title: installLang.title,
