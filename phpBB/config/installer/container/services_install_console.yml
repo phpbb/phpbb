@@ -21,7 +21,6 @@ services:
         arguments:
             - '@language'
             - '@installer.helper.iohandler_factory'
-            - '@installer.installer.install'
         tags:
             - { name: console.installer.command }
 
@@ -31,6 +30,32 @@ services:
         arguments:
             - '@language'
             - '@installer.helper.iohandler_factory'
-            - '@installer.installer.install'
+        tags:
+            - { name: console.installer.command }
+
+    console.updater.command.update:
+        class: phpbb\install\console\command\update\update
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.installer.update'
+            - '@installer.helper.install_helper'
+        tags:
+            - { name: console.installer.command }
+
+    console.updater.command.config.show:
+        class: phpbb\install\console\command\update\config\show
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+        tags:
+            - { name: console.installer.command }
+
+
+    console.updater.command.config.validate:
+        class: phpbb\install\console\command\update\config\validate
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
         tags:
             - { name: console.installer.command }

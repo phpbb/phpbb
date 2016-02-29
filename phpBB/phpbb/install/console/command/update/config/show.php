@@ -11,10 +11,10 @@
 *
 */
 
-namespace phpbb\install\console\command\install\config;
+namespace phpbb\install\console\command\update\config;
 
 use phpbb\install\helper\iohandler\factory;
-use phpbb\install\installer_configuration;
+use phpbb\install\updater_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Processor;
@@ -25,7 +25,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
-class validate extends \phpbb\console\command\command
+class show extends \phpbb\console\command\command
 {
 	/**
 	 * @var factory
@@ -58,17 +58,17 @@ class validate extends \phpbb\console\command\command
 	protected function configure()
 	{
 		$this
-			->setName('install:config:validate')
+			->setName('update:config:show')
 			->addArgument(
 				'config-file',
 				InputArgument::REQUIRED,
 				$this->language->lang('CLI_CONFIG_FILE'))
-			->setDescription($this->language->lang('CLI_INSTALL_VALIDATE_CONFIG'))
+			->setDescription($this->language->lang('CLI_INSTALL_SHOW_CONFIG'))
 		;
 	}
 
 	/**
-	 * Validate the configuration file
+	 * Show the validated configuration
 	 *
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
@@ -88,9 +88,9 @@ class validate extends \phpbb\console\command\command
 
 		if (!is_file($config_file))
 		{
-			$iohandler->add_error_message(array('MISSING_FILE', array($config_file)));
+			$iohandler->add_error_message(array('MISSING_FILE', $config_file));
 
-			return 1;
+			return;
 		}
 
 		try
@@ -101,24 +101,23 @@ class validate extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_YAML_FILE');
 
-			return 1;
+			return;
 		}
 
 		$processor = new Processor();
-		$configuration = new installer_configuration();
+		$configuration = new updater_configuration();
 
 		try
 		{
-			$processor->processConfiguration($configuration, $config);
+			$config = $processor->processConfiguration($configuration, $config);
 		}
 		catch (Exception $e)
 		{
 			$iohandler->add_error_message('INVALID_CONFIGURATION', $e->getMessage());
 
-			return 1;
+			return;
 		}
 
-		$iohandler->add_success_message('CONFIGURATION_VALID');
-		return 0;
+		$style->block(Yaml::dump(array('updater' => $config), 10, 4, true, false));
 	}
 }
