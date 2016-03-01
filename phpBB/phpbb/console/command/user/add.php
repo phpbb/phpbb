@@ -82,10 +82,30 @@ class add extends \phpbb\console\command\command
 		$this
 			->setName('user:add')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_ADD'))
-			->addOption('username', null, InputOption::VALUE_REQUIRED, $this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_USERNAME'))
-			->addOption('password', null, InputOption::VALUE_REQUIRED, $this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_PASSWORD'))
-			->addOption('email', null, InputOption::VALUE_REQUIRED, $this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_EMAIL'))
-			->addOption('send-email', null, InputOption::VALUE_NONE, $this->language->lang('CLI_CONFIG_PRINT_WITHOUT_NEWLINE'))
+			->addOption(
+				'username',
+				null,
+				InputOption::VALUE_REQUIRED,
+				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_USERNAME')
+			)
+			->addOption(
+				'password',
+				null,
+				InputOption::VALUE_REQUIRED,
+				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_PASSWORD')
+			)
+			->addOption(
+				'email',
+				null,
+				InputOption::VALUE_REQUIRED,
+				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_EMAIL')
+			)
+			->addOption(
+				'send-email',
+				null,
+				InputOption::VALUE_NONE,
+				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_NOTIFY')
+			)
 		;
 	}
 
@@ -271,13 +291,9 @@ class add extends \phpbb\console\command\command
 		}
 
 		$messenger = new \messenger(false);
-
 		$messenger->template($email_template, $this->user->lang_name);
-
 		$messenger->to($data['email'], $data['username']);
-
 		$messenger->anti_abuse_headers($this->config, $this->user);
-
 		$messenger->assign_vars(array(
 				'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
 				'USERNAME'    => htmlspecialchars_decode($data['username']),
