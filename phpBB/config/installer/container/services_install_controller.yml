@@ -65,3 +65,9 @@ services:
             - '@template'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    phpbb.installer.controller.status:
+        class: phpbb\install\controller\timeout_check
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '%core.root_path%'

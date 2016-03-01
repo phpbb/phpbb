@@ -47,6 +47,7 @@ services:
             - '@request'
             - '@template'
             - '@router'
+            - '%core.root_path%'
 
     installer.helper.iohandler_cli:
         class: phpbb\install\helper\iohandler\cli_iohandler
