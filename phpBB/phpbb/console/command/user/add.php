@@ -134,7 +134,7 @@ class add extends \phpbb\console\command\command
 
 		if (!$data['username'])
 		{
-			$question = new Question($this->ask_user('USERNAME'), null);
+			$question = new Question($this->ask_user('USERNAME'));
 			$data['username'] = $helper->ask($input, $output, $question);
 		}
 
@@ -158,7 +158,7 @@ class add extends \phpbb\console\command\command
 
 		if (!$data['email'])
 		{
-			$question = new Question($this->ask_user('EMAIL_ADDRESS'), null);
+			$question = new Question($this->ask_user('EMAIL_ADDRESS'));
 			$data['email'] = $helper->ask($input, $output, $question);
 		}
 
