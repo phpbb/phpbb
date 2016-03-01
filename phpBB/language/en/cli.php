@@ -124,6 +124,8 @@ $lang = array_merge($lang, array(
 
 	'CLI_THUMBNAIL_NOTHING_TO_GENERATE'	=> 'No thumbnails to generate.',
 	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',
+
+	'CLI_USER_ADD_SUCCESS'		=> 'Successfully added user %s.',
 ));
 
 // Additional help for commands.

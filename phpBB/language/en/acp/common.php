@@ -309,8 +309,6 @@ $lang = array_merge($lang, array(
 
 	'SHOW_ALL_OPERATIONS'	=> 'Show all operations',
 
-	'SUCCESS_ADD_USER'		=> 'Successfully added user %s.',
-
 	'TASKS_NOT_READY'			=> 'Not ready tasks:',
 	'TASKS_READY'			=> 'Ready tasks:',
 	'TOTAL_SIZE'			=> 'Total size',

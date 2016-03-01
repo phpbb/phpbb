@@ -102,7 +102,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 		));
 
 		$this->assertNotEquals(null, $this->get_user_id('foo'));
-		$this->assertContains('SUCCESS_ADD_USER', $command_tester->getDisplay());
+		$this->assertContains('CLI_USER_ADD_SUCCESS', $command_tester->getDisplay());
 	}
 
 	public function test_add_dialog()
@@ -118,7 +118,7 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 		));
 
 		$this->assertNotEquals(null, $this->get_user_id('bar'));
-		$this->assertContains('SUCCESS_ADD_USER', $command_tester->getDisplay());
+		$this->assertContains('CLI_USER_ADD_SUCCESS', $command_tester->getDisplay());
 
 	}
 

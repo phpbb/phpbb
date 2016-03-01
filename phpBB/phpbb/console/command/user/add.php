@@ -197,7 +197,7 @@ class add extends \phpbb\console\command\command
 			$this->send_activation_email($user_id, $data);
 		}
 
-		$io->success($this->language->lang('SUCCESS_ADD_USER', $data['username']));
+		$io->success($this->language->lang('CLI_USER_ADD_SUCCESS', $data['username']));
 
 		return 0;
 	}
