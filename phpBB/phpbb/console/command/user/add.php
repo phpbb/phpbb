@@ -184,11 +184,6 @@ class add extends \phpbb\console\command\command
 			'user_regdate'  => time(),
 		);
 
-		if (!function_exists('user_add'))
-		{
-			require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
-		}
-
 		$user_id = (int) user_add($user_row);
 
 		if ($input->getOption('send-email') && $this->config['email_enable'])
@@ -294,10 +289,10 @@ class add extends \phpbb\console\command\command
 		$messenger->to($data['email'], $data['username']);
 		$messenger->anti_abuse_headers($this->config, $this->user);
 		$messenger->assign_vars(array(
-				'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-				'USERNAME'    => htmlspecialchars_decode($data['username']),
-				'PASSWORD'    => htmlspecialchars_decode($data['new_password']),
-				'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
+			'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
+			'USERNAME'    => htmlspecialchars_decode($data['username']),
+			'PASSWORD'    => htmlspecialchars_decode($data['new_password']),
+			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
 		);
 
 		$messenger->send(NOTIFY_EMAIL);
