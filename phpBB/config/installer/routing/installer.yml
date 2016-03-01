@@ -60,3 +60,8 @@ phpbb_convert_finish:
     path: /convert/finished
     defaults:
         _controller: phpbb.installer.controller.convert:finish
+
+phpbb_installer_status:
+    path: /installer/status
+    defaults:
+        _controller: phpbb.installer.controller.status:status

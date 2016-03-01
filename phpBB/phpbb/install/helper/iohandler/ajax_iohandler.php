@@ -44,6 +44,11 @@ class ajax_iohandler extends iohandler_base
 	/**
 	 * @var string
 	 */
+	protected $phpbb_root_path;
+
+	/**
+	 * @var string
+	 */
 	protected $file_status;
 
 	/**
@@ -77,14 +82,20 @@ class ajax_iohandler extends iohandler_base
 	protected $redirect_url;
 
 	/**
+	 * @var resource
+	 */
+	protected $file_lock_pointer;
+
+	/**
 	 * Constructor
 	 *
 	 * @param path_helper						$path_helper
 	 * @param \phpbb\request\request_interface	$request	HTTP request interface
 	 * @param \phpbb\template\template			$template	Template engine
 	 * @param router 							$router		Router
+	 * @param string 							$root_path	Path to phpBB's root
 	 */
-	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router)
+	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router, $root_path)
 	{
 		$this->path_helper = $path_helper;
 		$this->request	= $request;
@@ -96,6 +107,7 @@ class ajax_iohandler extends iohandler_base
 		$this->download	= array();
 		$this->redirect_url = array();
 		$this->file_status = '';
+		$this->phpbb_root_path = $root_path;
 
 		parent::__construct();
 	}
@@ -430,6 +442,33 @@ class ajax_iohandler extends iohandler_base
 	{
 		$this->redirect_url = array('url' => $url, 'use_ajax' => $use_ajax);
 		$this->send_response(true);
+	}
+
+	/**
+	 * Acquires a file lock
+	 */
+	public function acquire_lock()
+	{
+		$lock_file = $this->phpbb_root_path . 'store/io_lock.lock';
+		$this->file_lock_pointer = @fopen($lock_file, 'w+');
+
+		if ($this->file_lock_pointer)
+		{
+			flock($this->file_lock_pointer, LOCK_EX);
+		}
+	}
+
+	/**
+	 * Release file lock
+	 */
+	public function release_lock()
+	{
+		if ($this->file_lock_pointer)
+		{
+			fwrite($this->file_lock_pointer, 'ok');
+			flock($this->file_lock_pointer, LOCK_UN);
+			fclose($this->file_lock_pointer);
+		}
 	}
 
 	/**

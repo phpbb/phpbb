@@ -22,6 +22,7 @@ use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\install\helper\config;
 use phpbb\install\helper\container_factory;
+use phpbb\install\helper\iohandler\ajax_iohandler;
 use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\path_helper;
@@ -126,6 +127,11 @@ class installer
 	 */
 	public function run()
 	{
+		if ($this->iohandler instanceof ajax_iohandler)
+		{
+			$this->iohandler->acquire_lock();
+		}
+
 		// Load install progress
 		$this->install_config->load_config();
 
@@ -174,7 +180,16 @@ class installer
 		try
 		{
 			$iterator = $this->installer_modules->getIterator();
-			$iterator->seek($module_index);
+
+			if ($module_index < $iterator->count())
+			{
+				$iterator->seek($module_index);
+			}
+			else
+			{
+				$iterator->seek($module_index - 1);
+				$iterator->next();
+			}
 
 			while ($iterator->valid())
 			{
@@ -254,6 +269,11 @@ class installer
 			$this->iohandler->add_error_message($e->getMessage());
 			$this->iohandler->send_response(true);
 			$fail_cleanup = true;
+		}
+
+		if ($this->iohandler instanceof ajax_iohandler)
+		{
+			$this->iohandler->release_lock();
 		}
 
 		if ($install_finished)
