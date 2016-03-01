@@ -140,14 +140,13 @@ class add extends \phpbb\console\command\command
 
 		if (!$data['new_password'])
 		{
-			$self = $this;
 			$question = new Question($this->ask_user('PASSWORD'));
-			$question->setValidator(function ($value) use ($self, $helper, $input, $output) {
-				$question = new Question($self->ask_user('CONFIRM_PASSWORD'));
+			$question->setValidator(function ($value) use ($helper, $input, $output) {
+				$question = new Question($this->ask_user('CONFIRM_PASSWORD'));
 				$question->setHidden(true);
 				if ($helper->ask($input, $output, $question) != $value)
 				{
-					throw new runtime_exception($self->language->lang('NEW_PASSWORD_ERROR'));
+					throw new runtime_exception($this->language->lang('NEW_PASSWORD_ERROR'));
 				}
 				return $value;
 			});
