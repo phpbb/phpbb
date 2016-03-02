@@ -214,6 +214,7 @@ class add_bots extends \phpbb\install\task_base
 				// If we can't insert this user then continue to the next one to avoid inconsistent data
 				$this->io_handler->add_error_message('CONV_ERROR_INSERT_BOT');
 
+				$i++;
 				continue;
 			}
 
