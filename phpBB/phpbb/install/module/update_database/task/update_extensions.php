@@ -27,6 +27,11 @@ use Symfony\Component\Finder\Finder;
 class update_extensions extends task_base
 {
 	/**
+	 * @var \phpbb\cache\driver\driver_interface
+	 */
+	protected $cache;
+
+	/**
 	 * @var config
 	 */
 	protected $install_config;
@@ -92,8 +97,10 @@ class update_extensions extends task_base
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->extension_manager = $container->get('ext.manager');
+		$this->cache				= $container->get('cache.driver');
 		$this->config			= $container->get('config');
 		$this->db				= $container->get('dbal.conn');
+		$this->update_helper = $update_helper;
 		$this->finder = new Finder();
 		$this->finder->in($phpbb_root_path . 'ext/')
 			->ignoreUnreadableDirs()
@@ -121,67 +128,72 @@ class update_extensions extends task_base
 		$this->user->setup(array('common', 'acp/common', 'cli'));
 
 		$update_info = $this->install_config->get('update_info_unprocessed', []);
+		$version_from = !empty($update_info) ? $update_info['version']['from'] : $this->config['version_update_from'];
 
-		if (empty($update_info))
+		if (!empty($version_from))
 		{
-			return;
-		}
+			$update_extensions = $this->iohandler->get_input('update-extensions', []);
 
-		$update_extensions = $this->iohandler->get_input('update-extensions', []);
-
-		// Create list of default extensions that need to be enabled in update
-		$default_update_extensions = [];
-		foreach ($this->default_update as $version => $extensions)
-		{
-			if ($this->update_helper->phpbb_version_compare($update_info['version']['from'], $version, '<'))
+			// Create list of default extensions that need to be enabled in update
+			$default_update_extensions = [];
+			foreach ($this->default_update as $version => $extensions)
 			{
-				$default_update_extensions = array_merge($default_update_extensions, $extensions);
+				if ($this->update_helper->phpbb_version_compare($version_from, $version, '<'))
+				{
+					$default_update_extensions = array_merge($default_update_extensions, $extensions);
+				}
+			}
+
+			// Find available extensions
+			foreach ($this->finder as $file)
+			{
+				/** @var \SplFileInfo $file */
+				$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
+
+				// Update extensions if:
+				//	1) Extension is currently enabled
+				//	2) Extension was implicitly defined as needing an update
+				//	3) Extension was newly added as default phpBB extension in
+				//		this update and should be enabled by default.
+				if ($this->extension_manager->is_available($ext_name) &&
+					(
+						$this->extension_manager->is_enabled($ext_name) ||
+						in_array($ext_name, $update_extensions) ||
+						in_array($ext_name, $default_update_extensions)
+					)
+				)
+				{
+					$extension_enabled = $this->extension_manager->is_enabled($ext_name);
+					if ($extension_enabled)
+					{
+						$this->extension_manager->disable($ext_name);
+					}
+					$this->extension_manager->enable($ext_name);
+					$extensions = $this->get_extensions();
+
+					if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
+					{
+						// Create log
+						$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
+					} else
+					{
+						$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
+					}
+
+					// Disable extensions if it was disabled by the admin before
+					if (!$extension_enabled && !in_array($ext_name, $default_update_extensions))
+					{
+						$this->extension_manager->disable($ext_name);
+					}
+				}
 			}
 		}
 
-		// Find available extensions
-		foreach ($this->finder as $file)
-		{
-			/** @var \SplFileInfo $file */
-			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
+		$this->config->delete('version_update_from');
 
-			// Update extensions if:
-			//	1) Extension is currently enabled
-			//	2) Extension was implicitly defined as needing an update
-			//	3) Extension was newly added as default phpBB extension in
-			//		this update and should be enabled by default.
-			if ($this->extension_manager->is_available($ext_name) &&
-				(
-					$this->extension_manager->is_enabled($ext_name) ||
-					in_array($ext_name, $update_extensions) ||
-					in_array($ext_name, $default_update_extensions)
-				))
-			{
-				$extension_enabled = $this->extension_manager->is_enabled($ext_name);
-				if ($extension_enabled)
-				{
-					$this->extension_manager->disable($ext_name);
-				}
-				$this->extension_manager->enable($ext_name);
-				$extensions = $this->get_extensions();
+		$this->cache->purge();
 
-				if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
-				{
-					// Create log
-					$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
-				}
-				else
-				{
-					$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
-				}
-
-				// Disable extensions if it was disabled by the admin before
-				if (!$extension_enabled && !in_array($ext_name, $default_update_extensions))
-				{
-					$this->extension_manager->disable($ext_name);
-				}
-			}
-		}
+		$this->config->increment('assets_version', 1);
 	}
 
 	/**
