@@ -244,7 +244,7 @@ class installer
 			else
 			{
 				global $SID;
-				$acp_url = $this->web_root . 'adm/index.php' . $SID;
+				$acp_url = $this->web_root . 'adm/index.php' . $SID . '&i=acp_help_phpbb&mode=help_phpbb';
 				$this->iohandler->add_success_message('INSTALLER_FINISHED', array(
 					'ACP_LINK',
 					$acp_url,
