@@ -18,7 +18,6 @@ use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\install\helper\update_helper;
 use phpbb\install\task_base;
-use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Finder\Finder;
 
 /**
