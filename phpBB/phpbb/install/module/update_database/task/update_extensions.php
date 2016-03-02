@@ -24,7 +24,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * Installs extensions that exist in ext folder upon install
  */
-class enable_extensions extends task_base
+class update_extensions extends task_base
 {
 	/**
 	 * @var config
@@ -65,6 +65,14 @@ class enable_extensions extends task_base
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/**
+	 * @var array	List of default extensions to update, grouped by version
+	 *				they were added
+	 */
+	private $default_update = [
+		'3.2.0-b2' => ['phpbb/viglink']
+	];
 
 	/**
 	 * Constructor
@@ -112,46 +120,65 @@ class enable_extensions extends task_base
 		$this->user->session_begin();
 		$this->user->setup(array('common', 'acp/common', 'cli'));
 
-		$input = new ArgvInput();
-		$update_extensions = explode(',', $input->getArgument('update-extensions'));
+		$update_info = $this->install_config->get('update_info_unprocessed', []);
 
-		$update_info = $this->install_config->get('update_info_unprocessed', array());
-
-		if (!empty($update_info))
+		if (empty($update_info))
 		{
-			// Find available extensions
-			foreach ($this->finder as $file)
+			return;
+		}
+
+		$update_extensions = $this->iohandler->get_input('update-extensions', []);
+
+		// Create list of default extensions that need to be enabled in update
+		$default_update_extensions = [];
+		foreach ($this->default_update as $version => $extensions)
+		{
+			if ($this->update_helper->phpbb_version_compare($update_info['version']['from'], $version, '<'))
 			{
-				/** @var \SplFileInfo $file */
-				$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
+				$default_update_extensions = array_merge($default_update_extensions, $extensions);
+			}
+		}
 
-				// Skip extensions that were not added or updated during update
-				if (!count(preg_grep('#ext/' . $ext_name . '#', $update_info['files'])) &&
-					!in_array($ext_name, $update_extensions) && $ext_name !== 'phpbb/viglink')
-				{
-					continue;
-				}
+		// Find available extensions
+		foreach ($this->finder as $file)
+		{
+			/** @var \SplFileInfo $file */
+			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
 
-				// Disable enabled extensions in order to run migrations if needed
-				if ($this->extension_manager->is_enabled($ext_name))
+			// Update extensions if:
+			//	1) Extension is currently enabled
+			//	2) Extension was implicitly defined as needing an update
+			//	3) Extension was newly added as default phpBB extension in
+			//		this update and should be enabled by default.
+			if ($this->extension_manager->is_available($ext_name) &&
+				(
+					$this->extension_manager->is_enabled($ext_name) ||
+					in_array($ext_name, $update_extensions) ||
+					in_array($ext_name, $default_update_extensions)
+				))
+			{
+				$extension_enabled = $this->extension_manager->is_enabled($ext_name);
+				if ($extension_enabled)
 				{
 					$this->extension_manager->disable($ext_name);
 				}
+				$this->extension_manager->enable($ext_name);
+				$extensions = $this->get_extensions();
 
-				if ($this->extension_manager->is_available($ext_name))
+				if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
 				{
-					$this->extension_manager->enable($ext_name);
-					$extensions = $this->get_extensions();
-
-					if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
-					{
-						// Create log
-						$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
-					}
+					// Create log
+					$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
 				else
 				{
 					$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
+				}
+
+				// Disable extensions if it was disabled by the admin before
+				if (!$extension_enabled && !in_array($ext_name, $default_update_extensions))
+				{
+					$this->extension_manager->disable($ext_name);
 				}
 			}
 		}
