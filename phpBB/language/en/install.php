@@ -330,7 +330,6 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'CLI_INSTALL_BOARD'				=> 'Install phpBB',
 	'CLI_UPDATE_BOARD'				=> 'Update phpBB',
-	'CLI_INSTALL_EXTENSIONS'		=> 'Extensions to install. Multiple extensions can be specified using a comma separated list.',
 	'CLI_INSTALL_SHOW_CONFIG'		=> 'Show the configuration which will be used',
 	'CLI_INSTALL_VALIDATE_CONFIG'	=> 'Validate a configuration file',
 	'CLI_CONFIG_FILE'				=> 'Config file to use',
