@@ -143,46 +143,51 @@ class update_extensions extends task_base
 				}
 			}
 
-			// Find available extensions
-			foreach ($this->finder as $file)
-			{
-				/** @var \SplFileInfo $file */
-				$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
+			$available_extensions = $this->extension_manager->all_available();
 
+			// Update available extensions
+			foreach ($available_extensions as $ext_name => $ext_path)
+			{
 				// Update extensions if:
 				//	1) Extension is currently enabled
 				//	2) Extension was implicitly defined as needing an update
 				//	3) Extension was newly added as default phpBB extension in
 				//		this update and should be enabled by default.
-				if ($this->extension_manager->is_available($ext_name) &&
-					(
-						$this->extension_manager->is_enabled($ext_name) ||
-						in_array($ext_name, $update_extensions) ||
-						in_array($ext_name, $default_update_extensions)
-					)
+				if ($this->extension_manager->is_enabled($ext_name) ||
+					in_array($ext_name, $update_extensions) ||
+					in_array($ext_name, $default_update_extensions)
 				)
 				{
-					$extension_enabled = $this->extension_manager->is_enabled($ext_name);
-					if ($extension_enabled)
+					try
 					{
-						$this->extension_manager->disable($ext_name);
-					}
-					$this->extension_manager->enable($ext_name);
-					$extensions = $this->get_extensions();
+						$extension_enabled = $this->extension_manager->is_enabled($ext_name);
+						if ($extension_enabled)
+						{
+							$this->extension_manager->disable($ext_name);
+						}
+						$this->extension_manager->enable($ext_name);
+						$extensions = $this->get_extensions();
 
-					if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
+						if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
+						{
+							// Create log
+							$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
+							$this->iohandler->add_success_message(array('CLI_EXTENSION_ENABLE_SUCCESS', $ext_name));
+						} else
+						{
+							$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
+						}
+
+						// Disable extensions if it was disabled by the admin before
+						if (!$extension_enabled && !in_array($ext_name, $default_update_extensions))
+						{
+							$this->extension_manager->disable($ext_name);
+						}
+					}
+					catch (\Exception $e)
 					{
-						// Create log
-						$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
-					} else
-					{
+						// Add fail log and continue
 						$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
-					}
-
-					// Disable extensions if it was disabled by the admin before
-					if (!$extension_enabled && !in_array($ext_name, $default_update_extensions))
-					{
-						$this->extension_manager->disable($ext_name);
 					}
 				}
 			}

@@ -102,18 +102,17 @@ class install_extensions extends \phpbb\install\task_base
 
 		$install_extensions = $this->iohandler->get_input('install-extensions', array());
 
-		// Find available extensions
-		foreach ($this->finder as $file)
-		{
-			/** @var \SplFileInfo $file */
-			$ext_name = preg_replace('#(.+[\\/\\\]ext[\\/\\\])(\w+)[\\/\\\](\w+)#', '$2/$3', dirname($file->getRealPath()));
+		$available_extensions = $this->extension_manager->all_available();
 
+		// Install extensions
+		foreach ($available_extensions as $ext_name => $ext_path)
+		{
 			if (!empty($install_extensions) && !in_array($ext_name, $install_extensions))
 			{
 				continue;
 			}
 
-			if ($this->extension_manager->is_available($ext_name))
+			try
 			{
 				$this->extension_manager->enable($ext_name);
 				$extensions = $this->get_extensions();
@@ -122,11 +121,17 @@ class install_extensions extends \phpbb\install\task_base
 				{
 					// Create log
 					$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
+					$this->iohandler->add_success_message(array('CLI_EXTENSION_ENABLE_SUCCESS', $ext_name));
 				}
 				else
 				{
 					$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
 				}
+			}
+			catch (\Exception $e)
+			{
+				// Add fail log and continue
+				$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
 			}
 		}
 	}
