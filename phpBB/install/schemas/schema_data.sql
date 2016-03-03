@@ -143,6 +143,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_in
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_stopwords', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('help_send_statistics', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('help_send_statistics_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_create_thumbnail', '0');
