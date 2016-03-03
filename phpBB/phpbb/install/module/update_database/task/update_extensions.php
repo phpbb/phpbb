@@ -75,7 +75,7 @@ class update_extensions extends task_base
 	 *				they were added
 	 */
 	private $default_update = [
-		'3.2.0-b2' => ['phpbb/viglink']
+		'3.2.0-b3' => ['phpbb/viglink']
 	];
 
 	/**
@@ -137,7 +137,7 @@ class update_extensions extends task_base
 			$default_update_extensions = [];
 			foreach ($this->default_update as $version => $extensions)
 			{
-				if ($this->update_helper->phpbb_version_compare($version_from, $version, '<'))
+				if ($this->update_helper->phpbb_version_compare($version_from, $version, '<='))
 				{
 					$default_update_extensions = array_merge($default_update_extensions, $extensions);
 				}
