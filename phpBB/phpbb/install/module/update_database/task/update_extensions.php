@@ -74,7 +74,7 @@ class update_extensions extends task_base
 	 * @var array	List of default extensions to update, grouped by version
 	 *				they were added
 	 */
-	private $default_update = [
+	static public $default_extensions_update = [
 		'3.2.0-b3' => ['phpbb/viglink']
 	];
 
@@ -135,7 +135,7 @@ class update_extensions extends task_base
 
 			// Create list of default extensions that need to be enabled in update
 			$default_update_extensions = [];
-			foreach ($this->default_update as $version => $extensions)
+			foreach (self::$default_extensions_update as $version => $extensions)
 			{
 				if ($this->update_helper->phpbb_version_compare($version_from, $version, '<='))
 				{
