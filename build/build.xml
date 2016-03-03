@@ -289,16 +289,31 @@
 
 		<!-- Checkout latest viglink to ext folder -->
 		<available file="${dir}/ext" type="dir" property="add-viglink-ext" />
+		<exec dir="${dir}"
+			command='php -r "echo version_compare(&apos;${version}&apos;, &apos;3.2.0-b3&apos;, &apos;>=&apos;) ? &apos;true&apos; : &apos;false&apos;;"'
+			checkreturn="true"
+			outputProperty='viglink-available' />
 		<if>
 			<and>
 				<equals arg1="${add-viglink-ext}" arg2="1" trim="true" />
-				<equals arg1="${revision}" arg2="HEAD" trim="true" />
+				<or>
+					<equals arg1="${revision}" arg2="HEAD" trim="true" />
+					<equals arg1="${viglink-available}" arg2="1" trim="true" />
+				</or>
 			</and>
 			<then>
 				<exec dir="${dir}/ext" command="mkdir phpbb" passthru="true" />
 
 				<exec dir="${dir}/ext/phpbb" command="git clone https://github.com/phpbb-extensions/viglink.git viglink" passthru="true" checkreturn="true" />
-				<exec dir="${dir}/ext/phpbb/viglink" command="git checkout master" />
+				<if>
+					<equals arg1="${revision}" arg2="HEAD" trim="true" />
+					<then>
+						<exec dir="${dir}/ext/phpbb/viglink" command="git checkout master" passthru="true" />
+					</then>
+					<else>
+						<exec dir="${dir}/ext/phpbb/viglink" command="git checkout release-phpbb-${version}" passthru="true" />
+					</else>
+				</if>
 				<delete dir="${dir}/ext/phpbb/viglink/.git" />
 				<delete dir="${dir}/ext/phpbb/viglink/tests" />
 				<delete dir="${dir}/ext/phpbb/viglink/travis" />
