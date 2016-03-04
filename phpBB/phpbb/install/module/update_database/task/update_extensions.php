@@ -174,11 +174,11 @@ class update_extensions extends task_base
 						if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
 						{
 							// Create log
-							$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
-							$this->iohandler->add_success_message(array('CLI_EXTENSION_ENABLE_SUCCESS', $ext_name));
+							$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_UPDATE', time(), array($ext_name));
+							$this->iohandler->add_success_message(array('CLI_EXTENSION_UPDATE_SUCCESS', $ext_name));
 						} else
 						{
-							$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
+							$this->iohandler->add_log_message('CLI_EXTENSION_UPDATE_FAILURE', array($ext_name));
 						}
 
 						// Disable extensions if it was disabled by the admin before
@@ -190,7 +190,7 @@ class update_extensions extends task_base
 					catch (\Exception $e)
 					{
 						// Add fail log and continue
-						$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
+						$this->iohandler->add_log_message('CLI_EXTENSION_UPDATE_FAILURE', array($ext_name));
 					}
 				}
 

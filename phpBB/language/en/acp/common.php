@@ -819,4 +819,5 @@ $lang = array_merge($lang, array(
 	'LOG_EXT_ENABLE'	=> '<strong>Extension enabled</strong><br />» %s',
 	'LOG_EXT_DISABLE'	=> '<strong>Extension disabled</strong><br />» %s',
 	'LOG_EXT_PURGE'		=> '<strong>Extension’s data deleted</strong><br />» %s',
+	'LOG_EXT_UPDATE'	=> '<strong>Extension updated</strong><br />» %s',
 ));
