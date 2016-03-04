@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_finish\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+
 /**
  * Installs extensions that exist in ext folder upon install
  */
@@ -102,7 +104,9 @@ class install_extensions extends \phpbb\install\task_base
 
 		$install_extensions = $this->iohandler->get_input('install-extensions', array());
 
-		$available_extensions = $this->extension_manager->all_available();
+		$all_available_extensions = $this->extension_manager->all_available();
+		$i = $this->install_config->get('install_extensions_index', 0);
+		$available_extensions = array_slice($all_available_extensions, $i);
 
 		// Install extensions
 		foreach ($available_extensions as $ext_name => $ext_path)
@@ -133,6 +137,21 @@ class install_extensions extends \phpbb\install\task_base
 				// Add fail log and continue
 				$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
 			}
+
+			$i++;
+
+			// Stop execution if resource limit is reached
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+			{
+				break;
+			}
+		}
+
+		$this->install_config->set('install_extensions_index', $i);
+
+		if ($i < sizeof($all_available_extensions))
+		{
+			throw new resource_limit_reached_exception();
 		}
 	}
 

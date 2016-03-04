@@ -13,6 +13,7 @@
 
 namespace phpbb\install\module\update_database\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
 use phpbb\install\helper\container_factory;
 use phpbb\install\helper\config;
 use phpbb\install\helper\iohandler\iohandler_interface;
@@ -143,7 +144,9 @@ class update_extensions extends task_base
 				}
 			}
 
-			$available_extensions = $this->extension_manager->all_available();
+			$all_available_extensions = $this->extension_manager->all_available();
+			$i = $this->install_config->get('update_extensions_index', 0);
+			$available_extensions = array_slice($all_available_extensions, $i);
 
 			// Update available extensions
 			foreach ($available_extensions as $ext_name => $ext_path)
@@ -190,6 +193,21 @@ class update_extensions extends task_base
 						$this->iohandler->add_log_message('CLI_EXTENSION_ENABLE_FAILURE', array($ext_name));
 					}
 				}
+
+				$i++;
+
+				// Stop execution if resource limit is reached
+				if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+				{
+					break;
+				}
+			}
+
+			$this->install_config->set('update_extensions_index', $i);
+
+			if ($i < sizeof($all_available_extensions))
+			{
+				throw new resource_limit_reached_exception();
 			}
 		}
 
