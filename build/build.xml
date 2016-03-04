@@ -142,6 +142,7 @@
 
 		<phingcall target="export">
 			<property name="revision" value="release-${version}" />
+			<property name="version" value="${version}" />
 			<property name="dir" value="build/old_versions/release-${version}" />
 			<property name="skip-composer" value="true" />
 		</phingcall>
@@ -308,7 +309,18 @@
 				<if>
 					<equals arg1="${revision}" arg2="HEAD" trim="true" />
 					<then>
-						<exec dir="${dir}/ext/phpbb/viglink" command="git checkout master" passthru="true" />
+						<exec dir="${dir}/ext/phpbb/viglink"
+							command="git rev-parse release-phpbb-${version}"
+							returnProperty='viglink_head_tag_exists' />
+						<if>
+							<equals arg1="${viglink_head_tag_exists}" arg2="0" trim="true" />
+							<then>
+								<exec dir="${dir}/ext/phpbb/viglink" command="git checkout release-phpbb-${version}" passthru="true" />
+							</then>
+							<else>
+								<exec dir="${dir}/ext/phpbb/viglink" command="git checkout master" passthru="true" />
+							</else>
+						</if>
 					</then>
 					<else>
 						<exec dir="${dir}/ext/phpbb/viglink" command="git checkout release-phpbb-${version}" passthru="true" />
