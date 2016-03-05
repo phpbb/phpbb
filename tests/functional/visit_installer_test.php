@@ -18,11 +18,11 @@ class phpbb_functional_visit_installer_test extends phpbb_functional_test_case
 {
 	public function test_visit_installer()
 	{
-		self::request('GET', 'install/');
-		$this->assertContains('installation system', $this->get_content());
+		self::request('GET', 'install/', [], false);
+		$this->assertContains('<meta http-equiv="refresh" content="0; url=./app.php" />', $this->get_content());
 
-		self::request('GET', 'install/index.html');
-		$this->assertContains('installation system', $this->get_content());
+		self::request('GET', 'install/index.html', [], false);
+		$this->assertContains('<meta http-equiv="refresh" content="0; url=./app.php" />', $this->get_content());
 
 		self::request('GET', 'install/app.php');
 		$this->assertContains('installation system', $this->get_content());
