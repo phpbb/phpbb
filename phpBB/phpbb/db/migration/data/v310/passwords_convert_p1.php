@@ -56,19 +56,16 @@ class passwords_convert_p1 extends \phpbb\db\migration\migration
 			{
 				// Use $CP$ prefix for passwords that need to
 				// be converted and set pass convert to false.
-				$update_users[$user_id] = array(
-					'user_password'		=> '$CP$' . $row['user_password'],
-					'user_pass_convert'	=> 0,
-				);
+				$update_users[$user_id] = '$CP$' . $row['user_password'];
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		foreach ($update_users as $user_id => $user_data)
+		foreach ($update_users as $user_id => $user_password)
 		{
-			$sql = 'UPDATE ' . $this->table_prefix . 'users
-				SET ' . $this->db->sql_build_array('UPDATE', $user_data) . '
-				WHERE user_id = ' . $user_id;
+			$sql = 'UPDATE ' . $this->table_prefix . "users
+				SET user_password = '" . $this->db->sql_escape($user_password) . "'
+				WHERE user_id = $user_id";
 			$this->sql_query($sql);
 		}
 
