@@ -185,7 +185,7 @@ class add extends \phpbb\console\command\command
 		);
 
 		$user_id = (int) user_add($user_row);
-		
+
 		if (!$user_id)
 		{
 			$io->error($this->language->lang('AUTH_NO_PROFILE_CREATED'));
