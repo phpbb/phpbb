@@ -974,18 +974,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		unset($new_attachment_data);
 	}
 
-	// Sort correctly
-	if (!$config['display_order'])
-	{
-		// Ascending sort
-		krsort($attachments);
-	}
-	else
-	{
-		// Descending sort
-		ksort($attachments);
-	}
-
 	foreach ($attachments as $attachment)
 	{
 		if (!sizeof($attachment))
@@ -1233,7 +1221,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	foreach ($matches[0] as $num => $capture)
 	{
 		// Flip index if we are displaying the reverse way
-		$index = (!$config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
+		$index = $tpl_size-($matches[1][$num] + 1);
 
 		$replace['from'][] = $matches[0][$num];
 		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
@@ -1247,6 +1235,18 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	}
 
 	$unset_tpl = array_unique($unset_tpl);
+
+	// Sort correctly
+	if ($config['display_order'])
+	{
+		// Ascending sort
+		krsort($attachments);
+	}
+	else
+	{
+		// Descending sort
+		ksort($attachments);
+	}
 
 	// Needed to let not display the inlined attachments at the end of the post again
 	foreach ($unset_tpl as $index)
