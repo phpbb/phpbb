@@ -111,7 +111,7 @@ class install_extensions extends \phpbb\install\task_base
 		// Install extensions
 		foreach ($available_extensions as $ext_name => $ext_path)
 		{
-			if (!empty($install_extensions) && !in_array($ext_name, $install_extensions))
+			if (!empty($install_extensions) && $install_extensions !== ['all'] && !in_array($ext_name, $install_extensions))
 			{
 				continue;
 			}
