@@ -974,6 +974,9 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		unset($new_attachment_data);
 	}
 
+	// Make sure attachments are properly ordered
+	ksort($attachments);
+
 	foreach ($attachments as $attachment)
 	{
 		if (!sizeof($attachment))
@@ -1211,8 +1214,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	$attachments = $compiled_attachments;
 	unset($compiled_attachments);
 
-	$tpl_size = sizeof($attachments);
-
 	$unset_tpl = array();
 
 	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches, PREG_PATTERN_ORDER);
@@ -1220,8 +1221,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	$replace = array();
 	foreach ($matches[0] as $num => $capture)
 	{
-		// Flip index if we are displaying the reverse way
-		$index = $tpl_size-($matches[1][$num] + 1);
+		$index = $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
 		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
