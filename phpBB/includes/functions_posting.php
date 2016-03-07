@@ -1636,6 +1636,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			break;
 		}
 	}
+	else if (isset($data['post_visibility']) && $data['post_visibility'] !== false)
+	{
+		$post_visibility = $data['post_visibility'];
+	}
 
 	// MODs/Extensions are able to force any visibility on posts
 	if (isset($data['force_approved_state']))
