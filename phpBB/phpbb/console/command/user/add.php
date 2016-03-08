@@ -84,19 +84,19 @@ class add extends \phpbb\console\command\command
 			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_ADD'))
 			->addOption(
 				'username',
-				null,
+				'U',
 				InputOption::VALUE_REQUIRED,
 				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_USERNAME')
 			)
 			->addOption(
 				'password',
-				null,
+				'P',
 				InputOption::VALUE_REQUIRED,
 				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_PASSWORD')
 			)
 			->addOption(
 				'email',
-				null,
+				'E',
 				InputOption::VALUE_REQUIRED,
 				$this->language->lang('CLI_DESCRIPTION_USER_ADD_OPTION_EMAIL')
 			)
