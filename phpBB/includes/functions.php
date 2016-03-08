@@ -4071,7 +4071,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 /**
 * Generate page header
 */
-function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum')
+function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = true)
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
 	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
@@ -4416,17 +4416,22 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
 
-	// An array of http headers that phpbb will set. The following event may override these.
-	$http_headers = array(
-		// application/xhtml+xml not used because of IE
-		'Content-type' => 'text/html; charset=UTF-8',
-		'Cache-Control' => 'private, no-cache="set-cookie"',
-		'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
-	);
-	if (!empty($user->data['is_bot']))
+	$http_headers = array();
+
+	if ($send_headers)
 	{
-		// Let reverse proxies know we detected a bot.
-		$http_headers['X-PHPBB-IS-BOT'] = 'yes';
+		// An array of http headers that phpbb will set. The following event may override these.
+		$http_headers += array(
+			// application/xhtml+xml not used because of IE
+			'Content-type' => 'text/html; charset=UTF-8',
+			'Cache-Control' => 'private, no-cache="set-cookie"',
+			'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
+		);
+		if (!empty($user->data['is_bot']))
+		{
+			// Let reverse proxies know we detected a bot.
+			$http_headers['X-PHPBB-IS-BOT'] = 'yes';
+		}
 	}
 
 	/**
