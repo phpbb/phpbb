@@ -923,6 +923,8 @@ class manager
 	{
 		$notification_type_ids = $this->cache->get('notification_type_ids');
 
+		$this->db->sql_transaction('begin');
+
 		if ($notification_type_ids === false)
 		{
 			$notification_type_ids = array();
@@ -956,6 +958,8 @@ class manager
 
 			$this->cache->put('notification_type_ids', $notification_type_ids);
 		}
+
+		$this->db->sql_transaction('commit');
 
 		return $notification_type_ids[$notification_type_name];
 	}
