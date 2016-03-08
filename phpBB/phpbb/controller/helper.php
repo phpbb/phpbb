@@ -102,12 +102,13 @@ class helper
 	* @param bool $display_online_list Do we display online users list
 	* @param int $item_id Restrict online users to item id
 	* @param string $item Restrict online users to a certain session item, e.g. forum for session_forum_id
+	* @param bool $send_headers Whether headers should be sent by page_header(). Defaults to false for controllers.
 	*
 	* @return Response object containing rendered page
 	*/
-	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum')
+	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = false)
 	{
-		page_header($page_title, $display_online_list, $item_id, $item);
+		page_header($page_title, $display_online_list, $item_id, $item, $send_headers);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,
@@ -115,7 +116,9 @@ class helper
 
 		page_footer(true, false, false);
 
-		return new Response($this->template->assign_display('body'), $status_code);
+		$headers = !empty($this->user->data['is_bot']) ? array('X-PHPBB-IS-BOT' => 'yes') : array();
+
+		return new Response($this->template->assign_display('body'), $status_code, $headers);
 	}
 
 	/**
