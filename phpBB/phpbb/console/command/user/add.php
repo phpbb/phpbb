@@ -82,6 +82,7 @@ class add extends \phpbb\console\command\command
 		$this
 			->setName('user:add')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_ADD'))
+			->setHelp($this->language->lang('CLI_HELP_USER_ADD'))
 			->addOption(
 				'username',
 				'U',
