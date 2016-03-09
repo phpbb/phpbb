@@ -125,43 +125,7 @@ class add extends \phpbb\console\command\command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$helper = $this->getHelper('question');
-
-		$data = array(
-			'username'     => $input->getOption('username'),
-			'new_password' => $input->getOption('password'),
-			'email'        => $input->getOption('email'),
-		);
-
-		if (!$data['username'])
-		{
-			$question = new Question($this->ask_user('USERNAME'));
-			$data['username'] = $helper->ask($input, $output, $question);
-		}
-
-		if (!$data['new_password'])
-		{
-			$question = new Question($this->ask_user('PASSWORD'));
-			$question->setValidator(function ($value) use ($helper, $input, $output) {
-				$question = new Question($this->ask_user('CONFIRM_PASSWORD'));
-				$question->setHidden(true);
-				if ($helper->ask($input, $output, $question) != $value)
-				{
-					throw new runtime_exception($this->language->lang('NEW_PASSWORD_ERROR'));
-				}
-				return $value;
-			});
-			$question->setHidden(true);
-			$question->setMaxAttempts(5);
-
-			$data['new_password'] = $helper->ask($input, $output, $question);
-		}
-
-		if (!$data['email'])
-		{
-			$question = new Question($this->ask_user('EMAIL_ADDRESS'));
-			$data['email'] = $helper->ask($input, $output, $question);
-		}
+		$data = $this->interact($input, $output);
 
 		try
 		{
@@ -201,6 +165,57 @@ class add extends \phpbb\console\command\command
 		$io->success($this->language->lang('CLI_USER_ADD_SUCCESS', $data['username']));
 
 		return 0;
+	}
+
+	/**
+	 * Interact with the user to obtain the required options
+	 *
+	 * @param InputInterface  $input  The input stream used to get the options
+	 * @param OutputInterface $output The output stream, used to print messages
+	 *
+	 * @return array Array of required user options
+	 */
+	protected function interact(InputInterface $input, OutputInterface $output)
+	{
+		$helper = $this->getHelper('question');
+
+		$data = array(
+			'username'     => $input->getOption('username'),
+			'new_password' => $input->getOption('password'),
+			'email'        => $input->getOption('email'),
+		);
+
+		if (!$data['username'])
+		{
+			$question = new Question($this->ask_user('USERNAME'));
+			$data['username'] = $helper->ask($input, $output, $question);
+		}
+
+		if (!$data['new_password'])
+		{
+			$question = new Question($this->ask_user('PASSWORD'));
+			$question->setValidator(function ($value) use ($helper, $input, $output) {
+				$question = new Question($this->ask_user('CONFIRM_PASSWORD'));
+				$question->setHidden(true);
+				if ($helper->ask($input, $output, $question) != $value)
+				{
+					throw new runtime_exception($this->language->lang('NEW_PASSWORD_ERROR'));
+				}
+				return $value;
+			});
+			$question->setHidden(true);
+			$question->setMaxAttempts(5);
+
+			$data['new_password'] = $helper->ask($input, $output, $question);
+		}
+
+		if (!$data['email'])
+		{
+			$question = new Question($this->ask_user('EMAIL_ADDRESS'));
+			$data['email'] = $helper->ask($input, $output, $question);
+		}
+
+		return $data;
 	}
 
 	/**
