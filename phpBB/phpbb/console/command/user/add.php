@@ -22,6 +22,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class add extends \phpbb\console\command\command
 {
+	/** @var array Array of interactively acquired options */
+	protected $data;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -125,11 +128,9 @@ class add extends \phpbb\console\command\command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$data = $this->interact($input, $output);
-
 		try
 		{
-			$this->validate_user_data($data);
+			$this->validate_user_data();
 			$group_id = $this->get_group_id();
 		}
 		catch (runtime_exception $e)
@@ -139,9 +140,9 @@ class add extends \phpbb\console\command\command
 		}
 
 		$user_row = array(
-			'username'      => $data['username'],
-			'user_password' => $this->password_manager->hash($data['new_password']),
-			'user_email'    => $data['email'],
+			'username'      => $this->data['username'],
+			'user_password' => $this->password_manager->hash($this->data['new_password']),
+			'user_email'    => $this->data['email'],
 			'group_id'      => $group_id,
 			'user_timezone' => $this->config['board_timezone'],
 			'user_lang'     => $this->config['default_lang'],
@@ -159,39 +160,37 @@ class add extends \phpbb\console\command\command
 
 		if ($input->getOption('send-email') && $this->config['email_enable'])
 		{
-			$this->send_activation_email($user_id, $data);
+			$this->send_activation_email($user_id);
 		}
 
-		$io->success($this->language->lang('CLI_USER_ADD_SUCCESS', $data['username']));
+		$io->success($this->language->lang('CLI_USER_ADD_SUCCESS', $this->data['username']));
 
 		return 0;
 	}
 
 	/**
-	 * Interact with the user to obtain the required options
+	 * Interacts with the user.
 	 *
-	 * @param InputInterface  $input  The input stream used to get the options
-	 * @param OutputInterface $output The output stream, used to print messages
-	 *
-	 * @return array Array of required user options
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
 	 */
 	protected function interact(InputInterface $input, OutputInterface $output)
 	{
 		$helper = $this->getHelper('question');
 
-		$data = array(
+		$this->data = array(
 			'username'     => $input->getOption('username'),
 			'new_password' => $input->getOption('password'),
 			'email'        => $input->getOption('email'),
 		);
 
-		if (!$data['username'])
+		if (!$this->data['username'])
 		{
 			$question = new Question($this->ask_user('USERNAME'));
-			$data['username'] = $helper->ask($input, $output, $question);
+			$this->data['username'] = $helper->ask($input, $output, $question);
 		}
 
-		if (!$data['new_password'])
+		if (!$this->data['new_password'])
 		{
 			$question = new Question($this->ask_user('PASSWORD'));
 			$question->setValidator(function ($value) use ($helper, $input, $output) {
@@ -206,33 +205,30 @@ class add extends \phpbb\console\command\command
 			$question->setHidden(true);
 			$question->setMaxAttempts(5);
 
-			$data['new_password'] = $helper->ask($input, $output, $question);
+			$this->data['new_password'] = $helper->ask($input, $output, $question);
 		}
 
-		if (!$data['email'])
+		if (!$this->data['email'])
 		{
 			$question = new Question($this->ask_user('EMAIL_ADDRESS'));
-			$data['email'] = $helper->ask($input, $output, $question);
+			$this->data['email'] = $helper->ask($input, $output, $question);
 		}
-
-		return $data;
 	}
 
 	/**
 	 * Validate the submitted user data
 	 *
-	 * @param array $data The user data array
 	 * @throws runtime_exception if any data fails validation
 	 * @return null
 	 */
-	protected function validate_user_data($data)
+	protected function validate_user_data()
 	{
 		if (!function_exists('validate_data'))
 		{
 			require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 		}
 
-		$error = validate_data($data, array(
+		$error = validate_data($this->data, array(
 			'username'     => array(
 				array('string', false, $this->config['min_name_chars'], $this->config['max_name_chars']),
 				array('username', '')),
@@ -280,10 +276,9 @@ class add extends \phpbb\console\command\command
 	 * Send account activation email
 	 *
 	 * @param int   $user_id The new user's id
-	 * @param array $data    The user data array
 	 * @return null
 	 */
-	protected function send_activation_email($user_id, $data)
+	protected function send_activation_email($user_id)
 	{
 		if ($this->config['require_activation'] == USER_ACTIVATION_SELF)
 		{
@@ -308,12 +303,12 @@ class add extends \phpbb\console\command\command
 
 		$messenger = new \messenger(false);
 		$messenger->template($email_template, $this->user->lang_name);
-		$messenger->to($data['email'], $data['username']);
+		$messenger->to($this->data['email'], $this->data['username']);
 		$messenger->anti_abuse_headers($this->config, $this->user);
 		$messenger->assign_vars(array(
 			'WELCOME_MSG' => htmlspecialchars_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename'])),
-			'USERNAME'    => htmlspecialchars_decode($data['username']),
-			'PASSWORD'    => htmlspecialchars_decode($data['new_password']),
+			'USERNAME'    => htmlspecialchars_decode($this->data['username']),
+			'PASSWORD'    => htmlspecialchars_decode($this->data['new_password']),
 			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
 		);
 
