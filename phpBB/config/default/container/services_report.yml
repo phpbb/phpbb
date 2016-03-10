@@ -29,10 +29,10 @@ services:
             - '@user'
 
 # ----- Report handlers -----
-# Scope MUST be prototype for all the handlers to work correctly.
+# Service MUST NOT be shared for all the handlers to work correctly.
     phpbb.report.handlers.report_handler_pm:
         class: phpbb\report\report_handler_pm
-        scope: prototype
+        shared: false
         arguments:
             - '@dbal.conn.driver'
             - '@dispatcher'
@@ -43,7 +43,7 @@ services:
 
     phpbb.report.handlers.report_handler_post:
         class: phpbb\report\report_handler_post
-        scope: prototype
+        shared: false
         arguments:
             - '@dbal.conn.driver'
             - '@dispatcher'

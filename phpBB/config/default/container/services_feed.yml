@@ -23,7 +23,7 @@ services:
 
     feed.forum:
         class: phpbb\feed\forum
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'
@@ -36,7 +36,7 @@ services:
 
     feed.forums:
         class: phpbb\feed\forums
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'
@@ -49,7 +49,7 @@ services:
 
     feed.news:
         class: phpbb\feed\news
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'
@@ -62,7 +62,7 @@ services:
 
     feed.overall:
         class: phpbb\feed\overall
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'
@@ -75,7 +75,7 @@ services:
 
     feed.topic:
         class: phpbb\feed\topic
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'
@@ -88,7 +88,7 @@ services:
 
     feed.topics:
         class: phpbb\feed\topics
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'
@@ -101,7 +101,7 @@ services:
 
     feed.topics_active:
         class: phpbb\feed\topics_active
-        scope: prototype
+        shared: false
         arguments:
             - '@feed.helper'
             - '@config'

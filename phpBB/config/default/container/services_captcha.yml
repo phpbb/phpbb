@@ -6,7 +6,7 @@ services:
             - '@captcha.plugins.service_collection'
 
 # ----- Captcha plugins -----
-# Scope MUST be prototype for all the plugins to work.
+# Service MUST NOT be shared for all the plugins to work.
     captcha.plugins.service_collection:
         class: phpbb\di\service_collection
         arguments:
@@ -16,7 +16,7 @@ services:
 
     core.captcha.plugins.gd:
         class: phpbb\captcha\plugins\gd
-        scope: prototype
+        shared: false
         calls:
             - [set_name, [core.captcha.plugins.gd]]
         tags:
@@ -24,7 +24,7 @@ services:
 
     core.captcha.plugins.gd_wave:
         class: phpbb\captcha\plugins\gd_wave
-        scope: prototype
+        shared: false
         calls:
             - [set_name, [core.captcha.plugins.gd_wave]]
         tags:
@@ -32,7 +32,7 @@ services:
 
     core.captcha.plugins.nogd:
         class: phpbb\captcha\plugins\nogd
-        scope: prototype
+        shared: false
         calls:
             - [set_name, [core.captcha.plugins.nogd]]
         tags:
@@ -40,7 +40,7 @@ services:
 
     core.captcha.plugins.qa:
         class: phpbb\captcha\plugins\qa
-        scope: prototype
+        shared: false
         arguments:
             - '%tables.captcha_qa_questions%'
             - '%tables.captcha_qa_answers%'
@@ -52,7 +52,7 @@ services:
 
     core.captcha.plugins.recaptcha:
         class: phpbb\captcha\plugins\recaptcha
-        scope: prototype
+        shared: false
         calls:
             - [set_name, [core.captcha.plugins.recaptcha]]
         tags:

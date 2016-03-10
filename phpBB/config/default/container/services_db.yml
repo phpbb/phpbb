@@ -31,10 +31,10 @@ services:
         factory: ['@dbal.extractor.factory', get]
 
 # ----- DB Extractors for different drivers -----
-# Scope MUST be prototype for all the handlers to work correctly.
+# Service MUST NOT be shared for all the handlers to work correctly.
     dbal.extractor.extractors.mssql_extractor:
         class: phpbb\db\extractor\mssql_extractor
-        scope: prototype
+        shared: false
         arguments:
             - '%core.root_path%'
             - '@request'
@@ -42,7 +42,7 @@ services:
 
     dbal.extractor.extractors.mysql_extractor:
         class: phpbb\db\extractor\mysql_extractor
-        scope: prototype
+        shared: false
         arguments:
             - '%core.root_path%'
             - '@request'
@@ -50,7 +50,7 @@ services:
 
     dbal.extractor.extractors.oracle_extractor:
         class: phpbb\db\extractor\oracle_extractor
-        scope: prototype
+        shared: false
         arguments:
             - '%core.root_path%'
             - '@request'
@@ -58,7 +58,7 @@ services:
 
     dbal.extractor.extractors.postgres_extractor:
         class: phpbb\db\extractor\postgres_extractor
-        scope: prototype
+        shared: false
         arguments:
             - '%core.root_path%'
             - '@request'
@@ -66,7 +66,7 @@ services:
 
     dbal.extractor.extractors.sqlite3_extractor:
         class: phpbb\db\extractor\sqlite3_extractor
-        scope: prototype
+        shared: false
         arguments:
             - '%core.root_path%'
             - '@request'
@@ -74,7 +74,7 @@ services:
 
     dbal.extractor.extractors.sqlite_extractor:
         class: phpbb\db\extractor\sqlite_extractor
-        scope: prototype
+        shared: false
         arguments:
             - '%core.root_path%'
             - '@request'

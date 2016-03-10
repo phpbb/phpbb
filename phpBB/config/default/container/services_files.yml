@@ -6,7 +6,7 @@ services:
 
     files.filespec:
         class: phpbb\files\filespec
-        scope: prototype
+        shared: false
         arguments:
             - '@filesystem'
             - '@language'
@@ -18,7 +18,7 @@ services:
 
     files.upload:
         class: phpbb\files\upload
-        scope: prototype
+        shared: false
         arguments:
             - '@filesystem'
             - '@files.factory'
@@ -28,7 +28,7 @@ services:
 
     files.types.form:
         class: phpbb\files\types\form
-        scope: prototype
+        shared: false
         arguments:
             - '@files.factory'
             - '@language'
@@ -38,7 +38,7 @@ services:
 
     files.types.local:
         class: phpbb\files\types\form
-        scope: prototype
+        shared: false
         arguments:
             - '@files.factory'
             - '@language'
@@ -47,7 +47,7 @@ services:
 
     files.types.remote:
         class: phpbb\files\types\remote
-        scope: prototype
+        shared: false
         arguments:
             - '@config'
             - '@files.factory'
