@@ -360,7 +360,7 @@ function getCaretPosition(txtarea) {
 		}
 
 		$('textarea').on('keydown', function (e) {
-			if (e.which === 13 && e.metaKey) {
+			if (e.which === 13 && (e.metaKey || e.ctrlKey)) {
 				$(this).closest('form').submit();
 			}
 		});
