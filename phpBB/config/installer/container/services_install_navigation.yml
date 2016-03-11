@@ -13,7 +13,7 @@ services:
 
     installer.navigation.main_navigation:
         class: phpbb\install\helper\navigation\main_navigation
-        scope: prototype
+        shared: false
         tags:
             - { name: installer.navigation }
 
@@ -21,7 +21,7 @@ services:
         class: phpbb\install\helper\navigation\install_navigation
         arguments:
             - '@installer.helper.install_helper'
-        scope: prototype
+        shared: false
         tags:
             - { name: installer.navigation }
 
@@ -29,7 +29,7 @@ services:
         class: phpbb\install\helper\navigation\update_navigation
         arguments:
             - '@installer.helper.install_helper'
-        scope: prototype
+        shared: false
         tags:
             - { name: installer.navigation }
 
@@ -37,6 +37,6 @@ services:
         class: phpbb\install\helper\navigation\convertor_navigation
         arguments:
             - '@installer.helper.install_helper'
-        scope: prototype
+        shared: false
         tags:
             - { name: installer.navigation }
