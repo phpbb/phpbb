@@ -100,6 +100,28 @@ class qa
 			$db->sql_freeresult($result);
 		}
 
+		// final fallback to any language
+		if (!sizeof($this->question_ids))
+		{
+			$this->question_lang = '';
+
+			$sql = 'SELECT q.question_id, q.lang_iso
+				FROM ' . $this->table_captcha_questions . ' q, ' . $this->table_captcha_answers . ' a
+				WHERE q.question_id = a.question_id
+				GROUP BY lang_iso';
+			$result = $db->sql_query($sql, 7200);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (empty($this->question_lang))
+				{
+					$this->question_lang = $row['lang_iso'];
+				}
+				$this->question_ids[$row['question_id']] = $row['question_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+
 		// okay, if there is a confirm_id, we try to load that confirm's state. If not, we try to find one
 		if (!$this->load_answer() && (!$this->load_confirm_id() || !$this->load_answer()))
 		{
@@ -200,7 +222,7 @@ class qa
 	{
 		global $template;
 
-		if ($this->is_solved())
+		if ($this->is_solved() || !count($this->question_ids))
 		{
 			return false;
 		}
@@ -370,7 +392,7 @@ class qa
 
 		if (!sizeof($this->question_ids))
 		{
-			return false;
+			return $user->lang['CONFIRM_QUESTION_MISSING'];
 		}
 
 		if (!$this->confirm_id)
