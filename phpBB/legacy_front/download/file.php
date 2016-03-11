@@ -25,6 +25,8 @@ else if ($request->is_set('HTTP_USER_AGENT', phpbb\request\request_interface::SE
 	return;
 }
 
+require_once($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
+
 if ($request->is_set('avatar'))
 {
 	$filename = $request->variable('avatar', '');
@@ -76,7 +78,6 @@ if ($request->is_set('avatar'))
 }
 
 // implicit else: we are not in avatar mode
-require_once($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 
 $attach_id = $request->variable('id', 0);
 $mode = $request->variable('mode', '');
