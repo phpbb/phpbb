@@ -22,3 +22,5 @@
 /tests/test_config*.php
 /tests/tmp/*
 /tests/vendor
+/vagrant/phpbb-install-config.yml
+.vagrant
