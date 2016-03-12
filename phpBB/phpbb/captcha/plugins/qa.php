@@ -220,10 +220,12 @@ class qa
 	*/
 	function get_template()
 	{
-		global $template;
+		global $phpbb_log, $template, $user;
 
-		if ($this->is_solved() || !count($this->question_ids))
+		if ($this->is_solved() || empty($this->question_text) || !count($this->question_ids))
 		{
+			/** @var \phpbb\log\log_interface $phpbb_log */
+			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
 			return false;
 		}
 		else
@@ -386,13 +388,15 @@ class qa
 	*/
 	function validate()
 	{
-		global $user;
+		global $phpbb_log, $user;
 
 		$error = '';
 
 		if (!sizeof($this->question_ids))
 		{
-			return $user->lang['CONFIRM_QUESTION_MISSING'];
+			/** @var \phpbb\log\log_interface $phpbb_log */
+			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
+			return $user->lang('CONFIRM_QUESTION_MISSING');
 		}
 
 		if (!$this->confirm_id)
