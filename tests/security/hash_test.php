@@ -34,7 +34,7 @@ class phpbb_security_hash_test extends phpbb_test_case
 		$passwords_helper = new \phpbb\passwords\helper();
 
 		// Set up passwords manager
-		$this->passwords_manager = new \phpbb\passwords\manager(
+		$this->password_manager = new \phpbb\passwords\manager(
 			$config,
 			$passwords_drivers,
 			$passwords_helper,
