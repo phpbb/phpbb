@@ -18,13 +18,11 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 {
 	public function setUp()
 	{
-		global $cache, $user, $phpbb_dispatcher;
+		global $phpbb_dispatcher;
 
 		parent::setUp();
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
-		$config = new \phpbb\config\config(array());
-		set_config(null, null, null, $config);
 	}
 
 	/**

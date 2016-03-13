@@ -29,6 +29,11 @@ class plupload
 	protected $config;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* @var \phpbb\request\request_interface
 	*/
 	protected $request;
@@ -65,15 +70,17 @@ class plupload
 	*
 	* @param string $phpbb_root_path
 	* @param \phpbb\config\config $config
+	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param \phpbb\request\request_interface $request
 	* @param \phpbb\user $user
 	* @param \bantu\IniGetWrapper\IniGetWrapper $php_ini
 	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
+		$this->filesystem = $filesystem;
 		$this->request = $request;
 		$this->user = $user;
 		$this->php_ini = $php_ini;
@@ -326,7 +333,7 @@ class plupload
 
 		$tmp_file = $this->temporary_filepath($upload['tmp_name']);
 
-		if (!phpbb_is_writable($this->temporary_directory) || !move_uploaded_file($upload['tmp_name'], $tmp_file))
+		if (!$this->filesystem->is_writable($this->temporary_directory) || !move_uploaded_file($upload['tmp_name'], $tmp_file))
 		{
 			$this->emit_error(103, 'PLUPLOAD_ERR_MOVE_UPLOADED');
 		}
