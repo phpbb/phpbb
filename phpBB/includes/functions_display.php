@@ -1146,18 +1146,6 @@ function display_custom_bbcodes()
 }
 
 /**
-* Display reasons
-*
-* @deprecated 3.2.0-dev
-*/
-function display_reasons($reason_id = 0)
-{
-	global $phpbb_container;
-
-	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
-}
-
-/**
 * Display user activity (action forum/topic)
 */
 function display_user_activity(&$userdata_ary)
