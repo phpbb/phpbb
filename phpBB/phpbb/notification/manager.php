@@ -140,7 +140,7 @@ class manager
 	 * @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	 * @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	 *
-	 * @deprecated since 3.2
+	 * @deprecated since 3.2 (To be removed: 3.4.0)
 	 */
 	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
 	{
@@ -186,7 +186,7 @@ class manager
 	 * @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	 * @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	 *
-	 * @deprecated since 3.2
+	 * @deprecated since 3.2 (To be removed: 3.4.0)
 	 */
 	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
 	{
