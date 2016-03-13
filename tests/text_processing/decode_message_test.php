@@ -49,7 +49,7 @@ class phpbb_text_processing_decode_message_test extends phpbb_test_case
 			),
 			array(
 				'<!-- w --><a class="postlink" href="http://www.phpbb.com">www.phpbb.com</a><!-- w -->',
-				'http://www.phpbb.com'
+				'www.phpbb.com'
 			),
 			array(
 				'<!-- m --><a class="postlink" href="http://www.phpbb.com">http://www.phpbb.com</a><!-- m -->',
