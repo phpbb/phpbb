@@ -386,6 +386,7 @@ $lang = array_merge($lang, array(
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks.',
 	'NO_EDIT_READ_MESSAGE'		=> 'Private message cannot be edited because it has already been read.',
 	'NO_EMAIL_USER'				=> 'The email/username information submitted could not be found.',
+	'EMAIL_NOT_UNIQUE'			=> 'Email you specified is used by multiple users. You must specify username as well.',
 	'NO_FOES'					=> 'No foes currently defined',
 	'NO_FRIENDS'				=> 'No friends currently defined',
 	'NO_FRIENDS_OFFLINE'		=> 'No friends offline',
