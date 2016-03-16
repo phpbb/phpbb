@@ -159,7 +159,7 @@ function adm_page_header($page_title)
 function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth;
-	global $phpbb_root_path;
+	global $phpbb_path_helper, $phpbb_root_path;
 	global $request, $phpbb_dispatcher;
 
 	// A listener can set this variable to `true` when it overrides this function
@@ -189,7 +189,7 @@ function adm_page_footer($copyright_html = true)
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
-		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery.min.js",
+		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : $phpbb_path_helper->update_web_root_path($phpbb_root_path . 'assets/javascript/jquery.min.js'),
 		'S_ALLOW_CDN'		=> !empty($config['allow_cdn']),
 		'VERSION'			=> $config['version'])
 	);
