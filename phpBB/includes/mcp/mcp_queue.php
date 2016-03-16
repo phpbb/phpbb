@@ -1345,7 +1345,7 @@ class mcp_queue
 			}
 
 			// If we came from viewtopic, we try to go back to it.
-			if (strpos($redirect, $phpbb_root_path . 'viewtopic.' . $phpEx) === 0)
+			if (strpos($redirect, 'viewtopic.' . $phpEx) !== false)
 			{
 				if ($num_disapproved_topics == 0)
 				{
