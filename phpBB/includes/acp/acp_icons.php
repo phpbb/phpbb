@@ -30,7 +30,7 @@ class acp_icons
 	{
 		global $db, $user, $template, $cache;
 		global $config, $phpbb_root_path;
-		global $request, $phpbb_container;
+		global $request, $phpbb_container, $phpbb_path_helper;
 
 		$user->add_lang('acp/posting');
 
@@ -285,7 +285,7 @@ class acp_icons
 					$template->assign_block_vars('items', array(
 						'IMG'		=> $img,
 						'A_IMG'		=> addslashes($img),
-						'IMG_SRC'	=> $phpbb_root_path . $img_path . '/' . $img,
+						'IMG_SRC'	=> $phpbb_path_helper->update_web_root_path($phpbb_root_path . $img_path . '/' . $img),
 
 						'CODE'		=> ($mode == 'smilies' && isset($img_row['code'])) ? $img_row['code'] : '',
 						'EMOTION'	=> ($mode == 'smilies' && isset($img_row['emotion'])) ? $img_row['emotion'] : '',
@@ -311,7 +311,7 @@ class acp_icons
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
 
-						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
+						'IMG_SRC'			=> $phpbb_path_helper->update_web_root_path($phpbb_root_path . $img_path . '/' . $default_row['smiley_url']),
 						'IMG_PATH'			=> $img_path,
 
 						'CODE'				=> $default_row['code'],
@@ -957,7 +957,7 @@ class acp_icons
 			$template->assign_block_vars('items', array(
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,
 				'ALT_TEXT'		=> $alt_text,
-				'IMG_SRC'		=> $phpbb_root_path . $img_path . '/' . $row[$fields . '_url'],
+				'IMG_SRC'		=> $phpbb_path_helper->update_web_root_path($phpbb_root_path . $img_path . '/' . $row[$fields . '_url']),
 				'WIDTH'			=> $row[$fields . '_width'],
 				'HEIGHT'		=> $row[$fields . '_height'],
 				'CODE'			=> (isset($row['code'])) ? $row['code'] : '',
