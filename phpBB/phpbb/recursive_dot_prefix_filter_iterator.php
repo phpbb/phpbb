@@ -25,6 +25,6 @@ class recursive_dot_prefix_filter_iterator extends \RecursiveFilterIterator
 	public function accept()
 	{
 		$filename = $this->current()->getFilename();
-		return !$this->current()->isDir() || $filename[0] !== '.';
+		return $filename[0] !== '.' || !$this->current()->isDir();
 	}
 }
