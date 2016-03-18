@@ -183,6 +183,21 @@ define('BBCODE_UID_LEN', 8);
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
 
+// BBCode IDs
+define('BBCODE_QUOTE_ID', 0);
+define('BBCODE_B_ID', 1);
+define('BBCODE_I_ID', 2);
+define('BBCODE_URL_ID', 3);
+define('BBCODE_IMG_ID', 4);
+define('BBCODE_SIZE_ID', 5);
+define('BBCODE_COLOR_ID', 6);
+define('BBCODE_U_ID', 7);
+define('BBCODE_CODE_ID', 8);
+define('BBCODE_LIST_ID', 9);
+define('BBCODE_EMAIL_ID', 10);
+define('BBCODE_FLASH_ID', 11);
+define('BBCODE_ATTACH_ID', 12);
+
 // BBCode hard limit
 define('BBCODE_LIMIT', 1511);
 
