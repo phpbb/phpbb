@@ -1076,7 +1076,7 @@ function display_custom_bbcodes()
 	global $db, $template, $user, $phpbb_dispatcher;
 
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
-	$num_predefined_bbcodes = 22;
+	$num_predefined_bbcodes = NUM_PREDEFINED_BBCODES;
 
 	$sql_ary = array(
 		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline',
