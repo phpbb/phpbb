@@ -34,7 +34,7 @@ class notifications_board extends \phpbb\db\migration\migration
 	public function update_module()
 	{
 		$sql = 'UPDATE ' . MODULES_TABLE . "
-			SET auth = 'cfg_allow_board_notifications'
+			SET module_auth = 'cfg_allow_board_notifications'
 			WHERE module_basename = 'ucp_notifications'
 				AND module_mode = 'notification_list'";
 		$this->sql_query($sql);
