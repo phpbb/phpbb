@@ -185,19 +185,19 @@ define('NUM_CORE_BBCODES', 12);
 define('NUM_PREDEFINED_BBCODES', 22);
 
 // BBCode IDs
-define('BBCODE_QUOTE_ID', 0);
-define('BBCODE_B_ID', 1);
-define('BBCODE_I_ID', 2);
-define('BBCODE_URL_ID', 3);
-define('BBCODE_IMG_ID', 4);
-define('BBCODE_SIZE_ID', 5);
-define('BBCODE_COLOR_ID', 6);
-define('BBCODE_U_ID', 7);
-define('BBCODE_CODE_ID', 8);
-define('BBCODE_LIST_ID', 9);
-define('BBCODE_EMAIL_ID', 10);
-define('BBCODE_FLASH_ID', 11);
-define('BBCODE_ATTACH_ID', 12);
+define('BBCODE_ID_QUOTE', 0);
+define('BBCODE_ID_B', 1);
+define('BBCODE_ID_I', 2);
+define('BBCODE_ID_URL', 3);
+define('BBCODE_ID_IMG', 4);
+define('BBCODE_ID_SIZE', 5);
+define('BBCODE_ID_COLOR', 6);
+define('BBCODE_ID_U', 7);
+define('BBCODE_ID_CODE', 8);
+define('BBCODE_ID_LIST', 9);
+define('BBCODE_ID_EMAIL', 10);
+define('BBCODE_ID_FLASH', 11);
+define('BBCODE_ID_ATTACH', 12);
 
 // BBCode hard limit
 define('BBCODE_LIMIT', 1511);
