@@ -5,7 +5,6 @@ VAGRANTFILE_API_VERSION ||= "2"
 confDir = $confDir ||= File.expand_path("phpBB/vendor/laravel/homestead", File.dirname(__FILE__))
 
 homesteadYamlPath = "vagrant/bootstrap.yaml"
-homesteadJsonPath = "vagrant/bootstrap.json"
 afterScriptPath = "vagrant/after.sh"
 aliasesPath = "vagrant/aliases"
 
@@ -18,8 +17,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     if File.exists? homesteadYamlPath then
         Homestead.configure(config, YAML::load(File.read(homesteadYamlPath)))
-    elsif File.exists? homesteadJsonPath then
-        Homestead.configure(config, JSON.parse(File.read(homesteadJsonPath)))
     end
 
     if File.exists? afterScriptPath then

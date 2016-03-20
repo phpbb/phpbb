@@ -2,7 +2,7 @@
 
 phpBB includes support for Vagrant. This allows developers and contributors to run phpBB without the need to set up their own local web server with traditional WAMP/MAMP stacks. It also provides a consistent environment between developers for writing and debugging code changes more productively.
 
-phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.2/homestead) Vagrant box. It runs a Linux server with Ubuntu 14.04, PHP 7, Nginx, SQLite3, MySQL, and a whole lot more (complete specs below).
+phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.1/homestead) Vagrant box. It runs a Linux server with Ubuntu 14.04, PHP 5.6, Nginx, SQLite3, MySQL, and a whole lot more (complete specs below).
 
 ## Get Started
 
@@ -14,7 +14,7 @@ phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.2/homestead) Vagra
 $ vagrant up
 ```
 
-* Access phpBB at `http://192.168.33.10/phpBB/`
+* Access phpBB at `http://192.168.33.10/`
 * Username: **admin**
 * Password: **adminadmin**
 
@@ -49,7 +49,7 @@ $ vagrant destroy
 
 By default, phpBB is pre-configured to install with a MySQL database. You can, however, switch to PostegreSQL or SQLite3 by editing the `phpbb-install-config.yml` file in the vagrant directory. The next time you run `vagrant up` (or `vagrant provision`) it will be installed under the new configuration.
 
-If you prefer to access phpBB from the more friendly URL `http://phpbb.app/phpBB` then you must update your computer's hosts file. This file is typically located at `/etc/hosts` for Mac/Linux or `C:\Windows\System32\drivers\etc\hosts` for Windows. Open this file and add the following line to it, at the very bottom, and save.
+If you prefer to access phpBB from the more friendly URL `http://phpbb.app` then you must update your computer's hosts file. This file is typically located at `/etc/hosts` for Mac/Linux or `C:\Windows\System32\drivers\etc\hosts` for Windows. Open this file and add the following line to it, at the very bottom, and save.
 
 ```
 192.168.10.10  phpbb.app
@@ -57,7 +57,7 @@ If you prefer to access phpBB from the more friendly URL `http://phpbb.app/phpBB
 
 ## How it all works
 
-When you vagrant up, the Laravel/Homestead box is transparently loaded as a Virtual Machine on your computer. Your local phpBB repository clone is mirrored/shared with the VM, so you can work on the phpBB code on your computer, and see the changes immediately when you browse to phpBB at the URL provided by the VM.
+When you vagrant up, the Laravel/Homestead box is transparently loaded as a Virtual Machine on your computer (this may take several minutes the very first time while it downloads the VM image to your computer). Your local phpBB repository clone is mirrored/shared with the VM, so you can work on the phpBB code on your computer, and see the changes immediately when you browse to phpBB at the URL provided by the VM.
 
 This is very similar to traditional methods of working with a local WAMP/MAMP stack, except the webserver is now being provided by a VM of a Linux server. The advantages here are the exact same Linux server environment is being used by everybody who uses Vagrant with phpBB, so there will be consist behaviour unlike when everybody is developing on different versions of PHP, server configurations, etc.
 
@@ -65,19 +65,24 @@ The environment is also "sandboxed" from your system. This means you don't need 
 
 There are some caveats, however. You can only run one vagrant VM for the phpBB repository. And of course, the database will be destroyed when you vagrant destroy. If the database is important, you should SSH into your vagrant VM and export/import the DB as needed using SSH commands.
 
-For example, to export/import a MySQL database (using phpBB's store directory):
+For example, to export/import a MySQL database (using phpBB's `store` directory):
 
 SSH into the VM
-```
+
+```sh
 $ vagrant ssh
 ```
+
 Export MySQL:
+
+```sh
+$ mysqldump -uhomestead -psecret phpbb > /home/vagrant/phpbb/phpBB/store/phpbb.sql
 ```
-$ mysqldump phpbb > /home/vagrant/phpbb/phpBB/store/phpbb.sql
-```
+
 Import MySQL:
-```
-$ mysql phpbb < /home/vagrant/phpbb/phpBB/store/phpbb.sql
+
+```sh
+$ mysql -uhomestead -psecret phpbb < /home/vagrant/phpbb/phpBB/store/phpbb.sql
 ```
 
 ---
@@ -88,11 +93,10 @@ $ mysql phpbb < /home/vagrant/phpbb/phpBB/store/phpbb.sql
 
 * Ubuntu 14.04
 * Git
-* PHP 7.0
+* PHP 5.6
 * HHVM
 * Nginx
 * MySQL
-* MariaDB
 * Sqlite3
 * Postgres
 * Composer
@@ -100,6 +104,7 @@ $ mysql phpbb < /home/vagrant/phpbb/phpBB/store/phpbb.sql
 * Redis
 * Memcached
 * Beanstalkd
+* Blackfire Profiler
 
 ### MySQL Access
 

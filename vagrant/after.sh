@@ -27,4 +27,7 @@ sudo chown -R vagrant /tmp/phpbb.sqlite3
 # Add DEBUG mode to phpBB to remove annoying installer warnings
 sed -i "$ a @define('DEBUG', true);" ${PHPBB_CONFIG}
 
+# Update the PHP memory limits (enough to allow phpunit tests to run)
+sed -i "s/memory_limit = .*/memory_limit = 768M/" /etc/php5/fpm/php.ini
+
 echo "Your board is ready at http://192.168.10.10/"

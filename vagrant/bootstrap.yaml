@@ -22,6 +22,10 @@ sites:
 databases:
     - phpbb
 
+variables:
+    - key: APP_ENV
+      value: local
+
 # blackfire:
 #     - id: foo
 #       token: bar
