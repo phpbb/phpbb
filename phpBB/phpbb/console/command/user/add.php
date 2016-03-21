@@ -280,20 +280,20 @@ class add extends \phpbb\console\command\command
 	 */
 	protected function send_activation_email($user_id)
 	{
-		if ($this->config['require_activation'] == USER_ACTIVATION_SELF)
+		switch ($this->config['require_activation'])
 		{
-			$email_template = 'user_welcome_inactive';
-			$user_actkey = gen_rand_string(mt_rand(6, 10));
-		}
-		else if ($this->config['require_activation'] == USER_ACTIVATION_ADMIN)
-		{
-			$email_template = 'admin_welcome_inactive';
-			$user_actkey = gen_rand_string(mt_rand(6, 10));
-		}
-		else
-		{
-			$email_template = 'user_welcome';
-			$user_actkey = '';
+			case USER_ACTIVATION_SELF:
+				$email_template = 'user_welcome_inactive';
+				$user_actkey = gen_rand_string(mt_rand(6, 10));
+			break;
+			case USER_ACTIVATION_ADMIN:
+				$email_template = 'admin_welcome_inactive';
+				$user_actkey = gen_rand_string(mt_rand(6, 10));
+			break;
+			default:
+				$email_template = 'user_welcome';
+				$user_actkey = '';
+			break;
 		}
 
 		if (!class_exists('messenger'))
