@@ -64,7 +64,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 			*	8	=> Forum subscribed, but already notified, should NOT receive a new notification
 			*/
 			array(
-				array(),
+				array('poster_id' => 2),
 				array(
 					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
 				),
@@ -81,7 +81,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 			* No new notifications
 			*/
 			array(
-				array('force_approved_state' => false),
+				array('force_approved_state' => false, 'poster_id' => 2),
 				array(
 					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
 				),
@@ -121,7 +121,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 			return;
 		}
 
-		$reply_data = array_merge($this->post_data, array(
+		$reply_data = array_merge($this->post_data, $additional_post_data, array(
 			'topic_id'		=> 2,
 		));
 		$url = submit_post('reply', '', 'poster-name', POST_NORMAL, $poll_data, $reply_data, false, false);

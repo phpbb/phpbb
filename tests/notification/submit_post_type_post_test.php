@@ -65,7 +65,7 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 			*	8	=> Forum subscribed, but already notified, should NOT receive a new notification
 			*/
 			array(
-				array(),
+				array('poster_id' => 2),
 				array(
 					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
 					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
@@ -85,7 +85,7 @@ class phpbb_notification_submit_post_type_post_test extends phpbb_notification_s
 			* No new notifications
 			*/
 			array(
-				array('force_approved_state' => false),
+				array('force_approved_state' => false, 'poster_id' => 2),
 				array(
 					array('user_id' => 5, 'item_id' => 1, 'item_parent_id' => 1),
 					array('user_id' => 8, 'item_id' => 1, 'item_parent_id' => 1),
