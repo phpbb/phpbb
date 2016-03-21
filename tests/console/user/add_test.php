@@ -143,7 +143,15 @@ class phpbb_console_command_user_add_test extends phpbb_database_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new add($this->user, $this->db, $this->config, $this->language, $this->passwords_manager, $this->phpbb_root_path, $this->php_ext));
+		$application->add(new add(
+			$this->user,
+			$this->db,
+			$this->config,
+			$this->language,
+			$this->passwords_manager,
+			$this->phpbb_root_path,
+			$this->php_ext
+		));
 
 		$command = $application->find('user:add');
 		$this->command_name = $command->getName();
