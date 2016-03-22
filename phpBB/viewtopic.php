@@ -592,7 +592,7 @@ $quickmod_array = array(
 * Event to modify data in the quickmod_array before it gets sent to the
 * phpbb_add_quickmod_option function.
 *
-* @event core.viewtopic_add_quickmod_option_after
+* @event core.viewtopic_add_quickmod_option_before
 * @var	int		forum_id			Forum ID
 * @var	int		post_id				Post ID
 * @var	array	quickmod_array		Array with quick moderation options data
@@ -601,7 +601,7 @@ $quickmod_array = array(
 * @var	array	topic_tracking_info	Array with topic tracking data
 * @var	string	viewtopic_url		URL to the topic page
 * @var  bool  allow_change_type   Topic change permissions check
-* @since 3.1.8-RC1
+* @since 3.1.9-RC1
 */
 $vars = array(
 	'forum_id',
@@ -613,7 +613,7 @@ $vars = array(
 	'viewtopic_url',
 	'allow_change_type',
 );
-extract($phpbb_dispatcher->trigger_event('core.viewtopic_add_quickmod_option_after', compact($vars)));
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_add_quickmod_option_before', compact($vars)));
 
 foreach ($quickmod_array as $option => $qm_ary)
 {
