@@ -95,7 +95,6 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			$this->config,
 			$this->filesystem,
 			$this->phpbb_path_helper,
-			$container,
 			$cache_path,
 			null,
 			$loader,
@@ -107,7 +106,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			)
 		);
 		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
