@@ -5,9 +5,8 @@ services:
             - '@service_container'
             - '@routing.chained_resources_locator'
             - '@routing.delegated_loader'
-            - '%core.root_path%'
             - '%core.php_ext%'
-            - '%core.environment%'
+            - '%core.cache_dir%'
 
     router.listener:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener

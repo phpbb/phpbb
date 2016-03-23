@@ -640,13 +640,13 @@ class messenger
 				$phpbb_container->get('filesystem'),
 				$phpbb_container->get('path_helper'),
 				$phpbb_container,
-				$phpbb_container->getParameter('core.root_path') . 'cache/',
+				$phpbb_container->getParameter('core.cache_dir'),
 				$phpbb_container->get('ext.manager'),
 				new \phpbb\template\twig\loader(
 					$phpbb_filesystem
 				)
 			),
-			$phpbb_container->getParameter('core.root_path') . 'cache/',
+			$phpbb_container->getParameter('core.cache_dir'),
 			$phpbb_container->get('user'),
 			$phpbb_container->get('template.twig.extensions.collection'),
 			$phpbb_extension_manager
