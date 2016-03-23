@@ -481,14 +481,14 @@
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.rst" />
 
-		<delete dir="${dir}/vendor/zendframework/zend-code/doc" />
-		<delete file="${dir}/vendor/zendframework/zend-code/CHANGELOG.md" />
 		<delete file="${dir}/vendor/zendframework/zend-code/CONTRIBUTING.md" />
 		<delete file="${dir}/vendor/zendframework/zend-code/README.md" />
 
-		<delete file="${dir}/vendor/zendframework/zend-eventmanager/CHANGELOG.md" />
 		<delete file="${dir}/vendor/zendframework/zend-eventmanager/CONTRIBUTING.md" />
 		<delete file="${dir}/vendor/zendframework/zend-eventmanager/README.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/README.md" />
 	</target>
 
 	<target name="clean-diff-dir">
