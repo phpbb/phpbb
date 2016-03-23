@@ -8,14 +8,16 @@ services:
             - '@config'
             - '@filesystem'
             - '@path_helper'
-            - '@service_container'
             - '%core.template.cache_path%'
             - '@ext.manager'
             - '@template.twig.loader'
             - []
+        calls:
+            - [setLexer, ['@template.twig.lexer']]
 
     template.twig.lexer:
         class: phpbb\template\twig\lexer
+        lazy: true
         arguments:
             - '@template.twig.environment'
 

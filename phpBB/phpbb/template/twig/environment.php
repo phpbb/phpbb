@@ -50,20 +50,18 @@ class environment extends \Twig_Environment
 	* @param \phpbb\config\config $phpbb_config The phpBB configuration
 	* @param \phpbb\filesystem\filesystem $filesystem
 	* @param \phpbb\path_helper $path_helper phpBB path helper
-	* @param \Symfony\Component\DependencyInjection\ContainerInterface $container The dependency injection container
 	* @param string $cache_path The path to the cache directory
 	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
 	* @param \Twig_LoaderInterface $loader Twig loader interface
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, \Symfony\Component\DependencyInjection\ContainerInterface $container, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
 		$this->filesystem = $filesystem;
 		$this->phpbb_path_helper = $path_helper;
 		$this->extension_manager = $extension_manager;
-		$this->container = $container;
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
@@ -77,23 +75,8 @@ class environment extends \Twig_Environment
 			'autoescape'	=> false,
 		), $options);
 
-		return parent::__construct($loader, $options);
+		parent::__construct($loader, $options);
 	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function getLexer()
-	{
-		if (null === $this->lexer)
-		{
-			$this->lexer = $this->container->get('template.twig.lexer');
-			$this->lexer->set_environment($this);
-		}
-
-		return $this->lexer;
-	}
-
 
 	/**
 	* Get the list of enabled phpBB extensions

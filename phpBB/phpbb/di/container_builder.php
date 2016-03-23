@@ -14,6 +14,8 @@
 namespace phpbb\di;
 
 use phpbb\filesystem\filesystem;
+use Symfony\Bridge\ProxyManager\LazyProxy\Instantiator\RuntimeInstantiator;
+use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -460,7 +462,10 @@ class container_builder
 	{
 		try
 		{
-			$dumper                = new PhpDumper($this->container);
+			$dumper = new PhpDumper($this->container);
+			$proxy_dumper = new ProxyDumper();
+			$dumper->setProxyDumper($proxy_dumper);
+
 			$cached_container_dump = $dumper->dump(array(
 				'class'      => 'phpbb_cache_container',
 				'base_class' => 'Symfony\\Component\\DependencyInjection\\ContainerBuilder',
@@ -483,6 +488,7 @@ class container_builder
 	protected function create_container(array $extensions)
 	{
 		$container = new ContainerBuilder(new ParameterBag($this->get_core_parameters()));
+		$container->setProxyInstantiator(new RuntimeInstantiator());
 
 		$extensions_alias = array();
 
