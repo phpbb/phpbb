@@ -593,14 +593,14 @@ $quickmod_array = array(
 * phpbb_add_quickmod_option function.
 *
 * @event core.viewtopic_add_quickmod_option_before
-* @var	int			forum_id								Forum ID
-* @var	int			post_id									Post ID
-* @var	array		quickmod_array					Array with quick moderation options data
-* @var	array		topic_data							Array with topic data
-* @var	int			topic_id								Topic ID
-* @var	array		topic_tracking_info			Array with topic tracking data
-* @var	string	viewtopic_url						URL to the topic page
-* @var	bool		allow_change_type				Topic change permissions check
+* @var	int				forum_id				Forum ID
+* @var	int				post_id					Post ID
+* @var	array			quickmod_array			Array with quick moderation options data
+* @var	array			topic_data				Array with topic data
+* @var	int				topic_id				Topic ID
+* @var	array			topic_tracking_info		Array with topic tracking data
+* @var	string			viewtopic_url			URL to the topic page
+* @var	bool			allow_change_type		Topic change permissions check
 * @since 3.1.9-RC1
 */
 $vars = array(
