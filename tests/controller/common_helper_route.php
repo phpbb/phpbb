@@ -126,7 +126,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			new \phpbb\routing\file_locator($this->filesystem, dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php');
 
 		// Set correct current phpBB root path
 		$this->root_path = $this->get_phpbb_root_path();

@@ -1044,7 +1044,7 @@ class convertor
 				OR config_name = 'convert_db_user'");
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
-		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
+		@unlink($phpbb_container->getParameter('core.cache_dir') . 'data_global.' . $phpEx);
 		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log

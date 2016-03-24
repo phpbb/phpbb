@@ -73,7 +73,7 @@ class phpbb_session_testable_factory
 	public function get_session(\phpbb\db\driver\driver_interface $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container;
+		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container, $phpbb_root_path;
 
 		$request = $this->request = new phpbb_mock_request(
 			array(),
@@ -95,6 +95,7 @@ class phpbb_session_testable_factory
 			new phpbb_mock_auth_provider()
 		);
 		$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+		$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
 		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
 		$provider_collection->add('auth.provider.db');
 		$phpbb_container->set(

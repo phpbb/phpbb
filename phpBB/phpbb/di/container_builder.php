@@ -522,6 +522,7 @@ class container_builder
 				'core.php_ext'       => $this->php_ext,
 				'core.environment'   => $this->get_environment(),
 				'core.debug'         => defined('DEBUG') ? DEBUG : false,
+				'core.cache_dir'     => $this->get_cache_dir(),
 			),
 			$this->get_env_parameters()
 		);
