@@ -283,7 +283,7 @@ if ($sort_days)
 			AND (t.topic_last_post_time >= ' . $min_post_time . '
 				OR t.topic_type = ' . POST_ANNOUNCE . '
 				OR t.topic_type = ' . POST_GLOBAL . ')
-			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id),
+			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.'),
 	);
 
 	/**
@@ -292,10 +292,10 @@ if ($sort_days)
 	* @event core.viewforum_modify_sort_data_sql
 	* @var int		forum_id		The forum_id whose topics are being listed
 	* @var int		start			Variable containing start for pagination
-	* @var	array	sort_days		The oldest topic displayable in elapsed days
-	* @var	array	sort_key		The sorting by. It is one of the first character of (in low case):
+	* @var int		sort_days		The oldest topic displayable in elapsed days
+	* @var string	sort_key		The sorting by. It is one of the first character of (in low case):
 	*								Author, Post time, Replies, Subject, Views
-	* @var	array	sort_dir		Either "a" for ascending or "d" for descending
+	* @var string	sort_dir		Either "a" for ascending or "d" for descending
 	* @var array	sql_array		The SQL array to get the data of all topics
 	* @since 3.1.9-RC1
 	*/
