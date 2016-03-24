@@ -75,6 +75,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '@config'
+            - '%core.cache_dir%'
         calls:
             - [set_name, [cron.task.core.queue]]
         tags:
