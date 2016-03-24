@@ -183,6 +183,9 @@ class container_factory
 
 		// Get compatibilty globals and constants
 		$this->update_helper->include_file('includes/compatibility_globals.' . $this->php_ext);
+
+		register_compatibility_globals();
+
 		$this->update_helper->include_file('includes/constants.' . $this->php_ext);
 	}
 }
