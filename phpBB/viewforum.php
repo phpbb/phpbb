@@ -274,16 +274,41 @@ if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
 
-	$sql = 'SELECT COUNT(topic_id) AS num_topics
-		FROM ' . TOPICS_TABLE . "
-		WHERE forum_id = $forum_id
-			AND (topic_last_post_time >= $min_post_time
-				OR topic_type = " . POST_ANNOUNCE . '
-				OR topic_type = ' . POST_GLOBAL . ')
-			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id);
-	$result = $db->sql_query($sql);
-	$topics_count = (int) $db->sql_fetchfield('num_topics');
-	$db->sql_freeresult($result);
+	$sql_array = array(
+		'SELECT'	=> 'COUNT(t.topic_id) AS num_topics',
+		'FROM'		=> array(
+			TOPICS_TABLE	=> 't',
+		),
+		'WHERE'		=> 't.forum_id = ' . $forum_id . '
+			AND (t.topic_last_post_time >= ' . $min_post_time . '
+				OR t.topic_type = ' . POST_ANNOUNCE . '
+				OR t.topic_type = ' . POST_GLOBAL . ')
+			AND ' . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id, 't.'),
+	);
+
+	/**
+	* Modify the sort data SQL query for getting additional fields if needed
+	*
+	* @event core.viewforum_modify_sort_data_sql
+	* @var int		forum_id		The forum_id whose topics are being listed
+	* @var int		start			Variable containing start for pagination
+	* @var int		sort_days		The oldest topic displayable in elapsed days
+	* @var string	sort_key		The sorting by. It is one of the first character of (in low case):
+	*								Author, Post time, Replies, Subject, Views
+	* @var string	sort_dir		Either "a" for ascending or "d" for descending
+	* @var array	sql_array		The SQL array to get the data of all topics
+	* @since 3.1.9-RC1
+	*/
+	$vars = array(
+		'forum_id',
+		'start',
+		'sort_days',
+		'sort_key',
+		'sort_dir',
+		'sql_array',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_sort_data_sql', compact($vars)));
+	$result = $db->sql_query($db->sql_build_query('SELECT', $sql_array));
 
 	if (isset($_POST['sort']))
 	{
