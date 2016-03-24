@@ -295,7 +295,7 @@ if ($sort_days)
 	* @var	array	sort_days		The oldest topic displayable in elapsed days
 	* @var	array	sort_key		The sorting by. It is one of the first character of (in low case):
 	*								Author, Post time, Replies, Subject, Views
-	* @var	array	sort_dir		Either "a" for ascending or "d" for descending 
+	* @var	array	sort_dir		Either "a" for ascending or "d" for descending
 	* @var array	sql_array		The SQL array to get the data of all topics
 	* @since 3.1.9-RC1
 	*/
