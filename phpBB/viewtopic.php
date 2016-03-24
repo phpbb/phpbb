@@ -1597,6 +1597,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		$parse_flags = ($user_cache[$poster_id]['sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 		$user_cache[$poster_id]['sig'] = generate_text_for_display($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield'],  $parse_flags, true);
+		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
 
 	// Parse the message and subject
