@@ -311,7 +311,10 @@ if ($sort_days)
 		'sql_array',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_sort_data_sql', compact($vars)));
+
 	$result = $db->sql_query($db->sql_build_query('SELECT', $sql_array));
+	$topics_count = (int) $db->sql_fetchfield('num_topics');
+	$db->sql_freeresult($result);
 
 	if (isset($_POST['sort']))
 	{
