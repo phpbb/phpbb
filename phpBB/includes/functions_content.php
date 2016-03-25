@@ -469,7 +469,7 @@ function decode_message(&$message, $bbcode_uid = '')
 		$message = str_replace($match, $replace, $message);
 
 		$match = get_preg_expression('bbcode_htm');
-		$replace = array('\1', '\1', '\3', '\1', '', '');
+		$replace = array('\1', '\1', '\2', '\2', '\1', '', '');
 
 		$message = preg_replace($match, $replace, $message);
 	}
