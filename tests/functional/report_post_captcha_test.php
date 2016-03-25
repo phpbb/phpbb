@@ -1,11 +1,15 @@
 <?php
 /**
- *
- * @package testing
- * @copyright (c) 2013 phpBB Group
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 /**
  * @group functional
@@ -14,12 +18,13 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 {
 	public function test_guest_report_post()
 	{
-		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$crawler = self::request('GET', 'app.php/post/1/report', array(), false);
+		$this->assert_response_html(403);
 		$this->add_lang('mcp');
 		$this->assertContains($this->lang('USER_CANNOT_REPORT'), $crawler->filter('html')->text());
 
 		$this->set_reporting_guest(1);
-		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$crawler = self::request('GET', 'app.php/post/1/report');
 		$this->assertContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
 		$this->set_reporting_guest(-1);
 	}
@@ -27,7 +32,7 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 	public function test_user_report_post()
 	{
 		$this->login();
-		$crawler = self::request('GET', 'report.php?f=2&p=1');
+		$crawler = self::request('GET', 'app.php/post/1/report');
 		$this->assertNotContains($this->lang('CONFIRM_CODE'), $crawler->filter('html')->text());
 
 		$this->add_lang('mcp');

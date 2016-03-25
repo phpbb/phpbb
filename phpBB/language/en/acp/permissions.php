@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* acp_permissions [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -53,12 +54,12 @@ $lang = array_merge($lang, array(
 
 		<br />
 
-		<p>For further information on setting up and managing permissions on your phpBB3 board, please see <a href="https://www.phpbb.com/support/documentation/3.0/quickstart/quick_permissions.html">Chapter 1.5 of our Quick Start Guide</a>.</p>
+		<p>For further information on setting up and managing permissions on your phpBB3 board, please see the section on <a href="https://www.phpbb.com/support/docs/en/3.1/ug/quickstart/permissions/">Setting permissions of our Quick Start Guide</a>.</p>
 	',
 
 	'ACL_NEVER'				=> 'Never',
 	'ACL_SET'				=> 'Setting permissions',
-	'ACL_SET_EXPLAIN'		=> 'Permissions are based on a simple <samp>YES</samp>/<samp>NO</samp> system. Setting an option to <samp>NEVER</samp> for a user or usergroup overrides any other value assigned to it. If you do not wish to assign a value for an option for this user or group select <samp>NO</samp>. If values are assigned for this option elsewhere they will be used in preference, else <samp>NEVER</samp> is assumed. All objects marked (with the checkbox in front of them) will copy the permission set you defined.',
+	'ACL_SET_EXPLAIN'		=> 'Permissions are based on a simple <strong>YES</strong>/<strong>NO</strong> system. Setting an option to <strong>NEVER</strong> for a user or usergroup overrides any other value assigned to it. If you do not wish to assign a value for an option for this user or group select <strong>NO</strong>. If values are assigned for this option elsewhere they will be used in preference, else <strong>NEVER</strong> is assumed. All objects marked (with the checkbox in front of them) will copy the permission set you defined.',
 	'ACL_SETTING'			=> 'Setting',
 
 	'ACL_TYPE_A_'			=> 'Administrative permissions',
@@ -101,10 +102,10 @@ $lang = array_merge($lang, array(
 	'ADD_USERS'					=> 'Add users',
 	'ADVANCED_PERMISSIONS'		=> 'Advanced Permissions',
 	'ALL_GROUPS'				=> 'Select all groups',
-	'ALL_NEVER'					=> 'All <samp>NEVER</samp>',
-	'ALL_NO'					=> 'All <samp>NO</samp>',
+	'ALL_NEVER'					=> 'All <strong>NEVER</strong>',
+	'ALL_NO'					=> 'All <strong>NO</strong>',
 	'ALL_USERS'					=> 'Select all users',
-	'ALL_YES'					=> 'All <samp>YES</samp>',
+	'ALL_YES'					=> 'All <strong>YES</strong>',
 	'APPLY_ALL_PERMISSIONS'		=> 'Apply all permissions',
 	'APPLY_PERMISSIONS'			=> 'Apply permissions',
 	'APPLY_PERMISSIONS_EXPLAIN'	=> 'The permissions and role defined for this item will only be applied to this item and all checked items.',
@@ -138,7 +139,7 @@ $lang = array_merge($lang, array(
 
 	'NO_AUTH_SETTING_FOUND'		=> 'Permission settings not defined.',
 	'NO_ROLE_ASSIGNED'			=> 'No role assigned…',
-	'NO_ROLE_ASSIGNED_EXPLAIN'	=> 'Setting to this role does not change permissions on the right. If you want to unset/remove all permissions you should use the “All <samp>NO</samp>” link.',
+	'NO_ROLE_ASSIGNED_EXPLAIN'	=> 'Setting to this role does not change permissions on the right. If you want to unset/remove all permissions you should use the “All <strong>NO</strong>” link.',
 	'NO_ROLE_AVAILABLE'			=> 'No role available',
 	'NO_ROLE_NAME_SPECIFIED'	=> 'Please give the role a name.',
 	'NO_ROLE_SELECTED'			=> 'Role could not be found.',
@@ -183,7 +184,6 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_STANDARD'		=> 'Standard Features',
 	'ROLE_USER_NEW_MEMBER'		=> 'Newly Registered User Features',
 
-
 	'ROLE_DESCRIPTION_ADMIN_FORUM'			=> 'Can access the forum management and forum permission settings.',
 	'ROLE_DESCRIPTION_ADMIN_FULL'			=> 'Has access to all administrative functions of this board.<br />Not recommended.',
 	'ROLE_DESCRIPTION_ADMIN_STANDARD'		=> 'Has access to most administrative features but is not allowed to use server or system related tools.',
@@ -197,17 +197,17 @@ $lang = array_merge($lang, array(
 	'ROLE_DESCRIPTION_FORUM_POLLS'			=> 'Like Standard Access but can also create polls.',
 	'ROLE_DESCRIPTION_FORUM_READONLY'		=> 'Can read the forum, but cannot create new topics or reply to posts.',
 	'ROLE_DESCRIPTION_FORUM_STANDARD'		=> 'Can use most forum features including attachments and deleting own topics, but cannot lock own topics, and cannot create polls.',
-	'ROLE_DESCRIPTION_FORUM_NEW_MEMBER'		=> 'A role for members of the special newly registered users group; contains <samp>NEVER</samp> permissions to lock features for new users.',
+	'ROLE_DESCRIPTION_FORUM_NEW_MEMBER'		=> 'A role for members of the special newly registered users group; contains <strong>NEVER</strong> permissions to lock features for new users.',
 	'ROLE_DESCRIPTION_MOD_FULL'				=> 'Can use all moderating features, including banning.',
 	'ROLE_DESCRIPTION_MOD_QUEUE'			=> 'Can use the Moderation Queue to validate and edit posts, but nothing else.',
 	'ROLE_DESCRIPTION_MOD_SIMPLE'			=> 'Can only use basic topic actions. Cannot send warnings or use moderation queue.',
 	'ROLE_DESCRIPTION_MOD_STANDARD'			=> 'Can use most moderating tools, but cannot ban users or change the post author.',
 	'ROLE_DESCRIPTION_USER_FULL'			=> 'Can use all available forum features for users, including changing the user name or ignoring the flood limit.<br />Not recommended.',
-	'ROLE_DESCRIPTION_USER_LIMITED'			=> 'Can access some of the user features. Attachments, e-mails, or instant messages are not allowed.',
+	'ROLE_DESCRIPTION_USER_LIMITED'			=> 'Can access some of the user features. Attachments, emails, or instant messages are not allowed.',
 	'ROLE_DESCRIPTION_USER_NOAVATAR'		=> 'Has a limited feature set and is not allowed to use the Avatar feature.',
 	'ROLE_DESCRIPTION_USER_NOPM'			=> 'Has a limited feature set, and is not allowed to use Private Messages.',
 	'ROLE_DESCRIPTION_USER_STANDARD'		=> 'Can access most but not all user features. Cannot change user name or ignore the flood limit, for instance.',
-	'ROLE_DESCRIPTION_USER_NEW_MEMBER'		=> 'A role for members of the special newly registered users group; contains <samp>NEVER</samp> permissions to lock features for new users.',
+	'ROLE_DESCRIPTION_USER_NEW_MEMBER'		=> 'A role for members of the special newly registered users group; contains <strong>NEVER</strong> permissions to lock features for new users.',
 
 	'ROLE_DESCRIPTION_EXPLAIN'		=> 'You are able to enter a short explanation of what the role is doing or for what it is meant for. The text you enter here will be displayed within the permissions screens too.',
 	'ROLE_DESCRIPTION_LONG'			=> 'The role description is too long, please limit it to 4000 characters.',
@@ -228,48 +228,48 @@ $lang = array_merge($lang, array(
 	'SET_USERS_PERMISSIONS'			=> 'Set user permissions',
 	'SET_USERS_FORUM_PERMISSIONS'	=> 'Set user forum permissions',
 
-	'TRACE_DEFAULT'					=> 'By default every permission is <samp>NO</samp> (unset). So the permission can be overwritten by other settings.',
+	'TRACE_DEFAULT'					=> 'By default every permission is <strong>NO</strong> (unset). So the permission can be overwritten by other settings.',
 	'TRACE_FOR'						=> 'Trace for',
 	'TRACE_GLOBAL_SETTING'			=> '%s (global)',
-	'TRACE_GROUP_NEVER_TOTAL_NEVER'	=> 'This group’s permission is set to <samp>NEVER</samp> like the total result so the old result is kept.',
-	'TRACE_GROUP_NEVER_TOTAL_NEVER_LOCAL'	=> 'This group’s permission for this forum is set to <samp>NEVER</samp> like the total result so the old result is kept.',
-	'TRACE_GROUP_NEVER_TOTAL_NO'	=> 'This group’s permission is set to <samp>NEVER</samp> which becomes the new total value because it wasn’t set yet (set to <samp>NO</samp>).',
-	'TRACE_GROUP_NEVER_TOTAL_NO_LOCAL'	=> 'This group’s permission for this forum is set to <samp>NEVER</samp> which becomes the new total value because it wasn’t set yet (set to <samp>NO</samp>).',
-	'TRACE_GROUP_NEVER_TOTAL_YES'	=> 'This group’s permission is set to <samp>NEVER</samp> which overwrites the total <samp>YES</samp> to a <samp>NEVER</samp> for this user.',
-	'TRACE_GROUP_NEVER_TOTAL_YES_LOCAL'	=> 'This group’s permission for this forum is set to <samp>NEVER</samp> which overwrites the total <samp>YES</samp> to a <samp>NEVER</samp> for this user.',
-	'TRACE_GROUP_NO'				=> 'The permission is <samp>NO</samp> for this group so the old total value is kept.',
-	'TRACE_GROUP_NO_LOCAL'			=> 'The permission is <samp>NO</samp> for this group within this forum so the old total value is kept.',
-	'TRACE_GROUP_YES_TOTAL_NEVER'	=> 'This group’s permission is set to <samp>YES</samp> but the total <samp>NEVER</samp> cannot be overwritten.',
-	'TRACE_GROUP_YES_TOTAL_NEVER_LOCAL'	=> 'This group’s permission for this forum is set to <samp>YES</samp> but the total <samp>NEVER</samp> cannot be overwritten.',
-	'TRACE_GROUP_YES_TOTAL_NO'		=> 'This group’s permission is set to <samp>YES</samp> which becomes the new total value because it wasn’t set yet (set to <samp>NO</samp>).',
-	'TRACE_GROUP_YES_TOTAL_NO_LOCAL'	=> 'This group’s permission for this forum is set to <samp>YES</samp> which becomes the new total value because it wasn’t set yet (set to <samp>NO</samp>).',
-	'TRACE_GROUP_YES_TOTAL_YES'		=> 'This group’s permission is set to <samp>YES</samp> and the total permission is already set to <samp>YES</samp>, so the total result is kept.',
-	'TRACE_GROUP_YES_TOTAL_YES_LOCAL'	=> 'This group’s permission for this forum is set to <samp>YES</samp> and the total permission is already set to <samp>YES</samp>, so the total result is kept.',
+	'TRACE_GROUP_NEVER_TOTAL_NEVER'	=> 'This group’s permission is set to <strong>NEVER</strong> like the total result so the old result is kept.',
+	'TRACE_GROUP_NEVER_TOTAL_NEVER_LOCAL'	=> 'This group’s permission for this forum is set to <strong>NEVER</strong> like the total result so the old result is kept.',
+	'TRACE_GROUP_NEVER_TOTAL_NO'	=> 'This group’s permission is set to <strong>NEVER</strong> which becomes the new total value because it wasn’t set yet (set to <strong>NO</strong>).',
+	'TRACE_GROUP_NEVER_TOTAL_NO_LOCAL'	=> 'This group’s permission for this forum is set to <strong>NEVER</strong> which becomes the new total value because it wasn’t set yet (set to <strong>NO</strong>).',
+	'TRACE_GROUP_NEVER_TOTAL_YES'	=> 'This group’s permission is set to <strong>NEVER</strong> which overwrites the total <strong>YES</strong> to a <strong>NEVER</strong> for this user.',
+	'TRACE_GROUP_NEVER_TOTAL_YES_LOCAL'	=> 'This group’s permission for this forum is set to <strong>NEVER</strong> which overwrites the total <strong>YES</strong> to a <strong>NEVER</strong> for this user.',
+	'TRACE_GROUP_NO'				=> 'The permission is <strong>NO</strong> for this group so the old total value is kept.',
+	'TRACE_GROUP_NO_LOCAL'			=> 'The permission is <strong>NO</strong> for this group within this forum so the old total value is kept.',
+	'TRACE_GROUP_YES_TOTAL_NEVER'	=> 'This group’s permission is set to <strong>YES</strong> but the total <strong>NEVER</strong> cannot be overwritten.',
+	'TRACE_GROUP_YES_TOTAL_NEVER_LOCAL'	=> 'This group’s permission for this forum is set to <strong>YES</strong> but the total <strong>NEVER</strong> cannot be overwritten.',
+	'TRACE_GROUP_YES_TOTAL_NO'		=> 'This group’s permission is set to <strong>YES</strong> which becomes the new total value because it wasn’t set yet (set to <strong>NO</strong>).',
+	'TRACE_GROUP_YES_TOTAL_NO_LOCAL'	=> 'This group’s permission for this forum is set to <strong>YES</strong> which becomes the new total value because it wasn’t set yet (set to <strong>NO</strong>).',
+	'TRACE_GROUP_YES_TOTAL_YES'		=> 'This group’s permission is set to <strong>YES</strong> and the total permission is already set to <strong>YES</strong>, so the total result is kept.',
+	'TRACE_GROUP_YES_TOTAL_YES_LOCAL'	=> 'This group’s permission for this forum is set to <strong>YES</strong> and the total permission is already set to <strong>YES</strong>, so the total result is kept.',
 	'TRACE_PERMISSION'				=> 'Trace permission - %s',
 	'TRACE_RESULT'					=> 'Trace result',
 	'TRACE_SETTING'					=> 'Trace setting',
 
-	'TRACE_USER_GLOBAL_YES_TOTAL_YES'		=> 'The forum independent user permission evaluates to <samp>YES</samp> but the total permission is already set to <samp>YES</samp>, so the total result is kept. %sTrace global permission%s',
-	'TRACE_USER_GLOBAL_YES_TOTAL_NEVER'		=> 'The forum independent user permission evaluates to <samp>YES</samp> which overwrites the current local result <samp>NEVER</samp>. %sTrace global permission%s',
-	'TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'	=> 'The forum independent user permission evaluates to <samp>NEVER</samp> which doesn’t influence the local permission. %sTrace global permission%s',
+	'TRACE_USER_GLOBAL_YES_TOTAL_YES'		=> 'The forum independent user permission evaluates to <strong>YES</strong> but the total permission is already set to <strong>YES</strong>, so the total result is kept. %sTrace global permission%s',
+	'TRACE_USER_GLOBAL_YES_TOTAL_NEVER'		=> 'The forum independent user permission evaluates to <strong>YES</strong> which overwrites the current local result <strong>NEVER</strong>. %sTrace global permission%s',
+	'TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'	=> 'The forum independent user permission evaluates to <strong>NEVER</strong> which doesn’t influence the local permission. %sTrace global permission%s',
 
-	'TRACE_USER_FOUNDER'					=> 'The user is a founder, therefore admin permissions are always set to <samp>YES</samp>.',
-	'TRACE_USER_KEPT'						=> 'The user’s permission is <samp>NO</samp> so the old total value is kept.',
-	'TRACE_USER_KEPT_LOCAL'					=> 'The user’s permission for this forum is <samp>NO</samp> so the old total value is kept.',
-	'TRACE_USER_NEVER_TOTAL_NEVER'			=> 'The user’s permission is set to <samp>NEVER</samp> and the total value is set to <samp>NEVER</samp>, so nothing is changed.',
-	'TRACE_USER_NEVER_TOTAL_NEVER_LOCAL'	=> 'The user’s permission for this forum is set to <samp>NEVER</samp> and the total value is set to <samp>NEVER</samp>, so nothing is changed.',
-	'TRACE_USER_NEVER_TOTAL_NO'				=> 'The user’s permission is set to <samp>NEVER</samp> which becomes the total value because it was set to NO.',
-	'TRACE_USER_NEVER_TOTAL_NO_LOCAL'		=> 'The user’s permission for this forum is set to <samp>NEVER</samp> which becomes the total value because it was set to NO.',
-	'TRACE_USER_NEVER_TOTAL_YES'			=> 'The user’s permission is set to <samp>NEVER</samp> and overwrites the previous <samp>YES</samp>.',
-	'TRACE_USER_NEVER_TOTAL_YES_LOCAL'		=> 'The user’s permission for this forum is set to <samp>NEVER</samp> and overwrites the previous <samp>YES</samp>.',
-	'TRACE_USER_NO_TOTAL_NO'				=> 'The user’s permission is <samp>NO</samp> and the total value was set to NO so it defaults to <samp>NEVER</samp>.',
-	'TRACE_USER_NO_TOTAL_NO_LOCAL'			=> 'The user’s permission for this forum is <samp>NO</samp> and the total value was set to NO so it defaults to <samp>NEVER</samp>.',
-	'TRACE_USER_YES_TOTAL_NEVER'			=> 'The user’s permission is set to <samp>YES</samp> but the total <samp>NEVER</samp> cannot be overwritten.',
-	'TRACE_USER_YES_TOTAL_NEVER_LOCAL'		=> 'The user’s permission for this forum is set to <samp>YES</samp> but the total <samp>NEVER</samp> cannot be overwritten.',
-	'TRACE_USER_YES_TOTAL_NO'				=> 'The user’s permission is set to <samp>YES</samp> which becomes the total value because it was set to <samp>NO</samp>.',
-	'TRACE_USER_YES_TOTAL_NO_LOCAL'			=> 'The user’s permission for this forum is set to <samp>YES</samp> which becomes the total value because it was set to <samp>NO</samp>.',
-	'TRACE_USER_YES_TOTAL_YES'				=> 'The user’s permission is set to <samp>YES</samp> and the total value is set to <samp>YES</samp>, so nothing is changed.',
-	'TRACE_USER_YES_TOTAL_YES_LOCAL'		=> 'The user’s permission for this forum is set to <samp>YES</samp> and the total value is set to <samp>YES</samp>, so nothing is changed.',
+	'TRACE_USER_FOUNDER'					=> 'The user is a founder, therefore admin permissions are always set to <strong>YES</strong>.',
+	'TRACE_USER_KEPT'						=> 'The user’s permission is <strong>NO</strong> so the old total value is kept.',
+	'TRACE_USER_KEPT_LOCAL'					=> 'The user’s permission for this forum is <strong>NO</strong> so the old total value is kept.',
+	'TRACE_USER_NEVER_TOTAL_NEVER'			=> 'The user’s permission is set to <strong>NEVER</strong> and the total value is set to <strong>NEVER</strong>, so nothing is changed.',
+	'TRACE_USER_NEVER_TOTAL_NEVER_LOCAL'	=> 'The user’s permission for this forum is set to <strong>NEVER</strong> and the total value is set to <strong>NEVER</strong>, so nothing is changed.',
+	'TRACE_USER_NEVER_TOTAL_NO'				=> 'The user’s permission is set to <strong>NEVER</strong> which becomes the total value because it was set to NO.',
+	'TRACE_USER_NEVER_TOTAL_NO_LOCAL'		=> 'The user’s permission for this forum is set to <strong>NEVER</strong> which becomes the total value because it was set to NO.',
+	'TRACE_USER_NEVER_TOTAL_YES'			=> 'The user’s permission is set to <strong>NEVER</strong> and overwrites the previous <strong>YES</strong>.',
+	'TRACE_USER_NEVER_TOTAL_YES_LOCAL'		=> 'The user’s permission for this forum is set to <strong>NEVER</strong> and overwrites the previous <strong>YES</strong>.',
+	'TRACE_USER_NO_TOTAL_NO'				=> 'The user’s permission is <strong>NO</strong> and the total value was set to NO so it defaults to <strong>NEVER</strong>.',
+	'TRACE_USER_NO_TOTAL_NO_LOCAL'			=> 'The user’s permission for this forum is <strong>NO</strong> and the total value was set to NO so it defaults to <strong>NEVER</strong>.',
+	'TRACE_USER_YES_TOTAL_NEVER'			=> 'The user’s permission is set to <strong>YES</strong> but the total <strong>NEVER</strong> cannot be overwritten.',
+	'TRACE_USER_YES_TOTAL_NEVER_LOCAL'		=> 'The user’s permission for this forum is set to <strong>YES</strong> but the total <strong>NEVER</strong> cannot be overwritten.',
+	'TRACE_USER_YES_TOTAL_NO'				=> 'The user’s permission is set to <strong>YES</strong> which becomes the total value because it was set to <strong>NO</strong>.',
+	'TRACE_USER_YES_TOTAL_NO_LOCAL'			=> 'The user’s permission for this forum is set to <strong>YES</strong> which becomes the total value because it was set to <strong>NO</strong>.',
+	'TRACE_USER_YES_TOTAL_YES'				=> 'The user’s permission is set to <strong>YES</strong> and the total value is set to <strong>YES</strong>, so nothing is changed.',
+	'TRACE_USER_YES_TOTAL_YES_LOCAL'		=> 'The user’s permission for this forum is set to <strong>YES</strong> and the total value is set to <strong>YES</strong>, so nothing is changed.',
 	'TRACE_WHO'								=> 'Who',
 	'TRACE_TOTAL'							=> 'Total',
 
@@ -285,5 +285,3 @@ $lang = array_merge($lang, array(
 	'WRONG_PERMISSION_TYPE'				=> 'Wrong permission type selected.',
 	'WRONG_PERMISSION_SETTING_FORMAT'	=> 'The permission settings are in a wrong format, phpBB is not able to process them correctly.',
 ));
-
-?>

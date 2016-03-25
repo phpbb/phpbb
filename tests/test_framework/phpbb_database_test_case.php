@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,6 +20,12 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	protected $test_case_helpers;
 
 	protected $fixture_xml_data;
+
+	static protected $schema_file;
+
+	static protected $phpbb_schema_copy;
+
+	static protected $install_schema_file;
 
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
@@ -32,6 +42,61 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		);
 
 		$this->db_connections = array();
+	}
+
+	/**
+	* @return array List of extensions that should be set up
+	*/
+	static protected function setup_extensions()
+	{
+		return array();
+	}
+
+	static public function setUpBeforeClass()
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$setup_extensions = static::setup_extensions();
+
+		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
+		$finder->core_path('phpbb/db/migration/data/');
+		if (!empty($setup_extensions))
+		{
+			$finder->set_extensions($setup_extensions)
+				->extension_directory('/migrations');
+		}
+		$classes = $finder->get_classes();
+
+		$schema_sha1 = sha1(serialize($classes));
+		self::$schema_file = __DIR__ . '/../tmp/' . $schema_sha1 . '.json';
+		self::$install_schema_file = __DIR__ . '/../../phpBB/install/schemas/schema.json';
+
+		if (!file_exists(self::$schema_file))
+		{
+
+			global $table_prefix;
+
+			$db = new \phpbb\db\driver\sqlite();
+			$factory = new \phpbb\db\tools\factory();
+			$db_tools = $factory->get($db, true);
+
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
+			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
+		}
+
+		copy(self::$schema_file, self::$install_schema_file);
+
+		parent::setUpBeforeClass();
+	}
+
+	static public function tearDownAfterClass()
+	{
+		if (file_exists(self::$install_schema_file))
+		{
+			unlink(self::$install_schema_file);
+		}
+
+		parent::tearDownAfterClass();
 	}
 
 	protected function tearDown()
@@ -79,25 +144,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function createXMLDataSet($path)
 	{
-		$db_config = $this->get_database_config();
-
-		// Firebird requires table and column names to be uppercase
-		if ($db_config['dbms'] == 'firebird')
-		{
-			$xml_data = file_get_contents($path);
-			$xml_data = preg_replace_callback('/(?:(<table name="))([a-z_]+)(?:(">))/', 'phpbb_database_test_case::to_upper', $xml_data);
-			$xml_data = preg_replace_callback('/(?:(<column>))([a-z_]+)(?:(<\/column>))/', 'phpbb_database_test_case::to_upper', $xml_data);
-
-			$new_fixture = tmpfile();
-			fwrite($new_fixture, $xml_data);
-			fseek($new_fixture, 0);
-
-			$meta_data = stream_get_meta_data($new_fixture);
-			$path = $meta_data['uri'];
-		}
-
 		$this->fixture_xml_data = parent::createXMLDataSet($path);
-
 		return $this->fixture_xml_data;
 	}
 
@@ -138,7 +185,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		if (!self::$already_connected)
 		{
-			$manager->load_schema();
+			$manager->load_schema($this->new_dbal());
 			self::$already_connected = true;
 		}
 
@@ -147,13 +194,9 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 	public function new_dbal()
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$config = $this->get_database_config();
 
-		require_once dirname(__FILE__) . '/../../phpBB/includes/db/' . $config['dbms'] . '.php';
-		$dbal = 'dbal_' . $config['dbms'];
-		$db = new $dbal();
+		$db = new $config['dbms']();
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
 
 		$this->db_connections[] = $db;
@@ -182,16 +225,19 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		return new phpbb_database_test_connection_manager($config);
 	}
 
-	/**
-	* Converts a match in the middle of a string to uppercase.
-	* This is necessary for transforming the fixture information for Firebird tests
-	*
-	* @param $matches The array of matches from a regular expression
-	*
-	* @return string The string with the specified match converted to uppercase
-	*/
-	static public function to_upper($matches)
+	public function assert_array_content_equals($one, $two)
 	{
-		return $matches[1] . strtoupper($matches[2]) . $matches[3];
+		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
+		// but one array_diff is not enough!
+		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
+		{
+			// get a nice error message
+			$this->assertEquals($one, $two);
+		}
+		else
+		{
+			// increase assertion count
+			$this->assertTrue(true);
+		}
 	}
 }

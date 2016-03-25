@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Legacy Standard">
+
+ <description>phpBB legacy coding standard for PHP files</description>
+
+ <rule ref="./ruleset-minimum.xml" />
+
+ <!-- "for (; bar; )" should be "while (bar)" instead -->
+ <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop" />
+
+ <!-- A method MUST not only call its parent -->
+ <rule ref="Generic.CodeAnalysis.UselessOverridingMethod" />
+
+ <!-- The body of each structure MUST be enclosed by braces. -->
+ <rule ref="Generic.ControlStructures.InlineControlStructure" />
+
+ <!-- There MUST not be more than one statement per line. -->
+ <rule ref="Generic.Formatting.DisallowMultipleStatements" />
+
+ <!-- Call-time pass-by-reference MUST not be used. -->
+ <rule ref="Generic.Functions.CallTimePassByReference.NotAllowed" />
+
+ <!-- Filenames MUST be lowercase. -->
+ <rule ref="Generic.Files.LowercasedFilename" />
+
+ <!-- The function brace MUST be on the line following the function declaration
+      and MUST be indented to the same column as the start of the function declaration. -->
+ <rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman" />
+
+ <!-- There MUST be exactly one space after a cast. -->
+ <rule ref="Generic.Formatting.SpaceAfterCast" />
+
+ <!-- Class constants MUST be declared in all upper case with underscore separators. -->
+ <rule ref="Generic.NamingConventions.UpperCaseConstantName" />
+
+ <!-- Only <?php, no short tags. -->
+ <rule ref="Generic.PHP.DisallowShortOpenTag.EchoFound" />
+
+ <!-- Method arguments with default values MUST go at the end of the argument list. -->
+ <rule ref="PEAR.Functions.ValidDefaultValue" />
+
+ <!-- Each file MUST end with exactly one newline character -->
+ <rule ref="PSR2.Files.EndFileNewline" />
+
+ <!-- When referencing arrays there MUST NOT be any whitespace around the opening bracket
+      or before the closing bracket. -->
+ <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
+
+ <!-- The "else if" statement MUST be written with a space between the words else and if. -->
+ <rule ref="Squiz.ControlStructures.ElseIfDeclaration" />
+
+ <!-- There MUST be a space between each element of a foreach loop. -->
+ <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
+
+ <!-- In a for loop declaration, there MUST be no space inside the brackets
+      and there MUST be 0 spaces before and 1 space after semicolons. -->
+ <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
+
+ <!-- In the argument list, there MUST NOT be a space before each comma,
+      and there MUST be one space after each comma. -->
+ <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
+  <properties>
+   <property name="equalsSpacing" value="1"/>
+  </properties>
+ </rule>
+ <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint" />
+
+ <!-- All built-in PHP functions MUST be called lowercased. -->
+ <rule ref="Squiz.Functions.LowercaseFunctionKeywords" />
+
+ <!-- The eval() function MUST NOT be used. -->
+ <rule ref="Squiz.PHP.Eval" />
+
+ <!-- There MUST NOT be trailing whitespace at the end of lines. -->
+ <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
+
+ <!-- There MUST NOT be whitespace before the first content of a file -->
+ <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.StartFile" />
+
+ <!-- There MUST NOT be whitespace after the last content of a file -->
+ <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EndFile" />
+
+ <!-- Functions MUST NOT contain multiple empty lines in a row -->
+ <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines" />
+
+ <!-- The ?> closing tag MUST be omitted from files containing only PHP. -->
+ <rule ref="Zend.Files.ClosingTag" />
+
+ <!-- There MUST be one space between control structure and opening parenthesis -->
+ <rule ref="./phpbb/Sniffs/ControlStructures/OpeningParenthesisSniff.php" />
+
+</ruleset>

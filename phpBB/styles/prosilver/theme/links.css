@@ -5,12 +5,12 @@
 a {
 	direction: ltr;
 	unicode-bidi: embed;
-}
+	text-decoration: none;
+	/* we use links inline more often then not so to address several bugs with
+	IE and some other browsers we render all links as inlineblock by default */
+	display: inline-block;
 
-a:link	{ color: #898989; text-decoration: none; }
-a:visited	{ color: #898989; text-decoration: none; }
-a:hover	{ color: #d3d3d3; text-decoration: underline; }
-a:active	{ color: #d2d2d2; text-decoration: none; }
+}
 
 /* Coloured usernames */
 .username-coloured {
@@ -20,193 +20,154 @@ a:active	{ color: #d2d2d2; text-decoration: none; }
 }
 
 /* Links on gradient backgrounds */
-#search-box a:link, .navbg a:link, .forumbg .header a:link, .forabg .header a:link, th a:link {
-	color: #FFFFFF;
+.forumbg .header a, .forabg .header a, th a {
 	text-decoration: none;
 }
 
-#search-box a:visited, .navbg a:visited, .forumbg .header a:visited, .forabg .header a:visited, th a:visited {
-	color: #FFFFFF;
-	text-decoration: none;
-}
-
-#search-box a:hover, .navbg a:hover, .forumbg .header a:hover, .forabg .header a:hover, th a:hover {
-	color: #ffffff;
+.forumbg .header a:hover, .forabg .header a:hover, th a:hover {
 	text-decoration: underline;
 }
 
-#search-box a:active, .navbg a:active, .forumbg .header a:active, .forabg .header a:active, th a:active {
-	color: #ffffff;
-	text-decoration: none;
+/* Notification mark read link */
+.dropdown-extended a.mark_read {
+	background-position: center center;
+	background-repeat: no-repeat;
+	border-radius: 3px 0 0 3px;
+	display: none;
+	margin-top: -20px;
+	position: absolute;
+	z-index: 2;
+	right: 0;
+	top: 50%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
+
+.dropdown-extended li:hover a.mark_read {
+	display: block;
+}
+
+.dropdown-extended a.mark_read:hover {
+	width: 50px;
+}
+
+.jumpbox-cat-link,
+.jumpbox-forum-link { font-weight: bold; }
+
 
 /* Links for forum/topic lists */
 a.forumtitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
 }
 
-/* a.forumtitle:visited { color: #898989; } */
-
 a.forumtitle:hover {
-	color: #bcbcbc;
 	text-decoration: underline;
-}
-
-a.forumtitle:active {
-	color: #898989;
 }
 
 a.topictitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, Sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
+	display: inline;
 }
 
-/* a.topictitle:visited { color: #d2d2d2; } */
-
 a.topictitle:hover {
-	color: #bcbcbc;
 	text-decoration: underline;
 }
 
-a.topictitle:active {
-	color: #898989;
+a.lastsubject {
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a.lastsubject:hover {
+	text-decoration: underline;
 }
 
 /* Post body links */
 .postlink {
 	text-decoration: none;
-	color: #d2d2d2;
-	border-bottom: 1px solid #d2d2d2;
+	border-bottom: 1px solid transparent;
 	padding-bottom: 0;
 }
 
-/* .postlink:visited { color: #bdbdbd; } */
-
-.postlink:active {
-	color: #d2d2d2;
-}
-
 .postlink:hover {
-	background-color: #f6f6f6;
 	text-decoration: none;
-	color: #404040;
 }
 
-.signature a, .signature a:visited, .signature a:hover, .signature a:active {
+.signature a, .signature a:hover {
 	border: none;
 	text-decoration: underline;
-	background-color: transparent;
 }
 
 /* Profile links */
-.postprofile a:link, .postprofile a:visited, .postprofile dt.author a {
+.postprofile a, .postprofile dt.author a {
 	font-weight: bold;
-	color: #898989;
 	text-decoration: none;
 }
 
 .postprofile a:hover, .postprofile dt.author a:hover {
 	text-decoration: underline;
-	color: #d3d3d3;
 }
 
-/* CSS spec requires a:link, a:visited, a:hover and a:active rules to be specified in this order. */
-/* See http://www.phpbb.com/bugs/phpbb3/59685 */
-.postprofile a:active {
-	font-weight: bold;
-	color: #898989;
-	text-decoration: none;
-}
-
-
-/* Profile searchresults */	
+/* Profile searchresults */
 .search .postprofile a {
-	color: #898989;
-	text-decoration: none; 
+	text-decoration: none;
 	font-weight: normal;
 }
 
 .search .postprofile a:hover {
-	color: #d3d3d3;
-	text-decoration: underline; 
+	text-decoration: underline;
+}
+
+.top {
+	font-size: 12px;
+	text-decoration: none;
+	margin-top: 10px;
 }
 
 /* Back to top of page */
 .back2top {
 	clear: both;
-	height: 11px;
-	text-align: right;
 }
 
-a.top {
-	background: none no-repeat top left;
-	text-decoration: none;
-	width: {IMG_ICON_BACK_TOP_WIDTH}px;
-	height: {IMG_ICON_BACK_TOP_HEIGHT}px;
-	display: block;
+.back2top .top {
 	float: right;
-	overflow: hidden;
-	letter-spacing: 1000px;
-	text-indent: 11px;
-}
-
-a.top2 {
-	background: none no-repeat 0 50%;
-	text-decoration: none;
-	padding-left: 15px;
+	margin-right: -10px;
+	margin-top: 0;
 }
 
 /* Arrow links  */
-a.up		{ background: none no-repeat left center; }
-a.down		{ background: none no-repeat right center; }
-a.left		{ background: none no-repeat 3px 60%; }
-a.right		{ background: none no-repeat 95% 60%; }
 
-a.up, a.up:link, a.up:active, a.up:visited {
+.arrow-up {
 	padding-left: 10px;
 	text-decoration: none;
 	border-bottom-width: 0;
 }
 
-a.up:hover {
-	background-position: left top;
-	background-color: transparent;
+.arrow-up:hover {
+
 }
 
-a.down, a.down:link, a.down:active, a.down:visited {
+.arrow-down {
 	padding-right: 10px;
 }
 
-a.down:hover {
-	background-position: right bottom;
+.arrow-down:hover {
+
+}
+
+.arrow-left:hover {
 	text-decoration: none;
 }
 
-a.left, a.left:active, a.left:visited {
-	padding-left: 12px;
-}
-
-a.left:hover {
-	color: #d2d2d2;
+.arrow-right:hover {
 	text-decoration: none;
-	background-position: 0 60%;
-}
-
-a.right, a.right:active, a.right:visited {
-	padding-right: 12px;
-}
-
-a.right:hover {
-	color: #d2d2d2;
-	text-decoration: none;
-	background-position: 100% 60%;
 }
 
 /* invisible skip link, used for accessibility  */
@@ -220,4 +181,8 @@ a.right:hover {
 a.feed-icon-forum {
 	float: right;
 	margin: 3px;
+}
+
+a.anchor {
+	display: block;
 }

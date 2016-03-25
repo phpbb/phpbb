@@ -1,8 +1,8 @@
 <!-- IF S_TYPE == 1 -->
-<div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+<div class="panel captcha-panel">
+	<div class="inner">
 
-	<h3>{L_CONFIRMATION}</h3>
+	<h3 class="captcha-title">{L_CONFIRMATION}</h3>
 	<p>{L_CONFIRM_EXPLAIN}</p>
 
 	<fieldset class="fields2">
@@ -10,33 +10,13 @@
 
 <!-- IF S_RECAPTCHA_AVAILABLE -->
 	<dl>
-	<dt><label>{L_CONFIRM_CODE}</label>:<br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
-	<dd>
-		<script type="text/javascript">
-		// <![CDATA[
-		var RecaptchaOptions = {
-			lang : '{LA_RECAPTCHA_LANG}',
-			theme : 'clean',
-			tabindex : <!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->
-		};
-		// ]]>
-		</script>
-		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
-		<script type="text/javascript">
-		// <![CDATA[
-		<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-			document.getElementById('recaptcha_table').style.direction = 'ltr';
-		<!-- ENDIF -->
-		// ]]>
-		</script>
+	<dt><label>{L_CONFIRM_CODE}{L_COLON}</label><br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
+	<dd class="captcha">
 		<noscript>
-		<div>
-			<object data="{RECAPTCHA_SERVER}/noscript?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}" type="text/html" height="300" width="500"></object><br />
-			<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
-			<input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
-		</div>
+			<div>{L_RECAPTCHA_NOSCRIPT}</div>
 		</noscript>
-
+		<script src="{RECAPTCHA_SERVER}.js?hl={LA_RECAPTCHA_LANG}" async defer></script>
+		<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}" data-tabindex="<!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->"></div>
 	</dd>
 	</dl>
 <!-- ELSE -->
@@ -45,6 +25,6 @@
 
 <!-- IF S_TYPE == 1 -->
 	</fieldset>
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 <!-- ENDIF -->

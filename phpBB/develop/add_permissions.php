@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2004 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -60,6 +64,7 @@ $f_permissions = array(
 	'f_vote'	=> array(1, 0),
 	'f_votechg'	=> array(1, 0),
 	'f_announce'=> array(1, 0),
+	'f_announce_global'	=> array(1, 0),
 	'f_sticky'	=> array(1, 0),
 	'f_attach'	=> array(1, 0),
 	'f_download'=> array(1, 0),
@@ -194,9 +199,9 @@ $prefixes = array('f_', 'a_', 'm_', 'u_');
 foreach ($prefixes as $prefix)
 {
 	$var = $prefix . 'permissions';
-	if (sizeof($$var))
+	if (sizeof(${$var}))
 	{
-		foreach ($$var as $auth_option => $l_ary)
+		foreach (${$var} as $auth_option => $l_ary)
 		{
 			$sql_ary = array(
 				'auth_option'	=> $auth_option,
@@ -367,7 +372,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 		switch ($sql_type)
 		{
 			case 'insert':
-				switch ($db->sql_layer)
+				switch ($db->get_sql_layer())
 				{
 					case 'mysql':
 					case 'mysql4':
@@ -376,6 +381,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 
 					case 'mssql':
 					case 'sqlite':
+					case 'sqlite3':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 						break;
 
@@ -383,7 +389,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 						foreach ($sql_subary as $sql)
 						{
 							$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($sql)";
-							$result = $db->sql_query($sql);
+							$db->sql_query($sql);
 							$sql = '';
 						}
 				}
@@ -391,7 +397,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 				if ($sql != '')
 				{
 					$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) $sql";
-					$result = $db->sql_query($sql);
+					$db->sql_query($sql);
 				}
 				break;
 
@@ -399,7 +405,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 			case 'delete':
 				foreach ($sql_subary as $sql)
 				{
-					$result = $db->sql_query($sql);
+					$db->sql_query($sql);
 					$sql = '';
 				}
 				break;
@@ -409,5 +415,3 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 	unset($sql_ary);
 
 }
-
-?>

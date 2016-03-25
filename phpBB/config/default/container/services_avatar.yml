@@ -1,0 +1,72 @@
+services:
+    avatar.manager:
+        class: phpbb\avatar\manager
+        arguments:
+            - '@config'
+            - '@avatar.driver_collection'
+
+# ----- Avatar drivers -----
+    avatar.driver_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: avatar.driver }
+
+    avatar.driver.gravatar:
+        class: phpbb\avatar\driver\gravatar
+        arguments:
+            - '@config'
+            - '@upload_imagesize'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@path_helper'
+            - '@cache.driver'
+        calls:
+            - [set_name, [avatar.driver.gravatar]]
+        tags:
+            - { name: avatar.driver }
+
+    avatar.driver.local:
+        class: phpbb\avatar\driver\local
+        arguments:
+            - '@config'
+            - '@upload_imagesize'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@path_helper'
+            - '@cache.driver'
+        calls:
+            - [set_name, [avatar.driver.local]]
+        tags:
+            - { name: avatar.driver }
+
+    avatar.driver.remote:
+        class: phpbb\avatar\driver\remote
+        arguments:
+            - '@config'
+            - '@upload_imagesize'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@path_helper'
+            - '@cache.driver'
+        calls:
+            - [set_name, [avatar.driver.remote]]
+        tags:
+            - { name: avatar.driver }
+
+    avatar.driver.upload:
+        class: phpbb\avatar\driver\upload
+        arguments:
+            - '@config'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@filesystem'
+            - '@path_helper'
+            - '@dispatcher'
+            - '@files.factory'
+            - '@cache.driver'
+        calls:
+            - [set_name, [avatar.driver.upload]]
+        tags:
+            - { name: avatar.driver }

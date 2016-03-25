@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class mcp_main_info
 {
 	function module()
@@ -18,7 +18,6 @@ class mcp_main_info
 		return array(
 			'filename'	=> 'mcp_main',
 			'title'		=> 'MCP_MAIN',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'front'			=> array('title' => 'MCP_MAIN_FRONT', 'auth' => '', 'cat' => array('MCP_MAIN')),
 				'forum_view'	=> array('title' => 'MCP_MAIN_FORUM_VIEW', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_MAIN')),
@@ -36,5 +35,3 @@ class mcp_main_info
 	{
 	}
 }
-
-?>

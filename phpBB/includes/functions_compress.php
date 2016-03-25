@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,11 +21,15 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Class for handling archives (compression/decompression)
-* @package phpBB3
 */
 class compress
 {
 	var $fp = 0;
+
+	/**
+	* @var array
+	*/
+	protected $filelist = array();
 
 	/**
 	* Add file to archive
@@ -42,14 +49,13 @@ class compress
 
 		if (is_file($phpbb_root_path . $src))
 		{
-			$this->data($src_path, file_get_contents("$phpbb_root_path$src"), false, stat("$phpbb_root_path$src"));
+			$this->data($src_path, file_get_contents("$phpbb_root_path$src"), stat("$phpbb_root_path$src"), false);
 		}
 		else if (is_dir($phpbb_root_path . $src))
 		{
 			// Clean up path, add closing / if not present
 			$src_path = ($src_path && substr($src_path, -1) != '/') ? $src_path . '/' : $src_path;
 
-			$filelist = array();
 			$filelist = filelist("$phpbb_root_path$src", '', '*');
 			krsort($filelist);
 
@@ -82,7 +88,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), false, stat("$phpbb_root_path$src$path$file"));
+					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), stat("$phpbb_root_path$src$path$file"), false);
 				}
 			}
 		}
@@ -105,7 +111,7 @@ class compress
 			return false;
 		}
 
-		$this->data($filename, file_get_contents($src), false, stat($src));
+		$this->data($filename, file_get_contents($src), stat($src), false);
 		return true;
 	}
 
@@ -119,14 +125,46 @@ class compress
 		$stat[4] = $stat[5] = 0;
 		$stat[7] = strlen($src);
 		$stat[9] = time();
-		$this->data($name, $src, false, $stat);
+		$this->data($name, $src, $stat, false);
 		return true;
 	}
 
 	/**
-	* Return available methods
+	* Checks if a file by that name as already been added and, if it has,
+	* returns a new, unique name.
+	*
+	* @param string $name The filename
+	* @return string A unique filename
 	*/
-	function methods()
+	protected function unique_filename($name)
+	{
+		if (isset($this->filelist[$name]))
+		{
+			$start = $name;
+			$ext = '';
+			$this->filelist[$name]++;
+
+			// Separate the extension off the end of the filename to preserve it
+			$pos = strrpos($name, '.');
+			if ($pos !== false)
+			{
+				$start = substr($name, 0, $pos);
+				$ext = substr($name, $pos);
+			}
+
+			return $start . '_' . $this->filelist[$name] . $ext;
+		}
+
+		$this->filelist[$name] = 0;
+		return $name;
+	}
+
+	/**
+	* Return available methods
+	*
+	* @return array Array of strings of available compression methods (.tar, .tar.gz, .zip, etc.)
+	*/
+	static public function methods()
 	{
 		$methods = array('.tar');
 		$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
@@ -145,17 +183,15 @@ class compress
 }
 
 /**
-* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux,
+* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier MÃ¼ller, LoÃ¯c Chapeaux,
 * Marc Delisle, http://www.phpmyadmin.net/
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
 *
-* Modified extensively by psoTFX and DavidMJ, (c) phpBB Group, 2003
+* Modified extensively by psoTFX and DavidMJ, (c) phpBB Limited, 2003
 *
 * Based on work by Eric Mueller and Denis125
 * Official ZIP file format: http://www.pkware.com/appnote.txt
-*
-* @package phpBB3
 */
 class compress_zip extends compress
 {
@@ -167,11 +203,19 @@ class compress_zip extends compress
 	var $datasec_len = 0;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* Constructor
 	*/
 	function compress_zip($mode, $file)
 	{
+		global $phpbb_filesystem;
+
 		$this->fp = @fopen($file, $mode . 'b');
+		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
 
 		if (!$this->fp)
 		{
@@ -249,7 +293,15 @@ class compress_zip extends compress
 									{
 										trigger_error("Could not create directory $folder");
 									}
-									phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+									try
+									{
+										$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+									}
+									catch (\phpbb\filesystem\exception\filesystem_exception $e)
+									{
+										// Do nothing
+									}
 								}
 							}
 						}
@@ -278,7 +330,15 @@ class compress_zip extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+								try
+								{
+									$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+								}
+								catch (\phpbb\filesystem\exception\filesystem_exception $e)
+								{
+									// Do nothing
+								}
 							}
 						}
 					}
@@ -359,9 +419,10 @@ class compress_zip extends compress
 	/**
 	* Create the structures ... note we assume version made by is MSDOS
 	*/
-	function data($name, $data, $is_dir = false, $stat)
+	function data($name, $data, $stat, $is_dir = false)
 	{
 		$name = str_replace('\\', '/', $name);
+		$name = $this->unique_filename($name);
 
 		$hexdtime = pack('V', $this->unix_to_dos_time($stat[9]));
 
@@ -471,7 +532,7 @@ class compress_zip extends compress
 
 		$mimetype = 'application/zip';
 
-		header('Pragma: no-cache');
+		header('Cache-Control: private, no-cache');
 		header("Content-Type: $mimetype; name=\"$download_name.zip\"");
 		header("Content-disposition: attachment; filename=$download_name.zip");
 
@@ -490,8 +551,6 @@ class compress_zip extends compress
 /**
 * Tar/tar.gz compression routine
 * Header/checksum creation derived from tarfile.pl, (c) Tom Horsley, 1994
-*
-* @package phpBB3
 */
 class compress_tar extends compress
 {
@@ -503,10 +562,17 @@ class compress_tar extends compress
 	var $wrote = false;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* Constructor
 	*/
 	function compress_tar($mode, $file, $type = '')
 	{
+		global $phpbb_filesystem;
+
 		$type = (!$type) ? $file : $type;
 		$this->isgz = preg_match('#(\.tar\.gz|\.tgz)$#', $type);
 		$this->isbz = preg_match('#\.tar\.bz2$#', $type);
@@ -515,6 +581,8 @@ class compress_tar extends compress
 		$this->file = &$file;
 		$this->type = &$type;
 		$this->open();
+
+		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
 	}
 
 	/**
@@ -565,7 +633,15 @@ class compress_tar extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+								try
+								{
+									$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+								}
+								catch (\phpbb\filesystem\exception\filesystem_exception $e)
+								{
+									// Do nothing
+								}
 							}
 						}
 					}
@@ -592,7 +668,15 @@ class compress_tar extends compress
 							{
 								trigger_error("Could not create directory $folder");
 							}
-							phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+							try
+							{
+								$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+							}
+							catch (\phpbb\filesystem\exception\filesystem_exception $e)
+							{
+								// Do nothing
+							}
 						}
 					}
 
@@ -601,7 +685,15 @@ class compress_tar extends compress
 					{
 						trigger_error("Couldn't create file $filename");
 					}
-					phpbb_chmod($target_filename, CHMOD_READ);
+
+					try
+					{
+						$this->filesystem->phpbb_chmod($target_filename, CHMOD_READ);
+					}
+					catch (\phpbb\filesystem\exception\filesystem_exception $e)
+					{
+						// Do nothing
+					}
 
 					// Grab the file contents
 					fwrite($fp, ($filesize) ? $fzread($this->fp, ($filesize + 511) &~ 511) : '', $filesize);
@@ -632,8 +724,9 @@ class compress_tar extends compress
 	/**
 	* Create the structures
 	*/
-	function data($name, $data, $is_dir = false, $stat)
+	function data($name, $data, $stat, $is_dir = false)
 	{
+		$name = $this->unique_filename($name);
 		$this->wrote = true;
 		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
@@ -720,7 +813,7 @@ class compress_tar extends compress
 			break;
 		}
 
-		header('Pragma: no-cache');
+		header('Cache-Control: private, no-cache');
 		header("Content-Type: $mimetype; name=\"$download_name$this->type\"");
 		header("Content-disposition: attachment; filename=$download_name$this->type");
 
@@ -735,5 +828,3 @@ class compress_tar extends compress
 		}
 	}
 }
-
-?>

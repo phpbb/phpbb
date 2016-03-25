@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2013 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -31,11 +35,7 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	public function test_handle_quickmod($crawler)
 	{
 		// Test moving a post
-		$form = $crawler->selectButton('Go')->eq(1)->form();
-		$form['action']->select('merge');
-		$crawler = self::submit($form);
-
-		return $crawler;
+		return $this->get_quickmod_page(0, 'MERGE_POSTS', $crawler);
 	}
 
 	/**
@@ -63,5 +63,21 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Yes')->form();
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang('POSTS_MERGED_SUCCESS'), $crawler->text());
+	}
+
+	public function test_delete_logs()
+	{
+		$this->login();
+		$crawler = self::request('GET', "mcp.php?i=mcp_logs&mode=front&sid={$this->sid}");
+		$this->assertGreaterThanOrEqual(1, $crawler->filter('input[type=checkbox]')->count());
+
+		$this->add_lang('mcp');
+		$form = $crawler->selectButton($this->lang('DELETE_ALL'))->form();
+		$crawler = self::submit($form);
+
+		$form = $crawler->selectButton('Yes')->form();
+		$crawler = self::submit($form);
+
+		$this->assertCount(0, $crawler->filter('input[type=checkbox]'));
 	}
 }

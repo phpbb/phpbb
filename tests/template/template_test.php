@@ -1,111 +1,25 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/template.php';
+require_once dirname(__FILE__) . '/template_test_case.php';
 
-class phpbb_template_template_test extends phpbb_test_case
+class phpbb_template_template_test extends phpbb_template_template_test_case
 {
-	private $template;
-	private $template_path;
-
-	// Keep the contents of the cache for debugging?
-	const PRESERVE_CACHE = true;
-
-	private function display($handle)
-	{
-		// allow the templates to throw notices
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
-		ob_start();
-
-		try
-		{
-			$this->assertTrue($this->template->display($handle, false));
-		}
-		catch (Exception $exception)
-		{
-			// reset the error level even when an error occurred
-			// PHPUnit turns trigger_error into exceptions as well
-			error_reporting($error_level);
-			ob_end_clean();
-			throw $exception;
-		}
-
-		$result = self::trim_template_result(ob_get_clean());
-
-		// reset error level
-		error_reporting($error_level);
-		return $result;
-	}
-
-	private static function trim_template_result($result)
-	{
-		return str_replace("\n\n", "\n", implode("\n", array_map('trim', explode("\n", trim($result)))));
-	}
-
-	private function setup_engine()
-	{
-		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->template = new template();
-		$this->template->set_custom_template($this->template_path, 'tests');
-	}
-
-	protected function setUp()
-	{
-		// Test the engine can be used
-		$this->setup_engine();
-
-		$template_cache_dir = dirname($this->template->cachepath);
-		if (!is_writable($template_cache_dir))
-		{
-			$this->markTestSkipped("Template cache directory ({$template_cache_dir}) is not writable.");
-		}
-
-		$file_array = scandir($template_cache_dir);
-		$file_prefix = basename($this->template->cachepath);
-		foreach ($file_array as $file)
-		{
-			if (strpos($file, $file_prefix) === 0)
-			{
-				unlink($template_cache_dir . '/' . $file);
-			}
-		}
-
-		$GLOBALS['config'] = array(
-			'load_tplcompile'	=> true,
-			'tpl_allow_php'		=> false,
-		);
-	}
-
-	protected function tearDown()
-	{
-		if (is_object($this->template))
-		{
-			$template_cache_dir = dirname($this->template->cachepath);
-			$file_array = scandir($template_cache_dir);
-			$file_prefix = basename($this->template->cachepath);
-			foreach ($file_array as $file)
-			{
-				if (strpos($file, $file_prefix) === 0)
-				{
-					unlink($template_cache_dir . '/' . $file);
-				}
-			}
-		}
-	}
-
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	static public function template_data()
+	public function template_data()
 	{
 		return array(
 			/*
@@ -122,7 +36,7 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array(),
 				array(),
-				"pass\npass\n<!-- DUMMY var -->",
+				"pass\npass\npass\n<!-- DUMMY var -->",
 			),
 			array(
 				'variable.html',
@@ -136,28 +50,56 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				array(),
 				array(),
-				'0',
+				'03!false',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => true),
 				array(),
 				array(),
-				"1\n0",
+				'1!false',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => true, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
-				'1',
+				'1!false',
+			),
+			array(
+				'if.html',
+				array('S_OTHER_OTHER_VALUE' => true),
+				array(),
+				array(),
+				'|S_OTHER_OTHER_VALUE|!false',
 			),
 			array(
 				'if.html',
 				array('S_VALUE' => false, 'S_OTHER_VALUE' => true),
 				array(),
 				array(),
-				'2',
+				'2!false',
+			),
+			array(
+				'if.html',
+				array('S_TEST' => false),
+				array(),
+				array(),
+				'03false',
+			),
+			array(
+				'if.html',
+				array('S_TEST' => 0),
+				array(),
+				array(),
+				'03!false',
+			),
+			array(
+				'if.html',
+				array('VALUE_TEST' => 'value'),
+				array(),
+				array(),
+				'03!falsevalue',
 			),
 			array(
 				'loop.html',
@@ -169,65 +111,151 @@ class phpbb_template_template_test extends phpbb_test_case
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array())),
+				array('test_loop' => array(array())),
 				array(),
 				"loop\nloop",
 			),
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array(), array()), 'loop.block' => array(array())),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array())),
 				array(),
 				"loop\nloop\nloop\nloop",
 			),
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array(), array()), 'loop.block' => array(array()), 'block' => array(array(), array())),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array()), 'block' => array(array(), array())),
+				array(),
+				"loop\nloop\nloop\nloop\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array(),
+				array(),
+				"noloop\nnoloop",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array('test_loop' => array(array())),
+				array(),
+				"loop\nloop",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array())),
+				array(),
+				"loop\nloop\nloop\nloop",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array()), 'block' => array(array(), array())),
 				array(),
 				"loop\nloop\nloop\nloop\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
 			),
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'))),
+				array('test_loop' => array(array('VARIABLE' => 'x'))),
 				array(),
-				"first\n0\nx\nset\nlast",
-			),/* no nested top level loops
-			array(
-				'loop_vars.html',
-				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
-				array(),
-				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
+				"first\n0 - a\nx - b\nset\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
 				array(),
-				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast\n0\n\n1\nlast inner\ninner loop",
-			),*/
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast",
+			),
+			array(
+				'loop_vars.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array(),
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner",
+			),
+			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'))),
+				array(),
+				"first\n0 - a\nx - b\nset\nlast",
+			),
+			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
+				array(),
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast",
+			),
+			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array(),
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner",
+			),
 			array(
 				'loop_advanced.html',
 				array(),
-				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array())),
 				array(),
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
 			),
 			array(
+				'loop_advanced_twig.html',
+				array(),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array())),
+				array(),
+				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
+			),
+			array(
+				'loop_nested2.html',
+				array(),
+				array('outer' => array(array(), array()), 'outer.middle' => array(array(), array())),
+				array(),
+				"o0o1m01m11",
+			),
+			array(
+				'loop_nested2_twig.html',
+				array(),
+				array('outer' => array(array(), array()), 'outer.middle' => array(array(), array())),
+				array(),
+				"o0o1m01m11",
+			),
+			array(
 				'define.html',
 				array(),
-				array('loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
 				array(),
-				"xyz\nabc",
+				"xyz\nabc\n\$VALUE == 'abc'\n(\$VALUE == 'abc')\n((\$VALUE == 'abc'))\n!\$DOESNT_EXIST\n(!\$DOESNT_EXIST)\nabc\nbar\nbar\nabc\ntest!@#$%^&*()_-=+{}[]:;\",<.>/?[]|foobar|false",
+			),
+			array(
+				'define_advanced.html',
+				array(),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array()), 'test' => array(array()), 'test.deep' => array(array()), 'test.deep.defines' => array(array())),
+				array(),
+				"abc\nzxc\ncde\nbcd",
 			),
 			array(
 				'expressions.html',
 				array(),
 				array(),
 				array(),
-				trim(str_repeat("pass", 39)),
+				trim(str_repeat("pass\n", 10) . "\n"
+					. str_repeat("pass\n", 4) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 6) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 6) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 2) . "\n"
+					. str_repeat("pass\n", 3) . "\n"
+					. str_repeat("pass\n", 2) . "\n"),
 			),
 			array(
 				'php.html',
@@ -251,10 +279,38 @@ class phpbb_template_template_test extends phpbb_test_case
 				'value',
 			),
 			array(
+				'include_loop.html',
+				array(),
+				array('test_loop' => array(array('NESTED_FILE' => 'include_loop1.html')), 'test_loop.inner' => array(array('NESTED_FILE' => 'include_loop1.html'), array('NESTED_FILE' => 'include_loop2.html'), array('NESTED_FILE' => 'include_loop3.html'))),
+				array(),
+				"1\n_1\n_02\n_3",
+			),
+			array(
+				'include_variable.html',
+				array('FILE' => 'variable.html', 'VARIABLE' => 'value'),
+				array(),
+				array(),
+				'value',
+			),
+			array(
+				'include_variables.html',
+				array('SUBDIR' => 'subdir', 'VARIABLE' => 'value'),
+				array(),
+				array(),
+				'value',
+			),
+			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
-				array('loop'),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array('test_loop'),
+				'',
+			),
+			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array('test_loop'),
 				'',
 			),
 			array(
@@ -262,12 +318,12 @@ class phpbb_template_template_test extends phpbb_test_case
 				array('VARIABLE' => 'variable.html'),
 				array(),
 				array(),
-				'variable.html',
+				"variable.html\nvariable.html\nvariable.html",
 			),
 			array(
 				'include_loop_define.html',
 				array('VARIABLE' => 'value'),
-				array('loop' => array(array('NESTED_FILE' => 'variable.html'))),
+				array('test_loop' => array(array('NESTED_FILE' => 'variable.html'))),
 				array(),
 				'value',
 			),
@@ -275,30 +331,186 @@ class phpbb_template_template_test extends phpbb_test_case
 			array(
 				'loop_vars.html',
 				array(),
-				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
-				array('loop.inner'),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array('test_loop.inner'),
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
 			),*/
 			array(
-				'lang.html',
+				// Just like a regular loop but the name begins
+				// with an underscore
+				'loop_underscore.html',
 				array(),
 				array(),
 				array(),
-				"{ VARIABLE }\n{ VARIABLE }",
+				"noloop\nnoloop",
+			),
+			array(
+				// Just like a regular loop but the name begins
+				// with an underscore
+				'loop_underscore_twig.html',
+				array(),
+				array(),
+				array(),
+				"noloop\nnoloop",
 			),
 			array(
 				'lang.html',
-				array('L_VARIABLE' => "Value'"),
 				array(),
 				array(),
-				"Value'\nValue\'",
+				array(),
+				"VARIABLE\n1_VARIABLE\nVARIABLE\n1_VARIABLE",
 			),
 			array(
 				'lang.html',
-				array('LA_VARIABLE' => "Value'"),
 				array(),
 				array(),
-				"{ VARIABLE }\nValue'",
+				array(),
+				"Value'\n1 O'Clock\nValue\\x27\n1\\x20O\\x27Clock",
+				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
+			),
+			array(
+				'loop_nested_multilevel_ref.html',
+				array(),
+				array(),
+				array(),
+				"top-level content",
+			),
+			array(
+				'loop_nested_multilevel_ref_twig.html',
+				array(),
+				array(),
+				array(),
+				"top-level content",
+			),
+			array(
+				'loop_nested_multilevel_ref.html',
+				array(),
+				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
+			),
+			array(
+				'loop_nested_multilevel_ref_twig.html',
+				array(),
+				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
+			),
+			array(
+				'loop_nested_deep_multilevel_ref.html',
+				array(),
+				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
+			),
+			array(
+				'loop_nested_deep_multilevel_ref_twig.html',
+				array(),
+				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
+			),
+			array(
+				'loop_size.html',
+				array(),
+				array('test_loop' => array(array()), 'empty_loop' => array()),
+				array(),
+				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
+			),
+			array(
+				'loop_size_twig.html',
+				array(),
+				array('test_loop' => array(array()), 'empty_loop' => array()),
+				array(),
+				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
+			),
+			array(
+				'loop_include.html',
+				array(),
+				array('test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1'))),
+				array(),
+				"barbarbar1bar1",
+			),
+			array(
+				'loop_include_twig.html',
+				array(),
+				array('test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1'))),
+				array(),
+				"barbarbar1bar1",
+			),
+			array(
+				'loop_nested_include.html',
+				array(),
+				array(
+					'test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1')),
+					'test_loop.inner' => array(array('myinner' => 'works')),
+				),
+				array(),
+				"[bar|[bar|]][bar1|[bar1|[bar1|works]]]",
+				array(),
+			),
+			array(
+				'loop_nested_include_twig.html',
+				array(),
+				array(
+					'test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1')),
+					'test_loop.inner' => array(array('myinner' => 'works')),
+				),
+				array(),
+				"[bar|[bar|]][bar1|[bar1|[bar1|works]]]",
+				array(),
+			),
+			/* Does not pass with the current implementation.
+			array(
+				'loop_reuse.html',
+				array(),
+				array('one' => array(array('VAR' => 'a'), array('VAR' => 'b')), 'one.one' => array(array('VAR' => 'c'), array('VAR' => 'd'))),
+				array(),
+				// Not entirely sure what should be outputted but the current output of "a" is most certainly wrong
+				"a\nb\nc\nd",
+			),*/
+			array(
+				'loop_reuse_twig.html',
+				array(),
+				array('one' => array(array('VAR' => 'a'), array('VAR' => 'b')), 'one.one' => array(array('VAR' => 'c'), array('VAR' => 'd'))),
+				array(),
+				// Not entirely sure what should be outputted but the current output of "a" is most certainly wrong
+				"a\nb\nc\nd",
+			),
+			array(
+				'twig.html',
+				array('VARIABLE' => 'FOObar',),
+				array(),
+				array(),
+				"13FOOBAR|foobar",
+			),
+			array(
+				'if_nested_tags.html',
+				array('S_VALUE' => true,),
+				array(),
+				array(),
+				'inner_value',
+			),
+			array(
+				'loop_expressions.html',
+				array(),
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
+			),
+			array(
+				'loop_expressions_twig.html',
+				array(),
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
+			),
+			array(
+				'loop_expressions_twig2.html',
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
 			),
 		);
 	}
@@ -310,149 +522,101 @@ class phpbb_template_template_test extends phpbb_test_case
 		$this->template->set_filenames(array('test' => $filename));
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
-		$expecting = sprintf('template->_tpl_load_file(): File %s does not exist or is empty', realpath($this->template_path . '/../') . '/templates/' . $filename);
-		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
+		$this->setExpectedException('Twig_Error_Loader');
 
 		$this->display('test');
 	}
 
-	public function test_empty_file()
-	{
-		$expecting = 'template->set_filenames: Empty filename specified for test';
-
-		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
-		$this->template->set_filenames(array('test' => ''));
-	}
 
 	public function test_invalid_handle()
 	{
-		$expecting = 'template->_tpl_load(): No file specified for handle test';
-		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
+		$this->setExpectedException('Twig_Error_Loader');
 
 		$this->display('test');
 	}
 
-	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
-	{
-		$this->template->set_filenames(array('test' => $file));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		foreach ($destroy as $block)
-		{
-			$this->template->destroy_block_vars($block);
-		}
-
-		try
-		{
-			$this->assertEquals($expected, $this->display('test'), "Testing $file");
-			$this->assertFileExists($cache_file);
-		}
-		catch (ErrorException $e)
-		{
-			if (file_exists($cache_file))
-			{
-				copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-			}
-
-			throw $e;
-		}
-
-		// For debugging
-		if (self::PRESERVE_CACHE)
-		{
-			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
-		}
-	}
-
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array(), $incomplete_message = '')
 	{
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.php';
+		if ($incomplete_message)
+		{
+			$this->markTestIncomplete($incomplete_message);
+		}
 
-		$this->assertFileNotExists($cache_file);
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
-
-		// Reset the engine state
-		$this->setup_engine();
-
-		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $cache_file);
+		$this->run_template($file, $vars, $block_vars, $destroy, $expected, $lang_vars);
 	}
 
-	/**
-	* @dataProvider template_data
-	*/
-	public function test_assign_display($file, array $vars, array $block_vars, array $destroy, $expected)
+	public function test_assign_display()
 	{
+		$this->run_template('basic.html', array(), array(), array(), "pass\npass\npass\n<!-- DUMMY var -->");
+
 		$this->template->set_filenames(array(
-			'test' => $file,
-			'container' => 'variable.html',
+			'test'		=> 'basic.html',
+			'container'	=> 'variable.html',
 		));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		foreach ($destroy as $block)
-		{
-			$this->template->destroy_block_vars($block);
-		}
-
-		$error_level = error_reporting();
-		error_reporting($error_level & ~E_NOTICE);
-
-		$this->assertEquals($expected, self::trim_template_result($this->template->assign_display('test')), "Testing assign_display($file)");
 
 		$this->template->assign_display('test', 'VARIABLE', false);
 
-		error_reporting($error_level);
+		$this->assertEquals("pass\npass\npass\n<!-- DUMMY var -->", $this->display('container'), "Testing assign_display($file)");
+	}
 
-		$this->assertEquals($expected, $this->display('container'), "Testing assign_display($file)");
+	public function test_append_var_without_assign_var()
+	{
+		$this->template->set_filenames(array(
+			'append_var'	=> 'variable.html'
+		));
+
+		$items = array('This ', 'is ', 'a ', 'test');
+		$expecting = implode('', $items);
+
+		foreach ($items as $word)
+		{
+			$this->template->append_var('VARIABLE', $word);
+		}
+
+		$this->assertEquals($expecting, $this->display('append_var'));
+	}
+
+	public function test_append_var_with_assign_var()
+	{
+		$this->template->set_filenames(array(
+			'append_var'	=> 'variable.html'
+		));
+
+		$start = 'This ';
+		$items = array('is ', 'a ', 'test');
+		$expecting = $start . implode('', $items);
+
+		$this->template->assign_var('VARIABLE', $start);
+		foreach ($items as $word)
+		{
+			$this->template->append_var('VARIABLE', $word);
+		}
+
+		$this->assertEquals($expecting, $this->display('append_var'));
 	}
 
 	public function test_php()
 	{
-		$GLOBALS['config']['tpl_allow_php'] = true;
+		global $phpbb_root_path;
 
-		$cache_file = $this->template->cachepath . 'php.html.php';
+		$template_text = '<!-- PHP -->echo "test";<!-- ENDPHP -->';
 
-		$this->assertFileNotExists($cache_file);
+		$cache_dir = $phpbb_root_path . 'cache/';
+		$fp = fopen($cache_dir . 'php.html', 'w');
+		fputs($fp, $template_text);
+		fclose($fp);
 
-		$this->run_template('php.html', array(), array(), array(), 'test', $cache_file);
+		$this->setup_engine(array('tpl_allow_php' => true));
 
-		$GLOBALS['config']['tpl_allow_php'] = false;
+		$this->template->set_custom_style('tests', $cache_dir);
+
+		$this->run_template('php.html', array(), array(), array(), 'test');
 	}
 
-	public function test_includephp()
-	{
-		$GLOBALS['config']['tpl_allow_php'] = true;
-
-		$cache_file = $this->template->cachepath . 'includephp.html.php';
-
-		$this->run_template('includephp.html', array(), array(), array(), 'testing included php', $cache_file);
-
-		$this->template->set_filenames(array('test' => 'includephp.html'));
-		$this->assertEquals('testing included php', $this->display('test'), "Testing INCLUDEPHP");
-
-		$GLOBALS['config']['tpl_allow_php'] = false;
-	}
-
-	static public function alter_block_array_data()
+	public function alter_block_array_data()
 	{
 		return array(
 			array(
@@ -555,10 +719,82 @@ EOT
 		$this->template->assign_block_vars('outer.middle', array());
 		$this->template->assign_block_vars('outer.middle', array());
 
-		$this->assertEquals("outer - 0\nmiddle - 0\nmiddle - 1\nouter - 1\nmiddle - 0\nmiddle - 1\nouter - 2\nmiddle - 0\nmiddle - 1", $this->display('test'), 'Ensuring template is built correctly before modification');
+		$this->assertEquals("outer - 0middle - 0middle - 1outer - 1middle - 0middle - 1outer - 2middle - 0middle - 1", $this->display('test'), 'Ensuring template is built correctly before modification');
 
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
-		$this->assertEquals($expect, $this->display('test'), $description);
+		$this->assertEquals(str_replace(array("\n", "\r", "\t"), '', $expect), str_replace(array("\n", "\r", "\t"), '', $this->display('test')), $description);
+	}
+
+	public function test_more_alter_block_array()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|1]outer - 1[outer|3]middle - 0[middle|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->alter_block_array('outer', array());
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after insertion');
+
+		$this->template->alter_block_array('outer', array('VARIABLE' => 'test'), 2, 'change');
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
+	}
+
+	public function assign_block_vars_array_data()
+	{
+		return array(
+			array(
+				array(
+					'outer' => array(
+						array('VARIABLE' => 'Test assigning block vars array loop 0:'),
+						array('VARIABLE' => 'Test assigning block vars array loop 1:'),
+					),
+					'outer.middle' => array(
+						array('VARIABLE' => '1st iteration',),
+						array('VARIABLE' => '2nd iteration',),
+						array('VARIABLE' => '3rd iteration',),
+					),
+				)
+			)
+		);
+	}
+
+	/**
+	* @dataProvider assign_block_vars_array_data
+	*/
+	public function test_assign_block_vars_array($block_data)
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		foreach ($block_data as $blockname => $block_vars_array)
+		{
+			$this->template->assign_block_vars_array($blockname, $block_vars_array);
+		}
+
+		$this->assertEquals("outer - 0 - Test assigning block vars array loop 0:outer - 1 - Test assigning block vars array loop 1:middle - 0 - 1st iterationmiddle - 1 - 2nd iterationmiddle - 2 - 3rd iteration", $this->display('test'), 'Ensuring assigning block vars array to template is working correctly');
+	}
+
+	/**
+	* @expectedException Twig_Error_Syntax
+	*/
+	public function test_define_error()
+	{
+		$this->run_template('define_error.html', array(), array(), array(), '');
 	}
 }
-

@@ -1,0 +1,23 @@
+{
+	"name": "vendor2/bar",
+	"type": "phpbb-extension",
+	"description": "An example/sample extension to be used for testing purposes in phpBB Development.",
+	"version": "1.0.0",
+	"time": "2012-02-15 01:01:01",
+	"license": "GPL-2.0",
+	"authors": [{
+			"name": "John Smith",
+			"email": "email@phpbb.com",
+			"homepage": "http://phpbb.com",
+			"role": "N/A"
+		}],
+	"require": {
+		"php": ">=5.3"
+	},
+	"extra": {
+		"display-name": "phpBB Bar Extension",
+		"soft-require": {
+			"phpbb/phpbb": "3.1.*@dev"
+		}
+	}
+}

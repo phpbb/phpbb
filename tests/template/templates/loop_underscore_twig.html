@@ -1,0 +1,21 @@
+{% for _underscore_loop_inner in _underscore_loop %}
+loop
+{% else %}
+noloop
+{% endfor %}
+
+{% if _underscore_loop|length %}
+loop
+{% else %}
+noloop
+{% endif %}
+
+{% if _underscore_loop|length == 2 %}
+loop
+{% endif %}
+
+{% for _underscore_loop_inner in _underscore_loop %}
+{% for block_inner in block %}
+loop#{{ loop.S_ROW_COUNT }}-block#{{ block_inner.S_ROW_COUNT }}
+{% endfor %}
+{% endfor %}

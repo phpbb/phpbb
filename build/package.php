@@ -2,9 +2,13 @@
 <?php
 /**
 *
-* @package build
-* @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -43,6 +47,10 @@ if (sizeof($package->old_packages))
 		// Parse this diff to determine file changes from the checked versions and save them
 		$diff_file_changes[$_package_name] = $package->collect_diff_files(
 			$package->get('patch_directory') . '/phpBB-' . $dest_package_filename . $package->get('new_version_number') . '.patch',
+			$_package_name
+		);
+		$diff_file_changes[$_package_name]['deleted'] = $package->collect_deleted_files(
+			$package->get('patch_directory') . '/phpBB-' . $dest_package_filename . $package->get('new_version_number') . '.deleted',
 			$_package_name
 		);
 	}
@@ -121,6 +129,7 @@ if (sizeof($package->old_packages))
 
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $dest_filename_dir);
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $dest_filename_dir);
+		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $dest_filename_dir);
 
 		$package->run_command('mkdir ' . $dest_filename_dir . '/install/update');
 		$package->run_command('mkdir ' . $dest_filename_dir . '/install/update/old');
@@ -135,6 +144,12 @@ if (sizeof($package->old_packages))
 		foreach ($file_contents['all'] as $index => $file)
 		{
 			if (strpos($file, 'recode_cjk') !== false)
+			{
+				unset($file_contents['all'][$index]);
+			}
+
+			$source_filename = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $file;
+			if (!file_exists($source_filename))
 			{
 				unset($file_contents['all'][$index]);
 			}
@@ -173,16 +188,28 @@ if (sizeof($package->old_packages))
 			$package->run_command('cp ' . $source_filename . ' ' . $dest_filename);
 		}
 
+		/**
+		* We try to keep the update packages as small as possible while creating them.
+		* However, we sometimes need to include additional files that are not included
+		* in the diff in order to be able to correctly include the relatively
+		* referenced files from the same or subsequent directories.
+		*/
+		$copy_relative_directories = array(
+			'config/'	=> array(
+				'recursive'	=> true,
+				'copied'	=> false,
+				'copy'		=> array(
+					'config/*' => 'config',
+				),
+			),
+		);
+
 		// Then fill the 'new' directory
 		foreach ($file_contents['all'] as $file)
 		{
 			$source_filename = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $file;
 			$dest_filename = $dest_filename_dir . '/install/update/new/' . $file;
-
-			if (!file_exists($source_filename))
-			{
-				continue;
-			}
+			$filename = $file;
 
 			// Create Directories along the way?
 			$file = explode('/', $file);
@@ -204,6 +231,81 @@ if (sizeof($package->old_packages))
 			}
 
 			$package->run_command('cp ' . $source_filename . ' ' . $dest_filename);
+
+			foreach ($copy_relative_directories as $reference => $data)
+			{
+				// Copy all relative referenced files if needed
+				if (strpos($filename, $reference) === 0 && !$data['copied'])
+				{
+					foreach ($data['copy'] as $source_dir_files => $destination_dir)
+					{
+						// Create directories along the way?
+						$directories = explode('/', $destination_dir);
+
+						chdir($dest_filename_dir . '/install/update/new');
+						foreach ($directories as $dir)
+						{
+							$dir = trim($dir);
+							if ($dir)
+							{
+								if (!file_exists('./' . $dir))
+								{
+									$package->run_command('mkdir ' . $dir);
+								}
+								chdir('./' . $dir);
+							}
+						}
+						$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_dir_files;
+						$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
+
+						if (isset($data['recursive']) && $data['recursive'])
+						{
+							$package->run_command('cp -Rp ' . $source_dir_files . ' ' . $destination_dir);
+						}
+						else
+						{
+							$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+						}
+					}
+					$copy_relative_directories[$reference]['copied'] = true;
+				}
+			}
+		}
+
+		/**
+		* We need to always copy the template and asset files that we need in
+		* the update, to ensure that the page is displayed correctly.
+		*/
+		$copy_update_files = array(
+			'adm/images/*'			=> 'adm/images',
+			'adm/style/admin.css'	=> 'adm/style',
+			'adm/style/admin.js'	=> 'adm/style',
+			'adm/style/ajax.js'		=> 'adm/style',
+			'adm/style/installer_*'	=> 'adm/style',
+			'assets/javascript/*'	=> 'assets/javascript',
+		);
+
+		foreach ($copy_update_files as $source_files => $destination_dir)
+		{
+			// Create directories along the way?
+			$directories = explode('/', $destination_dir);
+
+			chdir($dest_filename_dir . '/install/update/new');
+			foreach ($directories as $dir)
+			{
+				$dir = trim($dir);
+				if ($dir)
+				{
+					if (!file_exists('./' . $dir))
+					{
+						$package->run_command('mkdir ' . $dir);
+					}
+					chdir('./' . $dir);
+				}
+			}
+			$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_files;
+			$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
+			$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
 		}
 
 		// Build index.php file for holding the file structure
@@ -221,29 +323,32 @@ $update_info = array(
 
 		if (sizeof($file_contents['all']))
 		{
-			$index_contents .= '\'files\'		=> array(\'' . implode("',\n\t'", $file_contents['all']) . '\'),
-';
+			$index_contents .= "\t'files'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['all']) . "',\n\t),\n";
 		}
 		else
 		{
-			$index_contents .= '\'files\'		=> array(),
-';
+			$index_contents .= "\t'files'		=> array(),\n";
 		}
 
 		if (sizeof($file_contents['binary']))
 		{
-			$index_contents .= '\'binary\'		=> array(\'' . implode("',\n\t'", $file_contents['binary']) . '\'),
-';
+			$index_contents .= "\t'binary'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['binary']) . "',\n\t),\n";
 		}
 		else
 		{
-			$index_contents .= '\'binary\'		=> array(),
-';
+			$index_contents .= "\t'binary'		=> array(),\n";
 		}
 
-		$index_contents .= ');
+		if (sizeof($file_contents['deleted']))
+		{
+			$index_contents .= "\t'deleted'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['deleted']) . "',\n\t),\n";
+		}
+		else
+		{
+			$index_contents .= "\t'deleted'		=> array(),\n";
+		}
 
-?' . '>';
+		$index_contents .= ");\n";
 
 		$fp = fopen($dest_filename_dir . '/install/update/index.php', 'wt');
 		fwrite($fp, $index_contents);
@@ -256,6 +361,7 @@ $update_info = array(
 	// Copy the install files to their respective locations
 	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $package->get('patch_directory'));
 	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $package->get('patch_directory'));
+	$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $package->get('patch_directory'));
 
 	// Remove some files
 	chdir($package->get('patch_directory') . '/install');
@@ -285,9 +391,6 @@ if (sizeof($package->old_packages))
 
 		// Build Package
 		$package->run_command($compress_command . ' ../release_files/' . $package->get('release_filename') . '-patch.' . $extension . ' *');
-
-		// Build MD5 Sum
-		$package->run_command('md5sum ../release_files/' . $package->get('release_filename') . '-patch.' . $extension . ' > ../release_files/' . $package->get('release_filename') . '-patch.' . $extension . '.md5');
 	}
 
 	// Build Files Package
@@ -300,6 +403,7 @@ if (sizeof($package->old_packages))
 		$package->run_command('mkdir ' . $package->get('files_directory') . '/release');
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/docs ' . $package->get('files_directory') . '/release');
 		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/install ' . $package->get('files_directory') . '/release');
+		$package->run_command('cp -Rp ' . $package->get('dest_dir') . '/vendor ' . $package->get('files_directory') . '/release');
 
 		$package->run_command('rm -v ' . $package->get('files_directory') . '/release/install/install_install.php');
 		$package->run_command('rm -v ' . $package->get('files_directory') . '/release/install/install_update.php');
@@ -319,8 +423,6 @@ if (sizeof($package->old_packages))
 
 		chdir('./release');
 		$package->run_command("$compress_command ../../release_files/" . $package->get('release_filename') . '-files.' . $extension . ' *');
-		// Build MD5 Sum
-		$package->run_command('md5sum ../../release_files/' . $package->get('release_filename') . '-files.' . $extension . ' > ../../release_files/' . $package->get('release_filename') . '-files.' . $extension . '.md5');
 		chdir('..');
 
 		$package->run_command('rm -Rv ' . $package->get('files_directory') . '/release');
@@ -363,9 +465,6 @@ if (sizeof($package->old_packages))
 			// Copy last package over...
 			$package->run_command('rm -v ../release_files/phpBB-' . $last_version . ".$extension");
 			$package->run_command("$compress_command ../../release_files/phpBB-$last_version.$extension *");
-
-			// Build MD5 Sum
-			$package->run_command("md5sum ../../release_files/phpBB-$last_version.$extension > ../../release_files/phpBB-$last_version.$extension.md5");
 			chdir('..');
 		}
 
@@ -388,9 +487,6 @@ foreach ($compress_programs as $extension => $compress_command)
 
 	// Build Package
 	$package->run_command("$compress_command ./release_files/" . $package->get('release_filename') . '.' . $extension . ' ' . $package->get('package_name'));
-
-	// Build MD5 Sum
-	$package->run_command('md5sum ./release_files/' . $package->get('release_filename') . '.' . $extension . ' > ./release_files/' . $package->get('release_filename') . '.' . $extension . '.md5');
 }
 
 // Microsoft Web PI packaging
@@ -398,7 +494,6 @@ $package->begin_status('Packaging phpBB for Microsoft WebPI');
 $file = './release_files/' . $package->get('release_filename') . '.webpi.zip';
 $package->run_command('cp -p ./release_files/' . $package->get('release_filename') . ".zip $file");
 $package->run_command('cd ./../webpi && ' . $compress_programs['zip'] . " ./../new_version/$file *");
-$package->run_command("md5sum $file  > $file.md5");
 
 // verify results
 chdir($package->locations['root']);

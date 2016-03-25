@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package diff
-* @version $Id$
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -20,7 +23,7 @@ if (!defined('IN_PHPBB'))
 * Code from pear.php.net, Text_Diff-1.1.0 package
 * http://pear.php.net/package/Text_Diff/
 *
-* Modified by phpBB Group to meet our coding standards
+* Modified by phpBB Limited to meet our coding standards
 * and being able to integrate into phpBB
 *
 * A class to render Diffs in different formats.
@@ -856,5 +859,3 @@ class diff_renderer_side_by_side extends diff_renderer
 	}
 
 }
-
-?>

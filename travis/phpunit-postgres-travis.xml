@@ -13,11 +13,16 @@
          bootstrap="../tests/bootstrap.php">
 	<testsuites>
 		<testsuite name="phpBB Test Suite">
-			<directory suffix="_test.php">../tests/</directory>
-			<exclude>tests/functional</exclude>
+			<directory suffix="_test.php">../tests</directory>
+			<exclude>../tests/functional</exclude>
+			<exclude>../tests/lint_test.php</exclude>
+			<exclude>../tests/ui</exclude>
 		</testsuite>
 		<testsuite name="phpBB Functional Tests">
 			<directory suffix="_test.php" phpVersion="5.3.19" phpVersionOperator=">=">../tests/functional</directory>
+		</testsuite>
+		<testsuite name="phpBB UI Tests">
+			<directory suffix="_test.php" phpVersion="5.3.19" phpVersionOperator=">=">../tests/ui</directory>
 		</testsuite>
 	</testsuites>
 
@@ -28,14 +33,13 @@
 	</groups>
 
 	<php>
-		<!-- "Real" test database -->
-		<!-- uncomment, otherwise sqlite memory runs -->
-		<server name="PHPBB_TEST_DBMS" value="postgres"/>
+		<server name="PHPBB_TEST_DBMS" value="phpbb\db\driver\postgres"/>
 		<server name="PHPBB_TEST_DBHOST" value="localhost" />
 		<server name="PHPBB_TEST_DBPORT" value="5432" />
 		<server name="PHPBB_TEST_DBNAME" value="phpbb_tests" />
 		<server name="PHPBB_TEST_DBUSER" value="postgres" />
 		<server name="PHPBB_TEST_DBPASSWD" value="" />
+		<server name="PHPBB_TEST_REDIS_HOST" value="localhost" />
 		<server name="PHPBB_TEST_TABLE_PREFIX" value="phpbb_"/>
 		<server name="PHPBB_FUNCTIONAL_URL" value="http://localhost/" />
 	</php>

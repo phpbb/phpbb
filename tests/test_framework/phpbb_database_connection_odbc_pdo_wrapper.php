@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -21,7 +25,7 @@ if (!class_exists('PDO'))
 */
 class phpbb_database_connection_odbc_pdo_wrapper extends PDO
 {
-	// Name of the driver being used (i.e. mssql, firebird)
+	// Name of the driver being used (i.e. mssql)
 	public $driver = '';
 
 	// Version number of driver since PDO::getAttribute(PDO::ATTR_CLIENT_VERSION) is pretty useless for this

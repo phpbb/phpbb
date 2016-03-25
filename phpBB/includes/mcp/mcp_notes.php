@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,7 +22,6 @@ if (!defined('IN_PHPBB'))
 /**
 * mcp_notes
 * Displays notes about a user
-* @package mcp
 */
 class mcp_notes
 {
@@ -33,10 +35,10 @@ class mcp_notes
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx;
+		global $user, $template, $request;
+		global $phpbb_root_path, $phpEx;
 
-		$action = request_var('action', array('' => ''));
+		$action = $request->variable('action', array('' => ''));
 
 		if (is_array($action))
 		{
@@ -72,15 +74,18 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config;
-		global $template, $db, $user, $auth;
+		global $config, $phpbb_log, $request;
+		global $template, $db, $user, $auth, $phpbb_container;
 
-		$user_id = request_var('u', 0);
-		$username = request_var('username', '', true);
-		$start = request_var('start', 0);
-		$st	= request_var('st', 0);
-		$sk	= request_var('sk', 'b');
-		$sd	= request_var('sd', 'd');
+		$user_id = $request->variable('u', 0);
+		$username = $request->variable('username', '', true);
+		$start = $request->variable('start', 0);
+		$st	= $request->variable('st', 0);
+		$sk	= $request->variable('sk', 'b');
+		$sd	= $request->variable('sd', 'd');
+
+		/* @var $pagination \phpbb\pagination */
+		$pagination = $phpbb_container->get('pagination');
 
 		add_form_key('mcp_notes');
 
@@ -111,8 +116,8 @@ class mcp_notes
 
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
-		$marked		= request_var('marknote', array(0));
-		$usernote	= utf8_normalize_nfc(request_var('usernote', '', true));
+		$marked		= $request->variable('marknote', array(0));
+		$usernote	= $request->variable('usernote', '', true);
 
 		// Handle any actions
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -139,7 +144,7 @@ class mcp_notes
 							$where_sql";
 					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($userrow['username']));
 
 					$msg = ($deletemark) ? 'MARKED_NOTES_DELETED' : 'ALL_NOTES_DELETED';
 				}
@@ -157,10 +162,17 @@ class mcp_notes
 		{
 			if (check_form_key('mcp_notes'))
 			{
-				add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
-				add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($userrow['username']));
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+					'forum_id' => 0,
+					'topic_id' => 0,
+					$userrow['username']
+				));
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+					'reportee_id' => $user_id,
+					$usernote
+				));
 
-				add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
 				$msg = $user->lang['USER_FEEDBACK_ADDED'];
 			}
 			else
@@ -174,13 +186,9 @@ class mcp_notes
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-		if (!function_exists('get_user_avatar'))
-		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-		}
 
 		$rank_title = $rank_img = '';
-		$avatar_img = get_user_avatar($userrow['user_avatar'], $userrow['user_avatar_type'], $userrow['user_avatar_width'], $userrow['user_avatar_height']);
+		$avatar_img = phpbb_get_user_avatar($userrow);
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
@@ -193,7 +201,7 @@ class mcp_notes
 		$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$log_data = array();
@@ -216,6 +224,9 @@ class mcp_notes
 			}
 		}
 
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
@@ -226,9 +237,7 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start),
-			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
+			'TOTAL_REPORTS'		=> $user->lang('LIST_REPORTS', (int) $log_count),
 
 			'RANK_TITLE'		=> $rank_title,
 			'JOINED'			=> $user->format_date($userrow['user_regdate']),
@@ -247,5 +256,3 @@ class mcp_notes
 	}
 
 }
-
-?>

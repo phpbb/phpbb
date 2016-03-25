@@ -4,5 +4,4 @@ Hello {USERNAME},
 
 You are receiving this notification because the report you filed regarding the private message "{PM_SUBJECT}" at "{SITENAME}" was deleted by a moderator or administrator.
 
-
 {EMAIL_SIG}

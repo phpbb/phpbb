@@ -1,9 +1,13 @@
 <?php
 /**
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -34,8 +38,6 @@ if (!defined('IN_PHPBB'))
 *		Quoting a post (action=quotepost&p=[post_id])
 *		Quoting a PM (action=quote&p=[msg_id])
 *		Forwarding a PM (action=forward&p=[msg_id])
-*
-* @package ucp
 */
 class ucp_pm
 {
@@ -43,7 +45,7 @@ class ucp_pm
 
 	function main($id, $mode)
 	{
-		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config;
+		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config, $request;
 
 		if (!$user->data['is_registered'])
 		{
@@ -60,7 +62,7 @@ class ucp_pm
 		$template->assign_var('S_PRIVMSGS', true);
 
 		// Folder directly specified?
-		$folder_specified = request_var('folder', '');
+		$folder_specified = $request->variable('folder', '');
 
 		if (!in_array($folder_specified, array('inbox', 'outbox', 'sentbox')))
 		{
@@ -73,7 +75,7 @@ class ucp_pm
 
 		if (!$folder_specified)
 		{
-			$mode = (!$mode) ? request_var('mode', 'view') : $mode;
+			$mode = (!$mode) ? $request->variable('mode', 'view') : $mode;
 		}
 		else
 		{
@@ -84,40 +86,13 @@ class ucp_pm
 
 		switch ($mode)
 		{
-			// New private messages popup
-			case 'popup':
-
-				$l_new_message = '';
-				if ($user->data['is_registered'])
-				{
-					if ($user->data['user_new_privmsg'])
-					{
-						$l_new_message = ($user->data['user_new_privmsg'] == 1) ? $user->lang['YOU_NEW_PM'] : $user->lang['YOU_NEW_PMS'];
-					}
-					else
-					{
-						$l_new_message = $user->lang['YOU_NO_NEW_PM'];
-					}
-				}
-
-				$template->assign_vars(array(
-					'MESSAGE'			=> $l_new_message,
-					'S_NOT_LOGGED_IN'	=> ($user->data['user_id'] == ANONYMOUS) ? true : false,
-					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox(this.href); return false;">', '</a>'),
-					'U_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-					'UA_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false))
-				);
-
-				$tpl_file = 'ucp_pm_popup';
-			break;
-
 			// Compose message
 			case 'compose':
-				$action = request_var('action', 'post');
+				$action = $request->variable('action', 'post');
 
 				$user_folders = get_folder($user->data['user_id']);
 
-				if (!$auth->acl_get('u_sendpm'))
+				if ($action != 'delete' && !$auth->acl_get('u_sendpm'))
 				{
 					// trigger_error('NO_AUTH_SEND_MESSAGE');
 					$template->assign_vars(array(
@@ -176,12 +151,12 @@ class ucp_pm
 				}
 				else
 				{
-					$folder_id = request_var('f', PRIVMSGS_NO_BOX);
-					$action = request_var('action', 'view_folder');
+					$folder_id = $request->variable('f', PRIVMSGS_NO_BOX);
+					$action = $request->variable('action', 'view_folder');
 				}
 
-				$msg_id = request_var('p', 0);
-				$view	= request_var('view', '');
+				$msg_id = $request->variable('p', 0);
+				$view	= $request->variable('view', '');
 
 				// View message if specified
 				if ($msg_id)
@@ -200,12 +175,11 @@ class ucp_pm
 					trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
 				}
 
-
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
 				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
-				$mark_option	= request_var('mark_option', '');
-				$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
+				$mark_option	= $request->variable('mark_option', '');
+				$dest_folder	= $request->variable('dest_folder', PRIVMSGS_NO_BOX);
 
 				// Is moving PM triggered through mark options?
 				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
@@ -218,8 +192,8 @@ class ucp_pm
 				// Move PM
 				if ($move_pm)
 				{
-					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? request_var('marked_msg_id', array(0)) : array();
-					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
+					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? $request->variable('marked_msg_id', array(0)) : array();
+					$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
 					{
@@ -227,7 +201,7 @@ class ucp_pm
 						if ($action == 'view_message')
 						{
 							$msg_id		= 0;
-							$folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
+							$folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 							$action		= 'view_folder';
 						}
 					}
@@ -241,7 +215,7 @@ class ucp_pm
 
 				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
-				$release = request_var('release', 0);
+				$release = $request->variable('release', 0);
 
 				if ($user->data['user_new_privmsg'] && ($action == 'view_folder' || $action == 'view_message'))
 				{
@@ -270,6 +244,27 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 					$folder_id = (int) $row['folder_id'];
+				}
+
+				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_pms_read'))
+				{
+					mark_folder_read($user->data['user_id'], $folder_id);
+
+					meta_refresh(3, $this->u_action);
+					$message = $user->lang['PM_MARK_ALL_READ_SUCCESS'];
+
+					if ($request->is_ajax())
+					{
+						$json_response = new \phpbb\json_response();
+						$json_response->send(array(
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $message,
+							'success'		=> true,
+						));
+					}
+					$message .= '<br /><br />' . $user->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+
+					trigger_error($message);
 				}
 
 				$message_row = array();
@@ -345,8 +340,8 @@ class ucp_pm
 					'NUM_NOT_MOVED'			=> $num_not_moved,
 					'NUM_REMOVED'			=> $num_removed,
 					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
-					'NOT_MOVED_MESSAGES'	=> ($num_not_moved == 1) ? $user->lang['NOT_MOVED_MESSAGE'] : sprintf($user->lang['NOT_MOVED_MESSAGES'], $num_not_moved),
-					'RULE_REMOVED_MESSAGES'	=> ($num_removed == 1) ? $user->lang['RULE_REMOVED_MESSAGE'] : sprintf($user->lang['RULE_REMOVED_MESSAGES'], $num_removed),
+					'NOT_MOVED_MESSAGES'	=> $user->lang('NOT_MOVED_MESSAGES', (int) $num_not_moved),
+					'RULE_REMOVED_MESSAGES'	=> $user->lang('RULE_REMOVED_MESSAGES', (int) $num_removed),
 
 					'S_FOLDER_OPTIONS'		=> $s_folder_options,
 					'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,
@@ -358,6 +353,7 @@ class ucp_pm
 					'U_SENTBOX'				=> $this->u_action . '&amp;folder=sentbox',
 					'U_CREATE_FOLDER'		=> $this->u_action . '&amp;mode=options',
 					'U_CURRENT_FOLDER'		=> $this->u_action . '&amp;folder=' . $folder_id,
+					'U_MARK_ALL'			=> $this->u_action . '&amp;folder=' . $folder_id . '&amp;mark=all&amp;token=' . generate_link_hash('mark_all_pms_read'),
 
 					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,
@@ -380,9 +376,10 @@ class ucp_pm
 				else if ($action == 'view_message')
 				{
 					$template->assign_vars(array(
-						'S_VIEW_MESSAGE'	=> true,
-						'MSG_ID'			=> $msg_id)
-					);
+						'S_VIEW_MESSAGE'		=> true,
+						'L_RETURN_TO_FOLDER'	=> $user->lang('RETURN_TO', $folder_status['folder_name']),
+						'MSG_ID'				=> $msg_id,
+					));
 
 					if (!$msg_id)
 					{
@@ -412,5 +409,3 @@ class ucp_pm
 		$this->page_title = 'UCP_PM_' . strtoupper($mode);
 	}
 }
-
-?>

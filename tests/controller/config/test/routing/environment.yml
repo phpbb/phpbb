@@ -1,0 +1,3 @@
+core_controller:
+    path: /core_foo
+    defaults: { _controller: core_foo.controller:bar }

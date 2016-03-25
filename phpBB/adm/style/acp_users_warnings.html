@@ -1,7 +1,7 @@
 	<form id="list" method="post" action="{U_ACTION}">
 
 	<!-- IF .warn -->
-	<table cellspacing="1">
+	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_REPORT_BY}</th>
@@ -12,7 +12,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN warn -->
-		<!-- IF warn.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td>{warn.USERNAME}</td>
 			<td style="text-align: center; nowrap: nowrap;">{warn.DATE}</td>
 			<td>{warn.ACTION}</td>

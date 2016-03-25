@@ -38,12 +38,25 @@
 			<a href="#" onclick="swap_options('{p_mask.S_ROW_COUNT}', '{p_mask.f_mask.S_ROW_COUNT}', '0', true); return false;">{L_ADVANCED_PERMISSIONS}</a><!-- IF not p_mask.S_VIEW and p_mask.f_mask.S_CUSTOM --> *<!-- ENDIF -->
 		</div>
 		<dl class="permissions-simple">
-			<dt style="width: 20%"><label for="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">{L_ROLE}:</label></dt>
-			<!-- IF p_mask.f_mask.S_ROLE_OPTIONS -->
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 20%"><select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" onchange="set_role_settings(this.options[selectedIndex].value, 'advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); init_colours('{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')">{p_mask.f_mask.S_ROLE_OPTIONS}</select></dd>
-			<!-- ELSE -->
+			<dt style="width: 20%"><label for="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">{L_ROLE}{L_COLON}</label></dt>
+			{% if p_mask.f_mask.role_options %}
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 20%">
+					<div class="dropdown-container dropdown-button-control roles-options" data-alt-text="{LA_ROLE_DESCRIPTION}">
+						<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]">{p_mask.f_mask.S_ROLE_OPTIONS}</select>
+						<span title="Roles" class="button icon-button tools-icon dropdown-trigger dropdown-select">{L_NO_ROLE_ASSIGNED}</span>
+						<div class="dropdown hidden">
+							<ul class="dropdown-contents" id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" >
+								{% for role in p_mask.f_mask.role_options %}
+									<li data-id="{{ role.ID }}" data-target-id="advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" data-title="{{ role.TITLE }}"{% if role.SELECTED == true %} data-selected="{{ role.SELECTED }}"{% endif %}>{{ role.ROLE_NAME }}</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<input type="hidden" data-name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]"{% if p_mask.f_mask.S_ROLE_ID %}value="{{ p_mask.f_mask.S_ROLE_ID }}"{% endif %} />
+					</div>
+				</dd>
+			{% else %}
 				<dd>{L_NO_ROLE_AVAILABLE}</dd>
-			<!-- ENDIF -->
+			{% endif %}
 		</dl>
 	<!-- ENDIF -->
 
@@ -75,9 +88,8 @@
 
 	<!-- BEGIN category -->
 		<div class="permissions-panel" id="options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}" <!-- IF p_mask.S_FIRST_ROW and p_mask.f_mask.S_FIRST_ROW and p_mask.f_mask.category.S_FIRST_ROW --><!-- ELSE --> style="display: none;"<!-- ENDIF -->>
-			<span class="corners-top"><span></span></span>
 			<div class="tablewrap">
-				<table id="table{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}" cellspacing="1">
+				<table id="table{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}" class="table1 not-responsive">
 				<colgroup>
 					<col class="permissions-name" />
 					<col class="permissions-yes" />
@@ -118,7 +130,7 @@
 			</div>
 			
 			<!-- IF not p_mask.S_VIEW -->
-			<fieldset class="quick" style="margin-{S_CONTENT_FLOW_END}: 11px;">
+			<fieldset class="quick" style="margin-{S_CONTENT_FLOW_END}{L_COLON} 11px;">
 				<p class="small">{L_APPLY_PERMISSIONS_EXPLAIN}</p>
 				<input class="button1" type="submit" name="psubmit[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" value="{L_APPLY_PERMISSIONS}" />
 				<!-- IF .p_mask.f_mask gt 1 or .p_mask gt 1 -->
@@ -128,7 +140,6 @@
 		
 			<!-- ENDIF -->
 
-			<span class="corners-bottom"><span></span></span>
 		</div>
 	<!-- END category -->
 			<div class="clearfix"></div>

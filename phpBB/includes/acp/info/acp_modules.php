@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class acp_modules_info
 {
 	function module()
@@ -18,7 +18,6 @@ class acp_modules_info
 		return array(
 			'filename'	=> 'acp_modules',
 			'title'		=> 'ACP_MODULE_MANAGEMENT',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
 				'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules', 'cat' => array('ACP_MODULE_MANAGEMENT')),
@@ -35,5 +34,3 @@ class acp_modules_info
 	{
 	}
 }
-
-?>

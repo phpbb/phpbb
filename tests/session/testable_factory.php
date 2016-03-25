@@ -1,13 +1,18 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/session_testable.php';
+require_once dirname(__FILE__) . '/../mock/container_builder.php';
+require_once dirname(__FILE__) . '/../mock/auth_provider.php';
 
 /**
 * This class exists to setup an instance of phpbb's session class for testing.
@@ -18,12 +23,14 @@ require_once dirname(__FILE__) . '/../mock/session_testable.php';
 */
 class phpbb_session_testable_factory
 {
+	protected $container;
 	protected $config_data;
 	protected $cache_data;
 	protected $cookies;
 
 	protected $config;
 	protected $cache;
+	protected $request;
 
 	/**
 	* Initialises the factory with a set of default config and cache values.
@@ -60,22 +67,41 @@ class phpbb_session_testable_factory
 	/**
 	* Retrieve the configured session class instance
 	*
-	* @param dbal $dbal The database connection to use for session data
+	* @param \phpbb\db\driver\driver_interface $dbal The database connection to use for session data
 	* @return phpbb_mock_session_testable A session instance
 	*/
-	public function get_session(dbal $dbal)
+	public function get_session(\phpbb\db\driver\driver_interface $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache;
+		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container, $phpbb_root_path;
 
-		$config = $this->config = $this->get_config_data();
+		$request = $this->request = new phpbb_mock_request(
+			array(),
+			array(),
+			$this->cookies,
+			$this->server_data
+		);
+
+		$config = $this->config = new \phpbb\config\config($this->get_config_data());
+
 		$db = $dbal;
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
 
-		$_COOKIE = $this->cookies;
-		$_SERVER = $this->server_data;
+		$phpbb_container = $this->container = new phpbb_mock_container_builder();
+		$phpbb_container->set(
+			'auth.provider.db',
+			new phpbb_mock_auth_provider()
+		);
+		$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+		$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
+		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
+		$provider_collection->add('auth.provider.db');
+		$phpbb_container->set(
+			'auth.provider_collection',
+			$provider_collection
+		);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;
@@ -156,6 +182,32 @@ class phpbb_session_testable_factory
 	public function merge_server_data($server_data)
 	{
 		return $this->server_data = array_merge($this->server_data, $server_data);
+	}
+
+	/**
+	 * Set cookies, merge config and server data in one step.
+	 *
+	 * New values overwrite old ones.
+	 *
+	 * @param $session_id
+	 * @param $user_id
+	 * @param $user_agent
+	 * @param $ip
+	 * @param int $time
+	 */
+	public function merge_test_data($session_id, $user_id, $user_agent, $ip, $time = 0)
+	{
+		$this->set_cookies(array(
+			'_sid' => $session_id,
+			'_u' => $user_id,
+		));
+		$this->merge_config_data(array(
+			'session_length' => time() + $time, // need to do this to allow sessions started at time 0
+		));
+		$this->merge_server_data(array(
+			'HTTP_USER_AGENT' => $user_agent,
+			'REMOTE_ADDR' => $ip,
+		));
 	}
 
 	/**

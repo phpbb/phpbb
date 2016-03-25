@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_BBCODE -->
 
@@ -47,6 +47,8 @@
 	</dl>
 	</fieldset>
 
+	<!-- EVENT acp_bbcodes_edit_fieldsets_after -->
+
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
@@ -56,7 +58,7 @@
 	
 	<br />
 
-	<table cellspacing="1" id="down">
+	<table class="table1" id="down">
 	<thead>
 	<tr>
 		<th colspan="2">{L_TOKENS}</th>
@@ -71,7 +73,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN token -->
-		<tr valign="top">
+		<tr style="vertical-align: top;">
 			<td class="row1">{token.TOKEN}</td>
 			<td class="row2">{token.EXPLAIN}</td>
 		</tr>
@@ -90,7 +92,7 @@
 	<fieldset class="tabulated">
 	<legend>{L_ACP_BBCODES}</legend>
 
-	<table cellspacing="1" id="down">
+	<table class="table1 zebra-table" id="down">
 	<thead>
 	<tr>
 		<th>{L_BBCODE_TAG}</th>
@@ -99,9 +101,9 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN bbcodes -->
-		<!-- IF bbcodes.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<tr>
 			<td style="text-align: center;">{bbcodes.BBCODE_TAG}</td>
-			<td style="text-align: right; width: 40px;"><a href="{bbcodes.U_EDIT}">{ICON_EDIT}</a> <a href="{bbcodes.U_DELETE}">{ICON_DELETE}</a></td>
+			<td class="actions"><!-- EVENT acp_bbcodes_actions_prepend --> <a href="{bbcodes.U_EDIT}">{ICON_EDIT}</a> <a href="{bbcodes.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a> <!-- EVENT acp_bbcodes_actions_append --></td>
 		</tr>
 	<!-- BEGINELSE -->
 		<tr class="row3">

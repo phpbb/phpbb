@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -41,13 +44,13 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
 
 	$which_ary = ($user_id_ary) ? 'user_id_ary' : 'username_ary';
 
-	if ($$which_ary && !is_array($$which_ary))
+	if (${$which_ary} && !is_array(${$which_ary}))
 	{
-		$$which_ary = array($$which_ary);
+		${$which_ary} = array(${$which_ary});
 	}
 
-	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : array_map('utf8_clean_string', $$which_ary);
-	unset($$which_ary);
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', ${$which_ary}) : array_map('utf8_clean_string', ${$which_ary});
+	unset(${$which_ary});
 
 	$user_id_ary = $username_ary = array();
 
@@ -86,7 +89,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
 */
 function update_last_username()
 {
-	global $db;
+	global $config, $db;
 
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
@@ -99,9 +102,9 @@ function update_last_username()
 
 	if ($row)
 	{
-		set_config('newest_user_id', $row['user_id'], true);
-		set_config('newest_username', $row['username'], true);
-		set_config('newest_user_colour', $row['user_colour'], true);
+		$config->set('newest_user_id', $row['user_id'], false);
+		$config->set('newest_username', $row['username'], false);
+		$config->set('newest_user_colour', $row['user_colour'], false);
 	}
 }
 
@@ -113,7 +116,7 @@ function update_last_username()
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db, $cache;
+	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
 		FORUMS_TABLE			=> array('forum_last_poster_name'),
@@ -135,8 +138,19 @@ function user_update_name($old_name, $new_name)
 
 	if ($config['newest_username'] == $old_name)
 	{
-		set_config('newest_username', $new_name, true);
+		$config->set('newest_username', $new_name, false);
 	}
+
+	/**
+	* Update a username when it is changed
+	*
+	* @event core.update_username
+	* @var	string	old_name	The old username that is replaced
+	* @var	string	new_name	The new username
+	* @since 3.1.0-a1
+	*/
+	$vars = array('old_name', 'new_name');
+	extract($phpbb_dispatcher->trigger_event('core.update_username', compact($vars)));
 
 	// Because some tables/caches use username-specific data we need to purge this here.
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
@@ -147,11 +161,13 @@ function user_update_name($old_name, $new_name)
 *
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
+* @param array $notifications_data The notifications settings for the new user
 * @return the new user's ID.
 */
-function user_add($user_row, $cp_data = false)
+function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
-	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
+	global $db, $config;
+	global $phpbb_dispatcher, $phpbb_container;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
@@ -169,7 +185,6 @@ function user_add($user_row, $cp_data = false)
 		'username'			=> $user_row['username'],
 		'username_clean'	=> $username_clean,
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
-		'user_pass_convert'	=> 0,
 		'user_email'		=> strtolower($user_row['user_email']),
 		'user_email_hash'	=> phpbb_email_hash($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
@@ -198,12 +213,9 @@ function user_add($user_row, $cp_data = false)
 		'user_lastpost_time'	=> 0,
 		'user_lastpage'			=> '',
 		'user_posts'			=> 0,
-		'user_dst'				=> (int) $config['board_dst'],
 		'user_colour'			=> '',
-		'user_occ'				=> '',
-		'user_interests'		=> '',
 		'user_avatar'			=> '',
-		'user_avatar_type'		=> 0,
+		'user_avatar_type'		=> '',
 		'user_avatar_width'		=> 0,
 		'user_avatar_height'	=> 0,
 		'user_new_privmsg'		=> 0,
@@ -246,6 +258,19 @@ function user_add($user_row, $cp_data = false)
 		}
 	}
 
+	/**
+	* Use this event to modify the values to be inserted when a user is added
+	*
+	* @event core.user_add_modify_data
+	* @var array	user_row		Array of user details submited to user_add
+	* @var array	cp_data			Array of Custom profile fields submited to user_add
+	* @var array	sql_ary		Array of data to be inserted when a user is added
+	* @since 3.1.0-a1
+	* @change 3.1.0-b5
+	*/
+	$vars = array('user_row', 'cp_data', 'sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
+
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
 
@@ -256,13 +281,10 @@ function user_add($user_row, $cp_data = false)
 	{
 		$cp_data['user_id'] = (int) $user_id;
 
-		if (!class_exists('custom_profile'))
-		{
-			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-		}
-
+		/* @var $cp \phpbb\profilefields\manager */
+		$cp = $phpbb_container->get('profilefields.manager');
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
-			$db->sql_build_array('INSERT', custom_profile::build_insert_sql_array($cp_data));
+			$db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 		$db->sql_query($sql);
 	}
 
@@ -290,8 +312,10 @@ function user_add($user_row, $cp_data = false)
 
 		if ($add_group_id)
 		{
-			// Because these actions only fill the log unneccessarily we skip the add_log() entry with a little hack. :/
-			$GLOBALS['skip_add_log'] = true;
+			global $phpbb_log;
+
+			// Because these actions only fill the log unnecessarily, we disable it
+			$phpbb_log->disable('admin');
 
 			// Add user to "newly registered users" group and set to default group if admin specified so.
 			if ($config['new_member_group_default'])
@@ -304,16 +328,16 @@ function user_add($user_row, $cp_data = false)
 				group_user_add($add_group_id, $user_id);
 			}
 
-			unset($GLOBALS['skip_add_log']);
+			$phpbb_log->enable('admin');
 		}
 	}
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
 	if ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_FOUNDER)
 	{
-		set_config('newest_user_id', $user_id, true);
-		set_config('newest_username', $user_row['username'], true);
-		set_config_count('num_users', 1, true);
+		$config->set('newest_user_id', $user_id, false);
+		$config->set('newest_username', $user_row['username'], false);
+		$config->increment('num_users', 1, false);
 
 		$sql = 'SELECT group_colour
 			FROM ' . GROUPS_TABLE . '
@@ -322,36 +346,105 @@ function user_add($user_row, $cp_data = false)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('newest_user_colour', $row['group_colour'], true);
+		$config->set('newest_user_colour', $row['group_colour'], false);
 	}
+
+	// Use default notifications settings if notifications_data is not set
+	if ($notifications_data === null)
+	{
+		$notifications_data = array(
+			array(
+				'item_type'	=> 'notification.type.post',
+				'method'	=> 'notification.method.email',
+			),
+			array(
+				'item_type'	=> 'notification.type.topic',
+				'method'	=> 'notification.method.email',
+			),
+		);
+	}
+
+	// Subscribe user to notifications if necessary
+	if (!empty($notifications_data))
+	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+		foreach ($notifications_data as $subscription)
+		{
+			$phpbb_notifications->add_subscription($subscription['item_type'], 0, $subscription['method'], $user_id);
+		}
+	}
+
+	/**
+	* Event that returns user id, user detals and user CPF of newly registared user
+	*
+	* @event core.user_add_after
+	* @var int		user_id			User id of newly registared user
+	* @var array	user_row		Array of user details submited to user_add
+	* @var array	cp_data			Array of Custom profile fields submited to user_add
+	* @since 3.1.0-b5
+	*/
+	$vars = array('user_id', 'user_row', 'cp_data');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_after', compact($vars)));
 
 	return $user_id;
 }
 
 /**
-* Remove User
-*/
-function user_delete($mode, $user_id, $post_username = false)
+ * Remove User
+ *
+ * @param string	$mode		Either 'retain' or 'remove'
+ * @param mixed		$user_ids	Either an array of integers or an integer
+ * @param bool		$retain_username
+ * @return bool
+ */
+function user_delete($mode, $user_ids, $retain_username = true)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container;
 	global $phpbb_root_path, $phpEx;
+
+	$db->sql_transaction('begin');
+
+	$user_rows = array();
+	if (!is_array($user_ids))
+	{
+		$user_ids = array($user_ids);
+	}
+
+	$user_id_sql = $db->sql_in_set('user_id', $user_ids);
 
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $user_id_sql;
 	$result = $db->sql_query($sql);
-	$user_row = $db->sql_fetchrow($result);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$user_rows[(int) $row['user_id']] = $row;
+	}
 	$db->sql_freeresult($result);
 
-	if (!$user_row)
+	if (empty($user_rows))
 	{
 		return false;
 	}
 
+	/**
+	* Event before a user is deleted
+	*
+	* @event core.delete_user_before
+	* @var	string	mode		Mode of deletion (retain/delete posts)
+	* @var	array	user_ids	IDs of the deleted user
+	* @var	mixed	retain_username	True if username should be retained
+	*				or false if not
+	* @since 3.1.0-a1
+	*/
+	$vars = array('mode', 'user_ids', 'retain_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_before', compact($vars)));
+
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
 		FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
-		WHERE r.user_id = ' . $user_id . '
+		WHERE ' . $db->sql_in_set('r.user_id', $user_ids) . '
 			AND p.post_id = r.post_id';
 	$result = $db->sql_query($sql);
 
@@ -405,127 +498,208 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	// Remove reports
-	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE user_id = ' . $user_id);
+	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE ' . $user_id_sql);
 
-	if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == AVATAR_UPLOAD)
+	$num_users_delta = 0;
+
+	// Get auth provider collection in case accounts might need to be unlinked
+	$provider_collection = $phpbb_container->get('auth.provider_collection');
+
+	// Some things need to be done in the loop (if the query changes based
+	// on which user is currently being deleted)
+	$added_guest_posts = 0;
+	foreach ($user_rows as $user_id => $user_row)
 	{
-		avatar_delete('user', $user_row);
-	}
+		if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == 'avatar.driver.upload')
+		{
+			avatar_delete('user', $user_row);
+		}
 
-	switch ($mode)
-	{
-		case 'retain':
+		// Unlink accounts
+		foreach ($provider_collection as $provider_name => $auth_provider)
+		{
+			$provider_data = $auth_provider->get_auth_link_data($user_id);
 
-			$db->sql_transaction('begin');
-
-			if ($post_username === false)
+			if ($provider_data !== null)
 			{
-				$post_username = $user->lang['GUEST'];
-			}
+				$link_data = array(
+					'user_id' => $user_id,
+					'link_method' => 'user_delete',
+				);
 
-			// If the user is inactive and newly registered we assume no posts from this user being there...
-			if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
-			{
-			}
-			else
-			{
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
-					WHERE forum_last_poster_id = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
-					WHERE poster_id = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_edit_user = ' . ANONYMOUS . "
-					WHERE post_edit_user = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
-					WHERE topic_poster = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
-					WHERE topic_last_poster_id = $user_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-					SET poster_id = ' . ANONYMOUS . "
-					WHERE poster_id = $user_id";
-				$db->sql_query($sql);
-
-				// Since we change every post by this author, we need to count this amount towards the anonymous user
-
-				// Update the post count for the anonymous user
-				if ($user_row['user_posts'])
+				// BLOCK_VARS might contain hidden fields necessary for unlinking accounts
+				if (isset($provider_data['BLOCK_VARS']) && is_array($provider_data['BLOCK_VARS']))
 				{
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_posts = user_posts + ' . $user_row['user_posts'] . '
-						WHERE user_id = ' . ANONYMOUS;
-					$db->sql_query($sql);
+					foreach ($provider_data['BLOCK_VARS'] as $provider_service)
+					{
+						if (!array_key_exists('HIDDEN_FIELDS', $provider_service))
+						{
+							$provider_service['HIDDEN_FIELDS'] = array();
+						}
+
+						$auth_provider->unlink_account(array_merge($link_data, $provider_service['HIDDEN_FIELDS']));
+					}
+				}
+				else
+				{
+					$auth_provider->unlink_account($link_data);
 				}
 			}
+		}
 
-			$db->sql_transaction('commit');
+		// Decrement number of users if this user is active
+		if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
+		{
+			--$num_users_delta;
+		}
 
-		break;
+		switch ($mode)
+		{
+			case 'retain':
+				if ($retain_username === false)
+				{
+					$post_username = $user->lang['GUEST'];
+				}
+				else
+				{
+					$post_username = $user_row['username'];
+				}
 
-		case 'remove':
+				// If the user is inactive and newly registered
+				// we assume no posts from the user, and save
+				// the queries
+				if ($user_row['user_type'] != USER_INACTIVE || $user_row['user_inactive_reason'] != INACTIVE_REGISTER || $user_row['user_posts'])
+				{
+					// When we delete these users and retain the posts, we must assign all the data to the guest user
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
+						WHERE forum_last_poster_id = $user_id";
+					$db->sql_query($sql);
 
-			if (!function_exists('delete_posts'))
-			{
-				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-			}
+					$sql = 'UPDATE ' . POSTS_TABLE . '
+						SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
+						WHERE poster_id = $user_id";
+					$db->sql_query($sql);
 
-			// Delete posts, attachments, etc.
-			delete_posts('poster_id', $user_id);
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
+						WHERE topic_poster = $user_id";
+					$db->sql_query($sql);
 
-		break;
+					$sql = 'UPDATE ' . TOPICS_TABLE . '
+						SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
+						WHERE topic_last_poster_id = $user_id";
+					$db->sql_query($sql);
+
+					// Since we change every post by this author, we need to count this amount towards the anonymous user
+
+					if ($user_row['user_posts'])
+					{
+						$added_guest_posts += $user_row['user_posts'];
+					}
+				}
+			break;
+
+			case 'remove':
+				// there is nothing variant specific to deleting posts
+			break;
+		}
 	}
 
-	$db->sql_transaction('begin');
+	if ($num_users_delta != 0)
+	{
+		$config->increment('num_users', $num_users_delta, false);
+	}
+
+	// Now do the invariant tasks
+	// all queries performed in one call of this function are in a single transaction
+	// so this is kosher
+	if ($mode == 'retain')
+	{
+		// Assign more data to the Anonymous user
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+			SET poster_id = ' . ANONYMOUS . '
+			WHERE ' . $db->sql_in_set('poster_id', $user_ids);
+		$db->sql_query($sql);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_posts = user_posts + ' . $added_guest_posts . '
+			WHERE user_id = ' . ANONYMOUS;
+		$db->sql_query($sql);
+	}
+	else if ($mode == 'remove')
+	{
+		if (!function_exists('delete_posts'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+
+		// Delete posts, attachments, etc.
+		// delete_posts can handle any number of IDs in its second argument
+		delete_posts('poster_id', $user_ids);
+	}
 
 	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE, SESSIONS_KEYS_TABLE, PRIVMSGS_FOLDER_TABLE, PRIVMSGS_RULES_TABLE);
 
+	// Delete the miscellaneous (non-post) data for the user
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table
-			WHERE user_id = $user_id";
+			WHERE " . $user_id_sql;
 		$db->sql_query($sql);
 	}
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
+	// Change user_id to anonymous for posts edited by this user
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_edit_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('post_edit_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for pms edited by this user
+	$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+		SET message_edit_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('message_edit_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for posts deleted by this user
+	$sql = 'UPDATE ' . POSTS_TABLE . '
+		SET post_delete_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('post_delete_user', $user_ids);
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for topics deleted by this user
+	$sql = 'UPDATE ' . TOPICS_TABLE . '
+		SET topic_delete_user = ' . ANONYMOUS . '
+		WHERE ' . $db->sql_in_set('topic_delete_user', $user_ids);
+	$db->sql_query($sql);
+
 	// Delete user log entries about this user
 	$sql = 'DELETE FROM ' . LOG_TABLE . '
-		WHERE reportee_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('reportee_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Change user_id to anonymous for this users triggered events
 	$sql = 'UPDATE ' . LOG_TABLE . '
 		SET user_id = ' . ANONYMOUS . '
-		WHERE user_id = ' . $user_id;
+		WHERE ' . $user_id_sql;
 	$db->sql_query($sql);
 
 	// Delete the user_id from the zebra table
 	$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-		WHERE user_id = ' . $user_id . '
-			OR zebra_id = ' . $user_id;
+		WHERE ' . $user_id_sql . '
+			OR ' . $db->sql_in_set('zebra_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Delete the user_id from the banlist
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-		WHERE ban_userid = ' . $user_id;
+		WHERE ' . $db->sql_in_set('ban_userid', $user_ids);
 	$db->sql_query($sql);
 
 	// Delete the user_id from the session table
 	$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-		WHERE session_user_id = ' . $user_id;
+		WHERE ' . $db->sql_in_set('session_user_id', $user_ids);
 	$db->sql_query($sql);
 
 	// Clean the private messages tables from the user
@@ -533,20 +707,30 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 	}
-	phpbb_delete_user_pms($user_id);
+	phpbb_delete_users_pms($user_ids);
+
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+	$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_ids);
 
 	$db->sql_transaction('commit');
 
+	/**
+	* Event after a user is deleted
+	*
+	* @event core.delete_user_after
+	* @var	string	mode		Mode of deletion (retain/delete posts)
+	* @var	array	user_ids	IDs of the deleted user
+	* @var	mixed	retain_username	True if username should be retained
+	*				or false if not
+	* @since 3.1.0-a1
+	*/
+	$vars = array('mode', 'user_ids', 'retain_username');
+	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
+
 	// Reset newest user info if appropriate
-	if ($config['newest_user_id'] == $user_id)
+	if (in_array($config['newest_user_id'], $user_ids))
 	{
 		update_last_username();
-	}
-
-	// Decrement number of users if this user is active
-	if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
-	{
-		set_config_count('num_users', -1, true);
 	}
 
 	return false;
@@ -559,7 +743,7 @@ function user_delete($mode, $user_id, $post_username = false)
 */
 function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
-	global $config, $db, $user, $auth;
+	global $config, $db, $user, $auth, $phpbb_dispatcher;
 
 	$deactivated = $activated = 0;
 	$sql_statements = array();
@@ -612,6 +796,21 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 	}
 	$db->sql_freeresult($result);
 
+	/**
+	* Check or modify activated/deactivated users data before submitting it to the database
+	*
+	* @event core.user_active_flip_before
+	* @var	string	mode			User type changing mode, can be: flip|activate|deactivate
+	* @var	int		reason			Reason for changing user type, can be: INACTIVE_REGISTER|INACTIVE_PROFILE|INACTIVE_MANUAL|INACTIVE_REMIND
+	* @var	int		activated		The number of users to be activated
+	* @var	int		deactivated		The number of users to be deactivated
+	* @var	array	user_id_ary		Array with user ids to change user type
+	* @var	array	sql_statements	Array with users data to submit to the database, keys: user ids, values: arrays with user data
+	* @since 3.1.4-RC1
+	*/
+	$vars = array('mode', 'reason', 'activated', 'deactivated', 'user_id_ary', 'sql_statements');
+	extract($phpbb_dispatcher->trigger_event('core.user_active_flip_before', compact($vars)));
+
 	if (sizeof($sql_statements))
 	{
 		foreach ($sql_statements as $user_id => $sql_ary)
@@ -625,14 +824,29 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 		$auth->acl_clear_prefetch(array_keys($sql_statements));
 	}
 
+	/**
+	* Perform additional actions after the users have been activated/deactivated
+	*
+	* @event core.user_active_flip_after
+	* @var	string	mode			User type changing mode, can be: flip|activate|deactivate
+	* @var	int		reason			Reason for changing user type, can be: INACTIVE_REGISTER|INACTIVE_PROFILE|INACTIVE_MANUAL|INACTIVE_REMIND
+	* @var	int		activated		The number of users to be activated
+	* @var	int		deactivated		The number of users to be deactivated
+	* @var	array	user_id_ary		Array with user ids to change user type
+	* @var	array	sql_statements	Array with users data to submit to the database, keys: user ids, values: arrays with user data
+	* @since 3.1.4-RC1
+	*/
+	$vars = array('mode', 'reason', 'activated', 'deactivated', 'user_id_ary', 'sql_statements');
+	extract($phpbb_dispatcher->trigger_event('core.user_active_flip_after', compact($vars)));
+
 	if ($deactivated)
 	{
-		set_config_count('num_users', $deactivated * (-1), true);
+		$config->increment('num_users', $deactivated * (-1), false);
 	}
 
 	if ($activated)
 	{
-		set_config_count('num_users', $activated, true);
+		$config->increment('num_users', $activated, false);
 	}
 
 	// Update latest username
@@ -652,7 +866,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
-	global $db, $user, $auth, $cache;
+	global $db, $user, $cache, $phpbb_log;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -675,11 +889,13 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		else
 		{
 			$ban_other = explode('-', $ban_len_other);
-			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) &&
+			if (sizeof($ban_other) == 3 && ((int) $ban_other[0] < 9999) &&
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
-				$time_offset = (isset($user->timezone) && isset($user->dst)) ? (int) $user->timezone + (int) $user->dst : 0;
-				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]) - $time_offset);
+				$ban_end = max($current_time, $user->create_datetime()
+					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
+					->setTime(0, 0, 0)
+					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
 			}
 			else
 			{
@@ -799,7 +1015,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						if ($ip_2_counter == 0 && $ip_2_end == 254)
 						{
 							$ip_2_counter = 256;
-							$ip_2_fragment = 256;
 
 							$banlist_ary[] = "$ip_1_counter.*";
 						}
@@ -812,7 +1027,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 							if ($ip_3_counter == 0 && $ip_3_end == 254)
 							{
 								$ip_3_counter = 256;
-								$ip_3_fragment = 256;
 
 								$banlist_ary[] = "$ip_1_counter.$ip_2_counter.*";
 							}
@@ -825,7 +1039,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 								if ($ip_4_counter == 0 && $ip_4_end == 254)
 								{
 									$ip_4_counter = 256;
-									$ip_4_fragment = 256;
 
 									$banlist_ary[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.*";
 								}
@@ -1040,14 +1253,23 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		// Update log
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
 
-		// Add to moderator log, admin log and user notes
-		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
-		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+		// Add to admin log, moderator log and user notes
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array($ban_reason, $ban_list_log));
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
+			'forum_id' => 0,
+			'topic_id' => 0,
+			$ban_reason,
+			$ban_list_log
+		));
 		if ($mode == 'user')
 		{
 			foreach ($banlist_ary as $user_id)
 			{
-				add_log('user', $user_id, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
+					'reportee_id' => $user_id,
+					$ban_reason,
+					$ban_list_log
+				));
 			}
 		}
 
@@ -1067,7 +1289,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $auth, $cache;
+	global $db, $user, $cache, $phpbb_log;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1125,13 +1347,20 @@ function user_unban($mode, $ban)
 		$db->sql_query($sql);
 
 		// Add to moderator log, admin log and user notes
-		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
-		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array($l_unban_list));
+		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array(
+			'forum_id' => 0,
+			'topic_id' => 0,
+			$l_unban_list
+		));
 		if ($mode == 'user')
 		{
 			foreach ($user_ids_ary as $user_id)
 			{
-				add_log('user', $user_id, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array(
+					'reportee_id' => $user_id,
+					$l_unban_list
+				));
 			}
 		}
 	}
@@ -1188,7 +1417,7 @@ function user_ipwhois($ip)
 	$match = array();
 
 	// Test for referrals from $whois_host to other whois databases, roll on rwhois
-	if (preg_match('#ReferralServer: whois://(.+)#im', $ipwhois, $match))
+	if (preg_match('#ReferralServer:[\x20]*whois://(.+)#im', $ipwhois, $match))
 	{
 		if (strpos($match[1], ':') !== false)
 		{
@@ -1247,9 +1476,18 @@ function validate_data($data, $val_ary)
 		{
 			$function = array_shift($validate);
 			array_unshift($validate, $data[$var]);
-			$function_prefix = (function_exists('phpbb_validate_' . $function)) ? 'phpbb_validate_' : 'validate_';
 
-			if ($result = call_user_func_array($function_prefix . $function, $validate))
+			if (is_array($function))
+			{
+				$result = call_user_func_array(array($function[0], 'validate_' . $function[1]), $validate);
+			}
+			else
+			{
+				$function_prefix = (function_exists('phpbb_validate_' . $function)) ? 'phpbb_validate_' : 'validate_';
+				$result = call_user_func_array($function_prefix . $function, $validate);
+			}
+
+			if ($result)
 			{
 				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
 				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
@@ -1398,6 +1636,22 @@ function validate_language_iso_name($lang_iso)
 }
 
 /**
+* Validate Timezone Name
+*
+* Tests whether a timezone name is valid
+*
+* @param string $timezone	The timezone string to test
+*
+* @return bool|string		Either false if validation succeeded or
+*							a string which will be used as the error message
+*							(with the variable name appended)
+*/
+function phpbb_validate_timezone($timezone)
+{
+	return (in_array($timezone, phpbb_get_timezone_identifiers($timezone))) ? false : 'TIMEZONE_INVALID';
+}
+
+/**
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
@@ -1425,89 +1679,37 @@ function validate_username($username, $allowed_username = false)
 		return 'INVALID_CHARS';
 	}
 
-	$mbstring = $pcre = false;
-
-	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
-	{
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$mbstring = true;
-	}
-
 	switch ($config['allow_name_chars'])
 	{
 		case 'USERNAME_CHARS_ANY':
-			$pcre = true;
 			$regex = '.+';
 		break;
 
 		case 'USERNAME_ALPHA_ONLY':
-			$pcre = true;
 			$regex = '[A-Za-z0-9]+';
 		break;
 
 		case 'USERNAME_ALPHA_SPACERS':
-			$pcre = true;
 			$regex = '[A-Za-z0-9-[\]_+ ]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM':
-			if ($pcre)
-			{
-				$regex = '[\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[a-zA-Z0-9]+';
-			}
+			$regex = '[\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM_SPACERS':
-			if ($pcre)
-			{
-				$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[-\]_+ \[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[-\]_+ [a-zA-Z0-9]+';
-			}
+			$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_ASCII':
 		default:
-			$pcre = true;
 			$regex = '[\x01-\x7F]+';
 		break;
 	}
 
-	if ($pcre)
+	if (!preg_match('#^' . $regex . '$#u', $username))
 	{
-		if (!preg_match('#^' . $regex . '$#u', $username))
-		{
-			return 'INVALID_CHARS';
-		}
-	}
-	else if ($mbstring)
-	{
-		mb_ereg_search_init($username, '^' . $regex . '$');
-		if (!mb_ereg_search())
-		{
-			return 'INVALID_CHARS';
-		}
+		return 'INVALID_CHARS';
 	}
 
 	$sql = 'SELECT username
@@ -1562,35 +1764,10 @@ function validate_password($password)
 		return false;
 	}
 
-	$pcre = $mbstring = false;
-
-	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
-	{
-		$upp = '\p{Lu}';
-		$low = '\p{Ll}';
-		$num = '\p{N}';
-		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$upp = '[[:upper:]]';
-		$low = '[[:lower:]]';
-		$num = '[[:digit:]]';
-		$sym = '[^[:upper:][:lower:][:digit:]]';
-		$mbstring = true;
-	}
-	else
-	{
-		$upp = '[A-Z]';
-		$low = '[a-z]';
-		$num = '[0-9]';
-		$sym = '[^A-Za-z0-9]';
-		$pcre = true;
-	}
-
+	$upp = '\p{Lu}';
+	$low = '\p{Ll}';
+	$num = '\p{N}';
+	$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 	$chars = array();
 
 	switch ($config['pass_complex'])
@@ -1613,24 +1790,11 @@ function validate_password($password)
 			$chars[] = $upp;
 	}
 
-	if ($pcre)
+	foreach ($chars as $char)
 	{
-		foreach ($chars as $char)
+		if (!preg_match('#' . $char . '#u', $password))
 		{
-			if (!preg_match('#' . $char . '#u', $password))
-			{
-				return 'INVALID_CHARS';
-			}
-		}
-	}
-	else if ($mbstring)
-	{
-		foreach ($chars as $char)
-		{
-			if (mb_ereg($char, $password) === false)
-			{
-				return 'INVALID_CHARS';
-			}
+			return 'INVALID_CHARS';
 		}
 	}
 
@@ -1638,24 +1802,20 @@ function validate_password($password)
 }
 
 /**
-* Check to see if email address is banned or already present in the DB
+* Check to see if email address is a valid address and contains a MX record
 *
 * @param string $email The email to check
-* @param string $allowed_email An allowed email, default being $user->data['user_email']
 *
 * @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
-function validate_email($email, $allowed_email = false)
+function phpbb_validate_email($email, $config = null)
 {
-	global $config, $db, $user;
+	if ($config === null)
+	{
+		global $config;
+	}
 
 	$email = strtolower($email);
-	$allowed_email = ($allowed_email === false) ? strtolower($user->data['user_email']) : strtolower($allowed_email);
-
-	if ($allowed_email == $email)
-	{
-		return false;
-	}
 
 	if (!preg_match('/^' . get_preg_expression('email') . '$/i', $email))
 	{
@@ -1672,6 +1832,35 @@ function validate_email($email, $allowed_email = false)
 		{
 			return 'DOMAIN_NO_MX_RECORD';
 		}
+	}
+
+	return false;
+}
+
+/**
+* Check to see if email address is banned or already present in the DB
+*
+* @param string $email The email to check
+* @param string $allowed_email An allowed email, default being $user->data['user_email']
+*
+* @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+*/
+function validate_user_email($email, $allowed_email = false)
+{
+	global $config, $db, $user;
+
+	$email = strtolower($email);
+	$allowed_email = ($allowed_email === false) ? strtolower($user->data['user_email']) : strtolower($allowed_email);
+
+	if ($allowed_email == $email)
+	{
+		return false;
+	}
+
+	$validate_email = phpbb_validate_email($email, $config);
+	if ($validate_email)
+	{
+		return $validate_email;
 	}
 
 	if (($ban_reason = $user->check_ban(false, false, $email, true)) !== false)
@@ -1710,15 +1899,15 @@ function validate_jabber($jid)
 		return false;
 	}
 
-	$seperator_pos = strpos($jid, '@');
+	$separator_pos = strpos($jid, '@');
 
-	if ($seperator_pos === false)
+	if ($separator_pos === false)
 	{
 		return 'WRONG_DATA';
 	}
 
-	$username = substr($jid, 0, $seperator_pos);
-	$realm = substr($jid, $seperator_pos + 1);
+	$username = substr($jid, 0, $separator_pos);
+	$realm = substr($jid, $separator_pos + 1);
 
 	if (strlen($username) == 0 || strlen($realm) < 3)
 	{
@@ -1949,12 +2138,12 @@ function phpbb_style_is_active($style_id)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $phpbb_root_path, $config, $db, $user;
+	global $phpbb_root_path, $config;
 
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
 	{
-		if (strpos($row['user_avatar'], 'g') === 0 || (((int)$row['user_avatar'] !== 0) && ((int)$row['user_avatar'] !== (int)$row['user_id'])))
+		if (strpos($row['user_avatar'], 'g') === 0 || (((int) $row['user_avatar'] !== 0) && ((int) $row['user_avatar'] !== (int) $row['user_id'])))
 		{
 			return false;
 		}
@@ -1965,6 +2154,7 @@ function avatar_delete($mode, $row, $clean_db = false)
 		avatar_remove_db($row[$mode . '_avatar']);
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
+
 	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
 		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
@@ -1975,139 +2165,11 @@ function avatar_delete($mode, $row, $clean_db = false)
 }
 
 /**
-* Remote avatar linkage
-*/
-function avatar_remote($data, &$error)
-{
-	global $config, $db, $user, $phpbb_root_path, $phpEx;
-
-	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
-	{
-		$data['remotelink'] = 'http://' . $data['remotelink'];
-	}
-	if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
-	{
-		$error[] = $user->lang['AVATAR_URL_INVALID'];
-		return false;
-	}
-
-	// Make sure getimagesize works...
-	if (($image_data = @getimagesize($data['remotelink'])) === false && (empty($data['width']) || empty($data['height'])))
-	{
-		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-		return false;
-	}
-
-	if (!empty($image_data) && ($image_data[0] < 2 || $image_data[1] < 2))
-	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
-		return false;
-	}
-
-	$width = ($data['width'] && $data['height']) ? $data['width'] : $image_data[0];
-	$height = ($data['width'] && $data['height']) ? $data['height'] : $image_data[1];
-
-	if ($width < 2 || $height < 2)
-	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
-		return false;
-	}
-
-	// Check image type
-	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$types = fileupload::image_types();
-	$extension = strtolower(filespec::get_extension($data['remotelink']));
-
-	if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
-	{
-		if (!isset($types[$image_data[2]]))
-		{
-			$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-		}
-		else
-		{
-			$error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$image_data[2]][0], $extension);
-		}
-		return false;
-	}
-
-	if ($config['avatar_max_width'] || $config['avatar_max_height'])
-	{
-		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
-		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
-			return false;
-		}
-	}
-
-	if ($config['avatar_min_width'] || $config['avatar_min_height'])
-	{
-		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
-		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
-			return false;
-		}
-	}
-
-	return array(AVATAR_REMOTE, $data['remotelink'], $width, $height);
-}
-
-/**
-* Avatar upload using the upload class
-*/
-function avatar_upload($data, &$error)
-{
-	global $phpbb_root_path, $config, $db, $user, $phpEx;
-
-	// Init upload class
-	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], (isset($config['mime_triggers']) ? explode('|', $config['mime_triggers']) : false));
-
-	if (!empty($_FILES['uploadfile']['name']))
-	{
-		$file = $upload->form_upload('uploadfile');
-	}
-	else
-	{
-		$file = $upload->remote_upload($data['uploadurl']);
-	}
-
-	$prefix = $config['avatar_salt'] . '_';
-	$file->clean_filename('avatar', $prefix, $data['user_id']);
-
-	$destination = $config['avatar_path'];
-
-	// Adjust destination path (no trailing slash)
-	if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
-	{
-		$destination = substr($destination, 0, -1);
-	}
-
-	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-	if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
-	{
-		$destination = '';
-	}
-
-	// Move file and overwrite any existing image
-	$file->move_file($destination, true);
-
-	if (sizeof($file->error))
-	{
-		$file->remove();
-		$error = array_merge($error, $file->error);
-	}
-
-	return array(AVATAR_UPLOAD, $data['user_id'] . '_' . time() . '.' . $file->get('extension'), $file->get('width'), $file->get('height'));
-}
-
-/**
 * Generates avatar filename from the database entry
 */
 function get_avatar_filename($avatar_entry)
 {
 	global $config;
-
 
 	if ($avatar_entry[0] === 'g')
 	{
@@ -2124,320 +2186,18 @@ function get_avatar_filename($avatar_entry)
 }
 
 /**
-* Avatar Gallery
+* Returns an explanation string with maximum avatar settings
+*
+* @return string
 */
-function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
+function phpbb_avatar_explanation_string()
 {
-	global $user, $cache, $template;
-	global $config, $phpbb_root_path;
+	global $config, $user;
 
-	$avatar_list = array();
-
-	$path = $phpbb_root_path . $config['avatar_gallery_path'];
-
-	if (!file_exists($path) || !is_dir($path))
-	{
-		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
-	}
-	else
-	{
-		// Collect images
-		$dp = @opendir($path);
-
-		if (!$dp)
-		{
-			return array($user->lang['NO_AVATAR_CATEGORY'] => array());
-		}
-
-		while (($file = readdir($dp)) !== false)
-		{
-			if ($file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $file) && is_dir("$path/$file"))
-			{
-				$avatar_row_count = $avatar_col_count = 0;
-
-				if ($dp2 = @opendir("$path/$file"))
-				{
-					while (($sub_file = readdir($dp2)) !== false)
-					{
-						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
-						{
-							$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
-								'file'		=> rawurlencode($file) . '/' . rawurlencode($sub_file),
-								'filename'	=> rawurlencode($sub_file),
-								'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
-							);
-							$avatar_col_count++;
-							if ($avatar_col_count == $items_per_column)
-							{
-								$avatar_row_count++;
-								$avatar_col_count = 0;
-							}
-						}
-					}
-					closedir($dp2);
-				}
-			}
-		}
-		closedir($dp);
-	}
-
-	if (!sizeof($avatar_list))
-	{
-		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
-	}
-
-	@ksort($avatar_list);
-
-	$category = (!$category) ? key($avatar_list) : $category;
-	$avatar_categories = array_keys($avatar_list);
-
-	$s_category_options = '';
-	foreach ($avatar_categories as $cat)
-	{
-		$s_category_options .= '<option value="' . $cat . '"' . (($cat == $category) ? ' selected="selected"' : '') . '>' . $cat . '</option>';
-	}
-
-	$template->assign_vars(array(
-		'S_AVATARS_ENABLED'		=> true,
-		'S_IN_AVATAR_GALLERY'	=> true,
-		'S_CAT_OPTIONS'			=> $s_category_options)
-	);
-
-	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
-
-	foreach ($avatar_list as $avatar_row_ary)
-	{
-		$template->assign_block_vars($block_var, array());
-
-		foreach ($avatar_row_ary as $avatar_col_ary)
-		{
-			$template->assign_block_vars($block_var . '.avatar_column', array(
-				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
-				'AVATAR_NAME'	=> $avatar_col_ary['name'],
-				'AVATAR_FILE'	=> $avatar_col_ary['filename'])
-			);
-
-			$template->assign_block_vars($block_var . '.avatar_option_column', array(
-				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
-				'S_OPTIONS_AVATAR'	=> $avatar_col_ary['filename'])
-			);
-		}
-	}
-
-	return $avatar_list;
-}
-
-
-/**
-* Tries to (re-)establish avatar dimensions
-*/
-function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $current_y = 0)
-{
-	global $config, $phpbb_root_path, $user;
-
-	switch ($avatar_type)
-	{
-		case AVATAR_REMOTE :
-			break;
-
-		case AVATAR_UPLOAD :
-			$avatar = $phpbb_root_path . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
-			break;
-
-		case AVATAR_GALLERY :
-			$avatar = $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar ;
-			break;
-	}
-
-	// Make sure getimagesize works...
-	if (($image_data = @getimagesize($avatar)) === false)
-	{
-		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
-		return false;
-	}
-
-	if ($image_data[0] < 2 || $image_data[1] < 2)
-	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
-		return false;
-	}
-
-	// try to maintain ratio
-	if (!(empty($current_x) && empty($current_y)))
-	{
-		if ($current_x != 0)
-		{
-			$image_data[1] = (int) floor(($current_x / $image_data[0]) * $image_data[1]);
-			$image_data[1] = min($config['avatar_max_height'], $image_data[1]);
-			$image_data[1] = max($config['avatar_min_height'], $image_data[1]);
-		}
-		if ($current_y != 0)
-		{
-			$image_data[0] = (int) floor(($current_y / $image_data[1]) * $image_data[0]);
-			$image_data[0] = min($config['avatar_max_width'], $image_data[1]);
-			$image_data[0] = max($config['avatar_min_width'], $image_data[1]);
-		}
-	}
-	return array($image_data[0], $image_data[1]);
-}
-
-/**
-* Uploading/Changing user avatar
-*/
-function avatar_process_user(&$error, $custom_userdata = false, $can_upload = null)
-{
-	global $config, $phpbb_root_path, $auth, $user, $db;
-
-	$data = array(
-		'uploadurl'		=> request_var('uploadurl', ''),
-		'remotelink'	=> request_var('remotelink', ''),
-		'width'			=> request_var('width', 0),
-		'height'		=> request_var('height', 0),
-	);
-
-	$error = validate_data($data, array(
-		'uploadurl'		=> array('string', true, 5, 255),
-		'remotelink'	=> array('string', true, 5, 255),
-		'width'			=> array('string', true, 1, 3),
-		'height'		=> array('string', true, 1, 3),
-	));
-
-	if (sizeof($error))
-	{
-		return false;
-	}
-
-	$sql_ary = array();
-
-	if ($custom_userdata === false)
-	{
-		$userdata = &$user->data;
-	}
-	else
-	{
-		$userdata = &$custom_userdata;
-	}
-
-	$data['user_id'] = $userdata['user_id'];
-	$change_avatar = ($custom_userdata === false) ? $auth->acl_get('u_chgavatar') : true;
-	$avatar_select = basename(request_var('avatar_select', ''));
-
-	// Can we upload?
-	if (is_null($can_upload))
-	{
-		$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && phpbb_is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
-	}
-
-	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
-	{
-		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_upload($data, $error);
-	}
-	else if ($data['remotelink'] && $change_avatar && $config['allow_avatar_remote'])
-	{
-		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_remote($data, $error);
-	}
-	else if ($avatar_select && $change_avatar && $config['allow_avatar_local'])
-	{
-		$category = basename(request_var('category', ''));
-
-		$sql_ary['user_avatar_type'] = AVATAR_GALLERY;
-		$sql_ary['user_avatar'] = $avatar_select;
-
-		// check avatar gallery
-		if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
-		{
-			$sql_ary['user_avatar'] = '';
-			$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
-		}
-		else
-		{
-			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . urldecode($sql_ary['user_avatar']));
-			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
-		}
-	}
-	else if (isset($_POST['delete']) && $change_avatar)
-	{
-		$sql_ary['user_avatar'] = '';
-		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
-	}
-	else if (!empty($userdata['user_avatar']))
-	{
-		// Only update the dimensions
-
-		if (empty($data['width']) || empty($data['height']))
-		{
-			if ($dims = avatar_get_dimensions($userdata['user_avatar'], $userdata['user_avatar_type'], $error, $data['width'], $data['height']))
-			{
-				list($guessed_x, $guessed_y) = $dims;
-				if (empty($data['width']))
-				{
-					$data['width'] = $guessed_x;
-				}
-				if (empty($data['height']))
-				{
-					$data['height'] = $guessed_y;
-				}
-			}
-		}
-		if (($config['avatar_max_width'] || $config['avatar_max_height']) &&
-			(($data['width'] != $userdata['user_avatar_width']) || $data['height'] != $userdata['user_avatar_height']))
-		{
-			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
-			{
-				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
-			}
-		}
-
-		if (!sizeof($error))
-		{
-			if ($config['avatar_min_width'] || $config['avatar_min_height'])
-			{
-				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
-				{
-					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
-				}
-			}
-		}
-
-		if (!sizeof($error))
-		{
-			$sql_ary['user_avatar_width'] = $data['width'];
-			$sql_ary['user_avatar_height'] = $data['height'];
-		}
-	}
-
-	if (!sizeof($error))
-	{
-		// Do we actually have any data to update?
-		if (sizeof($sql_ary))
-		{
-			$ext_new = $ext_old = '';
-			if (isset($sql_ary['user_avatar']))
-			{
-				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
-				$ext_new = (empty($sql_ary['user_avatar'])) ? '' : substr(strrchr($sql_ary['user_avatar'], '.'), 1);
-				$ext_old = (empty($userdata['user_avatar'])) ? '' : substr(strrchr($userdata['user_avatar'], '.'), 1);
-
-				if ($userdata['user_avatar_type'] == AVATAR_UPLOAD)
-				{
-					// Delete old avatar if present
-					if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']))
-					   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $ext_new !== $ext_old))
-					{
-						avatar_delete('user', $userdata);
-					}
-				}
-			}
-
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
-			$db->sql_query($sql);
-
-		}
-	}
-
-	return (sizeof($error)) ? false : true;
+	return $user->lang('AVATAR_EXPLAIN',
+		$user->lang('PIXELS', (int) $config['avatar_max_width']),
+		$user->lang('PIXELS', (int) $config['avatar_max_height']),
+		round($config['avatar_filesize'] / 1024));
 }
 
 //
@@ -2450,7 +2210,10 @@ function avatar_process_user(&$error, $custom_userdata = false, $can_upload = nu
 */
 function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
-	global $phpbb_root_path, $config, $db, $user, $file_upload;
+	global $db, $user, $phpbb_container, $phpbb_log;
+
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
 
 	$error = array();
 
@@ -2474,8 +2237,67 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$error[] = $user->lang['GROUP_ERR_TYPE'];
 	}
 
+	$group_teampage = !empty($group_attributes['group_teampage']);
+	unset($group_attributes['group_teampage']);
+
 	if (!sizeof($error))
 	{
+		$current_legend = \phpbb\groupposition\legend::GROUP_DISABLED;
+		$current_teampage = \phpbb\groupposition\teampage::GROUP_DISABLED;
+
+		/* @var $legend \phpbb\groupposition\legend */
+		$legend = $phpbb_container->get('groupposition.legend');
+
+		/* @var $teampage \phpbb\groupposition\teampage */
+		$teampage = $phpbb_container->get('groupposition.teampage');
+
+		if ($group_id)
+		{
+			try
+			{
+				$current_legend = $legend->get_group_value($group_id);
+				$current_teampage = $teampage->get_group_value($group_id);
+			}
+			catch (\phpbb\groupposition\exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()));
+			}
+		}
+
+		if (!empty($group_attributes['group_legend']))
+		{
+			if (($group_id && ($current_legend == \phpbb\groupposition\legend::GROUP_DISABLED)) || !$group_id)
+			{
+				// Old group currently not in the legend or new group, add at the end.
+				$group_attributes['group_legend'] = 1 + $legend->get_group_count();
+			}
+			else
+			{
+				// Group stayes in the legend
+				$group_attributes['group_legend'] = $current_legend;
+			}
+		}
+		else if ($group_id && ($current_legend != \phpbb\groupposition\legend::GROUP_DISABLED))
+		{
+			// Group is removed from the legend
+			try
+			{
+				$legend->delete_group($group_id, true);
+			}
+			catch (\phpbb\groupposition\exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()));
+			}
+			$group_attributes['group_legend'] = \phpbb\groupposition\legend::GROUP_DISABLED;
+		}
+		else
+		{
+			$group_attributes['group_legend'] = \phpbb\groupposition\legend::GROUP_DISABLED;
+		}
+
+		// Unset the objects, we don't need them anymore.
+		unset($legend);
+
 		$user_ary = array();
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
@@ -2500,8 +2322,6 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		// Setting the log message before we set the group id (if group gets added)
 		$log = ($group_id) ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
 
-		$query = '';
-
 		if ($group_id)
 		{
 			$sql = 'SELECT user_id
@@ -2515,12 +2335,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			}
 			$db->sql_freeresult($result);
 
-			if (isset($sql_ary['group_avatar']) && !$sql_ary['group_avatar'])
+			if (isset($sql_ary['group_avatar']))
 			{
 				remove_default_avatar($group_id, $user_ary);
 			}
 
-			if (isset($sql_ary['group_rank']) && !$sql_ary['group_rank'])
+			if (isset($sql_ary['group_rank']))
 			{
 				remove_default_rank($group_id, $user_ary);
 			}
@@ -2568,15 +2388,54 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$db->sql_query($sql);
 		}
 
+		// Remove the group from the teampage, only if unselected and we are editing a group,
+		// which is currently displayed.
+		if (!$group_teampage && $group_id && $current_teampage != \phpbb\groupposition\teampage::GROUP_DISABLED)
+		{
+			try
+			{
+				$teampage->delete_group($group_id);
+			}
+			catch (\phpbb\groupposition\exception $exception)
+			{
+				trigger_error($user->lang($exception->getMessage()));
+			}
+		}
+
 		if (!$group_id)
 		{
 			$group_id = $db->sql_nextid();
 
-			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
+			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == 'avatar.driver.upload')
 			{
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
 			}
 		}
+
+		try
+		{
+			if ($group_teampage && $current_teampage == \phpbb\groupposition\teampage::GROUP_DISABLED)
+			{
+				$teampage->add_group($group_id);
+			}
+
+			if ($group_teampage)
+			{
+				if ($current_teampage == \phpbb\groupposition\teampage::GROUP_DISABLED)
+				{
+					$teampage->add_group($group_id);
+				}
+			}
+			else if ($group_id && ($current_teampage != \phpbb\groupposition\teampage::GROUP_DISABLED))
+			{
+				$teampage->delete_group($group_id);
+			}
+		}
+		catch (\phpbb\groupposition\exception $exception)
+		{
+			trigger_error($user->lang($exception->getMessage()));
+		}
+		unset($teampage);
 
 		// Set user attributes
 		$sql_ary = array();
@@ -2605,8 +2464,8 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			group_set_user_default($group_id, $user_ary, $sql_ary);
 		}
 
-		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
-		add_log('admin', $log, $name);
+		$name = $group_helper->get_name($name);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($name));
 
 		group_update_listings($group_id);
 	}
@@ -2622,7 +2481,7 @@ function group_correct_avatar($group_id, $old_entry)
 {
 	global $config, $db, $phpbb_root_path;
 
-	$group_id		= (int)$group_id;
+	$group_id		= (int) $group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
 	$old_filename 	= get_avatar_filename($old_entry);
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
@@ -2644,11 +2503,11 @@ function group_correct_avatar($group_id, $old_entry)
 */
 function avatar_remove_db($avatar_name)
 {
-	global $config, $db;
+	global $db;
 
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_avatar = '',
-		user_avatar_type = 0
+		user_avatar_type = ''
 		WHERE user_avatar = '" . $db->sql_escape($avatar_name) . '\'';
 	$db->sql_query($sql);
 }
@@ -2659,7 +2518,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db, $cache, $auth, $user, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $phpbb_container, $phpbb_log;
 
 	if (!$group_name)
 	{
@@ -2700,6 +2559,35 @@ function group_delete($group_id, $group_name = false)
 	}
 	while ($start);
 
+	// Delete group from legend and teampage
+	try
+	{
+		/* @var $legend \phpbb\groupposition\legend */
+		$legend = $phpbb_container->get('groupposition.legend');
+		$legend->delete_group($group_id);
+		unset($legend);
+	}
+	catch (\phpbb\groupposition\exception $exception)
+	{
+		// The group we want to delete does not exist.
+		// No reason to worry, we just continue the deleting process.
+		//trigger_error($user->lang($exception->getMessage()));
+	}
+
+	try
+	{
+		/* @var $teampage \phpbb\groupposition\teampage */
+		$teampage = $phpbb_container->get('groupposition.teampage');
+		$teampage->delete_group($group_id);
+		unset($teampage);
+	}
+	catch (\phpbb\groupposition\exception $exception)
+	{
+		// The group we want to delete does not exist.
+		// No reason to worry, we just continue the deleting process.
+		//trigger_error($user->lang($exception->getMessage()));
+	}
+
 	// Delete group
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
 		WHERE group_id = $group_id";
@@ -2710,15 +2598,26 @@ function group_delete($group_id, $group_name = false)
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
 
+	/**
+	* Event after a group is deleted
+	*
+	* @event core.delete_group_after
+	* @var	int		group_id	ID of the deleted group
+	* @var	string	group_name	Name of the deleted group
+	* @since 3.1.0-a1
+	*/
+	$vars = array('group_id', 'group_name');
+	extract($phpbb_dispatcher->trigger_event('core.delete_group_after', compact($vars)));
+
 	// Re-cache moderators
-	if (!function_exists('cache_moderators'))
+	if (!function_exists('phpbb_cache_moderators'))
 	{
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 	}
 
-	cache_moderators();
+	phpbb_cache_moderators($db, $cache, $auth);
 
-	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_GROUP_DELETE', false, array($group_name));
 
 	// Return false - no error
 	return false;
@@ -2731,7 +2630,7 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $db, $auth;
+	global $db, $auth, $user, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2808,6 +2707,26 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
 
+	/**
+	* Event after users are added to a group
+	*
+	* @event core.group_add_user_after
+	* @var	int	group_id		ID of the group to which users are added
+	* @var	string group_name		Name of the group
+	* @var	array	user_id_ary		IDs of the users which are added
+	* @var	array	username_ary	names of the users which are added
+	* @var	int		pending			Pending setting, 1 if user(s) added are pending
+	* @since 3.1.7-RC1
+	*/
+	$vars = array(
+		'group_id',
+		'group_name',
+		'user_id_ary',
+		'username_ary',
+		'pending',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.group_add_user_after', compact($vars)));
+
 	if (!$group_name)
 	{
 		$group_name = get_group_name($group_id);
@@ -2815,9 +2734,24 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$log = ($leader) ? 'LOG_MODS_ADDED' : (($pending) ? 'LOG_USERS_PENDING' : 'LOG_USERS_ADDED');
 
-	add_log('admin', $log, $group_name, implode(', ', $username_ary));
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
 
 	group_update_listings($group_id);
+
+	if ($pending)
+	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		foreach ($add_id_ary as $user_id)
+		{
+			$phpbb_notifications->add_notifications('notification.type.group_request', array(
+				'group_id'		=> $group_id,
+				'user_id'		=> $user_id,
+				'group_name'	=> $group_name,
+			));
+		}
+	}
 
 	// Return false - no error
 	return false;
@@ -2830,9 +2764,9 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 *
 * @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
-function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
+function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $log_action = true)
 {
-	global $db, $auth, $config;
+	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_log;
 
 	if ($config['coppa_enable'])
 	{
@@ -2931,6 +2865,19 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	}
 	unset($special_group_data);
 
+	/**
+	* Event before users are removed from a group
+	*
+	* @event core.group_delete_user_before
+	* @var	int		group_id		ID of the group from which users are deleted
+	* @var	string	group_name		Name of the group
+	* @var	array	user_id_ary		IDs of the users which are removed
+	* @var	array	username_ary	names of the users which are removed
+	* @since 3.1.0-a1
+	*/
+	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
+	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_before', compact($vars)));
+
 	$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
 		WHERE group_id = $group_id
 			AND " . $db->sql_in_set('user_id', $user_id_ary);
@@ -2939,19 +2886,40 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
 
-	if (!$group_name)
-	{
-		$group_name = get_group_name($group_id);
-	}
+	/**
+	* Event after users are removed from a group
+	*
+	* @event core.group_delete_user_after
+	* @var	int		group_id		ID of the group from which users are deleted
+	* @var	string	group_name		Name of the group
+	* @var	array	user_id_ary		IDs of the users which are removed
+	* @var	array	username_ary	names of the users which are removed
+	* @since 3.1.7-RC1
+	*/
+	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
+	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_after', compact($vars)));
 
-	$log = 'LOG_GROUP_REMOVE';
-
-	if ($group_name)
+	if ($log_action)
 	{
-		add_log('admin', $log, $group_name, implode(', ', $username_ary));
+		if (!$group_name)
+		{
+			$group_name = get_group_name($group_id);
+		}
+
+		$log = 'LOG_GROUP_REMOVE';
+
+		if ($group_name)
+		{
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
+		}
 	}
 
 	group_update_listings($group_id);
+
+	/* @var $phpbb_notifications \phpbb\notification\manager */
+	$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+	$phpbb_notifications->delete_notifications('notification.type.group_request', $user_id_ary, $group_id);
 
 	// Return false - no error
 	return false;
@@ -2978,7 +2946,7 @@ function remove_default_avatar($group_id, $user_ids)
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_id = ' . (int)$group_id;
+		WHERE group_id = ' . (int) $group_id;
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
@@ -2989,12 +2957,12 @@ function remove_default_avatar($group_id, $user_ids)
 
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_avatar = '',
-			user_avatar_type = 0,
+			user_avatar_type = '',
 			user_avatar_width = 0,
 			user_avatar_height = 0
 		WHERE group_id = " . (int) $group_id . "
-		AND user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
-		AND " . $db->sql_in_set('user_id', $user_ids);
+			AND user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
+			AND " . $db->sql_in_set('user_id', $user_ids);
 
 	$db->sql_query($sql);
 }
@@ -3019,7 +2987,7 @@ function remove_default_rank($group_id, $user_ids)
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE group_id = ' . (int)$group_id;
+		WHERE group_id = ' . (int) $group_id;
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
@@ -3030,10 +2998,10 @@ function remove_default_rank($group_id, $user_ids)
 
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_rank = 0
-		WHERE group_id = ' . (int)$group_id . '
-		AND user_rank <> 0
-		AND user_rank = ' . (int)$row['group_rank'] . '
-		AND ' . $db->sql_in_set('user_id', $user_ids);
+		WHERE group_id = ' . (int) $group_id . '
+			AND user_rank <> 0
+			AND user_rank = ' . (int) $row['group_rank'] . '
+			AND ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
 }
 
@@ -3042,7 +3010,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_root_path, $phpEx, $config;
+	global $db, $auth, $user, $phpbb_container, $phpbb_log;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -3062,7 +3030,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 		case 'demote':
 		case 'promote':
 
-			$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
+			$sql = 'SELECT user_id
+				FROM ' . USER_GROUP_TABLE . "
 				WHERE group_id = $group_id
 					AND user_pending = 1
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
@@ -3094,11 +3063,10 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND ' . $db->sql_in_set('ug.user_id', $user_id_ary);
 			$result = $db->sql_query($sql);
 
-			$user_id_ary = $email_users = array();
+			$user_id_ary = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$user_id_ary[] = $row['user_id'];
-				$email_users[] = $row;
 			}
 			$db->sql_freeresult($result);
 
@@ -3113,27 +3081,15 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 
-			// Send approved email to users...
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-			$messenger = new messenger();
+			/* @var $phpbb_notifications \phpbb\notification\manager */
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-			foreach ($email_users as $row)
-			{
-				$messenger->template('group_approved', $row['user_lang']);
-
-				$messenger->to($row['user_email'], $row['username']);
-				$messenger->im($row['user_jabber'], $row['username']);
-
-				$messenger->assign_vars(array(
-					'USERNAME'		=> htmlspecialchars_decode($row['username']),
-					'GROUP_NAME'	=> htmlspecialchars_decode($group_name),
-					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
-				);
-
-				$messenger->send($row['user_notify_type']);
-			}
-
-			$messenger->save_queue();
+			$phpbb_notifications->add_notifications('notification.type.group_request_approved', array(
+				'user_ids'		=> $user_id_ary,
+				'group_id'		=> $group_id,
+				'group_name'	=> $group_name,
+			));
+			$phpbb_notifications->delete_notifications('notification.type.group_request', $user_id_ary, $group_id);
 
 			$log = 'LOG_USERS_APPROVED';
 		break;
@@ -3160,7 +3116,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				return 'NO_USERS';
 			}
 
-			$sql = 'SELECT user_id, group_id FROM ' . USERS_TABLE . '
+			$sql = 'SELECT user_id, group_id
+				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $user_id_ary, false, true);
 			$result = $db->sql_query($sql);
 
@@ -3188,7 +3145,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
 
-	add_log('admin', $log, $group_name, implode(', ', $username_ary));
+	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
 
 	group_update_listings($group_id);
 
@@ -3200,7 +3157,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 */
 function group_validate_groupname($group_id, $group_name)
 {
-	global $config, $db;
+	global $db;
 
 	$group_name =  utf8_clean_string($group_name);
 
@@ -3248,7 +3205,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $cache, $db;
+	global $config, $phpbb_container, $db, $phpbb_dispatcher;
 
 	if (empty($user_id_ary))
 	{
@@ -3259,7 +3216,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		'group_colour'			=> 'string',
 		'group_rank'			=> 'int',
 		'group_avatar'			=> 'string',
-		'group_avatar_type'		=> 'int',
+		'group_avatar_type'		=> 'string',
 		'group_avatar_width'	=> 'int',
 		'group_avatar_height'	=> 'int',
 	);
@@ -3294,55 +3251,94 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		}
 	}
 
-	// Before we update the user attributes, we will make a list of those having now the group avatar assigned
+	$updated_sql_ary = $sql_ary;
+
+	// Before we update the user attributes, we will update the rank for users that don't have a custom rank
+	if (isset($sql_ary['user_rank']))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', array('user_rank' => $sql_ary['user_rank'])) . '
+			WHERE user_rank = 0
+				AND ' . $db->sql_in_set('user_id', $user_id_ary);
+		$db->sql_query($sql);
+		unset($sql_ary['user_rank']);
+	}
+
+	// Before we update the user attributes, we will update the avatar for users that don't have a custom avatar
+	$avatar_options = array('user_avatar', 'user_avatar_type', 'user_avatar_height', 'user_avatar_width');
+
 	if (isset($sql_ary['user_avatar']))
 	{
-		// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-		$sql = 'SELECT user_id, group_id, user_avatar
-			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
-				AND user_avatar_type = ' . AVATAR_UPLOAD;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
+		$avatar_sql_ary = array();
+		foreach ($avatar_options as $avatar_option)
 		{
-			avatar_delete('user', $row);
+			if (isset($sql_ary[$avatar_option]))
+			{
+				$avatar_sql_ary[$avatar_option] = $sql_ary[$avatar_option];
+			}
 		}
-		$db->sql_freeresult($result);
-	}
-	else
-	{
-		unset($sql_ary['user_avatar_type']);
-		unset($sql_ary['user_avatar_height']);
-		unset($sql_ary['user_avatar_width']);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $avatar_sql_ary) . "
+			WHERE user_avatar = ''
+				AND " . $db->sql_in_set('user_id', $user_id_ary);
+		$db->sql_query($sql);
 	}
 
-	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
-	$db->sql_query($sql);
+	// Remove the avatar options, as we already updated them
+	foreach ($avatar_options as $avatar_option)
+	{
+		unset($sql_ary[$avatar_option]);
+	}
+
+	if (!empty($sql_ary))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
+		$db->sql_query($sql);
+	}
 
 	if (isset($sql_ary['user_colour']))
 	{
 		// Update any cached colour information for these users
-		$sql = 'UPDATE ' . FORUMS_TABLE . " SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+			SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		$sql = 'UPDATE ' . TOPICS_TABLE . "
+			SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
 		$db->sql_query($sql);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		$sql = 'UPDATE ' . TOPICS_TABLE . "
+			SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
-		global $config;
-
 		if (in_array($config['newest_user_id'], $user_id_ary))
 		{
-			set_config('newest_user_colour', $sql_ary['user_colour'], true);
+			$config->set('newest_user_colour', $sql_ary['user_colour'], false);
 		}
 	}
+
+	// Make all values available for the event
+	$sql_ary = $updated_sql_ary;
+
+	/**
+	* Event when the default group is set for an array of users
+	*
+	* @event core.user_set_default_group
+	* @var	int		group_id			ID of the group
+	* @var	array	user_id_ary			IDs of the users
+	* @var	array	group_attributes	Group attributes which were changed
+	* @var	array	update_listing		Update the list of moderators and foes
+	* @var	array	sql_ary				User attributes which were changed
+	* @since 3.1.0-a1
+	*/
+	$vars = array('group_id', 'user_id_ary', 'group_attributes', 'update_listing', 'sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.user_set_default_group', compact($vars)));
 
 	if ($update_listing)
 	{
@@ -3350,7 +3346,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	}
 
 	// Because some tables/caches use usercolour-specific data we need to purge this here.
-	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	$phpbb_container->get('cache.driver')->destroy('sql', MODERATOR_CACHE_TABLE);
 }
 
 /**
@@ -3358,7 +3354,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 */
 function get_group_name($group_id)
 {
-	global $db, $user;
+	global $db, $phpbb_container;
 
 	$sql = 'SELECT group_name, group_type
 		FROM ' . GROUPS_TABLE . '
@@ -3367,12 +3363,15 @@ function get_group_name($group_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || ($row['group_type'] == GROUP_SPECIAL && empty($user->lang)))
+	if (!$row)
 	{
 		return '';
 	}
 
-	return ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+	/** @var \phpbb\group\helper $group_helper */
+	$group_helper = $phpbb_container->get('group_helper');
+
+	return $group_helper->get_name($row['group_name']);
 }
 
 /**
@@ -3449,7 +3448,7 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 */
 function group_update_listings($group_id)
 {
-	global $auth;
+	global $db, $cache, $auth;
 
 	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
 
@@ -3491,22 +3490,22 @@ function group_update_listings($group_id)
 
 	if ($mod_permissions)
 	{
-		if (!function_exists('cache_moderators'))
+		if (!function_exists('phpbb_cache_moderators'))
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		cache_moderators();
+		phpbb_cache_moderators($db, $cache, $auth);
 	}
 
 	if ($mod_permissions || $admin_permissions)
 	{
-		if (!function_exists('update_foes'))
+		if (!function_exists('phpbb_update_foes'))
 		{
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		update_foes(array($group_id));
+		phpbb_update_foes($db, $auth, array($group_id));
 	}
 }
 
@@ -3559,8 +3558,8 @@ function remove_newly_registered($user_id, $user_data = false)
 	}
 
 	// We need to call group_user_del here, because this function makes sure everything is correctly changed.
-	// A downside for a call within the session handler is that the language is not set up yet - so no log entry
-	group_user_del($group_id, $user_id);
+	// Force function to not log the removal of users from newly registered users group
+	group_user_del($group_id, $user_id, false, false, false);
 
 	// Set user_new to 0 to let this not be triggered again
 	$sql = 'UPDATE ' . USERS_TABLE . '
@@ -3588,9 +3587,12 @@ function remove_newly_registered($user_id, $user_data = false)
 *
 * @param array $user_ids Array of users' ids to check for banning,
 *						leave empty to get complete list of banned ids
+* @param bool|int $ban_end Bool True to get users currently banned
+* 						Bool False to only get permanently banned users
+* 						Int Unix timestamp to get users banned until that time
 * @return array	Array of banned users' ids if any, empty array otherwise
 */
-function phpbb_get_banned_user_ids($user_ids = array())
+function phpbb_get_banned_user_ids($user_ids = array(), $ban_end = true)
 {
 	global $db;
 
@@ -3602,9 +3604,26 @@ function phpbb_get_banned_user_ids($user_ids = array())
 	$sql = 'SELECT ban_userid
 		FROM ' . BANLIST_TABLE . "
 		WHERE $sql_user_ids
-			AND ban_exclude <> 1
-			AND (ban_end > " . time() . '
+			AND ban_exclude <> 1";
+
+	if ($ban_end === true)
+	{
+		// Banned currently
+		$sql .= " AND (ban_end > " . time() . '
 				OR ban_end = 0)';
+	}
+	else if ($ban_end === false)
+	{
+		// Permanently banned
+		$sql .= " AND ban_end = 0";
+	}
+	else
+	{
+		// Banned until a specified time
+		$sql .= " AND (ban_end > " . (int) $ban_end . '
+				OR ban_end = 0)';
+	}
+
 	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -3616,4 +3635,22 @@ function phpbb_get_banned_user_ids($user_ids = array())
 	return $banned_ids_list;
 }
 
-?>
+/**
+* Function for assigning a template var if the zebra module got included
+*/
+function phpbb_module_zebra($mode, &$module_row)
+{
+	global $template;
+
+	$template->assign_var('S_ZEBRA_ENABLED', true);
+
+	if ($mode == 'friends')
+	{
+		$template->assign_var('S_ZEBRA_FRIENDS_ENABLED', true);
+	}
+
+	if ($mode == 'foes')
+	{
+		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
+	}
+}

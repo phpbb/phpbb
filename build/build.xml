@@ -2,9 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.0.12" />
-	<property name="prevversion" value="3.0.11" />
-	<property name="olderversions" value="3.0.2, 3.0.3, 3.0.4, 3.0.5, 3.0.6, 3.0.7, 3.0.7-PL1, 3.0.8, 3.0.9, 3.0.10, 3.0.12-RC1, 3.0.12-RC2, 3.0.12-RC3" />
+	<property name="newversion" value="3.2.0-b3-dev" />
+	<property name="prevversion" value="3.2.0-b2" />
+	<property name="olderversions" value="3.0.14, 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.7-pl1, 3.1.8, 3.2.0-a1, 3.2.0-a2, 3.2.0-b1" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
@@ -67,22 +67,66 @@
 		<exec dir="."
 			command="phpBB/vendor/bin/phpunit
 			--log-junit build/logs/phpunit.xml
-			--configuration phpunit.xml.all
 			--group slow
 			--coverage-clover build/logs/clover-slow.xml
 			--coverage-html build/coverage-slow"
 			passthru="true" />
 	</target>
 
+	<target name="sniff">
+		<exec command="phpBB/vendor/bin/phpcs
+				-s -p
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-strict-core.xml
+				--ignore=${project.basedir}/phpBB/phpbb/db/migration/data/v30x/*
+				phpBB/phpbb"
+			dir="." returnProperty="retval-php-strict" passthru="true" />
+		<exec command="phpBB/vendor/bin/phpcs
+				-s -p
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-legacy-core.xml
+				--ignore=${project.basedir}/phpBB/cache/*
+				--ignore=${project.basedir}/phpBB/develop/*
+				--ignore=${project.basedir}/phpBB/ext/*
+				--ignore=${project.basedir}/phpBB/includes/diff/*.php
+				--ignore=${project.basedir}/phpBB/includes/sphinxapi.php
+				--ignore=${project.basedir}/phpBB/includes/utf/data/*
+				--ignore=${project.basedir}/phpBB/install/data/*
+				--ignore=${project.basedir}/phpBB/install/database_update.php
+				--ignore=${project.basedir}/phpBB/phpbb/*
+				--ignore=${project.basedir}/phpBB/vendor/*
+				phpBB"
+			dir="." returnProperty="retval-php-legacy" passthru="true" />
+		<exec command="phpBB/vendor/bin/phpcs
+				-s -p
+				--extensions=php
+				--standard=build/code_sniffer/ruleset-php-extensions.xml
+				--ignore=${project.basedir}/phpBB/ext/*/tests/*
+				--ignore=${project.basedir}/phpBB/ext/*/vendor/*
+				phpBB/ext"
+			dir="." returnProperty="retval-php-ext" passthru="true" />
+		<if>
+			<or>
+				<not><equals arg1="${retval-php-strict}" arg2="0" /></not>
+				<not><equals arg1="${retval-php-legacy}" arg2="0" /></not>
+				<not><equals arg1="${retval-php-ext}" arg2="0" /></not>
+			</or>
+			<then>
+				<fail message="PHP Code Sniffer failed." />
+			</then>
+		</if>
+	</target>
+
+	<!-- Builds docs for current branch into build/api/output/master -->
 	<target name="docs">
-		<!-- only works if you setup phpdoctor:
-                     git clone https://github.com/peej/phpdoctor.git
-                     and then create an executable phpdoctor in your path containing
-                     #!/bin/sh
-                     php -f /path/to/phpdoctor/phpdoc.php $@
-                -->
-		<exec dir="build"
-			command="phpdoctor phpdoc-phpbb.ini"
+		<exec dir="."
+			command="phpBB/vendor/bin/sami.php update build/sami-checkout.conf.php"
+			passthru="true" />
+	</target>
+	<!-- Builds docs for multiple branches/tags into build/api/output/$branch -->
+	<target name="docs-all">
+		<exec dir="."
+			command="phpBB/vendor/bin/sami.php update build/sami-all.conf.php"
 			passthru="true" />
 	</target>
 
@@ -105,8 +149,9 @@
 			<property name="dir" value="build/old_versions/release-${version}" />
 		</phingcall>
 
-		<exec dir="build/old_versions" command="diff -crNEBwd release-${version} release-${newversion} >
+		<exec dir="build/old_versions" command="LC_ALL=C diff -crNEBZbd release-${version} release-${newversion} >
 			../new_version/patches/phpBB-${version}_to_${newversion}.patch" escape="false" />
+		<exec dir="build/old_versions" command="LC_ALL=C diff -qr release-${version} release-${newversion} | grep 'Only in release-${version}' > ../new_version/patches/phpBB-${version}_to_${newversion}.deleted" escape="false" />
 	</target>
 
 	<target name="prepare-new-version">
@@ -131,24 +176,49 @@
 
 	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
-		<exec dir="build" command="php -f build_diff.php '${prevversion}' '${newversion}' > logs/build_diff.log" escape="false" />
-
 		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/language new_version/phpBB3/language >
-				save/save_${prevversion}_to_${newversion}/language/phpbb-${prevversion}_to_${newversion}_language.patch" />
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/language new_version/phpBB3/language >
+				save/phpbb-${prevversion}_to_${newversion}_language.patch" />
 		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
-				save/save_${prevversion}_to_${newversion}/prosilver/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
-		<exec dir="build" escape="false"
-			command="diff -crNEBwd old_versions/release-${prevversion}/styles/subsilver2 new_version/phpBB3/styles/subsilver2 >
-				save/save_${prevversion}_to_${newversion}/subsilver2/phpbb-${prevversion}_to_${newversion}_subsilver2.patch" />
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
+				save/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
 
 		<exec dir="build" escape="false"
 			command="git shortlog --summary --numbered release-${prevversion}...HEAD >
-				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_shortlog.txt" />
+				save/phpbb-${prevversion}_to_${newversion}_git_shortlog.txt" />
 		<exec dir="build" escape="false"
 			command="git diff --stat release-${prevversion}...HEAD >
-				save/save_${prevversion}_to_${newversion}/phpbb-${prevversion}_to_${newversion}_git_diffstat.txt" />
+				save/phpbb-${prevversion}_to_${newversion}_git_diffstat.txt" />
+
+		<phingcall target="checksum-dir">
+			<property name="dir" value="build/new_version/release_files" />
+		</phingcall>
+	</target>
+
+	<target name="checksum-dir">
+		<foreach param="filename" absparam="absfilename" target="checksum-file">
+			<fileset dir="${dir}">
+				<type type="file" />
+			</fileset>
+		</foreach>
+	</target>
+
+	<target name="checksum-file">
+		<echo msg="Creating checksum file for ${absfilename}" />
+		<php function="dirname" returnProperty="dir"><param value="${absfilename}"/></php>
+		<exec dir="${dir}" command="sha256sum ${filename} > ${filename}.sha256" />
+	</target>
+
+	<target name="announcement" depends="prepare">
+		<echo msg="Writing download links and checksums for email announcement to save/announcement_email_${newversion}.txt" />
+		<exec dir="build" escape="false"
+			command="php -f build_announcement.php email '${newversion}' 'new_version/release_files' sha256 >
+				save/announcement_email_${newversion}.txt"  />
+
+		<echo msg="Writing download links and checksums for bbcode announcement to save/announcement_bbcode_${newversion}.txt" />
+		<exec dir="build" escape="false"
+			command="php -f build_announcement.php bbcode '${newversion}' 'new_version/release_files' sha256 >
+				save/announcement_bbcode_${newversion}.txt"  />
 	</target>
 
 	<target name="changelog" depends="prepare">
@@ -170,8 +240,8 @@
 			checkreturn="true" />
 
 		<!-- Install composer dependencies, if there are any. -->
-		<exec dir="."
-			command='php -r "\$j = json_decode(file_get_contents("composer.json")); echo isset(\$j->require);"'
+		<exec dir="${dir}"
+			command='php -r "\$j = json_decode(file_get_contents(\"composer.json\")); echo isset(\$j->require);"'
 			checkreturn="true"
 			outputProperty='composer-has-dependencies' />
 		<if>
@@ -193,7 +263,7 @@
 							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
 							checkreturn="true" />
 						<exec dir="${dir}"
-							command="php composer.phar install"
+							command="php composer.phar install --no-dev --optimize-autoloader"
 							checkreturn="true"
 							passthru="true" />
 						<delete file="${dir}/composer.phar" />
@@ -207,9 +277,18 @@
 			</else>
 		</if>
 
+		<!-- Create schema.json -->
+		<exec dir="${dir}" command="php develop/create_schema_files.php" />
+
 		<delete file="${dir}/config.php" />
 		<delete dir="${dir}/develop" />
 		<delete dir="${dir}/install/data" />
+		<delete dir="${dir}/config/development" />
+		<delete dir="${dir}/config/test" />
+
+		<phingcall target="clean-vendor-dir">
+			<property name="dir" value="${dir}" />
+		</phingcall>
 
 		<echo msg="Setting permissions for checkout of ${revision} in ${dir}" />
 		<!-- set permissions of all files to 644, directories to 755 -->
@@ -220,6 +299,180 @@
 		<chmod mode="0777" file="${dir}/store" />
 		<chmod mode="0777" file="${dir}/files" />
 		<chmod mode="0777" file="${dir}/images/avatars/upload" />
+	</target>
+
+	<target name="clean-vendor-dir">
+		<!-- Delete unrelated files from vendor/, see PHPBB3-12390 -->
+		<delete dir="${dir}/vendor/bantu/ini-get-wrapper/tests" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/.gitignore" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/.scrutinizer.yml" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/.travis.yml" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/bantu/ini-get-wrapper/README.md" />
+
+		<delete dir="${dir}/vendor/google/recaptcha/examples" />
+		<delete dir="${dir}/vendor/google/recaptcha/tests" />
+		<delete file="${dir}/vendor/google/recaptcha/.gitignore" />
+		<delete file="${dir}/vendor/google/recaptcha/.travis.yml" />
+		<delete file="${dir}/vendor/google/recaptcha/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/google/recaptcha/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/google/recaptcha/README.md" />
+
+		<delete dir="${dir}/vendor/guzzlehttp/guzzle/build" />
+		<delete dir="${dir}/vendor/guzzlehttp/guzzle/docs" />
+		<delete dir="${dir}/vendor/guzzlehttp/guzzle/tests" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/CHANGELOG.md" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/.editorconfig" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/.gitignore" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/Makefile" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/README.md" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/.travis.yml" />
+		<delete file="${dir}/vendor/guzzlehttp/guzzle/UPGRADING.md" />
+
+		<delete dir="${dir}/vendor/guzzlehttp/ringphp/docs" />
+		<delete dir="${dir}/vendor/guzzlehttp/ringphp/tests" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/CHANGELOG.md" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/.gitignore" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/Makefile" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/README.rst" />
+		<delete file="${dir}/vendor/guzzlehttp/ringphp/.travis.yml" />
+
+		<delete dir="${dir}/vendor/guzzlehttp/streams/tests" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/CHANGELOG.rst" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/.gitignore" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/Makefile" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/README.rst" />
+		<delete file="${dir}/vendor/guzzlehttp/streams/.travis.yml" />
+
+		<delete dir="${dir}/vendor/lusitanian/oauth/examples" />
+		<delete dir="${dir}/vendor/lusitanian/oauth/tests" />
+		<delete file="${dir}/vendor/lusitanian/oauth/.gitignore" />
+		<delete file="${dir}/vendor/lusitanian/oauth/.scrutinizer.yml" />
+		<delete file="${dir}/vendor/lusitanian/oauth/.travis.yml" />
+		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
+
+		<delete dir="${dir}/vendor/paragonie/random_compat/dist" />
+		<delete dir="${dir}/vendor/paragonie/random_compat/other" />
+		<delete file="${dir}/vendor/paragonie/random_compat/CHANGELOG.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/ERRATA.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/README.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/SECURITY.md" />
+
+		<delete file="${dir}/vendor/patchwork/utf8/.travis.yml" />
+		<delete file="${dir}/vendor/patchwork/utf8/CHANGELOG.md" />
+		<delete file="${dir}/vendor/patchwork/utf8/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/patchwork/utf8/README.md" />
+
+		<delete dir="${dir}/vendor/psr/log/Psr/Log/Test" />
+		<delete file="${dir}/vendor/psr/log/.gitignore" />
+		<delete file="${dir}/vendor/psr/log/README.md" />
+
+		<delete dir="${dir}/vendor/react/promise/tests" />
+		<delete file="${dir}/vendor/react/promise/CHANGELOG.md" />
+		<delete file="${dir}/vendor/react/promise/.gitignore" />
+		<delete file="${dir}/vendor/react/promise/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/react/promise/README.md" />
+		<delete file="${dir}/vendor/react/promise/.travis.yml" />
+
+		<delete dir="${dir}/vendor/s9e/text-formatter/.git" />
+
+		<delete dir="${dir}/vendor/symfony/config/.git" />
+		<delete dir="${dir}/vendor/symfony/config/Tests" />
+		<delete file="${dir}/vendor/symfony/config/.gitignore" />
+		<delete file="${dir}/vendor/symfony/config/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/config/README.md" />
+		<delete file="${dir}/vendor/symfony/config/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/console/.git" />
+		<delete dir="${dir}/vendor/symfony/console/Tests" />
+		<delete file="${dir}/vendor/symfony/console/.gitignore" />
+		<delete file="${dir}/vendor/symfony/console/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/console/README.md" />
+		<delete file="${dir}/vendor/symfony/console/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/debug/.git" />
+		<delete dir="${dir}/vendor/symfony/debug/Tests" />
+		<delete file="${dir}/vendor/symfony/debug/.gitignore" />
+		<delete file="${dir}/vendor/symfony/debug/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/debug/README.md" />
+		<delete file="${dir}/vendor/symfony/debug/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/dependency-injection/.git" />
+		<delete dir="${dir}/vendor/symfony/dependency-injection/Tests" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/.gitignore" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/README.md" />
+		<delete file="${dir}/vendor/symfony/dependency-injection/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/event-dispatcher/.git" />
+		<delete dir="${dir}/vendor/symfony/event-dispatcher/Tests" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/.gitignore" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/README.md" />
+		<delete file="${dir}/vendor/symfony/event-dispatcher/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/filesystem/.git" />
+		<delete dir="${dir}/vendor/symfony/filesystem/Tests" />
+		<delete file="${dir}/vendor/symfony/filesystem/.gitignore" />
+		<delete file="${dir}/vendor/symfony/filesystem/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/filesystem/README.md" />
+		<delete file="${dir}/vendor/symfony/filesystem/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/finder/.git" />
+		<delete dir="${dir}/vendor/symfony/finder/Tests" />
+		<delete file="${dir}/vendor/symfony/finder/.gitignore" />
+		<delete file="${dir}/vendor/symfony/finder/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/finder/README.md" />
+		<delete file="${dir}/vendor/symfony/finder/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/http-foundation/.git" />
+		<delete dir="${dir}/vendor/symfony/http-foundation/Tests" />
+		<delete file="${dir}/vendor/symfony/http-foundation/.gitignore" />
+		<delete file="${dir}/vendor/symfony/http-foundation/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/http-foundation/README.md" />
+		<delete file="${dir}/vendor/symfony/http-foundation/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/http-kernel/.git" />
+		<delete dir="${dir}/vendor/symfony/http-kernel/Tests" />
+		<delete file="${dir}/vendor/symfony/http-kernel/.gitignore" />
+		<delete file="${dir}/vendor/symfony/http-kernel/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/http-kernel/README.md" />
+		<delete file="${dir}/vendor/symfony/http-kernel/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/routing/.git" />
+		<delete dir="${dir}/vendor/symfony/routing/Tests" />
+		<delete file="${dir}/vendor/symfony/routing/.gitignore" />
+		<delete file="${dir}/vendor/symfony/routing/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/routing/README.md" />
+		<delete file="${dir}/vendor/symfony/routing/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/twig-bridge/.git" />
+		<delete dir="${dir}/vendor/symfony/twig-bridge/Tests" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/.gitignore" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/README.md" />
+		<delete file="${dir}/vendor/symfony/twig-bridge/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/symfony/yaml/.git" />
+		<delete dir="${dir}/vendor/symfony/yaml/Tests" />
+		<delete file="${dir}/vendor/symfony/yaml/.gitignore" />
+		<delete file="${dir}/vendor/symfony/yaml/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/yaml/README.md" />
+		<delete file="${dir}/vendor/symfony/yaml/phpunit.xml.dist" />
+
+		<delete dir="${dir}/vendor/twig/twig/doc" />
+		<delete dir="${dir}/vendor/twig/twig/ext" />
+		<delete dir="${dir}/vendor/twig/twig/test" />
+		<delete file="${dir}/vendor/twig/twig/.editorconfig" />
+		<delete file="${dir}/vendor/twig/twig/.gitignore" />
+		<delete file="${dir}/vendor/twig/twig/.travis.yml" />
+		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
+		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/twig/twig/README.rst" />
 	</target>
 
 	<target name="clean-diff-dir">

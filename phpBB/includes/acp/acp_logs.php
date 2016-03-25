@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,64 +19,63 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_logs
 {
 	var $u_action;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $auth, $template, $phpbb_container;
+		global $config;
+		global $request;
 
 		$user->add_lang('mcp');
 
 		// Set up general vars
-		$action		= request_var('action', '');
-		$forum_id	= request_var('f', 0);
-		$topic_id	= request_var('t', 0);
-		$start		= request_var('start', 0);
-		$deletemark = (!empty($_POST['delmarked'])) ? true : false;
-		$deleteall	= (!empty($_POST['delall'])) ? true : false;
-		$marked		= request_var('mark', array(0));
+		$action		= $request->variable('action', '');
+		$forum_id	= $request->variable('f', 0);
+		$start		= $request->variable('start', 0);
+		$deletemark = $request->variable('delmarked', false, false, \phpbb\request\request_interface::POST);
+		$deleteall	= $request->variable('delall', false, false, \phpbb\request\request_interface::POST);
+		$marked		= $request->variable('mark', array(0));
 
 		// Sort keys
-		$sort_days	= request_var('st', 0);
-		$sort_key	= request_var('sk', 't');
-		$sort_dir	= request_var('sd', 'd');
+		$sort_days	= $request->variable('st', 0);
+		$sort_key	= $request->variable('sk', 't');
+		$sort_dir	= $request->variable('sd', 'd');
 
 		$this->tpl_name = 'acp_logs';
 		$this->log_type = constant('LOG_' . strtoupper($mode));
+
+		/* @var $pagination \phpbb\pagination */
+		$pagination = $phpbb_container->get('pagination');
 
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 		{
 			if (confirm_box(true))
 			{
-				$where_sql = '';
+				$conditions = array();
 
 				if ($deletemark && sizeof($marked))
 				{
-					$sql_in = array();
-					foreach ($marked as $mark)
-					{
-						$sql_in[] = $mark;
-					}
-					$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
-					unset($sql_in);
+					$conditions['log_id'] = array('IN' => $marked);
 				}
 
-				if ($where_sql || $deleteall)
+				if ($deleteall)
 				{
-					$sql = 'DELETE FROM ' . LOG_TABLE . "
-						WHERE log_type = {$this->log_type}
-						$where_sql";
-					$db->sql_query($sql);
+					if ($sort_days)
+					{
+						$conditions['log_time'] = array('>=', time() - ($sort_days * 86400));
+					}
 
-					add_log('admin', 'LOG_CLEAR_' . strtoupper($mode));
+					$keywords = $request->variable('keywords', '', true);
+					$conditions['keywords'] = $keywords;
 				}
+
+				/* @var $phpbb_log \phpbb\log\log_interface */
+				$phpbb_log = $phpbb_container->get('log');
+				$phpbb_log->delete($mode, $conditions);
 			}
 			else
 			{
@@ -105,7 +107,7 @@ class acp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$l_title = $user->lang['ACP_' . strtoupper($mode) . '_LOGS'];
@@ -117,7 +119,7 @@ class acp_logs
 		if ($mode == 'mod')
 		{
 			$forum_box = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id);
-			
+
 			$template->assign_vars(array(
 				'S_SHOW_FORUMS'			=> true,
 				'S_FORUM_BOX'			=> $forum_box)
@@ -129,13 +131,13 @@ class acp_logs
 		$log_count = 0;
 		$start = view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $keywords);
 
+		$base_url = $this->u_action . "&amp;$u_sort_param$keywords_param";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $log_count, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action . "&amp;$u_sort_param$keywords_param&amp;start=$start",
-
-			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
@@ -148,7 +150,7 @@ class acp_logs
 		foreach ($log_data as $row)
 		{
 			$data = array();
-				
+
 			$checks = array('viewtopic', 'viewlogs', 'viewforum');
 			foreach ($checks as $check)
 			{
@@ -172,5 +174,3 @@ class acp_logs
 		}
 	}
 }
-
-?>

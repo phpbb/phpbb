@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,22 +19,28 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_permission_roles
 {
 	var $u_action;
+	protected $auth_admin;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $phpbb_container;
+		global $phpbb_root_path, $phpEx;
+		global $request, $phpbb_log;
 
-		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+		if (!function_exists('user_get_id_name'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
-		$auth_admin = new auth_admin();
+		if (!class_exists('auth_admin'))
+		{
+			include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+		}
+
+		$this->auth_admin = new auth_admin();
 
 		$user->add_lang('acp/permissions');
 		add_permission_language();
@@ -39,12 +48,17 @@ class acp_permission_roles
 		$this->tpl_name = 'acp_permission_roles';
 
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$role_id = request_var('role_id', 0);
-		$action = request_var('action', '');
+		$role_id = $request->variable('role_id', 0);
+		$action = $request->variable('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 
 		$form_name = 'acp_permissions';
 		add_form_key($form_name);
+
+		if (!$role_id && in_array($action, array('remove', 'edit', 'move_up', 'move_down')))
+		{
+			trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		switch ($mode)
 		{
@@ -85,11 +99,6 @@ class acp_permission_roles
 			{
 				case 'remove':
 
-					if (!$role_id)
-					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
@@ -107,7 +116,7 @@ class acp_permission_roles
 						$this->remove_role($role_id, $permission_type);
 
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
-						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_name);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', false, array($role_name));
 						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -123,10 +132,6 @@ class acp_permission_roles
 				break;
 
 				case 'edit':
-					if (!$role_id)
-					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
 
 					// Get role we edit
 					$sql = 'SELECT *
@@ -150,9 +155,9 @@ class acp_permission_roles
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$role_name = utf8_normalize_nfc(request_var('role_name', '', true));
-					$role_description = utf8_normalize_nfc(request_var('role_description', '', true));
-					$auth_settings = request_var('setting', array('' => 0));
+					$role_name = $request->variable('role_name', '', true);
+					$role_description = $request->variable('role_description', '', true);
+					$auth_settings = $request->variable('setting', array('' => 0));
 
 					if (!$role_name)
 					{
@@ -211,10 +216,10 @@ class acp_permission_roles
 					}
 
 					// Now add the auth settings
-					$auth_admin->acl_set_role($role_id, $auth_settings);
+					$this->auth_admin->acl_set_role($role_id, $auth_settings);
 
 					$role_name = (!empty($user->lang[$role_name])) ? $user->lang[$role_name] : $role_name;
-					add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), $role_name);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), false, array($role_name));
 
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
 
@@ -227,11 +232,11 @@ class acp_permission_roles
 		{
 			case 'add':
 
-				$options_from = request_var('options_from', 0);
+				$options_from = $request->variable('options_from', 0);
 
 				$role_row = array(
-					'role_name'			=> utf8_normalize_nfc(request_var('role_name', '', true)),
-					'role_description'	=> utf8_normalize_nfc(request_var('role_description', '', true)),
+					'role_name'			=> $request->variable('role_name', '', true),
+					'role_description'	=> $request->variable('role_description', '', true),
 					'role_type'			=> $permission_type,
 				);
 
@@ -255,7 +260,7 @@ class acp_permission_roles
 				{
 					$sql = 'SELECT auth_option_id, auth_option
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char) . "
+						WHERE auth_option " . $db->sql_like_expression($permission_type . $db->get_any_char()) . "
 							AND auth_option <> '{$permission_type}'
 						ORDER BY auth_option_id";
 					$result = $db->sql_query($sql);
@@ -274,11 +279,6 @@ class acp_permission_roles
 
 				if ($action == 'edit')
 				{
-					if (!$role_id)
-					{
-						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-					
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
@@ -306,6 +306,9 @@ class acp_permission_roles
 					trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
+				/* @var $phpbb_permissions \phpbb\permissions */
+				$phpbb_permissions = $phpbb_container->get('acl.permissions');
+
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 
@@ -314,14 +317,13 @@ class acp_permission_roles
 
 					'ROLE_NAME'			=> $role_row['role_name'],
 					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
-					'L_ACL_TYPE'		=> $user->lang['ACL_TYPE_' . strtoupper($permission_type)],
-					)
-				);
+					'L_ACL_TYPE'		=> $phpbb_permissions->get_type_lang($permission_type),
+				));
 
 				// We need to fill the auth options array with ACL_NO options ;)
 				$sql = 'SELECT auth_option_id, auth_option
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char) . "
+					WHERE auth_option " . $db->sql_like_expression($permission_type . $db->get_any_char()) . "
 						AND auth_option <> '{$permission_type}'
 					ORDER BY auth_option_id";
 				$result = $db->sql_query($sql);
@@ -344,7 +346,7 @@ class acp_permission_roles
 				// Get users/groups/forums using this preset...
 				if ($action == 'edit')
 				{
-					$hold_ary = $auth_admin->get_role_mask($role_id);
+					$hold_ary = $this->auth_admin->get_role_mask($role_id);
 
 					if (sizeof($hold_ary))
 					{
@@ -355,7 +357,7 @@ class acp_permission_roles
 							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
 						);
 
-						$auth_admin->display_role_mask($hold_ary);
+						$this->auth_admin->display_role_mask($hold_ary);
 					}
 				}
 
@@ -365,7 +367,18 @@ class acp_permission_roles
 			case 'move_up':
 			case 'move_down':
 
-				$order = request_var('order', 0);
+				$sql = 'SELECT role_order
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_id = $role_id";
+				$result = $db->sql_query($sql);
+				$order = $db->sql_fetchfield('role_order');
+				$db->sql_freeresult($result);
+
+				if ($order === false || ($order == 0 && $action == 'move_up'))
+				{
+					break;
+				}
+				$order = (int) $order;
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
@@ -373,6 +386,14 @@ class acp_permission_roles
 					WHERE role_type = '" . $db->sql_escape($permission_type) . "'
 						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
+
+				if ($request->is_ajax())
+				{
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'success'	=> (bool) $db->sql_affectedrows(),
+					));
+				}
 
 			break;
 		}
@@ -400,7 +421,7 @@ class acp_permission_roles
 		$db->sql_freeresult($result);
 
 		// Display assigned items?
-		$display_item = request_var('display_item', 0);
+		$display_item = $request->variable('display_item', 0);
 
 		// Select existing roles
 		$sql = 'SELECT *
@@ -420,8 +441,8 @@ class acp_permission_roles
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;order=' . $row['role_order'],
-				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['role_order'],
+				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'],
+				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'],
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 
@@ -446,8 +467,8 @@ class acp_permission_roles
 				'S_DISPLAY_ROLE_MASK'	=> true)
 			);
 
-			$hold_ary = $auth_admin->get_role_mask($display_item);
-			$auth_admin->display_role_mask($hold_ary);
+			$hold_ary = $this->auth_admin->get_role_mask($display_item);
+			$this->auth_admin->display_role_mask($hold_ary);
 		}
 	}
 
@@ -456,14 +477,17 @@ class acp_permission_roles
 	*/
 	function display_auth_options($auth_options)
 	{
-		global $template, $user;
+		global $template, $phpbb_container;
+
+		/* @var $phpbb_permissions \phpbb\permissions */
+		$phpbb_permissions = $phpbb_container->get('acl.permissions');
 
 		$content_array = $categories = array();
 		$key_sort_array = array(0);
 		$auth_options = array(0 => $auth_options);
 
 		// Making use of auth_admin method here (we do not really want to change two similar code fragments)
-		auth_admin::build_permission_array($auth_options, $content_array, $categories, $key_sort_array);
+		$this->auth_admin->build_permission_array($auth_options, $content_array, $categories, $key_sort_array);
 
 		$content_array = $content_array[0];
 
@@ -473,7 +497,7 @@ class acp_permission_roles
 		foreach ($content_array as $cat => $cat_array)
 		{
 			$template->assign_block_vars('auth', array(
-				'CAT_NAME'	=> $user->lang['permission_cat'][$cat],
+				'CAT_NAME'	=> $phpbb_permissions->get_category_lang($cat),
 
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
@@ -488,8 +512,8 @@ class acp_permission_roles
 					'S_NO'		=> ($allowed == ACL_NO) ? true : false,
 
 					'FIELD_NAME'	=> $permission,
-					'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
-				);
+					'PERMISSION'	=> $phpbb_permissions->get_permission_lang($permission),
+				));
 			}
 		}
 	}
@@ -501,12 +525,10 @@ class acp_permission_roles
 	{
 		global $db;
 
-		$auth_admin = new auth_admin();
-
 		// Get complete auth array
 		$sql = 'SELECT auth_option, auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . "
-			WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char);
+			WHERE auth_option " . $db->sql_like_expression($permission_type . $db->get_any_char());
 		$result = $db->sql_query($sql);
 
 		$auth_settings = array();
@@ -530,19 +552,19 @@ class acp_permission_roles
 		$db->sql_freeresult($result);
 
 		// Get role assignments
-		$hold_ary = $auth_admin->get_role_mask($role_id);
+		$hold_ary = $this->auth_admin->get_role_mask($role_id);
 
 		// Re-assign permissions
 		foreach ($hold_ary as $forum_id => $forum_ary)
 		{
 			if (isset($forum_ary['users']))
 			{
-				$auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings, 0, false);
+				$this->auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings, 0, false);
 			}
 
 			if (isset($forum_ary['groups']))
 			{
-				$auth_admin->acl_set('group', $forum_id, $forum_ary['groups'], $auth_settings, 0, false);
+				$this->auth_admin->acl_set('group', $forum_id, $forum_ary['groups'], $auth_settings, 0, false);
 			}
 		}
 
@@ -564,8 +586,6 @@ class acp_permission_roles
 			WHERE role_id = ' . $role_id;
 		$db->sql_query($sql);
 
-		$auth_admin->acl_clear_prefetch();
+		$this->auth_admin->acl_clear_prefetch();
 	}
 }
-
-?>

@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,16 +19,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package mcp
-*/
 class mcp_ban
 {
 	var $u_action;
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $request, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -33,55 +33,133 @@ class mcp_ban
 		// Include the admin banning interface...
 		include($phpbb_root_path . 'includes/acp/acp_ban.' . $phpEx);
 
-		$bansubmit		= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit	= (isset($_POST['unbansubmit'])) ? true : false;
-		$current_time	= time();
+		$bansubmit		= $request->is_set_post('bansubmit');
+		$unbansubmit	= $request->is_set_post('unbansubmit');
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'mcp_ban';
+
+		/**
+		* Use this event to pass perform actions when a ban is issued or revoked
+		*
+		* @event core.mcp_ban_main
+		* @var	bool	bansubmit	True if a ban is issued
+		* @var	bool	unbansubmit	True if a ban is removed
+		* @var	string	mode		Mode of the ban that is being worked on
+		* @since 3.1.0-RC5
+		*/
+		$vars = array(
+			'bansubmit',
+			'unbansubmit',
+			'mode',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_ban_main', compact($vars)));
 
 		// Ban submitted?
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= request_var('ban', '', ($mode === 'user') ? true : false);
-
-			if ($mode === 'user')
-			{
-				$ban = utf8_normalize_nfc($ban);
-			}
-
-			$ban_len			= request_var('banlength', 0);
-			$ban_len_other		= request_var('banlengthother', '');
-			$ban_exclude		= request_var('banexclude', 0);
-			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
-			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
+			$ban				= $request->variable('ban', '', $mode === 'user');
+			$ban_length			= $request->variable('banlength', 0);
+			$ban_length_other	= $request->variable('banlengthother', '');
+			$ban_exclude		= $request->variable('banexclude', 0);
+			$ban_reason			= $request->variable('banreason', '', true);
+			$ban_give_reason	= $request->variable('bangivereason', '', true);
 
 			if ($ban)
 			{
 				if (confirm_box(true))
 				{
-					user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
+					$abort_ban = false;
+					/**
+					* Use this event to modify the ban details before the ban is performed
+					*
+					* @event core.mcp_ban_before
+					* @var	string	mode				One of the following: user, ip, email
+					* @var	string	ban					Either string or array with usernames, ips or email addresses
+					* @var	int		ban_length			Ban length in minutes
+					* @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
+					* @var	bool	ban_exclude			Are we banning or excluding from another ban
+					* @var	string	ban_reason			Ban reason displayed to moderators
+					* @var	string	ban_give_reason		Ban reason displayed to the banned user
+					* @var	mixed	abort_ban			Either false, or an error message that is displayed to the user.
+					*									If a string is given the bans are not issued.
+					* @since 3.1.0-RC5
+					*/
+					$vars = array(
+						'mode',
+						'ban',
+						'ban_length',
+						'ban_length_other',
+						'ban_exclude',
+						'ban_reason',
+						'ban_give_reason',
+						'abort_ban',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.mcp_ban_before', compact($vars)));
+
+					if ($abort_ban)
+					{
+						trigger_error($abort_ban);
+					}
+					user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
+
+					/**
+					* Use this event to perform actions after the ban has been performed
+					*
+					* @event core.mcp_ban_after
+					* @var	string	mode				One of the following: user, ip, email
+					* @var	string	ban					Either string or array with usernames, ips or email addresses
+					* @var	int		ban_length			Ban length in minutes
+					* @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
+					* @var	bool	ban_exclude			Are we banning or excluding from another ban
+					* @var	string	ban_reason			Ban reason displayed to moderators
+					* @var	string	ban_give_reason		Ban reason displayed to the banned user
+					* @since 3.1.0-RC5
+					*/
+					$vars = array(
+						'mode',
+						'ban',
+						'ban_length',
+						'ban_length_other',
+						'ban_exclude',
+						'ban_reason',
+						'ban_give_reason',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.mcp_ban_after', compact($vars)));
 
 					trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . '<br /><br /><a href="' . $this->u_action . '">&laquo; ' . $user->lang['BACK_TO_PREV'] . '</a>');
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					$hidden_fields = array(
 						'mode'				=> $mode,
 						'ban'				=> $ban,
 						'bansubmit'			=> true,
-						'banlength'			=> $ban_len,
-						'banlengthother'	=> $ban_len_other,
+						'banlength'			=> $ban_length,
+						'banlengthother'	=> $ban_length_other,
 						'banexclude'		=> $ban_exclude,
 						'banreason'			=> $ban_reason,
-						'bangivereason'		=> $ban_give_reason)));
+						'bangivereason'		=> $ban_give_reason,
+					);
+
+					/**
+					* Use this event to pass data from the ban form to the confirmation screen
+					*
+					* @event core.mcp_ban_confirm
+					* @var	array	hidden_fields	Hidden fields that are passed through the confirm screen
+					* @since 3.1.0-RC5
+					*/
+					$vars = array('hidden_fields');
+					extract($phpbb_dispatcher->trigger_event('core.mcp_ban_confirm', compact($vars)));
+
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($hidden_fields));
 				}
 			}
 		}
 		else if ($unbansubmit)
 		{
-			$ban = request_var('unban', array(''));
+			$ban = $request->variable('unban', array(''));
 
 			if ($ban)
 			{
@@ -157,9 +235,9 @@ class mcp_ban
 		}
 
 		// As a "service" we will check if any post id is specified and populate the username of the poster id if given
-		$post_id = request_var('p', 0);
-		$user_id = request_var('u', 0);
-		$username = $pre_fill = false;
+		$post_id = $request->variable('p', 0);
+		$user_id = $request->variable('u', 0);
+		$pre_fill = false;
 
 		if ($user_id && $user_id <> ANONYMOUS)
 		{
@@ -172,7 +250,7 @@ class mcp_ban
 				case 'user':
 					$pre_fill = (string) $db->sql_fetchfield('username');
 				break;
-				
+
 				case 'ip':
 					$pre_fill = (string) $db->sql_fetchfield('user_ip');
 				break;
@@ -185,7 +263,7 @@ class mcp_ban
 		}
 		else if ($post_id)
 		{
-			$post_info = get_post_data($post_id, 'm_ban');
+			$post_info = phpbb_get_post_data($post_id, 'm_ban');
 
 			if (sizeof($post_info) && !empty($post_info[$post_id]))
 			{
@@ -215,5 +293,3 @@ class mcp_ban
 		}
 	}
 }
-
-?>

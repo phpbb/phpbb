@@ -5,35 +5,35 @@
 <h2>{L_WARN_USER}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_SELECT_USER}</h3>
 
 	<fieldset>
 	<dl>
-		<dt><label for="username">{L_SELECT_USER}:</label></dt>
+		<dt><label for="username">{L_SELECT_USER}{L_COLON}</label></dt>
 		<dd><input name="username" id="username" type="text" class="inputbox" /></dd>
 		<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd>
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <fieldset class="submit-buttons">
-	<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+	<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
 	<input type="submit" name="submituser" value="{L_SUBMIT}" class="button1" />
 	{S_FORM_TOKEN}
 </fieldset>
 </form>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_MOST_WARNINGS}</h3>
 
 	<!-- IF .highest -->
-		<table class="table1" cellspacing="0">
+		<table class="table1">
 		<thead>
 			<tr>
 				<th class="name">{L_USERNAME}</th>
@@ -51,23 +51,23 @@
 				<td>{highest.WARNING_TIME}</td>
 				<td><a href="{highest.U_NOTES}">{L_VIEW_NOTES}</a></td>
 			</tr>
-		<!-- END latest -->
+		<!-- END highest -->
 		</tbody>
 		</table>
 	<!-- ELSE -->
-		<p><strong>{L_WARNINGS_ZERO_TOTAL}</strong></p>
+		<p><strong>{L_NO_WARNINGS}</strong></p>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<h3>{L_LATEST_WARNINGS}</h3>
 
 	<!-- IF .latest -->
-		<table class="table1" cellspacing="0">
+		<table class="table1">
 		<thead>
 			<tr>
 				<th class="name">{L_USERNAME}</th>
@@ -88,10 +88,10 @@
 		</tbody>
 		</table>
 	<!-- ELSE -->
-		<p><strong>{L_WARNINGS_ZERO_TOTAL}</strong></p>
+		<p><strong>{L_NO_WARNINGS}</strong></p>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 </div>
 
 <!-- INCLUDE mcp_footer.html -->

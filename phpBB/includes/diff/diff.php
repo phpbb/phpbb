@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package diff
-* @version $Id$
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -20,7 +23,7 @@ if (!defined('IN_PHPBB'))
 * Code from pear.php.net, Text_Diff-1.1.0 package
 * http://pear.php.net/package/Text_Diff/
 *
-* Modified by phpBB Group to meet our coding standards
+* Modified by phpBB Limited to meet our coding standards
 * and being able to integrate into phpBB
 *
 * General API for generating and formatting diffs - the differences between
@@ -43,8 +46,9 @@ class diff
 	/**
 	* Computes diffs between sequences of strings.
 	*
-	* @param array $from_lines  An array of strings. Typically these are lines from a file.
-	* @param array $to_lines    An array of strings.
+	* @param array	&$from_content	An array of strings. Typically these are lines from a file.
+	* @param array	&$to_content	An array of strings.
+	* @param bool	$preserve_cr	If true, \r is replaced by a new line in the diff output
 	*/
 	function diff(&$from_content, &$to_content, $preserve_cr = true)
 	{
@@ -488,9 +492,11 @@ class diff3 extends diff
 	/**
 	* Computes diff between 3 sequences of strings.
 	*
-	* @param array $orig    The original lines to use.
-	* @param array $final1  The first version to compare to.
-	* @param array $final2  The second version to compare to.
+	* @param array &$orig		The original lines to use.
+	* @param array &$final1		The first version to compare to.
+	* @param array &$final2		The second version to compare to.
+	* @param bool $preserve_cr	If true, \r\n and bare \r are replaced by a new line
+	*							in the diff output
 	*/
 	function diff3(&$orig, &$final1, &$final2, $preserve_cr = true)
 	{
@@ -1144,5 +1150,3 @@ class diff3_block_builder
 		array_splice($array, sizeof($array), 0, $lines);
 	}
 }
-
-?>

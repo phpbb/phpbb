@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username_clean</column>
+		<column>username</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>1</value>
+			<value>anonymous</value>
+			<value>anonymous</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>2</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_oauth_accounts">
+		<column>user_id</column>
+		<column>provider</column>
+		<column>oauth_provider_id</column>
+		<row>
+			<value>2</value>
+			<value>google</value>
+			<value>1234567890123456789</value>
+		</row>
+	</table>
+	<table name="phpbb_oauth_tokens">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_token</column>
+		<row>
+			<value>2</value>
+			<value>897a897b797c8789997d7979879</value>
+			<value>auth.provider.oauth.service.google</value>
+			<value>{"accessToken":"ya29.YPHwCWVkrvwu1kgbYKiDNYaQ451ZuHy9OEQAGVME8if-WBzR-v7a9ftxbx41kaL)5VLEXB-6qJEvri","endOfLife":1429959670,"extraParams":{"token_type":"Bearer","id_token":"eyJhbGciOiJSUzI1NiIsImupZCI6IjE0YuRjNzc2MDQwYjUyNDZmNTI5OWFkZDVlMmQ1NWNOPTdjMDdlZTAifQ.eyJpc3MiOiJhY2NvdW90cy5nb78nbGUuY29tIiwic3ViIjoiMTExMDMwNwerNjM4MTM5NTQwMTM1IiwiYXpwIjoiOTk3MzUwMTY0NzE0LWhwOXJrYjZpcjM4MW80YjV1NjRpaGtmM29zMnRvbWxhLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiZW1haWwiOiJtYXJjLmFsZXhhbmRlci4zN0BnbWFpbC5jb20iLCJhdF9oYXNoIjoiWHk2b1JabnVZUWRfRTZDeDV0RkItdyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJhdWQiOiI5OTczNTAxNjQ3MTQtaHA5cmtiNmlyMzgxbzRiNXU2NGloa2Yzb3MydG9tbGEuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJpYXQiOjE0Mjk5NTYwNzEsImV4cCI6MTQyOTk1OTY3MX0.C5gfSzjqwlRRvVMuTP6jfWIuEHMXn55oYHsSA3eh97n2BZL0TZHhUm4K206Fgucd6ufAphan4l0J7y6tMAHLZPr-kk6KDINxWnPG-up99reblGutay0lRYjMCcrhJAOql8EI1bi84GyliZFYHL67pE0ZtSf-CMb1CeH18TFe-Fk"},"refreshToken":null,"token_class":"OAuth\\\\OAuth2\\\\Token\\\\StdOAuth2Token"}</value>
+		</row>
+	</table>
+</dataset>

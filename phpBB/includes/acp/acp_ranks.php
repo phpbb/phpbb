@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,25 +19,22 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_ranks
 {
 	var $u_action;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $template, $cache, $request, $phpbb_dispatcher;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpbb_log;
 
 		$user->add_lang('acp/posting');
 
 		// Set up general vars
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 		$action = (isset($_POST['save'])) ? 'save' : $action;
-		$rank_id = request_var('id', 0);
+		$rank_id = $request->variable('id', 0);
 
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
@@ -50,10 +50,10 @@ class acp_ranks
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
-				$special_rank = request_var('special_rank', 0);
-				$min_posts = ($special_rank) ? 0 : max(0, request_var('min_posts', 0));
-				$rank_image = request_var('rank_image', '');
+				$rank_title = $request->variable('title', '', true);
+				$special_rank = $request->variable('special_rank', 0);
+				$min_posts = ($special_rank) ? 0 : max(0, $request->variable('min_posts', 0));
+				$rank_image = $request->variable('rank_image', '');
 
 				// The rank image has to be a jpg, gif or png
 				if ($rank_image != '' && !preg_match('#(\.gif|\.png|\.jpg|\.jpeg)$#i', $rank_image))
@@ -72,20 +72,31 @@ class acp_ranks
 					'rank_min'			=> $min_posts,
 					'rank_image'		=> htmlspecialchars_decode($rank_image)
 				);
-				
+
+				/**
+				* Modify the SQL array when saving a rank
+				*
+				* @event core.acp_ranks_save_modify_sql_ary
+				* @var	int		rank_id		The ID of the rank (if available)
+				* @var	array	sql_ary		Array with the rank's data
+				* @since 3.1.0-RC3
+				*/
+				$vars = array('rank_id', 'sql_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_ranks_save_modify_sql_ary', compact($vars)));
+
 				if ($rank_id)
 				{
 					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
 					$message = $user->lang['RANK_UPDATED'];
 
-					add_log('admin', 'LOG_RANK_UPDATED', $rank_title);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_UPDATED', false, array($rank_title));
 				}
 				else
 				{
 					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 					$message = $user->lang['RANK_ADDED'];
 
-					add_log('admin', 'LOG_RANK_ADDED', $rank_title);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_ADDED', false, array($rank_title));
 				}
 				$db->sql_query($sql);
 
@@ -122,7 +133,19 @@ class acp_ranks
 
 					$cache->destroy('_ranks');
 
-					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RANK_REMOVED', false, array($rank_title));
+
+					if ($request->is_ajax())
+					{
+						$json_response = new \phpbb\json_response;
+						$json_response->send(array(
+							'MESSAGE_TITLE'	=> $user->lang['INFORMATION'],
+							'MESSAGE_TEXT'	=> $user->lang['RANK_REMOVED'],
+							'REFRESH_DATA'	=> array(
+								'time'	=> 3
+							)
+						));
+					}
 				}
 				else
 				{
@@ -139,8 +162,8 @@ class acp_ranks
 			case 'edit':
 			case 'add':
 
-				$data = $ranks = $existing_imgs = array();
-				
+				$ranks = $existing_imgs = array();
+
 				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					ORDER BY rank_min ASC, rank_special ASC';
@@ -190,7 +213,7 @@ class acp_ranks
 				$filename_list = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>----------</option>' . $filename_list;
 				unset($existing_imgs, $imglist);
 
-				$template->assign_vars(array(
+				$tpl_ary = array(
 					'S_EDIT'			=> true,
 					'U_BACK'			=> $this->u_action,
 					'RANKS_PATH'		=> $phpbb_root_path . $config['ranks_path'],
@@ -198,17 +221,28 @@ class acp_ranks
 
 					'RANK_TITLE'		=> (isset($ranks['rank_title'])) ? $ranks['rank_title'] : '',
 					'S_FILENAME_LIST'	=> $filename_list,
-					'RANK_IMAGE'		=> ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : $phpbb_admin_path . 'images/spacer.gif',
+					'RANK_IMAGE'		=> ($edit_img) ? $phpbb_root_path . $config['ranks_path'] . '/' . $edit_img : htmlspecialchars($phpbb_admin_path) . 'images/spacer.gif',
 					'S_SPECIAL_RANK'	=> (isset($ranks['rank_special']) && $ranks['rank_special']) ? true : false,
-					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0)
+					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0,
 				);
-						
 
+				/**
+				* Modify the template output array for editing/adding ranks
+				*
+				* @event core.acp_ranks_edit_modify_tpl_ary
+				* @var	array	ranks		Array with the rank's data
+				* @var	array	tpl_ary		Array with the rank's template data
+				* @since 3.1.0-RC3
+				*/
+				$vars = array('ranks', 'tpl_ary');
+				extract($phpbb_dispatcher->trigger_event('core.acp_ranks_edit_modify_tpl_ary', compact($vars)));
+
+				$template->assign_vars($tpl_ary);
 				return;
 
 			break;
 		}
-	
+
 		$template->assign_vars(array(
 			'U_ACTION'		=> $this->u_action)
 		);
@@ -220,7 +254,7 @@ class acp_ranks
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('ranks', array(
+			$rank_row = array(
 				'S_RANK_IMAGE'		=> ($row['rank_image']) ? true : false,
 				'S_SPECIAL_RANK'	=> ($row['rank_special']) ? true : false,
 
@@ -229,12 +263,23 @@ class acp_ranks
 				'MIN_POSTS'			=> $row['rank_min'],
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;id=' . $row['rank_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'])
-			);	
+				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'],
+			);
+
+			/**
+			* Modify the template output array for each listed rank
+			*
+			* @event core.acp_ranks_list_modify_rank_row
+			* @var	array	row			Array with the rank's data
+			* @var	array	rank_row	Array with the rank's template data
+			* @since 3.1.0-RC3
+			*/
+			$vars = array('row', 'rank_row');
+			extract($phpbb_dispatcher->trigger_event('core.acp_ranks_list_modify_rank_row', compact($vars)));
+
+			$template->assign_block_vars('ranks', $rank_row);
 		}
 		$db->sql_freeresult($result);
 
 	}
 }
-
-?>

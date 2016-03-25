@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -21,16 +24,17 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth, $cache;
+	global $phpEx, $phpbb_root_path, $config, $request;
+	global $template, $db, $user, $auth;
+	global $phpbb_dispatcher;
 
 	$user->add_lang('posting');
 
-	$post_id = request_var('p', 0);
-	$start	= request_var('start', 0);
+	$post_id = $request->variable('p', 0);
+	$start	= $request->variable('start', 0);
 
 	// Get post data
-	$post_info = get_post_data(array($post_id), false, true);
+	$post_info = phpbb_get_post_data(array($post_id), false, true);
 
 	add_form_key('mcp_post_details');
 
@@ -40,7 +44,7 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	$post_info = $post_info[$post_id];
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . phpbb_extra_url());
 
 	switch ($action)
 	{
@@ -48,7 +52,7 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($auth->acl_get('m_info', $post_info['forum_id']))
 			{
-				$ip = request_var('ip', '');
+				$ip = $request->variable('ip', '');
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$template->assign_vars(array(
@@ -69,12 +73,12 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($action == 'chgposter')
 			{
-				$username = request_var('username', '', true);
+				$username = $request->variable('username', '', true);
 				$sql_where = "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			}
 			else
 			{
-				$new_user_id = request_var('u', 0);
+				$new_user_id = $request->variable('u', 0);
 				$sql_where = 'user_id = ' . $new_user_id;
 			}
 
@@ -103,13 +107,27 @@ function mcp_post_details($id, $mode, $action)
 			}
 
 		break;
+
+		default:
+
+			/**
+			* This event allows you to handle custom post moderation options
+			*
+			* @event core.mcp_post_additional_options
+			* @var	string	action		Post moderation action name
+			* @var	array	post_info	Information on the affected post
+			* @since 3.1.5-RC1
+			*/
+			$vars = array('action', 'post_info');
+			extract($phpbb_dispatcher->trigger_event('core.mcp_post_additional_options', compact($vars)));
+
+		break;
 	}
 
 	// Set some vars
 	$users_ary = $usernames_ary = array();
 	$attachments = $extensions = array();
 	$post_id = $post_info['post_id'];
-	$topic_tracking_info = array();
 
 	// Get topic tracking info
 	if ($config['load_db_lastread'])
@@ -126,22 +144,11 @@ function mcp_post_details($id, $mode, $action)
 	$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
 	// Process message, leave it uncensored
-	$message = $post_info['post_text'];
-
-	if ($post_info['bbcode_bitfield'])
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($post_info['bbcode_bitfield']);
-		$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
-	}
-
-	$message = bbcode_nl2br($message);
-	$message = smiley_text($message);
+	$parse_flags = ($post_info['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+	$message = generate_text_for_display($post_info['post_text'], $post_info['bbcode_uid'], $post_info['bbcode_bitfield'], $parse_flags, false);
 
 	if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 	{
-		$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id = ' . $post_id . '
@@ -157,6 +164,7 @@ function mcp_post_details($id, $mode, $action)
 
 		if (sizeof($attachments))
 		{
+			$user->add_lang('viewtopic');
 			$update_count = array();
 			parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
 		}
@@ -175,7 +183,34 @@ function mcp_post_details($id, $mode, $action)
 		}
 	}
 
-	$template->assign_vars(array(
+	// Deleting information
+	if ($post_info['post_visibility'] == ITEM_DELETED && $post_info['post_delete_user'])
+	{
+		// User having deleted the post also being the post author?
+		if (!$post_info['post_delete_user'] || $post_info['post_delete_user'] == $post_info['poster_id'])
+		{
+			$display_username = get_username_string('full', $post_info['poster_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']);
+		}
+		else
+		{
+			$sql = 'SELECT user_id, username, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . (int) $post_info['post_delete_user'];
+			$result = $db->sql_query($sql);
+			$user_delete_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$display_username = get_username_string('full', $post_info['post_delete_user'], $user_delete_row['username'], $user_delete_row['user_colour']);
+		}
+
+		$user->add_lang('viewtopic');
+		$l_deleted_by = $user->lang('DELETED_INFORMATION', $display_username, $user->format_date($post_info['post_delete_time'], false, true));
+	}
+	else
+	{
+		$l_deleted_by = '';
+	}
+
+	$mcp_post_template_data = array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1&amp;mode=post_details", // Use this for mode paramaters
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
 		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
@@ -186,10 +221,13 @@ function mcp_post_details($id, $mode, $action)
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
 
 		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
-		'S_POST_UNAPPROVED'		=> (!$post_info['post_approved']) ? true : false,
+		'S_POST_UNAPPROVED'		=> ($post_info['post_visibility'] == ITEM_UNAPPROVED || $post_info['post_visibility'] == ITEM_REAPPROVE) ? true : false,
+		'S_POST_DELETED'		=> ($post_info['post_visibility'] == ITEM_DELETED) ? true : false,
 		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
 		'S_USER_NOTES'			=> true,
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+		'DELETED_MESSAGE'		=> $l_deleted_by,
+		'DELETE_REASON'			=> $post_info['post_delete_reason'],
 
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
@@ -206,6 +244,7 @@ function mcp_post_details($id, $mode, $action)
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+		'DELETED_IMG'			=> $user->img('icon_topic_deleted', $user->lang['POST_DELETED']),
 		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
@@ -218,12 +257,37 @@ function mcp_post_details($id, $mode, $action)
 		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
-		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
 
 		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
 		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
-	));
+	);
+
+	$s_additional_opts = false;
+
+	/**
+	* Event to add/modify MCP post template data
+	*
+	* @event core.mcp_post_template_data
+	* @var	array	post_info					Array with the post information
+	* @var	array	mcp_post_template_data		Array with the MCP post template data
+	* @var	array	attachments					Array with the post attachments, if any
+	* @var	bool	s_additional_opts			Must be set to true in extension if additional options are presented in MCP post panel
+	* @since 3.1.5-RC1
+	*/
+	$vars = array(
+		'post_info',
+		'mcp_post_template_data',
+		'attachments',
+		's_additional_opts',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.mcp_post_template_data', compact($vars)));
+
+	$template->assign_vars($mcp_post_template_data);
+	$template->assign_var('S_MCP_POST_ADDITIONAL_OPTS', $s_additional_opts);
+
+	unset($mcp_post_template_data);
 
 	// Get User Notes
 	$log_data = array();
@@ -273,8 +337,8 @@ function mcp_post_details($id, $mode, $action)
 					'REPORT_ID'		=> $row['report_id'],
 					'REASON_TITLE'	=> $row['reason_title'],
 					'REASON_DESC'	=> $row['reason_description'],
-					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : $user->lang['GUEST'],
-					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+					'REPORTER'		=> get_username_string('username', $row['user_id'], $row['username']),
+					'U_REPORTER'	=> get_username_string('profile', $row['user_id'], $row['username']),
 					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
 					'REPORT_TIME'	=> $user->format_date($row['report_time']),
 					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
@@ -288,7 +352,7 @@ function mcp_post_details($id, $mode, $action)
 	// Get IP
 	if ($auth->acl_get('m_info', $post_info['forum_id']))
 	{
-		$rdns_ip_num = request_var('rdns', '');
+		$rdns_ip_num = $request->variable('rdns', '');
 
 		if ($rdns_ip_num != 'all')
 		{
@@ -333,11 +397,11 @@ function mcp_post_details($id, $mode, $action)
 			foreach ($users_ary as $user_id => $user_row)
 			{
 				$template->assign_block_vars('userrow', array(
-					'USERNAME'		=> ($user_id == ANONYMOUS) ? $user->lang['GUEST'] : $user_row['username'],
+					'USERNAME'		=> get_username_string('username', $user_id, $user_row['username']),
 					'NUM_POSTS'		=> $user_row['postings'],
 					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
 
-					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id),
+					'U_PROFILE'		=> get_username_string('profile', $user_id, $user_row['username']),
 					'U_SEARCHPOSTS' => append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user_id . '&amp;sr=topics'))
 				);
 			}
@@ -394,7 +458,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_log, $phpbb_dispatcher;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -416,7 +480,7 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// Adjust post counts... only if the post is approved (else, it was not added the users post count anyway)
-	if ($post_info['post_postcount'] && $post_info['post_approved'])
+	if ($post_info['post_postcount'] && $post_info['post_visibility'] == ITEM_APPROVED)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1
@@ -465,15 +529,13 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// refresh search cache of this post
-	$search_type = basename($config['search_type']);
+	$search_type = $config['search_type'];
 
-	if (file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (class_exists($search_type))
 	{
-		require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
-
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
-		$search = new $search_type($error);
+		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 
 		if (!$error && method_exists($search, 'destroy_cache'))
 		{
@@ -484,8 +546,20 @@ function change_poster(&$post_info, $userdata)
 	$from_username = $post_info['username'];
 	$to_username = $userdata['username'];
 
+	/**
+	* This event allows you to perform additional tasks after changing a post's poster
+	*
+	* @event core.mcp_change_poster_after
+	* @var	array	userdata	Information on a post's new poster
+	* @var	array	post_info	Information on the affected post
+	* @since 3.1.6-RC1
+	* @changed 3.1.7-RC1		Change location to prevent post_info from being set to the new post information
+	*/
+	$vars = array('userdata', 'post_info');
+	extract($phpbb_dispatcher->trigger_event('core.mcp_change_poster_after', compact($vars)));
+
 	// Renew post info
-	$post_info = get_post_data(array($post_id), false, true);
+	$post_info = phpbb_get_post_data(array($post_id), false, true);
 
 	if (!sizeof($post_info))
 	{
@@ -495,7 +569,12 @@ function change_poster(&$post_info, $userdata)
 	$post_info = $post_info[$post_id];
 
 	// Now add log entry
-	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
+	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MCP_CHANGE_POSTER', false, array(
+		'forum_id' => $post_info['forum_id'],
+		'topic_id' => $post_info['topic_id'],
+		'post_id'  => $post_info['post_id'],
+		$post_info['topic_title'],
+		$from_username,
+		$to_username
+	));
 }
-
-?>

@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2003 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -42,7 +46,7 @@ $sql = "CREATE TABLE {$table_prefix}posts
 		WHERE pt.post_id = p.post_id";
 $db->sql_query($sql);
 
-switch ($db->sql_layer)
+switch ($db->get_sql_layer())
 {
 	case 'mysql':
 	case 'mysql4':
@@ -50,7 +54,7 @@ switch ($db->sql_layer)
 			ADD PRIMARY KEY (post_id), 
 			ADD INDEX topic_id (topic_id), 
 			ADD INDEX poster_ip (poster_ip), 
-			ADD INDEX post_approved (post_approved), 
+			ADD INDEX post_visibility (post_visibility), 
 			MODIFY COLUMN post_id mediumint(8) UNSIGNED NOT NULL auto_increment, 
 			ADD COLUMN post_encoding varchar(11) DEFAULT \'iso-8859-15\' NOT NULL'; 
 		break;
@@ -138,7 +142,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-switch ($db->sql_layer)
+switch ($db->get_sql_layer())
 {
 	case 'oracle':
 		$sql = "SELECT f.*, p.post_time, p.post_username, u.username, u.user_id
@@ -162,7 +166,7 @@ while ($row = $db->sql_fetchrow($result))
 	$forum_id = $row['forum_id'];
 
 	$sql_ary[] = "UPDATE " . $table_prefix . "forums
-		SET forum_last_poster_id = " . ((!empty($row['user_id']) && $row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . ((!empty($row['user_id']) && $row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . ", forum_posts = " . (($post_count[$forum_id]) ? $post_count[$forum_id] : 0) . ", forum_topics = " . (($topic_count[$forum_id]) ? $topic_count[$forum_id] : 0) . " 
+		SET forum_last_poster_id = " . ((!empty($row['user_id']) && $row['user_id'] != ANONYMOUS) ? $row['user_id'] : ANONYMOUS) . ", forum_last_poster_name = '" . ((!empty($row['user_id']) && $row['user_id'] !=  ANONYMOUS) ? addslashes($row['username']) : addslashes($row['post_username'])) . "', forum_last_post_time = " . $row['post_time'] . ", forum_posts_approved = " . (($post_count[$forum_id]) ? $post_count[$forum_id] : 0) . ", forum_topics_approved = " . (($topic_count[$forum_id]) ? $topic_count[$forum_id] : 0) . " 
 		WHERE forum_id = $forum_id";
 
 	$sql = "SELECT t.topic_id, u.username, u.user_id, u2.username as user2, u2.user_id as id2, p.post_username, p2.post_username AS post_username2, p2.post_time
@@ -193,5 +197,3 @@ foreach ($sql_ary as $sql)
 }
 
 echo "<p><b>Done</b></p>\n";
- 
-?>

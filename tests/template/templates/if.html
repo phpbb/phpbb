@@ -2,10 +2,24 @@
 1
 <!-- ELSEIF S_OTHER_VALUE -->
 2
+<!-- ELSE IF S_OTHER_OTHER_VALUE -->
+|S_OTHER_OTHER_VALUE|
 <!-- ELSE -->
-0
+03
 <!-- ENDIF -->
 
-<!-- IF (S_VALUE > S_OTHER_VALUE) -->
-0
+<!-- IF S_VALUE and S_OTHER_VALUE and (S_VALUE > S_OTHER_VALUE) -->
+04
+<!-- ENDIF -->
+
+<!-- IF S_TEST === false -->
+false
+<!-- ENDIF -->
+
+<!-- IF S_TEST !== false -->
+!false
+<!-- ENDIF -->
+
+<!-- IF VALUE_TEST is defined -->
+{VALUE_TEST}
 <!-- ENDIF -->

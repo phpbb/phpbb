@@ -10,5 +10,4 @@ Use this link to view the user's profile:
 Use this link to activate the account:
 {U_ACTIVATE}
 
-
 {EMAIL_SIG}

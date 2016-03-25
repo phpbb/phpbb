@@ -5,19 +5,23 @@
 <h2>{L_WARNED_USERS}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<p>{L_WARNED_USERS_EXPLAIN}</p>
 
 	<!-- IF .user -->
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS} <!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
-			</li>
-		</ul>
-		
-		<table class="table1" cellspacing="0">
+		<div class="action-bar bar-top">
+			<div class="pagination">
+				{TOTAL_USERS}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+		<table class="table1">
 		<thead>
 			<tr>
 				<th class="name">{L_USERNAME}</th>
@@ -39,24 +43,24 @@
 		</tbody>
 		</table>
 
-		<fieldset class="display-options">
-			<label>{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}</label>
-			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		</fieldset>
-		<hr />
+		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
 
-		<ul class="linklist">
-			<li class="rightside pagination">
-				<!-- IF TOTAL_USERS -->{TOTAL_USERS} <!-- ENDIF -->
-				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
-			</li>
-		</ul>
+			<div class="pagination">
+				{TOTAL_USERS}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
 	<!-- ELSE -->
-		<p><strong>{L_WARNINGS_ZERO_TOTAL}</strong></p>
+		<p><strong>{L_NO_WARNINGS}</strong></p>
 	<!-- ENDIF -->
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 
 {S_FORM_TOKEN}
 </div>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>local</value>
+			<value></value>
+			<value>1</value>
+			<value>[local]{LOCAL_URL}[/local]</value>
+			<value><![CDATA[<a href="{LOCAL_URL}">{LOCAL_URL}</a>]]></value>
+			<value><![CDATA[!\[local\]((?:[a-z0-9\-._~\!$&'()*+,;=:@|]+|%[\dA-F]{2})*(?:/(?:[a-z0-9\-._~\!$&'()*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~\!$&'()*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:#(?:[a-z0-9\-._~\!$&'()*+,;=:@/?|]+|%[\dA-F]{2})*)?)\[/local\]!ie]]></value>
+			<value><![CDATA['[local:$uid]'.$this->bbcode_specialchars('${1}').'[/local:$uid]']]></value>
+			<value><![CDATA[!\[local:$uid\](?i)((?:[a-z0-9\-._~\!$&'()*+,;=:@|]+|%[\dA-F]{2})*(?:/(?:[a-z0-9\-._~\!$&'()*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~\!$&'()*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:#(?:[a-z0-9\-._~\!$&'()*+,;=:@/?|]+|%[\dA-F]{2})*)?)(?-i)\[/local:$uid\]!s]]></value>
+			<value><![CDATA[<a href="http://path/to/phpBB/${1}">http://path/to/phpBB/${1}</a>]]></value>
+		</row>
+	</table>
+</dataset>

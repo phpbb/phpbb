@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_password</column>
+		<column>user_passchg</column>
+		<column>user_email</column>
+		<column>user_type</column>
+		<column>user_login_attempts</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>1</value>
+			<value>foobar</value>
+			<value>foobar</value>
+			<value>$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i</value>
+			<value>0</value>
+			<value>example@example.com</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>foobar2</value>
+			<value>foobar2</value>
+			<value>$H$9E45lK6J8nLTSm9oJE5aNCSTFK9wqa/</value>
+			<value>0</value>
+			<value>example@example.com</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

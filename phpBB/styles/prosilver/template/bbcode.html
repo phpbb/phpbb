@@ -8,12 +8,47 @@
 <!-- BEGIN listitem --><li><!-- END listitem -->
 <!-- BEGIN listitem_close --></li><!-- END listitem_close -->
 
-<!-- BEGIN quote_username_open --><blockquote><div><cite>{USERNAME} {L_WROTE}:</cite><!-- END quote_username_open -->
+<!-- BEGIN quote_username_open --><blockquote><div><cite>{USERNAME} {L_WROTE}{L_COLON}</cite><!-- END quote_username_open -->
 <!-- BEGIN quote_open --><blockquote class="uncited"><div><!-- END quote_open -->
 <!-- BEGIN quote_close --></div></blockquote><!-- END quote_close -->
+<!-- BEGIN quote_extended -->
+<blockquote>
+	<xsl:if test="not(@author)">
+		<xsl:attribute name="class">uncited</xsl:attribute>
+	</xsl:if>
+	<div>
+		<xsl:if test="@author">
+			<cite>
+				<xsl:choose>
+					<xsl:when test="@url">
+						<a href="{@url}" class="postlink"><xsl:value-of select="@author"/></a>
+					</xsl:when>
+					<xsl:when test="@profile_url">
+						<a href="{@profile_url}"><xsl:value-of select="@author"/></a>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="@author"/>
+					</xsl:otherwise>
+				</xsl:choose>
+				<xsl:text> </xsl:text>
+				<xsl:value-of select="$L_WROTE"/>
+				<xsl:value-of select="$L_COLON"/>
+				<xsl:if test="@post_url">
+					<xsl:text> </xsl:text>
+					<a href="{@post_url}" data-post-id="{@post_id}" onclick="if(document.getElementById(hash.substr(1)))href=hash">&#8593;</a>
+				</xsl:if>
+				<xsl:if test="@date">
+					<div class="responsive-hide"><xsl:value-of select="@date"/></div>
+				</xsl:if>
+			</cite>
+		</xsl:if>
+		<xsl:apply-templates/>
+	</div>
+</blockquote>
+<!-- END quote_extended -->
 
-<!-- BEGIN code_open --><dl class="codebox"><dt>{L_CODE}: <a href="#" onclick="selectCode(this); return false;">{L_SELECT_ALL_CODE}</a></dt><dd><code><!-- END code_open -->
-<!-- BEGIN code_close --></code></dd></dl><!-- END code_close -->
+<!-- BEGIN code_open --><div class="codebox"><p>{L_CODE}{L_COLON} <a href="#" onclick="selectCode(this); return false;">{L_SELECT_ALL_CODE}</a></p><pre><code><!-- END code_open -->
+<!-- BEGIN code_close --></code></pre></div><!-- END code_close -->
 
 <!-- BEGIN inline_attachment_open --><div class="inline-attachment"><!-- END inline_attachment_open -->
 <!-- BEGIN inline_attachment_close --></div><!-- END inline_attachment_close -->
@@ -31,7 +66,7 @@
 
 <!-- BEGIN size --><span style="font-size: {SIZE}%; line-height: 116%;">{TEXT}</span><!-- END size -->
 
-<!-- BEGIN img --><img src="{URL}" alt="{L_IMAGE}" /><!-- END img -->
+<!-- BEGIN img --><img src="{URL}" class="postimage" alt="{L_IMAGE}" /><!-- END img -->
 
 <!-- BEGIN url --><a href="{URL}" class="postlink">{DESCRIPTION}</a><!-- END url -->
 

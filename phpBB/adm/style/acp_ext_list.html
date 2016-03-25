@@ -1,0 +1,121 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+
+	<fieldset class="quick">
+		<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{L_BROWSE_EXTENSIONS_DATABASE}</a> &bull; <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
+	</fieldset>
+
+	<form id="version_check_settings" method="post" action="{U_ACTION}" style="display:none">
+
+	<fieldset>
+		<legend>{L_EXTENSIONS_VERSION_CHECK_SETTINGS}</legend>
+		<dl>
+			<dt><label for="force_unstable">{L_FORCE_UNSTABLE}{L_COLON}</label></dt>
+			<dd>
+				<label><input type="radio" id="force_unstable" name="force_unstable" class="radio" value="1"<!-- IF FORCE_UNSTABLE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" name="force_unstable" class="radio" value="0"<!-- IF not FORCE_UNSTABLE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" name="reset" value="{L_RESET}" />
+			<input type="hidden" name="action" value="set_config_version_check_force_unstable" />
+			{S_FORM_TOKEN}
+		</p>
+	</fieldset>
+	</form>
+
+	<table class="table1">
+		<col class="row1" ><col class="row1" ><col class="row2" ><col class="row2" >
+	<thead>
+		<tr>
+			<th>{L_EXTENSION_NAME}</th>
+			<th style="text-align: center; width: 20%;">{L_CURRENT_VERSION}</th>
+			<th style="text-align: center; width: 10%;">{L_EXTENSION_OPTIONS}</th>
+			<th style="text-align: center; width: 25%;">{L_EXTENSION_ACTIONS}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- IF .enabled -->
+		<tr>
+			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_ENABLED}</strong></td>
+		</tr>
+		<!-- BEGIN enabled -->
+		<tr class="ext_enabled row-highlight">
+			<td><strong title="{enabled.NAME}">{enabled.META_DISPLAY_NAME}</strong></td>
+			<td style="text-align: center;">
+				<!-- IF enabled.S_VERSIONCHECK -->
+				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong>
+				<!-- ELSE -->
+				{enabled.META_VERSION}
+				<!-- ENDIF -->
+			</td>
+			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
+					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
+		</tr>
+		<!-- END enabled -->
+		<!-- ENDIF -->
+
+		<!-- IF .disabled -->
+		<tr>
+			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_DISABLED}</strong></td>
+		</tr>
+		<!-- BEGIN disabled -->
+		<tr class="ext_disabled row-highlight">
+			<td><strong title="{disabled.NAME}">{disabled.META_DISPLAY_NAME}</strong></td>
+			<td style="text-align: center;">
+				<!-- IF disabled.S_VERSIONCHECK -->
+				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong>
+				<!-- ELSE -->
+				{disabled.META_VERSION}
+				<!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">
+				<!-- IF disabled.U_DETAILS --><a href="{disabled.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
+					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
+		</tr>
+		<!-- END disabled -->
+		<!-- ENDIF -->
+	</tbody>
+	</table>
+
+	<table class="table1">
+	<tr>
+		<th>{L_EXTENSION_INSTALL_HEADLINE}</th>
+	</tr>
+	<tr>
+		<td class="row3">{L_EXTENSION_INSTALL_EXPLAIN}</td>
+	</tr>
+	<tr>
+		<th>{L_EXTENSION_UPDATE_HEADLINE}</th>
+	</tr>
+	<tr>
+		<td class="row3">{L_EXTENSION_UPDATE_EXPLAIN}</td>
+	</tr>
+	<tr>
+		<th>{L_EXTENSION_REMOVE_HEADLINE}</th>
+	</tr>
+	<tr>
+		<td class="row3">{L_EXTENSION_REMOVE_EXPLAIN}</td>
+	</tr>
+	</tbody>
+	</table>
+
+<!-- INCLUDE overall_footer.html -->

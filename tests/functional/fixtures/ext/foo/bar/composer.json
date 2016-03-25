@@ -1,0 +1,24 @@
+{
+	"name": "foo/bar",
+	"type": "phpbb-extension",
+	"description": "Testing extensions",
+	"homepage": "",
+	"version": "1.0.0",
+	"time": "2013-03-21 01:01:01",
+	"license": "GPL-2.0",
+	"authors": [{
+		"name": "Joas Schilling",
+		"email": "nickvergessen@phpbb.com",
+		"homepage": "http://www.phpbb.com",
+		"role": "Developer"
+	}],
+	"require": {
+		"php": ">=5.3"
+	},
+	"extra": {
+		"display-name": "phpBB 3.1 Extension Testing",
+		"soft-require": {
+			"phpbb/phpbb": "3.1.*@dev"
+		}
+	}
+}

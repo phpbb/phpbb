@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_topics">
+		<column>topic_id</column>
+		<column>forum_id</column>
+		<column>topic_title</column>
+		<column>topic_first_post_id</column>
+		<column>topic_last_post_id</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>Topic</value>
+			<value>2</value>
+			<value>2</value>
+		</row>
+	</table>
+	<table name="phpbb_posts">
+		<column>post_id</column>
+		<column>poster_id</column>
+		<column>topic_id</column>
+		<column>forum_id</column>
+		<column>post_text</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Post 1</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Post 2</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value>Post 3</value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>user_posts</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>user 1</value>
+			<value>user 1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>user 2</value>
+			<value>user 2</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>user 3</value>
+			<value>user 3</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Strict Standard">
+
+ <description>phpBB coding standard for PHP files</description>
+
+ <rule ref="./ruleset-php-legacy.xml" />
+
+ <!-- There SHOULD NOT be more than 80 characters per line
+      There MUST NOT be more than 120 characters per line -->
+ <!--
+ <rule ref="Generic.Files.LineLength">
+  <properties>
+   <property name="lineLimit" value="80"/>
+   <property name="absoluteLineLimit" value="120"/>
+  </properties>
+ </rule>
+ -->
+
+ <!-- The PHP constants true, false, and null MUST be in lower case. -->
+ <rule ref="Generic.PHP.LowerCaseConstant" />
+
+ <!-- PHP keywords MUST be in lower case. -->
+ <rule ref="Generic.PHP.LowerCaseKeyword" />
+
+ <!-- Constructors MUST be called __construct() instead of after the class. -->
+ <rule ref="Generic.NamingConventions.ConstructorName" />
+
+ <!-- Classes etc. MUST be namespaced -->
+ <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+
+ <!-- A file MUST not contain more than one class/interface -->
+ <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses" />
+
+ <!-- Files containing classes MUST not have any side-effects -->
+ <rule ref="PSR1.Files.SideEffects.FoundWithSymbols" />
+
+ <!-- When present, all use declarations MUST go after the namespace declaration.
+      There MUST be one use keyword per declaration.
+      There MUST be one blank line after the use block. -->
+ <rule ref="PSR2.Namespaces.UseDeclaration" />
+
+ <!-- There MUST be one blank line after the namespace declaration -->
+ <rule ref="PSR2.Namespaces.NamespaceDeclaration" />
+
+ <!-- There MUST NOT be unused use statements. -->
+ <rule ref="./phpbb/Sniffs/Namespaces/UnusedUseSniff.php" />
+
+</ruleset>

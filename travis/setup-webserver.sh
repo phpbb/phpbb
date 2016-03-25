@@ -1,54 +1,68 @@
 #!/bin/bash
 #
-# @copyright (c) 2013 phpBB Group
-# @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+# This file is part of the phpBB Forum Software package.
+#
+# @copyright (c) phpBB Limited <https://www.phpbb.com>
+# @license GNU General Public License, version 2 (GPL-2.0)
+#
+# For full copyright and license information, please see
+# the docs/CREDITS.txt file.
 #
 set -e
+set -x
 
-sudo apt-get update -qq
-sudo apt-get install -qq nginx realpath
+sudo apt-get update
+sudo apt-get install -y nginx realpath
 
 sudo service nginx stop
 
 DIR=$(dirname "$0")
-PHPBB_ROOT_PATH=$(realpath "$DIR/../phpBB")
-
-NGINX_CONF="/etc/nginx/sites-enabled/default"
-
-PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
-PHP_FPM_CONF="$DIR/php-fpm.conf"
-PHP_FPM_SOCK=$(realpath "$DIR")/php-fpm.sock
-
 USER=$(whoami)
+PHPBB_ROOT_PATH=$(realpath "$DIR/../phpBB")
+NGINX_CONF="/etc/nginx/sites-enabled/default"
+APP_SOCK=$(realpath "$DIR")/php-app.sock
 
-# php-fpm configuration
-echo "
-[global]
+if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ]
+then
+	HHVM_LOG=$(realpath "$DIR")/hhvm.log
 
-[travis]
-user = $USER
-group = $USER
-listen = $PHP_FPM_SOCK
-pm = static
-pm.max_children = 2
+    sudo service hhvm stop
+	sudo hhvm \
+		--mode daemon \
+		--user "$USER" \
+		-vServer.Type=fastcgi \
+		-vServer.FileSocket="$APP_SOCK" \
+		-vLog.File="$HHVM_LOG"
+else
+	# php-fpm
+	PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
+	PHP_FPM_CONF="$DIR/php-fpm.conf"
 
-php_admin_value[memory_limit] = 128M
-" > $PHP_FPM_CONF
+	echo "
+		[global]
 
-# nginx configuration
-echo "
-server {
-	listen	80;
-	root	$PHPBB_ROOT_PATH/;
-	index	index.php index.html;
+		[travis]
+		user = $USER
+		group = $USER
+		listen = $APP_SOCK
+		listen.mode = 0666
+		pm = static
+		pm.max_children = 2
 
-	location ~ \.php$ {
-		fastcgi_pass	unix:$PHP_FPM_SOCK;
-		include			fastcgi_params;
-	}
-}
-" | sudo tee $NGINX_CONF > /dev/null
+		php_admin_value[memory_limit] = 128M
+	" > $PHP_FPM_CONF
 
-# Start daemons
-sudo $PHP_FPM_BIN --fpm-config "$DIR/php-fpm.conf"
+	sudo $PHP_FPM_BIN \
+		--fpm-config "$DIR/php-fpm.conf"
+fi
+
+# nginx
+cat $DIR/../phpBB/docs/nginx.sample.conf \
+| sed "s/root \/path\/to\/phpbb/root $(echo $PHPBB_ROOT_PATH | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" \
+| sed -e '1,/The actual board domain/d' \
+| sed -e '/If running php as fastcgi/,$d' \
+| sed -e "s/fastcgi_pass php;/fastcgi_pass unix:$(echo $APP_SOCK | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g');/g" \
+| sed -e 's/#listen 80/listen 80/' \
+| sudo tee $NGINX_CONF
+
 sudo service nginx start

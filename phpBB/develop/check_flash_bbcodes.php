@@ -1,12 +1,18 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2009, 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
 *
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
+
+/**
 * This script will check your database for potentially dangerous flash BBCode tags
-*
 */
 
 //
@@ -134,8 +140,12 @@ function html_entity_decode_utf8($string)
 	static $trans_tbl;
 
 	// replace numeric entities
-	$string = preg_replace('~&#x([0-9a-f]+);~ei', 'code2utf8(hexdec("\\1"))', $string);
-	$string = preg_replace('~&#([0-9]+);~e', 'code2utf8(\\1)', $string);
+	$string = preg_replace_callback('~&#x([0-9a-f]+);~i', function ($match) {
+		return code2utf8(hexdec($match[1]));
+	}, $string);
+	$string = preg_replace_callback('~&#([0-9]+);~', function ($match) {
+		return code2utf8($match[1]);
+	}, $string);
 
 	// replace literal entities
 	if (!isset($trans_tbl))

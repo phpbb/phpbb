@@ -1,0 +1,17 @@
+pagination
+<!-- BEGIN sub -->
+:per_page:{sub.PER_PAGE}
+:current_page:{sub.CURRENT_PAGE}
+:base_url:{sub.BASE_URL}
+<!-- BEGIN pagination -->
+<!-- IF sub.pagination.S_IS_PREV -->:previous:{sub.pagination.PAGE_NUMBER}:{sub.pagination.PAGE_URL}
+<!-- ELSEIF sub.pagination.S_IS_CURRENT -->:current:{sub.pagination.PAGE_NUMBER}:{sub.pagination.PAGE_URL}
+<!-- ELSEIF sub.pagination.S_IS_ELLIPSIS -->:ellipsis:{sub.pagination.PAGE_NUMBER}:{sub.pagination.PAGE_URL}
+<!-- ELSEIF sub.pagination.S_IS_NEXT -->:next:{sub.pagination.PAGE_NUMBER}:{sub.pagination.PAGE_URL}
+<!-- ELSE -->:else:{sub.pagination.PAGE_NUMBER}:{sub.pagination.PAGE_URL}
+<!-- ENDIF -->
+<!-- END pagination -->
+<!-- IF sub.U_PREVIOUS_PAGE -->:u_prev:{sub.U_PREVIOUS_PAGE}<!-- ENDIF -->
+
+<!-- IF sub.U_NEXT_PAGE -->:u_next:{sub.U_NEXT_PAGE}<!-- ENDIF -->
+<!-- END sub -->

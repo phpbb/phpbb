@@ -2,15 +2,21 @@
 <h2>{L_WHOIS}</h2>
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
-	
-		<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_RETURN_POST}">{L_RETURN_POST}</a></p>
+	<div class="inner">
+		<p>
+			<a href="{U_RETURN_POST}" class="arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
+				<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_POST}</span>
+			</a>
+		</p>
 		<div class="postbody"><div class="content">
 			<pre>{WHOIS}</pre>
 		</div></div>
-		<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_RETURN_POST}">{L_RETURN_POST}</a></p>
-	
-	<span class="corners-bottom"><span></span></span></div>
+		<p>
+			<a href="{U_RETURN_POST}" class="arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
+				<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_POST}</span>
+			</a>
+		</p>
+	</div>
 </div>
 
 <!-- INCLUDE mcp_footer.html -->

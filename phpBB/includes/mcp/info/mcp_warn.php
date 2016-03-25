@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package mcp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class mcp_warn_info
 {
 	function module()
@@ -18,7 +18,6 @@ class mcp_warn_info
 		return array(
 			'filename'	=> 'mcp_warn',
 			'title'		=> 'MCP_WARN',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'front'				=> array('title' => 'MCP_WARN_FRONT', 'auth' => 'aclf_m_warn', 'cat' => array('MCP_WARN')),
 				'list'				=> array('title' => 'MCP_WARN_LIST', 'auth' => 'aclf_m_warn', 'cat' => array('MCP_WARN')),
@@ -36,5 +35,3 @@ class mcp_warn_info
 	{
 	}
 }
-
-?>

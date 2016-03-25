@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_config">
+		<column>config_name</column>
+		<column>config_value</column>
+		<column>is_dynamic</column>
+		<row>
+			<value>foo</value>
+			<value>23</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>bar</value>
+			<value>42</value>
+			<value>1</value>
+		</row>
+	</table>
+</dataset>

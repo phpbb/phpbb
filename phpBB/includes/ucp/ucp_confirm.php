@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package VC
-* @version $Id$
-* @copyright (c) 2005 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -26,8 +29,6 @@ if (!defined('IN_PHPBB'))
 * to that licence. Do not incorporate this within software
 * released or distributed in any way under a licence other
 * than the GPL. We will be watching ... ;)
-*
-* @package VC
 */
 class ucp_confirm
 {
@@ -35,16 +36,13 @@ class ucp_confirm
 
 	function main($id, $mode)
 	{
-		global $db, $user, $phpbb_root_path, $config, $phpEx;
+		global $config, $phpbb_container, $request;
 
-		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-		$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-		$captcha->init(request_var('type', 0));
+		$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
+		$captcha->init($request->variable('type', 0));
 		$captcha->execute();
 
 		garbage_collection();
 		exit_handler();
 	}
 }
-
-?>

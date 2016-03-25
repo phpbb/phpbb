@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -25,7 +29,6 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : '../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/acp/acp_search.' . $phpEx);
-require($phpbb_root_path . 'includes/search/' . $class_name . '.' . $phpEx);
 
 $user->session_begin();
 $auth->acl($user->data);
@@ -129,7 +132,7 @@ else
 
 $search->tidy();
 
-add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $search_name);
+$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($search_name));
 
 echo $user->lang['SEARCH_INDEX_CREATED'] . "\n";
 echo 'Peak Memory Usage: ' . get_formatted_filesize(memory_get_peak_usage()) . "\n";

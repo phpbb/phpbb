@@ -1,22 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
-<meta http-equiv="Content-Language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <!-- IF META -->{META}<!-- ENDIF -->
 <title>{PAGE_TITLE}</title>
 
-<link href="style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+<link href="style/admin.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
 // <![CDATA[
-var jump_page = '{LA_JUMP_PAGE}:';
-var on_page = '{ON_PAGE}';
+var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
+var on_page = '{CURRENT_PAGE}';
 var per_page = '{PER_PAGE}';
-var base_url = '{A_BASE_URL}';
+var base_url = '{BASE_URL|e('js')}';
 
 /**
 * Window popup
@@ -53,25 +51,6 @@ function jumpto()
 }
 
 /**
-* Set display of page element
-* s[-1,0,1] = hide,toggle display,show
-*/
-function dE(n, s, type)
-{
-	if (!type)
-	{
-		type = 'block';
-	}
-
-	var e = document.getElementById(n);
-	if (!s)
-	{
-		s = (e.style.display == '') ? -1 : 1;
-	}
-	e.style.display = (s == 1) ? type : 'none';
-}
-
-/**
 * Mark/unmark checkboxes
 * id = ID of parent container, name = name prefix, state = state [true/false]
 */
@@ -105,8 +84,13 @@ function find_username(url)
 
 // ]]>
 </script>
+<!-- EVENT acp_simple_header_head_append -->
+{$STYLESHEETS}
+<!-- EVENT acp_simple_header_stylesheets_after -->
 </head>
 
-<body class="{S_CONTENT_DIRECTION}">
+<body class="{S_CONTENT_DIRECTION} {BODY_CLASS}">
+
+<!-- EVENT acp_simple_header_body_before -->
 
 <div id="page-body" class="simple-page-body">

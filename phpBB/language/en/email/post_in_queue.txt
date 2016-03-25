@@ -1,0 +1,13 @@
+Subject: Post moderation notification - "{TOPIC_TITLE}"
+
+Hello {USERNAME},
+
+You are receiving this notification because the post "{POST_SUBJECT}" at "{SITENAME}" needs approval.
+
+If you want to view the post, click the following link:
+{U_VIEW_POST}
+
+If you want to view the topic, click the following link:
+{U_TOPIC}
+
+{EMAIL_SIG}

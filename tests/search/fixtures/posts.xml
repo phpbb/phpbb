@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_posts">
+		<column>post_username</column>
+		<column>post_subject</column>
+		<column>post_text</column>
+		<row>
+			<value>foo</value>
+			<value>foo</value>
+			<value>foo</value>
+		</row>
+		<row>
+			<value>bar</value>
+			<value>bar</value>
+			<value>bar</value>
+		</row>
+		<row>
+			<value>commonword</value>
+			<value>commonword</value>
+			<value>commonword</value>
+		</row>
+		<row>
+			<value>baaz</value>
+			<value>baaz</value>
+			<value>baaz</value>
+		</row>
+	</table>
+	<table name="phpbb_search_wordlist">
+		<column>word_id</column>
+		<column>word_text</column>
+		<column>word_common</column>
+		<row>
+			<value>1</value>
+			<value>foo</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>bar</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>commonword</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>baaz</value>
+			<value>0</value>
+		</row>
+	</table>
+</dataset>

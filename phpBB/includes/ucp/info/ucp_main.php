@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class ucp_main_info
 {
 	function module()
@@ -18,7 +18,6 @@ class ucp_main_info
 		return array(
 			'filename'	=> 'ucp_main',
 			'title'		=> 'UCP_MAIN',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'front'			=> array('title' => 'UCP_MAIN_FRONT', 'auth' => '', 'cat' => array('UCP_MAIN')),
 				'subscribed'	=> array('title' => 'UCP_MAIN_SUBSCRIBED', 'auth' => '', 'cat' => array('UCP_MAIN')),
@@ -36,5 +35,3 @@ class ucp_main_info
 	{
 	}
 }
-
-?>

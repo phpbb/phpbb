@@ -14,14 +14,10 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value>mass email</value>
 			<value>mass email</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -31,15 +27,11 @@
 			<value>banned</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>not in group</value>
 			<value>not in group</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

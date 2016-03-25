@@ -1,0 +1,2 @@
+[url]http://example.org/?tourney[id]=34&action=brackets[/url]
+[url="http://example.org/?tourney[id]=34&action=brackets"]link[/url]

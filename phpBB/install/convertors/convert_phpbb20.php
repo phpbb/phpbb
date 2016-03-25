@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package install
-* @version $Id$
-* @copyright (c) 2006 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -22,8 +25,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include($phpbb_root_path . 'config.' . $phpEx);
+$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
+extract($phpbb_config_php_file->get_all());
 unset($dbpasswd);
+
+$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 
 /**
 * $convertor_data provides some basic information about this convertor which is
@@ -32,8 +38,8 @@ unset($dbpasswd);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.0.12',
-	'author'		=> '<a href="https://www.phpbb.com/">phpBB Group</a>',
+	'phpbb_version'	=> '3.3.0-a1-dev',
+	'author'		=> '<a href="https://www.phpbb.com/">phpBB Limited</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
 	'dbport'		=> $dbport,
@@ -135,7 +141,7 @@ $config_schema = array(
 		'avatar_max_width'		=> 'avatar_max_width',
 		'avatar_max_height'		=> 'avatar_max_height',
 		'default_dateformat'	=> 'phpbb_set_encoding(default_dateformat)',
-		'board_timezone'		=> 'board_timezone',
+		'board_timezone'		=> 'phpbb_convert_timezone(board_timezone)',
 		'allow_privmsg'			=> 'not(privmsg_disable)',
 		'gzip_compress'			=> 'gzip_compress',
 		'coppa_enable'			=> '!is_empty(coppa_mail)',
@@ -227,11 +233,11 @@ if (!$get_info)
 		$user_id = (int) $src_db->sql_fetchfield('max_user_id');
 		$src_db->sql_freeresult($result);
 
-		set_config('increment_user_id', ($user_id + 1), true);
+		$config->set('increment_user_id', ($user_id + 1), false);
 	}
 	else
 	{
-		set_config('increment_user_id', 0, true);
+		$config->set('increment_user_id', 0, false);
 	}
 
 	// Overwrite maximum avatar width/height
@@ -340,6 +346,9 @@ if (!$get_info)
 			update_folder_pm_count();
 		', '
 			update_unread_count();
+		', (defined('MOD_ATTACHMENT')) ? '
+			phpbb_attachment_extension_group_name();
+		' : '
 		', '
 			phpbb_convert_authentication(\'start\');
 		', '
@@ -398,7 +407,7 @@ if (!$get_info)
 				array('is_orphan',				0,										''),
 				array('poster_id',				'attachments.user_id_1 AS poster_id',	'phpbb_user_id'),
 				array('physical_filename',		'attachments_desc.physical_filename',	'import_attachment'),
-				array('real_filename',			'attachments_desc.real_filename',		''),
+				array('real_filename',			'attachments_desc.real_filename',		'phpbb_set_encoding'),
 				array('download_count',			'attachments_desc.download_count',		''),
 				array('attach_comment',			'attachments_desc.comment',				array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('extension',				'attachments_desc.extension',			''),
@@ -496,14 +505,17 @@ if (!$get_info)
 				array('topic_title',			'topics.topic_title',				'phpbb_set_encoding'),
 				array('topic_time',				'topics.topic_time',				''),
 				array('topic_views',			'topics.topic_views',				''),
-				array('topic_replies',			'topics.topic_replies',				''),
-				array('topic_replies_real',		'topics.topic_replies',				''),
+				array('topic_posts_approved',	'topics.topic_replies',				'phpbb_topic_replies_to_posts'),
+				array('topic_posts_unapproved',	0,									''),
+				array('topic_posts_softdeleted',0,									''),
 				array('topic_last_post_id',		'topics.topic_last_post_id',		''),
 				array('topic_status',			'topics.topic_status',				'is_topic_locked'),
 				array('topic_moved_id',			0,									''),
 				array('topic_type',				'topics.topic_type',				'phpbb_convert_topic_type'),
 				array('topic_first_post_id',	'topics.topic_first_post_id',		''),
 				array('topic_last_view_time',	'posts.post_time',					'intval'),
+				array('topic_visibility',		ITEM_APPROVED,						''),
+
 				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'htmlspecialchars_decode', 'function4' => 'utf8_htmlspecialchars')),
 				array('poll_start',				'vote_desc.vote_start',				'null_to_zero'),
 				array('poll_length',			'vote_desc.vote_length',			'null_to_zero'),
@@ -529,13 +541,15 @@ if (!$get_info)
 				array('topic_title',			'topics.topic_title',				'phpbb_set_encoding'),
 				array('topic_time',				'topics.topic_time',				''),
 				array('topic_views',			'topics.topic_views',				''),
-				array('topic_replies',			'topics.topic_replies',				''),
-				array('topic_replies_real',		'topics.topic_replies',				''),
+				array('topic_posts_approved',	'topics.topic_replies',				'phpbb_topic_replies_to_posts'),
+				array('topic_posts_unapproved',	0,									''),
+				array('topic_posts_softdeleted',0,									''),
 				array('topic_last_post_id',		'topics.topic_last_post_id',		''),
 				array('topic_status',			ITEM_MOVED,							''),
 				array('topic_moved_id',			'topics.topic_moved_id',			''),
 				array('topic_type',				'topics.topic_type',				'phpbb_convert_topic_type'),
 				array('topic_first_post_id',	'topics.topic_first_post_id',		''),
+				array('topic_visibility',		ITEM_APPROVED,						''),
 
 				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'htmlspecialchars_decode', 'function4' => 'utf8_htmlspecialchars')),
 				array('poll_start',				'vote_desc.vote_start',				'null_to_zero'),
@@ -643,6 +657,7 @@ if (!$get_info)
 				array('post_edit_count',		'posts.post_edit_count',			''),
 				array('post_edit_reason',		'',									''),
 				array('post_edit_user',			'',									'phpbb_post_edit_user'),
+				array('post_visibility',		ITEM_APPROVED,						''),
 
 				array('bbcode_uid',				'posts.post_time',					'make_uid'),
 				array('post_text',				'posts_text.post_text',				'phpbb_prepare_message'),
@@ -818,7 +833,10 @@ if (!$get_info)
 			array(
 				'target'		=> GROUPS_TABLE,
 				'autoincrement'	=> 'group_id',
-				'query_first'	=> array('target', $convert->truncate_statement . GROUPS_TABLE),
+				'query_first'	=> array(
+					array('target', $convert->truncate_statement . GROUPS_TABLE),
+					array('target', $convert->truncate_statement . TEAMPAGE_TABLE),
+				),
 
 				array('group_id',				'groups.group_id',					''),
 				array('group_type',				'groups.group_type',				'phpbb_convert_group_type'),
@@ -835,6 +853,7 @@ if (!$get_info)
 				'query_first'	=> array('target', $convert->truncate_statement . USER_GROUP_TABLE),
 				'execute_first'	=> '
 					add_default_groups();
+					add_groups_to_teampage();
 				',
 
 				array('group_id',		'groups.group_id',					''),
@@ -862,7 +881,8 @@ if (!$get_info)
 				'autoincrement'	=> 'user_id',
 				'query_first'	=> array(
 					array('target', 'DELETE FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS),
-					array('target', $convert->truncate_statement . BOTS_TABLE)
+					array('target', $convert->truncate_statement . BOTS_TABLE),
+					array('target', $convert->truncate_statement . USER_NOTIFICATIONS_TABLE),
 				),
 
 				'execute_last'	=> '
@@ -876,8 +896,7 @@ if (!$get_info)
 				array('user_regdate',			'users.user_regdate',				''),
 				array('username',				'users.username',					'phpbb_set_default_encoding'), // recode to utf8 with default lang
 				array('username_clean',			'users.username',					array('function1' => 'phpbb_set_default_encoding', 'function2' => 'utf8_clean_string')),
-				array('user_password',			'users.user_password',				'phpbb_hash'),
-				array('user_pass_convert',		1,									''),
+				array('user_password',			'users.user_password',				'phpbb_convert_password_hash'),
 				array('user_posts',				'users.user_posts',					'intval'),
 				array('user_email',				'users.user_email',					'strtolower'),
 				array('user_email_hash',		'users.user_email',					'gen_email_hash'),
@@ -886,20 +905,12 @@ if (!$get_info)
 				array('user_lastmark',			'users.user_lastvisit',				'intval'),
 				array('user_lang',				$config['default_lang'],			''),
 				array('',						'users.user_lang',					''),
-				array('user_timezone',			'users.user_timezone',				'floatval'),
+				array('user_timezone',			'users.user_timezone',				'phpbb_convert_timezone'),
 				array('user_dateformat',		'users.user_dateformat',			array('function1' => 'phpbb_set_encoding', 'function2' => 'fill_dateformat')),
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 
-				array('user_interests',			'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
-				array('user_occ',				'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
-				array('user_website',			'users.user_website',				'validate_website'),
 				array('user_jabber',			'',									''),
-				array('user_msnm',				'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
-				array('user_yim',				'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
-				array('user_aim',				'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
-				array('user_icq',				'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
-				array('user_from',				'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 
@@ -935,10 +946,29 @@ if (!$get_info)
 				array('user_sig_bbcode_bitfield',	'',												'get_bbcode_bitfield'),
 				array('',							'users.user_regdate AS post_time',				''),
 
+				array('',						'users.user_notify_pm',				'phpbb_add_notification_options'),
+
+				'where'			=> 'users.user_id <> -1',
+			),
+
+			array(
+				'target'		=> PROFILE_FIELDS_DATA_TABLE,
+				'primary'		=> 'users.user_id',
+				'query_first'	=> array(
+					array('target', $convert->truncate_statement . PROFILE_FIELDS_DATA_TABLE),
+				),
+
+				array('user_id',				'users.user_id',					'phpbb_user_id'),
+				array('pf_phpbb_occupation',	'users.user_occ',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_interests',		'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_location',		'users.user_from',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_icq',			'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_yahoo',			'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_aol',			'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
+				array('pf_phpbb_website',		'users.user_website',				'validate_website'),
+
 				'where'			=> 'users.user_id <> -1',
 			),
 		),
 	);
 }
-
-?>

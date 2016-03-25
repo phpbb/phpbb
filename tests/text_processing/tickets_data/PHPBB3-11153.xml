@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>myemail</value>
+			<value></value>
+			<value>1</value>
+			<value>[myemail={EMAIL}]{TEXT}[/myemail]</value>
+			<value><![CDATA[<a href="mailto:{EMAIL}">{TEXT}</a>]]></value>
+			<value><![CDATA[!\[myemail\=(([\w\!\#$\%\&'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?))\](.*?)\[/myemail\]!ies]]></value>
+			<value><![CDATA['[myemail='.$this->bbcode_specialchars('${1}').':$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${2}')).'[/myemail:$uid]']]></value>
+			<value><![CDATA[!\[myemail\=(([\w\!\#$\%\&'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*(?:[\w\!\#$\%'\*\+\-\/\=\?\^\`{\|\}\~]|&amp;)+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,63})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)):$uid\](.*?)\[/myemail:$uid\]!s]]></value>
+			<value><![CDATA[<a href="mailto:${1}">${2}</a>]]></value>
+		</row>
+	</table>
+</dataset>

@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2008 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -22,7 +26,7 @@ class phpbb_test_case extends PHPUnit_Framework_TestCase
 			'PHP_Token_Stream' => array('customTokens'),
 			'PHP_Token_Stream_CachingFactory' => array('cache'),
 
-			'phpbb_database_test_case' => array('already_connected'),
+			'phpbb_database_test_case' => array('already_connected', 'last_post_timestamp'),
 		);
 	}
 

@@ -13,28 +13,33 @@
 >
     <testsuites>
         <testsuite name="phpBB Test Suite">
-            <directory suffix="_test.php">./tests/</directory>
+            <directory suffix="_test.php">./tests</directory>
             <exclude>./tests/functional</exclude>
-            <exclude>tests/lint_test.php</exclude>
-        </testsuite>
-        <testsuite name="phpBB Lint Test">
-            <file>tests/lint_test.php</file>
+            <exclude>./tests/lint_test.php</exclude>
+            <exclude>./tests/ui</exclude>
         </testsuite>
         <testsuite name="phpBB Functional Tests">
-            <directory suffix="_test.php" phpVersion="5.3.0" phpVersionOperator=">=">./tests/functional</directory>
+            <directory suffix="_test.php">./tests/functional</directory>
+        </testsuite>
+        <testsuite name="phpBB Lint Test">
+            <file>./tests/lint_test.php</file>
+        </testsuite>
+        <testsuite name="phpBB UI Tests">
+            <directory suffix="_test.php" phpVersion="5.3.19"
+                phpVersionOperator=">=">./tests/ui</directory>
         </testsuite>
     </testsuites>
 
     <groups>
         <exclude>
-            <group>functional</group>
             <group>slow</group>
         </exclude>
     </groups>
 
     <filter>
-        <blacklist>
-            <directory>./tests/</directory>
-        </blacklist>
+        <whitelist>
+            <directory suffix=".php">./phpBB/includes/</directory>
+            <directory suffix=".php">./phpBB/phpbb/</directory>
+        </whitelist>
     </filter>
 </phpunit>

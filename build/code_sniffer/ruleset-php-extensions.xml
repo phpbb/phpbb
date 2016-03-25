@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB PHP Strict Standard Extensions">
+
+ <description>phpBB coding standard for PHP files of phpBB extensions</description>
+
+ <rule ref="./ruleset-php-strict.xml" />
+
+</ruleset>

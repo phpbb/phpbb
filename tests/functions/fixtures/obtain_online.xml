@@ -15,8 +15,6 @@
 		<column>user_allow_viewonline</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value>anonymous</value>
@@ -24,16 +22,12 @@
 			<value>1</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>2</value>
 			<value>2</value>
 			<value>1</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -44,16 +38,12 @@
 			<value>1</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>4</value>
 			<value>4</value>
 			<value>1</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -64,16 +54,12 @@
 			<value>1</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>6</value>
 			<value>6</value>
 			<value>6</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -84,16 +70,12 @@
 			<value>0</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>8</value>
 			<value>8</value>
 			<value>8</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -104,16 +86,12 @@
 			<value>0</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>10</value>
 			<value>10</value>
 			<value>10</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

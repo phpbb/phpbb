@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -17,21 +20,38 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
+$mode = $request->variable('mode', '');
+
+if ($mode === 'contactadmin')
+{
+	define('SKIP_CHECK_BAN', true);
+	define('SKIP_CHECK_DISABLED', true);
+}
+
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
+// Setting a variable to let the style designer know where he is...
+$template->assign_var('S_IN_MEMBERLIST', true);
+
 // Grab data
-$mode		= request_var('mode', '');
-$action		= request_var('action', '');
-$user_id	= request_var('u', ANONYMOUS);
-$username	= request_var('un', '', true);
-$group_id	= request_var('g', 0);
-$topic_id	= request_var('t', 0);
+$action		= $request->variable('action', '');
+$user_id	= $request->variable('u', ANONYMOUS);
+$username	= $request->variable('un', '', true);
+$group_id	= $request->variable('g', 0);
+$topic_id	= $request->variable('t', 0);
+
+// Redirect when old mode is used
+if ($mode == 'leaders')
+{
+	send_status_line(301, 'Moved Permanently');
+	redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'));
+}
 
 // Check our mode...
-if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'leaders')))
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'contactadmin', 'searchuser', 'team', 'livesearch')))
 {
 	trigger_error('NO_MODE');
 }
@@ -39,7 +59,15 @@ if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'sear
 switch ($mode)
 {
 	case 'email':
+	case 'contactadmin':
 	break;
+
+	case 'livesearch':
+		if (!$config['allow_live_searches'])
+		{
+			trigger_error('LIVE_SEARCHES_NOT_ALLOWED');
+		}
+		// No break
 
 	default:
 		// Can this user view profiles/memberlist?
@@ -55,206 +83,276 @@ switch ($mode)
 	break;
 }
 
-$start	= request_var('start', 0);
+/** @var \phpbb\group\helper $group_helper */
+$group_helper = $phpbb_container->get('group_helper');
+
+$start	= $request->variable('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
 $default_key = 'c';
-$sort_key = request_var('sk', $default_key);
-$sort_dir = request_var('sd', 'a');
+$sort_key = $request->variable('sk', $default_key);
+$sort_dir = $request->variable('sd', 'a');
 
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
-	case 'leaders':
+	case 'team':
 		// Display a listing of board admins, moderators
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		$page_title = $user->lang['THE_TEAM'];
-		$template_html = 'memberlist_leaders.html';
+		$template_html = 'memberlist_team.html';
 
-		$user_ary = $auth->acl_get_list(false, array('a_', 'm_'), false);
-
-		$admin_id_ary = $global_mod_id_ary = $mod_id_ary = $forum_id_ary = array();
-		foreach ($user_ary as $forum_id => $forum_ary)
-		{
-			foreach ($forum_ary as $auth_option => $id_ary)
-			{
-				if (!$forum_id)
-				{
-					if ($auth_option == 'a_')
-					{
-						$admin_id_ary = array_merge($admin_id_ary, $id_ary);
-					}
-					else
-					{
-						$global_mod_id_ary = array_merge($global_mod_id_ary, $id_ary);
-					}
-					continue;
-				}
-				else
-				{
-					$mod_id_ary = array_merge($mod_id_ary, $id_ary);
-				}
-
-				if ($forum_id)
-				{
-					foreach ($id_ary as $id)
-					{
-						$forum_id_ary[$id][] = $forum_id;
-					}
-				}
-			}
-		}
-
-		$admin_id_ary = array_unique($admin_id_ary);
-		$global_mod_id_ary = array_unique($global_mod_id_ary);
-
-		$mod_id_ary = array_merge($mod_id_ary, $global_mod_id_ary);
-		$mod_id_ary = array_unique($mod_id_ary);
-
-		// Admin group id...
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'ADMINISTRATORS'";
-		$result = $db->sql_query($sql);
-		$admin_group_id = (int) $db->sql_fetchfield('group_id');
+		$sql = 'SELECT *
+			FROM ' . TEAMPAGE_TABLE . '
+			ORDER BY teampage_position ASC';
+		$result = $db->sql_query($sql, 3600);
+		$teampage_data = $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
-		// Get group memberships for the admin id ary...
-		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
+		$sql_ary = array(
+			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id, t.teampage_id',
 
-		$admin_user_ids = array();
+			'FROM'		=> array(GROUPS_TABLE => 'g'),
 
-		if (!empty($admin_memberships))
-		{
-			// ok, we only need the user ids...
-			foreach ($admin_memberships as $row)
-			{
-				$admin_user_ids[$row['user_id']] = true;
-			}
-		}
-		unset($admin_memberships);
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(TEAMPAGE_TABLE => 't'),
+					'ON'	=> 't.group_id = g.group_id',
+				),
+				array(
+					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
+					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $user->data['user_id'],
+				),
+			),
+		);
 
-		$sql = 'SELECT forum_id, forum_name
-			FROM ' . FORUMS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
-		$forums = array();
+		$group_ids = $groups_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$forums[$row['forum_id']] = $row['forum_name'];
+			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
+			{
+				$row['group_name'] = $user->lang['GROUP_UNDISCLOSED'];
+				$row['u_group'] = '';
+			}
+			else
+			{
+				$row['group_name'] = $group_helper->get_name($row['group_name']);
+				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
+			}
+
+			if ($row['teampage_id'])
+			{
+				// Only put groups into the array we want to display.
+				// We are fetching all groups, to ensure we got all data for default groups.
+				$group_ids[] = (int) $row['group_id'];
+			}
+			$groups_ary[(int) $row['group_id']] = $row;
 		}
 		$db->sql_freeresult($result);
 
-		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
+		$sql_ary = array(
+			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_type, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id',
 
 			'FROM'		=> array(
-				USERS_TABLE		=> 'u',
-				GROUPS_TABLE	=> 'g'
+				USER_GROUP_TABLE => 'ug',
 			),
 
 			'LEFT_JOIN'	=> array(
 				array(
-					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
-					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . $user->data['user_id']
-				)
+					'FROM'	=> array(USERS_TABLE => 'u'),
+					'ON'	=> 'ug.user_id = u.user_id AND ug.user_pending = 0',
+				),
+				array(
+					'FROM'	=> array(GROUPS_TABLE => 'g'),
+					'ON'	=> 'ug.group_id = g.group_id',
+				),
 			),
 
-			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary)), false, true) . '
-				AND u.group_id = g.group_id',
+			'WHERE'		=> $db->sql_in_set('g.group_id', $group_ids, false, true),
 
-			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
-		));
-		$result = $db->sql_query($sql);
+			'ORDER_BY'	=> 'u.username_clean ASC',
+		);
 
+		/**
+		 * Modify the query used to get the users for the team page
+		 *
+		 * @event core.memberlist_team_modify_query
+		 * @var array	sql_ary			Array containing the query
+		 * @var array	group_ids		Array of group ids
+		 * @var array	teampage_data	The teampage data
+		 * @since 3.1.3-RC1
+		 */
+		$vars = array(
+			'sql_ary',
+			'group_ids',
+			'teampage_data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_query', compact($vars)));
+
+		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+
+		$user_ary = $user_ids = $group_users = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$which_row = (in_array($row['user_id'], $admin_id_ary)) ? 'admin' : 'mod';
+			$row['forums'] = '';
+			$row['forums_ary'] = array();
+			$user_ary[(int) $row['user_id']] = $row;
+			$user_ids[] = (int) $row['user_id'];
+			$group_users[(int) $row['group_id']][] = (int) $row['user_id'];
+		}
+		$db->sql_freeresult($result);
 
-			// We sort out admins not within the 'Administrators' group.
-			// Else, we will list those as admin only having the permission to view logs for example.
-			if ($which_row == 'admin' && empty($admin_user_ids[$row['user_id']]))
+		$user_ids = array_unique($user_ids);
+
+		if (!empty($user_ids) && $config['teampage_forums'])
+		{
+			$template->assign_var('S_DISPLAY_MODERATOR_FORUMS', true);
+			// Get all moderators
+			$perm_ary = $auth->acl_get_list($user_ids, array('m_'), false);
+
+			foreach ($perm_ary as $forum_id => $forum_ary)
 			{
-				// Remove from admin_id_ary, because the user may be a mod instead
-				unset($admin_id_ary[array_search($row['user_id'], $admin_id_ary)]);
-
-				if (!in_array($row['user_id'], $mod_id_ary) && !in_array($row['user_id'], $global_mod_id_ary))
+				foreach ($forum_ary as $auth_option => $id_ary)
 				{
-					continue;
-				}
-				else
-				{
-					$which_row = 'mod';
-				}
-			}
-
-			$s_forum_select = '';
-			$undisclosed_forum = false;
-
-			if (isset($forum_id_ary[$row['user_id']]) && !in_array($row['user_id'], $global_mod_id_ary))
-			{
-				if ($which_row == 'mod' && sizeof(array_diff(array_keys($forums), $forum_id_ary[$row['user_id']])))
-				{
-					foreach ($forum_id_ary[$row['user_id']] as $forum_id)
+					foreach ($id_ary as $id)
 					{
-						if (isset($forums[$forum_id]))
+						if (!$forum_id)
 						{
-							if ($auth->acl_get('f_list', $forum_id))
-							{
-								$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
-							}
-							else
-							{
-								$undisclosed_forum = true;
-							}
+							$user_ary[$id]['forums'] = $user->lang['ALL_FORUMS'];
+						}
+						else
+						{
+							$user_ary[$id]['forums_ary'][] = $forum_id;
 						}
 					}
 				}
 			}
 
-			// If the mod is only moderating non-viewable forums we skip the user. There is no gain in displaying the person then...
-			if (!$s_forum_select && $undisclosed_forum)
+			$sql = 'SELECT forum_id, forum_name
+				FROM ' . FORUMS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$forums = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-//				$s_forum_select = '<option value="">' . $user->lang['FORUM_UNDISCLOSED'] . '</option>';
+				$forums[$row['forum_id']] = $row['forum_name'];
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($user_ary as $user_id => $user_data)
+			{
+				if (!$user_data['forums'])
+				{
+					foreach ($user_data['forums_ary'] as $forum_id)
+					{
+						$user_ary[$user_id]['forums_options'] = true;
+						if (isset($forums[$forum_id]))
+						{
+							if ($auth->acl_get('f_list', $forum_id))
+							{
+								$user_ary[$user_id]['forums'] .= '<option value="">' . $forums[$forum_id] . '</option>';
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$parent_team = 0;
+		foreach ($teampage_data as $team_data)
+		{
+			// If this team entry has no group, it's a category
+			if (!$team_data['group_id'])
+			{
+				$template->assign_block_vars('group', array(
+					'GROUP_NAME'  => $team_data['teampage_name'],
+				));
+
+				$parent_team = (int) $team_data['teampage_id'];
 				continue;
 			}
 
-			// The person is moderating several "public" forums, therefore the person should be listed, but not giving the real group name if hidden.
-			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
+			$group_data = $groups_ary[(int) $team_data['group_id']];
+			$group_id = (int) $team_data['group_id'];
+
+			if (!$team_data['teampage_parent'])
 			{
-				$group_name = $user->lang['GROUP_UNDISCLOSED'];
-				$u_group = '';
+				// If the group does not have a parent category, we display the groupname as category
+				$template->assign_block_vars('group', array(
+					'GROUP_NAME'	=> $group_data['group_name'],
+					'GROUP_COLOR'	=> $group_data['group_colour'],
+					'U_GROUP'		=> $group_data['u_group'],
+				));
 			}
-			else
+
+			// Display group members.
+			if (!empty($group_users[$group_id]))
 			{
-				$group_name = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-				$u_group = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
+				foreach ($group_users[$group_id] as $user_id)
+				{
+					if (isset($user_ary[$user_id]))
+					{
+						$row = $user_ary[$user_id];
+						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['teampage_id'])
+						{
+							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
+							continue;
+						}
+
+						$user_rank_data = phpbb_get_user_rank($row, (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']));
+
+						$template_vars = array(
+							'USER_ID'		=> $row['user_id'],
+							'FORUMS'		=> $row['forums'],
+							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
+							'RANK_TITLE'	=> $user_rank_data['title'],
+
+							'GROUP_NAME'	=> $groups_ary[$row['default_group']]['group_name'],
+							'GROUP_COLOR'	=> $groups_ary[$row['default_group']]['group_colour'],
+							'U_GROUP'		=> $groups_ary[$row['default_group']]['u_group'],
+
+							'RANK_IMG'		=> $user_rank_data['img'],
+							'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
+
+							'S_INACTIVE'	=> $row['user_type'] == USER_INACTIVE,
+
+							'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+
+							'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+							'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
+						);
+
+						/**
+						 * Modify the template vars for displaying the user in the groups on the teampage
+						 *
+						 * @event core.memberlist_team_modify_template_vars
+						 * @var array	template_vars		Array containing the query
+						 * @var array	row					Array containing the action user row
+						 * @var array	groups_ary			Array of groups with all users that should be displayed
+						 * @since 3.1.3-RC1
+						 */
+						$vars = array(
+							'template_vars',
+							'row',
+							'groups_ary',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_template_vars', compact($vars)));
+
+						$template->assign_block_vars('group.user', $template_vars);
+
+						if ($config['teampage_memberships'] != 2)
+						{
+							unset($user_ary[$user_id]);
+						}
+					}
+				}
 			}
-
-			$rank_title = $rank_img = '';
-			get_user_rank($row['user_rank'], (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']), $rank_title, $rank_img, $rank_img_src);
-
-			$template->assign_block_vars($which_row, array(
-				'USER_ID'		=> $row['user_id'],
-				'FORUMS'		=> $s_forum_select,
-				'RANK_TITLE'	=> $rank_title,
-				'GROUP_NAME'	=> $group_name,
-				'GROUP_COLOR'	=> $row['group_colour'],
-
-				'RANK_IMG'		=> $rank_img,
-				'RANK_IMG_SRC'	=> $rank_img_src,
-
-				'U_GROUP'			=> $u_group,
-				'U_PM'				=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-
-				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
-				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
-				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
-				'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
-			));
 		}
-		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
@@ -274,20 +372,6 @@ switch ($mode)
 		$presence_img = '';
 		switch ($action)
 		{
-			case 'aim':
-				$lang = 'AIM';
-				$sql_field = 'user_aim';
-				$s_select = 'S_SEND_AIM';
-				$s_action = '';
-			break;
-
-			case 'msnm':
-				$lang = 'MSNM';
-				$sql_field = 'user_msnm';
-				$s_select = 'S_SEND_MSNM';
-				$s_action = '';
-			break;
-
 			case 'jabber':
 				$lang = 'JABBER';
 				$sql_field = 'user_jabber';
@@ -332,7 +416,7 @@ switch ($mode)
 						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-						$message = utf8_normalize_nfc(request_var('message', '', true));
+						$message = $request->variable('message', '', true);
 
 						if (empty($message))
 						{
@@ -345,10 +429,10 @@ switch ($mode)
 						$messenger->subject(htmlspecialchars_decode($subject));
 
 						$messenger->replyto($user->data['user_email']);
-						$messenger->im($row['user_jabber'], $row['username']);
+						$messenger->set_addresses($row);
 
 						$messenger->assign_vars(array(
-							'BOARD_CONTACT'	=> $config['board_contact'],
+							'BOARD_CONTACT'	=> phpbb_get_board_contact($config, $phpEx),
 							'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 							'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
 							'MESSAGE'		=> htmlspecialchars_decode($message))
@@ -370,9 +454,6 @@ switch ($mode)
 		$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
 			'A_IM_CONTACT'	=> addslashes($row[$sql_field]),
-
-			'U_AIM_CONTACT'	=> ($action == 'aim') ? 'aim:addbuddy?screenname=' . urlencode($row[$sql_field]) : '',
-			'U_AIM_MESSAGE'	=> ($action == 'aim') ? 'aim:goim?screenname=' . urlencode($row[$sql_field]) . '&amp;message=' . urlencode($config['sitename']) : '',
 
 			'USERNAME'		=> $row['username'],
 			'CONTACT_NAME'	=> $row[$sql_field],
@@ -460,19 +541,13 @@ switch ($mode)
 		$group_data = $group_sort = array();
 		foreach ($profile_groups as $row)
 		{
-			if ($row['group_type'] == GROUP_SPECIAL)
-			{
-				// Lookup group name in language dictionary
-				if (isset($user->lang['G_' . $row['group_name']]))
-				{
-					$row['group_name'] = $user->lang['G_' . $row['group_name']];
-				}
-			}
-			else if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
+			if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
 			{
 				// Skip over hidden groups the user cannot see
 				continue;
 			}
+
+			$row['group_name'] = $group_helper->get_name($row['group_name']);
 
 			$group_sort[$row['group_id']] = utf8_clean_string($row['group_name']);
 			$group_data[$row['group_id']] = $row;
@@ -530,20 +605,9 @@ switch ($mode)
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text($member['user_sig']);
-
-			if ($member['user_sig_bbcode_bitfield'])
-			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-				$bbcode = new bbcode();
-				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-			}
-
-			$member['user_sig'] = bbcode_nl2br($member['user_sig']);
-			$member['user_sig'] = smiley_text($member['user_sig']);
+			$parse_flags = ($member['user_sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
+			$member['user_sig'] = generate_text_for_display($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield'], $parse_flags, true);
 		}
-
-		$poster_avatar = get_user_avatar($member['user_avatar'], $member['user_avatar_type'], $member['user_avatar_width'], $member['user_avatar_height']);
 
 		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
 		$zebra_enabled = $friends_enabled = $foes_enabled = $user_notes_enabled = $warn_user_enabled = false;
@@ -560,26 +624,56 @@ switch ($mode)
 			$module->list_modules('ucp');
 			$module->list_modules('mcp');
 
-			$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
-			$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
-			$zebra_enabled = ($module->loaded('zebra')) ? true : false;
-			$friends_enabled = ($module->loaded('zebra', 'friends')) ? true : false;
-			$foes_enabled = ($module->loaded('zebra', 'foes')) ? true : false;
+			$user_notes_enabled = ($module->loaded('mcp_notes', 'user_notes')) ? true : false;
+			$warn_user_enabled = ($module->loaded('mcp_warn', 'warn_user')) ? true : false;
+			$zebra_enabled = ($module->loaded('ucp_zebra')) ? true : false;
+			$friends_enabled = ($module->loaded('ucp_zebra', 'friends')) ? true : false;
+			$foes_enabled = ($module->loaded('ucp_zebra', 'foes')) ? true : false;
 
 			unset($module);
 		}
-
-		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// Custom Profile Fields
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
-			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-			$cp = new custom_profile();
-			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
-			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
+			/* @var $cp \phpbb\profilefields\manager */
+			$cp = $phpbb_container->get('profilefields.manager');
+			$profile_fields = $cp->grab_profile_fields_data($user_id);
+			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
 		}
+
+		/**
+		* Modify user data before we display the profile
+		*
+		* @event core.memberlist_view_profile
+		* @var	array	member					Array with user's data
+		* @var	bool	user_notes_enabled		Is the mcp user notes module enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module enabled?
+		* @var	bool	zebra_enabled			Is the ucp zebra module enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module enabled?
+		* @var	bool    friend					Is the user friend?
+		* @var	bool	foe						Is the user foe?
+		* @var	array	profile_fields			Array with user's profile field data
+		* @since 3.1.0-a1
+		* @changed 3.1.0-b2 Added friend and foe status
+		* @changed 3.1.0-b3 Added profile fields data
+		*/
+		$vars = array(
+			'member',
+			'user_notes_enabled',
+			'warn_user_enabled',
+			'zebra_enabled',
+			'friends_enabled',
+			'foes_enabled',
+			'friend',
+			'foe',
+			'profile_fields',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_view_profile', compact($vars)));
+
+		$template->assign_vars(phpbb_show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
@@ -587,7 +681,7 @@ switch ($mode)
 			$sql = 'SELECT COUNT(post_id) as posts_in_queue
 				FROM ' . POSTS_TABLE . '
 				WHERE poster_id = ' . $user_id . '
-					AND post_approved = 0';
+					AND ' . $db->sql_in_set('post_visibility', array(ITEM_UNAPPROVED, ITEM_REAPPROVE));
 			$result = $db->sql_query($sql);
 			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
 			$db->sql_freeresult($result);
@@ -600,22 +694,15 @@ switch ($mode)
 		$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
-			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+			'POSTS_DAY'			=> $user->lang('POST_DAY', $posts_per_day),
+			'POSTS_PCT'			=> $user->lang('POST_PCT', $percentage),
 
-			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
-			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
 			'SIGNATURE'		=> $member['user_sig'],
 			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
-			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
+			'L_SEND_EMAIL_USER'	=> $user->lang('SEND_EMAIL_USER', $member['username']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
-			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
-			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
-			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
@@ -623,11 +710,12 @@ switch ($mode)
 			'S_GROUP_OPTIONS'	=> $group_options,
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 
-			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_MCP_QUEUE'			=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}&amp;hash=" . generate_link_hash('switchperm')) : '',
+			'U_EDIT_SELF'			=> ($user_id == $user->data['user_id'] && $auth->acl_get('u_chgprofileinfo')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_profile&amp;mode=profile_info') : '',
 
 			'S_USER_NOTES'		=> ($user_notes_enabled) ? true : false,
 			'S_WARN_USER'		=> ($warn_user_enabled) ? true : false,
@@ -636,6 +724,8 @@ switch ($mode)
 			'U_ADD_FOE'			=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
 			'U_REMOVE_FRIEND'	=> ($friend && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
 			'U_REMOVE_FOE'		=> ($foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
+
+			'U_CANONICAL'	=> generate_board_url() . '/' . append_sid("memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id, true, ''),
 		));
 
 		if (!empty($profile_fields['row']))
@@ -689,265 +779,81 @@ switch ($mode)
 
 	break;
 
+	case 'contactadmin':
 	case 'email':
-
-		// Send an email
-		$page_title = $user->lang['SEND_EMAIL'];
-		$template_html = 'memberlist_email.html';
-
-		add_form_key('memberlist_email');
-
-		if (!$config['email_enable'])
+		if (!class_exists('messenger'))
 		{
-			trigger_error('EMAIL_DISABLED');
+			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		}
 
-		if (!$auth->acl_get('u_sendemail'))
-		{
-			trigger_error('NO_EMAIL');
-		}
+		$user_id	= $request->variable('u', 0);
+		$topic_id	= $request->variable('t', 0);
 
-		// Are we trying to abuse the facility?
-		if (time() - $user->data['user_emailtime'] < $config['flood_interval'])
-		{
-			trigger_error('FLOOD_EMAIL_LIMIT');
-		}
-
-		// Determine action...
-		$user_id = request_var('u', 0);
-		$topic_id = request_var('t', 0);
-
-		// Send email to user...
 		if ($user_id)
 		{
-			if ($user_id == ANONYMOUS || !$config['board_email_form'])
-			{
-				trigger_error('NO_EMAIL');
-			}
-
-			// Get the appropriate username, etc.
-			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
-				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$row)
-			{
-				trigger_error('NO_USER');
-			}
-
-			// Can we send email to this user?
-			if (!$row['user_allow_viewemail'] && !$auth->acl_get('a_user'))
-			{
-				trigger_error('NO_EMAIL');
-			}
+			$form_name = 'user';
 		}
 		else if ($topic_id)
 		{
-			// Send topic heads-up to email address
-			$sql = 'SELECT forum_id, topic_title
-				FROM ' . TOPICS_TABLE . "
-				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (!$row)
-			{
-				trigger_error('NO_TOPIC');
-			}
-
-			if ($row['forum_id'])
-			{
-				if (!$auth->acl_get('f_read', $row['forum_id']))
-				{
-					trigger_error('SORRY_AUTH_READ');
-				}
-
-				if (!$auth->acl_get('f_email', $row['forum_id']))
-				{
-					trigger_error('NO_EMAIL');
-				}
-			}
-			else
-			{
-				// If global announcement, we need to check if the user is able to at least read and email in one forum...
-				if (!$auth->acl_getf_global('f_read'))
-				{
-					trigger_error('SORRY_AUTH_READ');
-				}
-
-				if (!$auth->acl_getf_global('f_email'))
-				{
-					trigger_error('NO_EMAIL');
-				}
-			}
+			$form_name = 'topic';
+		}
+		else if ($mode === 'contactadmin')
+		{
+			$form_name = 'admin';
 		}
 		else
 		{
 			trigger_error('NO_EMAIL');
 		}
 
-		$error = array();
+		/** @var $form \phpbb\message\form */
+		$form = $phpbb_container->get('message.form.' . $form_name);
 
-		$name		= utf8_normalize_nfc(request_var('name', '', true));
-		$email		= request_var('email', '');
-		$email_lang = request_var('lang', $config['default_lang']);
-		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
-		$message	= utf8_normalize_nfc(request_var('message', '', true));
-		$cc			= (isset($_POST['cc_email'])) ? true : false;
-		$submit		= (isset($_POST['submit'])) ? true : false;
-
-		if ($submit)
+		$form->bind($request);
+		$error = $form->check_allow();
+		if ($error)
 		{
-			if (!check_form_key('memberlist_email'))
-			{
-				$error[] = 'FORM_INVALID';
-			}
-			if ($user_id)
-			{
-				if (!$subject)
-				{
-					$error[] = $user->lang['EMPTY_SUBJECT_EMAIL'];
-				}
-
-				if (!$message)
-				{
-					$error[] = $user->lang['EMPTY_MESSAGE_EMAIL'];
-				}
-
-				$name = $row['username'];
-				$email_lang = $row['user_lang'];
-				$email = $row['user_email'];
-			}
-			else
-			{
-				if (!$email || !preg_match('/^' . get_preg_expression('email') . '$/i', $email))
-				{
-					$error[] = $user->lang['EMPTY_ADDRESS_EMAIL'];
-				}
-
-				if (!$name)
-				{
-					$error[] = $user->lang['EMPTY_NAME_EMAIL'];
-				}
-			}
-
-			if (!sizeof($error))
-			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_emailtime = ' . time() . '
-					WHERE user_id = ' . $user->data['user_id'];
-				$result = $db->sql_query($sql);
-
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-				$messenger = new messenger(false);
-				$email_tpl = ($user_id) ? 'profile_send_email' : 'email_notify';
-
-				$mail_to_users = array();
-
-				$mail_to_users[] = array(
-					'email_lang'		=> $email_lang,
-					'email'				=> $email,
-					'name'				=> $name,
-					'username'			=> ($user_id) ? $row['username'] : '',
-					'to_name'			=> $name,
-					'user_jabber'		=> ($user_id) ? $row['user_jabber'] : '',
-					'user_notify_type'	=> ($user_id) ? $row['user_notify_type'] : NOTIFY_EMAIL,
-					'topic_title'		=> (!$user_id) ? $row['topic_title'] : '',
-					'forum_id'			=> (!$user_id) ? $row['forum_id'] : 0,
-				);
-
-				// Ok, now the same email if CC specified, but without exposing the users email address
-				if ($cc)
-				{
-					$mail_to_users[] = array(
-						'email_lang'		=> $user->data['user_lang'],
-						'email'				=> $user->data['user_email'],
-						'name'				=> $user->data['username'],
-						'username'			=> $user->data['username'],
-						'to_name'			=> $name,
-						'user_jabber'		=> $user->data['user_jabber'],
-						'user_notify_type'	=> ($user_id) ? $user->data['user_notify_type'] : NOTIFY_EMAIL,
-						'topic_title'		=> (!$user_id) ? $row['topic_title'] : '',
-						'forum_id'			=> (!$user_id) ? $row['forum_id'] : 0,
-					);
-				}
-
-				foreach ($mail_to_users as $row)
-				{
-					$messenger->template($email_tpl, $row['email_lang']);
-					$messenger->replyto($user->data['user_email']);
-					$messenger->to($row['email'], $row['name']);
-
-					if ($user_id)
-					{
-						$messenger->subject(htmlspecialchars_decode($subject));
-						$messenger->im($row['user_jabber'], $row['username']);
-						$notify_type = $row['user_notify_type'];
-					}
-					else
-					{
-						$notify_type = NOTIFY_EMAIL;
-					}
-
-					$messenger->anti_abuse_headers($config, $user);
-
-					$messenger->assign_vars(array(
-						'BOARD_CONTACT'	=> $config['board_contact'],
-						'TO_USERNAME'	=> htmlspecialchars_decode($row['to_name']),
-						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
-						'MESSAGE'		=> htmlspecialchars_decode($message))
-					);
-
-					if ($topic_id)
-					{
-						$messenger->assign_vars(array(
-							'TOPIC_NAME'	=> htmlspecialchars_decode($row['topic_title']),
-							'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
-						);
-					}
-
-					$messenger->send($notify_type);
-				}
-
-				meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');
-				trigger_error($user->lang['EMAIL_SENT'] . '<br /><br />' . $message);
-			}
+			trigger_error($error);
 		}
 
-		if ($user_id)
+		if ($request->is_set_post('submit'))
 		{
-			$template->assign_vars(array(
-				'S_SEND_USER'	=> true,
-				'USERNAME'		=> $row['username'],
+			$messenger = new messenger(false);
+			$form->submit($messenger);
+		}
 
-				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_BODY_EXPLAIN'],
-				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id))
+		$page_title = $form->get_page_title();
+		$template_html = $form->get_template_file();
+		$form->render($template);
+
+	break;
+
+	case 'livesearch':
+
+		$username_chars = $request->variable('username', '', true);
+
+		$sql = 'SELECT username, user_id, user_colour
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
+				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->get_any_char());
+		$result = $db->sql_query_limit($sql, 10);
+		$user_list = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_list[] = array(
+				'user_id'		=> (int) $row['user_id'],
+				'result'		=> $row['username'],
+				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
 			);
 		}
-		else
-		{
-			$template->assign_vars(array(
-				'EMAIL'				=> $email,
-				'NAME'				=> $name,
-				'S_LANG_OPTIONS'	=> language_select($email_lang),
-
-				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_TOPIC_EXPLAIN'],
-				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;t=' . $topic_id))
-			);
-		}
-
-		$template->assign_vars(array(
-			'ERROR_MESSAGE'		=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'SUBJECT'			=> $subject,
-			'MESSAGE'			=> $message,
-			)
-		);
+		$db->sql_freeresult($result);
+		$json_response = new \phpbb\json_response();
+		$json_response->send(array(
+			'keyword' => $username_chars,
+			'results' => $user_list,
+		));
 
 	break;
 
@@ -957,9 +863,18 @@ switch ($mode)
 		$page_title = $user->lang['MEMBERLIST'];
 		$template_html = 'memberlist_body.html';
 
+		/* @var $pagination \phpbb\pagination */
+		$pagination = $phpbb_container->get('pagination');
+
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
-		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT']);
+		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts');
+
+		if ($config['jab_enable'])
+		{
+			$sort_key_text['k'] = $user->lang['JABBER'];
+			$sort_key_sql['k'] = 'u.user_jabber';
+		}
 
 		if ($auth->acl_get('a_user'))
 		{
@@ -997,36 +912,32 @@ switch ($mode)
 		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
 
 
-		$form			= request_var('form', '');
-		$field			= request_var('field', '');
-		$select_single 	= request_var('select_single', false);
+		$form			= $request->variable('form', '');
+		$field			= $request->variable('field', '');
+		$select_single 	= $request->variable('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
-		$search_params = array('username', 'email', 'icq', 'aim', 'yahoo', 'msn', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if (($mode == 'searchuser' || sizeof(array_intersect(array_keys($_GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '', true);
-			$email		= strtolower(request_var('email', ''));
-			$icq		= request_var('icq', '');
-			$aim		= request_var('aim', '');
-			$yahoo		= request_var('yahoo', '');
-			$msn		= request_var('msn', '');
-			$jabber		= request_var('jabber', '');
-			$search_group_id	= request_var('search_group_id', 0);
+			$username	= $request->variable('username', '', true);
+			$email		= strtolower($request->variable('email', ''));
+			$jabber		= $request->variable('jabber', '');
+			$search_group_id	= $request->variable('search_group_id', 0);
 
 			// when using these, make sure that we actually have values defined in $find_key_match
-			$joined_select	= request_var('joined_select', 'lt');
-			$active_select	= request_var('active_select', 'lt');
-			$count_select	= request_var('count_select', 'eq');
+			$joined_select	= $request->variable('joined_select', 'lt');
+			$active_select	= $request->variable('active_select', 'lt');
+			$count_select	= $request->variable('count_select', 'eq');
 
-			$joined			= explode('-', request_var('joined', ''));
-			$active			= explode('-', request_var('active', ''));
-			$count			= (request_var('count', '') !== '') ? request_var('count', 0) : '';
-			$ipdomain		= request_var('ip', '');
+			$joined			= explode('-', $request->variable('joined', ''));
+			$active			= explode('-', $request->variable('active', ''));
+			$count			= ($request->variable('count', '') !== '') ? $request->variable('count', 0) : '';
+			$ipdomain		= $request->variable('ip', '');
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
@@ -1053,25 +964,16 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
-			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
-			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', $db->any_char, $icq)) . ' ' : '';
-			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $aim)) . ' ' : '';
-			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $yahoo)) . ' ' : '';
-			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', $db->any_char, $msn)) . ' ' : '';
-			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
+			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($username))) : '';
+			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $email)) . ' ' : '';
+			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
 			{
-				// Before PHP 5.1 an error value -1 can be returned instead of false.
-				// Theoretically gmmktime() can also legitimately return -1 as an actual timestamp.
-				// But since we do not pass the $second parameter to gmmktime(),
-				// an actual unix timestamp -1 cannot be returned in this case.
-				// Thus we can check whether it is -1 and treat -1 as an error.
 				$joined_time = gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]);
 
-				if ($joined_time !== false && $joined_time !== -1)
+				if ($joined_time !== false)
 				{
 					$sql_where .= " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . $joined_time;
 				}
@@ -1081,7 +983,7 @@ switch ($mode)
 			{
 				$active_time = gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
 
-				if ($active_time !== false && $active_time !== -1)
+				if ($active_time !== false)
 				{
 					$sql_where .= " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . $active_time;
 				}
@@ -1126,7 +1028,24 @@ switch ($mode)
 					$sql = 'SELECT DISTINCT poster_id
 						FROM ' . POSTS_TABLE . '
 						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
-							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
+							AND " . $db->sql_in_set('forum_id', $ip_forums);
+
+					/**
+					* Modify sql query for members search by ip address / hostname
+					*
+					* @event core.memberlist_modify_ip_search_sql_query
+					* @var	string	ipdomain	The host name
+					* @var	string	ips			IP address list for the given host name
+					* @var	string	sql			The SQL query for searching members by IP address
+					* @since 3.1.7-RC1
+					*/
+					$vars = array(
+						'ipdomain',
+						'ips',
+						'sql',
+					);
+					extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_ip_search_sql_query', compact($vars)));
+
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
@@ -1152,18 +1071,18 @@ switch ($mode)
 			}
 		}
 
-		$first_char = request_var('first_char', '');
+		$first_char = $request->variable('first_char', '');
 
 		if ($first_char == 'other')
 		{
 			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->any_char);
+				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->get_any_char());
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->any_char);
+			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->get_any_char());
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -1171,7 +1090,7 @@ switch ($mode)
 		if ($mode == 'group')
 		{
 			// We JOIN here to save a query for determining membership for hidden groups. ;)
-			$sql = 'SELECT g.*, ug.user_id
+			$sql = 'SELECT g.*, ug.user_id, ug.group_leader
 				FROM ' . GROUPS_TABLE . ' g
 				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.user_pending = 0 AND ug.user_id = ' . $user->data['user_id'] . " AND ug.group_id = $group_id)
 				WHERE g.group_id = $group_id";
@@ -1213,33 +1132,55 @@ switch ($mode)
 				break;
 			}
 
-			// Misusing the avatar function for displaying group avatars...
-			$avatar_img = get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR');
+			$avatar_img = phpbb_get_group_avatar($group_row);
 
 			// ... same for group rank
-			$rank_title = $rank_img = $rank_img_src = '';
+			$user_rank_data = array(
+				'title'		=> null,
+				'img'		=> null,
+				'img_src'	=> null,
+			);
 			if ($group_row['group_rank'])
 			{
-				get_user_rank($group_row['group_rank'], false, $rank_title, $rank_img, $rank_img_src);
+				$user_rank_data = phpbb_get_user_rank($group_row, false);
 
-				if ($rank_img)
+				if ($user_rank_data['img'])
 				{
-					$rank_img .= '<br />';
+					$user_rank_data['img'] .= '<br />';
 				}
+			}
+			// include modules for manage groups link display or not
+			// need to ensure the module is active
+			$can_manage_group = false;
+			if ($user->data['is_registered'] && $group_row['group_leader'])
+			{
+				if (!class_exists('p_master'))
+				{
+					include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+				}
+				$module = new p_master;
+				$module->list_modules('ucp');
+
+				if ($module->is_active('ucp_groups', 'manage'))
+				{
+					$can_manage_group = true;
+				}
+				unset($module);
 			}
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
-				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
+				'GROUP_NAME'	=> $group_helper->get_name($group_row['group_name']),
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
-				'GROUP_RANK'	=> $rank_title,
+				'GROUP_RANK'	=> $user_rank_data['title'],
 
 				'AVATAR_IMG'	=> $avatar_img,
-				'RANK_IMG'		=> $rank_img,
-				'RANK_IMG_SRC'	=> $rank_img_src,
+				'RANK_IMG'		=> $user_rank_data['img'],
+				'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
 
-				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
+				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',
+				'U_MANAGE'		=> ($can_manage_group) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_groups&amp;mode=manage') : false,)
 			);
 
 			$sql_select = ', ug.group_leader';
@@ -1264,26 +1205,50 @@ switch ($mode)
 			$order_by .= ', u.user_posts DESC';
 		}
 
+		/**
+		* Modify sql query data for members search
+		*
+		* @event core.memberlist_modify_sql_query_data
+		* @var	string	order_by		SQL ORDER BY clause condition
+		* @var	string	sort_dir		The sorting direction
+		* @var	string	sort_key		The sorting key
+		* @var	array	sort_key_sql	Arraty with the sorting conditions data
+		* @var	string	sql_from		SQL FROM clause condition
+		* @var	string	sql_select		SQL SELECT fields list
+		* @var	string	sql_where		SQL WHERE clause condition
+		* @var	string	sql_where_data	SQL WHERE clause additional conditions data
+		* @since 3.1.7-RC1
+		*/
+		$vars = array(
+			'order_by',
+			'sort_dir',
+			'sort_key',
+			'sort_key_sql',
+			'sql_from',
+			'sql_select',
+			'sql_where',
+			'sql_where_data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
+
+		$user_types = array(USER_NORMAL, USER_FOUNDER);
+		if ($auth->acl_get('a_user'))
+		{
+			$user_types[] = USER_INACTIVE;
+		}
 		// Count the users ...
-		if ($sql_where)
-		{
-			$sql = 'SELECT COUNT(u.user_id) AS total_users
-				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where";
-			$result = $db->sql_query($sql);
-			$total_users = (int) $db->sql_fetchfield('total_users');
-			$db->sql_freeresult($result);
-		}
-		else
-		{
-			$total_users = $config['num_users'];
-		}
+		$sql = 'SELECT COUNT(u.user_id) AS total_users
+			FROM ' . USERS_TABLE . " u$sql_from
+			WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
+			$sql_where";
+		$result = $db->sql_query($sql);
+		$total_users = (int) $db->sql_fetchfield('total_users');
+		$db->sql_freeresult($result);
 
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
-		// We do not use request_var() here directly to save some calls (not all variables are set)
+		// We do not use $request->variable() here directly to save some calls (not all variables are set)
 		$check_params = array(
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
@@ -1293,10 +1258,6 @@ switch ($mode)
 			'select_single'	=> array('select_single', $select_single),
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
-			'icq'			=> array('icq', ''),
-			'aim'			=> array('aim', ''),
-			'yahoo'			=> array('yahoo', ''),
-			'msn'			=> array('msn', ''),
 			'jabber'		=> array('jabber', ''),
 			'search_group_id'	=> array('search_group_id', 0),
 			'joined_select'	=> array('joined_select', 'lt'),
@@ -1304,7 +1265,7 @@ switch ($mode)
 			'count_select'	=> array('count_select', 'eq'),
 			'joined'		=> array('joined', ''),
 			'active'		=> array('active', ''),
-			'count'			=> (request_var('count', '') !== '') ? array('count', 0) : array('count', ''),
+			'count'			=> ($request->variable('count', '') !== '') ? array('count', 0) : array('count', ''),
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
@@ -1317,8 +1278,9 @@ switch ($mode)
 				continue;
 			}
 
-			$param = call_user_func_array('request_var', $call);
-			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : $param);
+			$param = call_user_func_array(array($request, 'variable'), $call);
+			// Encode strings, convert everything else to int in order to prevent empty parameters.
+			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : (int) $param);
 			$params[] = $param;
 
 			if ($key != 'first_char')
@@ -1367,9 +1329,9 @@ switch ($mode)
 		}
 
 		// Some search user specific data
-		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
+		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$group_selected = request_var('search_group_id', 0);
+			$group_selected = $request->variable('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
 			$group_ids = array();
 
@@ -1413,7 +1375,7 @@ switch ($mode)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$group_ids[] = $row['group_id'];
-				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 
@@ -1425,10 +1387,6 @@ switch ($mode)
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
-				'ICQ'		=> $icq,
-				'AIM'		=> $aim,
-				'YAHOO'		=> $yahoo,
-				'MSNM'		=> $msn,
 				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
@@ -1437,8 +1395,9 @@ switch ($mode)
 
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
+				'S_JABBER_ENABLED'		=> $config['jab_enable'],
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
-				'S_SEARCH_USER'			=> true,
+				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
 				'S_SELECT_SINGLE'		=> $select_single,
@@ -1451,11 +1410,13 @@ switch ($mode)
 			);
 		}
 
+		$start = $pagination->validate_start($start, $config['topics_per_page'], $total_users);
+
 		// Get us some users :D
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+			WHERE " . $db->sql_in_set('u.user_type', $user_types) . "
 				$sql_where
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -1466,6 +1427,20 @@ switch ($mode)
 			$user_list[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
+
+		// Load custom profile fields
+		if ($config['load_cpf_memberlist'])
+		{
+			/* @var $cp \phpbb\profilefields\manager */
+			$cp = $phpbb_container->get('profilefields.manager');
+
+			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');
+			foreach ($cp_row as $profile_field)
+			{
+				$template->assign_block_vars('custom_fields', $profile_field);
+			}
+		}
+
 		$leaders_set = false;
 		// So, did we get any users?
 		if (sizeof($user_list))
@@ -1516,41 +1491,65 @@ switch ($mode)
 			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
-				include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-				$cp = new custom_profile();
-
 				// Grab all profile fields from users in id cache for later use - similar to the poster cache
-				$profile_fields_cache = $cp->generate_profile_fields_template('grab', $user_list);
+				$profile_fields_cache = $cp->grab_profile_fields_data($user_list);
+
+				// Filter the fields we don't want to show
+				foreach ($profile_fields_cache as $user_id => $user_profile_fields)
+				{
+					foreach ($user_profile_fields as $field_ident => $profile_field)
+					{
+						if (!$profile_field['data']['field_show_on_ml'])
+						{
+							unset($profile_fields_cache[$user_id][$field_ident]);
+						}
+					}
+				}
 			}
 
 			// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
 			if ($sort_key == 'l')
 			{
 //				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
-				usort($user_list,  '_sort_last_active');
+				usort($user_list,  'phpbb_sort_last_active');
 			}
+
+			// do we need to display contact fields as such
+			$use_contact_fields = false;
+
+			/**
+			 * Modify list of users before member row is created
+			 *
+			 * @event core.memberlist_memberrow_before
+			 * @var array	user_list			Array containing list of users
+			 * @var bool	use_contact_fields	Should we display contact fields as such?
+			 * @since 3.1.7-RC1
+			 */
+			$vars = array('user_list', 'use_contact_fields');
+			extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_before', compact($vars)));
 
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
-				$row =& $id_cache[$user_id];
+				$row = $id_cache[$user_id];
 				$is_leader = (isset($row['group_leader']) && $row['group_leader']) ? true : false;
 				$leaders_set = ($leaders_set || $is_leader);
 
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
-					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$user_id]) : array();
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields_cache[$user_id], $use_contact_fields) : array();
 				}
 
-				$memberrow = array_merge(show_profile($row), array(
+				$memberrow = array_merge(phpbb_show_profile($row, false, false, false), array(
 					'ROW_NUMBER'		=> $i + ($start + 1),
 
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
 					'S_GROUP_LEADER'	=> $is_leader,
+					'S_INACTIVE'		=> $row['user_type'] == USER_INACTIVE,
 
-					'U_VIEW_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id))
-				);
+					'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $row['username']),
+				));
 
 				if (isset($cp_row['row']) && sizeof($cp_row['row']))
 				{
@@ -1571,39 +1570,28 @@ switch ($mode)
 			}
 		}
 
+		$pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
+
 		// Generate page
 		$template->assign_vars(array(
-			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
-			'PAGE_NUMBER'	=> on_page($total_users, $config['topics_per_page'], $start),
-			'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
+			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
-			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
-			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
-			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
-			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
+			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser' || ($mode == '' && $submit)) ? $u_hide_find_member : '',
+			'U_LIVE_SEARCH'			=> ($config['allow_live_searches']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=livesearch') : false,
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_POSTS'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_EMAIL'			=> $sort_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_WEBSITE'		=> $sort_url . '&amp;sk=f&amp;sd=' . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_LOCATION'		=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_ICQ'			=> $sort_url . '&amp;sk=g&amp;sd=' . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_AIM'			=> $sort_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_MSN'			=> $sort_url . '&amp;sk=i&amp;sd=' . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_YIM'			=> $sort_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a') : '',
-			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_JOINED'			=> $sort_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'd') ? 'a' : 'd'),
+			'U_SORT_POSTS'			=> $sort_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'd') ? 'a' : 'd'),
+			'U_SORT_EMAIL'			=> $sort_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'd') ? 'a' : 'd'),
+			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'd') ? 'a' : 'd') : '',
+			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'd') ? 'a' : 'd'),
+			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'd') ? 'a' : 'd'),
 
 			'S_SHOW_GROUP'		=> ($mode == 'group') ? true : false,
 			'S_VIEWONLINE'		=> $auth->acl_get('u_viewonline'),
@@ -1615,7 +1603,7 @@ switch ($mode)
 }
 
 // Output the page
-page_header($page_title, false);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => $template_html)
@@ -1623,141 +1611,3 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();
-
-/**
-* Prepare profile data
-*/
-function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
-{
-	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path;
-
-	$username = $data['username'];
-	$user_id = $data['user_id'];
-
-	$rank_title = $rank_img = $rank_img_src = '';
-	get_user_rank($data['user_rank'], (($user_id == ANONYMOUS) ? false : $data['user_posts']), $rank_title, $rank_img, $rank_img_src);
-
-	if ((!empty($data['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_user'))
-	{
-		$email = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id) : (($config['board_hide_emails'] && !$auth->acl_get('a_user')) ? '' : 'mailto:' . $data['user_email']);
-	}
-	else
-	{
-		$email = '';
-	}
-
-	if ($config['load_onlinetrack'])
-	{
-		$update_time = $config['load_online_time'] * 60;
-		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['session_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
-	}
-	else
-	{
-		$online = false;
-	}
-
-	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
-	{
-		$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
-	}
-	else
-	{
-		$last_visit = '';
-	}
-
-	$age = '';
-
-	if ($config['allow_birthdays'] && $data['user_birthday'])
-	{
-		list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $data['user_birthday']));
-
-		if ($bday_year)
-		{
-			$now = phpbb_gmgetdate(time() + $user->timezone + $user->dst);
-
-			$diff = $now['mon'] - $bday_month;
-			if ($diff == 0)
-			{
-				$diff = ($now['mday'] - $bday_day < 0) ? 1 : 0;
-			}
-			else
-			{
-				$diff = ($diff < 0) ? 1 : 0;
-			}
-
-			$age = max(0, (int) ($now['year'] - $bday_year - $diff));
-		}
-	}
-
-	// Dump it out to the template
-	return array(
-		'AGE'			=> $age,
-		'RANK_TITLE'	=> $rank_title,
-		'JOINED'		=> $user->format_date($data['user_regdate']),
-		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
-		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
-		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
-
-		'USERNAME_FULL'		=> get_username_string('full', $user_id, $username, $data['user_colour']),
-		'USERNAME'			=> get_username_string('username', $user_id, $username, $data['user_colour']),
-		'USER_COLOR'		=> get_username_string('colour', $user_id, $username, $data['user_colour']),
-		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
-
-		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
-
-		'AVATAR_IMG'		=> get_user_avatar($data['user_avatar'], $data['user_avatar_type'], $data['user_avatar_width'], $data['user_avatar_height']),
-		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
-		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
-		'RANK_IMG'			=> $rank_img,
-		'RANK_IMG_SRC'		=> $rank_img_src,
-		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
-		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
-
-		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
-
-		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
-		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
-		'U_EMAIL'		=> $email,
-		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
-		'U_SHORT_WWW'			=> (!empty($data['user_website'])) ? ((strlen($data['user_website']) > 55) ? substr($data['user_website'], 0, 39) . ' ... ' . substr($data['user_website'], -10) : $data['user_website']) : '',
-		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/' . urlencode($data['user_icq']) . '/' : '',
-		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
-		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
-		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
-		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',
-
-		'USER_ICQ'			=> $data['user_icq'],
-		'USER_AIM'			=> $data['user_aim'],
-		'USER_YIM'			=> $data['user_yim'],
-		'USER_MSN'			=> $data['user_msnm'],
-		'USER_JABBER'		=> $data['user_jabber'],
-		'USER_JABBER_IMG'	=> ($data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
-
-		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
-	);
-}
-
-function _sort_last_active($first, $second)
-{
-	global $id_cache, $sort_dir;
-
-	$lesser_than = ($sort_dir === 'd') ? -1 : 1;
-
-	if (isset($id_cache[$first]['group_leader']) && $id_cache[$first]['group_leader'] && (!isset($id_cache[$second]['group_leader']) || !$id_cache[$second]['group_leader']))
-	{
-		return -1;
-	}
-	else if (isset($id_cache[$second]['group_leader']) && (!isset($id_cache[$first]['group_leader']) || !$id_cache[$first]['group_leader']) && $id_cache[$second]['group_leader'])
-	{
-		return 1;
-	}
-	else
-	{
-		return $lesser_than * (int) ($id_cache[$first]['last_visit'] - $id_cache[$second]['last_visit']);
-	}
-}
-
-?>

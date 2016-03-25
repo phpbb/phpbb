@@ -1,18 +1,23 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/db/db_tools.php';
 
 class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 {
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $tools;
 	protected $table_exists;
 	protected $table_data;
@@ -27,7 +32,8 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$this->tools = new phpbb_db_tools($this->db);
+		$factory = new \phpbb\db\tools\factory();
+		$this->tools = $factory->get($this->db);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(
@@ -41,6 +47,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 				'c_bool'				=> array('BOOL', 1),
 				'c_vchar'				=> array('VCHAR', 'foo'),
 				'c_vchar_size'		=> array('VCHAR:4', 'foo'),
+				'c_vchar_null'		=> array('VCHAR', null),
 				'c_char_size'			=> array('CHAR:4', 'foo'),
 				'c_xstext'			=> array('XSTEXT', 'foo'),
 				'c_stext'				=> array('STEXT', 'foo'),
@@ -106,6 +113,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			'c_bool' => 0,
 			'c_vchar' => '',
 			'c_vchar_size' => '',
+			'c_vchar_null' => null,
 			'c_char_size' => 'abcd',
 			'c_xstext' => '',
 			'c_stext' => '',
@@ -139,6 +147,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			array('c_bool', 0),
 			array('c_vchar', str_repeat('a', 255)),
 			array('c_vchar_size', str_repeat('a', 4)),
+			array('c_vchar_null', str_repeat('a', 4)),
 			array('c_char_size', str_repeat('a', 4)),
 			array('c_xstext', str_repeat('a', 1000)),
 			array('c_stext', str_repeat('a', 3000)),
@@ -208,6 +217,50 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'column_does_not_exist'));
 	}
 
+	public function test_column_change_with_index()
+	{
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012', array('DECIMAL', 0)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+
+		// Create index over the column
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012', array('c_bug_12012', 'c_bool')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+
+		// Change type from int to string
+		$this->assertTrue($this->tools->sql_column_change('prefix_table_name', 'c_bug_12012', array('VCHAR:100', '')));
+
+		// Remove the index
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+		$this->assertTrue($this->tools->sql_index_drop('prefix_table_name', 'i_bug_12012'));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
+
+		// Remove the column
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_bug_12012'));
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
+	}
+
+	public function test_column_change_with_composite_primary()
+	{
+		// Remove the old primary key
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_id'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_id', array('UINT', 0)));
+
+		// Create a composite key
+		$this->assertTrue($this->tools->sql_create_primary_key('prefix_table_name', array('c_id', 'c_uint')));
+
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12643'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12643', array('DECIMAL', 0)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12643'));
+
+		// Change type from int to string
+		$this->assertTrue($this->tools->sql_column_change('prefix_table_name', 'c_bug_12643', array('VCHAR:100', '')));
+	}
+
 	public function test_column_remove()
 	{
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
@@ -215,6 +268,39 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_int_size'));
 
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_int_size'));
+	}
+
+	public function test_column_remove_similar_name()
+	{
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_vchar'));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_vchar_size'));
+
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_vchar'));
+
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_vchar'));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_vchar_size'));
+	}
+
+	public function test_column_remove_with_index()
+	{
+		// Create column
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012_2', array('UINT', 4)));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+
+		// Create index over the column
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_2'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'bug_12012_2', array('c_bug_12012_2', 'c_bool')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_2'));
+
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_3'));
+		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'bug_12012_3', array('c_bug_12012_2')));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_3'));
+
+		// Remove the column
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_bug_12012_2'));
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
 	}
 
 	public function test_column_remove_primary()
@@ -253,9 +339,9 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_table_exists('prefix_test_table'));
 	}
 
-	public function test_peform_schema_changes_drop_tables()
+	public function test_perform_schema_changes_drop_tables()
 	{
-		$db_tools = $this->getMock('phpbb_db_tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
 			'sql_table_exists',
 			'sql_table_drop',
 		), array(&$this->db));
@@ -279,9 +365,9 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		));
 	}
 
-	public function test_peform_schema_changes_drop_columns()
+	public function test_perform_schema_changes_drop_columns()
 	{
-		$db_tools = $this->getMock('phpbb_db_tools', array(
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
 			'sql_column_exists',
 			'sql_column_remove',
 		), array(&$this->db));
@@ -329,5 +415,12 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	{
 		$this->tools->sql_create_unique_index('prefix_table_name', 'i_uniq_ts_id', array('c_timestamp', 'c_id'));
 		$this->assertTrue($this->tools->sql_unique_index_exists('prefix_table_name', 'i_uniq_ts_id'));
+	}
+
+	public function test_create_int_default_null()
+	{
+		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_13282'));
+		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_13282', array('TINT:2')));
+		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_13282'));
 	}
 }

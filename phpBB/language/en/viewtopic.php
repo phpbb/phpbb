@@ -1,12 +1,13 @@
 <?php
 /**
 *
-* viewtopic [English]
+* This file is part of the phpBB Forum Software package.
 *
-* @package language
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -36,6 +37,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'APPROVE'								=> 'Approve',
 	'ATTACHMENT'						=> 'Attachment',
 	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled.',
 
@@ -48,20 +50,23 @@ $lang = array_merge($lang, array(
 	'BUMP_TOPIC'			=> 'Bump topic',
 
 	'CODE'					=> 'Code',
-	'COLLAPSE_QR'			=> 'Hide Quick Reply',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
+	'DELETED_INFORMATION'	=> 'Deleted by %1$s on %2$s',
+	'DISAPPROVE'					=> 'Disapprove',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
-	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total.',
-	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total.',
-	'EMAIL_TOPIC'			=> 'E-mail friend',
+	'EDITED_TIMES_TOTAL'	=> array(
+		1	=> 'Last edited by %2$s on %3$s, edited %1$d time in total.',
+		2	=> 'Last edited by %2$s on %3$s, edited %1$d times in total.',
+	),
+	'EMAIL_TOPIC'			=> 'Email topic',
 	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
-	'FULL_EDITOR'			=> 'Full Editor',
-	
+	'FULL_EDITOR'			=> 'Full Editor &amp; Preview',
+
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
 	'LOGIN_VIEWTOPIC'		=> 'The board requires you to be registered and logged in to view this topic.',
@@ -70,8 +75,10 @@ $lang = array_merge($lang, array(
 	'MAKE_GLOBAL'				=> 'Change to “Global”',
 	'MAKE_NORMAL'				=> 'Change to “Standard Topic”',
 	'MAKE_STICKY'				=> 'Change to “Sticky”',
-	'MAX_OPTIONS_SELECT'		=> 'You may select up to <strong>%d</strong> options',
-	'MAX_OPTION_SELECT'			=> 'You may select <strong>1</strong> option',
+	'MAX_OPTIONS_SELECT'		=> array(
+		1	=> 'You may select <strong>%d</strong> option',
+		2	=> 'You may select up to <strong>%d</strong> options',
+	),
 	'MISSING_INLINE_ATTACHMENT'	=> 'The attachment <strong>%s</strong> is no longer available',
 	'MOVE_TOPIC'				=> 'Move topic',
 
@@ -85,6 +92,7 @@ $lang = array_merge($lang, array(
 	'POLL_ENDED_AT'			=> 'Poll ended at %s',
 	'POLL_RUN_TILL'			=> 'Poll runs till %s',
 	'POLL_VOTED_OPTION'		=> 'You voted for this option',
+	'POST_DELETED_RESTORE'	=> 'This post has been deleted. It can be restored.',
 	'PRINT_TOPIC'			=> 'Print view',
 
 	'QUICK_MOD'				=> 'Quick-mod tools',
@@ -92,11 +100,13 @@ $lang = array_merge($lang, array(
 	'QUOTE'					=> 'Quote',
 
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
+	'RESTORE'				=> 'Restore',
+	'RESTORE_TOPIC'			=> 'Restore topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
-	'SHOW_QR'				=> 'Quick Reply',
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
+	'TOPIC_TOOLS'			=> 'Topic tools',
 	'TOTAL_VOTES'			=> 'Total votes',
 
 	'UNLOCK_TOPIC'			=> 'Unlock topic',
@@ -105,13 +115,12 @@ $lang = array_merge($lang, array(
 	'VIEW_NEXT_TOPIC'		=> 'Next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',
 	'VIEW_RESULTS'			=> 'View results',
-	'VIEW_TOPIC_POST'		=> '1 post',
-	'VIEW_TOPIC_POSTS'		=> '%d posts',
+	'VIEW_TOPIC_POSTS'		=> array(
+		1	=> '%d post',
+		2	=> '%d posts',
+	),
 	'VIEW_UNREAD_POST'		=> 'First unread post',
-	'VISIT_WEBSITE'			=> 'WWW',
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast.',
 	'VOTE_CONVERTED'		=> 'Changing votes is not supported for converted polls.',
 
 ));
-
-?>

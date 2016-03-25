@@ -8,16 +8,12 @@
 		<column>user_unread_privmsg</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>2</value>
 			<value>sender</value>
 			<value>sender</value>
 			<value>0</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -29,8 +25,6 @@
 			<value>0</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>4</value>
@@ -40,8 +34,6 @@
 			<value>2</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>5</value>
@@ -49,8 +41,6 @@
 			<value>no pms</value>
 			<value>0</value>
 			<value>0</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>

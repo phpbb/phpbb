@@ -1,0 +1,79 @@
+services:
+    router:
+        class: phpbb\routing\router
+        arguments:
+            - '@service_container'
+            - '@routing.chained_resources_locator'
+            - '@routing.delegated_loader'
+            - '%core.php_ext%'
+            - '%core.cache_dir%'
+
+    router.listener:
+        class: Symfony\Component\HttpKernel\EventListener\RouterListener
+        arguments:
+            - '@router'
+            - null
+            - null
+            - '@request_stack'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    routing.helper:
+        class: phpbb\routing\helper
+        arguments:
+            - '@config'
+            - '@router'
+            - '@symfony_request'
+            - '@request'
+            - '@filesystem'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# ---- Route loaders ----
+
+    routing.delegated_loader:
+        class: Symfony\Component\Config\Loader\DelegatingLoader
+        arguments:
+            - '@routing.resolver'
+
+    routing.resolver:
+        class: phpbb\routing\loader_resolver
+        arguments:
+            - '@routing.loader.collection'
+
+    routing.loader.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: routing.loader }
+
+    routing.loader.yaml:
+        class: Symfony\Component\Routing\Loader\YamlFileLoader
+        arguments:
+            - '@file_locator'
+        tags:
+            - { name: routing.loader }
+
+# ---- Resources Locators ----
+
+    routing.chained_resources_locator:
+        class: phpbb\routing\resources_locator\chained_resources_locator
+        arguments:
+            - '@routing.resources_locator.collection'
+
+    routing.resources_locator.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: routing.resources_locator }
+
+    routing.resources_locator.default:
+        class: phpbb\routing\resources_locator\default_resources_locator
+        arguments:
+            - '%core.root_path%'
+            - '%core.environment%'
+            - '@ext.manager'
+        tags:
+            - { name: routing.resources_locator }

@@ -191,12 +191,12 @@ do
 				err=$ERR_HEADER;
 				echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] .+$"
 				result=$?
-				if ! echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [A-Z].+$"
+				if ! echo "$line" | grep -Eq "^\[(ticket/[0-9]+|feature/$branch_regex|task/$branch_regex)\] [a-zA-Z].+$"
 				then
 					# Don't be too strict.
 					# Commits may be temporary, intended to be squashed later.
 					# Just issue a warning here.
-					complain "$severity: heading should be a sentence beginning with a capital letter." 1>&2
+					complain "$severity: heading should be a sentence beginning with a letter." 1>&2
 					complain "You entered:" 1>&2
 					complain "$line" 1>&2
 				fi

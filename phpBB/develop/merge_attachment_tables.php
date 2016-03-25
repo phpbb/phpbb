@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2001, 2003 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -44,7 +48,7 @@ $sql = "CREATE TABLE {$table_prefix}attachments
 			AND a.post_id = p.post_id";
 $db->sql_query($sql);
 
-switch ($db->sql_layer)
+switch ($db->get_sql_layer())
 {
 	case 'mysql':
 	case 'mysql4':
@@ -72,5 +76,3 @@ $db->sql_query($sql);
 //$db->sql_query("DROP TABLE {$table_prefix}attach_temp");
 
 echo "<p><b>Done</b></p>\n";
- 
-?>

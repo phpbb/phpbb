@@ -1,6 +1,6 @@
 <!-- INCLUDE overall_header.html -->
 
-<a name="maincontent"></a>
+<a id="maincontent"></a>
 
 <!-- IF S_EDIT_MODULE -->
 
@@ -10,11 +10,11 @@
 		{
 			if (value == 'category')
 			{
-				dE('modoptions', -1);
+				phpbb.toggleDisplay('modoptions', -1);
 			}
 			else
 			{
-				dE('modoptions', 1);
+				phpbb.toggleDisplay('modoptions', 1);
 			}
 		}
 
@@ -72,37 +72,37 @@
 	<fieldset>
 		<legend>{L_GENERAL_OPTIONS}</legend>
 	<dl>
-		<dt><label for="module_langname">{L_MODULE_LANGNAME}:</label><br />
+		<dt><label for="module_langname">{L_MODULE_LANGNAME}{L_COLON}</label><br />
 		<span>{L_MODULE_LANGNAME_EXPLAIN}</span></dt>
 		<dd><input name="module_langname" type="text" class="text medium" id="module_langname" value="{MODULE_LANGNAME}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="module_type">{L_MODULE_TYPE}:</label></dt>
+		<dt><label for="module_type">{L_MODULE_TYPE}{L_COLON}</label></dt>
 		<dd><select name="module_type" id="module_type" onchange="display_options(this.value);"><option value="category"<!-- IF S_IS_CAT --> selected="selected"<!-- ENDIF -->>{L_CATEGORY}</option><option value="module"<!-- IF not S_IS_CAT --> selected="selected"<!-- ENDIF -->>{L_MODULE}</option></select></dd>
 	</dl>
 	<dl>
-		<dt><label for="parent_id">{L_PARENT}:</label></dt>
+		<dt><label for="parent_id">{L_PARENT}{L_COLON}</label></dt>
 		<dd><select name="module_parent_id" id="parent_id">{S_CAT_OPTIONS}</select></dd>
 	</dl>
 	<hr />
 	<dl>
-		<dt><label for="module_enabled">{L_MODULE_ENABLED}:</label></dt>
+		<dt><label for="module_enabled">{L_MODULE_ENABLED}{L_COLON}</label></dt>
 		<dd><label><input type="radio" class="radio" name="module_enabled" id="module_enabled" value="1"<!-- IF MODULE_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="module_enabled" value="0"<!-- IF not MODULE_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<div id="modoptions"<!-- IF S_IS_CAT --> style="display: none;"<!-- ENDIF -->>
 		<dl>
-			<dt><label for="module_display">{L_MODULE_DISPLAYED}:</label><br /><span>{L_MODULE_DISPLAYED_EXPLAIN}</span></dt>
+			<dt><label for="module_display">{L_MODULE_DISPLAYED}{L_COLON}</label><br /><span>{L_MODULE_DISPLAYED_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="module_display" id="module_display" value="1"<!-- IF MODULE_DISPLAY --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="module_display" value="0"<!-- IF not MODULE_DISPLAY --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="module_basename">{L_CHOOSE_MODULE}:</label><br />
+			<dt><label for="module_basename">{L_CHOOSE_MODULE}{L_COLON}</label><br />
 			<span>{L_CHOOSE_MODULE_EXPLAIN}</span></dt>
 			<dd><select name="module_basename" id="module_basename" onchange="display_modes(this.value);">{S_MODULE_NAMES}</select></dd>
 		</dl>
 		<dl>
-			<dt><label for="module_mode">{L_CHOOSE_MODE}:</label><br />
+			<dt><label for="module_mode">{L_CHOOSE_MODE}{L_COLON}</label><br />
 			<span>{L_CHOOSE_MODE_EXPLAIN}</span></dt>
 			<dd><select name="module_mode" id="module_mode">{S_MODULE_MODES}</select></dd>
 		</dl>
@@ -132,7 +132,7 @@
 		</div>
 	<!-- ENDIF -->
 
-	<table cellspacing="1">
+	<table class="table1">
 	<tbody>
 	<tr>
 		<td class="row3">{NAVIGATION}<!-- IF S_NO_MODULES --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a> | <!-- IF MODULE_ENABLED --><a href="{U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->]<!-- ENDIF --></td>
@@ -141,7 +141,7 @@
 	</table>
 
 	<!-- IF .modules -->
-		<table cellspacing="1">
+		<table class="table1">
 			<col class="row1" /><col class="row1" /><col class="row2" /><col class="row2" />
 		<tbody>
 		<!-- BEGIN modules -->
@@ -149,22 +149,13 @@
 				<td style="width: 5%; text-align: center;">{modules.MODULE_IMAGE}</td>
 				<td><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
 				<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;<!-- IF modules.MODULE_ENABLED --><a href="{modules.U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{modules.U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->&nbsp;</td>
-				<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-					<!-- IF modules.S_FIRST_ROW && not modules.S_LAST_ROW -->
-						{ICON_MOVE_UP_DISABLED}
-						<a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-					<!-- ELSEIF not modules.S_FIRST_ROW && not modules.S_LAST_ROW-->
-						<a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-						<a href="{modules.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-					<!-- ELSEIF modules.S_LAST_ROW && not modules.S_FIRST_ROW -->
-						<a href="{modules.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
-						{ICON_MOVE_DOWN_DISABLED}
-					<!-- ELSE -->
-						{ICON_MOVE_UP_DISABLED}
-						{ICON_MOVE_DOWN_DISABLED}
-					<!-- ENDIF -->
+				<td class="actions">
+					<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+					<span class="up"><a href="{modules.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
+					<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+					<span class="down"><a href="{modules.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
 					<a href="{modules.U_EDIT}">{ICON_EDIT}</a> 
-					<a href="{modules.U_DELETE}">{ICON_DELETE}</a>
+					<a href="{modules.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 				</td>
 			</tr>
 		<!-- END modules -->
@@ -201,7 +192,7 @@
 	
 	<form id="mselect" method="post" action="{U_SEL_ACTION}">
 	<fieldset class="quick">
-		{L_SELECT_MODULE}: <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{MODULE_BOX}</select> 
+		{L_SELECT_MODULE}{L_COLON} <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{MODULE_BOX}</select> 
 
 		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>

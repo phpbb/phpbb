@@ -1,0 +1,39 @@
+<!-- IF .nonexistent_loop -->
+	nonexistent
+<!-- ENDIF -->
+
+<!-- IF .nonexistent_loop == 0 -->
+	nonexistent = 0
+<!-- ENDIF -->
+
+<!-- IF ! .nonexistent_loop -->
+	! nonexistent
+<!-- ENDIF -->
+
+<!-- IF .empty_loop -->
+	empty
+<!-- ENDIF -->
+
+<!-- IF .empty_loop == 0 -->
+	empty = 0
+<!-- ENDIF -->
+
+<!-- IF ! .empty_loop -->
+	! empty
+<!-- ENDIF -->
+
+<!-- IF .test_loop -->
+	loop
+<!-- ENDIF -->
+
+<!-- IF .test_loop == 0 -->
+	loop = 0
+<!-- ENDIF -->
+
+<!-- IF ! .test_loop -->
+	! loop
+<!-- ENDIF -->
+
+<!-- BEGIN test_loop -->
+	in loop
+<!-- END test_loop -->

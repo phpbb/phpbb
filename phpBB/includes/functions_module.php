@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,7 +21,6 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Class handling all types of 'plugins' (a future term)
-* @package phpBB3
 */
 class p_master
 {
@@ -80,8 +82,8 @@ class p_master
 	*/
 	function list_modules($p_class)
 	{
-		global $auth, $db, $user, $cache;
-		global $config, $phpbb_root_path, $phpEx;
+		global $db, $user, $cache;
+		global $phpbb_dispatcher;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
@@ -126,10 +128,19 @@ class p_master
 
 		// Clean up module cache array to only let survive modules the user can access
 		$right_id = false;
+
+		$hide_categories = array();
 		foreach ($this->module_cache['modules'] as $key => $row)
 		{
+			// When the module has no mode (category) we check whether it has visible children
+			// before listing it as well.
+			if (!$row['module_mode'])
+			{
+				$hide_categories[(int) $row['module_id']] = $key;
+			}
+
 			// Not allowed to view module?
-			if (!$this->module_auth($row['module_auth']))
+			if (!$this->module_auth_self($row['module_auth']))
 			{
 				unset($this->module_cache['modules'][$key]);
 				continue;
@@ -162,6 +173,22 @@ class p_master
 				$right_id = $row['right_id'];
 				continue;
 			}
+
+			if ($row['module_mode'])
+			{
+				// The parent category has a visible child
+				// So remove it and all its parents from the hide array
+				unset($hide_categories[(int) $row['parent_id']]);
+				foreach ($this->module_cache['parents'][$row['module_id']] as $module_id => $row_id)
+				{
+					unset($hide_categories[$module_id]);
+				}
+			}
+		}
+
+		foreach ($hide_categories as $module_id => $row_id)
+		{
+			unset($this->module_cache['modules'][$row_id]);
 		}
 
 		// Re-index (this is needed, else we are not able to array_slice later)
@@ -221,13 +248,27 @@ class p_master
 			// We need to prefix the functions to not create a naming conflict
 
 			// Function for building 'url_extra'
-			$url_func = '_module_' . $row['module_basename'] . '_url';
+			$short_name = $this->get_short_name($row['module_basename']);
+
+			$url_func = 'phpbb_module_' . $short_name . '_url';
+			if (!function_exists($url_func))
+			{
+				$url_func = '_module_' . $short_name . '_url';
+			}
 
 			// Function for building the language name
-			$lang_func = '_module_' . $row['module_basename'] . '_lang';
+			$lang_func = 'phpbb_module_' . $short_name . '_lang';
+			if (!function_exists($lang_func))
+			{
+				$lang_func = '_module_' . $short_name . '_lang';
+			}
 
 			// Custom function for calling parameters on module init (for example assigning template variables)
-			$custom_func = '_module_' . $row['module_basename'];
+			$custom_func = 'phpbb_module_' . $short_name;
+			if (!function_exists($custom_func))
+			{
+				$custom_func = '_module_' . $short_name;
+			}
 
 			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
 
@@ -258,6 +299,20 @@ class p_master
 				$custom_func($row['module_mode'], $module_row);
 			}
 
+			/**
+			* This event allows to modify parameters for building modules list
+			*
+			* @event core.modify_module_row
+			* @var	string		url_func		Function for building 'url_extra'
+			* @var	string		lang_func		Function for building the language name
+			* @var	string		custom_func		Custom function for calling parameters on module init
+			* @var	array		row				Array holding the basic module data
+			* @var	array		module_row		Array holding the module display parameters
+			* @since 3.1.0-b3
+			*/
+			$vars = array('url_func', 'lang_func', 'custom_func', 'row', 'module_row');
+			extract($phpbb_dispatcher->trigger_event('core.modify_module_row', compact($vars)));
+
 			$this->module_ary[] = $module_row;
 		}
 
@@ -275,6 +330,11 @@ class p_master
 	*/
 	function loaded($module_basename, $module_mode = false)
 	{
+		if (!$this->is_full_class($module_basename))
+		{
+			$module_basename = $this->p_class . '_' . $module_basename;
+		}
+
 		if (empty($this->loaded_cache))
 		{
 			$this->loaded_cache = array();
@@ -309,11 +369,26 @@ class p_master
 	}
 
 	/**
-	* Check module authorisation
+	* Check module authorisation.
+	*
+	* This is a non-static version that uses $this->acl_forum_id
+	* for the forum id.
 	*/
-	function module_auth($module_auth, $forum_id = false)
+	function module_auth_self($module_auth)
+	{
+		return self::module_auth($module_auth, $this->acl_forum_id);
+	}
+
+	/**
+	* Check module authorisation.
+	*
+	* This is a static version, it must be given $forum_id.
+	* See also module_auth_self.
+	*/
+	static function module_auth($module_auth, $forum_id)
 	{
 		global $auth, $config;
+		global $request, $phpbb_extension_manager, $phpbb_dispatcher;
 
 		$module_auth = trim($module_auth);
 
@@ -330,6 +405,31 @@ class p_master
 			[(),]                                  |
 			[^\s(),]+)/x', $module_auth, $match);
 
+		// Valid tokens for auth and their replacements
+		$valid_tokens = array(
+			'acl_([a-z0-9_]+)(,\$id)?'		=> '(int) $auth->acl_get(\'\\1\'\\2)',
+			'\$id'							=> '(int) $forum_id',
+			'aclf_([a-z0-9_]+)'				=> '(int) $auth->acl_getf_global(\'\\1\')',
+			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
+			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
+			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
+			'authmethod_([a-z0-9_\\\\]+)'		=> '($config[\'auth_method\'] === \'\\1\')',
+		);
+
+		/**
+		* Alter tokens for module authorisation check
+		*
+		* @event core.module_auth
+		* @var	array	valid_tokens		Valid tokens and their auth check
+		*									replacements
+		* @var	string	module_auth			The module_auth of the current
+		* 									module
+		* @var	int		forum_id			The current forum_id
+		* @since 3.1.0-a3
+		*/
+		$vars = array('valid_tokens', 'module_auth', 'forum_id');
+		extract($phpbb_dispatcher->trigger_event('core.module_auth', compact($vars)));
+
 		$tokens = $match[0];
 		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
 		{
@@ -345,7 +445,7 @@ class p_master
 				break;
 
 				default:
-					if (!preg_match('#(?:acl_([a-z0-9_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z0-9_]+))|(?:cfg_([a-z0-9_]+))|(?:request_([a-zA-Z0-9_]+))#', $token))
+					if (!preg_match('#(?:' . implode(array_keys($valid_tokens), ')|(?:') . ')#', $token))
 					{
 						$token = '';
 					}
@@ -355,13 +455,22 @@ class p_master
 
 		$module_auth = implode(' ', $tokens);
 
-		// Make sure $id seperation is working fine
+		// Make sure $id separation is working fine
 		$module_auth = str_replace(' , ', ',', $module_auth);
 
-		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
+		$module_auth = preg_replace(
+			// Array keys with # prepended/appended
+			array_map(function($value) {
+				return '#' . $value . '#';
+			}, array_keys($valid_tokens)),
+			array_values($valid_tokens),
+			$module_auth
+		);
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '!empty($_REQUEST[\'\\1\'])'), $module_auth) . ');');
+		// @codingStandardsIgnoreStart
+		eval('$is_auth = (int) (' .	$module_auth . ');');
+		// @codingStandardsIgnoreEnd
 
 		return $is_auth;
 	}
@@ -371,13 +480,26 @@ class p_master
 	*/
 	function set_active($id = false, $mode = false)
 	{
+		global $request;
+
 		$icat = false;
 		$this->active_module = false;
 
-		if (request_var('icat', ''))
+		if ($request->variable('icat', ''))
 		{
 			$icat = $id;
-			$id = request_var('icat', '');
+			$id = $request->variable('icat', '');
+		}
+
+		// Restore the backslashes in class names
+		if (strpos($id, '-') !== false)
+		{
+			$id = str_replace('-', '\\', $id);
+		}
+
+		if ($id && !is_numeric($id) && !$this->is_full_class($id))
+		{
+			$id = $this->p_class . '_' . $id;
 		}
 
 		$category = false;
@@ -388,9 +510,9 @@ class p_master
 			// If this is a module and no mode selected, select first mode
 			// If no category or module selected, go active for first module in first category
 			if (
-				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
+				(($item_ary['name'] === $id || $item_ary['name'] === $this->p_class . '_' . $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
 				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat && $item_ary['display']) ||
-				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
+				(($item_ary['name'] === $id || $item_ary['name'] === $this->p_class . '_' . $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
 				(!$id && !$mode && !$item_ary['cat'] && $item_ary['display'])
 				)
 			{
@@ -426,88 +548,132 @@ class p_master
 	* Loads currently active module
 	*
 	* This method loads a given module, passing it the relevant id and mode.
+	*
+	* @param string|false $mode mode, as passed through to the module
+	* @param string|false $module_url If supplied, we use this module url
+	* @param bool $execute_module If true, at the end we execute the main method for the new instance
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user, $template, $request;
 
 		$module_path = $this->include_path . $this->p_class;
-		$icat = request_var('icat', '');
+		$icat = $request->variable('icat', '');
 
 		if ($this->active_module === false)
 		{
-			trigger_error('Module not accessible', E_USER_ERROR);
+			trigger_error('MODULE_NOT_ACCESS', E_USER_ERROR);
 		}
 
-		if (!class_exists("{$this->p_class}_$this->p_name"))
+		// new modules use the full class names, old ones are always called <type>_<name>, e.g. acp_board
+		if (!class_exists($this->p_name))
 		{
-			if (!file_exists("$module_path/{$this->p_class}_$this->p_name.$phpEx"))
+			if (!file_exists("$module_path/{$this->p_name}.$phpEx"))
 			{
-				trigger_error("Cannot find module $module_path/{$this->p_class}_$this->p_name.$phpEx", E_USER_ERROR);
+				trigger_error($user->lang('MODULE_NOT_FIND', "$module_path/{$this->p_name}.$phpEx"), E_USER_ERROR);
 			}
 
-			include("$module_path/{$this->p_class}_$this->p_name.$phpEx");
+			include("$module_path/{$this->p_name}.$phpEx");
 
-			if (!class_exists("{$this->p_class}_$this->p_name"))
+			if (!class_exists($this->p_name))
 			{
-				trigger_error("Module file $module_path/{$this->p_class}_$this->p_name.$phpEx does not contain correct class [{$this->p_class}_$this->p_name]", E_USER_ERROR);
+				trigger_error($user->lang('MODULE_FILE_INCORRECT_CLASS', "$module_path/{$this->p_name}.$phpEx", $this->p_name), E_USER_ERROR);
 			}
+		}
 
-			if (!empty($mode))
+		if (!empty($mode))
+		{
+			$this->p_mode = $mode;
+		}
+
+		// Create a new instance of the desired module ...
+		$class_name = $this->p_name;
+
+		$this->module = new $class_name($this);
+
+		// We pre-define the action parameter we are using all over the place
+		if (defined('IN_ADMIN'))
+		{
+			/*
+			* If this is an extension module, we'll try to automatically set
+			* the style paths for the extension (the ext author can change them
+			* if necessary).
+			*/
+			$module_dir = explode('\\', get_class($this->module));
+
+			// 0 vendor, 1 extension name, ...
+			if (isset($module_dir[1]))
 			{
-				$this->p_mode = $mode;
-			}
+				$module_style_dir = $phpbb_root_path . 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/adm/style';
 
-			// Create a new instance of the desired module ... if it has a
-			// constructor it will of course be executed
-			$instance = "{$this->p_class}_$this->p_name";
-
-			$this->module = new $instance($this);
-
-			// We pre-define the action parameter we are using all over the place
-			if (defined('IN_ADMIN'))
-			{
-				// Is first module automatically enabled a duplicate and the category not passed yet?
-				if (!$icat && $this->module_ary[$this->active_module_row_id]['is_duplicate'])
+				if (is_dir($module_style_dir))
 				{
-					$icat = $this->module_ary[$this->active_module_row_id]['parent'];
+					$template->set_custom_style(array(
+						array(
+							'name' 		=> 'adm',
+							'ext_path' 	=> 'adm/style/',
+						),
+					), array($module_style_dir, $phpbb_admin_path . 'style'));
 				}
+			}
 
-				// Not being able to overwrite ;)
-				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			// Is first module automatically enabled a duplicate and the category not passed yet?
+			if (!$icat && $this->module_ary[$this->active_module_row_id]['is_duplicate'])
+			{
+				$icat = $this->module_ary[$this->active_module_row_id]['parent'];
+			}
+
+			// Not being able to overwrite ;)
+			$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+		}
+		else
+		{
+			/*
+			* If this is an extension module, we'll try to automatically set
+			* the style paths for the extension (the ext author can change them
+			* if necessary).
+			*/
+			$module_dir = explode('\\', get_class($this->module));
+
+			// 0 vendor, 1 extension name, ...
+			if (isset($module_dir[1]))
+			{
+				$module_style_dir = 'ext/' . $module_dir[0] . '/' . $module_dir[1] . '/styles';
+
+				if (is_dir($phpbb_root_path . $module_style_dir))
+				{
+					$template->set_style(array($module_style_dir, 'styles'));
+				}
+			}
+
+			// If user specified the module url we will use it...
+			if ($module_url !== false)
+			{
+				$this->module->u_action = $module_url;
 			}
 			else
 			{
-				// If user specified the module url we will use it...
-				if ($module_url !== false)
-				{
-					$this->module->u_action = $module_url;
-				}
-				else
-				{
-					$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
-				}
-
-				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 			}
 
-			// Add url_extra parameter to u_action url
-			if (!empty($this->module_ary) && $this->active_module !== false && $this->module_ary[$this->active_module_row_id]['url_extra'])
-			{
-				$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
-			}
+			$this->module->u_action = append_sid($this->module->u_action, 'i=' . $this->get_module_identifier($this->p_name)) . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+		}
 
-			// Assign the module path for re-usage
-			$this->module->module_path = $module_path . '/';
+		// Add url_extra parameter to u_action url
+		if (!empty($this->module_ary) && $this->active_module !== false && $this->module_ary[$this->active_module_row_id]['url_extra'])
+		{
+			$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
+		}
 
-			// Execute the main method for the new instance, we send the module id and mode as parameters
-			// Users are able to call the main method after this function to be able to assign additional parameters manually
-			if ($execute_module)
-			{
-				$this->module->main($this->p_name, $this->p_mode);
-			}
+		// Assign the module path for re-usage
+		$this->module->module_path = $module_path . '/';
 
-			return;
+		// Execute the main method for the new instance, we send the module id and mode as parameters
+		// Users are able to call the main method after this function to be able to assign additional parameters manually
+		if ($execute_module)
+		{
+			$short_name = preg_replace("#^{$this->p_class}_#", '', $this->p_name);
+			$this->module->main($short_name, $this->p_mode);
 		}
 	}
 
@@ -546,7 +712,7 @@ class p_master
 		// If we find a name by this id and being enabled we have our active one...
 		foreach ($this->module_ary as $row_id => $item_ary)
 		{
-			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && $item_ary['display'])
+			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && $item_ary['display'] || $item_ary['name'] === $this->p_class . '_' . $id)
 			{
 				if ($mode === false || $mode === $item_ary['mode'])
 				{
@@ -563,8 +729,6 @@ class p_master
 	*/
 	function get_parents($parent_id, $left_id, $right_id, &$all_parents)
 	{
-		global $db;
-
 		$parents = array();
 
 		if ($parent_id > 0)
@@ -656,7 +820,7 @@ class p_master
 		// Make sure the module_url has a question mark set, effectively determining the delimiter to use
 		$delim = (strpos($module_url, '?') === false) ? '?' : '&amp;';
 
-		$current_padding = $current_depth = 0;
+		$current_depth = 0;
 		$linear_offset 	= 'l_block1';
 		$tabular_offset = 't_block2';
 
@@ -734,7 +898,26 @@ class p_master
 				}
 			}
 
-			$u_title = $module_url . $delim . 'i=' . (($item_ary['cat']) ? $item_ary['id'] : $item_ary['name'] . (($item_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $item_ary['mode']);
+			$u_title = $module_url . $delim . 'i=';
+			// if the item has a name use it, else use its id
+			if (empty($item_ary['name']))
+			{
+				$u_title .= $item_ary['id'];
+			}
+			else
+			{
+				// if the category has a name, then use it.
+				$u_title .= $this->get_module_identifier($item_ary['name']);
+			}
+			// If the item is not a category append the mode
+			if (!$item_ary['cat'])
+			{
+				if ($item_ary['is_duplicate'])
+				{
+					$u_title .= '&amp;icat=' . $current_id;
+				}
+				$u_title .= '&amp;mode=' . $item_ary['mode'];
+			}
 
 			// Was not allowed in categories before - /*!$item_ary['cat'] && */
 			$u_title .= (isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
@@ -790,9 +973,22 @@ class p_master
 
 	/**
 	* Load module as the current active one without the need for registering it
+	*
+	* @param string $class module class (acp/mcp/ucp)
+	* @param string $name module name (class name of the module, or its basename
+	*                     phpbb_ext_foo_acp_bar_module, ucp_zebra or zebra)
+	* @param string $mode mode, as passed through to the module
+	*
 	*/
 	function load($class, $name, $mode = false)
 	{
+		// new modules use the full class names, old ones are always called <class>_<name>, e.g. acp_board
+		// in the latter case this function may be called as load('acp', 'board')
+		if (!class_exists($name) && substr($name, 0, strlen($class) + 1) !== $class . '_')
+		{
+			$name = $class . '_' . $name;
+		}
+
 		$this->p_class = $class;
 		$this->p_name = $name;
 
@@ -805,7 +1001,7 @@ class p_master
 	/**
 	* Display module
 	*/
-	function display($page_title, $display_online_list = true)
+	function display($page_title, $display_online_list = false)
 	{
 		global $template, $user;
 
@@ -840,7 +1036,7 @@ class p_master
 	{
 		foreach ($this->module_ary as $row_id => $item_ary)
 		{
-			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (!$mode || $item_ary['mode'] === $mode))
+			if (($item_ary['name'] === $id || $item_ary['name'] === $this->p_class . '_' . $id || $item_ary['id'] === (int) $id) && (!$mode || $item_ary['mode'] === $mode))
 			{
 				$this->module_ary[$row_id]['display'] = (int) $display;
 			}
@@ -852,32 +1048,98 @@ class p_master
 	*/
 	function add_mod_info($module_class)
 	{
-		global $user, $phpEx;
+		global $config, $user, $phpEx, $phpbb_extension_manager;
 
-		if (file_exists($user->lang_path . $user->lang_name . '/mods'))
+		$finder = $phpbb_extension_manager->get_finder();
+
+		// We grab the language files from the default, English and user's language.
+		// So we can fall back to the other files like we do when using add_lang()
+		$default_lang_files = $english_lang_files = $user_lang_files = array();
+
+		// Search for board default language if it's not the user language
+		if ($config['default_lang'] != $user->lang_name)
 		{
-			$add_files = array();
+			$default_lang_files = $finder
+				->prefix('info_' . strtolower($module_class) . '_')
+				->suffix(".$phpEx")
+				->extension_directory('/language/' . basename($config['default_lang']))
+				->core_path('language/' . basename($config['default_lang']) . '/mods/')
+				->find();
+		}
 
-			$dir = @opendir($user->lang_path . $user->lang_name . '/mods');
+		// Search for english, if its not the default or user language
+		if ($config['default_lang'] != 'en' && $user->lang_name != 'en')
+		{
+			$english_lang_files = $finder
+				->prefix('info_' . strtolower($module_class) . '_')
+				->suffix(".$phpEx")
+				->extension_directory('/language/en')
+				->core_path('language/en/mods/')
+				->find();
+		}
 
-			if ($dir)
-			{
-				while (($entry = readdir($dir)) !== false)
-				{
-					if (strpos($entry, 'info_' . strtolower($module_class) . '_') === 0 && substr(strrchr($entry, '.'), 1) == $phpEx)
-					{
-						$add_files[] = 'mods/' . substr(basename($entry), 0, -(strlen($phpEx) + 1));
-					}
-				}
-				closedir($dir);
-			}
+		// Find files in the user's language
+		$user_lang_files = $finder
+			->prefix('info_' . strtolower($module_class) . '_')
+			->suffix(".$phpEx")
+			->extension_directory('/language/' . $user->lang_name)
+			->core_path('language/' . $user->lang_name . '/mods/')
+			->find();
 
-			if (sizeof($add_files))
-			{
-				$user->add_lang($add_files);
-			}
+		$lang_files = array_merge($english_lang_files, $default_lang_files, $user_lang_files);
+		foreach ($lang_files as $lang_file => $ext_name)
+		{
+			$user->add_lang_ext($ext_name, $lang_file);
 		}
 	}
-}
 
-?>
+	/**
+	* Retrieve shortened module basename for legacy basenames (with xcp_ prefix)
+	*
+	* @param string $basename A module basename
+	* @return string The basename if it starts with phpbb_ or the basename with
+	*                the current p_class (e.g. acp_) stripped.
+	*/
+	protected function get_short_name($basename)
+	{
+		if (substr($basename, 0, 6) === 'phpbb\\' || strpos($basename, '\\') !== false)
+		{
+			return $basename;
+		}
+
+		// strip xcp_ prefix from old classes
+		return substr($basename, strlen($this->p_class) + 1);
+	}
+
+	/**
+	* If the basename contains a \ we don't use that for the URL.
+	*
+	* Firefox is currently unable to correctly copy a urlencoded \
+	* so users will be unable to post links to modules.
+	* However we can replace them with dashes and re-replace them later
+	*
+	* @param	string	$basename	Basename of the module
+	* @return		string	Identifier that should be used for
+	*						module link creation
+	*/
+	protected function get_module_identifier($basename)
+	{
+		if (strpos($basename, '\\') === false)
+		{
+			return $basename;
+		}
+
+		return str_replace('\\', '-', $basename);
+	}
+
+	/**
+	* Checks whether the given module basename is a correct class name
+	*
+	* @param string $basename A module basename
+	* @return bool True if the basename starts with phpbb_ or (x)cp_, false otherwise
+	*/
+	protected function is_full_class($basename)
+	{
+		return (strpos($basename, '\\') !== false || preg_match('/^(ucp|mcp|acp)_/', $basename));
+	}
+}

@@ -1,0 +1,15 @@
+<?php
+
+	/**
+	* Event after the post data has been assigned to the template
+	*
+	* @event core.trigger
+	* @var	int		start				Start item of this page
+	* @var	int		current_row_number	Number of the post on this page
+	* @var	int		end					Number of posts on this page
+	* @var	array	row					Array with original post and user data
+	* @var	array	cp_row				Custom profile field data of the poster
+	* @since 3.1.0-a3
+	*/
+	$vars = array('start', 'current_row_number', 'end', 'row', 'cp_row');
+	extract($phpbb_dispatcher->trigger_event('core.trigger', compact($vars)));

@@ -1,0 +1,32 @@
+{
+	"name": "phpbb/phpbb-core",
+	"description": "Collection of core phpBB libraries",
+	"type": "library",
+	"keywords": ["phpbb", "forum"],
+	"homepage": "https://www.phpbb.com",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "phpBB Limited",
+			"email": "operations@phpbb.com",
+			"homepage": "https://www.phpbb.com/go/authors"
+		}
+	],
+	"support": {
+		"issues": "https://tracker.phpbb.com",
+		"forum": "https://www.phpbb.com/community/",
+		"wiki": "https://wiki.phpbb.com",
+		"irc": "irc://irc.freenode.org/phpbb"
+	},
+	"autoload": {
+		"classmap": [""]
+	},
+	"require": {
+		"php": ">=5.4"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.3.x-dev"
+		}
+	}
+}

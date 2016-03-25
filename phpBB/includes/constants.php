@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -25,7 +28,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-define('PHPBB_VERSION', '3.0.12');
+@define('PHPBB_VERSION', '3.2.0-b3-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -47,10 +50,10 @@ define('USER_INACTIVE', 1);
 define('USER_IGNORE', 2);
 define('USER_FOUNDER', 3);
 
-define('INACTIVE_REGISTER', 1);
-define('INACTIVE_PROFILE', 2);
-define('INACTIVE_MANUAL', 3);
-define('INACTIVE_REMIND', 4);
+define('INACTIVE_REGISTER', 1); // Newly registered account
+define('INACTIVE_PROFILE', 2); // Profile details changed
+define('INACTIVE_MANUAL', 3); // Account deactivated by administrator
+define('INACTIVE_REMIND', 4); // Forced user account reactivation
 
 // ACL
 define('ACL_NEVER', 0);
@@ -62,6 +65,7 @@ define('LOGIN_CONTINUE', 1);
 define('LOGIN_BREAK', 2);
 define('LOGIN_SUCCESS', 3);
 define('LOGIN_SUCCESS_CREATE_PROFILE', 20);
+define('LOGIN_SUCCESS_LINK_PROFILE', 21);
 define('LOGIN_ERROR_USERNAME', 10);
 define('LOGIN_ERROR_PASSWORD', 11);
 define('LOGIN_ERROR_ACTIVE', 12);
@@ -87,6 +91,11 @@ define('FORUM_LINK', 2);
 define('ITEM_UNLOCKED', 0);
 define('ITEM_LOCKED', 1);
 define('ITEM_MOVED', 2);
+
+define('ITEM_UNAPPROVED', 0); // => has not yet been approved
+define('ITEM_APPROVED', 1); // => has been approved, and has not been soft deleted
+define('ITEM_DELETED', 2); // => has been soft deleted
+define('ITEM_REAPPROVE', 3); // => has been edited and needs to be re-approved
 
 // Forum Flags
 define('FORUM_FLAG_LINK_TRACK', 1);
@@ -162,11 +171,11 @@ define('CONFIRM_REPORT', 4);
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);
 define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
-define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming
-define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming
+define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming - @deprecated 3.2
+define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
 define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files
-define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files
+define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files - @deprecated 3.2
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 8);
@@ -212,6 +221,9 @@ define('CAPTCHA_MAX_CHARS', 7);
 // Additional constants
 define('VOTE_CONVERTED', 127);
 
+// BC global FTW
+global $table_prefix;
+
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');
 define('ACL_OPTIONS_TABLE',			$table_prefix . 'acl_options');
@@ -223,10 +235,12 @@ define('BANLIST_TABLE',				$table_prefix . 'banlist');
 define('BBCODES_TABLE',				$table_prefix . 'bbcodes');
 define('BOOKMARKS_TABLE',			$table_prefix . 'bookmarks');
 define('BOTS_TABLE',				$table_prefix . 'bots');
-define('CONFIG_TABLE',				$table_prefix . 'config');
+@define('CONFIG_TABLE',				$table_prefix . 'config');
+define('CONFIG_TEXT_TABLE',			$table_prefix . 'config_text');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');
 define('DRAFTS_TABLE',				$table_prefix . 'drafts');
+define('EXT_TABLE',					$table_prefix . 'ext');
 define('EXTENSIONS_TABLE',			$table_prefix . 'extensions');
 define('EXTENSION_GROUPS_TABLE',	$table_prefix . 'extension_groups');
 define('FORUMS_TABLE',				$table_prefix . 'forums');
@@ -238,8 +252,11 @@ define('ICONS_TABLE',				$table_prefix . 'icons');
 define('LANG_TABLE',				$table_prefix . 'lang');
 define('LOG_TABLE',					$table_prefix . 'log');
 define('LOGIN_ATTEMPT_TABLE',		$table_prefix . 'login_attempts');
+define('MIGRATIONS_TABLE',			$table_prefix . 'migrations');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
+define('NOTIFICATION_TYPES_TABLE',	$table_prefix . 'notification_types');
+define('NOTIFICATIONS_TABLE',		$table_prefix . 'notifications');
 define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
 define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('POSTS_TABLE',				$table_prefix . 'posts');
@@ -261,23 +278,23 @@ define('SESSIONS_TABLE',			$table_prefix . 'sessions');
 define('SESSIONS_KEYS_TABLE',		$table_prefix . 'sessions_keys');
 define('SITELIST_TABLE',			$table_prefix . 'sitelist');
 define('SMILIES_TABLE',				$table_prefix . 'smilies');
+define('SPHINX_TABLE',				$table_prefix . 'sphinx');
 define('STYLES_TABLE',				$table_prefix . 'styles');
 define('STYLES_TEMPLATE_TABLE',		$table_prefix . 'styles_template');
 define('STYLES_TEMPLATE_DATA_TABLE',$table_prefix . 'styles_template_data');
 define('STYLES_THEME_TABLE',		$table_prefix . 'styles_theme');
 define('STYLES_IMAGESET_TABLE',		$table_prefix . 'styles_imageset');
 define('STYLES_IMAGESET_DATA_TABLE',$table_prefix . 'styles_imageset_data');
+define('TEAMPAGE_TABLE',			$table_prefix . 'teampage');
 define('TOPICS_TABLE',				$table_prefix . 'topics');
 define('TOPICS_POSTED_TABLE',		$table_prefix . 'topics_posted');
 define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');
 define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('USER_GROUP_TABLE',			$table_prefix . 'user_group');
+define('USER_NOTIFICATIONS_TABLE',	$table_prefix . 'user_notifications');
 define('USERS_TABLE',				$table_prefix . 'users');
 define('WARNINGS_TABLE',			$table_prefix . 'warnings');
 define('WORDS_TABLE',				$table_prefix . 'words');
 define('ZEBRA_TABLE',				$table_prefix . 'zebra');
 
 // Additional tables
-
-
-?>

@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class acp_permissions_info
 {
 	function module()
@@ -18,7 +18,6 @@ class acp_permissions_info
 		return array(
 			'filename'	=> 'acp_permissions',
 			'title'		=> 'ACP_PERMISSIONS',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'intro'					=> array('title' => 'ACP_PERMISSIONS', 'auth' => 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth', 'cat' => array('ACP_CAT_PERMISSIONS')),
 				'trace'					=> array('title' => 'ACP_PERMISSION_TRACE', 'auth' => 'acl_a_viewauth', 'display' => false, 'cat' => array('ACP_PERMISSION_MASKS')),
@@ -50,5 +49,3 @@ class acp_permissions_info
 	{
 	}
 }
-
-?>

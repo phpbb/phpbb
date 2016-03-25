@@ -1,0 +1,3 @@
+controller_noroute:
+    path: /donotfindthis
+    defaults: { _controller: foo.controller:handle }

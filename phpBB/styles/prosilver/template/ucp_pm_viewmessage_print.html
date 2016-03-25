@@ -1,25 +1,18 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}" xml:lang="{S_USER_LANG}">
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
 <head>
-
-<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="content-style-type" content="text/css" />
-<meta http-equiv="content-language" content="{S_USER_LANG}" />
-<meta http-equiv="imagetoolbar" content="no" />
-<meta name="resource-type" content="document" />
-<meta name="distribution" content="global" />
-<meta name="keywords" content="" />
-<meta name="description" content="" />
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="robots" content="noindex" />
 {META}
 <title>{SITENAME} &bull; {PAGE_TITLE}</title>
 
-<link href="{T_THEME_PATH}/print.css" rel="stylesheet" type="text/css" />
+<link href="{T_THEME_PATH}/print.css" rel="stylesheet">
+<!-- EVENT ucp_pm_viewmessage_print_head_append -->
 </head>
-
 <body id="phpbb">
-<div id="wrap">
-	<a id="top" name="top" accesskey="t"></a>
+<div id="wrap" class="wrap">
+	<a id="top" class="top-anchor" accesskey="t"></a>
 
 	<div id="page-header">
 		<h1>{SITENAME}</h1>
@@ -28,7 +21,7 @@
 		<h2>{L_PRIVATE_MESSAGING}</h2>
 	</div>
 
-	<div id="page-body">
+	<div id="page-body" class="page-body">
 		<div class="page-number">{PAGE_NUMBER}</div>
 			<div class="post">
 				<h3>{SUBJECT}</h3>
@@ -46,9 +39,9 @@
 			<hr />
 	</div>
 
-	<div id="page-footer">
+	<div id="page-footer" class="page-footer">
 		<div class="page-number">{S_TIMEZONE}<br />{PAGE_NUMBER}</div>
-		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Group<br />https://www.phpbb.com/</div>
+		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Limited<br />https://www.phpbb.com/</div>
 	</div>
 </div>
 

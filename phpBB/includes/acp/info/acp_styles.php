@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class acp_styles_info
 {
 	function module()
@@ -18,12 +18,9 @@ class acp_styles_info
 		return array(
 			'filename'	=> 'acp_styles',
 			'title'		=> 'ACP_CAT_STYLES',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'style'		=> array('title' => 'ACP_STYLES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_MANAGEMENT')),
-				'template'	=> array('title' => 'ACP_TEMPLATES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_COMPONENTS')),
-				'theme'		=> array('title' => 'ACP_THEMES', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_COMPONENTS')),
-				'imageset'	=> array('title' => 'ACP_IMAGESETS', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_COMPONENTS')),
+				'install'	=> array('title' => 'ACP_STYLES_INSTALL', 'auth' => 'acl_a_styles', 'cat' => array('ACP_STYLE_MANAGEMENT')),
 			),
 		);
 	}
@@ -36,5 +33,3 @@ class acp_styles_info
 	{
 	}
 }
-
-?>

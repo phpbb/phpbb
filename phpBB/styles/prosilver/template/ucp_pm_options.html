@@ -5,16 +5,16 @@
 <form id="ucp" method="post" action="{S_UCP_ACTION}">
 
 <div class="panel">
-	<div class="inner"><span class="corners-top"><span></span></span>
+	<div class="inner">
 
 	<!-- IF ERROR_MESSAGE --><p class="error">{ERROR_MESSAGE}</p><!-- ENDIF -->
 	<!-- IF NOTIFICATION_MESSAGE --><p class="error">{NOTIFICATION_MESSAGE}</p><!-- ENDIF -->
-	
+
 	<h3>{L_DEFINED_RULES}</h3>
 
 	<ol class="def-rules">
 	<!-- BEGIN rule -->
-		<li><div class="right-box"><input type="submit" name="delete_rule[{rule.RULE_ID}]" value="{L_DELETE_RULE}" class="button2" /></div><strong>{L_IF}</strong> {rule.CHECK} <em>{rule.RULE}</em> <!-- IF rule.STRING --><strong>{rule.STRING}</strong> | <!-- ENDIF -->{rule.ACTION}<!-- IF rule.FOLDER -->: {rule.FOLDER}<!-- ENDIF --><div style="clear: both;"></div></li>
+		<li><div class="right-box"><input type="submit" name="delete_rule[{rule.RULE_ID}]" value="{L_DELETE_RULE}" class="button2" /></div><strong>{L_IF}</strong> {rule.CHECK} <em>{rule.RULE}</em> <!-- IF rule.STRING --><strong>{rule.STRING}</strong> | <!-- ENDIF -->{rule.ACTION}<!-- IF rule.FOLDER -->{L_COLON} {rule.FOLDER}<!-- ENDIF --><div style="clear: both;"></div></li>
 	<!-- BEGINELSE -->
 		<li><strong>{L_NO_RULES_DEFINED}</strong></li>
 	<!-- END rule -->
@@ -26,7 +26,7 @@
 
 	<!-- IF S_CHECK_DEFINED -->
 		<dl>
-			<dt><label<!-- IF S_CHECK_SELECT --> for="check_option"<!-- ENDIF -->>{L_IF}:</label></dt>
+			<dt><label<!-- IF S_CHECK_SELECT --> for="check_option"<!-- ENDIF -->>{L_IF}{L_COLON}</label></dt>
 			<dd>
 				<!-- IF S_CHECK_SELECT --><select name="check_option" id="check_option">{S_CHECK_OPTIONS}</select> <input type="submit" name="next" value="{L_NEXT_STEP}" class="button2" /><!-- ELSE -->{CHECK_CURRENT}<input type="hidden" name="check_option" value="{CHECK_OPTION}" /><!-- ENDIF -->
 			</dd>
@@ -81,26 +81,26 @@
 
 	<!-- IF not S_MAX_FOLDER_ZERO -->
 	<dl>
-		<dt><label for="foldername">{L_ADD_FOLDER}:</label></dt>
+		<dt><label for="foldername">{L_ADD_FOLDER}{L_COLON}</label></dt>
 		<dd><!-- IF S_MAX_FOLDER_REACHED -->{L_MAX_FOLDER_REACHED}<!-- ELSE --><input type="text" class="inputbox medium" name="foldername" id="foldername" size="30" maxlength="30" /> <input class="button2" type="submit" name="addfolder" value="{L_ADD}" /><!-- ENDIF --></dd>
 	</dl>
 	<!-- IF S_FOLDER_OPTIONS --><hr class="dashed" /><!-- ENDIF -->
 	<!-- ENDIF -->
 
-	
+
 
 	<!-- IF S_FOLDER_OPTIONS -->
 		<dl>
-			<dt><label for="rename_folder_id">{L_RENAME_FOLDER}:</label></dt>
+			<dt><label for="rename_folder_id">{L_RENAME_FOLDER}{L_COLON}</label></dt>
 			<dd><select name="rename_folder_id" id="rename_folder_id">{S_FOLDER_OPTIONS}</select></dd>
-			<dt><label for="new_folder_name">{L_NEW_FOLDER_NAME}:</label></dt>
+			<dt><label for="new_folder_name">{L_NEW_FOLDER_NAME}{L_COLON}</label></dt>
 			<dd><input type="text" class="inputbox tiny" name="new_folder_name" id="new_folder_name" maxlength="30" /> <input class="button2" type="submit" name="rename_folder" value="{L_RENAME}" /></dd>
 		</dl>
 		<hr class="dashed" />
 		<dl>
-			<dt><label for="remove_folder_id">{L_REMOVE_FOLDER}:</label></dt>
+			<dt><label for="remove_folder_id">{L_REMOVE_FOLDER}{L_COLON}</label></dt>
 			<dd><select name="remove_folder_id" id="remove_folder_id">{S_FOLDER_OPTIONS}</select></dd>
-			<dd style="margin-top: 3px;"><label for="remove_action1"><input type="radio" name="remove_action" id="remove_action1" value="1" checked="checked" /> {L_MOVE_DELETED_MESSAGES_TO}:</label> <select name="move_to">{S_TO_FOLDER_OPTIONS}</select></dd>
+			<dd style="margin-top: 3px;"><label for="remove_action1"><input type="radio" name="remove_action" id="remove_action1" value="1" checked="checked" /> {L_MOVE_DELETED_MESSAGES_TO}{L_COLON}</label> <select name="move_to">{S_TO_FOLDER_OPTIONS}</select></dd>
 			<dd style="margin-top: 3px;"><label for="remove_action2"><input type="radio" name="remove_action" id="remove_action2" value="2" /> {L_DELETE_MESSAGES_IN_FOLDER}</label></dd>
 			<dd style="margin-top: 3px;"><input class="button2" type="submit" name="remove_folder" value="{L_REMOVE}" /></dd>
 		</dl>
@@ -109,21 +109,21 @@
 	<hr class="dashed" />
 
 	<dl>
-		<dt><label for="full_action1">{L_IF_FOLDER_FULL}:</label></dt>
+		<dt><label for="full_action1">{L_IF_FOLDER_FULL}{L_COLON}</label></dt>
 		<dd style="margin-top: 3px;"><label for="full_action1"><input type="radio" name="full_action" id="full_action1" value="1"{S_DELETE_CHECKED} /> {L_DELETE_OLDEST_MESSAGES}</label></dd>
-		<dd style="margin-top: 3px;"><label for="full_action2"><input type="radio" name="full_action" id="full_action2" value="2"{S_MOVE_CHECKED} /> {L_MOVE_TO_FOLDER}:</label> <select name="full_move_to">{S_FULL_FOLDER_OPTIONS}</select></dd>
+		<dd style="margin-top: 3px;"><label for="full_action2"><input type="radio" name="full_action" id="full_action2" value="2"{S_MOVE_CHECKED} /> {L_MOVE_TO_FOLDER}{L_COLON}</label> <select name="full_move_to">{S_FULL_FOLDER_OPTIONS}</select></dd>
 		<dd style="margin-top: 3px;"><label for="full_action3" style="white-space:normal;"><input type="radio" name="full_action" id="full_action3" value="3"{S_HOLD_CHECKED} /> {L_HOLD_NEW_MESSAGES}</label></dd>
 	</dl>
 
 
 	<dl>
-		<dt><label>{L_DEFAULT_ACTION}:</label><br /><span>{L_DEFAULT_ACTION_EXPLAIN}</span></dt>
+		<dt><label>{L_DEFAULT_ACTION}{L_COLON}</label><br /><span>{L_DEFAULT_ACTION_EXPLAIN}</span></dt>
 		<dd>{DEFAULT_ACTION}</dd>
 		<dd><input class="button2" type="submit" name="fullfolder" value="{L_CHANGE}" /></dd>
 	</dl>
 	</fieldset>
 
-	<span class="corners-bottom"><span></span></span></div>
+	</div>
 	{S_FORM_TOKEN}
 </div>
 </form>

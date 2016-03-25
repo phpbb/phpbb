@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -16,19 +19,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* @package acp
-*/
 class acp_disallow
 {
 	var $u_action;
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		global $db, $user, $template, $cache, $phpbb_log, $request;
 
 		$user->add_lang('acp/posting');
 
@@ -49,7 +46,7 @@ class acp_disallow
 
 		if ($disallow)
 		{
-			$disallowed_user = str_replace('*', '%', utf8_normalize_nfc(request_var('disallowed_user', '', true)));
+			$disallowed_user = str_replace('*', '%', $request->variable('disallowed_user', '', true));
 
 			if (!$disallowed_user)
 			{
@@ -74,13 +71,13 @@ class acp_disallow
 			$cache->destroy('_disallowed_usernames');
 
 			$message = $user->lang['DISALLOW_SUCCESSFUL'];
-			add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_ADD', false, array(str_replace('%', '*', $disallowed_user)));
 
 			trigger_error($message . adm_back_link($this->u_action));
 		}
 		else if ($allow)
 		{
-			$disallowed_id = request_var('disallowed_id', 0);
+			$disallowed_id = $request->variable('disallowed_id', 0);
 
 			if (!$disallowed_id)
 			{
@@ -93,7 +90,7 @@ class acp_disallow
 
 			$cache->destroy('_disallowed_usernames');
 
-			add_log('admin', 'LOG_DISALLOW_DELETE');
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_DISALLOW_DELETE');
 
 			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
 		}
@@ -116,5 +113,3 @@ class acp_disallow
 		);
 	}
 }
-
-?>

@@ -1,0 +1,6 @@
+controller2:
+    path: /bar
+    defaults: { _controller: foo.controller:handle }
+controller3:
+    path: /bar/p-{p}
+    defaults: { _controller: foo.controller:handle }

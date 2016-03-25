@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class acp_database_info
 {
 	function module()
@@ -18,7 +18,6 @@ class acp_database_info
 		return array(
 			'filename'	=> 'acp_database',
 			'title'		=> 'ACP_DATABASE',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'backup'	=> array('title' => 'ACP_BACKUP', 'auth' => 'acl_a_backup', 'cat' => array('ACP_CAT_DATABASE')),
 				'restore'	=> array('title' => 'ACP_RESTORE', 'auth' => 'acl_a_backup', 'cat' => array('ACP_CAT_DATABASE')),
@@ -34,5 +33,3 @@ class acp_database_info
 	{
 	}
 }
-
-?>

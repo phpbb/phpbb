@@ -1,15 +1,18 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2013 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/auth.php';
 
 class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 {
@@ -22,8 +25,9 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $config, $db;
+		global $config, $db, $user;
 
+		$user = new StdClass;
 		$db = $this->db = $this->new_dbal();
 		$config = array(
 			'load_online_time'	=> 5,
@@ -124,28 +128,28 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		return array(
 			array(0, false, array(
-				'online_userlist'	=> 'REGISTERED_USERS 2, 3',
-				'l_online_users'	=> 'ONLINE_USERS_TOTAL 5REG_USERS_TOTAL_AND 2HIDDEN_USERS_TOTAL 3',
+				'online_userlist'	=> 'REGISTERED_USERS <span class="username">2</span>, <span class="username">3</span>',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL 5 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 3',
 			)),
 			array(0, true, array(
-				'online_userlist'	=> 'REGISTERED_USERS 2, 3',
-				'l_online_users'	=> 'ONLINE_USERS_TOTAL 7REG_USERS_TOTAL 2HIDDEN_USERS_TOTAL_AND 3GUEST_USERS_TOTAL 2',
+				'online_userlist'	=> 'REGISTERED_USERS <span class="username">2</span>, <span class="username">3</span>',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 7 REG_USERS_TOTAL 2 HIDDEN_USERS_TOTAL 3 GUEST_USERS_TOTAL 2',
 			)),
 			array(1, false, array(
-				'online_userlist'	=> 'BROWSING_FORUM 3',
-				'l_online_users'	=> 'ONLINE_USERS_TOTAL 2REG_USER_TOTAL_AND 1HIDDEN_USER_TOTAL 1',
+				'online_userlist'	=> 'BROWSING_FORUM <span class="username">3</span>',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL 2 REG_USERS_TOTAL 1 HIDDEN_USERS_TOTAL 1',
 			)),
 			array(1, true, array(
-				'online_userlist'	=> 'BROWSING_FORUM_GUEST 3 1',
-				'l_online_users'	=> 'ONLINE_USERS_TOTAL 3REG_USER_TOTAL 1HIDDEN_USER_TOTAL_AND 1GUEST_USER_TOTAL 1',
+				'online_userlist'	=> 'BROWSING_FORUM_GUESTS 1 <span class="username">3</span>',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 3 REG_USERS_TOTAL 1 HIDDEN_USERS_TOTAL 1 GUEST_USERS_TOTAL 1',
 			)),
 			array(2, false, array(
 				'online_userlist'	=> 'BROWSING_FORUM NO_ONLINE_USERS',
-				'l_online_users'	=> 'ONLINE_USERS_ZERO_TOTAL 0REG_USERS_ZERO_TOTAL_AND 0HIDDEN_USERS_ZERO_TOTAL 0',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL 0 REG_USERS_TOTAL 0 HIDDEN_USERS_TOTAL 0',
 			)),
 			array(2, true, array(
-				'online_userlist'	=> 'BROWSING_FORUM_GUESTS NO_ONLINE_USERS 0',
-				'l_online_users'	=> 'ONLINE_USERS_ZERO_TOTAL 0REG_USERS_ZERO_TOTAL 0HIDDEN_USERS_ZERO_TOTAL_AND 0GUEST_USERS_ZERO_TOTAL 0',
+				'online_userlist'	=> 'BROWSING_FORUM_GUESTS 0 NO_ONLINE_USERS',
+				'l_online_users'	=> 'ONLINE_USERS_TOTAL_GUESTS 0 REG_USERS_TOTAL 0 HIDDEN_USERS_TOTAL 0 GUEST_USERS_TOTAL 0',
 			)),
 		);
 	}
@@ -157,18 +161,21 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 	{
 		$this->db->sql_query('DELETE FROM phpbb_sessions');
 
-		global $config, $user, $auth;
+		global $config, $user, $auth, $phpbb_dispatcher;
 		$config['load_online_guests'] = $display_guests;
+		$user = new phpbb_mock_lang();
 		$user->lang = $this->load_language();
-		$auth = $this->getMock('auth');
+		$auth = $this->getMock('\phpbb\auth\auth');
 		$acl_get_map = array(
 			array('u_viewonline', true),
+			array('u_viewprofile', true),
 		);
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'),
 				$this->anything())
 			->will($this->returnValueMap($acl_get_map));
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$time = time();
 		$this->create_guest_sessions($time);
@@ -214,25 +221,12 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 
 	protected function load_language()
 	{
-		$lang = array(
+		return array(
 			'NO_ONLINE_USERS'	=> 'NO_ONLINE_USERS',
 			'REGISTERED_USERS'	=> 'REGISTERED_USERS',
 			'BROWSING_FORUM'	=> 'BROWSING_FORUM %s',
 			'BROWSING_FORUM_GUEST'	=> 'BROWSING_FORUM_GUEST %s %d',
 			'BROWSING_FORUM_GUESTS'	=> 'BROWSING_FORUM_GUESTS %s %d',
 		);
-		$vars_online = array('ONLINE', 'REG', 'HIDDEN', 'GUEST');
-		foreach ($vars_online as $online)
-		{
-			$lang = array_merge($lang, array(
-				$online . '_USERS_ZERO_TOTAL'	=> $online . '_USERS_ZERO_TOTAL %d',
-				$online . '_USER_TOTAL'			=> $online . '_USER_TOTAL %d',
-				$online . '_USERS_TOTAL'		=> $online . '_USERS_TOTAL %d',
-				$online . '_USERS_ZERO_TOTAL_AND'	=> $online . '_USERS_ZERO_TOTAL_AND %d',
-				$online . '_USER_TOTAL_AND'			=> $online . '_USER_TOTAL_AND %d',
-				$online . '_USERS_TOTAL_AND'		=> $online . '_USERS_TOTAL_AND %d',
-			));
-		}
-		return $lang;
 	}
 }

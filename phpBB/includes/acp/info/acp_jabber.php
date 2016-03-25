@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class acp_jabber_info
 {
 	function module()
@@ -18,7 +18,6 @@ class acp_jabber_info
 		return array(
 			'filename'	=> 'acp_jabber',
 			'title'		=> 'ACP_JABBER_SETTINGS',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'settings'		=> array('title' => 'ACP_JABBER_SETTINGS', 'auth' => 'acl_a_jabber', 'cat' => array('ACP_CLIENT_COMMUNICATION')),
 			),
@@ -33,4 +32,3 @@ class acp_jabber_info
 	{
 	}
 }
-?>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ruleset name="phpBB Minimum Standard">
+
+ <description>phpBB minimum coding standard</description>
+
+ <!-- All code files MUST use only UTF-8 without BOM. -->
+ <rule ref="Generic.Files.ByteOrderMark" />
+
+ <!-- All code files MUST use the Unix LF (linefeed) line ending. -->
+ <rule ref="Generic.Files.LineEndings" />
+
+ <!-- Tabs MUST be used for indentation -->
+ <rule ref="Generic.WhiteSpace.DisallowSpaceIndent" />
+
+ <!-- ALL braces MUST be on their own lines. -->
+ <rule ref="./phpbb/Sniffs/ControlStructures/OpeningBraceBsdAllmanSniff.php" />
+
+</ruleset>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_ext">
+		<column>ext_name</column>
+		<column>ext_active</column>
+		<column>ext_state</column>
+		<row>
+			<value>vendor2/foo</value>
+			<value>1</value>
+			<value></value>
+		</row>
+		<row>
+			<value>vendor/moo</value>
+			<value>0</value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

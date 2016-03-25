@@ -1,0 +1,35 @@
+foo_bar_controller:
+    path: /foo/bar
+    defaults: { _controller: foo_bar.controller:handle }
+
+foo_baz_controller:
+    path: /foo/baz
+    defaults: { _controller: foo_bar.controller:baz }
+
+foo_template_controller:
+    path: /foo/template
+    defaults: { _controller: foo_bar.controller:template }
+
+foo_exception_controller:
+    path: /foo/exception
+    defaults: { _controller: foo_bar.controller:exception }
+
+foo_login_redirect_controller:
+    path: /foo/login_redirect
+    defaults: { _controller: foo_bar.controller:login_redirect }
+
+foo_redirect_controller:
+    path: /foo/redirect
+    defaults: { _controller: foo_bar.controller:redirect }
+
+foo_index_controller:
+    path: /index
+    defaults: { _controller: foo_bar.controller:redirect }
+
+foo_tests_index_controller:
+    path: /tests/index
+    defaults: { _controller: foo_bar.controller:redirect }
+
+foo_tests_dotdot_index_controller:
+    path: /tests/../index
+    defaults: { _controller: foo_bar.controller:redirect }

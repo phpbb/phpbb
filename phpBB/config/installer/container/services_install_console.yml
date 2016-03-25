@@ -1,0 +1,61 @@
+services:
+    console.installer.command_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: console.installer.command }
+
+    console.installer.command.install:
+        class: phpbb\install\console\command\install\install
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.installer.install'
+            - '@installer.helper.install_helper'
+        tags:
+            - { name: console.installer.command }
+
+    console.installer.command.config.show:
+        class: phpbb\install\console\command\install\config\show
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+        tags:
+            - { name: console.installer.command }
+
+
+    console.installer.command.config.validate:
+        class: phpbb\install\console\command\install\config\validate
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+        tags:
+            - { name: console.installer.command }
+
+    console.updater.command.update:
+        class: phpbb\install\console\command\update\update
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.installer.update'
+            - '@installer.helper.install_helper'
+        tags:
+            - { name: console.installer.command }
+
+    console.updater.command.config.show:
+        class: phpbb\install\console\command\update\config\show
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+        tags:
+            - { name: console.installer.command }
+
+
+    console.updater.command.config.validate:
+        class: phpbb\install\console\command\update\config\validate
+        arguments:
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+        tags:
+            - { name: console.installer.command }

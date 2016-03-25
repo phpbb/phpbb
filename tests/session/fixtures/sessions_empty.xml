@@ -5,13 +5,9 @@
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
-		<column>user_occ</column>
-		<column>user_interests</column>
 		<row>
 			<value>1</value>
 			<value>anonymous</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -20,14 +16,10 @@
 			<value>foo</value>
 			<value></value>
 			<value></value>
-			<value></value>
-			<value></value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>bar</value>
-			<value></value>
-			<value></value>
 			<value></value>
 			<value></value>
 		</row>
@@ -37,5 +29,12 @@
 		<column>session_user_id</column>
 		<column>session_ip</column>
 		<column>session_browser</column>
+	</table>
+	<table name="phpbb_banlist">
+		<column>ban_id</column>
+		<column>ban_userid</column>
+		<column>ban_email</column>
+		<column>ban_reason</column>
+		<column>ban_give_reason</column>
 	</table>
 </dataset>

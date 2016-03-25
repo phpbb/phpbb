@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bookmarks">
+	</table>
+	<table name="phpbb_notifications">
+	</table>
+	<table name="phpbb_notification_types">
+	</table>
+	<table name="phpbb_topics_watch">
+	</table>
+	<table name="phpbb_user_notifications">
+	</table>
+</dataset>

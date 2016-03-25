@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -19,7 +22,6 @@ if (!defined('IN_PHPBB'))
 /**
 * ucp_attachments
 * User attachments
-* @package ucp
 */
 class ucp_attachments
 {
@@ -27,15 +29,14 @@ class ucp_attachments
 
 	function main($id, $mode)
 	{
-		global $template, $user, $db, $config, $phpEx, $phpbb_root_path;
+		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $phpbb_container, $request;
 
-		$start		= request_var('start', 0);
-		$sort_key	= request_var('sk', 'a');
-		$sort_dir	= request_var('sd', 'a');
+		$start		= $request->variable('start', 0);
+		$sort_key	= $request->variable('sk', 'a');
+		$sort_dir	= $request->variable('sd', 'a');
 
 		$delete		= (isset($_POST['delete'])) ? true : false;
-		$confirm	= (isset($_POST['confirm'])) ? true : false;
-		$delete_ids	= array_keys(request_var('attachment', array(0)));
+		$delete_ids	= array_keys($request->variable('attachment', array(0)));
 
 		if ($delete && sizeof($delete_ids))
 		{
@@ -68,12 +69,10 @@ class ucp_attachments
 
 			if (confirm_box(true))
 			{
-				if (!function_exists('delete_attachments'))
-				{
-					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-				}
-
-				delete_attachments('attach', $delete_ids);
+				/** @var \phpbb\attachment\manager $attachment_manager */
+				$attachment_manager = $phpbb_container->get('attachment.manager');
+				$attachment_manager->delete('attach', $delete_ids);
+				unset($attachment_manager);
 
 				meta_refresh(3, $this->u_action);
 				$message = ((sizeof($delete_ids) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED']) . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -119,6 +118,11 @@ class ucp_attachments
 		$result = $db->sql_query($sql);
 		$num_attachments = $db->sql_fetchfield('num_attachments');
 		$db->sql_freeresult($result);
+
+		// Ensure start is a valid value
+		/* @var $pagination \phpbb\pagination */
+		$pagination = $phpbb_container->get('pagination');
+		$start = $pagination->validate_start($start, $config['topics_per_page'], $num_attachments);
 
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
 			FROM ' . ATTACHMENTS_TABLE . ' a
@@ -171,10 +175,12 @@ class ucp_attachments
 		}
 		$db->sql_freeresult($result);
 
+		$base_url = $this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir";
+		$pagination->generate_template_pagination($base_url, 'pagination', 'start', $num_attachments, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> on_page($num_attachments, $config['topics_per_page'], $start),
-			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
+			'NUM_ATTACHMENTS'		=> $user->lang('NUM_ATTACHMENTS', $num_attachments),
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
 
@@ -197,5 +203,3 @@ class ucp_attachments
 		$this->page_title = 'UCP_ATTACHMENTS';
 	}
 }
-
-?>

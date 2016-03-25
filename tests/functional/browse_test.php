@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package testing
-* @copyright (c) 2011 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -28,5 +32,24 @@ class phpbb_functional_browse_test extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'viewtopic.php?t=1');
 		$this->assertGreaterThan(0, $crawler->filter('.postbody')->count());
+	}
+
+	public function test_help_faq()
+	{
+		$crawler = self::request('GET', 'app.php/help/faq');
+		$this->assertGreaterThan(0, $crawler->filter('h2.faq-title')->count());
+	}
+
+	public function test_help_bbcode()
+	{
+		$crawler = self::request('GET', 'app.php/help/bbcode');
+		$this->assertGreaterThan(0, $crawler->filter('h2.faq-title')->count());
+	}
+
+	public function test_feed()
+	{
+		$crawler = self::request('GET', 'app.php/feed', array(), false);
+		self::assert_response_xml();
+		$this->assertGreaterThan(0, $crawler->filter('entry')->count());
 	}
 }

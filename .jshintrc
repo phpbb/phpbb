@@ -1,0 +1,24 @@
+
+{
+  "bitwise": true,
+  "curly": true,
+  "eqeqeq": true,
+  "es3": true,
+  "forin": false,
+  "freeze": true,
+  "newcap": true,
+  "noarg": true,
+  "noempty": true,
+  "nonbsp": true,
+  "undef": true,
+  "unused": true,
+  "strict": true,
+
+  "browser": true,
+  "devel": true,
+  "jquery": true,
+
+  "globals": {
+    "JSON": true
+  }
+}

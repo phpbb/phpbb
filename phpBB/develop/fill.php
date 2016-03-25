@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package phpBB3
-* @copyright (c) 2001, 2003 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -38,8 +42,8 @@ $posts_per_topic = 500;
 
 
 // general vars
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'generate';
-$start = (isset($_REQUEST['start'])) ? intval($_REQUEST['start']) : 0;
+$mode = $request->variable('mode', 'generate');
+$start = $request->variable('start', 0);
 
 switch ($mode)
 {
@@ -86,7 +90,7 @@ switch ($mode)
 
 			$topic_rows[] = "($topic_id, $forum_id, '$forum_id-$topic_id', " . (($topic_id % 34) ? '0' : '1') . ')';
 
-			$sql = 'INSERT IGNORE INTO ' . POSTS_TABLE . ' (topic_id, forum_id, poster_id, post_subject, post_text, post_username, post_approved, post_time, post_reported)
+			$sql = 'INSERT IGNORE INTO ' . POSTS_TABLE . ' (topic_id, forum_id, poster_id, post_subject, post_text, post_username, post_visibility, post_time, post_reported)
 				VALUES ';
 
 			$rows = array();
@@ -183,5 +187,3 @@ function rndm_username()
 
 	return $usernames[array_rand($usernames)];
 }
-
-?>

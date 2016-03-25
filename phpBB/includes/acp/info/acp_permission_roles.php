@@ -1,16 +1,16 @@
 <?php
 /**
 *
-* @package acp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
-/**
-* @package module_install
-*/
 class acp_permission_roles_info
 {
 	function module()
@@ -18,7 +18,6 @@ class acp_permission_roles_info
 		return array(
 			'filename'	=> 'acp_permission_roles',
 			'title'		=> 'ACP_PERMISSION_ROLES',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'admin_roles'		=> array('title' => 'ACP_ADMIN_ROLES', 'auth' => 'acl_a_roles && acl_a_aauth', 'cat' => array('ACP_PERMISSION_ROLES')),
 				'user_roles'		=> array('title' => 'ACP_USER_ROLES', 'auth' => 'acl_a_roles && acl_a_uauth', 'cat' => array('ACP_PERMISSION_ROLES')),
@@ -36,5 +35,3 @@ class acp_permission_roles_info
 	{
 	}
 }
-
-?>

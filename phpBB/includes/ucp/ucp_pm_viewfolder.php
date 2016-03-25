@@ -1,10 +1,13 @@
 <?php
 /**
 *
-* @package ucp
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -22,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_folder($id, $mode, $folder_id, $folder)
 {
-	global $user, $template, $auth, $db, $cache;
+	global $user, $template, $auth, $db, $cache, $request;
 	global $phpbb_root_path, $config, $phpEx;
 
 	$submit_export = (isset($_POST['submit_export'])) ? true : false;
@@ -37,9 +40,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$icons = $cache->obtain_icons();
 
 		$color_rows = array('marked', 'replied');
-
-		// only show the friend/foe color rows if the module is enabled
-		$zebra_enabled = false;
 
 		$_module = new p_master();
 		$_module->list_modules('ucp');
@@ -165,7 +165,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+					'FOLDER_IMG_STYLE'	=> $folder_img,
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
@@ -177,7 +177,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'U_MCP_REPORT'		=> (isset($row['report_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=pm_reports&amp;mode=pm_report_details&amp;r=' . $row['report_id']) : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode($user->lang['COMMA_SEPARATOR'], $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
@@ -193,9 +193,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 	}
 	else
 	{
-		$export_type = request_var('export_option', '');
-		$enclosure = request_var('enclosure', '');
-		$delimiter = request_var('delimiter', '');
+		$export_type = $request->variable('export_option', '');
+		$enclosure = $request->variable('enclosure', '');
+		$delimiter = $request->variable('delimiter', '');
 
 		if ($export_type == 'CSV' && ($delimiter === '' || $enclosure === ''))
 		{
@@ -267,10 +267,10 @@ function view_folder($id, $mode, $folder_id, $folder)
 					}
 				}
 
-				// There is the chance that all recipients of the message got deleted. To avoid creating 
+				// There is the chance that all recipients of the message got deleted. To avoid creating
 				// exports without recipients, we add a bogus "undisclosed recipient".
-				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) && 
-				    !(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
+				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) &&
+					!(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
 				{
 					$address[$message_id]['u'] = array();
 					$address[$message_id]['u']['to'] = array();
@@ -278,12 +278,12 @@ function view_folder($id, $mode, $folder_id, $folder)
 				}
 
 				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
-				
+
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
 					// ISO 8601 date. For PHP4 we are able to hardcode the timezone because $user->format_date() does not set it.
-					'date'		=> $user->format_date($row['message_time'], (PHP_VERSION >= 5) ? 'c' : "Y-m-d\TH:i:s+00:00", true),
+					'date'		=> $user->format_date($row['message_time'], 'c', true),
 					'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
 					'message'	=> $message_row['message_text']
 				);
@@ -380,7 +380,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				break;
 			}
 
-			header('Pragma: no-cache');
+			header('Cache-Control: private, no-cache');
 			header("Content-Type: $mimetype; name=\"data.$filetype\"");
 			header("Content-disposition: attachment; filename=data.$filetype");
 			echo $string;
@@ -394,14 +394,17 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $config, $auth, $phpbb_root_path, $phpEx;
+	global $user, $db, $template, $config, $auth, $phpbb_container, $phpbb_root_path, $phpEx, $request;
 
-	$start = request_var('start', 0);
+	$start = $request->variable('start', 0);
 
 	// Additional vars later, pm ordering is mostly different from post ordering. :/
-	$sort_days	= request_var('st', 0);
-	$sort_key	= request_var('sk', 't');
-	$sort_dir	= request_var('sd', 'd');
+	$sort_days	= $request->variable('st', 0);
+	$sort_key	= $request->variable('sk', 't');
+	$sort_dir	= $request->variable('sd', 'd');
+
+	/* @var $pagination \phpbb\pagination */
+	$pagination = $phpbb_container->get('pagination');
 
 	// PM ordering options
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
@@ -452,10 +455,12 @@ function get_pm_from($folder_id, $folder, $user_id)
 		$sql_limit_time = '';
 	}
 
+	$base_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param");
+	$start = $pagination->validate_start($start, $config['topics_per_page'], $pm_count);
+	$pagination->generate_template_pagination($base_url, 'pagination', 'start', $pm_count, $config['topics_per_page'], $start);
+
 	$template->assign_vars(array(
-		'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
-		'PAGE_NUMBER'		=> on_page($pm_count, $config['topics_per_page'], $start),
-		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
+		'TOTAL_MESSAGES'	=> $user->lang('VIEW_PM_MESSAGES', (int) $pm_count),
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'POST_PM_LOCKED') : $user->img('button_pm_new', 'POST_NEW_PM'),
 
@@ -480,14 +485,10 @@ function get_pm_from($folder_id, $folder, $user_id)
 	{
 		$store_reverse = true;
 
-		if ($start + $config['topics_per_page'] > $pm_count)
-		{
-			$sql_limit = min($config['topics_per_page'], max(1, $pm_count - $start));
-		}
-
 		// Select the sort order
 		$direction = ($sort_dir == 'd') ? 'ASC' : 'DESC';
-		$sql_start = max(0, $pm_count - $sql_limit - $start);
+		$sql_limit = $pagination->reverse_limit($start, $sql_limit, $pm_count);
+		$sql_start = $pagination->reverse_start($start, $sql_limit, $pm_count);
 	}
 	else
 	{
@@ -552,5 +553,3 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'rowset'	=> $rowset
 	);
 }
-
-?>

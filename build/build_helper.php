@@ -1,9 +1,13 @@
 <?php
 /**
 *
-* @package build
-* @copyright (c) 2010 phpBB Group
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
 *
 */
 
@@ -18,11 +22,11 @@ class build_package
 	// -r - compare recursive
 	// -N - Treat missing files as empty
 	// -E - Ignore tab expansions
-	//		not used: -b - Ignore space changes.
-	// -w - Ignore all whitespace
+	// -Z - Ignore white space at line end.
+	// -b - Ignore changes in the amount of white space.
 	// -B - Ignore blank lines
 	// -d - Try to find smaller set of changes
-	var $diff_options = '-crNEBwd';
+	var $diff_options = '-crNEBZbd';
 	var $diff_options_long = '-x images -crNEB'; // -x fonts -x imageset //imageset not used here, because it includes the imageset.cfg file. ;)
 
 	var $verbose = false;
@@ -307,6 +311,65 @@ class build_package
 			else
 			{
 				$result['files'][] = $filename;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	* Collect the list of the deleted files from a list of deleted files and folders.
+	*
+	* @param string $deleted_filename   The full path to a file containing the list of deleted files and directories
+	* @param string $package_name       The name of the package
+	* @return array
+	*/
+	public function collect_deleted_files($deleted_filename, $package_name)
+	{
+		$result = array();
+		$file_contents = file($deleted_filename);
+
+		foreach ($file_contents as $filename)
+		{
+			$filename = trim($filename);
+
+			if (!$filename)
+			{
+				continue;
+			}
+
+			$filename = str_replace('Only in ' . $package_name, '', $filename);
+			$filename = ltrim($filename, '/');
+
+			if (substr($filename, 0, 1) == ':')
+			{
+				$replace = '';
+			}
+			else
+			{
+				$replace = '/';
+			}
+
+			$filename = str_replace(': ', $replace, $filename);
+
+			if (is_dir("{$this->locations['old_versions']}{$package_name}/{$filename}"))
+			{
+				$iterator = new \RecursiveIteratorIterator(
+					new \RecursiveDirectoryIterator(
+						"{$this->locations['old_versions']}{$package_name}/{$filename}",
+						\FilesystemIterator::UNIX_PATHS | \FilesystemIterator::SKIP_DOTS
+					),
+					\RecursiveIteratorIterator::LEAVES_ONLY
+				);
+
+				foreach ($iterator as $file_info)
+				{
+					$result[] = "{$filename}/{$iterator->getSubPathname()}";
+				}
+			}
+			else
+			{
+				$result[] = $filename;
 			}
 		}
 

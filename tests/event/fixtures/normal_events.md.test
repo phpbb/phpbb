@@ -1,0 +1,20 @@
+acp_bbcodes_actions_append
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a3
+* Changed: 3.1.0-a4
+* Purpose: desc1
+
+acp_bbcodes_actions_prepend
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a5
+* Purpose: desc2
+
+acp_bbcodes_actions_prepend2
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a4
+* Changed: 3.1.0-a5 Moved up
+* Changed: 3.1.0-a6 Moved down
+* Purpose: desc2

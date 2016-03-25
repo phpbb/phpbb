@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username_clean</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>1</value>
+			<value>anonymous</value>
+			<value></value>
+			<value></value>
+		</row>
+    </table>
+    <table name="phpbb_sessions">
+		<column>session_id</column>
+		<column>session_user_id</column>
+		<column>session_ip</column>
+		<column>session_browser</column>
+		<column>session_admin</column>
+		<row>
+			<value>bar_session000000000000000000000</value>
+			<value>4</value>
+            <value>127.0.0.1</value>
+			<value>user agent</value>
+			<value>1</value>
+		</row>
+	</table>
+	<table name="phpbb_banlist">
+        <column>ban_id</column>
+        <column>ban_userid</column>
+        <column>ban_ip</column>
+        <column>ban_email</column>
+        <column>ban_start</column>
+        <column>ban_end</column>
+        <column>ban_exclude</column>
+        <column>ban_reason</column>
+        <column>ban_give_reason</column>
+        <row>
+            <value>2</value>
+            <value>4</value>
+            <value>127.0.0.1</value>
+            <value>bar@example.org</value>
+            <value>1111</value>
+            <value>0</value>
+            <value>0</value>
+            <value>HAHAHA</value>
+            <value>1</value>
+        </row>
+        <row>
+            <value>3</value>
+            <value>0</value>
+            <value>127.1.1.1</value>
+            <value></value>
+            <value>1111</value>
+            <value>0</value>
+            <value>0</value>
+            <value>HAHAHA</value>
+            <value>1</value>
+        </row>
+    </table>
+</dataset>
