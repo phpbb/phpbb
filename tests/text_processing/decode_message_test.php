@@ -16,6 +16,15 @@ require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 
 class phpbb_text_processing_decode_message_test extends phpbb_test_case
 {
+	public function setUp()
+	{
+		parent::setUp();
+
+		global $phpbb_dispatcher;
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+	}
+
 	/**
 	* @dataProvider get_legacy_tests
 	*/
@@ -45,6 +54,14 @@ class phpbb_text_processing_decode_message_test extends phpbb_test_case
 			array(
 				'<!-- m --><a class="postlink" href="http://www.phpbb.com">http://www.phpbb.com</a><!-- m -->',
 				'http://www.phpbb.com'
+			),
+			array(
+				'<!-- m --><a class="postlink" href="http://www.phpbb.com">this is just text</a><!-- m -->',
+				'http://www.phpbb.com'
+			),
+			array(
+				'<!-- m --><a class="postlink" href="http://www.phpbb.com/some/more/link/that/is/shortened">http://www.phpbb.com/some/ ... /shortened</a><!-- m -->',
+				'http://www.phpbb.com/some/more/link/that/is/shortened'
 			),
 			/**
 			* Fails as per PHPBB3-8420
