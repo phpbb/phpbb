@@ -230,7 +230,8 @@ abstract class base implements reparser_interface
 			$unparsed['enable_img_bbcode'],
 			$unparsed['enable_flash_bbcode'],
 			$unparsed['enable_quote_bbcode'],
-			$unparsed['enable_url_bbcode']
+			$unparsed['enable_url_bbcode'],
+			'reparse'
 		);
 
 		// Save the new text if it has changed and it's not a dry run
