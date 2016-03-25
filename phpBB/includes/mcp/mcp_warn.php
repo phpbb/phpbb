@@ -530,7 +530,6 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
-		// Okay we need to get the reason from the warned users language
 		// Attempt to translate warning to language of user being warned if user's language differs from issuer's language
 		if ($user_row['user_lang'] != $user->lang_name)
 		{
