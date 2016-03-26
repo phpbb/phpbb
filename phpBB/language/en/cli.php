@@ -87,6 +87,9 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_USER_ADD_OPTION_PASSWORD'	=> 'Password of the new user',
 	'CLI_DESCRIPTION_USER_ADD_OPTION_EMAIL'		=> 'E-mail address of the new user',
 	'CLI_DESCRIPTION_USER_ADD_OPTION_NOTIFY'	=> 'Send account activation email to the new user (not sent by default)',
+	'CLI_DESCRIPTION_USER_DELETE'				=> 'Delete a user account.',
+	'CLI_DESCRIPTION_USER_DELETE_USERNAME'		=> 'Username of the user to delete',
+	'CLI_DESCRIPTION_USER_DELETE_OPTION_POSTS'	=> 'Delete all posts by the user. Without this option, the user’s posts will be retained.',
 
 	'CLI_EXTENSION_DISABLE_FAILURE'		=> 'Could not disable extension %s',
 	'CLI_EXTENSION_DISABLE_SUCCESS'		=> 'Successfully disabled extension %s',
@@ -126,6 +129,7 @@ $lang = array_merge($lang, array(
 	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',
 
 	'CLI_USER_ADD_SUCCESS'		=> 'Successfully added user %s.',
+	'CLI_USER_DELETE_CONFIRM'	=> 'Are you sure you want to delete ‘%s’? [y/N]',
 ));
 
 // Additional help for commands.

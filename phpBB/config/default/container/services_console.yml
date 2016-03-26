@@ -232,3 +232,15 @@ services:
             - '%core.php_ext%'
         tags:
             - { name: console.command }
+
+    console.command.user.delete:
+        class: phpbb\console\command\user\delete
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@language'
+            - '@log'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
