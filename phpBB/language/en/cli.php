@@ -82,6 +82,12 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_THUMBNAIL_GENERATE'	=> 'Generate all missing thumbnails.',
 	'CLI_DESCRIPTION_THUMBNAIL_RECREATE'	=> 'Recreate all thumbnails.',
 
+	'CLI_DESCRIPTION_USER_ADD'					=> 'Add a new user.',
+	'CLI_DESCRIPTION_USER_ADD_OPTION_USERNAME'	=> 'Username of the new user',
+	'CLI_DESCRIPTION_USER_ADD_OPTION_PASSWORD'	=> 'Password of the new user',
+	'CLI_DESCRIPTION_USER_ADD_OPTION_EMAIL'		=> 'E-mail address of the new user',
+	'CLI_DESCRIPTION_USER_ADD_OPTION_NOTIFY'	=> 'Send account activation email to the new user (not sent by default)',
+
 	'CLI_EXTENSION_DISABLE_FAILURE'		=> 'Could not disable extension %s',
 	'CLI_EXTENSION_DISABLE_SUCCESS'		=> 'Successfully disabled extension %s',
 	'CLI_EXTENSION_ENABLE_FAILURE'		=> 'Could not enable extension %s',
@@ -118,9 +124,14 @@ $lang = array_merge($lang, array(
 
 	'CLI_THUMBNAIL_NOTHING_TO_GENERATE'	=> 'No thumbnails to generate.',
 	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',
+
+	'CLI_USER_ADD_SUCCESS'		=> 'Successfully added user %s.',
 ));
 
 // Additional help for commands.
 $lang = array_merge($lang, array(
 	'CLI_HELP_CRON_RUN'			=> $lang['CLI_DESCRIPTION_CRON_RUN'] . ' Optionally you can specify a cron task name to run only the specified cron task.',
+	'CLI_HELP_USER_ADD'			=> 'The <info>%command.name%</info> command adds a new user:
+If this command is run without options, you will be prompted to enter them.
+To optionally send an email to the new user, use the <info>--send-email</info> option.',
 ));

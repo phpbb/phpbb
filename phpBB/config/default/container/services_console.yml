@@ -219,3 +219,16 @@ services:
             - '@user'
         tags:
             - { name: console.command }
+
+    console.command.user.add:
+        class: phpbb\console\command\user\add
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@language'
+            - '@passwords.manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
