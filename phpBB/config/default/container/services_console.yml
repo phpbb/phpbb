@@ -258,3 +258,12 @@ services:
             - '%core.php_ext%'
         tags:
             - { name: console.command }
+
+    console.command.user.reclean:
+        class: phpbb\console\command\user\reclean
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@language'
+        tags:
+            - { name: console.command }

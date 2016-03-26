@@ -95,6 +95,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_USER_DELETE'				=> 'Delete a user account.',
 	'CLI_DESCRIPTION_USER_DELETE_USERNAME'		=> 'Username of the user to delete',
 	'CLI_DESCRIPTION_USER_DELETE_OPTION_POSTS'	=> 'Delete all posts by the user. Without this option, the user’s posts will be retained.',
+	'CLI_DESCRIPTION_USER_RECLEAN'				=> 'Re-clean usernames.',
 
 	'CLI_EXTENSION_DISABLE_FAILURE'		=> 'Could not disable extension %s',
 	'CLI_EXTENSION_DISABLE_SUCCESS'		=> 'Successfully disabled extension %s',
@@ -135,6 +136,11 @@ $lang = array_merge($lang, array(
 
 	'CLI_USER_ADD_SUCCESS'		=> 'Successfully added user %s.',
 	'CLI_USER_DELETE_CONFIRM'	=> 'Are you sure you want to delete ‘%s’? [y/N]',
+	'CLI_USER_RECLEAN_SUCCESS'	=> [
+		0	=> 'Re-cleaning complete. No usernames needed to be cleaned.',
+		1	=> 'Re-cleaning complete. %d username was cleaned.',
+		2	=> 'Re-cleaning complete. %d usernames were cleaned.',
+	],
 ));
 
 // Additional help for commands.
