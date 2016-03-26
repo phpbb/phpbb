@@ -161,6 +161,7 @@ $lang = array_merge($lang, array(
 		2	=> '%d characters',
 	),
 	'COLLAPSE_VIEW'			=> 'Collapse view',
+	'CANNOT_DELETE_FILES'	=> 'phpBB failed to delete a file',
 	'CLOSE_WINDOW'			=> 'Close window',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
 	'COLON'					=> ':',
