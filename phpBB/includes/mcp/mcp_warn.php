@@ -530,12 +530,28 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
-		$user_row['user_lang'] = (file_exists($phpbb_root_path . 'language/' . $user_row['user_lang'] . "/mcp.$phpEx")) ? $user_row['user_lang'] : $config['default_lang'];
-		include($phpbb_root_path . 'language/' . basename($user_row['user_lang']) . "/mcp.$phpEx");
+		// Attempt to translate warning to language of user being warned if user's language differs from issuer's language
+		if ($user_row['user_lang'] != $user->lang_name)
+		{
+			$lang = array();
+
+			$user_row['user_lang'] = (file_exists($phpbb_root_path . 'language/' . basename($user_row['user_lang']) . "/mcp." . $phpEx)) ? $user_row['user_lang'] : $config['default_lang'];
+			include($phpbb_root_path . 'language/' . basename($user_row['user_lang']) . "/mcp." . $phpEx);
+
+			$warn_pm_subject = $lang['WARNING_PM_SUBJECT'];
+			$warn_pm_body = sprintf($lang['WARNING_PM_BODY'], $warning);
+
+			unset($lang);
+		}
+		else
+		{
+			$warn_pm_subject = $user->lang('WARNING_PM_SUBJECT');
+			$warn_pm_body = $user->lang('WARNING_PM_BODY', $warning);
+		}
 
 		$message_parser = new parse_message();
 
-		$message_parser->message = $user->lang('WARNING_PM_BODY', $warning);
+		$message_parser->message = $warn_pm_body;
 		$message_parser->parse(true, true, true, false, false, true, true);
 
 		$pm_data = array(
@@ -553,7 +569,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 			'address_list'			=> array('u' => array($user_row['user_id'] => 'to')),
 		);
 
-		submit_pm('post', $user->lang('WARNING_PM_SUBJECT'), $pm_data, false);
+		submit_pm('post', $warn_pm_subject, $pm_data, false);
 	}
 
 	add_log('admin', 'LOG_USER_WARNING', $user_row['username']);
