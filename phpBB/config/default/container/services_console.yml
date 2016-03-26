@@ -220,6 +220,20 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.user.activate:
+        class: phpbb\console\command\user\activate
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
+
     console.command.user.add:
         class: phpbb\console\command\user\add
         arguments:
