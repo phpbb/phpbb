@@ -15,34 +15,23 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\user\reclean;
 
-class phpbb_console_command_user_reclean_test extends phpbb_database_test_case
+require_once dirname(__FILE__) . '/base.php';
+
+class phpbb_console_user_reclean_test extends phpbb_console_user_base
 {
-	protected $db;
-	protected $user;
-	protected $language;
-	protected $command_name;
-
-	public function getDataSet()
+	public function get_command_tester()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/config.xml');
-	}
-
-	public function setUp()
-	{
-		$this->db = $this->new_dbal();
-
-		$this->language = $this->getMockBuilder('\phpbb\language\language')
-			->disableOriginalConstructor()
-			->getMock();
-		$this->language->expects($this->any())
-			->method('lang')
-			->will($this->returnArgument(0));
-		$this->user = $this->getMock('\phpbb\user', array(), array(
-			$this->language,
-			'\phpbb\datetime'
+		$application = new Application();
+		$application->add(new reclean(
+			$this->user,
+			$this->db,
+			$this->language
 		));
 
-		parent::setUp();
+		$command = $application->find('user:reclean');
+		$this->command_name = $command->getName();
+
+		return new CommandTester($command);
 	}
 
 	public function test_reclean()
@@ -59,20 +48,5 @@ class phpbb_console_command_user_reclean_test extends phpbb_database_test_case
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 		$this->assertNotNull($row['user_id']);
-	}
-
-	public function get_command_tester()
-	{
-		$application = new Application();
-		$application->add(new reclean(
-			$this->user,
-			$this->db,
-			$this->language
-		));
-
-		$command = $application->find('user:reclean');
-		$this->command_name = $command->getName();
-
-		return new CommandTester($command);
 	}
 }
