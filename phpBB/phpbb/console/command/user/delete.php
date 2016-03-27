@@ -13,6 +13,11 @@
 
 namespace phpbb\console\command\user;
 
+use phpbb\console\command\command;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\log\log_interface;
+use phpbb\user;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,15 +25,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class delete extends \phpbb\console\command\command
+class delete extends command
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\log\log_interface */
+	/** @var log_interface */
 	protected $log;
 
 	/**
@@ -48,14 +53,14 @@ class delete extends \phpbb\console\command\command
 	/**
 	 * Construct method
 	 *
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\language\language          $language
-	 * @param \phpbb\log\log_interface          $log
-	 * @param string                            $phpbb_root_path
-	 * @param string                            $php_ext
+	 * @param user             $user
+	 * @param driver_interface $db
+	 * @param language         $language
+	 * @param log_interface    $log
+	 * @param string           $phpbb_root_path
+	 * @param string           $php_ext
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\log\log_interface $log, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, language $language, log_interface $log, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->language = $language;

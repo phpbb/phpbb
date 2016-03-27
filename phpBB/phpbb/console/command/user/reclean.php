@@ -13,16 +13,20 @@
 
 namespace phpbb\console\command\user;
 
+use phpbb\console\command\command;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\user;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class reclean extends \phpbb\console\command\command
+class reclean extends command
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
 	/** @var int A count of the number of re-cleaned user names */
@@ -31,11 +35,11 @@ class reclean extends \phpbb\console\command\command
 	/**
 	 * Construct method
 	 *
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\language\language          $language
+	 * @param user             $user
+	 * @param driver_interface $db
+	 * @param language         $language
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language)
+	public function __construct(user $user, driver_interface $db, language $language)
 	{
 		$this->db = $db;
 		$this->language = $language;

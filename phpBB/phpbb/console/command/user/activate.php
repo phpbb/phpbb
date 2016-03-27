@@ -13,27 +13,34 @@
 
 namespace phpbb\console\command\user;
 
+use phpbb\config\config;
+use phpbb\console\command\command;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\log\log_interface;
+use phpbb\notification\manager;
+use phpbb\user;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class activate extends \phpbb\console\command\command
+class activate extends command
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\log\log_interface */
+	/** @var log_interface */
 	protected $log;
 
-	/** @var \phpbb\notification\manager */
+	/** @var manager */
 	protected $notifications;
 
 	/**
@@ -53,16 +60,16 @@ class activate extends \phpbb\console\command\command
 	/**
 	 * Construct method
 	 *
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\config\config              $config
-	 * @param \phpbb\language\language          $language
-	 * @param \phpbb\log\log_interface          $log
-	 * @param \phpbb\notification\manager       $notifications
-	 * @param string                            $phpbb_root_path
-	 * @param string                            $php_ext
+	 * @param user             $user
+	 * @param driver_interface $db
+	 * @param config           $config
+	 * @param language         $language
+	 * @param log_interface    $log
+	 * @param manager          $notifications
+	 * @param string           $phpbb_root_path
+	 * @param string           $php_ext
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\log\log_interface $log, \phpbb\notification\manager $notifications, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, language $language, log_interface $log, manager $notifications, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
