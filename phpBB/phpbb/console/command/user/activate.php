@@ -123,8 +123,7 @@ class activate extends command
 	/**
 	 * Executes the command user:activate
 	 *
-	 * Deletes a user from the database. An option to delete the user's posts
-	 * is available, by default posts will be retained.
+	 * Activate (or deactivate) a user account
 	 *
 	 * @param InputInterface  $input  The input stream used to get the options
 	 * @param OutputInterface $output The output stream, used to print messages
