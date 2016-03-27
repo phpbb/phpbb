@@ -17,6 +17,7 @@ use phpbb\console\command\command;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\user;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -31,6 +32,9 @@ class reclean extends command
 
 	/** @var int A count of the number of re-cleaned user names */
 	protected $processed;
+
+	/** @var ProgressBar */
+	protected $progress;
 
 	/**
 	 * Construct method
@@ -73,7 +77,15 @@ class reclean extends command
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
+		$io->section($this->language->lang('CLI_USER_RECLEAN_START'));
+
 		$this->processed = 0;
+
+		$this->progress = $this->create_progress_bar($this->get_count(), $io, $output);
+		$this->progress->setMessage($this->language->lang('CLI_USER_RECLEAN_START'));
+		$this->progress->start();
 
 		$stage = 0;
 		while ($stage !== true)
@@ -81,8 +93,11 @@ class reclean extends command
 			$stage = $this->reclean_usernames($stage);
 		}
 
-		$io = new SymfonyStyle($input, $output);
-		$io->success($this->language->lang('CLI_USER_RECLEAN_SUCCESS', $this->processed));
+		$this->progress->finish();
+
+		$io->newLine(2);
+		$io->success($this->language->lang('CLI_USER_RECLEAN_DONE', $this->processed));
+
 		return 0;
 	}
 
@@ -116,11 +131,68 @@ class reclean extends command
 
 				$this->processed++;
 			}
+
+			$this->progress->advance();
 		}
 		$this->db->sql_freeresult($result);
 
 		$this->db->sql_transaction('commit');
 
 		return ($i < $limit) ? true : $start + $i;
+	}
+
+	/**
+	 * Create a styled progress bar
+	 *
+	 * @param integer         $max    Max value for the progress bar
+	 * @param SymfonyStyle    $io
+	 * @param OutputInterface $output The output stream, used to print messages
+	 * @return ProgressBar
+	 */
+	protected function create_progress_bar($max, SymfonyStyle $io, OutputInterface $output)
+	{
+		$progress = $io->createProgressBar($max);
+		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
+		{
+			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
+			$progress->setOverwrite(false);
+		}
+		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
+		{
+			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
+			$progress->setOverwrite(false);
+		}
+		else
+		{
+			$io->newLine(2);
+			$progress->setFormat(
+				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
+				"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
+			$progress->setBarWidth(60);
+		}
+
+		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
+		{
+			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
+			$progress->setProgressCharacter('');
+			$progress->setBarCharacter('▓'); // dark shade character \u2593
+		}
+
+		return $progress;
+	}
+
+	/**
+	 * Get the count of users in the database
+	 *
+	 * @return int
+	 */
+	protected function get_count()
+	{
+		$sql = 'SELECT COUNT(user_id) AS count FROM ' . USERS_TABLE;
+		$result = $this->db->sql_query($sql);
+		$count = (int) $this->db->sql_fetchfield('count');
+		$this->db->sql_freeresult($result);
+
+		return $count;
 	}
 }

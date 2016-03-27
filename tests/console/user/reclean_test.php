@@ -38,11 +38,8 @@ class phpbb_console_user_reclean_test extends phpbb_console_user_base
 	{
 		$command_tester = $this->get_command_tester();
 
-		$command_tester->execute(array(
-			'command' => $this->command_name,
-		));
-
-		$this->assertContains('CLI_USER_RECLEAN_SUCCESS', $command_tester->getDisplay());
+		$exit_status = $command_tester->execute(array('command' => $this->command_name));
+		$this->assertSame(0, $exit_status);
 
 		$result = $this->db->sql_query('SELECT user_id FROM ' . USERS_TABLE . " WHERE username_clean = 'test unclean'");
 		$row = $this->db->sql_fetchrow($result);
