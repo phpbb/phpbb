@@ -183,7 +183,7 @@ class update extends task_base
 			);
 		}
 
-		$this->iohandler->finish_progress('INLINE_UPDATE_SUCCESSFUL');
+		$this->iohandler->set_progress('INLINE_UPDATE_SUCCESSFUL', $migration_count);
 
 		$this->iohandler->add_success_message('INLINE_UPDATE_SUCCESSFUL');
 

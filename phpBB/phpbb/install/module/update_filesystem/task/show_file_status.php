@@ -140,10 +140,14 @@ class show_file_status extends task_base
 		}
 		else
 		{
+			$this->file_updater->close();
+			$conflict_archive_path = $this->installer_config->get('update_file_conflict_archive', null);
+
 			// Remove archive
-			$this->filesystem->remove(
-				$this->installer_config->get('update_file_conflict_archive', null)
-			);
+			if ($conflict_archive_path !== null && $this->filesystem->exists($conflict_archive_path))
+			{
+				$this->filesystem->remove($conflict_archive_path);
+			}
 
 			$this->installer_config->set('update_file_conflict_archive', null);
 		}
