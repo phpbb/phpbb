@@ -1538,6 +1538,13 @@ phpbb.toggleSelectSettings = function(el) {
 		var $this = $(this),
 			$setting = $($this.data('toggle-setting'));
 		$setting.toggle($this.is(':selected'));
+
+		// Disable any input elements that are not visible right now
+		if ($this.is(':selected')) {
+			$($this.data('toggle-setting') + ' input').prop('disabled', false);
+		} else {
+			$($this.data('toggle-setting') + ' input').prop('disabled', true);
+		}
 	});
 };
 

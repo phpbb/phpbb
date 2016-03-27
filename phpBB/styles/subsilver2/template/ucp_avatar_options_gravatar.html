@@ -6,8 +6,8 @@
 	<tr>
 		<td class="row1" width="35%"><b class="genmed">{L_GRAVATAR_AVATAR_SIZE}{L_COLON}</b><br /><span class="gensmall">{L_GRAVATAR_AVATAR_SIZE_EXPLAIN}</span></td>
 		<td class="row2">
-			<input type="text" name="avatar_gravatar_width" id="avatar_gravatar_width" size="3" value="{AVATAR_GRAVATAR_WIDTH}" class="inputbox autowidth" /> {L_PIXEL} &times;&nbsp; 
-			<input type="text" name="avatar_gravatar_height" id="avatar_gravatar_height" size="3" value="{AVATAR_GRAVATAR_HEIGHT}" class="inputbox autowidth" /> {L_PIXEL}
+			<input type="number" name="avatar_gravatar_width" id="avatar_gravatar_width" min="{AVATAR_MIN_WIDTH}" max="{AVATAR_MAX_WIDTH}" value="{AVATAR_GRAVATAR_WIDTH}" class="inputbox autowidth" /> {L_PIXEL} &times;&nbsp;
+			<input type="number" name="avatar_gravatar_height" id="avatar_gravatar_height" min="{AVATAR_MIN_HEIGHT}" max="{AVATAR_MAX_HEIGHT}" value="{AVATAR_GRAVATAR_HEIGHT}" class="inputbox autowidth" /> {L_PIXEL}
 		</td>
 	</tr>
 </table>
