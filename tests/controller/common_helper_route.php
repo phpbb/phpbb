@@ -427,7 +427,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	 */
 	public function test_helper_url_network_with_rewrite($route, $params, $is_amp, $session_id, $expected, $description)
 	{
-		$this->config = new \phpbb\config\config(['enable_mod_rewrite' => '1']);
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 		$helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $this->provider, $this->extension_manager, $this->symfony_request, $this->request, $this->filesystem, $this->root_path, 'php', dirname(__FILE__) . '/');
 		static::assertEquals($expected, $helper->route($route, $params, $is_amp, $session_id, UrlGeneratorInterface::NETWORK_PATH), $description);
 	}

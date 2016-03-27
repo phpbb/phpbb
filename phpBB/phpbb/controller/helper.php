@@ -143,12 +143,13 @@ class helper
 		$context = new RequestContext();
 		$context->fromRequest($this->symfony_request);
 
-		if ($this->config['force_server_vars']) {
+		if ($this->config['force_server_vars'])
+		{
 			$context->setHost($this->config['server_name']);
 			$context->setScheme(substr($this->config['server_protocol'], -4));
 			$context->setHttpPort($this->config['server_port']);
 			$context->setHttpsPort($this->config['server_port']);
-			$context->setBaseUrl($this->config['script_path'] . '/app.php');
+			$context->setBaseUrl($this->config['script_path']);
 		}
 
 		$script_name = $this->symfony_request->getScriptName();
@@ -166,7 +167,7 @@ class helper
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
 
 		// We need to update the base url to move to the directory of the app.php file if the current script is not app.php
-		if ($page_name !== 'app.php')
+		if ($page_name !== 'app.php' && !$this->config['force_server_vars'])
 		{
 			if (empty($this->config['enable_mod_rewrite']))
 			{
