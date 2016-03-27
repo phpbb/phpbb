@@ -129,11 +129,18 @@ class add_config_settings extends \phpbb\install\task_base
 		$this->db->sql_return_on_error(true);
 
 		$server_name	= $this->install_config->get('server_name');
-		$cookie_domain	= $this->install_config->get('cookie_domain');
 		$current_time 	= time();
 		$user_ip		= phpbb_ip_normalise($this->iohandler->get_server_variable('REMOTE_ADDR'));
 		$user_ip		= ($user_ip === false) ? '' : $user_ip;
 		$referer		= $this->iohandler->get_server_variable('REFERER');
+
+		// Calculate cookie domain
+		$cookie_domain = $server_name;
+
+		if (strpos($cookie_domain, 'www.') === 0)
+		{
+			$cookie_domain = substr($cookie_domain, 3);
+		}
 
 		// Set default config and post data, this applies to all DB's
 		$sql_ary = array(
