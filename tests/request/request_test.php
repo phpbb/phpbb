@@ -13,7 +13,10 @@
 
 class phpbb_request_test extends phpbb_test_case
 {
+	/** @var \phpbb\request\type_cast_helper_interface */
 	private $type_cast_helper;
+
+	/** @var \phpbb\request\request */
 	private $request;
 
 	protected function setUp()
@@ -143,15 +146,112 @@ class phpbb_request_test extends phpbb_test_case
 		$this->assertTrue($this->request->is_ajax());
 	}
 
-	public function test_is_secure()
+	public function data_is_secure()
+	{
+		return array(
+			array(
+				array(
+					'HTTPS' => 'on',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => '1',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 'yes',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 1,
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 'off',
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTPS' => '0',
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTPS' => 0,
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTPS' => '',
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTPS' => 'off',
+					'HTTP_X_FORWARDED_PROTO' => 'https',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 'on',
+					'HTTP_X_FORWARDED_PROTO' => 'http',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 'off',
+					'HTTP_X_FORWARDED_PROTO' => 'http',
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTP_X_FORWARDED_PROTO' => 'http',
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTP_X_FORWARDED_PROTO' => 'https',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 'on',
+					'HTTP_X_FORWARDED_PROTO' => 'http',
+				),
+				true,
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_is_secure
+	 */
+	public function test_is_secure($server_data, $expected)
 	{
 		$this->assertFalse($this->request->is_secure());
 
 		$this->request->enable_super_globals();
-		$_SERVER['HTTPS'] = 'on';
+		$_SERVER = $server_data;
 		$this->request = new \phpbb\request\request($this->type_cast_helper);
 
-		$this->assertTrue($this->request->is_secure());
+		$this->assertSame($expected, $this->request->is_secure());
 	}
 
 	public function test_variable_names()
