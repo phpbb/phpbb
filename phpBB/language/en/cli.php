@@ -151,4 +151,5 @@ To optionally send an activation email to the user, use the <info>--send-email</
 	'CLI_HELP_USER_ADD'			=> 'The <info>%command.name%</info> command adds a new user:
 If this command is run without options, you will be prompted to enter them.
 To optionally send an email to the new user, use the <info>--send-email</info> option.',
+	'CLI_HELP_USER_RECLEAN'		=> 'Re-clean usernames will check all stored usernames and ensure clean versions are also stored. Cleaned usernames are a case insensitive form, NFC normalized and transformed to ASCII.',
 ));

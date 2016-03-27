@@ -57,6 +57,7 @@ class reclean extends command
 		$this
 			->setName('user:reclean')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_RECLEAN'))
+			->setHelp($this->language->lang('CLI_HELP_USER_RECLEAN'))
 		;
 	}
 
