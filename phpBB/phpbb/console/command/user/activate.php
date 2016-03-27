@@ -20,6 +20,7 @@ use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\notification\manager;
 use phpbb\user;
+use phpbb\user_loader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,6 +43,9 @@ class activate extends command
 
 	/** @var manager */
 	protected $notifications;
+
+	/** @var user_loader */
+	protected $user_loader;
 
 	/**
 	 * phpBB root path
@@ -66,16 +70,18 @@ class activate extends command
 	 * @param language         $language
 	 * @param log_interface    $log
 	 * @param manager          $notifications
+	 * @param user_loader      $user_loader
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, config $config, language $language, log_interface $log, manager $notifications, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
 		$this->language = $language;
 		$this->log = $log;
 		$this->notifications = $notifications;
+		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -132,7 +138,10 @@ class activate extends command
 		$name = $input->getArgument('username');
 		$mode = ($input->getOption('deactivate')) ? 'deactivate' : 'activate';
 
-		if (!$user_row = $this->get_user_data($name))
+		$user_id  = $this->user_loader->load_user_by_username($name);
+		$user_row = $this->user_loader->get_user($user_id);
+
+		if ($user_row['user_id'] == ANONYMOUS)
 		{
 			$io->error($this->language->lang('NO_USER'));
 			return 1;
@@ -206,23 +215,5 @@ class activate extends command
 
 			$messenger->send(NOTIFY_EMAIL);
 		}
-	}
-
-	/**
-	 * Get the user's data from the database
-	 *
-	 * @param string $name A user name
-	 * @return mixed The user's data array if they exist, false otherwise.
-	 */
-	protected function get_user_data($name)
-	{
-		$sql = 'SELECT *
-			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($name)) . "'";
-		$result = $this->db->sql_query_limit($sql, 1);
-		$user_row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return $user_row;
 	}
 }

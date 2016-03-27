@@ -18,6 +18,7 @@ use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
+use phpbb\user_loader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -35,6 +36,9 @@ class delete extends command
 
 	/** @var log_interface */
 	protected $log;
+
+	/** @var user_loader */
+	protected $user_loader;
 
 	/**
 	 * phpBB root path
@@ -57,14 +61,16 @@ class delete extends command
 	 * @param driver_interface $db
 	 * @param language         $language
 	 * @param log_interface    $log
+	 * @param user_loader      $user_loader
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, language $language, log_interface $log, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, language $language, log_interface $log, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->language = $language;
 		$this->log = $log;
+		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -116,7 +122,10 @@ class delete extends command
 		{
 			$io = new SymfonyStyle($input, $output);
 
-			if (!$user_row = $this->get_user_data($name))
+			$user_id  = $this->user_loader->load_user_by_username($name);
+			$user_row = $this->user_loader->get_user($user_id);
+
+			if ($user_row['user_id'] == ANONYMOUS)
 			{
 				$io->error($this->language->lang('NO_USER'));
 				return 1;
@@ -157,23 +166,5 @@ class delete extends command
 		{
 			$input->setArgument('username', false);
 		}
-	}
-
-	/**
-	 * Get the user's data from the database
-	 *
-	 * @param string $name A user name
-	 * @return mixed The user's id and username if they exist, false otherwise.
-	 */
-	protected function get_user_data($name)
-	{
-		$sql = 'SELECT user_id, username
-			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $this->db->sql_escape(utf8_clean_string($name)) . "'";
-		$result = $this->db->sql_query_limit($sql, 1);
-		$user_row = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return $user_row;
 	}
 }

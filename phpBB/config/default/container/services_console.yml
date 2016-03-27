@@ -229,6 +229,7 @@ services:
             - '@language'
             - '@log'
             - '@notification_manager'
+            - '@user_loader'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
@@ -254,6 +255,7 @@ services:
             - '@dbal.conn'
             - '@language'
             - '@log'
+            - '@user_loader'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
