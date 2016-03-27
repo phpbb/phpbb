@@ -143,6 +143,14 @@ class helper
 		$context = new RequestContext();
 		$context->fromRequest($this->symfony_request);
 
+		if ($this->config['force_server_vars']) {
+			$context->setHost($this->config['server_name']);
+			$context->setScheme(substr($this->config['server_protocol'], -4));
+			$context->setHttpPort($this->config['server_port']);
+			$context->setHttpsPort($this->config['server_port']);
+			$context->setBaseUrl($this->config['script_path'] . '/app.php');
+		}
+
 		$script_name = $this->symfony_request->getScriptName();
 		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
 
