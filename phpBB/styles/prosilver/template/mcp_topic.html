@@ -34,7 +34,7 @@
 	<fieldset id="display-panel" class="fields2" role="tabpanel">
 	<dl>
 		<dt><label for="posts_per_page">{L_POSTS_PER_PAGE}{L_COLON}</label><br /><span>{L_POSTS_PER_PAGE_EXPLAIN}</span></dt>
-		<dd><input class="inputbox autowidth" type="number" min="0" name="posts_per_page" id="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></dd>
+		<dd><input class="inputbox autowidth" type="number" min="0" max="999999" name="posts_per_page" id="posts_per_page" value="{POSTS_PER_PAGE}" /></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_DISPLAY_POSTS}{L_COLON}</label></dt>
@@ -73,7 +73,7 @@
 	<dl>
 		<dt><label for="to_topic_id">{L_MERGE_TOPIC_ID}{L_COLON}</label></dt>
 		<dd>
-			<input class="inputbox autowidth" type="number" min="0" size="6" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
+			<input class="inputbox autowidth" type="number" min="0" max="999999" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
 			<a href="{U_SELECT_TOPIC}" >{L_SELECT_TOPIC}</a>
 		</dd>
 		<!-- IF TO_TOPIC_INFO --><dd>{TO_TOPIC_INFO}</dd><!-- ENDIF -->
