@@ -1589,6 +1589,9 @@ $message_parser->decode_message($post_data['bbcode_uid']);
 
 if ($generate_quote)
 {
+	// Remove attachment bbcode tags from the quoted message to avoid mixing with the new post attachments if any
+	$message_parser->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#uis', '\\2', $message_parser->message);
+
 	if ($config['allow_bbcode'])
 	{
 		$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
