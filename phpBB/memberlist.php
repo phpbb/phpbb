@@ -1442,7 +1442,7 @@ switch ($mode)
 			'FROM'		=> array(
 				USERS_TABLE	=> 'u',
 			),
-			'WHERE'	=> 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . $sql_where
+			'WHERE'	=> $db->sql_in_set('u.user_type', $user_types) . $sql_where
 		);
 		if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
 		{
