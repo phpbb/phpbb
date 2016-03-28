@@ -30,6 +30,16 @@ class tools implements tools_interface
 	var $db = null;
 
 	/**
+	* @var object User object
+	*/
+	var $user = null;
+
+	/**
+	* @var string Table prefix
+	*/
+	var $table_prefix = '';
+
+	/**
 	* The Column types for every database we support
 	* @var array
 	*/
@@ -216,11 +226,15 @@ class tools implements tools_interface
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
 	* @param \phpbb\db\driver\driver_interface	$db					Database connection
+	* @param \phpbb\user						$user				User class
+	* @param string								$table_prefix		Database table prefix
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $return_statements = false)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $table_prefix, $return_statements = false)
 	{
 		$this->db = $db;
+		$this->user = $user;
+		$this->table_prefix = $table_prefix;
 		$this->return_statements = $return_statements;
 
 		$this->dbms_type_map = self::get_dbms_type_map();
@@ -1953,6 +1967,146 @@ class tools implements tools_interface
 		$this->db->sql_freeresult($result);
 
 		return $existing_indexes;
+	}
+
+	/**
+	* Get database size
+	*
+	* @return string	Formatted database size
+	*/
+	public function get_database_size()
+	{
+		$database_size = false;
+
+		// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
+		switch ($this->db->get_sql_layer())
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$sql = 'SELECT VERSION() AS mysql_version';
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				if ($row)
+				{
+					$version = $row['mysql_version'];
+
+					if (preg_match('#(3\.23|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria)#', $version))
+					{
+						$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.|10\.[0-9]\.[0-9]{1,2}-+Maria#', $version)) ? "`{$this->db->get_db_name()}`" : $this->db->get_db_name();
+
+						$sql = 'SHOW TABLE STATUS
+							FROM ' . $db_name;
+						$result = $this->db->sql_query($sql, 7200);
+
+						$database_size = 0;
+						while ($row = $this->db->sql_fetchrow($result))
+						{
+							if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB' || $row['Engine'] == 'Aria')))
+							{
+								if ($this->table_prefix != '')
+								{
+									if (strpos($row['Name'], $this->table_prefix) !== false)
+									{
+										$database_size += $row['Data_length'] + $row['Index_length'];
+									}
+								}
+								else
+								{
+									$database_size += $row['Data_length'] + $row['Index_length'];
+								}
+							}
+						}
+						$this->db->sql_freeresult($result);
+					}
+				}
+			break;
+
+			case 'sqlite':
+			case 'sqlite3':
+				global $dbhost;
+
+				if (file_exists($dbhost))
+				{
+					$database_size = filesize($dbhost);
+				}
+
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+			case 'mssqlnative':
+				$sql = 'SELECT @@VERSION AS mssql_version';
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
+					FROM sysfiles';
+
+				if ($row)
+				{
+					// Azure stats are stored elsewhere
+					if (strpos($row['mssql_version'], 'SQL Azure') !== false)
+					{
+						$sql = 'SELECT ((SUM(reserved_page_count) * 8.0) * 1024.0) as dbsize
+						FROM sys.dm_db_partition_stats';
+					}
+				}
+
+				$result = $this->db->sql_query($sql, 7200);
+				$database_size = ($row = $this->db->sql_fetchrow($result)) ? $row['dbsize'] : false;
+				$this->db->sql_freeresult($result);
+			break;
+
+			case 'postgres':
+				$sql = "SELECT proname
+					FROM pg_proc
+					WHERE proname = 'pg_database_size'";
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_freeresult($result);
+
+				if ($row['proname'] == 'pg_database_size')
+				{
+					$database = $this->db->get_db_name();
+					if (strpos($database, '.') !== false)
+					{
+						list($database, ) = explode('.', $database);
+					}
+
+					$sql = "SELECT oid
+						FROM pg_database
+						WHERE datname = '$database'";
+					$result = $this->db->sql_query($sql);
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
+
+					$oid = $row['oid'];
+
+					$sql = 'SELECT pg_database_size(' . $oid . ') as size';
+					$result = $this->db->sql_query($sql);
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
+
+					$database_size = $row['size'];
+				}
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT SUM(bytes) as dbsize
+					FROM user_segments';
+				$result = $this->db->sql_query($sql, 7200);
+				$database_size = ($row = $this->db->sql_fetchrow($result)) ? $row['dbsize'] : false;
+				$this->db->sql_freeresult($result);
+			break;
+		}
+
+		$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $this->user->lang['NOT_AVAILABLE'];
+
+		return $database_size;
 	}
 
 	/**
