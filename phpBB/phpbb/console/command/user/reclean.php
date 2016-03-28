@@ -167,7 +167,7 @@ class reclean extends command
 			$io->newLine(2);
 			$progress->setFormat(
 				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-				"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
+				"                         %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
 			$progress->setBarWidth(60);
 		}
 
