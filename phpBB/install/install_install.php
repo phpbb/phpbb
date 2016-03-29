@@ -1222,7 +1222,6 @@ class install_install extends module
 		// Deal with any special comments and characters
 		switch ($data['dbms'])
 		{
-			case 'mssql':
 			case 'mssql_odbc':
 			case 'mssqlnative':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $sql_query);

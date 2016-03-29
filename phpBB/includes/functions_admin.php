@@ -3143,7 +3143,6 @@ function get_database_size()
 
 		break;
 
-		case 'mssql':
 		case 'mssql_odbc':
 		case 'mssqlnative':
 			$sql = 'SELECT @@VERSION AS mssql_version';

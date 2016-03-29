@@ -344,7 +344,6 @@ class tools
 				$this->sql_layer = 'mysql_41';
 			break;
 
-			case 'mssql':
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
@@ -398,7 +397,6 @@ class tools
 						AND name <> "sqlite_sequence"';
 			break;
 
-			case 'mssql':
 			case 'mssql_odbc':
 			case 'mssqlnative':
 				$sql = "SELECT name

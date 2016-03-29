@@ -1276,7 +1276,6 @@ class install_convert extends module
 				{
 					switch ($db->get_sql_layer())
 					{
-						case 'mssql':
 						case 'mssql_odbc':
 						case 'mssqlnative':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' ON');
@@ -1404,7 +1403,6 @@ class install_convert extends module
 				{
 					switch ($db->get_sql_layer())
 					{
-						case 'mssql':
 						case 'mssql_odbc':
 						case 'mssqlnative':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' OFF');

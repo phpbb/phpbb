@@ -47,15 +47,6 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'mssql',
-			'DELIM'			=> 'GO',
-			'DRIVER'		=> 'phpbb\db\driver\mssql',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
-		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
@@ -240,7 +231,6 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 			$prefix_length = 36;
 		break;
 
-		case 'phpbb\db\driver\mssql':
 		case 'phpbb\db\driver\mssql_odbc':
 		case 'phpbb\db\driver\mssqlnative':
 			$prefix_length = 90;
