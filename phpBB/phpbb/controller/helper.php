@@ -71,7 +71,8 @@ class helper
 	* @param \phpbb\template\template $template Template object
 	* @param \phpbb\user $user User object
 	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\controller\provider $provider Path provider
+	 *
+	 * @param \phpbb\controller\provider $provider Path provider
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param \phpbb\request\request_interface $request phpBB request object
@@ -146,7 +147,7 @@ class helper
 		if ($this->config['force_server_vars'])
 		{
 			$context->setHost($this->config['server_name']);
-			$context->setScheme(substr($this->config['server_protocol'], -4));
+			$context->setScheme(substr($this->config['server_protocol'], 0, -3));
 			$context->setHttpPort($this->config['server_port']);
 			$context->setHttpsPort($this->config['server_port']);
 			$context->setBaseUrl($this->config['script_path']);

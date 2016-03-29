@@ -435,14 +435,14 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 	public function helper_url_data_force_server_vars()
 	{
 		return array(
-			array(false, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::ABSOLUTE_URL, 'http://my_server:443/my/board/app.php/foo'),
-			array(true, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::ABSOLUTE_URL, 'http://my_server:443/my/board/foo'),
-			array(false, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::NETWORK_PATH, '//my_server:443/my/board/app.php/foo'),
-			array(true, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::NETWORK_PATH, '//my_server:443/my/board/foo'),
-			array(false, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::ABSOLUTE_PATH, '/my/board/app.php/foo'),
-			array(true, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::ABSOLUTE_PATH, '/my/board/foo'),
-			array(false, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::RELATIVE_PATH, 'app.php/foo'),
-			array(true, true, 'my_server', 443, '/my/board', 'http', UrlGeneratorInterface::RELATIVE_PATH, 'foo'),
+			array(false, true, 'my_server', 443, '/my/board', 'http://', UrlGeneratorInterface::ABSOLUTE_URL, 'http://my_server:443/my/board/app.php/foo'),
+			array(true, true, 'my_server', 444, '/my/board', 'https://', UrlGeneratorInterface::ABSOLUTE_URL, 'https://my_server:444/my/board/foo'),
+			array(false, true, 'my_server', 443, '/my/board', 'http://', UrlGeneratorInterface::NETWORK_PATH, '//my_server:443/my/board/app.php/foo'),
+			array(true, true, 'my_server', 444, '/my/board', 'https://', UrlGeneratorInterface::NETWORK_PATH, '//my_server:444/my/board/foo'),
+			array(false, true, 'my_server', 443, '/my/board', 'http://', UrlGeneratorInterface::ABSOLUTE_PATH, '/my/board/app.php/foo'),
+			array(true, true, 'my_server', 443, '/my/board', 'http://', UrlGeneratorInterface::ABSOLUTE_PATH, '/my/board/foo'),
+			array(false, true, 'my_server', 443, '/my/board', 'http://', UrlGeneratorInterface::RELATIVE_PATH, 'app.php/foo'),
+			array(true, true, 'my_server', 443, '/my/board', 'http://', UrlGeneratorInterface::RELATIVE_PATH, 'foo'),
 		);
 	}
 
