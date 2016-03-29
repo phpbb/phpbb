@@ -131,11 +131,14 @@ class resolver implements ControllerResolverInterface
 		{
 			list($object, $method) = $controller;
 			$mirror = new \ReflectionMethod($object, $method);
-		} else if (is_object($controller) && !$controller instanceof \Closure)
+		}
+		else if (is_object($controller) && !$controller instanceof \Closure)
 		{
 			$mirror = new \ReflectionObject($controller);
 			$mirror = $mirror->getMethod('__invoke');
-		} else {
+		}
+		else
+		{
 			$mirror = new \ReflectionFunction($controller);
 		}
 
