@@ -112,7 +112,6 @@ class acp_database
 										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
 									break;
 
-									case 'mssql':
 									case 'mssql_odbc':
 									case 'mssqlnative':
 										$extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
@@ -352,7 +351,6 @@ class acp_database
 									}
 								break;
 
-								case 'mssql':
 								case 'mssql_odbc':
 								case 'mssqlnative':
 									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)

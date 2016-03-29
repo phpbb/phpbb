@@ -54,15 +54,6 @@ class database
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'mssql',
-			'DELIM'			=> ';',
-			'DRIVER'		=> 'phpbb\db\driver\mssql',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
-		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',

@@ -94,7 +94,6 @@ function phpbb_insert_forums()
 
 	switch ($db->get_sql_layer())
 	{
-		case 'mssql':
 		case 'mssql_odbc':
 		case 'mssqlnative':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
@@ -294,7 +293,6 @@ function phpbb_insert_forums()
 			$db->sql_query("SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));');
 		break;
 
-		case 'mssql':
 		case 'mssql_odbc':
 		case 'mssqlnative':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
@@ -1780,7 +1778,6 @@ function phpbb_create_userconv_table()
 			$map_dbms = 'mysql_41';
 		break;
 
-		case 'mssql':
 		case 'mssql_odbc':
 		case 'mssqlnative':
 			$map_dbms = 'mssql';
