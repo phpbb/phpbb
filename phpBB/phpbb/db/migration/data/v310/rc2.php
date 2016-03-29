@@ -17,7 +17,7 @@ class rc2 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.1.0-RC2', '>=');
+		return phpbb_version_compare($this->config['version'], '3.1.0-RC2', '>=');
 	}
 
 	static public function depends_on()

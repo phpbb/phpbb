@@ -17,7 +17,7 @@ class v318 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return version_compare($this->config['version'], '3.1.8', '>=');
+		return phpbb_version_compare($this->config['version'], '3.1.8', '>=');
 	}
 
 	static public function depends_on()
