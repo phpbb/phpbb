@@ -115,20 +115,6 @@ class helper
 	}
 
 	/**
-	* Output an error, effectively the same thing as trigger_error
-	*
-	* @param string $message The error message
-	* @param int $code The error code (e.g. 404, 500, 503, etc.)
-	* @return Response A Response instance
-	*
-	* @deprecated 3.1.3 (To be removed: 3.3.0) Use exceptions instead.
-	*/
-	public function error($message, $code = 500)
-	{
-		return $this->message($message, array(), 'INFORMATION', $code);
-	}
-
-	/**
 	 * Output a message
 	 *
 	 * In case of an error, please throw an exception instead
