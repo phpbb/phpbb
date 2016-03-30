@@ -37,5 +37,10 @@ then
 fi
 
 cd phpBB
+if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.4', '<');"` == "1" ]
+then
+	php ../composer.phar config disable-tls true
+fi
 php ../composer.phar install --dev --no-interaction
+
 cd ..
