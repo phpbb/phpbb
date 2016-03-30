@@ -110,7 +110,7 @@ class helper
 			$context->setScheme(substr($this->config['server_protocol'], 0, -3));
 			$context->setHttpPort($this->config['server_port']);
 			$context->setHttpsPort($this->config['server_port']);
-			$context->setBaseUrl($this->config['script_path']);
+			$context->setBaseUrl(rtrim($this->config['script_path'], '/'));
 		}
 
 		$script_name = $this->symfony_request->getScriptName();
