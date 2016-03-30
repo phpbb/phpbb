@@ -142,6 +142,7 @@ class update extends task_base
 		$this->migrator->set_migrations($migrations);
 		$migration_count = count($this->migrator->get_migrations());
 		$this->iohandler->set_task_count($migration_count, true);
+		$this->installer_config->set_task_progress_count($migration_count);
 		$progress_count = $this->installer_config->get('database_update_count', 0);
 
 		while (!$this->migrator->finished())
@@ -182,8 +183,6 @@ class update extends task_base
 				)
 			);
 		}
-
-		$this->iohandler->set_progress('INLINE_UPDATE_SUCCESSFUL', $migration_count);
 
 		$this->iohandler->add_success_message('INLINE_UPDATE_SUCCESSFUL');
 
