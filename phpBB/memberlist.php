@@ -93,6 +93,12 @@ $default_key = 'c';
 $sort_key = $request->variable('sk', $default_key);
 $sort_dir = $request->variable('sd', 'a');
 
+$user_types = array(USER_NORMAL, USER_FOUNDER);
+if ($auth->acl_get('a_user'))
+{
+	$user_types[] = USER_INACTIVE;
+}
+
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
@@ -834,7 +840,7 @@ switch ($mode)
 
 		$sql = 'SELECT username, user_id, user_colour
 			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_type', array(USER_NORMAL, USER_FOUNDER)) . '
+			WHERE ' . $db->sql_in_set('user_type', $user_types) . '
 				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->get_any_char());
 		$result = $db->sql_query_limit($sql, 10);
 		$user_list = array();
@@ -1231,11 +1237,6 @@ switch ($mode)
 		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
 
-		$user_types = array(USER_NORMAL, USER_FOUNDER);
-		if ($auth->acl_get('a_user'))
-		{
-			$user_types[] = USER_INACTIVE;
-		}
 		// Count the users ...
 		$sql = 'SELECT COUNT(u.user_id) AS total_users
 			FROM ' . USERS_TABLE . " u$sql_from
