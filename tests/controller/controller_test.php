@@ -104,9 +104,10 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		return array(
 			array(array(new foo\controller(), 'handle2'), array('foo', 0)),
 			array(array(new foo\controller(), 'handle_fail'), array('default'), array('no_default' => 'default')),
+			array(new foo\controller(), array(), array()),
 			array(array(new foo\controller(), 'handle_fail'), array(), array(), '\phpbb\controller\exception', 'CONTROLLER_ARGUMENT_VALUE_MISSING'),
 			array('', array(), array(), '\ReflectionException', 'Function () does not exist'),
-			array(new foo\controller(), array(), array(), '\ReflectionException', 'Method __invoke does not exist'),
+			array(new phpbb\controller\foo, array(), array(), '\ReflectionException', 'Method __invoke does not exist'),
 		);
 	}
 

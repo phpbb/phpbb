@@ -25,4 +25,9 @@ class controller
 	{
 		return new Response('Test_fail', 200);
 	}
+
+	public function __invoke()
+	{
+		$this->handle();
+	}
 }
