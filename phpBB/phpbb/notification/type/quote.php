@@ -115,14 +115,14 @@ class quote extends \phpbb\notification\type\post
 		));
 
 		// Find the new users to notify
-		$notifications = array_keys($this->find_users_for_notification($post));
+		$notifications = $this->find_users_for_notification($post);
 
 		// Find the notifications we must delete
 		$remove_notifications = array_diff(array_keys($old_notifications), array_keys($notifications));
 
 		// Find the notifications we must add
 		$add_notifications = array();
-		foreach (array_diff(array_keys($notifications), $old_notifications) as $user_id)
+		foreach (array_diff(array_keys($notifications), array_keys($old_notifications)) as $user_id)
 		{
 			$add_notifications[$user_id] = $notifications[$user_id];
 		}
