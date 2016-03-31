@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_lock_db_test extends phpbb_database_test_case
 {
 	private $db;

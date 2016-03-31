@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
 require_once dirname(__FILE__) . '/migration/if.php';

@@ -11,7 +11,6 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/type_foo.php';
 
 class phpbb_files_types_remote_test extends phpbb_test_case

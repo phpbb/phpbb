@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compatibility.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\thumbnail\generate;

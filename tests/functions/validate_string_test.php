@@ -12,7 +12,6 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/validate_data_helper.php';
 
 class phpbb_functions_validate_string_test extends phpbb_test_case

@@ -11,11 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_test_case
 {

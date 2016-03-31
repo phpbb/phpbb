@@ -15,10 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {

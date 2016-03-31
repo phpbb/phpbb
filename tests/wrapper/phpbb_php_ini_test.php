@@ -12,7 +12,6 @@
 */
 
 require_once dirname(__FILE__) . '/phpbb_php_ini_fake.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 {

@@ -10,7 +10,6 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/ext/vendor2/bar/migrations/bar.php';
 require_once dirname(__FILE__) . '/ext/vendor2/bar/migrations/foo.php';
 require_once dirname(__FILE__) . '/ext/vendor2/bar/migrations/migration.php';

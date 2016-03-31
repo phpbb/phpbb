@@ -11,9 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/../mock/cache.php';
 require_once dirname(__FILE__) . '/validate_data_helper.php';
 

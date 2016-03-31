@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 {
 	/** @var \phpbb\db\driver\driver_interface */
