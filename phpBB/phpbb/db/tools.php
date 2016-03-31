@@ -2340,7 +2340,7 @@ class tools
 				if (!empty($column_data['default']))
 				{
 					// Add new default value constraint
-					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
+					$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $column_data['default'] . ' FOR [' . $column_name . ']';
 				}
 
 				if (!empty($indexes))
