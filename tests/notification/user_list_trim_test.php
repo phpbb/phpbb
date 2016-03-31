@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 {
 	protected $notification;

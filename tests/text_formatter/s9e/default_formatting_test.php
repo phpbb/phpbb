@@ -10,8 +10,6 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once __DIR__ . '/../../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
 
 class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 {

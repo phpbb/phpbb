@@ -11,7 +11,6 @@
 *
 */
 
-
 class phpbb_groupposition_legend_test extends phpbb_database_test_case
 {
 	public function getDataSet()

@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_regex_url_test extends phpbb_test_case
 {
 	public function url_test_data()

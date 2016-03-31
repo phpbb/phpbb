@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_functions_get_preg_expression_test extends phpbb_test_case
 {
 	public function data_path_remove_dot_trailing_slash()

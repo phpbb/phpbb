@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_random_gen_rand_string_test extends phpbb_test_case
 {
 	const TEST_COUNT = 100;

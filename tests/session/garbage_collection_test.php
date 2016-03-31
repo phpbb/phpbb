@@ -12,7 +12,6 @@
 */
 
 require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 {

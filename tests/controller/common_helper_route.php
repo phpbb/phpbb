@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 abstract class phpbb_controller_common_helper_route extends phpbb_test_case
