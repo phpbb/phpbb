@@ -166,6 +166,7 @@ class file_check extends task_base
 		}
 
 		$this->installer_config->set('update_files', $file_update_info);
+		$this->installer_config->set('update_info', array());
 	}
 
 	/**

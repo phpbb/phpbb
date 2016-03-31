@@ -66,11 +66,7 @@ class show_file_status extends task_base
 		$this->cache = $container->get('cache.driver');
 
 		// Initialize compression file updater
-		$compression_method = $this->installer_config->get('compression_method', '');
 		$this->file_updater = $file_updater_factory->get('compression');
-		$conflict_archive = $this->file_updater->init($compression_method);
-
-		$this->installer_config->set('update_file_conflict_archive', $conflict_archive);
 
 		parent::__construct(false);
 	}
@@ -96,6 +92,10 @@ class show_file_status extends task_base
 			// Create archive for merge conflicts
 			if (!empty($merge_conflicts))
 			{
+				$compression_method = $this->installer_config->get('compression_method', '');
+				$conflict_archive = $this->file_updater->init($compression_method);
+				$this->installer_config->set('update_file_conflict_archive', $conflict_archive);
+
 				foreach ($merge_conflicts as $filename)
 				{
 					$this->file_updater->create_new_file(
@@ -111,9 +111,9 @@ class show_file_status extends task_base
 					'DOWNLOAD_CONFLICTS',
 					'DOWNLOAD_CONFLICTS_EXPLAIN'
 				);
-			}
 
-			$this->file_updater->close();
+				$this->file_updater->close();
+			}
 
 			// Render update file statuses
 			$file_update_info = $this->installer_config->get('update_files', array());
@@ -140,10 +140,13 @@ class show_file_status extends task_base
 		}
 		else
 		{
+			$conflict_archive_path = $this->installer_config->get('update_file_conflict_archive', null);
+
 			// Remove archive
-			$this->filesystem->remove(
-				$this->installer_config->get('update_file_conflict_archive', null)
-			);
+			if ($conflict_archive_path !== null && $this->filesystem->exists($conflict_archive_path))
+			{
+				$this->filesystem->remove($conflict_archive_path);
+			}
 
 			$this->installer_config->set('update_file_conflict_archive', null);
 		}
