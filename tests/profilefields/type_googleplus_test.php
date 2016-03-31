@@ -11,8 +11,6 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
-
 class phpbb_profilefield_type_googleplus_test extends phpbb_test_case
 {
 	protected  $field;

@@ -11,8 +11,6 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_captcha_qa_test extends \phpbb_database_test_case
 {
 	protected $request;

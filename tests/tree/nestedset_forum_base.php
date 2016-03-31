@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_tests_tree_nestedset_forum_base extends phpbb_database_test_case
 {
 	public function getDataSet()

@@ -10,8 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once __DIR__ . '/../../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
+
 require_once __DIR__ . '/../../test_framework/phpbb_database_test_case.php';
 
 abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_test_case

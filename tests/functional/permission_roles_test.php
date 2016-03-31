@@ -11,8 +11,6 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-
 /**
 * @group functional
 */
