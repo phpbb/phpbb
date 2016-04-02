@@ -1426,7 +1426,7 @@ class acp_attachments
 		$row['group_name'] = $user->lang['NOT_ASSIGNED'];
 		$group_name[] = $row;
 
-		for ($i = 0; $i < sizeof($group_name); $i++)
+		for ($i = 0, $groups_size = sizeof($group_name); $i < $groups_size; $i++)
 		{
 			if ($default_group === false)
 			{
