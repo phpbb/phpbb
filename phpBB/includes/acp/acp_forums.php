@@ -1411,7 +1411,7 @@ class acp_forums
 		$diff = sizeof($moved_forums) * 2;
 
 		$moved_ids = array();
-		for ($i = 0; $i < sizeof($moved_forums); ++$i)
+		for ($i = 0, $size = sizeof($moved_forums); $i < $size; ++$i)
 		{
 			$moved_ids[] = $moved_forums[$i]['forum_id'];
 		}
