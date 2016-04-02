@@ -2999,8 +2999,8 @@ function add_permission_language()
 	$lang_files = $finder
 		->prefix('permissions_')
 		->suffix(".$phpEx")
-		->core_path('language/' . $user->lang_name . '/')
-		->extension_directory('/language/' . $user->lang_name)
+		->core_path('language/')
+		->extension_directory('/language')
 		->find();
 
 	foreach ($lang_files as $lang_file => $ext_name)
