@@ -373,7 +373,7 @@ class convertor
 								$val = array($val);
 							}
 
-							for ($j = 0; $j < sizeof($val); ++$j)
+							for ($j = 0, $size = sizeof($val); $j < $size; ++$j)
 							{
 								if (preg_match('/LEFT JOIN ([a-z0-9_]+) AS ([a-z0-9_]+)/i', $val[$j], $m))
 								{
