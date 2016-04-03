@@ -452,7 +452,7 @@ class content_visibility
 			'is_latest',
 			'data',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.set_post_visibility_before_sql', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.set_post_visibility_before_sql', compact($vars)));
 
 		$sql = 'UPDATE ' . $this->posts_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
@@ -487,7 +487,7 @@ class content_visibility
 			'is_latest',
 			'data',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.set_post_visibility_after_sql', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.set_post_visibility_after_sql', compact($vars)));
 
 		// Group the authors by post count, to reduce the number of queries
 		foreach ($poster_postcounts as $poster_id => $num_posts)
@@ -720,7 +720,7 @@ class content_visibility
 			'force_update_all',
 			'data',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.set_topic_visibility_before_sql', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.set_topic_visibility_before_sql', compact($vars)));
 
 		$sql = 'UPDATE ' . $this->topics_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
@@ -751,7 +751,7 @@ class content_visibility
 			'force_update_all',
 			'data',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.set_topic_visibility_after_sql', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.set_topic_visibility_after_sql', compact($vars)));
 
 		if (!$this->db->sql_affectedrows())
 		{
