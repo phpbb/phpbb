@@ -172,13 +172,13 @@ class acp_extensions
 				/** @var \phpbb\composer\manager $composer_manager */
 				$composer_manager = $phpbb_container->get('ext.composer.manager');
 
+				$this->request->enable_super_globals();
 				$managed_packages = [];
 				if ($composer_manager->check_requirements())
 				{
 					$managed_packages = array_keys($composer_manager->get_managed_packages());
 				}
 
-				$this->request->enable_super_globals();
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
