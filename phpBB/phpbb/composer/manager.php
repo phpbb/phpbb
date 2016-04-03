@@ -170,7 +170,6 @@ class manager implements manager_interface
 	{
 		$packages = $this->normalize_version($packages);
 
-		// TODO: if the extension is already enabled, we should disabled (with an option for purge)
 		$not_managed = array_diff_key($packages, $this->get_managed_packages());
 		if (count($not_managed) !== 0)
 		{
