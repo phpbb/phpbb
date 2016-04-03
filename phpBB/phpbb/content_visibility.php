@@ -424,10 +424,70 @@ class content_visibility
 			'post_delete_reason'	=> truncate_string($reason, 255, 255, false),
 		);
 
+		/**
+		 * Perform actions right before the query to change post visibility
+		 *
+		 * @event core.set_post_visibility_before_sql
+		 * @var			int			visibility		Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
+		 * @var			array		post_id			Array containing all post IDs to be modified. If blank, all posts within the topic are modified.
+		 * @var			int			topic_id		Topic of the post IDs to be modified.
+		 * @var			int			forum_id		Forum ID that the topic_id resides in.
+		 * @var			int			user_id			User ID doing this action.
+		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			string		reason			Reason specified by the user for this change.
+		 * @var			bool		is_starter		Are we changing the topic's starter?
+		 * @var			bool		is_latest		Are we changing the topic's latest post?
+		 * @var			array		data			The data array for this action.
+		 * @since 3.1.9-RC1
+		 */
+		$vars = array(
+			'visibility',
+			'post_id',
+			'topic_id',
+			'forum_id',
+			'user_id',
+			'timestamp',
+			'reason',
+			'is_starter',
+			'is_latest',
+			'data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.set_post_visibility_before_sql', compact($vars)));
+
 		$sql = 'UPDATE ' . $this->posts_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
 			WHERE ' . $this->db->sql_in_set('post_id', $post_ids);
 		$this->db->sql_query($sql);
+
+		/**
+		 * Perform actions right after the query to change post visibility
+		 *
+		 * @event core.set_post_visibility_after_sql
+		 * @var			int			visibility		Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
+		 * @var			array		post_id			Array containing all post IDs to be modified. If blank, all posts within the topic are modified.
+		 * @var			int			topic_id		Topic of the post IDs to be modified.
+		 * @var			int			forum_id		Forum ID that the topic_id resides in.
+		 * @var			int			user_id			User ID doing this action.
+		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			string		reason			Reason specified by the user for this change.
+		 * @var			bool		is_starter		Are we changing the topic's starter?
+		 * @var			bool		is_latest		Are we changing the topic's latest post?
+		 * @var			array		data			The data array for this action.
+		 * @since 3.1.9-RC1
+		 */
+		$vars = array(
+			'visibility',
+			'post_id',
+			'topic_id',
+			'forum_id',
+			'user_id',
+			'timestamp',
+			'reason',
+			'is_starter',
+			'is_latest',
+			'data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.set_post_visibility_after_sql', compact($vars)));
 
 		// Group the authors by post count, to reduce the number of queries
 		foreach ($poster_postcounts as $poster_id => $num_posts)
@@ -636,10 +696,62 @@ class content_visibility
 			'topic_delete_reason'	=> truncate_string($reason, 255, 255, false),
 		);
 
+		/**
+		 * Perform actions right before the query to change topic visibility
+		 *
+		 * @event core.set_topic_visibility_before_sql
+		 * @var			int			visibility			Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
+		 * @var			int			topic_id			Topic of the post IDs to be modified.
+		 * @var			int			forum_id			Forum ID that the topic_id resides in.
+		 * @var			int			user_id				User ID doing this action.
+		 * @var			int			timestamp			Timestamp of this action.
+		 * @var			string		reason				Reason specified by the user for this change.
+		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
+		 * @var			array		data				The data array for this action.
+		 * @since 3.1.9-RC1
+		 */
+		$vars = array(
+			'visibility',
+			'topic_id',
+			'forum_id',
+			'user_id',
+			'timestamp',
+			'reason',
+			'force_update_all',
+			'data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.set_topic_visibility_before_sql', compact($vars)));
+
 		$sql = 'UPDATE ' . $this->topics_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
 			WHERE topic_id = ' . (int) $topic_id;
 		$this->db->sql_query($sql);
+
+		/**
+		 * Perform actions right after the query to change topic visibility
+		 *
+		 * @event core.set_topic_visibility_after_sql
+		 * @var			int			visibility			Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
+		 * @var			int			topic_id			Topic of the post IDs to be modified.
+		 * @var			int			forum_id			Forum ID that the topic_id resides in.
+		 * @var			int			user_id				User ID doing this action.
+		 * @var			int			timestamp			Timestamp of this action.
+		 * @var			string		reason				Reason specified by the user for this change.
+		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
+		 * @var			array		data				The data array for this action.
+		 * @since 3.1.9-RC1
+		 */
+		$vars = array(
+			'visibility',
+			'topic_id',
+			'forum_id',
+			'user_id',
+			'timestamp',
+			'reason',
+			'force_update_all',
+			'data',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.set_topic_visibility_after_sql', compact($vars)));
 
 		if (!$this->db->sql_affectedrows())
 		{
