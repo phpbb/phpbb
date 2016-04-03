@@ -23,7 +23,7 @@ class error_handler extends ErrorHandler
 		{
 			$handler = defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler';
 
-			$handler($type, $message, $file, $line);
+			return $handler($type, $message, $file, $line);
 		}
 
 		return parent::handleError($type, $message, $file, $line, $context, $backtrace);
