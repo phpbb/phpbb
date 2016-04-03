@@ -261,7 +261,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$blacklist = ['phpbb_class_loader_mock', 'phpbb_class_loader_ext', 'phpbb_class_loader'];
 
-		foreach (array_keys($GLOBALS) as $key) {
+		foreach (array_keys($GLOBALS) as $key)
+		{
 			if (is_object($GLOBALS[$key]) && !in_array($key, $blacklist, true))
 			{
 				unset($GLOBALS[$key]);
