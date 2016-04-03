@@ -226,6 +226,11 @@ class bbcode
 						),
 						'preg' => array(
 							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;.*?&quot;)?:$uid\]).)?#is'	=> function ($match) {
+								if (!isset($match[2]))
+								{
+									$match[2] = '';
+								}
+
 								return $this->bbcode_second_pass_quote($match[1], $match[2]);
 							},
 						)
