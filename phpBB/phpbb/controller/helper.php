@@ -66,20 +66,19 @@ class helper
 	protected $php_ext;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\template\template $template Template object
-	* @param \phpbb\user $user User object
-	* @param \phpbb\config\config $config Config object
+	 * Constructor
 	 *
+	 * @param \phpbb\template\template $template Template object
+	 * @param \phpbb\user $user User object
+	 * @param \phpbb\config\config $config Config object
 	 * @param \phpbb\controller\provider $provider Path provider
-	* @param \phpbb\extension\manager $manager Extension manager object
-	* @param \phpbb\symfony_request $symfony_request Symfony Request object
-	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\filesystem $filesystem The filesystem object
-	* @param string $phpbb_root_path phpBB root path
-	* @param string $php_ext PHP file extension
-	*/
+	 * @param \phpbb\extension\manager $manager Extension manager object
+	 * @param \phpbb\symfony_request $symfony_request Symfony Request object
+	 * @param \phpbb\request\request_interface $request phpBB request object
+	 * @param \phpbb\filesystem $filesystem The filesystem object
+	 * @param string $phpbb_root_path phpBB root path
+	 * @param string $php_ext PHP file extension
+	 */
 	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\controller\provider $provider, \phpbb\extension\manager $manager, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem $filesystem, $phpbb_root_path, $php_ext)
 	{
 		$this->template = $template;
