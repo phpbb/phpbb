@@ -13,28 +13,34 @@
 
 namespace phpbb\console\command\user;
 
+use phpbb\config\config;
+use phpbb\console\command\command;
+use phpbb\db\driver\driver_interface;
 use phpbb\exception\runtime_exception;
+use phpbb\language\language;
+use phpbb\passwords\manager;
+use phpbb\user;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class add extends \phpbb\console\command\command
+class add extends command
 {
 	/** @var array Array of interactively acquired options */
 	protected $data;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\passwords\manager */
+	/** @var manager */
 	protected $password_manager;
 
 	/**
@@ -54,15 +60,15 @@ class add extends \phpbb\console\command\command
 	/**
 	 * Construct method
 	 *
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\config\config              $config
-	 * @param \phpbb\language\language          $language
-	 * @param \phpbb\passwords\manager          $password_manager
-	 * @param string                            $phpbb_root_path
-	 * @param string                            $php_ext
+	 * @param user             $user
+	 * @param driver_interface $db
+	 * @param config           $config
+	 * @param language         $language
+	 * @param manager          $password_manager
+	 * @param string           $phpbb_root_path
+	 * @param string           $php_ext
 	 */
-	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\language\language $language, \phpbb\passwords\manager $password_manager, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, language $language, manager $password_manager, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
