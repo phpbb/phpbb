@@ -459,36 +459,6 @@ class content_visibility
 			WHERE ' . $this->db->sql_in_set('post_id', $post_ids);
 		$this->db->sql_query($sql);
 
-		/**
-		 * Perform actions right after the query to change post visibility
-		 *
-		 * @event core.set_post_visibility_after_sql
-		 * @var			int			visibility		Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
-		 * @var			array		post_id			Array containing all post IDs to be modified. If blank, all posts within the topic are modified.
-		 * @var			int			topic_id		Topic of the post IDs to be modified.
-		 * @var			int			forum_id		Forum ID that the topic_id resides in.
-		 * @var			int			user_id			User ID doing this action.
-		 * @var			int			timestamp		Timestamp of this action.
-		 * @var			string		reason			Reason specified by the user for this change.
-		 * @var			bool		is_starter		Are we changing the topic's starter?
-		 * @var			bool		is_latest		Are we changing the topic's latest post?
-		 * @var			array		data			The data array for this action.
-		 * @since 3.1.9-RC1
-		 */
-		$vars = array(
-			'visibility',
-			'post_id',
-			'topic_id',
-			'forum_id',
-			'user_id',
-			'timestamp',
-			'reason',
-			'is_starter',
-			'is_latest',
-			'data',
-		);
-		extract($this->phpbb_dispatcher->trigger_event('core.set_post_visibility_after_sql', compact($vars)));
-
 		// Group the authors by post count, to reduce the number of queries
 		foreach ($poster_postcounts as $poster_id => $num_posts)
 		{
@@ -641,6 +611,36 @@ class content_visibility
 			$this->db->sql_query($sql);
 		}
 
+		/**
+		 * Perform actions after all steps to changing post visibility
+		 *
+		 * @event core.set_post_visibility_after
+		 * @var			int			visibility		Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
+		 * @var			array		post_id			Array containing all post IDs to be modified. If blank, all posts within the topic are modified.
+		 * @var			int			topic_id		Topic of the post IDs to be modified.
+		 * @var			int			forum_id		Forum ID that the topic_id resides in.
+		 * @var			int			user_id			User ID doing this action.
+		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			string		reason			Reason specified by the user for this change.
+		 * @var			bool		is_starter		Are we changing the topic's starter?
+		 * @var			bool		is_latest		Are we changing the topic's latest post?
+		 * @var			array		data			The data array for this action.
+		 * @since 3.1.9-RC1
+		 */
+		$vars = array(
+			'visibility',
+			'post_id',
+			'topic_id',
+			'forum_id',
+			'user_id',
+			'timestamp',
+			'reason',
+			'is_starter',
+			'is_latest',
+			'data',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.set_post_visibility_after', compact($vars)));
+
 		return $data;
 	}
 
@@ -727,10 +727,30 @@ class content_visibility
 			WHERE topic_id = ' . (int) $topic_id;
 		$this->db->sql_query($sql);
 
+		if (!$this->db->sql_affectedrows())
+		{
+			return array();
+		}
+
+		if (!$force_update_all && $original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
+		{
+			// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
+			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
+		}
+		else if (!$force_update_all && $original_topic_data['topic_visibility'] == ITEM_APPROVED && $visibility == ITEM_DELETED)
+		{
+			// If we're soft deleting a topic we only mark approved posts as soft deleted.
+			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility']);
+		}
+		else
+		{
+			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
+		}
+
 		/**
-		 * Perform actions right after the query to change topic visibility
+		 * Perform actions after all steps to changing topic visibility
 		 *
-		 * @event core.set_topic_visibility_after_sql
+		 * @event core.set_topic_visibility_after
 		 * @var			int			visibility			Element of {ITEM_APPROVED, ITEM_DELETED, ITEM_REAPPROVE}
 		 * @var			int			topic_id			Topic of the post IDs to be modified.
 		 * @var			int			forum_id			Forum ID that the topic_id resides in.
@@ -751,27 +771,8 @@ class content_visibility
 			'force_update_all',
 			'data',
 		);
-		extract($this->phpbb_dispatcher->trigger_event('core.set_topic_visibility_after_sql', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.set_topic_visibility_after', compact($vars)));
 
-		if (!$this->db->sql_affectedrows())
-		{
-			return array();
-		}
-
-		if (!$force_update_all && $original_topic_data['topic_delete_time'] && $original_topic_data['topic_visibility'] == ITEM_DELETED && $visibility == ITEM_APPROVED)
-		{
-			// If we're restoring a topic we only restore posts, that were soft deleted through the topic soft deletion.
-			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility'], $original_topic_data['topic_delete_time']);
-		}
-		else if (!$force_update_all && $original_topic_data['topic_visibility'] == ITEM_APPROVED && $visibility == ITEM_DELETED)
-		{
-			// If we're soft deleting a topic we only mark approved posts as soft deleted.
-			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true, $original_topic_data['topic_visibility']);
-		}
-		else
-		{
-			$this->set_post_visibility($visibility, false, $topic_id, $forum_id, $user_id, $time, '', true, true);
-		}
 
 		return $data;
 	}
