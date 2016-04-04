@@ -773,7 +773,6 @@ class content_visibility
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.set_topic_visibility_after', compact($vars)));
 
-
 		return $data;
 	}
 
