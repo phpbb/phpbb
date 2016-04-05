@@ -63,7 +63,6 @@ class acp_update
 			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $update_link),
 		));
 
-
 		// Incomplete update?
 		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
 		{
