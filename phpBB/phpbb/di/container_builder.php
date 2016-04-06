@@ -556,7 +556,13 @@ class container_builder
 	 */
 	protected function get_container_filename()
 	{
-		return $this->get_cache_dir() . 'container_' . md5($this->phpbb_root_path) . '.' . $this->php_ext;
+		$container_params = [
+			'phpbb_root_path' => $this->phpbb_root_path,
+			'use_extensions' => $this->use_extensions,
+			'config_path' => $this->config_path,
+		];
+
+		return $this->get_cache_dir() . 'container_' . md5(implode(',', $container_params)) . '.' . $this->php_ext;
 	}
 
 	/**
@@ -566,7 +572,13 @@ class container_builder
 	 */
 	protected function get_autoload_filename()
 	{
-		return $this->get_cache_dir() . 'autoload_' . md5($this->phpbb_root_path) . '.' . $this->php_ext;
+		$container_params = [
+			'phpbb_root_path' => $this->phpbb_root_path,
+			'use_extensions' => $this->use_extensions,
+			'config_path' => $this->config_path,
+		];
+
+		return $this->get_cache_dir() . 'autoload_' . md5(implode(',', $container_params)) . '.' . $this->php_ext;
 	}
 
 	/**
