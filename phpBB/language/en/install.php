@@ -534,7 +534,7 @@ $lang = array_merge($lang, array(
 	'UPDATE_FILES'					=> 'Update files',
 	'UPDATE_FILES_NOTICE'			=> 'Please make sure you have updated your board files too, this file is only updating your database.',
 	'UPDATE_INCOMPLETE'				=> 'Your phpBB installation has not been correctly updated.',
-	'UPDATE_INCOMPLETE_MORE'		=> 'Please see the information below to know how to fix that.',
+	'UPDATE_INCOMPLETE_MORE'		=> 'Please read the information below in order to fix this error.',
 	'UPDATE_INCOMPLETE_EXPLAIN'		=> '<h1>Incomplete update</h1>
 
 		<p>We noticed that the last update of your phpBB installation hasn’t been correctly completed. Have you updated your files and forget to update your database? In this case, phpBB can’t work correctly and you may notice some strange behaviour.</p>
@@ -546,14 +546,14 @@ $lang = array_merge($lang, array(
 		<p>If you have updated phpBB using the Automatic Update Package, please restart the update process to be sure that all steps are correctly completed.</p>
 
 		<ul style="margin-left: 20px; font-size: 1.1em;">
-			<li>Retrieve the Automatic Update Package that you’ve used to update phpBB. The latest package can be found <a href="https://www.phpbb.com/downloads/" title="https://www.phpbb.com/downloads/">on phpBB.com</a>. For previous version, the package can be found <a href="https://download.phpbb.com/pub/release/" title="https://download.phpbb.com/pub/release/">on the phpBB download servers</a>.<br /><br /></li>
-			<li>Unpack the archive.<br /><br /></li>
-			<li>Upload the complete uncompressed "install" and "vendor" folders to your phpBB root directory (where your config.php file is).<br /><br /></li>
-			<li>Once uploaded your board will be offline for normal users due to the install directory you uploaded now present.<br /><br /></li>
-			<li><strong><a href="%1$s" title="%1$s">Now restart the update process by pointing your browser to the install folder</a>.</strong><br /><br /></li>
+			<li>Retrieve the Automatic Update Package that you’ve used to update phpBB. The latest package can be found <a href="https://www.phpbb.com/downloads/" title="phpBB update package">on phpBB.com</a>. For a previous version, the package can be found <a href="https://download.phpbb.com/pub/release/" title="phpBB releases">on the phpBB download servers</a>.<br /><br /></li>
+			<li>Unpack the archive.<br><br></li>
+			<li>Upload the complete uncompressed "install" and "vendor" folders to your phpBB root directory (where your config.php file is).<br><br></li>
+			<li>Once uploaded your board will be offline for normal users due to the install directory you uploaded now being present.<br><br></li>
+			<li><strong><a href="%1$s" title="%1$s">Now restart the update process by pointing your browser to the install folder</a>.</strong><br><br></li>
 		</ul>
 
-		<p>If you have updated phpBB using any other method, please <a href="https://www.phpbb.com/downloads/" title="https://www.phpbb.com/downloads/">download the latest package</a>, upload the "install" folder to your phpBB root directory (where your config.php file is) and <a href="%2$s" title="%2$s">run the database update script</a>.</p>',
+		<p>If you have updated phpBB using any other method, please <a href="https://www.phpbb.com/downloads/" title="phpBB downloads">download the latest package</a>, upload the "install" folder to your phpBB root directory (where your config.php file is) and <a href="%2$s" title="%2$s">run the database update script</a>.</p>',
 
 	'UPDATE_INSTALLATION'			=> 'Update phpBB installation',
 	'UPDATE_INSTALLATION_EXPLAIN'	=> 'With this option, it is possible to update your phpBB installation to the latest version.<br />During the process all of your files will be checked for their integrity. You are able to review all differences and files before the update.<br /><br />The file update itself can be done in two different ways.</p><h2>Manual Update</h2><p>With this update you only download your personal set of changed files to make sure you do not lose your file modifications you may have done. After you downloaded this package you need to manually upload the files to their correct position under your phpBB root directory. Once done, you are able to do the file check stage again to see if you moved the files to their correct location.</p><h2>Automatic Update with FTP</h2><p>This method is similar to the first one but without the need to download the changed files and uploading them on your own. This will be done for you. In order to use this method you need to know your FTP login details since you will be asked for them. Once finished you will be redirected to the file check again to make sure everything got updated correctly.<br /><br />',
