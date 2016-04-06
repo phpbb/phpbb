@@ -52,18 +52,6 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 }
 
 /**
-* Casts a variable to the given type.
-*
-* @deprecated
-*/
-function set_var(&$result, $var, $type, $multibyte = false)
-{
-	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new \phpbb\request\type_cast_helper();
-	$type_cast_helper->set_var($result, $var, $type, $multibyte);
-}
-
-/**
 * Generates an alphanumeric random string of given length
 *
 * @param int $num_chars Length of random string, defaults to 8.
