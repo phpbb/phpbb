@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 /**
 * Get user avatar
 *
-* @deprecated 3.1.0-a1 (To be removed: 3.3.0)
+* @deprecated 3.1.0-a1 (To be removed: 4.0.0)
 *
 * @param string $avatar Users assigned avatar name
 * @param int $avatar_type Type of avatar
@@ -50,7 +50,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 /**
 * Hash the password
 *
-* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+* @deprecated 3.1.0-a2 (To be removed: 4.0.0)
 *
 * @param string $password Password to be hashed
 *
@@ -68,7 +68,7 @@ function phpbb_hash($password)
 /**
 * Check for correct password
 *
-* @deprecated 3.1.0-a2 (To be removed: 3.3.0)
+* @deprecated 3.1.0-a2 (To be removed: 4.0.0)
 *
 * @param string $password The password in plain text
 * @param string $hash The stored password hash
@@ -92,7 +92,7 @@ function phpbb_check_hash($password, $hash)
 * @param string $path Path to clean
 * @return string Cleaned path
 *
-* @deprecated 3.1.0 (To be removed: 3.3.0)
+* @deprecated 3.1.0 (To be removed: 4.0.0)
 */
 function phpbb_clean_path($path)
 {
@@ -136,7 +136,7 @@ function phpbb_clean_path($path)
 *
 * @return		string		Returns the options for timezone selector only
 *
-* @deprecated 3.1.0 (To be removed: 3.3.0)
+* @deprecated 3.1.0 (To be removed: 4.0.0)
 */
 function tz_select($default = '', $truncate = false)
 {
@@ -150,7 +150,7 @@ function tz_select($default = '', $truncate = false)
 * via admin_permissions. Changes of usernames and group names
 * must be carried through for the moderators table.
 *
-* @deprecated 3.1.0 (To be removed: 3.3.0)
+* @deprecated 3.1.0 (To be removed: 4.0.0)
 * @return null
 */
 function cache_moderators()
@@ -162,7 +162,7 @@ function cache_moderators()
 /**
 * Removes moderators and administrators from foe lists.
 *
-* @deprecated 3.1.0 (To be removed: 3.3.0)
+* @deprecated 3.1.0 (To be removed: 4.0.0)
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
 * @return null
@@ -182,7 +182,7 @@ function update_foes($group_id = false, $user_id = false)
 * @param string &$rank_img the rank image as full img tag is stored here after execution
 * @param string &$rank_img_src the rank image source is stored here after execution
 *
-* @deprecated 3.1.0-RC5 (To be removed: 3.3.0)
+* @deprecated 3.1.0-RC5 (To be removed: 4.0.0)
 *
 * Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
 */
@@ -232,7 +232,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
  *
  * @return	int|bool		Returns the log_id, if the entry was added to the database, false otherwise.
  *
- * @deprecated	3.1.0 (To be removed: 3.3.0)
+ * @deprecated	3.1.0 (To be removed: 4.0.0)
  */
 function add_log()
 {
@@ -280,7 +280,7 @@ function add_log()
  *
  * @return null
  *
- * @deprecated 3.1.0 (To be removed: 3.3.0)
+ * @deprecated 3.1.0 (To be removed: 4.0.0)
  */
 function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\config\config $set_config = null)
 {
@@ -310,7 +310,7 @@ function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\con
  *
  * @return null
  *
- * @deprecated 3.1.0 (To be removed: 3.3.0)
+ * @deprecated 3.1.0 (To be removed: 4.0.0)
  */
 function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\config\config $set_config = null)
 {
@@ -331,7 +331,7 @@ function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\
  * See {@link \phpbb\request\request_interface::variable \phpbb\request\request_interface::variable} for
  * documentation of this function's use.
  *
- * @deprecated 3.1.0 (To be removed: 3.3.0)
+ * @deprecated 3.1.0 (To be removed: 4.0.0)
  * @param	mixed			$var_name	The form variable's name from which data shall be retrieved.
  * 										If the value is an array this may be an array of indizes which will give
  * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
@@ -389,7 +389,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 /**
  * Get tables of a database
  *
- * @deprecated 3.1.0 (To be removed: 3.3.0)
+ * @deprecated 3.1.0 (To be removed: 4.0.0)
  */
 function get_tables(&$db)
 {
@@ -492,7 +492,7 @@ function phpbb_realpath($path)
  * @param $number	int|float	The number we want to get the plural case for. Float numbers are floored.
  * @return	int		The plural-case we need to use for the number plural-rule combination
  *
- * @deprecated 3.2.0-dev (To be removed: 3.3.0)
+ * @deprecated 3.2.0-dev (To be removed: 4.0.0)
  */
 function phpbb_get_plural_form($rule, $number)
 {
@@ -515,7 +515,7 @@ function phpbb_pcre_utf8_support()
 /**
  * Casts a variable to the given type.
  *
- * @deprecated 3.3.0-dev (To be removed 3.4.0)
+ * @deprecated 3.1 (To be removed 4.0.0)
  */
 function set_var(&$result, $var, $type, $multibyte = false)
 {
@@ -527,7 +527,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 /**
  * Delete Attachments
  *
- * @deprecated 3.2.0-a1 (To be removed: 3.4.0)
+ * @deprecated 3.2.0-a1 (To be removed: 4.0.0)
  *
  * @param string $mode can be: post|message|topic|attach|user
  * @param mixed $ids can be: post_ids, message_ids, topic_ids, attach_ids, user_ids
@@ -549,7 +549,7 @@ function delete_attachments($mode, $ids, $resync = true)
 /**
  * Delete attached file
  *
- * @deprecated 3.2.0-a1 (To be removed: 3.4.0)
+ * @deprecated 3.2.0-a1 (To be removed: 4.0.0)
  */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
@@ -566,7 +566,7 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 /**
  * Display reasons
  *
- * @deprecated 3.2.0-dev (To be removed: 3.4.0)
+ * @deprecated 3.2.0-dev (To be removed: 4.0.0)
  */
 function display_reasons($reason_id = 0)
 {
@@ -579,7 +579,7 @@ function display_reasons($reason_id = 0)
  * Upload Attachment - filedata is generated here
  * Uses upload class
  *
- * @deprecated 3.2.0-a1 (To be removed: 3.4.0)
+ * @deprecated 3.2.0-a1 (To be removed: 4.0.0)
  *
  * @param string			$form_name		The form name of the file upload input
  * @param int			$forum_id		The id of the forum
