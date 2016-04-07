@@ -52,15 +52,15 @@ class helper
 	protected $routing_helper;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\template\template $template Template object
-	* @param \phpbb\user $user User object
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\symfony_request $symfony_request Symfony Request object
-	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\routing\helper $routing_helper Helper to generate the routes
-	*/
+	 * Constructor
+	 *
+	 * @param \phpbb\template\template $template Template object
+	 * @param \phpbb\user $user User object
+	 * @param \phpbb\config\config $config Config object
+	 * @param \phpbb\symfony_request $symfony_request Symfony Request object
+	 * @param \phpbb\request\request_interface $request phpBB request object
+	 * @param \phpbb\routing\helper $routing_helper Helper to generate the routes
+	 */
 	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\routing\helper $routing_helper)
 	{
 		$this->template = $template;
