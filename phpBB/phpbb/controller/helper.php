@@ -71,7 +71,8 @@ class helper
 	* @param \phpbb\template\template $template Template object
 	* @param \phpbb\user $user User object
 	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\controller\provider $provider Path provider
+	 *
+	 * @param \phpbb\controller\provider $provider Path provider
 	* @param \phpbb\extension\manager $manager Extension manager object
 	* @param \phpbb\symfony_request $symfony_request Symfony Request object
 	* @param \phpbb\request\request_interface $request phpBB request object
@@ -143,6 +144,15 @@ class helper
 		$context = new RequestContext();
 		$context->fromRequest($this->symfony_request);
 
+		if ($this->config['force_server_vars'])
+		{
+			$context->setHost($this->config['server_name']);
+			$context->setScheme(substr($this->config['server_protocol'], 0, -3));
+			$context->setHttpPort($this->config['server_port']);
+			$context->setHttpsPort($this->config['server_port']);
+			$context->setBaseUrl(rtrim($this->config['script_path'], '/'));
+		}
+
 		$script_name = $this->symfony_request->getScriptName();
 		$page_name = substr($script_name, -1, 1) == '/' ? '' : utf8_basename($script_name);
 
@@ -158,7 +168,7 @@ class helper
 		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
 
 		// We need to update the base url to move to the directory of the app.php file if the current script is not app.php
-		if ($page_name !== 'app.php')
+		if ($page_name !== 'app.php' && !$this->config['force_server_vars'])
 		{
 			if (empty($this->config['enable_mod_rewrite']))
 			{
