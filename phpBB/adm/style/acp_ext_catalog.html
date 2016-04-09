@@ -81,6 +81,11 @@
 	</fieldset>
 </form>
 
+{% if extensions is empty %}
+<tr>
+	<td colspan="4"><div class="errorbox notice">{{ lang('NO_EXTENSION_AVAILABLE') }}</div></td>
+</tr>
+{% else %}
 <table class="table1">
 	<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" >
 <thead>
@@ -116,6 +121,7 @@
 {% endfor %}
 </tbody>
 </table>
+{% endif %}
 
 {% if pagination is defined %}
 	<div class="pagination bottom-pagination">
