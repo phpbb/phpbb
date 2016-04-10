@@ -1483,7 +1483,7 @@ function tracking_unserialize($string, $max_depth = 3)
 function append_sid($url, $params = false, $is_amp = true, $session_id = false, $is_route = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_path_helper;
-	global $phpbb_dispatcher, $config;
+	global $phpbb_dispatcher, $config, $phpEx;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
@@ -1497,7 +1497,18 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 		// All front controllers are wrapped by app.php
 		if (strpos($url, 'app.php') === false)
 		{
-			$url = './app.php/' . $url;
+			if (strpos($url, $phpbb_path_helper->get_phpbb_root_path()) === 0)
+			{
+				$url = str_replace(
+					$phpbb_path_helper->get_phpbb_root_path(),
+					$phpbb_path_helper->get_phpbb_root_path() . "app.{$phpEx}/",
+					$url
+				);
+			}
+			else if (filter_var($url, FILTER_VALIDATE_URL) === false)
+			{
+				$url = "./app.{$phpEx}/{$url}";
+			}
 		}
 
 		$url = $phpbb_path_helper->update_web_root_path($url);
@@ -1505,7 +1516,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 
 	if (!empty($config['enable_mod_rewrite']))
 	{
-		$url = str_replace('/app.php', '', $url);
+		$url = str_replace("/app.{$phpEx}", '', $url);
 	}
 
 	$append_sid_overwrite = false;

@@ -39,27 +39,27 @@ class phpbb_build_url_test extends phpbb_test_case
 			array(
 				'index.php',
 				false,
-				'phpBB/index.php?',
+				'phpBB/app.php/index.php?',
 			),
 			array(
 				'index.php',
 				't',
-				'phpBB/index.php?',
+				'phpBB/app.php/index.php?',
 			),
 			array(
 				'viewtopic.php?t=5&f=4',
 				false,
-				'phpBB/viewtopic.php?t=5&amp;f=4',
+				'phpBB/app.php/viewtopic.php?t=5&amp;f=4',
 			),
 			array(
 				'viewtopic.php?f=2&style=1&t=6',
 				'f',
-				'phpBB/viewtopic.php?style=1&amp;t=6',
+				'phpBB/app.php/viewtopic.php?style=1&amp;t=6',
 			),
 			array(
 				'viewtopic.php?f=2&style=1&t=6',
 				array('f', 'style', 't'),
-				'phpBB/viewtopic.php?',
+				'phpBB/app.php/viewtopic.php?',
 			),
 			array(
 				'http://test.phpbb.com/viewtopic.php?f=2&style=1&t=6',
@@ -69,7 +69,7 @@ class phpbb_build_url_test extends phpbb_test_case
 			array(
 				'posting.php?f=2&mode=delete&p=20%22%3Cscript%3Ealert%281%29%3B%3C%2Fscript%3E',
 				false,
-				'phpBB/posting.php?f=2&amp;mode=delete&amp;p=20%22%3Cscript%3Ealert%281%29%3B%3C%2Fscript%3E',
+				'phpBB/app.php/posting.php?f=2&amp;mode=delete&amp;p=20%22%3Cscript%3Ealert%281%29%3B%3C%2Fscript%3E',
 			)
 		);
 	}
