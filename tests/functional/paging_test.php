@@ -31,12 +31,12 @@ class phpbb_functional_paging_test extends phpbb_functional_test_case
 		$this->assertNotContains('post no16', $crawler->text());
 
 		$next_link = $crawler->filter('.pagination > ul > li.next > a')->attr('href');
-		$crawler = self::request('GET', $next_link);
+		$crawler = self::request('GET', $next_link, [], true, true);
 		$this->assertNotContains('post no4', $crawler->text());
 		$this->assertContains('post no16', $crawler->text());
 
 		$prev_link = $crawler->filter('.pagination > ul > li.previous > a')->attr('href');
-		$crawler = self::request('GET', $prev_link);
+		$crawler = self::request('GET', $prev_link, [], true, true);
 		$this->assertContains('post no4', $crawler->text());
 		$this->assertNotContains('post no16', $crawler->text());
 	}
