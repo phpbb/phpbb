@@ -1482,13 +1482,30 @@ function tracking_unserialize($string, $max_depth = 3)
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false, $is_route = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
-	global $phpbb_dispatcher;
+	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_path_helper;
+	global $phpbb_dispatcher, $config;
 
 	if ($params === '' || (is_array($params) && empty($params)))
 	{
 		// Do not append the ? if the param-list is empty anyway.
 		$params = false;
+	}
+
+	// Update the root path with the correct relative web path
+	if (!$is_route && $phpbb_path_helper instanceof \phpbb\path_helper)
+	{
+		// All front controllers are wrapped by app.php
+		if (strpos($url, 'app.php') === false)
+		{
+			$url = './app.php/' . $url;
+		}
+
+		$url = $phpbb_path_helper->update_web_root_path($url);
+	}
+
+	if (!empty($config['enable_mod_rewrite']))
+	{
+		$url = str_replace('/app.php', '', $url);
 	}
 
 	$append_sid_overwrite = false;

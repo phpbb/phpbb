@@ -14,6 +14,5 @@
 $_SERVER['SCRIPT_NAME'] =  str_replace('report.php', 'app.php', $_SERVER['SCRIPT_NAME']);
 $_SERVER['PHP_SELF'] =  str_replace('report.php', 'app.php', $_SERVER['PHP_SELF']);
 $_SERVER['SCRIPT_FILENAME'] =  str_replace('report.php', 'app.php', $_SERVER['SCRIPT_FILENAME']);
-$_SERVER['REQUEST_URI'] = '/app.php'.$_SERVER['REQUEST_URI'];
 
 require 'app.php';
