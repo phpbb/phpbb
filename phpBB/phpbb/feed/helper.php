@@ -151,8 +151,7 @@ class helper
 			parse_attachments($forum_id, $content, $post_attachments, $update_count);
 			$content .= implode('<br />', $post_attachments);
 
-			// Convert attachments' relative path to absolute path
-			$content = str_replace($this->phpbb_root_path . 'download/file.' . $this->phpEx, $this->get_board_url() . '/download/file.' . $this->phpEx, $content);
+			$content = preg_replace('|src="[^"]*/download/file.' . $this->phpEx . '|', 'src="' . $this->get_board_url() . '/download/file.' . $this->phpEx, $content);
 		}
 
 		// Remove Comments from inline attachments [ia]
