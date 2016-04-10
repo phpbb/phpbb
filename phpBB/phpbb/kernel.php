@@ -15,7 +15,6 @@ namespace phpbb;
 
 use phpbb\debug\debug;
 use phpbb\di\container_builder;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +27,7 @@ class kernel implements kernel_interface, TerminableInterface
 	/** @var config_php_file */
 	protected $config_file;
 
-	/** @var ContainerInterface */
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
 	protected $container;
 
 	/** @var string */
@@ -124,7 +123,8 @@ class kernel implements kernel_interface, TerminableInterface
 	 */
 	public function terminate(Request $request, Response $response)
 	{
-		if ($this->booted === false) {
+		if ($this->booted === false)
+		{
 			return;
 		}
 

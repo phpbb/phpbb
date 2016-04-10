@@ -49,6 +49,9 @@ class legacy_handler
 	/** @var string */
 	private $previousErrorLevel;
 
+	/** @var \Symfony\Component\Stopwatch\Stopwatch */
+	private $stopwatch;
+
 	public function __construct(HttpKernel $httpKernel, $legacyDir, $debug = false)
 	{
 		$this->httpKernel = $httpKernel;
@@ -60,6 +63,11 @@ class legacy_handler
 		];
 	}
 
+	/**
+	 * Returns the path to the legacy front controllers
+	 *
+	 * @return string
+	 */
 	public function getLegacyPath()
 	{
 		return $this->legacyPath;
@@ -84,41 +92,51 @@ class legacy_handler
 		$path = urldecode(ltrim(rtrim($path, '/'), '/'));
 		$path = $this->legacyDir . '/' . $path;
 
-		if (!realpath($path)) {
+		if (!realpath($path))
+		{
 			return $this->handleNotFound($request);
 		}
 
 		$authorized = false;
-		foreach ($this->folderWhitelist as $folder) {
-			if (0 !== strpos(realpath($path), realpath($folder))) {
+		foreach ($this->folderWhitelist as $folder)
+		{
+			if (0 !== strpos(realpath($path), realpath($folder)))
+			{
 				continue;
 			}
 
 			$authorized = true;
 		}
 
-		if (!$authorized) {
+		if (!$authorized)
+		{
 			throw new AccessDeniedException(sprintf('You are forbidden to access "%s"', $path));
 		}
 
-		if (is_dir($path)) {
-			if ($response = $this->handleTrailingSlash($request)) {
+		if (is_dir($path))
+		{
+			if ($response = $this->handleTrailingSlash($request))
+			{
 				return $response;
 			}
 
-			foreach (['/index.php', '/index.htm'] as $extension) {
-				if (file_exists($path . $extension)) {
+			foreach (['/index.php', '/index.htm'] as $extension)
+			{
+				if (file_exists($path . $extension))
+				{
 					$path .= $extension;
 					break;
 				}
 			}
 
-			if (!file_exists($path)) {
+			if (!file_exists($path))
+			{
 				return $this->handleNotFound($request);
 			}
 		}
 
-		if ('php' !== strtolower(pathinfo($path, PATHINFO_EXTENSION))) {
+		if ('php' !== strtolower(pathinfo($path, PATHINFO_EXTENSION)))
+		{
 			return new Response('', 200, [
 				'X-Sendfile' => $path,
 				'Content-Type' => (new \finfo(FILEINFO_MIME_TYPE))->file($path),
@@ -175,12 +193,14 @@ class legacy_handler
 
 		// Restore the path
 		//chdir($this->basePath);
-		$rawHeaders = array_map(function ($header) {
+		$rawHeaders = array_map(function ($header)
+		{
 			return explode(': ', $header);
 		}, headers_list());
 
 		$headers = [];
-		foreach ($rawHeaders as $header) {
+		foreach ($rawHeaders as $header)
+		{
 			list($k, $v) = $header;
 			header_remove($k);
 			$headers[$k] = $v;
@@ -227,8 +247,9 @@ class legacy_handler
 	 */
 	private function stopwatchStart($name)
 	{
-		if ($this->debug) {
-			//$this->stopwatch->start($name);
+		if ($this->debug && $this->stopwatch !== null)
+		{
+			$this->stopwatch->start($name);
 		}
 	}
 
@@ -239,8 +260,9 @@ class legacy_handler
 	 */
 	private function stopwatchStop($name)
 	{
-		if ($this->debug) {
-			//$this->stopwatch->stop($name);
+		if ($this->debug && $this->stopwatch !== null)
+		{
+			$this->stopwatch->stop($name);
 		}
 	}
 
@@ -248,7 +270,7 @@ class legacy_handler
 	 * A simple helper to throw a NotFoundHttpException
 	 *
 	 * @param Request $request
-	 * @return Response
+	 * @throws NotFoundHttpException
 	 */
 	private function handleNotFound(Request $request)
 	{
@@ -259,7 +281,8 @@ class legacy_handler
 	{
 		$parts = parse_url($request->getUri());
 
-		if(isset($parts['path']) && '/' === substr($parts['path'], -1)) {
+		if (isset($parts['path']) && '/' === substr($parts['path'], -1))
+		{
 			return;
 		}
 
@@ -267,7 +290,8 @@ class legacy_handler
 
 		$url = $parts['scheme']."://".$parts['host'].$parts['path'];
 
-		if (isset($parts['query'])) {
+		if (isset($parts['query']))
+		{
 			$url .= '?'.$parts['query'];
 		}
 
