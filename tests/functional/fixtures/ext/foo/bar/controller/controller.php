@@ -66,15 +66,15 @@ class controller
 		$redirects = array(
 			array(
 				append_sid($this->root_path . 'index.' . $this->php_ext),
-				'index.php',
+				$rewrite_prefix . 'index.php',
 			),
 			array(
 				append_sid($this->root_path . 'foo/bar/index.' . $this->php_ext),
-				'foo/bar/index.php',
+				$rewrite_prefix . 'foo/bar/index.php',
 			),
 			array(
 				append_sid($this->root_path . 'tests/index.' . $this->php_ext),
-				'tests/index.php',
+				$rewrite_prefix . 'tests/index.php',
 			),
 			array(
 				$this->helper->route('foo_index_controller'),
