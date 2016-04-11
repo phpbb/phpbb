@@ -172,7 +172,7 @@ abstract class module_base implements module_interface
 			$this->iohandler->send_response();
 
 			// Stop execution if resource limit is reached
-			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+			if ($iterator->valid() && ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0))
 			{
 				throw new resource_limit_reached_exception();
 			}
