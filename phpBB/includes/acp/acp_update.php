@@ -71,7 +71,7 @@ class acp_update
 			$template->assign_vars(array(
 				'S_UPDATE_INCOMPLETE'		=> true,
 				'FILES_VERSION'				=> PHPBB_VERSION,
-				'INCOMPLETE_INSTRUCTIONS'	=> $user->lang('UPDATE_INCOMPLETE_EXPLAIN', $update_link, $database_update_link),
+				'INCOMPLETE_INSTRUCTIONS'	=> $user->lang('UPDATE_INCOMPLETE_EXPLAIN', $database_update_link),
 			));
 		}
 	}
