@@ -90,17 +90,17 @@ $lang = array_merge($lang, array(
 // Requirements translation
 $lang = array_merge($lang, array(
 	// Filesystem requirements
-	'FILE_NOT_EXISTS'						=> 'File not exists',
+	'FILE_NOT_EXISTS'						=> 'File does not exist',
 	'FILE_NOT_EXISTS_EXPLAIN'				=> 'To be able to install phpBB the %1$s file needs to exist.',
-	'FILE_NOT_EXISTS_EXPLAIN_OPTIONAL'		=> 'It is recommended that the %1$s file exists for a better forum user experience.',
-	'FILE_NOT_WRITABLE'						=> 'File not writable',
+	'FILE_NOT_EXISTS_EXPLAIN_OPTIONAL'		=> 'It is recommended that the %1$s file exist for a better forum user experience.',
+	'FILE_NOT_WRITABLE'						=> 'File is not writable',
 	'FILE_NOT_WRITABLE_EXPLAIN'				=> 'To be able to install phpBB the %1$s file needs to be writable.',
 	'FILE_NOT_WRITABLE_EXPLAIN_OPTIONAL'	=> 'It is recommended that the %1$s file be writable for a better forum user experience.',
 
-	'DIRECTORY_NOT_EXISTS'						=> 'Directory not exists',
+	'DIRECTORY_NOT_EXISTS'						=> 'Directory does not exist',
 	'DIRECTORY_NOT_EXISTS_EXPLAIN'				=> 'To be able to install phpBB the %1$s directory needs to exist.',
-	'DIRECTORY_NOT_EXISTS_EXPLAIN_OPTIONAL'		=> 'It is recommended that the %1$s directory exists for a better forum user experience.',
-	'DIRECTORY_NOT_WRITABLE'					=> 'Directory not writable',
+	'DIRECTORY_NOT_EXISTS_EXPLAIN_OPTIONAL'		=> 'It is recommended that the %1$s directory exist for a better forum user experience.',
+	'DIRECTORY_NOT_WRITABLE'					=> 'Directory is not writable',
 	'DIRECTORY_NOT_WRITABLE_EXPLAIN'			=> 'To be able to install phpBB the %1$s directory needs to be writable.',
 	'DIRECTORY_NOT_WRITABLE_EXPLAIN_OPTIONAL'	=> 'It is recommended that the %1$s directory be writable for a better forum user experience.',
 
