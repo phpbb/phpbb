@@ -185,6 +185,6 @@ class acp_captcha
 		$captcha->execute_demo();
 
 		garbage_collection();
-		exit_handler();
+		throw new \phpbb\legacy\exception\exit_exception();
 	}
 }

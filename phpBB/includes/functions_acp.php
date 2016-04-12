@@ -197,7 +197,7 @@ function adm_page_footer($copyright_html = true)
 	$template->display('body');
 
 	garbage_collection();
-	exit_handler();
+	throw new \phpbb\legacy\exception\exit_exception();
 }
 
 /**

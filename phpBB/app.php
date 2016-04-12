@@ -39,16 +39,13 @@ if (!defined('PHPBB_ENVIRONMENT'))
 	@define('PHPBB_ENVIRONMENT', 'production');
 }
 
-$phpbb_kernel = new kernel($phpbb_config_php_file, $phpbb_root_path, $phpEx, PHPBB_ENVIRONMENT, DEBUG);
+$phpbb_kernel = new kernel($phpbb_config_php_file, $phpbb_root_path, $phpEx, PHPBB_ENVIRONMENT, defined('DEBUG') && DEBUG);
 $phpbb_kernel->boot();
-
-// Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('app');
 
 /* @var $symfony_request \phpbb\symfony_request */
 $symfony_request = $phpbb_container->get('symfony_request');
+
+$response = null;
 
 try
 {
@@ -88,12 +85,32 @@ catch (NotFoundHttpException $e)
 		}
 		catch (\Exception $e)
 		{
-			// In case we have an error in the legacy, we want to be able to
-			// have a nice error page instead of a blank page.
-			$response = $legacyHandler->handleException($e, $symfony_request);
+			try
+			{
+				// In case we have an error in the legacy, we want to be able to
+				// have a nice error page instead of a blank page.
+				$response = $legacyHandler->handleException($e, $symfony_request);
+			}
+			catch (\Exception $_)
+			{
+				// In case we have an error in the error handling fail we want to display the original error
+				throw $e;
+			}
 		}
 	}
 }
+catch (\phpbb\legacy\exception\exit_exception $e)
+{
+	// Do nothing
+}
 
-$response->send();
+if ($response !== null)
+{
+	$response->send();
+}
+else
+{
+	$response = new \Symfony\Component\HttpFoundation\Response();
+}
+
 $phpbb_kernel->terminate($symfony_request, $response);

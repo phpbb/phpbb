@@ -568,3 +568,24 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	return $file;
 }
+
+/**
+ * Handler for exit calls in phpBB.
+ * This function supports hooks.
+ *
+ * Note: This function doesn't do anything, it is kept only for BC reasons
+ *
+ * @deprecated 3.3.0 (To be removed: 3.4.0)
+ */
+function exit_handler()
+{
+	global $phpbb_hook;
+
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
+	{
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
+	}
+}

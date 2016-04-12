@@ -3388,7 +3388,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '</body>';
 			echo '</html>';
 
-			exit_handler();
+			throw new \phpbb\legacy\exception\exit_exception();
 
 			// On a fatal error (and E_USER_ERROR *is* fatal) we never want other scripts to continue and force an exit here.
 			exit;
@@ -3468,8 +3468,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				page_footer();
 			}
-
-			exit_handler();
 
 			throw new \phpbb\legacy\exception\exit_exception();
 		break;
@@ -4708,7 +4706,7 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 
 	if ($exit_handler)
 	{
-		exit_handler();
+		throw new \phpbb\legacy\exception\exit_exception();
 	}
 }
 
@@ -4743,30 +4741,6 @@ function garbage_collection()
 	{
 		$db->sql_close();
 	}
-}
-
-/**
-* Handler for exit calls in phpBB.
-* This function supports hooks.
-*
-* Note: This function is called after the template has been outputted.
-*/
-function exit_handler()
-{
-	global $phpbb_hook;
-
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
-	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
-		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
-		}
-	}
-
-	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	//(ob_get_level() > 0) ? @ob_flush() : @flush();
-
-	throw new \phpbb\legacy\exception\exit_exception();
 }
 
 /**

@@ -1291,8 +1291,7 @@ class session
 			if (defined('IN_CRON'))
 			{
 				garbage_collection();
-				exit_handler();
-				exit;
+				throw new \phpbb\legacy\exception\exit_exception();
 			}
 
 			// To circumvent session_begin returning a valid value and the check_ban() not called on second page view, we kill the session again
