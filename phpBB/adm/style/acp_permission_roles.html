@@ -20,7 +20,7 @@
 	// ]]>
 	</script>
 
-	<script type="text/javascript" src="style/permissions.js"></script>
+	<!-- INCLUDEJS permissions.js -->
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
@@ -84,7 +84,7 @@
 					<!-- ELSE -->
 						<li class="permissions-preset-custom<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
 					<!-- ENDIF -->
-						<a href="#" onclick="swap_options('0','0','{auth.S_ROW_COUNT}'); return false;"><span class="tabbg"><span class="colour"></span>{auth.CAT_NAME}</span></a></li>	
+						<a href="#" onclick="swap_options('0','0','{auth.S_ROW_COUNT}'); return false;"><span class="tabbg"><span class="colour"></span>{auth.CAT_NAME}</span></a></li>
 				<!-- END auth -->
 				</ul>
 			</div>
@@ -110,7 +110,7 @@
 					<!-- BEGIN mask -->
 						<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 						<th class="permissions-name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
-							
+
 						<td class="permissions-yes"><label for="setting_{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
 						<td class="permissions-no"><label for="setting_{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
 						<td class="permissions-never"><label for="setting_{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
@@ -162,7 +162,7 @@
 			<span class="up"><a href="{roles.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
 			<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
 			<span class="down"><a href="{roles.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
-			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a> 
+			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a>
 			<a href="{roles.U_REMOVE}" title="{L_REMOVE_ROLE}" data-ajax="row_delete">{ICON_DELETE}</a>
 		</td>
 	</tr>
