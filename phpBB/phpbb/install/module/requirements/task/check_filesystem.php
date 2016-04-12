@@ -177,7 +177,9 @@ class check_filesystem extends \phpbb\install\task_base
 		if (!($exists && $writable))
 		{
 			$title = ($exists) ? 'FILE_NOT_WRITABLE' : 'FILE_NOT_EXISTS';
-			$description = array($title . '_EXPLAIN', $file);
+			$lang_suffix = '_EXPLAIN';
+			$lang_suffix .= ($failable) ? '_OPTIONAL' : '';
+			$description = array($title . $lang_suffix, $file);
 
 			if ($failable)
 			{
@@ -244,7 +246,9 @@ class check_filesystem extends \phpbb\install\task_base
 		if (!($exists && $writable))
 		{
 			$title = ($exists) ? 'DIRECTORY_NOT_WRITABLE' : 'DIRECTORY_NOT_EXISTS';
-			$description = array($title . '_EXPLAIN', $dir);
+			$lang_suffix = '_EXPLAIN';
+			$lang_suffix .= ($failable) ? '_OPTIONAL' : '';
+			$description = array($title . $lang_suffix, $dir);
 
 			if ($failable)
 			{
