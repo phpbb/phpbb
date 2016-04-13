@@ -75,5 +75,3 @@ function register_compatibility_globals()
 	/* @var $template \phpbb\template\template */
 	$template = $phpbb_container->get('template');
 }
-
-register_compatibility_globals();

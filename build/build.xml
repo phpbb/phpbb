@@ -443,6 +443,13 @@
 		<delete file="${dir}/vendor/symfony/http-kernel/README.md" />
 		<delete file="${dir}/vendor/symfony/http-kernel/phpunit.xml.dist" />
 
+		<delete dir="${dir}/vendor/symfony/proxy-manager-bridge/.git" />
+		<delete dir="${dir}/vendor/symfony/proxy-manager-bridge/Tests" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/.gitignore" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/README.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/routing/.git" />
 		<delete dir="${dir}/vendor/symfony/routing/Tests" />
 		<delete file="${dir}/vendor/symfony/routing/.gitignore" />
@@ -473,6 +480,15 @@
 		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.rst" />
+
+		<delete file="${dir}/vendor/zendframework/zend-code/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-code/README.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/README.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/README.md" />
 	</target>
 
 	<target name="clean-diff-dir">

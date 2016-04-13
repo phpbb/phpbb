@@ -65,7 +65,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->config,
 			$filesystem,
 			$phpbb_path_helper,
-			$container,
 			$cache_path,
 			null,
 			$loader,
@@ -112,7 +111,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
 		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 	}
 
 	// Should fail from missing composer.json
