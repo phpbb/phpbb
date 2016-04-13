@@ -29,7 +29,7 @@ class delete
 	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var dispatcher */
 	protected $dispatcher;
 
 	/** @var filesystem  */
