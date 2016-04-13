@@ -129,52 +129,18 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 			}
 		}
 
+		$old_docblock = $stackPtr;
+		while (($docblock = $phpcsFile->findNext(T_DOC_COMMENT_CLOSE_TAG, ($old_docblock + 1))) !== false)
+		{
+			$old_docblock = $docblock;
+			$ok = $this->checkDocblock($phpcsFile, $docblock, $tokens, $class_name_full, $class_name_short) ? true : $ok;
+		}
+
 		// Checks in type hinting
 		$old_function_declaration = $stackPtr;
 		while (($function_declaration = $phpcsFile->findNext(T_FUNCTION, ($old_function_declaration + 1))) !== false)
 		{
 			$old_function_declaration = $function_declaration;
-
-			// Check docblocks
-			$find = array(
-				T_COMMENT,
-				T_DOC_COMMENT_CLOSE_TAG,
-				T_DOC_COMMENT,
-				T_CLASS,
-				T_FUNCTION,
-				T_OPEN_TAG,
-			);
-
-			$comment_end = $phpcsFile->findPrevious($find, ($function_declaration - 1));
-			if ($comment_end !== false)
-			{
-				if ($tokens[$comment_end]['code'] === T_DOC_COMMENT_CLOSE_TAG)
-				{
-					$comment_start = $tokens[$comment_end]['comment_opener'];
-					foreach ($tokens[$comment_start]['comment_tags'] as $tag) {
-						if ($tokens[$tag]['content'] !== '@param' && $tokens[$tag]['content'] !== '@return' && $tokens[$tag]['content'] !== '@throws') {
-							continue;
-						}
-
-						$classes = $tokens[($tag + 2)]['content'];
-						$space = strpos($classes, ' ');
-						if ($space !== false) {
-							$classes = substr($classes, 0, $space);
-						}
-
-						$tab = strpos($classes, "\t");
-						if ($tab !== false) {
-							$classes = substr($classes, 0, $tab);
-						}
-
-						$classes = explode('|', str_replace('[]', '', $classes));
-						foreach ($classes as $class)
-						{
-							$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tokens[$tag + 2]['line']) ? true : $ok;
-						}
-					}
-				}
-			}
 
 			// Check type hint
 			$params = $phpcsFile->getMethodParameters($function_declaration);
@@ -233,5 +199,50 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements PHP_CodeSniffer_Sniff
 
 		return false;
 
+	}
+
+	/**
+	 * @param PHP_CodeSniffer_File $phpcsFile
+	 * @param int $field
+	 * @param array $tokens
+	 * @param string $class_name_full
+	 * @param string $class_name_short
+	 * @param bool $ok
+	 *
+	 * @return bool
+	 */
+	private function checkDocblock(PHP_CodeSniffer_File $phpcsFile, $comment_end, $tokens, $class_name_full, $class_name_short)
+	{
+		$ok = false;
+
+		$comment_start = $tokens[$comment_end]['comment_opener'];
+		foreach ($tokens[$comment_start]['comment_tags'] as $tag)
+		{
+			if (!in_array($tokens[$tag]['content'], array('@param', '@var', '@return', '@throws'), true))
+			{
+				continue;
+			}
+
+			$classes = $tokens[($tag + 2)]['content'];
+			$space = strpos($classes, ' ');
+			if ($space !== false)
+			{
+				$classes = substr($classes, 0, $space);
+			}
+
+			$tab = strpos($classes, "\t");
+			if ($tab !== false)
+			{
+				$classes = substr($classes, 0, $tab);
+			}
+
+			$classes = explode('|', str_replace('[]', '', $classes));
+			foreach ($classes as $class)
+			{
+				$ok = $this->check($phpcsFile, $class, $class_name_full, $class_name_short, $tokens[$tag + 2]['line']) ? true : $ok;
+			}
+		}
+
+		return $ok;
 	}
 }
