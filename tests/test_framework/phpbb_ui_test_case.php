@@ -256,9 +256,18 @@ class phpbb_ui_test_case extends phpbb_test_case
 			@unlink($phpbb_root_path . 'cache/install_lock');
 		}
 
-		global $phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;
+		global $phpbb_container;
 		$phpbb_container->reset();
-		unset($phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template);
+
+		$blacklist = ['phpbb_class_loader_mock', 'phpbb_class_loader_ext', 'phpbb_class_loader'];
+
+		foreach (array_keys($GLOBALS) as $key)
+		{
+			if (is_object($GLOBALS[$key]) && !in_array($key, $blacklist, true))
+			{
+				unset($GLOBALS[$key]);
+			}
+		}
 	}
 
 	static protected function get_db()
