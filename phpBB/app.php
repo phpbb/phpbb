@@ -83,16 +83,26 @@ catch (NotFoundHttpException $e)
 
 			$response = $legacyHandler->handleResponse();
 		}
+		catch (\Throwable $e)
+		{
+			goto catch_exception_for_pretty;
+		}
 		catch (\Exception $e)
 		{
+			catch_exception_for_pretty:
 			try
 			{
 				// In case we have an error in the legacy, we want to be able to
 				// have a nice error page instead of a blank page.
 				$response = $legacyHandler->handleException($e, $symfony_request);
 			}
+			catch (\Throwable $e)
+			{
+				goto catch_exception;
+			}
 			catch (\Exception $_)
 			{
+				catch_exception:
 				// In case we have an error in the error handling fail we want to display the original error
 				throw $e;
 			}
