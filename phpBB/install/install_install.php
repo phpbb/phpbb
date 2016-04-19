@@ -154,7 +154,7 @@ class install_install extends module
 		// Test the minimum PHP version
 		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '5.3.3') < 0)
+		if ((version_compare($php_version, '5.3.3') < 0) || (version_compare($php_version, '7.0.0-dev', '>=')))
 		{
 			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
