@@ -2264,7 +2264,8 @@
         "COLUMNS": {
             "report_id": [
                 "ULINT",
-                0
+                null,
+				"auto_increment"
             ],
             "reason_id": [
                 "USINT",
