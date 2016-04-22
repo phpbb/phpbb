@@ -151,7 +151,7 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SETTINGS_EXPLAIN'],
 		));
 
-		// Test the minimum and maximum versions of PHP
+		// Test the minimum and maximum PHP's versions
 		$php_version = PHP_VERSION;
 
 		if ((version_compare($php_version, '5.3.3') < 0) || (version_compare($php_version, '7.0.0-dev', '>=')))
