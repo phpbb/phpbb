@@ -91,32 +91,7 @@ class delete extends \phpbb\console\command\command
 			WHERE thumbnail = 1';
 		$result = $this->db->sql_query($sql);
 
-		$progress = $io->createProgressBar($nb_missing_thumbnails);
-		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
-			$progress->setOverwrite(false);
-		}
-		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
-			$progress->setOverwrite(false);
-		}
-		else
-		{
-			$io->newLine(2);
-			$progress->setFormat(
-				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-				"                         %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
-			$progress->setBarWidth(60);
-		}
-
-		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
-		{
-			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
-			$progress->setProgressCharacter('');
-			$progress->setBarCharacter('▓'); // dark shade character \u2593
-		}
+		$progress = $this->create_progress_bar($nb_missing_thumbnails, $io, $output);
 
 		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_DELETING'));
 
