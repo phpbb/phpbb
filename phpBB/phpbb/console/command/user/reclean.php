@@ -142,46 +142,6 @@ class reclean extends command
 	}
 
 	/**
-	 * Create a styled progress bar
-	 *
-	 * @param integer         $max    Max value for the progress bar
-	 * @param SymfonyStyle    $io
-	 * @param OutputInterface $output The output stream, used to print messages
-	 * @return ProgressBar
-	 */
-	protected function create_progress_bar($max, SymfonyStyle $io, OutputInterface $output)
-	{
-		$progress = $io->createProgressBar($max);
-		if ($output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
-			$progress->setOverwrite(false);
-		}
-		else if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
-			$progress->setOverwrite(false);
-		}
-		else
-		{
-			$io->newLine(2);
-			$progress->setFormat(
-				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-				"                         %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
-			$progress->setBarWidth(60);
-		}
-
-		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
-		{
-			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
-			$progress->setProgressCharacter('');
-			$progress->setBarCharacter('▓'); // dark shade character \u2593
-		}
-
-		return $progress;
-	}
-
-	/**
 	 * Get the count of users in the database
 	 *
 	 * @return int

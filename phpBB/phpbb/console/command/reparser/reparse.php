@@ -122,44 +122,6 @@ class reparse extends \phpbb\console\command\command
 	}
 
 	/**
-	* Create a styled progress bar
-	*
-	* @param  integer $max Max value for the progress bar
-	* @return \Symfony\Component\Console\Helper\ProgressBar
-	*/
-	protected function create_progress_bar($max)
-	{
-		$progress = $this->io->createProgressBar($max);
-		if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
-			$progress->setOverwrite(false);
-		}
-		else if ($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
-			$progress->setOverwrite(false);
-		}
-		else
-		{
-			$this->io->newLine(2);
-			$progress->setFormat(
-				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-				"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
-			$progress->setBarWidth(60);
-		}
-
-		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
-		{
-			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
-			$progress->setProgressCharacter('');
-			$progress->setBarCharacter('▓'); // dark shade character \u2593
-		}
-
-		return $progress;
-	}
-
-	/**
 	* Executes the command reparser:reparse
 	*
 	* @param InputInterface $input
@@ -258,7 +220,7 @@ class reparse extends \phpbb\console\command\command
 
 		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $min, $max));
 
-		$progress = $this->create_progress_bar($max);
+		$progress = $this->create_progress_bar($max, $this->io, $this->output, true);
 		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', preg_replace('(^text_reparser\\.)', '', $name)));
 		$progress->start();
 
