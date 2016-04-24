@@ -80,6 +80,7 @@ abstract class report_handler implements report_handler_interface
 	protected function create_report(array $report_data)
 	{
 		$sql_ary = array(
+			'report_id'							=> (int) $report_data['report_id'],
 			'reason_id'							=> (int) $report_data['reason_id'],
 			'post_id'							=> $report_data['post_id'],
 			'pm_id'								=> $report_data['pm_id'],
