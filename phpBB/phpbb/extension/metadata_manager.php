@@ -136,6 +136,15 @@ class metadata_manager
 	}
 
 	/**
+	 * Loads the extension info language file
+	 */
+	public function load_info_language_file()
+	{
+		$this->extension_manager->add_ext_info();
+	}
+
+
+	/**
 	* Sets the filepath of the metadata file
 	*
 	* @throws \phpbb\extension\exception
@@ -349,9 +358,9 @@ class metadata_manager
 	public function output_template_data()
 	{
 		$this->template->assign_vars(array(
-			'META_NAME'			=> $this->metadata['name'],
+			'META_NAME'			=> $this->get_metadata_language_key($this->metadata['name']),
 			'META_TYPE'			=> $this->metadata['type'],
-			'META_DESCRIPTION'	=> (isset($this->metadata['description'])) ? $this->metadata['description'] : '',
+			'META_DESCRIPTION'	=> (isset($this->metadata['description'])) ? $this->get_metadata_language_key($this->metadata['description']) : '',
 			'META_HOMEPAGE'		=> (isset($this->metadata['homepage'])) ? $this->metadata['homepage'] : '',
 			'META_VERSION'		=> (isset($this->metadata['version'])) ? $this->metadata['version'] : '',
 			'META_TIME'			=> (isset($this->metadata['time'])) ? $this->metadata['time'] : '',
@@ -372,8 +381,23 @@ class metadata_manager
 				'AUTHOR_NAME'		=> $author['name'],
 				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
-				'AUTHOR_ROLE'		=> (isset($author['role'])) ? $author['role'] : '',
+				'AUTHOR_ROLE'		=> (isset($author['role'])) ? $this->get_metadata_language_key($author['role']) : '',
 			));
 		}
+	}
+
+	/**
+	 * Returns the language key if exists
+	 *
+	 * @return string
+	 */
+	private function get_metadata_language_key($lang_key)
+	{
+		if (isset($this->user->lang[$lang_key]))
+		{
+			return $this->user->lang[$lang_key];
+		}
+
+		return $lang_key;
 	}
 }
