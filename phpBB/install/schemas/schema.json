@@ -1,1 +1,3390 @@
-{"phpbb_acl_groups":{"COLUMNS":{"group_id":["UINT",0],"forum_id":["UINT",0],"auth_option_id":["UINT",0],"auth_role_id":["UINT",0],"auth_setting":["TINT:2",0]},"KEYS":{"group_id":["INDEX","group_id"],"auth_opt_id":["INDEX","auth_option_id"],"auth_role_id":["INDEX","auth_role_id"]}},"phpbb_acl_options":{"COLUMNS":{"auth_option_id":["UINT",null,"auto_increment"],"auth_option":["VCHAR:50",""],"is_global":["BOOL",0],"is_local":["BOOL",0],"founder_only":["BOOL",0]},"PRIMARY_KEY":"auth_option_id","KEYS":{"auth_option":["UNIQUE",["auth_option"]]}},"phpbb_acl_roles":{"COLUMNS":{"role_id":["UINT",null,"auto_increment"],"role_name":["VCHAR_UNI",""],"role_description":["TEXT_UNI",""],"role_type":["VCHAR:10",""],"role_order":["USINT",0]},"PRIMARY_KEY":"role_id","KEYS":{"role_type":["INDEX","role_type"],"role_order":["INDEX","role_order"]}},"phpbb_acl_roles_data":{"COLUMNS":{"role_id":["UINT",0],"auth_option_id":["UINT",0],"auth_setting":["TINT:2",0]},"PRIMARY_KEY":["role_id","auth_option_id"],"KEYS":{"ath_op_id":["INDEX","auth_option_id"]}},"phpbb_acl_users":{"COLUMNS":{"user_id":["ULINT",0],"forum_id":["UINT",0],"auth_option_id":["UINT",0],"auth_role_id":["UINT",0],"auth_setting":["TINT:2",0]},"KEYS":{"user_id":["INDEX","user_id"],"auth_option_id":["INDEX","auth_option_id"],"auth_role_id":["INDEX","auth_role_id"]}},"phpbb_attachments":{"COLUMNS":{"attach_id":["ULINT",null,"auto_increment"],"post_msg_id":["ULINT",0],"topic_id":["ULINT",0],"in_message":["BOOL",0],"poster_id":["ULINT",0],"is_orphan":["BOOL",1],"physical_filename":["VCHAR",""],"real_filename":["VCHAR",""],"download_count":["UINT",0],"attach_comment":["TEXT_UNI",""],"extension":["VCHAR:100",""],"mimetype":["VCHAR:100",""],"filesize":["UINT:20",0],"filetime":["TIMESTAMP",0],"thumbnail":["BOOL",0]},"PRIMARY_KEY":"attach_id","KEYS":{"filetime":["INDEX","filetime"],"post_msg_id":["INDEX","post_msg_id"],"topic_id":["INDEX","topic_id"],"poster_id":["INDEX","poster_id"],"is_orphan":["INDEX","is_orphan"]}},"phpbb_banlist":{"COLUMNS":{"ban_id":["ULINT",null,"auto_increment"],"ban_userid":["ULINT",0],"ban_ip":["VCHAR:40",""],"ban_email":["VCHAR_UNI:100",""],"ban_start":["TIMESTAMP",0],"ban_end":["TIMESTAMP",0],"ban_exclude":["BOOL",0],"ban_reason":["VCHAR_UNI",""],"ban_give_reason":["VCHAR_UNI",""]},"PRIMARY_KEY":"ban_id","KEYS":{"ban_end":["INDEX","ban_end"],"ban_user":["INDEX",["ban_userid","ban_exclude"]],"ban_email":["INDEX",["ban_email","ban_exclude"]],"ban_ip":["INDEX",["ban_ip","ban_exclude"]]}},"phpbb_bbcodes":{"COLUMNS":{"bbcode_id":["USINT",0],"bbcode_tag":["VCHAR:16",""],"bbcode_helpline":["VCHAR_UNI",""],"display_on_posting":["BOOL",0],"bbcode_match":["TEXT_UNI",""],"bbcode_tpl":["MTEXT_UNI",""],"first_pass_match":["MTEXT_UNI",""],"first_pass_replace":["MTEXT_UNI",""],"second_pass_match":["MTEXT_UNI",""],"second_pass_replace":["MTEXT_UNI",""]},"PRIMARY_KEY":"bbcode_id","KEYS":{"display_on_post":["INDEX","display_on_posting"]}},"phpbb_bookmarks":{"COLUMNS":{"topic_id":["ULINT",0],"user_id":["ULINT",0]},"PRIMARY_KEY":["topic_id","user_id"]},"phpbb_bots":{"COLUMNS":{"bot_id":["ULINT",null,"auto_increment"],"bot_active":["BOOL",1],"bot_name":["STEXT_UNI",""],"user_id":["ULINT",0],"bot_agent":["VCHAR",""],"bot_ip":["VCHAR",""]},"PRIMARY_KEY":"bot_id","KEYS":{"bot_active":["INDEX","bot_active"]}},"phpbb_config":{"COLUMNS":{"config_name":["VCHAR",""],"config_value":["VCHAR_UNI",""],"is_dynamic":["BOOL",0]},"PRIMARY_KEY":"config_name","KEYS":{"is_dynamic":["INDEX","is_dynamic"]}},"phpbb_config_text":{"COLUMNS":{"config_name":["VCHAR",""],"config_value":["MTEXT",""]},"PRIMARY_KEY":"config_name"},"phpbb_confirm":{"COLUMNS":{"confirm_id":["CHAR:32",""],"session_id":["CHAR:32",""],"confirm_type":["TINT:3",0],"code":["VCHAR:8",""],"seed":["UINT:10",0],"attempts":["UINT",0]},"PRIMARY_KEY":["session_id","confirm_id"],"KEYS":{"confirm_type":["INDEX","confirm_type"]}},"phpbb_disallow":{"COLUMNS":{"disallow_id":["UINT",null,"auto_increment"],"disallow_username":["VCHAR_UNI:255",""]},"PRIMARY_KEY":"disallow_id"},"phpbb_drafts":{"COLUMNS":{"draft_id":["ULINT",null,"auto_increment"],"user_id":["ULINT",0],"topic_id":["ULINT",0],"forum_id":["UINT",0],"save_time":["TIMESTAMP",0],"draft_subject":["STEXT_UNI",""],"draft_message":["MTEXT_UNI",""]},"PRIMARY_KEY":"draft_id","KEYS":{"save_time":["INDEX","save_time"]}},"phpbb_ext":{"COLUMNS":{"ext_name":["VCHAR",""],"ext_active":["BOOL",0],"ext_state":["TEXT",""]},"KEYS":{"ext_name":["UNIQUE","ext_name"]}},"phpbb_extension_groups":{"COLUMNS":{"group_id":["UINT",null,"auto_increment"],"group_name":["VCHAR_UNI",""],"cat_id":["TINT:2",0],"allow_group":["BOOL",0],"download_mode":["BOOL",1],"upload_icon":["VCHAR",""],"max_filesize":["UINT:20",0],"allowed_forums":["TEXT",""],"allow_in_pm":["BOOL",0]},"PRIMARY_KEY":"group_id"},"phpbb_extensions":{"COLUMNS":{"extension_id":["UINT",null,"auto_increment"],"group_id":["UINT",0],"extension":["VCHAR:100",""]},"PRIMARY_KEY":"extension_id"},"phpbb_forums":{"COLUMNS":{"forum_id":["UINT",null,"auto_increment"],"parent_id":["UINT",0],"left_id":["UINT",0],"right_id":["UINT",0],"forum_parents":["MTEXT",""],"forum_name":["STEXT_UNI",""],"forum_desc":["TEXT_UNI",""],"forum_desc_bitfield":["VCHAR:255",""],"forum_desc_options":["UINT:11",7],"forum_desc_uid":["VCHAR:8",""],"forum_link":["VCHAR_UNI",""],"forum_password":["VCHAR:255",""],"forum_style":["UINT",0],"forum_image":["VCHAR",""],"forum_rules":["TEXT_UNI",""],"forum_rules_link":["VCHAR_UNI",""],"forum_rules_bitfield":["VCHAR:255",""],"forum_rules_options":["UINT:11",7],"forum_rules_uid":["VCHAR:8",""],"forum_topics_per_page":["TINT:4",0],"forum_type":["TINT:4",0],"forum_status":["TINT:4",0],"forum_last_post_id":["ULINT",0],"forum_last_poster_id":["ULINT",0],"forum_last_post_subject":["STEXT_UNI",""],"forum_last_post_time":["TIMESTAMP",0],"forum_last_poster_name":["VCHAR_UNI",""],"forum_last_poster_colour":["VCHAR:6",""],"forum_flags":["TINT:4",32],"display_on_index":["BOOL",1],"enable_indexing":["BOOL",1],"enable_icons":["BOOL",1],"enable_prune":["BOOL",0],"prune_next":["TIMESTAMP",0],"prune_days":["UINT",0],"prune_viewed":["UINT",0],"prune_freq":["UINT",0],"display_subforum_list":["BOOL",1],"forum_options":["UINT:20",0],"forum_posts_approved":["UINT",0],"forum_posts_unapproved":["UINT",0],"forum_posts_softdeleted":["UINT",0],"forum_topics_approved":["UINT",0],"forum_topics_unapproved":["UINT",0],"forum_topics_softdeleted":["UINT",0],"enable_shadow_prune":["BOOL",0],"prune_shadow_days":["UINT",7],"prune_shadow_freq":["UINT",1],"prune_shadow_next":["INT:11",0]},"PRIMARY_KEY":"forum_id","KEYS":{"left_right_id":["INDEX",["left_id","right_id"]],"forum_lastpost_id":["INDEX","forum_last_post_id"]}},"phpbb_forums_access":{"COLUMNS":{"forum_id":["UINT",0],"user_id":["ULINT",0],"session_id":["CHAR:32",""]},"PRIMARY_KEY":["forum_id","user_id","session_id"]},"phpbb_forums_track":{"COLUMNS":{"user_id":["ULINT",0],"forum_id":["UINT",0],"mark_time":["TIMESTAMP",0]},"PRIMARY_KEY":["user_id","forum_id"]},"phpbb_forums_watch":{"COLUMNS":{"forum_id":["UINT",0],"user_id":["ULINT",0],"notify_status":["BOOL",0]},"KEYS":{"forum_id":["INDEX","forum_id"],"user_id":["INDEX","user_id"],"notify_stat":["INDEX","notify_status"]}},"phpbb_groups":{"COLUMNS":{"group_id":["UINT",null,"auto_increment"],"group_type":["TINT:4",1],"group_founder_manage":["BOOL",0],"group_skip_auth":["BOOL",0],"group_name":["VCHAR_CI",""],"group_desc":["TEXT_UNI",""],"group_desc_bitfield":["VCHAR:255",""],"group_desc_options":["UINT:11",7],"group_desc_uid":["VCHAR:8",""],"group_display":["BOOL",0],"group_avatar":["VCHAR",""],"group_avatar_type":["VCHAR:255",""],"group_avatar_width":["USINT",0],"group_avatar_height":["USINT",0],"group_rank":["UINT",0],"group_colour":["VCHAR:6",""],"group_sig_chars":["UINT",0],"group_receive_pm":["BOOL",0],"group_message_limit":["UINT",0],"group_legend":["UINT",0],"group_max_recipients":["UINT",0]},"PRIMARY_KEY":"group_id","KEYS":{"group_legend_name":["INDEX",["group_legend","group_name"]]}},"phpbb_icons":{"COLUMNS":{"icons_id":["UINT",null,"auto_increment"],"icons_url":["VCHAR",""],"icons_width":["TINT:4",0],"icons_height":["TINT:4",0],"icons_alt":["VCHAR",""],"icons_order":["UINT",0],"display_on_posting":["BOOL",1]},"PRIMARY_KEY":"icons_id","KEYS":{"display_on_posting":["INDEX","display_on_posting"]}},"phpbb_lang":{"COLUMNS":{"lang_id":["TINT:4",null,"auto_increment"],"lang_iso":["VCHAR:30",""],"lang_dir":["VCHAR:30",""],"lang_english_name":["VCHAR_UNI:100",""],"lang_local_name":["VCHAR_UNI:255",""],"lang_author":["VCHAR_UNI:255",""]},"PRIMARY_KEY":"lang_id","KEYS":{"lang_iso":["INDEX","lang_iso"]}},"phpbb_log":{"COLUMNS":{"log_id":["ULINT",null,"auto_increment"],"log_type":["TINT:4",0],"user_id":["ULINT",0],"forum_id":["UINT",0],"topic_id":["ULINT",0],"post_id":["ULINT",0],"reportee_id":["ULINT",0],"log_ip":["VCHAR:40",""],"log_time":["TIMESTAMP",0],"log_operation":["TEXT_UNI",""],"log_data":["MTEXT_UNI",""]},"PRIMARY_KEY":"log_id","KEYS":{"log_type":["INDEX","log_type"],"forum_id":["INDEX","forum_id"],"topic_id":["INDEX","topic_id"],"reportee_id":["INDEX","reportee_id"],"user_id":["INDEX","user_id"]}},"phpbb_login_attempts":{"COLUMNS":{"attempt_ip":["VCHAR:40",""],"attempt_browser":["VCHAR:150",""],"attempt_forwarded_for":["VCHAR:255",""],"attempt_time":["TIMESTAMP",0],"user_id":["ULINT",0],"username":["VCHAR_UNI:255",0],"username_clean":["VCHAR_CI",0]},"KEYS":{"att_ip":["INDEX",["attempt_ip","attempt_time"]],"att_for":["INDEX",["attempt_forwarded_for","attempt_time"]],"att_time":["INDEX",["attempt_time"]],"user_id":["INDEX","user_id"]}},"phpbb_migrations":{"COLUMNS":{"migration_name":["VCHAR",""],"migration_depends_on":["TEXT",""],"migration_schema_done":["BOOL",0],"migration_data_done":["BOOL",0],"migration_data_state":["TEXT",""],"migration_start_time":["TIMESTAMP",0],"migration_end_time":["TIMESTAMP",0]},"PRIMARY_KEY":"migration_name"},"phpbb_moderator_cache":{"COLUMNS":{"forum_id":["UINT",0],"user_id":["ULINT",0],"username":["VCHAR_UNI:255",""],"group_id":["UINT",0],"group_name":["VCHAR_UNI",""],"display_on_index":["BOOL",1]},"KEYS":{"disp_idx":["INDEX","display_on_index"],"forum_id":["INDEX","forum_id"]}},"phpbb_modules":{"COLUMNS":{"module_id":["UINT",null,"auto_increment"],"module_enabled":["BOOL",1],"module_display":["BOOL",1],"module_basename":["VCHAR",""],"module_class":["VCHAR:10",""],"parent_id":["UINT",0],"left_id":["UINT",0],"right_id":["UINT",0],"module_langname":["VCHAR",""],"module_mode":["VCHAR",""],"module_auth":["VCHAR",""]},"PRIMARY_KEY":"module_id","KEYS":{"left_right_id":["INDEX",["left_id","right_id"]],"module_enabled":["INDEX","module_enabled"],"class_left_id":["INDEX",["module_class","left_id"]]}},"phpbb_notification_types":{"COLUMNS":{"notification_type_id":["USINT",null,"auto_increment"],"notification_type_name":["VCHAR:255",""],"notification_type_enabled":["BOOL",1]},"PRIMARY_KEY":["notification_type_id"],"KEYS":{"type":["UNIQUE",["notification_type_name"]]}},"phpbb_notifications":{"COLUMNS":{"notification_id":["UINT:10",null,"auto_increment"],"notification_type_id":["USINT",0],"item_id":["UINT",0],"item_parent_id":["UINT",0],"user_id":["ULINT",0],"notification_read":["BOOL",0],"notification_time":["TIMESTAMP",1],"notification_data":["TEXT_UNI",""]},"PRIMARY_KEY":"notification_id","KEYS":{"item_ident":["INDEX",["notification_type_id","item_id"]],"user":["INDEX",["user_id","notification_read"]]}},"phpbb_oauth_accounts":{"COLUMNS":{"user_id":["ULINT",0],"provider":["VCHAR",""],"oauth_provider_id":["TEXT_UNI",""]},"PRIMARY_KEY":["user_id","provider"]},"phpbb_oauth_states":{"COLUMNS":{"user_id":["ULINT",0],"session_id":["CHAR:32",""],"provider":["VCHAR",""],"oauth_state":["VCHAR",""]},"KEYS":{"user_id":["INDEX","user_id"],"provider":["INDEX","provider"]}},"phpbb_oauth_tokens":{"COLUMNS":{"user_id":["ULINT",0],"session_id":["CHAR:32",""],"provider":["VCHAR",""],"oauth_token":["MTEXT",""]},"KEYS":{"user_id":["INDEX","user_id"],"provider":["INDEX","provider"]}},"phpbb_poll_options":{"COLUMNS":{"poll_option_id":["TINT:4",0],"topic_id":["ULINT",0],"poll_option_text":["TEXT_UNI",""],"poll_option_total":["UINT",0]},"KEYS":{"poll_opt_id":["INDEX","poll_option_id"],"topic_id":["INDEX","topic_id"]}},"phpbb_poll_votes":{"COLUMNS":{"topic_id":["ULINT",0],"poll_option_id":["TINT:4",0],"vote_user_id":["ULINT",0],"vote_user_ip":["VCHAR:40",""]},"KEYS":{"topic_id":["INDEX","topic_id"],"vote_user_id":["INDEX","vote_user_id"],"vote_user_ip":["INDEX","vote_user_ip"]}},"phpbb_posts":{"COLUMNS":{"post_id":["ULINT",null,"auto_increment"],"topic_id":["ULINT",0],"forum_id":["UINT",0],"poster_id":["ULINT",0],"icon_id":["UINT",0],"poster_ip":["VCHAR:40",""],"post_time":["TIMESTAMP",0],"post_reported":["BOOL",0],"enable_bbcode":["BOOL",1],"enable_smilies":["BOOL",1],"enable_magic_url":["BOOL",1],"enable_sig":["BOOL",1],"post_username":["VCHAR_UNI:255",""],"post_subject":["STEXT_UNI","","true_sort"],"post_text":["MTEXT_UNI",""],"post_checksum":["VCHAR:32",""],"post_attachment":["BOOL",0],"bbcode_bitfield":["VCHAR:255",""],"bbcode_uid":["VCHAR:8",""],"post_postcount":["BOOL",1],"post_edit_time":["TIMESTAMP",0],"post_edit_reason":["STEXT_UNI",""],"post_edit_user":["ULINT",0],"post_edit_count":["USINT",0],"post_edit_locked":["BOOL",0],"post_visibility":["TINT:3",0],"post_delete_time":["TIMESTAMP",0],"post_delete_reason":["STEXT_UNI",""],"post_delete_user":["ULINT",0]},"PRIMARY_KEY":"post_id","KEYS":{"forum_id":["INDEX","forum_id"],"topic_id":["INDEX","topic_id"],"poster_ip":["INDEX","poster_ip"],"poster_id":["INDEX","poster_id"],"tid_post_time":["INDEX",["topic_id","post_time"]],"post_username":["INDEX",["post_username:255"]],"post_visibility":["INDEX",["post_visibility"]]}},"phpbb_privmsgs":{"COLUMNS":{"msg_id":["ULINT",null,"auto_increment"],"root_level":["UINT",0],"author_id":["ULINT",0],"icon_id":["UINT",0],"author_ip":["VCHAR:40",""],"message_time":["TIMESTAMP",0],"enable_bbcode":["BOOL",1],"enable_smilies":["BOOL",1],"enable_magic_url":["BOOL",1],"enable_sig":["BOOL",1],"message_subject":["STEXT_UNI",""],"message_text":["MTEXT_UNI",""],"message_edit_reason":["STEXT_UNI",""],"message_edit_user":["ULINT",0],"message_attachment":["BOOL",0],"bbcode_bitfield":["VCHAR:255",""],"bbcode_uid":["VCHAR:8",""],"message_edit_time":["TIMESTAMP",0],"message_edit_count":["USINT",0],"to_address":["TEXT_UNI",""],"bcc_address":["TEXT_UNI",""],"message_reported":["BOOL",0]},"PRIMARY_KEY":"msg_id","KEYS":{"author_ip":["INDEX","author_ip"],"message_time":["INDEX","message_time"],"author_id":["INDEX","author_id"],"root_level":["INDEX","root_level"]}},"phpbb_privmsgs_folder":{"COLUMNS":{"folder_id":["UINT",null,"auto_increment"],"user_id":["ULINT",0],"folder_name":["VCHAR_UNI",""],"pm_count":["UINT",0]},"PRIMARY_KEY":"folder_id","KEYS":{"user_id":["INDEX","user_id"]}},"phpbb_privmsgs_rules":{"COLUMNS":{"rule_id":["UINT",null,"auto_increment"],"user_id":["ULINT",0],"rule_check":["UINT",0],"rule_connection":["UINT",0],"rule_string":["VCHAR_UNI",""],"rule_user_id":["ULINT",0],"rule_group_id":["UINT",0],"rule_action":["UINT",0],"rule_folder_id":["INT:11",0]},"PRIMARY_KEY":"rule_id","KEYS":{"user_id":["INDEX","user_id"]}},"phpbb_privmsgs_to":{"COLUMNS":{"msg_id":["ULINT",0],"user_id":["ULINT",0],"author_id":["ULINT",0],"pm_deleted":["BOOL",0],"pm_new":["BOOL",1],"pm_unread":["BOOL",1],"pm_replied":["BOOL",0],"pm_marked":["BOOL",0],"pm_forwarded":["BOOL",0],"folder_id":["INT:11",0]},"KEYS":{"msg_id":["INDEX","msg_id"],"author_id":["INDEX","author_id"],"usr_flder_id":["INDEX",["user_id","folder_id"]]}},"phpbb_profile_fields":{"COLUMNS":{"field_id":["UINT",null,"auto_increment"],"field_name":["VCHAR_UNI",""],"field_type":["VCHAR:100",""],"field_ident":["VCHAR:20",""],"field_length":["VCHAR:20",""],"field_minlen":["VCHAR",""],"field_maxlen":["VCHAR",""],"field_novalue":["VCHAR_UNI",""],"field_default_value":["VCHAR_UNI",""],"field_validation":["VCHAR_UNI:64",""],"field_required":["BOOL",0],"field_show_on_reg":["BOOL",0],"field_hide":["BOOL",0],"field_no_view":["BOOL",0],"field_active":["BOOL",0],"field_order":["UINT",0],"field_show_profile":["BOOL",0],"field_show_on_vt":["BOOL",0],"field_show_novalue":["BOOL",0],"field_show_on_pm":["BOOL",0],"field_show_on_ml":["BOOL",0],"field_is_contact":["BOOL",0],"field_contact_desc":["VCHAR",""],"field_contact_url":["VCHAR",""]},"PRIMARY_KEY":"field_id","KEYS":{"fld_type":["INDEX","field_type"],"fld_ordr":["INDEX","field_order"]}},"phpbb_profile_fields_data":{"COLUMNS":{"user_id":["ULINT",0],"pf_phpbb_interests":["MTEXT",""],"pf_phpbb_occupation":["MTEXT",""],"pf_phpbb_icq":["VCHAR",""],"pf_phpbb_twitter":["VCHAR",""],"pf_phpbb_facebook":["VCHAR",""],"pf_phpbb_skype":["VCHAR",""],"pf_phpbb_youtube":["VCHAR",""],"pf_phpbb_location":["VCHAR",""],"pf_phpbb_googleplus":["VCHAR",""],"pf_phpbb_website":["VCHAR",""],"pf_phpbb_yahoo":["VCHAR",""],"pf_phpbb_aol":["VCHAR",""]},"PRIMARY_KEY":"user_id"},"phpbb_profile_fields_lang":{"COLUMNS":{"field_id":["UINT",0],"lang_id":["UINT",0],"option_id":["UINT",0],"field_type":["VCHAR:100",""],"lang_value":["VCHAR_UNI",""]},"PRIMARY_KEY":["field_id","lang_id","option_id"]},"phpbb_profile_lang":{"COLUMNS":{"field_id":["UINT",0],"lang_id":["UINT",0],"lang_name":["VCHAR_UNI",""],"lang_explain":["TEXT_UNI",""],"lang_default_value":["VCHAR_UNI",""]},"PRIMARY_KEY":["field_id","lang_id"]},"phpbb_ranks":{"COLUMNS":{"rank_id":["UINT",null,"auto_increment"],"rank_title":["VCHAR_UNI",""],"rank_min":["UINT",0],"rank_special":["BOOL",0],"rank_image":["VCHAR",""]},"PRIMARY_KEY":"rank_id"},"phpbb_reports":{"COLUMNS":{"report_id":["ULINT",0],"reason_id":["USINT",0],"post_id":["ULINT",0],"user_id":["ULINT",0],"user_notify":["BOOL",0],"report_closed":["BOOL",0],"report_time":["TIMESTAMP",0],"report_text":["MTEXT_UNI",""],"pm_id":["ULINT",0],"reported_post_enable_bbcode":["BOOL",1],"reported_post_enable_smilies":["BOOL",1],"reported_post_enable_magic_url":["BOOL",1],"reported_post_text":["MTEXT_UNI",""],"reported_post_uid":["VCHAR:8",""],"reported_post_bitfield":["VCHAR:255",""]},"PRIMARY_KEY":"report_id","KEYS":{"post_id":["INDEX",["post_id"]],"pm_id":["INDEX",["pm_id"]]}},"phpbb_reports_reasons":{"COLUMNS":{"reason_id":["USINT",null,"auto_increment"],"reason_title":["VCHAR_UNI",""],"reason_description":["MTEXT_UNI",""],"reason_order":["USINT",0]},"PRIMARY_KEY":"reason_id"},"phpbb_search_results":{"COLUMNS":{"search_key":["VCHAR:32",""],"search_time":["TIMESTAMP",0],"search_keywords":["MTEXT_UNI",""],"search_authors":["MTEXT",""]},"PRIMARY_KEY":"search_key"},"phpbb_search_wordlist":{"COLUMNS":{"word_id":["ULINT",null,"auto_increment"],"word_text":["VCHAR_UNI",""],"word_common":["BOOL",0],"word_count":["UINT",0]},"PRIMARY_KEY":"word_id","KEYS":{"wrd_txt":["UNIQUE","word_text"],"wrd_cnt":["INDEX","word_count"]}},"phpbb_search_wordmatch":{"COLUMNS":{"post_id":["ULINT",0],"word_id":["ULINT",0],"title_match":["BOOL",0]},"KEYS":{"word_id":["INDEX","word_id"],"post_id":["INDEX","post_id"],"un_mtch":["UNIQUE",["word_id","post_id","title_match"]]}},"phpbb_sessions":{"COLUMNS":{"session_id":["CHAR:32",""],"session_user_id":["ULINT",0],"session_last_visit":["TIMESTAMP",0],"session_start":["TIMESTAMP",0],"session_time":["TIMESTAMP",0],"session_ip":["VCHAR:40",""],"session_browser":["VCHAR:150",""],"session_forwarded_for":["VCHAR:255",""],"session_page":["VCHAR_UNI",""],"session_viewonline":["BOOL",1],"session_autologin":["BOOL",0],"session_admin":["BOOL",0],"session_forum_id":["UINT",0]},"PRIMARY_KEY":"session_id","KEYS":{"session_time":["INDEX","session_time"],"session_user_id":["INDEX","session_user_id"],"session_fid":["INDEX",["session_forum_id"]]}},"phpbb_sessions_keys":{"COLUMNS":{"key_id":["CHAR:32",""],"user_id":["ULINT",0],"last_ip":["VCHAR:40",""],"last_login":["TIMESTAMP",0]},"PRIMARY_KEY":["key_id","user_id"],"KEYS":{"last_login":["INDEX","last_login"]}},"phpbb_sitelist":{"COLUMNS":{"site_id":["UINT",null,"auto_increment"],"site_ip":["VCHAR:40",""],"site_hostname":["VCHAR",""],"ip_exclude":["BOOL",0]},"PRIMARY_KEY":"site_id"},"phpbb_smilies":{"COLUMNS":{"smiley_id":["UINT",null,"auto_increment"],"code":["VCHAR_UNI:50",""],"emotion":["VCHAR_UNI:50",""],"smiley_url":["VCHAR:50",""],"smiley_width":["USINT",0],"smiley_height":["USINT",0],"smiley_order":["UINT",0],"display_on_posting":["BOOL",1]},"PRIMARY_KEY":"smiley_id","KEYS":{"display_on_post":["INDEX","display_on_posting"]}},"phpbb_styles":{"COLUMNS":{"style_id":["UINT",null,"auto_increment"],"style_name":["VCHAR_UNI:255",""],"style_copyright":["VCHAR_UNI",""],"style_active":["BOOL",1],"style_path":["VCHAR:100",""],"bbcode_bitfield":["VCHAR:255","kNg="],"style_parent_id":["UINT:4",0],"style_parent_tree":["TEXT",""]},"PRIMARY_KEY":"style_id","KEYS":{"style_name":["UNIQUE","style_name"]}},"phpbb_teampage":{"COLUMNS":{"teampage_id":["UINT",null,"auto_increment"],"group_id":["UINT",0],"teampage_name":["VCHAR_UNI:255",""],"teampage_position":["UINT",0],"teampage_parent":["UINT",0]},"PRIMARY_KEY":"teampage_id"},"phpbb_topics":{"COLUMNS":{"topic_id":["ULINT",null,"auto_increment"],"forum_id":["UINT",0],"icon_id":["UINT",0],"topic_attachment":["BOOL",0],"topic_reported":["BOOL",0],"topic_title":["STEXT_UNI","","true_sort"],"topic_poster":["ULINT",0],"topic_time":["TIMESTAMP",0],"topic_time_limit":["TIMESTAMP",0],"topic_views":["UINT",0],"topic_status":["TINT:3",0],"topic_type":["TINT:3",0],"topic_first_post_id":["ULINT",0],"topic_first_poster_name":["VCHAR_UNI:255","","true_sort"],"topic_first_poster_colour":["VCHAR:6",""],"topic_last_post_id":["ULINT",0],"topic_last_poster_id":["ULINT",0],"topic_last_poster_name":["VCHAR_UNI",""],"topic_last_poster_colour":["VCHAR:6",""],"topic_last_post_subject":["STEXT_UNI",""],"topic_last_post_time":["TIMESTAMP",0],"topic_last_view_time":["TIMESTAMP",0],"topic_moved_id":["ULINT",0],"topic_bumped":["BOOL",0],"topic_bumper":["UINT",0],"poll_title":["STEXT_UNI",""],"poll_start":["TIMESTAMP",0],"poll_length":["TIMESTAMP",0],"poll_max_options":["TINT:4",1],"poll_last_vote":["TIMESTAMP",0],"poll_vote_change":["BOOL",0],"topic_visibility":["TINT:3",0],"topic_delete_time":["TIMESTAMP",0],"topic_delete_reason":["STEXT_UNI",""],"topic_delete_user":["ULINT",0],"topic_posts_approved":["UINT",0],"topic_posts_unapproved":["UINT",0],"topic_posts_softdeleted":["UINT",0]},"PRIMARY_KEY":"topic_id","KEYS":{"forum_id":["INDEX","forum_id"],"forum_id_type":["INDEX",["forum_id","topic_type"]],"last_post_time":["INDEX","topic_last_post_time"],"fid_time_moved":["INDEX",["forum_id","topic_last_post_time","topic_moved_id"]],"topic_visibility":["INDEX",["topic_visibility"]],"forum_vis_last":["INDEX",["forum_id","topic_visibility","topic_last_post_id"]]}},"phpbb_topics_posted":{"COLUMNS":{"user_id":["ULINT",0],"topic_id":["ULINT",0],"topic_posted":["BOOL",0]},"PRIMARY_KEY":["user_id","topic_id"]},"phpbb_topics_track":{"COLUMNS":{"user_id":["ULINT",0],"topic_id":["ULINT",0],"forum_id":["UINT",0],"mark_time":["TIMESTAMP",0]},"PRIMARY_KEY":["user_id","topic_id"],"KEYS":{"forum_id":["INDEX","forum_id"],"topic_id":["INDEX",["topic_id"]]}},"phpbb_topics_watch":{"COLUMNS":{"topic_id":["ULINT",0],"user_id":["ULINT",0],"notify_status":["BOOL",0]},"KEYS":{"topic_id":["INDEX","topic_id"],"user_id":["INDEX","user_id"],"notify_stat":["INDEX","notify_status"]}},"phpbb_user_group":{"COLUMNS":{"group_id":["UINT",0],"user_id":["ULINT",0],"group_leader":["BOOL",0],"user_pending":["BOOL",1]},"KEYS":{"group_id":["INDEX","group_id"],"user_id":["INDEX","user_id"],"group_leader":["INDEX","group_leader"]}},"phpbb_user_notifications":{"COLUMNS":{"item_type":["VCHAR:255",""],"item_id":["ULINT",0],"user_id":["ULINT",0],"method":["VCHAR:255",""],"notify":["BOOL",1]}},"phpbb_users":{"COLUMNS":{"user_id":["ULINT",null,"auto_increment"],"user_type":["TINT:2",0],"group_id":["UINT",3],"user_permissions":["MTEXT",""],"user_perm_from":["UINT",0],"user_ip":["VCHAR:40",""],"user_regdate":["TIMESTAMP",0],"username":["VCHAR_CI",""],"username_clean":["VCHAR_CI",""],"user_password":["VCHAR:255",""],"user_passchg":["TIMESTAMP",0],"user_email":["VCHAR_UNI:100",""],"user_email_hash":["BINT",0],"user_birthday":["VCHAR:10",""],"user_lastvisit":["TIMESTAMP",0],"user_lastmark":["TIMESTAMP",0],"user_lastpost_time":["TIMESTAMP",0],"user_lastpage":["VCHAR_UNI:200",""],"user_last_confirm_key":["VCHAR:10",""],"user_last_search":["TIMESTAMP",0],"user_warnings":["TINT:4",0],"user_last_warning":["TIMESTAMP",0],"user_login_attempts":["TINT:4",0],"user_inactive_reason":["TINT:2",0],"user_inactive_time":["TIMESTAMP",0],"user_posts":["UINT",0],"user_lang":["VCHAR:30",""],"user_timezone":["VCHAR:100",""],"user_dateformat":["VCHAR_UNI:64","d M Y H:i"],"user_style":["UINT",0],"user_rank":["UINT",0],"user_colour":["VCHAR:6",""],"user_new_privmsg":["INT:4",0],"user_unread_privmsg":["INT:4",0],"user_last_privmsg":["TIMESTAMP",0],"user_message_rules":["BOOL",0],"user_full_folder":["INT:11",-3],"user_emailtime":["TIMESTAMP",0],"user_topic_show_days":["USINT",0],"user_topic_sortby_type":["VCHAR:1","t"],"user_topic_sortby_dir":["VCHAR:1","d"],"user_post_show_days":["USINT",0],"user_post_sortby_type":["VCHAR:1","t"],"user_post_sortby_dir":["VCHAR:1","a"],"user_notify":["BOOL",0],"user_notify_pm":["BOOL",1],"user_notify_type":["TINT:4",0],"user_allow_pm":["BOOL",1],"user_allow_viewonline":["BOOL",1],"user_allow_viewemail":["BOOL",1],"user_allow_massemail":["BOOL",1],"user_options":["UINT:11",230271],"user_avatar":["VCHAR",""],"user_avatar_type":["VCHAR:255",""],"user_avatar_width":["USINT",0],"user_avatar_height":["USINT",0],"user_sig":["MTEXT_UNI",""],"user_sig_bbcode_uid":["VCHAR:8",""],"user_sig_bbcode_bitfield":["VCHAR:255",""],"user_jabber":["VCHAR_UNI",""],"user_actkey":["VCHAR:32",""],"user_newpasswd":["VCHAR:255",""],"user_form_salt":["VCHAR_UNI:32",""],"user_new":["BOOL",1],"user_reminded":["TINT:4",0],"user_reminded_time":["TIMESTAMP",0]},"PRIMARY_KEY":"user_id","KEYS":{"user_birthday":["INDEX","user_birthday"],"user_email_hash":["INDEX","user_email_hash"],"user_type":["INDEX","user_type"],"username_clean":["UNIQUE","username_clean"]}},"phpbb_warnings":{"COLUMNS":{"warning_id":["UINT",null,"auto_increment"],"user_id":["ULINT",0],"post_id":["ULINT",0],"log_id":["ULINT",0],"warning_time":["TIMESTAMP",0]},"PRIMARY_KEY":"warning_id"},"phpbb_words":{"COLUMNS":{"word_id":["ULINT",null,"auto_increment"],"word":["VCHAR_UNI",""],"replacement":["VCHAR_UNI",""]},"PRIMARY_KEY":"word_id"},"phpbb_zebra":{"COLUMNS":{"user_id":["ULINT",0],"zebra_id":["ULINT",0],"friend":["BOOL",0],"foe":["BOOL",0]},"PRIMARY_KEY":["user_id","zebra_id"]}}
+{
+    "phpbb_acl_groups": {
+        "COLUMNS": {
+            "group_id": [
+                "UINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "auth_option_id": [
+                "UINT",
+                0
+            ],
+            "auth_role_id": [
+                "UINT",
+                0
+            ],
+            "auth_setting": [
+                "TINT:2",
+                0
+            ]
+        },
+        "KEYS": {
+            "group_id": [
+                "INDEX",
+                "group_id"
+            ],
+            "auth_opt_id": [
+                "INDEX",
+                "auth_option_id"
+            ],
+            "auth_role_id": [
+                "INDEX",
+                "auth_role_id"
+            ]
+        }
+    },
+    "phpbb_acl_options": {
+        "COLUMNS": {
+            "auth_option_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "auth_option": [
+                "VCHAR:50",
+                ""
+            ],
+            "is_global": [
+                "BOOL",
+                0
+            ],
+            "is_local": [
+                "BOOL",
+                0
+            ],
+            "founder_only": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "auth_option_id",
+        "KEYS": {
+            "auth_option": [
+                "UNIQUE",
+                [
+                    "auth_option"
+                ]
+            ]
+        }
+    },
+    "phpbb_acl_roles": {
+        "COLUMNS": {
+            "role_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "role_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "role_description": [
+                "TEXT_UNI",
+                ""
+            ],
+            "role_type": [
+                "VCHAR:10",
+                ""
+            ],
+            "role_order": [
+                "USINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "role_id",
+        "KEYS": {
+            "role_type": [
+                "INDEX",
+                "role_type"
+            ],
+            "role_order": [
+                "INDEX",
+                "role_order"
+            ]
+        }
+    },
+    "phpbb_acl_roles_data": {
+        "COLUMNS": {
+            "role_id": [
+                "UINT",
+                0
+            ],
+            "auth_option_id": [
+                "UINT",
+                0
+            ],
+            "auth_setting": [
+                "TINT:2",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "role_id",
+            "auth_option_id"
+        ],
+        "KEYS": {
+            "ath_op_id": [
+                "INDEX",
+                "auth_option_id"
+            ]
+        }
+    },
+    "phpbb_acl_users": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "auth_option_id": [
+                "UINT",
+                0
+            ],
+            "auth_role_id": [
+                "UINT",
+                0
+            ],
+            "auth_setting": [
+                "TINT:2",
+                0
+            ]
+        },
+        "KEYS": {
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ],
+            "auth_option_id": [
+                "INDEX",
+                "auth_option_id"
+            ],
+            "auth_role_id": [
+                "INDEX",
+                "auth_role_id"
+            ]
+        }
+    },
+    "phpbb_attachments": {
+        "COLUMNS": {
+            "attach_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "post_msg_id": [
+                "ULINT",
+                0
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "in_message": [
+                "BOOL",
+                0
+            ],
+            "poster_id": [
+                "ULINT",
+                0
+            ],
+            "is_orphan": [
+                "BOOL",
+                1
+            ],
+            "physical_filename": [
+                "VCHAR",
+                ""
+            ],
+            "real_filename": [
+                "VCHAR",
+                ""
+            ],
+            "download_count": [
+                "UINT",
+                0
+            ],
+            "attach_comment": [
+                "TEXT_UNI",
+                ""
+            ],
+            "extension": [
+                "VCHAR:100",
+                ""
+            ],
+            "mimetype": [
+                "VCHAR:100",
+                ""
+            ],
+            "filesize": [
+                "UINT:20",
+                0
+            ],
+            "filetime": [
+                "TIMESTAMP",
+                0
+            ],
+            "thumbnail": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "attach_id",
+        "KEYS": {
+            "filetime": [
+                "INDEX",
+                "filetime"
+            ],
+            "post_msg_id": [
+                "INDEX",
+                "post_msg_id"
+            ],
+            "topic_id": [
+                "INDEX",
+                "topic_id"
+            ],
+            "poster_id": [
+                "INDEX",
+                "poster_id"
+            ],
+            "is_orphan": [
+                "INDEX",
+                "is_orphan"
+            ]
+        }
+    },
+    "phpbb_banlist": {
+        "COLUMNS": {
+            "ban_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "ban_userid": [
+                "ULINT",
+                0
+            ],
+            "ban_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "ban_email": [
+                "VCHAR_UNI:100",
+                ""
+            ],
+            "ban_start": [
+                "TIMESTAMP",
+                0
+            ],
+            "ban_end": [
+                "TIMESTAMP",
+                0
+            ],
+            "ban_exclude": [
+                "BOOL",
+                0
+            ],
+            "ban_reason": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "ban_give_reason": [
+                "VCHAR_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "ban_id",
+        "KEYS": {
+            "ban_end": [
+                "INDEX",
+                "ban_end"
+            ],
+            "ban_user": [
+                "INDEX",
+                [
+                    "ban_userid",
+                    "ban_exclude"
+                ]
+            ],
+            "ban_email": [
+                "INDEX",
+                [
+                    "ban_email",
+                    "ban_exclude"
+                ]
+            ],
+            "ban_ip": [
+                "INDEX",
+                [
+                    "ban_ip",
+                    "ban_exclude"
+                ]
+            ]
+        }
+    },
+    "phpbb_bbcodes": {
+        "COLUMNS": {
+            "bbcode_id": [
+                "USINT",
+                0
+            ],
+            "bbcode_tag": [
+                "VCHAR:16",
+                ""
+            ],
+            "bbcode_helpline": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "display_on_posting": [
+                "BOOL",
+                0
+            ],
+            "bbcode_match": [
+                "TEXT_UNI",
+                ""
+            ],
+            "bbcode_tpl": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "first_pass_match": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "first_pass_replace": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "second_pass_match": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "second_pass_replace": [
+                "MTEXT_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "bbcode_id",
+        "KEYS": {
+            "display_on_post": [
+                "INDEX",
+                "display_on_posting"
+            ]
+        }
+    },
+    "phpbb_bookmarks": {
+        "COLUMNS": {
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "topic_id",
+            "user_id"
+        ]
+    },
+    "phpbb_bots": {
+        "COLUMNS": {
+            "bot_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "bot_active": [
+                "BOOL",
+                1
+            ],
+            "bot_name": [
+                "STEXT_UNI",
+                ""
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "bot_agent": [
+                "VCHAR",
+                ""
+            ],
+            "bot_ip": [
+                "VCHAR",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "bot_id",
+        "KEYS": {
+            "bot_active": [
+                "INDEX",
+                "bot_active"
+            ]
+        }
+    },
+    "phpbb_config": {
+        "COLUMNS": {
+            "config_name": [
+                "VCHAR",
+                ""
+            ],
+            "config_value": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "is_dynamic": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "config_name",
+        "KEYS": {
+            "is_dynamic": [
+                "INDEX",
+                "is_dynamic"
+            ]
+        }
+    },
+    "phpbb_config_text": {
+        "COLUMNS": {
+            "config_name": [
+                "VCHAR",
+                ""
+            ],
+            "config_value": [
+                "MTEXT",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "config_name"
+    },
+    "phpbb_confirm": {
+        "COLUMNS": {
+            "confirm_id": [
+                "CHAR:32",
+                ""
+            ],
+            "session_id": [
+                "CHAR:32",
+                ""
+            ],
+            "confirm_type": [
+                "TINT:3",
+                0
+            ],
+            "code": [
+                "VCHAR:8",
+                ""
+            ],
+            "seed": [
+                "UINT:10",
+                0
+            ],
+            "attempts": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "session_id",
+            "confirm_id"
+        ],
+        "KEYS": {
+            "confirm_type": [
+                "INDEX",
+                "confirm_type"
+            ]
+        }
+    },
+    "phpbb_disallow": {
+        "COLUMNS": {
+            "disallow_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "disallow_username": [
+                "VCHAR_UNI:255",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "disallow_id"
+    },
+    "phpbb_drafts": {
+        "COLUMNS": {
+            "draft_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "save_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "draft_subject": [
+                "STEXT_UNI",
+                ""
+            ],
+            "draft_message": [
+                "MTEXT_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "draft_id",
+        "KEYS": {
+            "save_time": [
+                "INDEX",
+                "save_time"
+            ]
+        }
+    },
+    "phpbb_ext": {
+        "COLUMNS": {
+            "ext_name": [
+                "VCHAR",
+                ""
+            ],
+            "ext_active": [
+                "BOOL",
+                0
+            ],
+            "ext_state": [
+                "TEXT",
+                ""
+            ]
+        },
+        "KEYS": {
+            "ext_name": [
+                "UNIQUE",
+                "ext_name"
+            ]
+        }
+    },
+    "phpbb_extension_groups": {
+        "COLUMNS": {
+            "group_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "group_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "cat_id": [
+                "TINT:2",
+                0
+            ],
+            "allow_group": [
+                "BOOL",
+                0
+            ],
+            "download_mode": [
+                "BOOL",
+                1
+            ],
+            "upload_icon": [
+                "VCHAR",
+                ""
+            ],
+            "max_filesize": [
+                "UINT:20",
+                0
+            ],
+            "allowed_forums": [
+                "TEXT",
+                ""
+            ],
+            "allow_in_pm": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "group_id"
+    },
+    "phpbb_extensions": {
+        "COLUMNS": {
+            "extension_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "group_id": [
+                "UINT",
+                0
+            ],
+            "extension": [
+                "VCHAR:100",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "extension_id"
+    },
+    "phpbb_forums": {
+        "COLUMNS": {
+            "forum_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "parent_id": [
+                "UINT",
+                0
+            ],
+            "left_id": [
+                "UINT",
+                0
+            ],
+            "right_id": [
+                "UINT",
+                0
+            ],
+            "forum_parents": [
+                "MTEXT",
+                ""
+            ],
+            "forum_name": [
+                "STEXT_UNI",
+                ""
+            ],
+            "forum_desc": [
+                "TEXT_UNI",
+                ""
+            ],
+            "forum_desc_bitfield": [
+                "VCHAR:255",
+                ""
+            ],
+            "forum_desc_options": [
+                "UINT:11",
+                7
+            ],
+            "forum_desc_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "forum_link": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "forum_password": [
+                "VCHAR:255",
+                ""
+            ],
+            "forum_style": [
+                "UINT",
+                0
+            ],
+            "forum_image": [
+                "VCHAR",
+                ""
+            ],
+            "forum_rules": [
+                "TEXT_UNI",
+                ""
+            ],
+            "forum_rules_link": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "forum_rules_bitfield": [
+                "VCHAR:255",
+                ""
+            ],
+            "forum_rules_options": [
+                "UINT:11",
+                7
+            ],
+            "forum_rules_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "forum_topics_per_page": [
+                "TINT:4",
+                0
+            ],
+            "forum_type": [
+                "TINT:4",
+                0
+            ],
+            "forum_status": [
+                "TINT:4",
+                0
+            ],
+            "forum_last_post_id": [
+                "ULINT",
+                0
+            ],
+            "forum_last_poster_id": [
+                "ULINT",
+                0
+            ],
+            "forum_last_post_subject": [
+                "STEXT_UNI",
+                ""
+            ],
+            "forum_last_post_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "forum_last_poster_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "forum_last_poster_colour": [
+                "VCHAR:6",
+                ""
+            ],
+            "forum_flags": [
+                "TINT:4",
+                32
+            ],
+            "display_on_index": [
+                "BOOL",
+                1
+            ],
+            "enable_indexing": [
+                "BOOL",
+                1
+            ],
+            "enable_icons": [
+                "BOOL",
+                1
+            ],
+            "enable_prune": [
+                "BOOL",
+                0
+            ],
+            "prune_next": [
+                "TIMESTAMP",
+                0
+            ],
+            "prune_days": [
+                "UINT",
+                0
+            ],
+            "prune_viewed": [
+                "UINT",
+                0
+            ],
+            "prune_freq": [
+                "UINT",
+                0
+            ],
+            "display_subforum_list": [
+                "BOOL",
+                1
+            ],
+            "forum_options": [
+                "UINT:20",
+                0
+            ],
+            "enable_shadow_prune": [
+                "BOOL",
+                0
+            ],
+            "prune_shadow_days": [
+                "UINT",
+                7
+            ],
+            "prune_shadow_freq": [
+                "UINT",
+                1
+            ],
+            "prune_shadow_next": [
+                "INT:11",
+                0
+            ],
+            "forum_posts_approved": [
+                "UINT",
+                0
+            ],
+            "forum_posts_unapproved": [
+                "UINT",
+                0
+            ],
+            "forum_posts_softdeleted": [
+                "UINT",
+                0
+            ],
+            "forum_topics_approved": [
+                "UINT",
+                0
+            ],
+            "forum_topics_unapproved": [
+                "UINT",
+                0
+            ],
+            "forum_topics_softdeleted": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "forum_id",
+        "KEYS": {
+            "left_right_id": [
+                "INDEX",
+                [
+                    "left_id",
+                    "right_id"
+                ]
+            ],
+            "forum_lastpost_id": [
+                "INDEX",
+                "forum_last_post_id"
+            ]
+        }
+    },
+    "phpbb_forums_access": {
+        "COLUMNS": {
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "session_id": [
+                "CHAR:32",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": [
+            "forum_id",
+            "user_id",
+            "session_id"
+        ]
+    },
+    "phpbb_forums_track": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "mark_time": [
+                "TIMESTAMP",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "user_id",
+            "forum_id"
+        ]
+    },
+    "phpbb_forums_watch": {
+        "COLUMNS": {
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "notify_status": [
+                "BOOL",
+                0
+            ]
+        },
+        "KEYS": {
+            "forum_id": [
+                "INDEX",
+                "forum_id"
+            ],
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ],
+            "notify_stat": [
+                "INDEX",
+                "notify_status"
+            ]
+        }
+    },
+    "phpbb_groups": {
+        "COLUMNS": {
+            "group_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "group_type": [
+                "TINT:4",
+                1
+            ],
+            "group_founder_manage": [
+                "BOOL",
+                0
+            ],
+            "group_skip_auth": [
+                "BOOL",
+                0
+            ],
+            "group_name": [
+                "VCHAR_CI",
+                ""
+            ],
+            "group_desc": [
+                "TEXT_UNI",
+                ""
+            ],
+            "group_desc_bitfield": [
+                "VCHAR:255",
+                ""
+            ],
+            "group_desc_options": [
+                "UINT:11",
+                7
+            ],
+            "group_desc_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "group_display": [
+                "BOOL",
+                0
+            ],
+            "group_avatar": [
+                "VCHAR",
+                ""
+            ],
+            "group_avatar_type": [
+                "VCHAR:255",
+                ""
+            ],
+            "group_avatar_width": [
+                "USINT",
+                0
+            ],
+            "group_avatar_height": [
+                "USINT",
+                0
+            ],
+            "group_rank": [
+                "UINT",
+                0
+            ],
+            "group_colour": [
+                "VCHAR:6",
+                ""
+            ],
+            "group_sig_chars": [
+                "UINT",
+                0
+            ],
+            "group_receive_pm": [
+                "BOOL",
+                0
+            ],
+            "group_message_limit": [
+                "UINT",
+                0
+            ],
+            "group_legend": [
+                "UINT",
+                0
+            ],
+            "group_max_recipients": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "group_id",
+        "KEYS": {
+            "group_legend_name": [
+                "INDEX",
+                [
+                    "group_legend",
+                    "group_name"
+                ]
+            ]
+        }
+    },
+    "phpbb_icons": {
+        "COLUMNS": {
+            "icons_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "icons_url": [
+                "VCHAR",
+                ""
+            ],
+            "icons_width": [
+                "TINT:4",
+                0
+            ],
+            "icons_height": [
+                "TINT:4",
+                0
+            ],
+            "icons_alt": [
+                "VCHAR",
+                ""
+            ],
+            "icons_order": [
+                "UINT",
+                0
+            ],
+            "display_on_posting": [
+                "BOOL",
+                1
+            ]
+        },
+        "PRIMARY_KEY": "icons_id",
+        "KEYS": {
+            "display_on_posting": [
+                "INDEX",
+                "display_on_posting"
+            ]
+        }
+    },
+    "phpbb_lang": {
+        "COLUMNS": {
+            "lang_id": [
+                "TINT:4",
+                null,
+                "auto_increment"
+            ],
+            "lang_iso": [
+                "VCHAR:30",
+                ""
+            ],
+            "lang_dir": [
+                "VCHAR:30",
+                ""
+            ],
+            "lang_english_name": [
+                "VCHAR_UNI:100",
+                ""
+            ],
+            "lang_local_name": [
+                "VCHAR_UNI:255",
+                ""
+            ],
+            "lang_author": [
+                "VCHAR_UNI:255",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "lang_id",
+        "KEYS": {
+            "lang_iso": [
+                "INDEX",
+                "lang_iso"
+            ]
+        }
+    },
+    "phpbb_log": {
+        "COLUMNS": {
+            "log_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "log_type": [
+                "TINT:4",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "post_id": [
+                "ULINT",
+                0
+            ],
+            "reportee_id": [
+                "ULINT",
+                0
+            ],
+            "log_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "log_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "log_operation": [
+                "TEXT_UNI",
+                ""
+            ],
+            "log_data": [
+                "MTEXT_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "log_id",
+        "KEYS": {
+            "log_type": [
+                "INDEX",
+                "log_type"
+            ],
+            "forum_id": [
+                "INDEX",
+                "forum_id"
+            ],
+            "topic_id": [
+                "INDEX",
+                "topic_id"
+            ],
+            "reportee_id": [
+                "INDEX",
+                "reportee_id"
+            ],
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ]
+        }
+    },
+    "phpbb_login_attempts": {
+        "COLUMNS": {
+            "attempt_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "attempt_browser": [
+                "VCHAR:150",
+                ""
+            ],
+            "attempt_forwarded_for": [
+                "VCHAR:255",
+                ""
+            ],
+            "attempt_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "username": [
+                "VCHAR_UNI:255",
+                0
+            ],
+            "username_clean": [
+                "VCHAR_CI",
+                0
+            ]
+        },
+        "KEYS": {
+            "att_ip": [
+                "INDEX",
+                [
+                    "attempt_ip",
+                    "attempt_time"
+                ]
+            ],
+            "att_for": [
+                "INDEX",
+                [
+                    "attempt_forwarded_for",
+                    "attempt_time"
+                ]
+            ],
+            "att_time": [
+                "INDEX",
+                [
+                    "attempt_time"
+                ]
+            ],
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ]
+        }
+    },
+    "phpbb_migrations": {
+        "COLUMNS": {
+            "migration_name": [
+                "VCHAR",
+                ""
+            ],
+            "migration_depends_on": [
+                "TEXT",
+                ""
+            ],
+            "migration_schema_done": [
+                "BOOL",
+                0
+            ],
+            "migration_data_done": [
+                "BOOL",
+                0
+            ],
+            "migration_data_state": [
+                "TEXT",
+                ""
+            ],
+            "migration_start_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "migration_end_time": [
+                "TIMESTAMP",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "migration_name"
+    },
+    "phpbb_moderator_cache": {
+        "COLUMNS": {
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "username": [
+                "VCHAR_UNI:255",
+                ""
+            ],
+            "group_id": [
+                "UINT",
+                0
+            ],
+            "group_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "display_on_index": [
+                "BOOL",
+                1
+            ]
+        },
+        "KEYS": {
+            "disp_idx": [
+                "INDEX",
+                "display_on_index"
+            ],
+            "forum_id": [
+                "INDEX",
+                "forum_id"
+            ]
+        }
+    },
+    "phpbb_modules": {
+        "COLUMNS": {
+            "module_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "module_enabled": [
+                "BOOL",
+                1
+            ],
+            "module_display": [
+                "BOOL",
+                1
+            ],
+            "module_basename": [
+                "VCHAR",
+                ""
+            ],
+            "module_class": [
+                "VCHAR:10",
+                ""
+            ],
+            "parent_id": [
+                "UINT",
+                0
+            ],
+            "left_id": [
+                "UINT",
+                0
+            ],
+            "right_id": [
+                "UINT",
+                0
+            ],
+            "module_langname": [
+                "VCHAR",
+                ""
+            ],
+            "module_mode": [
+                "VCHAR",
+                ""
+            ],
+            "module_auth": [
+                "VCHAR",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "module_id",
+        "KEYS": {
+            "left_right_id": [
+                "INDEX",
+                [
+                    "left_id",
+                    "right_id"
+                ]
+            ],
+            "module_enabled": [
+                "INDEX",
+                "module_enabled"
+            ],
+            "class_left_id": [
+                "INDEX",
+                [
+                    "module_class",
+                    "left_id"
+                ]
+            ]
+        }
+    },
+    "phpbb_notification_types": {
+        "COLUMNS": {
+            "notification_type_id": [
+                "USINT",
+                null,
+                "auto_increment"
+            ],
+            "notification_type_name": [
+                "VCHAR:255",
+                ""
+            ],
+            "notification_type_enabled": [
+                "BOOL",
+                1
+            ]
+        },
+        "PRIMARY_KEY": [
+            "notification_type_id"
+        ],
+        "KEYS": {
+            "type": [
+                "UNIQUE",
+                [
+                    "notification_type_name"
+                ]
+            ]
+        }
+    },
+    "phpbb_notifications": {
+        "COLUMNS": {
+            "notification_id": [
+                "UINT:10",
+                null,
+                "auto_increment"
+            ],
+            "notification_type_id": [
+                "USINT",
+                0
+            ],
+            "item_id": [
+                "UINT",
+                0
+            ],
+            "item_parent_id": [
+                "UINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "notification_read": [
+                "BOOL",
+                0
+            ],
+            "notification_time": [
+                "TIMESTAMP",
+                1
+            ],
+            "notification_data": [
+                "TEXT_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "notification_id",
+        "KEYS": {
+            "item_ident": [
+                "INDEX",
+                [
+                    "notification_type_id",
+                    "item_id"
+                ]
+            ],
+            "user": [
+                "INDEX",
+                [
+                    "user_id",
+                    "notification_read"
+                ]
+            ]
+        }
+    },
+    "phpbb_oauth_accounts": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "provider": [
+                "VCHAR",
+                ""
+            ],
+            "oauth_provider_id": [
+                "TEXT_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": [
+            "user_id",
+            "provider"
+        ]
+    },
+    "phpbb_oauth_states": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "session_id": [
+                "CHAR:32",
+                ""
+            ],
+            "provider": [
+                "VCHAR",
+                ""
+            ],
+            "oauth_state": [
+                "VCHAR",
+                ""
+            ]
+        },
+        "KEYS": {
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ],
+            "provider": [
+                "INDEX",
+                "provider"
+            ]
+        }
+    },
+    "phpbb_oauth_tokens": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "session_id": [
+                "CHAR:32",
+                ""
+            ],
+            "provider": [
+                "VCHAR",
+                ""
+            ],
+            "oauth_token": [
+                "MTEXT",
+                ""
+            ]
+        },
+        "KEYS": {
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ],
+            "provider": [
+                "INDEX",
+                "provider"
+            ]
+        }
+    },
+    "phpbb_poll_options": {
+        "COLUMNS": {
+            "poll_option_id": [
+                "TINT:4",
+                0
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "poll_option_text": [
+                "TEXT_UNI",
+                ""
+            ],
+            "poll_option_total": [
+                "UINT",
+                0
+            ]
+        },
+        "KEYS": {
+            "poll_opt_id": [
+                "INDEX",
+                "poll_option_id"
+            ],
+            "topic_id": [
+                "INDEX",
+                "topic_id"
+            ]
+        }
+    },
+    "phpbb_poll_votes": {
+        "COLUMNS": {
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "poll_option_id": [
+                "TINT:4",
+                0
+            ],
+            "vote_user_id": [
+                "ULINT",
+                0
+            ],
+            "vote_user_ip": [
+                "VCHAR:40",
+                ""
+            ]
+        },
+        "KEYS": {
+            "topic_id": [
+                "INDEX",
+                "topic_id"
+            ],
+            "vote_user_id": [
+                "INDEX",
+                "vote_user_id"
+            ],
+            "vote_user_ip": [
+                "INDEX",
+                "vote_user_ip"
+            ]
+        }
+    },
+    "phpbb_posts": {
+        "COLUMNS": {
+            "post_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "poster_id": [
+                "ULINT",
+                0
+            ],
+            "icon_id": [
+                "UINT",
+                0
+            ],
+            "poster_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "post_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "post_reported": [
+                "BOOL",
+                0
+            ],
+            "enable_bbcode": [
+                "BOOL",
+                1
+            ],
+            "enable_smilies": [
+                "BOOL",
+                1
+            ],
+            "enable_magic_url": [
+                "BOOL",
+                1
+            ],
+            "enable_sig": [
+                "BOOL",
+                1
+            ],
+            "post_username": [
+                "VCHAR_UNI:255",
+                ""
+            ],
+            "post_subject": [
+                "STEXT_UNI",
+                "",
+                "true_sort"
+            ],
+            "post_text": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "post_checksum": [
+                "VCHAR:32",
+                ""
+            ],
+            "post_attachment": [
+                "BOOL",
+                0
+            ],
+            "bbcode_bitfield": [
+                "VCHAR:255",
+                ""
+            ],
+            "bbcode_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "post_postcount": [
+                "BOOL",
+                1
+            ],
+            "post_edit_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "post_edit_reason": [
+                "STEXT_UNI",
+                ""
+            ],
+            "post_edit_user": [
+                "ULINT",
+                0
+            ],
+            "post_edit_count": [
+                "USINT",
+                0
+            ],
+            "post_edit_locked": [
+                "BOOL",
+                0
+            ],
+            "post_visibility": [
+                "TINT:3",
+                0
+            ],
+            "post_delete_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "post_delete_reason": [
+                "STEXT_UNI",
+                ""
+            ],
+            "post_delete_user": [
+                "ULINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "post_id",
+        "KEYS": {
+            "forum_id": [
+                "INDEX",
+                "forum_id"
+            ],
+            "topic_id": [
+                "INDEX",
+                "topic_id"
+            ],
+            "poster_ip": [
+                "INDEX",
+                "poster_ip"
+            ],
+            "poster_id": [
+                "INDEX",
+                "poster_id"
+            ],
+            "tid_post_time": [
+                "INDEX",
+                [
+                    "topic_id",
+                    "post_time"
+                ]
+            ],
+            "post_username": [
+                "INDEX",
+                [
+                    "post_username:255"
+                ]
+            ],
+            "post_visibility": [
+                "INDEX",
+                [
+                    "post_visibility"
+                ]
+            ]
+        }
+    },
+    "phpbb_privmsgs": {
+        "COLUMNS": {
+            "msg_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "root_level": [
+                "UINT",
+                0
+            ],
+            "author_id": [
+                "ULINT",
+                0
+            ],
+            "icon_id": [
+                "UINT",
+                0
+            ],
+            "author_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "message_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "enable_bbcode": [
+                "BOOL",
+                1
+            ],
+            "enable_smilies": [
+                "BOOL",
+                1
+            ],
+            "enable_magic_url": [
+                "BOOL",
+                1
+            ],
+            "enable_sig": [
+                "BOOL",
+                1
+            ],
+            "message_subject": [
+                "STEXT_UNI",
+                ""
+            ],
+            "message_text": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "message_edit_reason": [
+                "STEXT_UNI",
+                ""
+            ],
+            "message_edit_user": [
+                "ULINT",
+                0
+            ],
+            "message_attachment": [
+                "BOOL",
+                0
+            ],
+            "bbcode_bitfield": [
+                "VCHAR:255",
+                ""
+            ],
+            "bbcode_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "message_edit_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "message_edit_count": [
+                "USINT",
+                0
+            ],
+            "to_address": [
+                "TEXT_UNI",
+                ""
+            ],
+            "bcc_address": [
+                "TEXT_UNI",
+                ""
+            ],
+            "message_reported": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "msg_id",
+        "KEYS": {
+            "author_ip": [
+                "INDEX",
+                "author_ip"
+            ],
+            "message_time": [
+                "INDEX",
+                "message_time"
+            ],
+            "author_id": [
+                "INDEX",
+                "author_id"
+            ],
+            "root_level": [
+                "INDEX",
+                "root_level"
+            ]
+        }
+    },
+    "phpbb_privmsgs_folder": {
+        "COLUMNS": {
+            "folder_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "folder_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "pm_count": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "folder_id",
+        "KEYS": {
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ]
+        }
+    },
+    "phpbb_privmsgs_rules": {
+        "COLUMNS": {
+            "rule_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "rule_check": [
+                "UINT",
+                0
+            ],
+            "rule_connection": [
+                "UINT",
+                0
+            ],
+            "rule_string": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "rule_user_id": [
+                "ULINT",
+                0
+            ],
+            "rule_group_id": [
+                "UINT",
+                0
+            ],
+            "rule_action": [
+                "UINT",
+                0
+            ],
+            "rule_folder_id": [
+                "INT:11",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "rule_id",
+        "KEYS": {
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ]
+        }
+    },
+    "phpbb_privmsgs_to": {
+        "COLUMNS": {
+            "msg_id": [
+                "ULINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "author_id": [
+                "ULINT",
+                0
+            ],
+            "pm_deleted": [
+                "BOOL",
+                0
+            ],
+            "pm_new": [
+                "BOOL",
+                1
+            ],
+            "pm_unread": [
+                "BOOL",
+                1
+            ],
+            "pm_replied": [
+                "BOOL",
+                0
+            ],
+            "pm_marked": [
+                "BOOL",
+                0
+            ],
+            "pm_forwarded": [
+                "BOOL",
+                0
+            ],
+            "folder_id": [
+                "INT:11",
+                0
+            ]
+        },
+        "KEYS": {
+            "msg_id": [
+                "INDEX",
+                "msg_id"
+            ],
+            "author_id": [
+                "INDEX",
+                "author_id"
+            ],
+            "usr_flder_id": [
+                "INDEX",
+                [
+                    "user_id",
+                    "folder_id"
+                ]
+            ]
+        }
+    },
+    "phpbb_profile_fields": {
+        "COLUMNS": {
+            "field_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "field_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "field_type": [
+                "VCHAR:100",
+                ""
+            ],
+            "field_ident": [
+                "VCHAR:20",
+                ""
+            ],
+            "field_length": [
+                "VCHAR:20",
+                ""
+            ],
+            "field_minlen": [
+                "VCHAR",
+                ""
+            ],
+            "field_maxlen": [
+                "VCHAR",
+                ""
+            ],
+            "field_novalue": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "field_default_value": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "field_validation": [
+                "VCHAR_UNI:64",
+                ""
+            ],
+            "field_required": [
+                "BOOL",
+                0
+            ],
+            "field_show_on_reg": [
+                "BOOL",
+                0
+            ],
+            "field_hide": [
+                "BOOL",
+                0
+            ],
+            "field_no_view": [
+                "BOOL",
+                0
+            ],
+            "field_active": [
+                "BOOL",
+                0
+            ],
+            "field_order": [
+                "UINT",
+                0
+            ],
+            "field_show_profile": [
+                "BOOL",
+                0
+            ],
+            "field_show_on_vt": [
+                "BOOL",
+                0
+            ],
+            "field_show_novalue": [
+                "BOOL",
+                0
+            ],
+            "field_show_on_pm": [
+                "BOOL",
+                0
+            ],
+            "field_show_on_ml": [
+                "BOOL",
+                0
+            ],
+            "field_is_contact": [
+                "BOOL",
+                0
+            ],
+            "field_contact_desc": [
+                "VCHAR",
+                ""
+            ],
+            "field_contact_url": [
+                "VCHAR",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "field_id",
+        "KEYS": {
+            "fld_type": [
+                "INDEX",
+                "field_type"
+            ],
+            "fld_ordr": [
+                "INDEX",
+                "field_order"
+            ]
+        }
+    },
+    "phpbb_profile_fields_data": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "pf_phpbb_interests": [
+                "MTEXT",
+                ""
+            ],
+            "pf_phpbb_occupation": [
+                "MTEXT",
+                ""
+            ],
+            "pf_phpbb_icq": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_location": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_twitter": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_website": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_youtube": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_googleplus": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_facebook": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_skype": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_yahoo": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_aol": [
+                "VCHAR",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "user_id"
+    },
+    "phpbb_profile_fields_lang": {
+        "COLUMNS": {
+            "field_id": [
+                "UINT",
+                0
+            ],
+            "lang_id": [
+                "UINT",
+                0
+            ],
+            "option_id": [
+                "UINT",
+                0
+            ],
+            "field_type": [
+                "VCHAR:100",
+                ""
+            ],
+            "lang_value": [
+                "VCHAR_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": [
+            "field_id",
+            "lang_id",
+            "option_id"
+        ]
+    },
+    "phpbb_profile_lang": {
+        "COLUMNS": {
+            "field_id": [
+                "UINT",
+                0
+            ],
+            "lang_id": [
+                "UINT",
+                0
+            ],
+            "lang_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "lang_explain": [
+                "TEXT_UNI",
+                ""
+            ],
+            "lang_default_value": [
+                "VCHAR_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": [
+            "field_id",
+            "lang_id"
+        ]
+    },
+    "phpbb_ranks": {
+        "COLUMNS": {
+            "rank_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "rank_title": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "rank_min": [
+                "UINT",
+                0
+            ],
+            "rank_special": [
+                "BOOL",
+                0
+            ],
+            "rank_image": [
+                "VCHAR",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "rank_id"
+    },
+    "phpbb_reports": {
+        "COLUMNS": {
+            "report_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "reason_id": [
+                "USINT",
+                0
+            ],
+            "post_id": [
+                "ULINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "user_notify": [
+                "BOOL",
+                0
+            ],
+            "report_closed": [
+                "BOOL",
+                0
+            ],
+            "report_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "report_text": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "pm_id": [
+                "ULINT",
+                0
+            ],
+            "reported_post_enable_bbcode": [
+                "BOOL",
+                1
+            ],
+            "reported_post_enable_smilies": [
+                "BOOL",
+                1
+            ],
+            "reported_post_enable_magic_url": [
+                "BOOL",
+                1
+            ],
+            "reported_post_text": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "reported_post_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "reported_post_bitfield": [
+                "VCHAR:255",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "report_id",
+        "KEYS": {
+            "post_id": [
+                "INDEX",
+                [
+                    "post_id"
+                ]
+            ],
+            "pm_id": [
+                "INDEX",
+                [
+                    "pm_id"
+                ]
+            ]
+        }
+    },
+    "phpbb_reports_reasons": {
+        "COLUMNS": {
+            "reason_id": [
+                "USINT",
+                null,
+                "auto_increment"
+            ],
+            "reason_title": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "reason_description": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "reason_order": [
+                "USINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "reason_id"
+    },
+    "phpbb_search_results": {
+        "COLUMNS": {
+            "search_key": [
+                "VCHAR:32",
+                ""
+            ],
+            "search_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "search_keywords": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "search_authors": [
+                "MTEXT",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "search_key"
+    },
+    "phpbb_search_wordlist": {
+        "COLUMNS": {
+            "word_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "word_text": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "word_common": [
+                "BOOL",
+                0
+            ],
+            "word_count": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "word_id",
+        "KEYS": {
+            "wrd_txt": [
+                "UNIQUE",
+                "word_text"
+            ],
+            "wrd_cnt": [
+                "INDEX",
+                "word_count"
+            ]
+        }
+    },
+    "phpbb_search_wordmatch": {
+        "COLUMNS": {
+            "post_id": [
+                "ULINT",
+                0
+            ],
+            "word_id": [
+                "ULINT",
+                0
+            ],
+            "title_match": [
+                "BOOL",
+                0
+            ]
+        },
+        "KEYS": {
+            "word_id": [
+                "INDEX",
+                "word_id"
+            ],
+            "post_id": [
+                "INDEX",
+                "post_id"
+            ],
+            "un_mtch": [
+                "UNIQUE",
+                [
+                    "word_id",
+                    "post_id",
+                    "title_match"
+                ]
+            ]
+        }
+    },
+    "phpbb_sessions": {
+        "COLUMNS": {
+            "session_id": [
+                "CHAR:32",
+                ""
+            ],
+            "session_user_id": [
+                "ULINT",
+                0
+            ],
+            "session_last_visit": [
+                "TIMESTAMP",
+                0
+            ],
+            "session_start": [
+                "TIMESTAMP",
+                0
+            ],
+            "session_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "session_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "session_browser": [
+                "VCHAR:150",
+                ""
+            ],
+            "session_forwarded_for": [
+                "VCHAR:255",
+                ""
+            ],
+            "session_page": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "session_viewonline": [
+                "BOOL",
+                1
+            ],
+            "session_autologin": [
+                "BOOL",
+                0
+            ],
+            "session_admin": [
+                "BOOL",
+                0
+            ],
+            "session_forum_id": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "session_id",
+        "KEYS": {
+            "session_time": [
+                "INDEX",
+                "session_time"
+            ],
+            "session_user_id": [
+                "INDEX",
+                "session_user_id"
+            ],
+            "session_fid": [
+                "INDEX",
+                [
+                    "session_forum_id"
+                ]
+            ]
+        }
+    },
+    "phpbb_sessions_keys": {
+        "COLUMNS": {
+            "key_id": [
+                "CHAR:32",
+                ""
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "last_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "last_login": [
+                "TIMESTAMP",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "key_id",
+            "user_id"
+        ],
+        "KEYS": {
+            "last_login": [
+                "INDEX",
+                "last_login"
+            ]
+        }
+    },
+    "phpbb_sitelist": {
+        "COLUMNS": {
+            "site_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "site_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "site_hostname": [
+                "VCHAR",
+                ""
+            ],
+            "ip_exclude": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "site_id"
+    },
+    "phpbb_smilies": {
+        "COLUMNS": {
+            "smiley_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "code": [
+                "VCHAR_UNI:50",
+                ""
+            ],
+            "emotion": [
+                "VCHAR_UNI:50",
+                ""
+            ],
+            "smiley_url": [
+                "VCHAR:50",
+                ""
+            ],
+            "smiley_width": [
+                "USINT",
+                0
+            ],
+            "smiley_height": [
+                "USINT",
+                0
+            ],
+            "smiley_order": [
+                "UINT",
+                0
+            ],
+            "display_on_posting": [
+                "BOOL",
+                1
+            ]
+        },
+        "PRIMARY_KEY": "smiley_id",
+        "KEYS": {
+            "display_on_post": [
+                "INDEX",
+                "display_on_posting"
+            ]
+        }
+    },
+    "phpbb_styles": {
+        "COLUMNS": {
+            "style_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "style_name": [
+                "VCHAR_UNI:255",
+                ""
+            ],
+            "style_copyright": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "style_active": [
+                "BOOL",
+                1
+            ],
+            "style_path": [
+                "VCHAR:100",
+                ""
+            ],
+            "bbcode_bitfield": [
+                "VCHAR:255",
+                "kNg="
+            ],
+            "style_parent_id": [
+                "UINT:4",
+                0
+            ],
+            "style_parent_tree": [
+                "TEXT",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "style_id",
+        "KEYS": {
+            "style_name": [
+                "UNIQUE",
+                "style_name"
+            ]
+        }
+    },
+    "phpbb_teampage": {
+        "COLUMNS": {
+            "teampage_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "group_id": [
+                "UINT",
+                0
+            ],
+            "teampage_name": [
+                "VCHAR_UNI:255",
+                ""
+            ],
+            "teampage_position": [
+                "UINT",
+                0
+            ],
+            "teampage_parent": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "teampage_id"
+    },
+    "phpbb_topics": {
+        "COLUMNS": {
+            "topic_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "icon_id": [
+                "UINT",
+                0
+            ],
+            "topic_attachment": [
+                "BOOL",
+                0
+            ],
+            "topic_reported": [
+                "BOOL",
+                0
+            ],
+            "topic_title": [
+                "STEXT_UNI",
+                "",
+                "true_sort"
+            ],
+            "topic_poster": [
+                "ULINT",
+                0
+            ],
+            "topic_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "topic_time_limit": [
+                "TIMESTAMP",
+                0
+            ],
+            "topic_views": [
+                "UINT",
+                0
+            ],
+            "topic_status": [
+                "TINT:3",
+                0
+            ],
+            "topic_type": [
+                "TINT:3",
+                0
+            ],
+            "topic_first_post_id": [
+                "ULINT",
+                0
+            ],
+            "topic_first_poster_name": [
+                "VCHAR_UNI:255",
+                "",
+                "true_sort"
+            ],
+            "topic_first_poster_colour": [
+                "VCHAR:6",
+                ""
+            ],
+            "topic_last_post_id": [
+                "ULINT",
+                0
+            ],
+            "topic_last_poster_id": [
+                "ULINT",
+                0
+            ],
+            "topic_last_poster_name": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "topic_last_poster_colour": [
+                "VCHAR:6",
+                ""
+            ],
+            "topic_last_post_subject": [
+                "STEXT_UNI",
+                ""
+            ],
+            "topic_last_post_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "topic_last_view_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "topic_moved_id": [
+                "ULINT",
+                0
+            ],
+            "topic_bumped": [
+                "BOOL",
+                0
+            ],
+            "topic_bumper": [
+                "UINT",
+                0
+            ],
+            "poll_title": [
+                "STEXT_UNI",
+                ""
+            ],
+            "poll_start": [
+                "TIMESTAMP",
+                0
+            ],
+            "poll_length": [
+                "TIMESTAMP",
+                0
+            ],
+            "poll_max_options": [
+                "TINT:4",
+                1
+            ],
+            "poll_last_vote": [
+                "TIMESTAMP",
+                0
+            ],
+            "poll_vote_change": [
+                "BOOL",
+                0
+            ],
+            "topic_visibility": [
+                "TINT:3",
+                0
+            ],
+            "topic_delete_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "topic_delete_reason": [
+                "STEXT_UNI",
+                ""
+            ],
+            "topic_delete_user": [
+                "ULINT",
+                0
+            ],
+            "topic_posts_approved": [
+                "UINT",
+                0
+            ],
+            "topic_posts_unapproved": [
+                "UINT",
+                0
+            ],
+            "topic_posts_softdeleted": [
+                "UINT",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "topic_id",
+        "KEYS": {
+            "forum_id": [
+                "INDEX",
+                "forum_id"
+            ],
+            "forum_id_type": [
+                "INDEX",
+                [
+                    "forum_id",
+                    "topic_type"
+                ]
+            ],
+            "last_post_time": [
+                "INDEX",
+                "topic_last_post_time"
+            ],
+            "fid_time_moved": [
+                "INDEX",
+                [
+                    "forum_id",
+                    "topic_last_post_time",
+                    "topic_moved_id"
+                ]
+            ],
+            "topic_visibility": [
+                "INDEX",
+                [
+                    "topic_visibility"
+                ]
+            ],
+            "forum_vis_last": [
+                "INDEX",
+                [
+                    "forum_id",
+                    "topic_visibility",
+                    "topic_last_post_id"
+                ]
+            ]
+        }
+    },
+    "phpbb_topics_posted": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "topic_posted": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "user_id",
+            "topic_id"
+        ]
+    },
+    "phpbb_topics_track": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "forum_id": [
+                "UINT",
+                0
+            ],
+            "mark_time": [
+                "TIMESTAMP",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "user_id",
+            "topic_id"
+        ],
+        "KEYS": {
+            "forum_id": [
+                "INDEX",
+                "forum_id"
+            ],
+            "topic_id": [
+                "INDEX",
+                [
+                    "topic_id"
+                ]
+            ]
+        }
+    },
+    "phpbb_topics_watch": {
+        "COLUMNS": {
+            "topic_id": [
+                "ULINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "notify_status": [
+                "BOOL",
+                0
+            ]
+        },
+        "KEYS": {
+            "topic_id": [
+                "INDEX",
+                "topic_id"
+            ],
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ],
+            "notify_stat": [
+                "INDEX",
+                "notify_status"
+            ]
+        }
+    },
+    "phpbb_user_group": {
+        "COLUMNS": {
+            "group_id": [
+                "UINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "group_leader": [
+                "BOOL",
+                0
+            ],
+            "user_pending": [
+                "BOOL",
+                1
+            ]
+        },
+        "KEYS": {
+            "group_id": [
+                "INDEX",
+                "group_id"
+            ],
+            "user_id": [
+                "INDEX",
+                "user_id"
+            ],
+            "group_leader": [
+                "INDEX",
+                "group_leader"
+            ]
+        }
+    },
+    "phpbb_user_notifications": {
+        "COLUMNS": {
+            "item_type": [
+                "VCHAR:255",
+                ""
+            ],
+            "item_id": [
+                "ULINT",
+                0
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "method": [
+                "VCHAR:255",
+                ""
+            ],
+            "notify": [
+                "BOOL",
+                1
+            ]
+        }
+    },
+    "phpbb_users": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "user_type": [
+                "TINT:2",
+                0
+            ],
+            "group_id": [
+                "UINT",
+                3
+            ],
+            "user_permissions": [
+                "MTEXT",
+                ""
+            ],
+            "user_perm_from": [
+                "UINT",
+                0
+            ],
+            "user_ip": [
+                "VCHAR:40",
+                ""
+            ],
+            "user_regdate": [
+                "TIMESTAMP",
+                0
+            ],
+            "username": [
+                "VCHAR_CI",
+                ""
+            ],
+            "username_clean": [
+                "VCHAR_CI",
+                ""
+            ],
+            "user_password": [
+                "VCHAR:255",
+                ""
+            ],
+            "user_passchg": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_email": [
+                "VCHAR_UNI:100",
+                ""
+            ],
+            "user_email_hash": [
+                "BINT",
+                0
+            ],
+            "user_birthday": [
+                "VCHAR:10",
+                ""
+            ],
+            "user_lastvisit": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_lastmark": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_lastpost_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_lastpage": [
+                "VCHAR_UNI:200",
+                ""
+            ],
+            "user_last_confirm_key": [
+                "VCHAR:10",
+                ""
+            ],
+            "user_last_search": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_warnings": [
+                "TINT:4",
+                0
+            ],
+            "user_last_warning": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_login_attempts": [
+                "TINT:4",
+                0
+            ],
+            "user_inactive_reason": [
+                "TINT:2",
+                0
+            ],
+            "user_inactive_time": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_posts": [
+                "UINT",
+                0
+            ],
+            "user_lang": [
+                "VCHAR:30",
+                ""
+            ],
+            "user_timezone": [
+                "VCHAR:100",
+                ""
+            ],
+            "user_dateformat": [
+                "VCHAR_UNI:64",
+                "d M Y H:i"
+            ],
+            "user_style": [
+                "UINT",
+                0
+            ],
+            "user_rank": [
+                "UINT",
+                0
+            ],
+            "user_colour": [
+                "VCHAR:6",
+                ""
+            ],
+            "user_new_privmsg": [
+                "INT:4",
+                0
+            ],
+            "user_unread_privmsg": [
+                "INT:4",
+                0
+            ],
+            "user_last_privmsg": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_message_rules": [
+                "BOOL",
+                0
+            ],
+            "user_full_folder": [
+                "INT:11",
+                -3
+            ],
+            "user_emailtime": [
+                "TIMESTAMP",
+                0
+            ],
+            "user_topic_show_days": [
+                "USINT",
+                0
+            ],
+            "user_topic_sortby_type": [
+                "VCHAR:1",
+                "t"
+            ],
+            "user_topic_sortby_dir": [
+                "VCHAR:1",
+                "d"
+            ],
+            "user_post_show_days": [
+                "USINT",
+                0
+            ],
+            "user_post_sortby_type": [
+                "VCHAR:1",
+                "t"
+            ],
+            "user_post_sortby_dir": [
+                "VCHAR:1",
+                "a"
+            ],
+            "user_notify": [
+                "BOOL",
+                0
+            ],
+            "user_notify_pm": [
+                "BOOL",
+                1
+            ],
+            "user_notify_type": [
+                "TINT:4",
+                0
+            ],
+            "user_allow_pm": [
+                "BOOL",
+                1
+            ],
+            "user_allow_viewonline": [
+                "BOOL",
+                1
+            ],
+            "user_allow_viewemail": [
+                "BOOL",
+                1
+            ],
+            "user_allow_massemail": [
+                "BOOL",
+                1
+            ],
+            "user_options": [
+                "UINT:11",
+                230271
+            ],
+            "user_avatar": [
+                "VCHAR",
+                ""
+            ],
+            "user_avatar_type": [
+                "VCHAR:255",
+                ""
+            ],
+            "user_avatar_width": [
+                "USINT",
+                0
+            ],
+            "user_avatar_height": [
+                "USINT",
+                0
+            ],
+            "user_sig": [
+                "MTEXT_UNI",
+                ""
+            ],
+            "user_sig_bbcode_uid": [
+                "VCHAR:8",
+                ""
+            ],
+            "user_sig_bbcode_bitfield": [
+                "VCHAR:255",
+                ""
+            ],
+            "user_jabber": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "user_actkey": [
+                "VCHAR:32",
+                ""
+            ],
+            "user_newpasswd": [
+                "VCHAR:255",
+                ""
+            ],
+            "user_form_salt": [
+                "VCHAR_UNI:32",
+                ""
+            ],
+            "user_new": [
+                "BOOL",
+                1
+            ],
+            "user_reminded": [
+                "TINT:4",
+                0
+            ],
+            "user_reminded_time": [
+                "TIMESTAMP",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "user_id",
+        "KEYS": {
+            "user_birthday": [
+                "INDEX",
+                "user_birthday"
+            ],
+            "user_email_hash": [
+                "INDEX",
+                "user_email_hash"
+            ],
+            "user_type": [
+                "INDEX",
+                "user_type"
+            ],
+            "username_clean": [
+                "UNIQUE",
+                "username_clean"
+            ]
+        }
+    },
+    "phpbb_warnings": {
+        "COLUMNS": {
+            "warning_id": [
+                "UINT",
+                null,
+                "auto_increment"
+            ],
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "post_id": [
+                "ULINT",
+                0
+            ],
+            "log_id": [
+                "ULINT",
+                0
+            ],
+            "warning_time": [
+                "TIMESTAMP",
+                0
+            ]
+        },
+        "PRIMARY_KEY": "warning_id"
+    },
+    "phpbb_words": {
+        "COLUMNS": {
+            "word_id": [
+                "ULINT",
+                null,
+                "auto_increment"
+            ],
+            "word": [
+                "VCHAR_UNI",
+                ""
+            ],
+            "replacement": [
+                "VCHAR_UNI",
+                ""
+            ]
+        },
+        "PRIMARY_KEY": "word_id"
+    },
+    "phpbb_zebra": {
+        "COLUMNS": {
+            "user_id": [
+                "ULINT",
+                0
+            ],
+            "zebra_id": [
+                "ULINT",
+                0
+            ],
+            "friend": [
+                "BOOL",
+                0
+            ],
+            "foe": [
+                "BOOL",
+                0
+            ]
+        },
+        "PRIMARY_KEY": [
+            "user_id",
+            "zebra_id"
+        ]
+    }
+}
