@@ -59,7 +59,7 @@
 	<li><a href="#quickinstall">Quick install</a></li>
 	<li><a href="#require">Requirements</a></li>
 	<li><a href="#install">New installation</a></li>
-	<li><a href="#update">Updating from stable releases of phpBB 3.1.x</a>
+	<li><a href="#update">Updating from stable releases of phpBB 3.2.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#update_full">Full package</a></li>
 		<li><a href="#update_files">Changed files</a></li>
@@ -68,8 +68,9 @@
 		<li><a href="#update_all">All package types</a></li>
 	</ol>
 	</li>
-	<li><a href="#update30">Updating from phpBB 3.0.x to phpBB 3.1.x</a></li>
-	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.1.x</a>
+	<li><a href="#update30">Updating from phpBB 3.0.x to phpBB 3.2.x</a></li>
+	<li><a href="#update31">Updating from phpBB 3.1.x to phpBB 3.2.x</a></li>
+	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.2.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#prereq">Requirements before converting</a></li>
 		<li><a href="#conversion">Converting</a></li>
@@ -109,7 +110,7 @@
 		<li>Change the permissions on config.php to be writable by all (666 or -rw-rw-rw- within your FTP Client)</li>
 		<li>Change the permissions on the following directories to be writable by all (777 or -rwxrwxrwx within your FTP Client):<br />
 			<code>store/</code>, <code>cache/</code>, <code>files/</code> and <code>images/avatars/upload/</code>.</li>
-		<li>Point your web browser to the location where you uploaded the phpBB3 files with the addition of <code>install/index.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB3/install/index.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
+		<li>Point your web browser to the location where you uploaded the phpBB3 files with the addition of <code>install/app.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB3/install/app.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
 		<li>Click the <strong><em>INSTALL</em></strong> tab, follow the steps and fill out all the requested information.</li>
 		<li>Change the permissions on config.php to be writable only by yourself (644 or -rw-r--r-- within your FTP Client)</li>
 		<li>phpBB3 should now be available, please <strong>MAKE SURE</strong> you read at least <a href="#postinstall">Section 6</a> below for important, security related post-installation instructions, and also take note of <a href="#anti_spam">Section 7</a> regarding anti-spam measures.</li>
@@ -192,7 +193,7 @@
 
 	<p>phpBB comes supplied with British English as its standard language. However, a number of separate packs for different languages are available. If you are not a native English speaker you may wish to install one or more of these packages before continuing. The installation process below will allow you to select a default language from those available (you can, of course, change this default at a later stage). For more details on language packs, where to obtain them and how to install them please see the <a href="README.html#i18n">README</a>.</p>
 
-	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB3</code> off your web root you would enter <code>http://www.example.com/phpBB3/install/</code> or (alternatively) <code>http://www.example.com/phpBB3/install/index.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
+	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB3</code> off your web root you would enter <code>http://www.example.com/phpBB3/install/</code> or (alternatively) <code>http://www.example.com/phpBB3/install/app.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
 
 	<h4>Introduction:</h4>
 
