@@ -696,8 +696,8 @@ extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_be
 
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
-// Send vars to template
-$template->assign_vars(array(
+//
+$tpl_ary = array(
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME' 	=> $topic_data['forum_name'],
 	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield'], $topic_data['forum_desc_options']),
@@ -772,8 +772,32 @@ $template->assign_vars(array(
 
 	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=post&amp;f=$forum_id") : '',
 	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
-	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
+	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : ''
 );
+
+/**
+* Modify the topic data before it is assigned to the template
+*
+* @event core.viewtopic_modify_tpl_ary
+* @var	int		forum_id			The forum id from where the topic belongs
+* @var	int		topic_id			The id of the topic the user tries to access
+* @var	array	topic_data			All the information from the topic and forum tables for this topic
+* 									It includes posts information if post_id is not 0
+* @var	int		start				Pagination information
+* @var	array	tpl_ary				Template block array with topic data
+* @since 3.1.10-RC1
+*/
+$vars = array(
+	'topic_id',
+	'forum_id',
+	'topic_data',
+	'start',
+	'tpl_ary',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_tpl_ary', compact($vars)));
+
+// Dump vars into template
+$template->assign_vars($tpl_ary);
 
 // Does this topic contain a poll?
 if (!empty($topic_data['poll_start']))
