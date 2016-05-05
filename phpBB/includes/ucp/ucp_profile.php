@@ -479,19 +479,6 @@ class ucp_profile
 					{
 						$message_parser = new parse_message($signature);
 
-						// Allowing Quote BBCode
-						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
-
-						if (sizeof($message_parser->warn_msg))
-						{
-							$error[] = implode('<br />', $message_parser->warn_msg);
-						}
-
-						if (!check_form_key('ucp_sig'))
-						{
-							$error[] = 'FORM_INVALID';
-						}
-
 						/**
 						* Modify user signature on editing profile in UCP
 						*
@@ -517,6 +504,19 @@ class ucp_profile
 							'preview',
 						);
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature', compact($vars)));
+						
+						// Allowing Quote BBCode
+						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
+												
+						if (sizeof($message_parser->warn_msg))
+						{
+							$error[] = implode('<br />', $message_parser->warn_msg);
+						}
+
+						if (!check_form_key('ucp_sig'))
+						{
+							$error[] = 'FORM_INVALID';
+						}
 
 						if (!sizeof($error) && $submit)
 						{
