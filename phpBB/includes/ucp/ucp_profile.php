@@ -492,6 +492,32 @@ class ucp_profile
 							$error[] = 'FORM_INVALID';
 						}
 
+						/**
+						* Modify user signature on editing profile in UCP
+						*
+						* @event core.ucp_profile_modify_signature
+						* @var	bool	enable_bbcode		Whether or not bbcode is enabled
+						* @var	bool	enable_smilies		Whether or not smilies are enabled
+						* @var	bool	enable_urls			Whether or not urls are enabled
+						* @var	string	signature			Users signature text
+						* @var	object	message_parser		The message parser object
+						* @var	array	error				Any error strings
+						* @var	bool	submit				Whether or not the form has been sumitted
+						* @var	bool	preview				Whether or not the signature is being previewed
+						* @since 3.1.9
+						*/
+						$vars = array(
+							'enable_bbocde',
+							'enable_smilies',
+							'enable_urls',
+							'signature',
+							'message_parser',
+							'error',
+							'submit',
+							'preview',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature', compact($vars)));
+
 						if (!sizeof($error) && $submit)
 						{
 							$user->optionset('sig_bbcode', $enable_bbcode);
