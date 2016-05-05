@@ -491,10 +491,10 @@ class ucp_profile
 						* @var	array	error				Any error strings
 						* @var	bool	submit				Whether or not the form has been sumitted
 						* @var	bool	preview				Whether or not the signature is being previewed
-						* @since 3.1.9
+						* @since 3.1.10-RC1
 						*/
 						$vars = array(
-							'enable_bbocde',
+							'enable_bbcode',
 							'enable_smilies',
 							'enable_urls',
 							'signature',
