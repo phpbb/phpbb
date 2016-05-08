@@ -228,7 +228,7 @@ class qa
 			if ($this->is_solved())
 			{
 				return;
-			}			
+			}
 			/** @var \phpbb\log\log_interface $phpbb_log */
 			$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_CAPTCHA', time(), array($user->lang('CONFIRM_QUESTION_MISSING')));
 			return false;
