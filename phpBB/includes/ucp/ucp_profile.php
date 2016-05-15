@@ -490,6 +490,32 @@ class ucp_profile
 					}
 				}
 
+				/**
+				* Modify user signature on editing profile in UCP
+				*
+				* @event core.ucp_profile_modify_signature
+				* @var	bool	enable_bbcode		Whether or not bbcode is enabled
+				* @var	bool	enable_smilies		Whether or not smilies are enabled
+				* @var	bool	enable_urls			Whether or not urls are enabled
+				* @var	string	signature			Users signature text
+				* @var	object	message_parser		The message parser object
+				* @var	array	error				Any error strings
+				* @var	bool	submit				Whether or not the form has been sumitted
+				* @var	bool	preview				Whether or not the signature is being previewed
+				* @since 3.1.10-RC1
+				* @change 3.2.0-RC2 Removed message parser
+				*/
+				$vars = array(
+					'enable_bbcode',
+					'enable_smilies',
+					'enable_urls',
+					'signature',
+					'error',
+					'submit',
+					'preview',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature', compact($vars)));
+
 				$bbcode_uid = $bbcode_bitfield = $bbcode_flags = '';
 				$warn_msg = generate_text_for_storage(
 					$signature,
