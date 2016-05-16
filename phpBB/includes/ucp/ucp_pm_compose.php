@@ -752,9 +752,9 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
 
 		/**
-		* Modify Private message
+		* Modify private message
 		*
-		* @event core.ucp_pm_compose_modify_private_message
+		* @event core.ucp_pm_compose_modify_submit_before
 		* @var	bool	enable_bbcode		Whether or not bbcode is enabled
 		* @var	bool	enable_smilies		Whether or not smilies are enabled
 		* @var	bool	enable_urls			Whether or not urls are enabled
@@ -777,7 +777,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'preview',
 			'error',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_private_message', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_submit_before', compact($vars)));
 
 		if ($submit)
 		{
