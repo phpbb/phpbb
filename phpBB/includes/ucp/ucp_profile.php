@@ -498,7 +498,6 @@ class ucp_profile
 				* @var	bool	enable_smilies		Whether or not smilies are enabled
 				* @var	bool	enable_urls			Whether or not urls are enabled
 				* @var	string	signature			Users signature text
-				* @var	object	message_parser		The message parser object
 				* @var	array	error				Any error strings
 				* @var	bool	submit				Whether or not the form has been sumitted
 				* @var	bool	preview				Whether or not the signature is being previewed
