@@ -223,7 +223,7 @@ class ucp_main
 				 * @since 3.2.0-RC2
 				 */
 				$vars = array(
-					'post_data'
+					'post_data',
 				);
 				extract($phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_post_data', compact($vars)));
 
@@ -325,7 +325,7 @@ class ucp_main
 					$vars = array(
 						'sql_array',
 						'forbidden_forums',
-						'user'
+						'user',
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_forums_modify_query', compact($vars)));
 
@@ -409,11 +409,12 @@ class ucp_main
 						$vars = array(
 							'template_vars',
 							'row',
+							'forum_id',
 							'folder_image',
 							'folder_alt',
 							'unread_forum',
 							'last_post_time',
-							'last_post_url'
+							'last_post_url',
 						);
 						extract($phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_forum_modify_template_vars', compact($vars)));
 
@@ -736,7 +737,7 @@ class ucp_main
 			'sql_array',
 			'forbidden_forum_ary',
 			'user',
-			'mode'
+			'mode',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_main_topiclist_count_modify_query', compact($vars)));
 
@@ -822,7 +823,7 @@ class ucp_main
 			'sql_array',
 			'forbidden_forum_ary',
 			'user',
-			'mode'
+			'mode',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_main_topiclist_modify_query', compact($vars)));
 
@@ -963,7 +964,7 @@ class ucp_main
 				'folder_alt',
 				'icons',
 				'unread_topic',
-				'view_topic_url'
+				'view_topic_url',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.ucp_main_topiclist_topic_modify_template_vars', compact($vars)));
 
