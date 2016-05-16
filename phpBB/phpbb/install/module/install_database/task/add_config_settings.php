@@ -191,6 +191,10 @@ class add_config_settings extends \phpbb\install\task_base
 				WHERE config_name = 'smtp_host'",
 
 			'UPDATE ' . $this->config_table . "
+				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_port')) . "'
+				WHERE config_name = 'smtp_port'",
+
+			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_auth')) . "'
 				WHERE config_name = 'smtp_auth_method'",
 

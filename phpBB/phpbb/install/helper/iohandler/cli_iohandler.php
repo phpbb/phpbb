@@ -124,13 +124,14 @@ class cli_iohandler extends iohandler_base
 	public function add_error_message($error_title, $error_description = false)
 	{
 		$this->io->newLine();
-
-		if (strpos($error_title, '<br />') !== false)
-		{
-			$error_title = strip_tags(str_replace('<br />', "\n", $error_title));
-		}
 		$message = $this->translate_message($error_title, $error_description);
 		$message_string = $message['title'] . (!empty($message['description']) ? "\n" . $message['description'] : '');
+
+		if (strpos($message_string, '<br />') !== false)
+		{
+			$message_string = strip_tags(str_replace('<br />', "\n", $message_string));
+		}
+
 		$this->io->error($message_string);
 
 		if ($this->progress_bar !== null)

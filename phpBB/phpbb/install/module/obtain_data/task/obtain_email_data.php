@@ -51,6 +51,7 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 		$email_enable	= $this->io_handler->get_input('email_enable', true);
 		$smtp_delivery	= $this->io_handler->get_input('smtp_delivery', '');
 		$smtp_host		= $this->io_handler->get_input('smtp_host', '');
+		$smtp_port		= $this->io_handler->get_input('smtp_port', '');
 		$smtp_auth		= $this->io_handler->get_input('smtp_auth', '');
 		$smtp_user		= $this->io_handler->get_input('smtp_user', '');
 		$smtp_passwd	= $this->io_handler->get_input('smtp_pass', '');
@@ -63,6 +64,7 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 			$this->install_config->set('email_enable', $email_enable);
 			$this->install_config->set('smtp_delivery', $smtp_delivery);
 			$this->install_config->set('smtp_host', $smtp_host);
+			$this->install_config->set('smtp_port', $smtp_port);
 			$this->install_config->set('smtp_auth', $smtp_auth);
 			$this->install_config->set('smtp_user', $smtp_user);
 			$this->install_config->set('smtp_pass', $smtp_passwd);
@@ -118,6 +120,11 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 					'label'			=> 'SMTP_SERVER',
 					'type'			=> 'text',
 					'default'		=> $smtp_host,
+				),
+				'smtp_port' => array(
+					'label'			=> 'SMTP_PORT',
+					'type'			=> 'text',
+					'default'		=> $smtp_port,
 				),
 				'smtp_auth' => array(
 					'label'			=> 'SMTP_AUTH_METHOD',
