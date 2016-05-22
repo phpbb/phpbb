@@ -47,6 +47,7 @@ class language_file_helper
 		$finder->files()
 			->name('iso.txt')
 			->depth('== 1')
+			->followLinks()
 			->in($this->phpbb_root_path . 'language');
 
 		$available_languages = array();
