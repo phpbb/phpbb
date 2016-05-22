@@ -113,15 +113,29 @@ class token_storage implements TokenStorageInterface
 		$this->cachedToken = $token;
 
 		$data = array(
-			'user_id'		=> (int) $this->user->data['user_id'],
-			'provider'		=> $service,
 			'oauth_token'	=> $this->json_encode_token($token),
-			'session_id'	=> $this->user->data['session_id'],
 		);
 
-		$sql = 'INSERT INTO ' . $this->oauth_token_table . '
-			' . $this->db->sql_build_array('INSERT', $data);
+		$sql = 'UPDATE ' . $this->oauth_token_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $data) . '
+				WHERE user_id = ' . (int) $this->user->data['user_id'] . '
+					' . ((int) $this->user->data['user_id'] === ANONYMOUS ? "AND session_id = '" . $this->db->sql_escape($this->user->data['session_id']) . "'" : '') . "
+					AND provider = '" . $this->db->sql_escape($service) . "'";
 		$this->db->sql_query($sql);
+
+		if (!$this->db->sql_affectedrows())
+		{
+			$data = array(
+				'user_id'		=> (int) $this->user->data['user_id'],
+				'provider'		=> $service,
+				'oauth_token'	=> $this->json_encode_token($token),
+				'session_id'	=> $this->user->data['session_id'],
+			);
+
+			$sql = 'INSERT INTO ' . $this->oauth_token_table . $this->db->sql_build_array('INSERT', $data);
+
+			$this->db->sql_query($sql);
+		}
 
 		return $this;
 	}
