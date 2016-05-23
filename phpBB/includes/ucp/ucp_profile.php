@@ -531,6 +531,16 @@ class ucp_profile
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
+							/**
+							* Modify user registration data before submitting it to the database
+							*
+							* @event core.ucp_profile_modify_signature_sql_ary
+							* @var	array	sql_ary		Array with user signature data to submit to the database
+							* @since 3.1.10-RC1
+							*/
+							$vars = array('sql_ary');
+							extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature_sql_ary', compact($vars)));
+
 							$sql = 'UPDATE ' . USERS_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . $user->data['user_id'];
