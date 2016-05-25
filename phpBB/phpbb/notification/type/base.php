@@ -487,7 +487,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		foreach ($user_ids as $user_id)
 		{
-			if (isset($options['ignore_users'][$user_id])) 
+			if (isset($options['ignore_users'][$user_id]))
 			{
 				continue;
 			}
