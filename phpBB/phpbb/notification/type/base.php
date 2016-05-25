@@ -449,7 +449,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 			return array();
 		}
 
-		$rowset = $resulting_user_ids = array();
+		$rowset = $output = array();
 
 		$sql = 'SELECT user_id, method, notify
 			FROM ' . $this->user_notifications_table . '
@@ -460,9 +460,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$resulting_user_ids[] = $row['user_id'];
-
-			if (!$row['notify'] || (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']])))
+			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
 				continue;
 			}
@@ -471,22 +469,47 @@ abstract class base implements \phpbb\notification\type\type_interface
 			{
 				$rowset[$row['user_id']] = array();
 			}
+			$rowset[$row['user_id']][$row['method']] = $row['notify'];
 
-			$rowset[$row['user_id']][] = $row['method'];
+			if (!isset($output[$row['user_id']]))
+			{
+				$output[$row['user_id']] = array();
+			}
+			if ($row['notify'])
+			{
+				$output[$row['user_id']][] = $row['method'];
+			}
 		}
 
 		$this->db->sql_freeresult($result);
 
+		$default_methods = $this->notification_manager->get_default_methods();
+
 		foreach ($user_ids as $user_id)
 		{
-			if (!in_array($user_id, $resulting_user_ids) && !isset($options['ignore_users'][$user_id]))
+			if (isset($options['ignore_users'][$user_id])) 
+			{
+				continue;
+			}
+			if (!array_key_exists($user_id, $rowset))
 			{
 				// No rows at all for this user, use the default methods
-				$rowset[$user_id] = $this->notification_manager->get_default_methods();
+				$output[$user_id] = $default_methods;
+			}
+			else
+			{
+				foreach ($default_methods as $default_method)
+				{
+					if (!array_key_exists($default_method, $rowset[$user_id]))
+					{
+						// No user preference for this type recorded, but it should be enabled by default.
+						$output[$user_id][] = $default_method;
+					}
+				}
 			}
 		}
 
-		return $rowset;
+		return $output;
 	}
 
 	/**
