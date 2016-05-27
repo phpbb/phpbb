@@ -967,11 +967,16 @@ class manager
 	/**
 	* Get notification type ids (as an array)
 	*
-	* @param array $notification_type_names Array of strings
+	* @param string|array $notification_type_names Notification type names
 	* @return array Array of integers
 	*/
-	public function get_notification_type_ids(array $notification_type_names)
+	public function get_notification_type_ids($notification_type_names)
 	{
+		if (!is_array($notification_type_names))
+		{
+			$notification_type_names = array($notification_type_names);
+		}
+
 		$notification_type_ids = array();
 
 		foreach ($notification_type_names as $name)
