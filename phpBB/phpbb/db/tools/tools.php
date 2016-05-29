@@ -30,9 +30,9 @@ class tools implements tools_interface
 	var $db = null;
 
 	/**
-	* @var object User object
+	* @var object Language object
 	*/
-	var $user = null;
+	var $language = null;
 
 	/**
 	* @var string Table prefix
@@ -226,14 +226,14 @@ class tools implements tools_interface
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
 	* @param \phpbb\db\driver\driver_interface	$db					Database connection
-	* @param \phpbb\user						$user				User class
+	* @param \phpbb\language\language			$language			Language class
 	* @param string								$table_prefix		Database table prefix
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $table_prefix, $return_statements = false)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $table_prefix, $return_statements = false)
 	{
 		$this->db = $db;
-		$this->user = $user;
+		$this->language = $language;
 		$this->table_prefix = $table_prefix;
 		$this->return_statements = $return_statements;
 
@@ -2104,7 +2104,7 @@ class tools implements tools_interface
 			break;
 		}
 
-		$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $this->user->lang['NOT_AVAILABLE'];
+		$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $this->language->lang['NOT_AVAILABLE'];
 
 		return $database_size;
 	}
