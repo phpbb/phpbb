@@ -540,7 +540,7 @@ class acp_main
 			$total_orphan = false;
 		}
 
-		$dbsize = get_database_size();
+		$dbsize = $phpbb_container->get('dbal.tools')->get_database_size();
 
 		$template->assign_vars(array(
 			'TOTAL_POSTS'		=> $total_posts,

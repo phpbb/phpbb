@@ -26,6 +26,11 @@ class database
 	protected $filesystem;
 
 	/**
+	 * @var \phpbb\language\language
+	 */
+	protected $language;
+
+	/**
 	 * @var string
 	 */
 	protected $phpbb_root_path;
@@ -125,9 +130,10 @@ class database
 	 * @param \phpbb\filesystem\filesystem_interface	$filesystem			Filesystem interface
 	 * @param string									$phpbb_root_path	Path to phpBB's root
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \phpbb\language\language $language, $phpbb_root_path)
 	{
 		$this->filesystem		= $filesystem;
+		$this->language			= $language;
 		$this->phpbb_root_path	= $phpbb_root_path;
 	}
 
@@ -376,7 +382,7 @@ class database
 			);
 
 			$db_tools_factory = new \phpbb\db\tools\factory();
-			$db_tools = $db_tools_factory->get($db);
+			$db_tools = $db_tools_factory->get($db, $this->language, $table_prefix);
 			$tables = $db_tools->sql_list_tables();
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);

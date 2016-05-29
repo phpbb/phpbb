@@ -101,11 +101,13 @@ class mssql extends tools
 	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
 	*
 	* @param \phpbb\db\driver\driver_interface	$db					Database connection
+	* @param \phpbb\language\language			$language			Language class
+	* @param string								$table_prefix		Database table prefix
 	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $return_statements = false)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, $table_prefix, $return_statements = false)
 	{
-		parent::__construct($db, $return_statements);
+		parent::__construct($db, $language, $table_prefix, $return_statements);
 
 		// Determine mapping database type
 		switch ($this->db->get_sql_layer())

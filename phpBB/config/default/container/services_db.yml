@@ -18,6 +18,8 @@ services:
         factory: ['@dbal.tools.factory', get]
         arguments:
             - '@dbal.conn.driver'
+            - '@language'
+            - '%core.table_prefix%'
 
 # ----- DB Extractor -----
     dbal.extractor.factory:
