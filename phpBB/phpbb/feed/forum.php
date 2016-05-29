@@ -74,6 +74,14 @@ class forum extends post_base
 		// Make sure we can read this forum
 		if (!$this->auth->acl_get('f_read', $this->forum_id))
 		{
+			if ($this->user->data['user_id'] != ANONYMOUS)
+			{
+				send_status_line(403, 'Forbidden');
+			}
+			else
+			{
+				send_status_line(401, 'Unauthorized');
+			}
 			throw new unauthorized_forum_exception($this->forum_id);
 		}
 
@@ -84,6 +92,14 @@ class forum extends post_base
 
 			if (isset($forum_ids_passworded[$this->forum_id]))
 			{
+				if ($this->user->data['user_id'] != ANONYMOUS)
+				{
+					send_status_line(403, 'Forbidden');
+				}
+				else
+				{
+					send_status_line(401, 'Unauthorized');
+				}
 				throw new unauthorized_forum_exception($this->forum_id);
 			}
 

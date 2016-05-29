@@ -2264,6 +2264,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 		}
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
@@ -2280,6 +2281,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 				}
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_ADMIN');
 			}
 
@@ -2301,6 +2303,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			// We log the attempt to use a different username...
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
+
+			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 

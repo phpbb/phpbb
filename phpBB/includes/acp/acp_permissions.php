@@ -315,6 +315,7 @@ class acp_permissions
 				case 'apply_permissions':
 					if (!isset($_POST['setting']))
 					{
+						send_status_line(403, 'Forbidden');
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
@@ -328,6 +329,7 @@ class acp_permissions
 				case 'apply_all_permissions':
 					if (!isset($_POST['setting']))
 					{
+						send_status_line(403, 'Forbidden');
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
@@ -687,6 +689,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
@@ -772,6 +775,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
@@ -884,6 +888,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 

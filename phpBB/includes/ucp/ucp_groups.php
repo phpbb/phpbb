@@ -87,6 +87,7 @@ class ucp_groups
 
 							if (!$auth->acl_get('u_chggrp'))
 							{
+								send_status_line(403, 'Forbidden');
 								trigger_error($user->lang['NOT_AUTHORISED'] . $return_page);
 							}
 

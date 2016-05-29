@@ -164,6 +164,7 @@ class acp_inactive
 						{
 							if (!$auth->acl_get('a_userdel'))
 							{
+								send_status_line(403, 'Forbidden');
 								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
