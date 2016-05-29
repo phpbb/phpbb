@@ -184,8 +184,8 @@ if ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('
 	* Event to modify the birthdays list
 	*
 	* @event core.index_modify_birthdays_list
-	* @var	array	birthdays		Array with the users birhtdays data
-	* @var	array	rows			Array with the birhtdays SQL query result
+	* @var	array	birthdays		Array with the users birthdays data
+	* @var	array	rows			Array with the birthdays SQL query result
 	* @since 3.1.7-RC1
 	*/
 	$vars = array('birthdays', 'rows');
