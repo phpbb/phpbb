@@ -77,8 +77,12 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite();
+			// Set up language service
+			$lang = new \phpbb\language\language(
+				new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)
+			);
 			$factory = new \phpbb\db\tools\factory();
-			$db_tools = $factory->get($db, true);
+			$db_tools = $factory->get($db, $lang, $table_prefix, true);
 
 			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
 			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
