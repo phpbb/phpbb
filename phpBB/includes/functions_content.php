@@ -244,10 +244,8 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		);
 		extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_tpl_ary', compact($vars)));
 
-		foreach ($tpl_ary as $i => $ary)
-		{
-			$template->assign_block_vars('jumpbox_forums', $ary);
-		}
+		$template->assign_block_vars_array('jumpbox_forums', $tpl_ary);
+
 		unset($tpl_ary);
 
 		for ($i = 0; $i < $padding; $i++)
