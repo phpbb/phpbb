@@ -754,7 +754,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		/**
 		* Modify private message
 		*
-		* @event core.ucp_pm_compose_modify_submit_before
+		* @event core.ucp_pm_compose_modify_parse_before
 		* @var	bool	enable_bbcode		Whether or not bbcode is enabled
 		* @var	bool	enable_smilies		Whether or not smilies are enabled
 		* @var	bool	enable_urls			Whether or not urls are enabled
@@ -763,7 +763,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	object	message_parser		The message parser object
 		* @var	bool	submit				Whether or not the form has been sumitted
 		* @var	bool	preview				Whether or not the signature is being previewed
-		* @var	string	error				Any error strings
+		* @var	array	error				Any error strings
 		* @since 3.1.10-RC1
 		*/
 		$vars = array(
@@ -777,7 +777,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'preview',
 			'error',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_submit_before', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
 
 		if ($submit)
 		{
