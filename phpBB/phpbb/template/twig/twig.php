@@ -350,7 +350,7 @@ class twig extends \phpbb\template\base
 			return $this->twig->render($this->get_filename_from_handle($handle), $this->get_template_vars());
 		}
 
-		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle, $this->get_template_vars())));
+		$this->assign_var($template_var, $this->twig->render($this->get_filename_from_handle($handle), $this->get_template_vars()));
 
 		return $this;
 	}
