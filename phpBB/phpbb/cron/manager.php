@@ -110,7 +110,7 @@ class manager
 	* Web runner uses this method to resolve names to tasks.
 	*
 	* @param string				$name Name of the task to look up.
-	* @return \phpbb\cron\task\task	A task corresponding to the given name, or null.
+	* @return \phpbb\cron\task\wrapper	A wrapped task corresponding to the given name, or null.
 	*/
 	public function find_task($name)
 	{
