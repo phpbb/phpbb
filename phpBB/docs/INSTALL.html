@@ -68,8 +68,7 @@
 		<li><a href="#update_all">All package types</a></li>
 	</ol>
 	</li>
-	<li><a href="#update30">Updating from phpBB 3.0.x to phpBB 3.2.x</a></li>
-	<li><a href="#update31">Updating from phpBB 3.1.x to phpBB 3.2.x</a></li>
+	<li><a href="#update30_31">Updating from phpBB 3.0.x/3.1.x to phpBB 3.2.x</a></li>
 	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.2.x</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#prereq">Requirements before converting</a></li>
@@ -334,16 +333,16 @@
 
 	<hr />
 
-	<a name="update30"></a><h2>5. Updating from phpBB 3.0.x to phpBB 3.1.x</h2>
+	<a name="update30_31"></a><h2>5. Updating from phpBB 3.0.x/3.1x to phpBB 3.2.x</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
 
-			<p>Updating from phpBB 3.0.x to 3.1.x is just the same as <a href="#update">updating from stable releases of phpBB 3.1.x</a></p>
+			<p>Updating from phpBB 3.0.x or 3.1.x to 3.2.x is just the same as <a href="#update">updating from stable releases of phpBB 3.2.x</a></p>
 
-			<p>However you can also start with a new set of phpBB 3.1.x files.</p>
+			<p>However you can also start with a new set of phpBB 3.2.x files.</p>
 
 			<ol>
 				<li>Delete all files <strong>EXCEPT</strong> for the following:
@@ -353,10 +352,12 @@
 					<li>The <code>images/</code> directory</li>
 					<li>The <code>files/</code> directory</li>
 					<li>The <code>store/</code> directory</li>
+					<li>(The <code>ext/</code> directory</li>
 				</ul></li>
 
-				<li>Upload the contents of the 3.1.x Full Package into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
-				<li>Browse to install/database_update.php</li>
+				<li>Upload the contents of the 3.2.x Full Package into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
+				<li>Browse to <code>/install/app.php/update</code></li>
+				<li>Read the notice <em>Update database only</em> and press <strong>Submit</strong></li>
 				<li>Delete the <code>install/</code> directory</li>
 			</ol>
 		</div>
