@@ -1,0 +1,44 @@
+{
+  "name": "phpbb",
+  "version": "3.2.0",
+  "description": "phpBB Forum Software application",
+  "main": "index.php",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "post-update-cmd": "echo 'You MUST manually modify the clean-vendor-dir target in build/build.xml when adding or upgrading dependencies.'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phpbb/phpbb.git"
+  },
+  "keywords": [
+    "phpbb",
+    "forums"
+  ],
+  "author": [
+    {
+      "name": "phpBB Limited",
+      "email": "operations@phpbb.com",
+      "homepage": "https://www.phpbb.com/go/authors"
+    }
+  ],
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://tracker.phpbb.com"
+  },
+  "homepage": "https://www.phpbb.com",
+  "devDependencies": {
+    "autoprefixer": "^6.0.2",
+    "csswring": "^4.0.0",
+    "gulp": "^3.9.0",
+    "gulp-postcss": "^6.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-util": "^3.0.6",
+    "postcss-import": "^7.0.0",
+    "postcss-simple-vars": "^1.0.0"
+  }
+}
