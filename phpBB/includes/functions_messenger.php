@@ -624,31 +624,34 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $phpbb_container;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
 			return;
 		}
 
+		$template_environment = new \phpbb\template\twig\environment(
+			$phpbb_container->get('config'),
+			$phpbb_container->get('filesystem'),
+			$phpbb_container->get('path_helper'),
+			$phpbb_container->getParameter('core.template.cache_path'),
+			$phpbb_container->get('ext.manager'),
+			new \phpbb\template\twig\loader(
+				$phpbb_container->get('filesystem')
+			)
+		);
+		$template_environment->setLexer($phpbb_container->get('template.twig.lexer'));
+
 		$this->template = new \phpbb\template\twig\twig(
 			$phpbb_container->get('path_helper'),
 			$phpbb_container->get('config'),
 			new \phpbb\template\context(),
-			new \phpbb\template\twig\environment(
-				$phpbb_container->get('config'),
-				$phpbb_container->get('filesystem'),
-				$phpbb_container->get('path_helper'),
-				$phpbb_container->getParameter('core.cache_dir'),
-				$phpbb_container->get('ext.manager'),
-				new \phpbb\template\twig\loader(
-					$phpbb_filesystem
-				)
-			),
-			$phpbb_container->getParameter('core.cache_dir'),
+			$template_environment,
+			$phpbb_container->getParameter('core.template.cache_path'),
 			$phpbb_container->get('user'),
 			$phpbb_container->get('template.twig.extensions.collection'),
-			$phpbb_extension_manager
+			$phpbb_container->get('ext.manager')
 		);
 	}
 
