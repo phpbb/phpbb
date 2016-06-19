@@ -14,7 +14,7 @@ phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.1/homestead) Vagra
 $ vagrant up
 ```
 
-* Access phpBB at `http://192.168.33.10/`
+* Access phpBB at `http://192.168.10.10/`
 * Username: **admin**
 * Password: **adminadmin**
 
