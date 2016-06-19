@@ -751,6 +751,34 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
 
+		/**
+		* Modify private message
+		*
+		* @event core.ucp_pm_compose_modify_parse_before
+		* @var	bool	enable_bbcode		Whether or not bbcode is enabled
+		* @var	bool	enable_smilies		Whether or not smilies are enabled
+		* @var	bool	enable_urls			Whether or not urls are enabled
+		* @var	bool	enable_sig			Whether or not signature is enabled
+		* @var	string	subject				PM subject text
+		* @var	object	message_parser		The message parser object
+		* @var	bool	submit				Whether or not the form has been sumitted
+		* @var	bool	preview				Whether or not the signature is being previewed
+		* @var	array	error				Any error strings
+		* @since 3.1.10-RC1
+		*/
+		$vars = array(
+			'enable_bbcode',
+			'enable_smilies',
+			'enable_urls',
+			'enable_sig',
+			'subject',
+			'message_parser',
+			'submit',
+			'preview',
+			'error',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
+
 		if ($submit)
 		{
 			$status_switch	= (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
