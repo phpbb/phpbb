@@ -178,6 +178,7 @@ $lang = array_merge($lang, array(
 	'DB_PASSWORD'			=> 'Database password',
 	'DB_NAME'				=> 'Database name',
 	'DB_USERNAME'			=> 'Database username',
+	'DATABASE_VERSION'		=> 'Database version',
 	'TABLE_PREFIX'			=> 'Prefix for tables in database',
 	'TABLE_PREFIX_EXPLAIN'	=> 'The prefix must start with a letter and must only contain letters, numbers and underscores.',
 
@@ -212,6 +213,14 @@ $lang = array_merge($lang, array(
 	// Email data
 	//
 	'EMAIL_CONFIG'	=> 'E-mail configuration',
+
+	// Package info
+	'PACKAGE_VERSION'					=> 'Package version installed',
+	'UPDATE_INCOMPLETE'				=> 'Your phpBB installation has not been correctly updated.',
+	'UPDATE_INCOMPLETE_MORE'		=> 'Please read the information below in order to fix this error.',
+	'UPDATE_INCOMPLETE_EXPLAIN'		=> '<h1>Incomplete update</h1>
+
+		<p>We noticed that the last update of your phpBB installation hasn’t been completed. Visit the <a href="%1$s" title="%1$s">database_update script</a> and run it. If it is missing, please <a href="https://www.phpbb.com/downloads/" title="phpBB downloads">download your package version</a>, upload the "install" folder to your phpBB root directory (where your config.php file is) and <a href="%1$s" title="%1$s">run the database update script</a>.</p>',
 
 	//
 	// Server data
@@ -432,6 +441,7 @@ $lang = array_merge($lang, array(
 	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files are not modified and represent the original phpBB files from the version you want to update from.',
 	'FILES_UP_TO_DATE'				=> 'Already updated files',
 	'FILES_UP_TO_DATE_EXPLAIN'		=> 'The following files are already up to date and do not need to be updated.',
+	'FILES_VERSION'					=> 'Files Version',
 	'TOGGLE_DISPLAY'				=> 'View/Hide file list',
 
 	// File updater
