@@ -104,7 +104,7 @@ class mcp_queue
 
 				if (!empty($topic_id_list) && $mode == 'deleted_topics')
 				{
-					if (!function_exists('mcp_delete_topics'))
+					if (!function_exists('mcp_delete_topic'))
 					{
 						global $phpbb_root_path, $phpEx;
 						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
