@@ -1694,6 +1694,15 @@ topiclist_row_append
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
+topiclist_row_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.1.10-RC1
+* Purpose: Add content into topic rows (after the elements containing the topic titles)
+
 ucp_agreement_terms_after
 ===
 * Locations:
