@@ -14,7 +14,11 @@
 
 	<p>{L_ADMIN_INTRO}</p>
 
-	<!-- IF S_VERSIONCHECK_FAIL -->
+	<!-- IF S_UPDATE_INCOMPLETE -->
+		<div class="errorbox">
+			<p>{L_UPDATE_INCOMPLETE} <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+		</div>
+	<!-- ELSEIF S_VERSIONCHECK_FAIL -->
 		<div class="errorbox notice">
 			<p>{L_VERSIONCHECK_FAIL}</p>
 			<p>{VERSIONCHECK_FAIL_REASON}</p>
