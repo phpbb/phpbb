@@ -568,7 +568,6 @@ class ucp_profile
 						$vars = array('sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature_sql_ary', compact($vars)));
 
-
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user->data['user_id'];
