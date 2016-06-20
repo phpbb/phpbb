@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "aabe5d97d87369a2f21f6e63b0922297",
-    "content-hash": "cf9ea8c945f6877cbaa8dcbd4ccd6cc3",
+    "hash": "306150660d9296419b5ccbafe6366ea7",
+    "content-hash": "9f0c9c1562e9268e2fec8ec4e555b5f8",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1974,6 +1974,47 @@
             "time": "2015-12-31 15:58:49"
         },
         {
+            "name": "laravel/homestead",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/homestead.git",
+                "reference": "5008339af93bbb73efee53cbef9374c5d443c708"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/homestead/zipball/5008339af93bbb73efee53cbef9374c5d443c708",
+                "reference": "5008339af93bbb73efee53cbef9374c5d443c708",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4",
+                "symfony/console": "~2.0",
+                "symfony/process": "~2.0"
+            },
+            "bin": [
+                "homestead"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Homestead\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylorotwell@gmail.com"
+                }
+            ],
+            "description": "A virtual machine for web artisans.",
+            "time": "2016-01-05 19:19:26"
+        },
+        {
             "name": "michelf/php-markdown",
             "version": "1.6.0",
             "source": {
@@ -2105,8 +2146,7 @@
             "authors": [
                 {
                     "name": "Michiel Rook",
-                    "email": "mrook@php.net",
-                    "role": "Lead"
+                    "email": "mrook@php.net"
                 },
                 {
                     "name": "Phing Community",
@@ -2585,7 +2625,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 }
             ],
             "description": "Pimple is a simple Dependency Injection Container for PHP 5.3",

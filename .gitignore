@@ -4,7 +4,7 @@
 !/phpBB/cache/.htaccess
 !/phpBB/cache/index.html
 /phpBB/composer.phar
-/phpBB/config*.php
+/phpBB/config*.php*
 /phpBB/ext/*
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
@@ -22,3 +22,5 @@
 /tests/test_config*.php
 /tests/tmp/*
 /tests/vendor
+/vagrant/phpbb-install-config.yml
+.vagrant
