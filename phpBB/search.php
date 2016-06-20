@@ -323,7 +323,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	array	ex_fid_ary		Array of excluded forum ids
 	* @var	array	author_id_ary	Array of exclusive author ids
 	* @var	string	search_id		The id of the search request
+	* @var	array	id_ary			Array of post or topic ids for search result
+	* @var	string	show_results	'posts' or 'topics' type of ids
 	* @since 3.1.3-RC1
+	* @changed 3.1.10-RC1 Added id_ary, show_results
 	*/
 	$vars = array(
 		'keywords',
@@ -331,6 +334,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'ex_fid_ary',
 		'author_id_ary',
 		'search_id',
+		'id_ary',
+		'show_results',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.search_modify_param_before', compact($vars)));
 

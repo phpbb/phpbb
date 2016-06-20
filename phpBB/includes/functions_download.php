@@ -166,7 +166,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Make sure the database record for the filesize is correct
-	if ($size > 0 && $size != $attachment['filesize'])
+	if ($size > 0 && $size != $attachment['filesize'] && strpos($attachment['physical_filename'], 'thumb_') === false)
 	{
 		// Update database record
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '

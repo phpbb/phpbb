@@ -470,6 +470,8 @@ class ucp_profile
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
+				$preview	= $request->is_set_post('preview');
+
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? $user->optionget('sig_bbcode') : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? $user->optionget('sig_smilies') : false;
 				$enable_urls	= ($config['allow_sig_links']) ? $user->optionget('sig_links') : false;
@@ -478,7 +480,7 @@ class ucp_profile
 				$signature			= $request->variable('signature', $decoded_message['text'], true);
 				$signature_preview	= '';
 
-				if ($submit || $request->is_set_post('preview'))
+				if ($submit || $preview)
 				{
 					$enable_bbcode	= ($config['allow_sig_bbcode']) ? !$request->variable('disable_bbcode', false) : false;
 					$enable_smilies	= ($config['allow_sig_smilies']) ? !$request->variable('disable_smilies', false) : false;
@@ -555,6 +557,16 @@ class ucp_profile
 							'user_sig_bbcode_uid'		=> $bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> $bbcode_bitfield
 						);
+
+						/**
+						* Modify user registration data before submitting it to the database
+						*
+						* @event core.ucp_profile_modify_signature_sql_ary
+						* @var	array	sql_ary		Array with user signature data to submit to the database
+						* @since 3.1.10-RC1
+						*/
+						$vars = array('sql_ary');
+						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature_sql_ary', compact($vars)));
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '

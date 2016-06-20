@@ -642,6 +642,9 @@ class acp_board
 				$messenger->template('test');
 				$messenger->set_addresses($user->data);
 				$messenger->anti_abuse_headers($config, $user);
+				$messenger->assign_vars(array(
+					'USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+				));
 				$messenger->send(NOTIFY_EMAIL);
 
 				trigger_error($user->lang('TEST_EMAIL_SENT') . adm_back_link($this->u_action));
