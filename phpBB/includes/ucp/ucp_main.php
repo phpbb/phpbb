@@ -213,21 +213,15 @@ class ucp_main
 
 				add_form_key('ucp_front_subscribed');
 
-				$post_data = $_POST;
+				$unwatch = (isset($_POST['unwatch'])) ? true : false;
 
 				/**
 				 * Read and potentially modify the post data used to remove subscriptions to forums/topics
 				 *
 				 * @event core.ucp_main_subscribed_post_data
-				 * @var array	post_data	The data from the post submission, if any
 				 * @since 3.2.0-RC2
 				 */
-				$vars = array(
-					'post_data',
-				);
-				extract($phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_post_data', compact($vars)));
-
-				$unwatch = (isset($post_data['unwatch'])) ? true : false;
+				$phpbb_dispatcher->dispatch('core.ucp_main_subscribed_post_data');
 
 				if ($unwatch)
 				{
@@ -319,13 +313,11 @@ class ucp_main
 					 * @event core.ucp_main_subscribed_forums_modify_query
 					 * @var array	sql_array	       The subscribed forums query
 					 * @var array   forbidden_forums   The list of forbidden forums
-					 * @var user    user               The current user
 					 * @since 3.2.0-RC2
 					 */
 					$vars = array(
 						'sql_array',
 						'forbidden_forums',
-						'user',
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_forums_modify_query', compact($vars)));
 
@@ -729,14 +721,12 @@ class ucp_main
 		 * @event core.ucp_main_topiclist_count_modify_query
 		 * @var array	sql_array	          The subscribed/bookmarked topics query
 		 * @var array   forbidden_forum_ary   The list of forbidden forums
-		 * @var user    user                  The current user
 		 * @var string  mode                  The type of topic list ('subscribed' or 'bookmarks')
 		 * @since 3.2.0-RC2
 		 */
 		$vars = array(
 			'sql_array',
 			'forbidden_forum_ary',
-			'user',
 			'mode',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_main_topiclist_count_modify_query', compact($vars)));
@@ -815,14 +805,12 @@ class ucp_main
 		 * @event core.ucp_main_topiclist_modify_query
 		 * @var array	sql_array	          The subscribed/bookmarked topics query
 		 * @var array   forbidden_forum_ary   The list of forbidden forums
-		 * @var user    user                  The current user
 		 * @var string  mode                  The type of topic list ('subscribed' or 'bookmarks')
 		 * @since 3.2.0-RC2
 		 */
 		$vars = array(
 			'sql_array',
 			'forbidden_forum_ary',
-			'user',
 			'mode',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_main_topiclist_modify_query', compact($vars)));
