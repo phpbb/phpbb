@@ -39,6 +39,12 @@ abstract class base
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\content_visibility */
+	protected $content_visibility;
+
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $phpbb_dispatcher;
+
 	/** @var string */
 	protected $phpEx;
 
@@ -79,10 +85,21 @@ abstract class base
 	* @param \phpbb\cache\driver\driver_interface	$cache	Cache object
 	* @param \phpbb\user						$user		User object
 	* @param \phpbb\auth\auth					$auth		Auth object
-	* @param \phpbb\content_visibility			$content_visibility		Auth object
+	* @param \phpbb\content_visibility			$content_visibility		Content visibility object
+	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher		Event dispatcher object
 	* @param string								$phpEx		php file extension
 	*/
-	function __construct(\phpbb\feed\helper $helper, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\content_visibility $content_visibility, $phpEx)
+	function __construct(
+		\phpbb\feed\helper $helper,
+		\phpbb\config\config $config,
+		\phpbb\db\driver\driver_interface $db,
+		\phpbb\cache\driver\driver_interface $cache,
+		\phpbb\user $user,
+		\phpbb\auth\auth $auth,
+		\phpbb\content_visibility $content_visibility,
+		\phpbb\event\dispatcher_interface $phpbb_dispatcher,
+		$phpEx
+	)
 	{
 		$this->config = $config;
 		$this->helper = $helper;
@@ -91,6 +108,7 @@ abstract class base
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->content_visibility = $content_visibility;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->phpEx = $phpEx;
 
 		$this->set_keys();
@@ -238,6 +256,21 @@ abstract class base
 			{
 				return false;
 			}
+
+			$sql_ary = $this->sql;
+
+			/**
+			* Event to modify the feed item sql
+			*
+			* @event core.feed_base_modify_item_sql
+			* @var	array	sql_ary		The SQL array to get the feed item data
+			*
+			* @since 3.1.10-RC1
+			*/
+			$vars = array('sql_ary');
+			extract($this->phpbb_dispatcher->trigger_event('core.feed_base_modify_item_sql', compact($vars)));
+			$this->sql = $sql_ary;
+			unset($sql_ary);
 
 			// Query database
 			$sql = $this->db->sql_build_query('SELECT', $this->sql);

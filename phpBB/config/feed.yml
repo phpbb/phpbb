@@ -25,6 +25,7 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
 
     feed.forums:
@@ -38,6 +39,7 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
 
     feed.news:
@@ -51,6 +53,7 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
 
     feed.overall:
@@ -64,6 +67,7 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
 
     feed.topic:
@@ -77,6 +81,7 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
 
     feed.topics:
@@ -90,6 +95,7 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
 
     feed.topics_active:
@@ -103,4 +109,5 @@ services:
             - @user
             - @auth
             - @content.visibility
+            - @dispatcher
             - %core.php_ext%
