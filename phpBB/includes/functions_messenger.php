@@ -687,10 +687,10 @@ class queue
 	*/
 	function queue()
 	{
-		global $phpEx, $phpbb_root_path, $phpbb_filesystem;
+		global $phpEx, $phpbb_root_path, $phpbb_filesystem, $phpbb_container;
 
 		$this->data = array();
-		$this->cache_file = "{$phpbb_root_path}cache/queue.$phpEx";
+		$this->cache_file = $phpbb_container->getParameter('core.cache_dir') . "queue.$phpEx";
 		$this->filesystem = $phpbb_filesystem;
 	}
 
