@@ -186,15 +186,12 @@ class user extends \phpbb\session
 		$this->data = $user_data;
 		$this->lang_name = $user_lang_name;
 		$this->date_format = $user_date_format;
+		$this->timezone =  new \DateTimeZone('UTC');
 
-		try
+		// If user has set a timezone then use the user configuration
+		if (isset($user_timezone) && !empty($user_timezone))
 		{
 			$this->timezone = new \DateTimeZone($user_timezone);
-		}
-		catch (\Exception $e)
-		{
-			// If the timezone the user has selected is invalid, we fall back to UTC.
-			$this->timezone = new \DateTimeZone('UTC');
 		}
 
 		// We include common language file here to not load it every time a custom language file is included
