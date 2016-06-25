@@ -1491,7 +1491,7 @@ posting_editor_subject_append
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.1.10
+* Since: 3.1.10-RC1
 * Purpose: Add field, text, etc. to the posting after the subject text box
 
 posting_editor_subject_before
@@ -1506,7 +1506,7 @@ posting_editor_subject_prepend
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
-* Since: 3.1.10
+* Since: 3.1.10-RC1
 * Purpose: Add field, text, etc. to the posting before the subject text box
 
 posting_editor_submit_buttons
