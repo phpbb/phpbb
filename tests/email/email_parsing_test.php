@@ -19,7 +19,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 
 	public function setUp()
 	{
-		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user; 
+		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user;
 
 		$phpbb_container = new phpbb_mock_container_builder;
 
@@ -73,7 +73,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->set('ext.manager', $extension_manager, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
 
 		$context = new \phpbb\template\context();
-		$phpbb_container->set('template.twig.extensions.collection', array(new \phpbb\template\twig\extension($context, $user)), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$twig_extension = new \phpbb\template\twig\extension($context, $user);
+		$phpbb_container->set('template.twig.extensions.collection', array($twig_extension), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
 
 		$twig = new \phpbb\template\twig\environment(
 			$config,
@@ -89,13 +90,14 @@ class phpbb_email_parsing_test extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
+		$twig->addExtension($twig_extension);
 		$phpbb_container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
 
 		if (!class_exists('messenger'))
 		{
 			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		}
-		
+
 		$this->messenger = new \messenger();
 
 		$reflection = new ReflectionObject($this->messenger);
@@ -103,9 +105,20 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->reflection_template_property->setAccessible(true);
 	}
 
-	public function test_email_parsing()
+	public function email_parsing_data()
 	{
-		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $user, $request; 
+		return array(
+			array('Author username', 'Any forum', 'The topic title', 'Dear user'),
+			array('0', 'Any forum', 'The topic title', 'Dear user'),
+		);
+	}
+
+	/**
+	 * @dataProvider email_parsing_data
+	 */
+	public function test_email_parsing($author_name, $forum_name, $topic_title, $username)
+	{
+		global $config, $phpEx, $user;
 
 		$this->messenger->set_addresses($user->data);
 
@@ -113,10 +126,10 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])),
 			'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
 
-			'AUTHOR_NAME'				=> 'Author username',
-			'FORUM_NAME'				=> 'Any forum',
-			'TOPIC_TITLE'				=> 'The topic title',
-			'USERNAME'					=> 'Dear user',
+			'AUTHOR_NAME'				=> $author_name,
+			'FORUM_NAME'				=> $forum_name,
+			'TOPIC_TITLE'				=> $topic_title,
+			'USERNAME'					=> $username,
 
 			'U_FORUM'					=> generate_board_url() . "/viewforum.{$phpEx}?f=1",
 			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$phpEx}?uid=2&f=1&unwatch=forum",
@@ -126,10 +139,10 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$reflection_template = $this->reflection_template_property->getValue($this->messenger);
 		$msg = trim($reflection_template->assign_display('body'));
 
-		$this->assertContains('Author username', $msg);
-		$this->assertContains('Any forum', $msg);
-		$this->assertContains('The topic title', $msg);
-		$this->assertContains('Dear user', $msg);
+		$this->assertContains($author_name, $msg);
+		$this->assertContains($forum_name, $msg);
+		$this->assertContains($topic_title, $msg);
+		$this->assertContains($username, $msg);
 		$this->assertContains(htmlspecialchars_decode($config['sitename']), $msg);
 		$this->assertContains(str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])), $msg);
 		$this->assertNotContains('EMAIL_SIG', $msg);
