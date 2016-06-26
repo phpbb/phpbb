@@ -13,8 +13,10 @@
 
 class phpbb_email_parsing_test extends phpbb_test_case
 {
-	static protected $reflection;
+	/** @var \messenger */
 	protected $messenger;
+
+	/** @var \ReflectionProperty */
 	protected $reflection_template_property;
 
 	public function setUp()
@@ -23,20 +25,12 @@ class phpbb_email_parsing_test extends phpbb_test_case
 
 		$phpbb_container = new phpbb_mock_container_builder;
 
-		$config = new \phpbb\config\config(array());
-		$default_config = array(
+		$config = new \phpbb\config\config(array(
 			'board_email_sig'     => '-- Thanks, The Management',
 			'sitename' 			=> 'yourdomain.com',
 			'default_lang'		=> 'en',
-		);
-		foreach ($default_config as $config_name => $config_value)
-		{
-			if (!isset($config[$config_name]))
-			{
-				$config[$config_name] = $config_value;
-			}
-		}
-		$phpbb_container->set('config', $config, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		));
+		$phpbb_container->set('config', $config);
 
 		$request = new phpbb_mock_request;
 		$symfony_request = new \phpbb\symfony_request(
@@ -50,16 +44,16 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			$phpbb_root_path,
 			$phpEx
 		);
-		$phpbb_container->set('path_helper', $phpbb_path_helper, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
-		$phpbb_container->set('filesystem', $filesystem, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$phpbb_container->set('path_helper', $phpbb_path_helper);
+		$phpbb_container->set('filesystem', $filesystem);
 
-		$cache_path = 'cache/' . PHPBB_ENVIRONMENT . '/twig';
-		$phpbb_container->setParameter('core.template.cache_path', $cache_path, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$cache_path = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/twig';
+		$phpbb_container->setParameter('core.template.cache_path', $cache_path);
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$phpbb_container->set('user', $user, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$phpbb_container->set('user', $user);
 		$extension_manager = new phpbb_mock_extension_manager(
 			dirname(__FILE__) . '/',
 			array(
@@ -70,11 +64,15 @@ class phpbb_email_parsing_test extends phpbb_test_case
 				),
 			)
 		);
-		$phpbb_container->set('ext.manager', $extension_manager, phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$phpbb_container->set('ext.manager', $extension_manager);
 
 		$context = new \phpbb\template\context();
-		$twig_extension = new \phpbb\template\twig\extension($context, $user);
-		$phpbb_container->set('template.twig.extensions.collection', array($twig_extension), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$twig_extension = new \phpbb\template\twig\extension($context, $lang);
+		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
+
+		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
+		$twig_extensions_collection->add('template.twig.extensions.phpbb');
+		$phpbb_container->set('template.twig.extensions.collection', $twig_extensions_collection);
 
 		$twig = new \phpbb\template\twig\environment(
 			$config,
@@ -91,7 +89,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			)
 		);
 		$twig->addExtension($twig_extension);
-		$phpbb_container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		$phpbb_container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
 
 		if (!class_exists('messenger'))
 		{
