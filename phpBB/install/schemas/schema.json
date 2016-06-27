@@ -800,22 +800,6 @@
                 "UINT:20",
                 0
             ],
-            "enable_shadow_prune": [
-                "BOOL",
-                0
-            ],
-            "prune_shadow_days": [
-                "UINT",
-                7
-            ],
-            "prune_shadow_freq": [
-                "UINT",
-                1
-            ],
-            "prune_shadow_next": [
-                "INT:11",
-                0
-            ],
             "forum_posts_approved": [
                 "UINT",
                 0
@@ -838,6 +822,22 @@
             ],
             "forum_topics_softdeleted": [
                 "UINT",
+                0
+            ],
+            "enable_shadow_prune": [
+                "BOOL",
+                0
+            ],
+            "prune_shadow_days": [
+                "UINT",
+                7
+            ],
+            "prune_shadow_freq": [
+                "UINT",
+                1
+            ],
+            "prune_shadow_next": [
+                "INT:11",
                 0
             ]
         },
@@ -2138,23 +2138,7 @@
                 "VCHAR",
                 ""
             ],
-            "pf_phpbb_location": [
-                "VCHAR",
-                ""
-            ],
             "pf_phpbb_twitter": [
-                "VCHAR",
-                ""
-            ],
-            "pf_phpbb_website": [
-                "VCHAR",
-                ""
-            ],
-            "pf_phpbb_youtube": [
-                "VCHAR",
-                ""
-            ],
-            "pf_phpbb_googleplus": [
                 "VCHAR",
                 ""
             ],
@@ -2163,6 +2147,22 @@
                 ""
             ],
             "pf_phpbb_skype": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_youtube": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_location": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_googleplus": [
+                "VCHAR",
+                ""
+            ],
+            "pf_phpbb_website": [
                 "VCHAR",
                 ""
             ],
