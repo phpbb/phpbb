@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v320b2">Changes since 3.2.0-b2</a></li>
 		<li><a href="#v320b1">Changes since 3.2.0-b1</a></li>
 		<li><a href="#v320a2">Changes since 3.2.0-a2</a></li>
 		<li><a href="#v320a1">Changes since 3.2.0-a1</a></li>
@@ -121,6 +122,60 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v320b2"></a><h3>Changes since 3.2.0-b2</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-9435">PHPBB3-9435</a>] - &quot;magic numbers&quot; in message_parser.php/bbcode.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13616">PHPBB3-13616</a>] - Pass lexer directly to TWIG environment</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13972">PHPBB3-13972</a>] - 3.1.5 - Waiting time conflict</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14136">PHPBB3-14136</a>] - IE compatibility meta is missing in overall_header.html</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14198">PHPBB3-14198</a>] - Container cache filename doesn't depend on the build options</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14260">PHPBB3-14260</a>] - Right parenthesis breaks (some?) magic URLs</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14318">PHPBB3-14318</a>] - Board Notifications Config Migration Not Working</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14329">PHPBB3-14329</a>] - Updater Cannot remove files</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14381">PHPBB3-14381</a>] - Text Reparser fails with empty sql fields</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14393">PHPBB3-14393</a>] - Update 3.2.0a1 to 3.2.0a2 --&gt; Error: CANNOT_DELETE_FILES </li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14426">PHPBB3-14426</a>] - viewtopic error posts bbcode pregmatch</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14481">PHPBB3-14481</a>] - phpBB does not obey HTTP_X_FORWARDED_PORT header</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14497">PHPBB3-14497</a>] - Update nginx sample config for new installer</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14527">PHPBB3-14527</a>] - Dataloss caused by link shortening</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14528">PHPBB3-14528</a>] - Structured data - breadcrumbs error</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14530">PHPBB3-14530</a>] - Signature parsing inconsistant</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14532">PHPBB3-14532</a>] - Database column default incorrectly escaped on MSSQL</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14550">PHPBB3-14550</a>] - function unique_id()</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14555">PHPBB3-14555</a>] - Inconsistent usage of the cache directory</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14559">PHPBB3-14559</a>] - Attachments' behaviour in quotes</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14562">PHPBB3-14562</a>] - Extension's permissions don't have language fallback</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14564">PHPBB3-14564</a>] - config cookie domain is empty</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14569">PHPBB3-14569</a>] - Add a method for console progress bar initialisation</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14572">PHPBB3-14572</a>] - Quote notifications deleted on edit</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14576">PHPBB3-14576</a>] - Functional Test Framework should include functions.php</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14577">PHPBB3-14577</a>] - Stop using sizeof() inside for() loop</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14589">PHPBB3-14589</a>] - Requirements test showing required text for &quot;yellow/amber&quot; (optional) requirements</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14590">PHPBB3-14590</a>] - Installer gets stuck at sending notification e-mail</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14591">PHPBB3-14591</a>] - Some installation data not being inserted when running under MS SQL Server</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14607">PHPBB3-14607</a>] - Missing Auto Increment in Report Table</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14619">PHPBB3-14619</a>] - docs/ folder need work to change 3.1.x to 3.2.x in readme, install, changelog etc</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14648">PHPBB3-14648</a>] - Users don't receive default notifications if another setting is set.</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14649">PHPBB3-14649</a>] - Missing variable within event</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13502">PHPBB3-13502</a>] - controller resolver should handle callable functions and objects</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14540">PHPBB3-14540</a>] - Adjust class recursive_dot_prefix_filter_iterator to increase performance</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14561">PHPBB3-14561</a>] - Add additional commands for user actions</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14664">PHPBB3-14664</a>] - Fix PHPDoc comment in cron manager</li>
+			</ul>
+			<h4>New Feature</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12684">PHPBB3-12684</a>] - Add a command to add a user from the CLI</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13969">PHPBB3-13969</a>] - Remove old help_* language files</li>
+				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14565">PHPBB3-14565</a>] - Updates composer to 1.0.0-b2</li>
+			</ul>
+
 			<a name="v320b1"></a><h3>Changes since 3.2.0-b1</h3>
 			<h4>Bug</h4>
 			<ul>
