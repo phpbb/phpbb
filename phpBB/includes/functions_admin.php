@@ -2531,7 +2531,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 /**
 * Prune function
 */
-function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true)
+function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true, $prune_limit = 0)
 {
 	global $db, $phpbb_dispatcher;
 
@@ -2571,6 +2571,11 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	if ($prune_mode == 'shadow')
 	{
 		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
+	}
+	
+	if ($prune_limit > 0)
+	{
+		$sql_and .= " LIMIT $prune_limit";
 	}
 
 	/**
@@ -2643,12 +2648,15 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 		$prune_date = time() - ($prune_days * 86400);
 		$next_prune = time() + ($prune_freq * 86400);
 
-		prune($forum_id, $prune_mode, $prune_date, $prune_flags, true);
+		$result = prune($forum_id, $prune_mode, $prune_date, $prune_flags, true, 300);
 
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET prune_next = $next_prune
-			WHERE forum_id = $forum_id";
-		$db->sql_query($sql);
+		if ($result['topics'] == 0 && $result['posts'] == 0)
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET prune_next = $next_prune
+				WHERE forum_id = $forum_id";
+			$db->sql_query($sql);
+		}
 
 		add_log('admin', 'LOG_AUTO_PRUNE', $row['forum_name']);
 	}
