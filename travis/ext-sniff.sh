@@ -14,8 +14,9 @@ set -x
 DB=$1
 TRAVIS_PHP_VERSION=$2
 EXTNAME=$3
+NOTESTS=$4
 
-if [ "$TRAVIS_PHP_VERSION" == "5.5" -a "$DB" == "mysqli" ]
+if [ "$NOTESTS" == "1" ]
 then
 	phpBB/vendor/bin/phpcs 											\
 		-s															\
