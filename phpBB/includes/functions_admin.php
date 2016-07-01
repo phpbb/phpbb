@@ -2599,7 +2599,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		'prune_flags',
 		'auto_sync',
 		'sql_and',
-		'prune_limit'
+		'prune_limit',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.prune_sql', compact($vars)));
 
