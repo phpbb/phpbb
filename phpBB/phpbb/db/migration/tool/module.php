@@ -95,7 +95,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				$sql = 'SELECT module_id
 					FROM ' . $this->modules_table . "
 					WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
-						AND module_class = '" . $this->db->sql_escape($class) . "'";
+						AND module_class = '" . $this->db->sql_escape($class) . "'
+						AND module_basename = ''";
 				$result = $this->db->sql_query($sql);
 				$module_id = $this->db->sql_fetchfield('module_id');
 				$this->db->sql_freeresult($result);
@@ -384,7 +385,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					$sql = 'SELECT module_id
 						FROM ' . $this->modules_table . "
 						WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
-							AND module_class = '" . $this->db->sql_escape($class) . "'";
+							AND module_class = '" . $this->db->sql_escape($class) . "'
+							AND module_basename = ''";
 					$result = $this->db->sql_query($sql);
 					$module_id = $this->db->sql_fetchfield('module_id');
 					$this->db->sql_freeresult($result);
