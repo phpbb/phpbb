@@ -60,6 +60,8 @@ $lang = array_merge($lang, array(
 	'MIGRATION_INVALID_DATA_UNDEFINED_METHOD'		=> 'A migration is invalid. An undefined migration tool method was encountered.',
 
 	'MODULE_ERROR'						=> 'An error occurred while creating a module: %s',
+	'MODULE_EXISTS'						=> 'A module already exists: %s',
+	'MODULE_EXIST_MULTIPLE'				=> 'Several modules with the given parent module langname already exist: %s. Try using before/after keys to clarify the module placement.',
 	'MODULE_INFO_FILE_NOT_EXIST'		=> 'A required module info file is missing: %2$s',
 	'MODULE_NOT_EXIST'					=> 'A required module does not exist: %s',
 
