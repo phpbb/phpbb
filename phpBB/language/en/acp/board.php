@@ -570,6 +570,7 @@ $lang = array_merge($lang, array(
 	'SMTP_PORT'						=> 'SMTP server port',
 	'SMTP_PORT_EXPLAIN'				=> 'Only change this if you know your SMTP server is on a different port.',
 	'SMTP_SERVER'					=> 'SMTP server address',
+	'SMTP_SERVER_EXPLAIN'			=> 'Note that you have to provide the protocol that your server uses. If you are using SSL, this has to be "ssl://your.mailserver.com"',
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
