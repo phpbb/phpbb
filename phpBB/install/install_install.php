@@ -404,7 +404,7 @@ class install_install extends module
 			));
 		}
 
-		// Can we find Imagemagick anywhere on the system?
+		// Can we find ImageMagick anywhere on the system?
 		$exe = (DIRECTORY_SEPARATOR == '\\') ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');

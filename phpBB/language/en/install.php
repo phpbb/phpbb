@@ -44,7 +44,7 @@ $lang = array_merge($lang, array(
 	'ADMIN_TEST'				=> 'Check administrator settings',
 	'ADMIN_USERNAME'			=> 'Administrator username',
 	'ADMIN_USERNAME_EXPLAIN'	=> 'Please enter a username between 3 and 20 characters in length.',
-	'APP_MAGICK'				=> 'Imagemagick support [ Attachments ]',
+	'APP_MAGICK'				=> 'ImageMagick support [ Attachments ]',
 	'AUTHOR_NOTES'				=> 'Author notes<br />» %s',
 	'AVAILABLE'					=> 'Available',
 	'AVAILABLE_CONVERTORS'		=> 'Available convertors',
@@ -282,7 +282,7 @@ $lang = array_merge($lang, array(
 	'NOT_UNDERSTAND'			=> 'Could not understand %s #%d, table %s (“%s”)',
 	'NO_CONVERTORS'				=> 'No convertors are available for use.',
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified.',
-	'NO_LOCATION'				=> 'Cannot determine location. If you know Imagemagick is installed, you may specify the location later within your administration control panel',
+	'NO_LOCATION'				=> 'Cannot determine location. If you know ImageMagick is installed, you may specify the location later within your administration control panel',
 	'NO_TABLES_FOUND'			=> 'No tables found.',
 
 	'OVERVIEW_BODY'				=> 'Welcome to phpBB3!<br /><br />phpBB® is the most widely used open source bulletin board solution in the world. phpBB3 is the latest installment in a package line started in 2000. Like its predecessors, phpBB3 is feature-rich, user-friendly, and fully supported by the phpBB Team. phpBB3 greatly improves on what made phpBB2 popular, and adds commonly requested features that were not present in previous versions. We hope it exceeds your expectations.<br /><br />This installation system will guide you through installing phpBB3, updating to the latest version of phpBB3 from past releases, as well as converting to phpBB3 from a different discussion board system (including phpBB2). For more information, we encourage you to read <a href="../docs/INSTALL.html">the installation guide</a>.<br /><br />To read the phpBB3 license or learn about obtaining support and our stance on it, please select the respective options from the side menu. To continue, please select the appropriate tab above.',
