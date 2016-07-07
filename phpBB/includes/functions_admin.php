@@ -2573,11 +2573,6 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
 	}
 
-	if ($prune_limit > 0)
-	{
-		$sql_and .= " LIMIT $prune_limit";
-	}
-
 	/**
 	* Use this event to modify the SQL that selects topics to be pruned
 	*
@@ -2608,7 +2603,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		WHERE ' . $db->sql_in_set('forum_id', $forum_id) . "
 			AND poll_start = 0
 			$sql_and";
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query_limit($sql, $prune_limit);
 
 	$topic_list = array();
 	while ($row = $db->sql_fetchrow($result))
@@ -2625,7 +2620,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 				AND poll_start > 0
 				AND poll_last_vote < $prune_date
 				$sql_and";
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, $prune_limit);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
