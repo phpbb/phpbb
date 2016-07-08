@@ -82,7 +82,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'flash' => '[FLASH={NUMBER1},{NUMBER2} width={NUMBER1;postFilter=#flashwidth} height={NUMBER2;postFilter=#flashheight} url={URL;useContent} /]',
 		'i'     => '[I]{TEXT}[/I]',
 		'img'   => '[IMG src={IMAGEURL;useContent}]',
-		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext}]{TEXT}[/LIST]',
+		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext} #createChild=LI]{TEXT}[/LIST]',
 		'li'    => '[* $tagName=LI]{TEXT}[/*]',
 		'quote' =>
 			"[QUOTE

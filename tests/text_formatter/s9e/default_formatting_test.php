@@ -86,7 +86,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 			),
 			array(
 				'[list]no item[/list]',
-				'<ul>no item</ul>'
+				'<ul><li>no item</li></ul>'
 			),
 			array(
 				'[*]unparsed',

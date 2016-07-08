@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0a51a3b7218cbf3a5fe6621729b72c05",
-    "content-hash": "396082a59d972dd35293fe73b0615e79",
+    "hash": "b0bb6560f0982ecfc8867e762faa3847",
+    "content-hash": "322b621681118fa67925d35030625dae",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -647,16 +647,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "0.4.11",
+            "version": "0.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "e6dc4615081b1668742076aa05d11aa0f7b00103"
+                "reference": "e9363a0d2d6ddef40200854207557c648d36d925"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/e6dc4615081b1668742076aa05d11aa0f7b00103",
-                "reference": "e6dc4615081b1668742076aa05d11aa0f7b00103",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/e9363a0d2d6ddef40200854207557c648d36d925",
+                "reference": "e9363a0d2d6ddef40200854207557c648d36d925",
                 "shasum": ""
             },
             "require": {
@@ -703,7 +703,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2016-02-21 20:38:42"
+            "time": "2016-07-08 05:19:02"
         },
         {
             "name": "symfony/config",
