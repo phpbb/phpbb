@@ -38,8 +38,9 @@ class report_id_auto_increment extends \phpbb\db\migration\migration
 		return array(
 			'change_columns'	=> array(
 				$this->table_prefix . 'reports'				=> array(
-					'report_id'		=> array('ULINT', 0), 0),
+					'report_id'		=> array('ULINT', 0),
 				),
+			),
 		);
 	}
 }
