@@ -1012,6 +1012,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			$approve_log[] = array(
 				'forum_id'		=> $post_data['forum_id'],
 				'topic_id'		=> $post_data['topic_id'],
+				'post_id'		=> $post_id,
 				'post_subject'	=> $post_data['post_subject'],
 				'poster_id'		=> $post_data['poster_id'],
 				'post_username'	=> $post_data['post_username'],
