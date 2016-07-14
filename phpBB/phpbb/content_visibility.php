@@ -417,6 +417,11 @@ class content_visibility
 			return array();
 		}
 
+		if (!function_exists('truncate_string'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_content.' . $this->php_ext);
+		}
+
 		$data = array(
 			'post_visibility'		=> (int) $visibility,
 			'post_delete_user'		=> (int) $user_id,
@@ -626,6 +631,11 @@ class content_visibility
 				// The topic does not exist...
 				return array();
 			}
+		}
+
+		if (!function_exists('truncate_string'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_content.' . $this->php_ext);
 		}
 
 		// Note, we do not set a reason for the posts, just for the topic
