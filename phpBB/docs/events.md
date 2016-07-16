@@ -811,7 +811,6 @@ mcp_move_before
 ===
 * Locations:
     + styles/prosilver/template/mcp_move.html
-    + styles/subsilver2/template/mcp_move.html
 * Since: 3.1.10-RC1
 * Purpose: Add content before move topic/post form
 
