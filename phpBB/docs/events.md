@@ -807,6 +807,14 @@ mcp_front_latest_unapproved_before
 * Since: 3.1.3-RC1
 * Purpose: Add content before latest unapproved posts list
 
+mcp_move_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_move.html
+    + styles/subsilver2/template/mcp_move.html
+* Since: 3.1.10-RC1
+* Purpose: Add content before move topic/post form
+
 mcp_post_additional_options
 ===
 * Locations:
