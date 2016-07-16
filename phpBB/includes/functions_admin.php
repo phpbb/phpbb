@@ -2221,7 +2221,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 /**
 * Prune function
 */
-function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true)
+function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true, $prune_limit = 0)
 {
 	global $db, $phpbb_dispatcher;
 
@@ -2273,9 +2273,19 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	* @var int		prune_flags		The prune flags
 	* @var bool		auto_sync		Whether or not to perform auto sync
 	* @var string	sql_and			SQL text appended to where clause
+	* @var int		prune_limit		The prune limit
 	* @since 3.1.3-RC1
+	* @changed 3.1.10-RC1			Added prune_limit
 	*/
-	$vars = array('forum_id', 'prune_mode', 'prune_date', 'prune_flags', 'auto_sync', 'sql_and');
+	$vars = array(
+		'forum_id',
+		'prune_mode',
+		'prune_date',
+		'prune_flags',
+		'auto_sync',
+		'sql_and',
+		'prune_limit',
+	);
 	extract($phpbb_dispatcher->trigger_event('core.prune_sql', compact($vars)));
 
 	$sql = 'SELECT topic_id
@@ -2283,7 +2293,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		WHERE ' . $db->sql_in_set('forum_id', $forum_id) . "
 			AND poll_start = 0
 			$sql_and";
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query_limit($sql, $prune_limit);
 
 	$topic_list = array();
 	while ($row = $db->sql_fetchrow($result))
@@ -2300,7 +2310,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 				AND poll_start > 0
 				AND poll_last_vote < $prune_date
 				$sql_and";
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, $prune_limit);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -2333,12 +2343,15 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 		$prune_date = time() - ($prune_days * 86400);
 		$next_prune = time() + ($prune_freq * 86400);
 
-		prune($forum_id, $prune_mode, $prune_date, $prune_flags, true);
+		$result = prune($forum_id, $prune_mode, $prune_date, $prune_flags, true, 300);
 
-		$sql = 'UPDATE ' . FORUMS_TABLE . "
-			SET prune_next = $next_prune
-			WHERE forum_id = $forum_id";
-		$db->sql_query($sql);
+		if ($result['topics'] == 0 && $result['posts'] == 0)
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET prune_next = $next_prune
+				WHERE forum_id = $forum_id";
+			$db->sql_query($sql);
+		}
 
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_AUTO_PRUNE', false, array($row['forum_name']));
 	}
