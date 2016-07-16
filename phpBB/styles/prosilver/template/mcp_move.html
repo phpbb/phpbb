@@ -31,6 +31,8 @@
 
 <!-- INCLUDE overall_header.html -->
 
+<!-- EVENT mcp_move_before -->
+
 <form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
 
 <div class="panel">
@@ -54,7 +56,7 @@
 		</fieldset>
 
 		<fieldset class="submit-buttons">
-			{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="button1" />&nbsp; 
+			{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="button1" />&nbsp;
 			<input type="submit" name="cancel" value="{L_NO}" class="button2" />
 			{S_FORM_TOKEN}
 		</fieldset>
