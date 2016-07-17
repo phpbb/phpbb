@@ -37,52 +37,6 @@ class base
 	}
 
 	/**
-	* Retrieves a language dependend list of words that should be ignored by the search
-	*/
-	function get_ignore_words()
-	{
-		if (!sizeof($this->ignore_words))
-		{
-			global $user, $phpEx;
-
-			$words = array();
-
-			if (file_exists("{$user->lang_path}{$user->lang_name}/search_ignore_words.$phpEx"))
-			{
-				// include the file containing ignore words
-				include("{$user->lang_path}{$user->lang_name}/search_ignore_words.$phpEx");
-			}
-
-			$this->ignore_words = $words;
-			unset($words);
-		}
-	}
-
-	/**
-	* Stores a list of synonyms that should be replaced in $this->match_synonym and $this->replace_synonym and caches them
-	*/
-	function get_synonyms()
-	{
-		if (!sizeof($this->match_synonym))
-		{
-			global $user, $phpEx;
-
-			$synonyms = array();
-
-			if (file_exists("{$user->lang_path}{$user->lang_name}/search_synonyms.$phpEx"))
-			{
-				// include the file containing synonyms
-				include("{$user->lang_path}{$user->lang_name}/search_synonyms.$phpEx");
-			}
-
-			$this->match_synonym = array_keys($synonyms);
-			$this->replace_synonym = array_values($synonyms);
-
-			unset($synonyms);
-		}
-	}
-
-	/**
 	* Retrieves cached search results
 	*
 	* @param string $search_key		an md5 string generated from all the passed search options to identify the results
