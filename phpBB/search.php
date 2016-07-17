@@ -1254,6 +1254,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 }
 
 // Search forum
+$rowset = array();
 $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, f.enable_indexing, fa.user_id
 	FROM ' . FORUMS_TABLE . ' f
@@ -1262,11 +1263,27 @@ $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f
 	ORDER BY f.left_id ASC";
 $result = $db->sql_query($sql);
 
+while ($row = $db->sql_fetchrow($result))
+{
+	$rowset[(int) $row['forum_id']] = $row;
+}
+$db->sql_freeresult($result);
+
 $right = $cat_right = $padding_inc = 0;
 $padding = $forum_list = $holding = '';
 $pad_store = array('0' => '');
 
-while ($row = $db->sql_fetchrow($result))
+/**
+* Modify the forum select list for advanced search page
+*
+* @event core.search_modify_forum_select_list
+* @var	array	rowset	Array with the forums list data
+* @since 3.1.10-RC1
+*/
+$vars = array('rowset');
+extract($phpbb_dispatcher->trigger_event('core.search_modify_forum_select_list', compact($vars)));
+
+foreach ($rowset as $row)
 {
 	if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
 	{
@@ -1338,8 +1355,8 @@ if ($holding)
 	$s_forums .= $holding;
 }
 
-$db->sql_freeresult($result);
 unset($pad_store);
+unset($rowset);
 
 if (!$s_forums)
 {
