@@ -204,7 +204,7 @@ function group_select_options($group_id, $exclude_ids = false, $manage_founder =
 */
 function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = false, $no_cache = false)
 {
-	global $db, $auth;
+	global $db, $auth, $phpbb_dispatcher;
 	static $forum_rows;
 
 	if (!isset($forum_rows))
@@ -258,6 +258,16 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 			$rowset[] = ($id_only) ? (int) $row['forum_id'] : $row;
 		}
 	}
+
+	/**
+	* Modify the forum list data
+	*
+	* @event core.get_forum_list_modify_data
+	* @var	array	rowset	Array with the forum list data
+	* @since 3.1.10-RC1
+	*/
+	$vars = array('rowset');
+	extract($phpbb_dispatcher->trigger_event('core.get_forum_list_modify_data', compact($vars)));
 
 	return $rowset;
 }
