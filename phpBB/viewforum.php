@@ -495,6 +495,28 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 		'ORDER_BY'	=> 't.topic_time DESC',
 	);
+
+	/**
+	* Event to modify the SQL query before the announcement topic ids data is retrieved
+	*
+	* @event core.viewforum_get_announcement_topic_ids_data
+	* @var	array	forum_data			Data about the forum
+	* @var	array	g_forum_ary			Global announcement forums array
+	* @var	array	sql_anounce_array	SQL announcement array
+	* @var	array	sql_ary				SQL query array to get the announcement topic ids data
+	* @var	int		forum_id			The forum ID
+	*
+	* @since 3.1.10-RC1
+	*/
+	$vars = array(
+		'forum_data',
+		'g_forum_ary',
+		'sql_anounce_array',
+		'sql_ary',
+		'forum_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.viewforum_get_announcement_topic_ids_data', compact($vars)));
+
 	$sql = $db->sql_build_query('SELECT', $sql_ary);
 	$result = $db->sql_query($sql);
 
