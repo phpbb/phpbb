@@ -942,11 +942,15 @@ if (sizeof($topic_list))
 		* Modify the topic data before it is assigned to the template
 		*
 		* @event core.viewforum_modify_topicrow
-		* @var	array	row			Array with topic data
-		* @var	array	topic_row	Template array with topic data
+		* @var	array	row					Array with topic data
+		* @var	array	topic_row			Template array with topic data
+		* @var	bool	s_type_switch		Flag indicating if the topic type is [global] announcement
+		* @var	bool	s_type_switch_test	Flag indicating if the test topic type is [global] announcement
 		* @since 3.1.0-a1
+		*
+		* @changed 3.1.10-RC1 Added s_type_switch, s_type_switch_test
 		*/
-		$vars = array('row', 'topic_row');
+		$vars = array('row', 'topic_row', 's_type_switch', 's_type_switch_test');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));
 
 		$template->assign_block_vars('topicrow', $topic_row);
