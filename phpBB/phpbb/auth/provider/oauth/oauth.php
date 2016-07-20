@@ -201,7 +201,8 @@ class oauth extends \phpbb\auth\provider\base
 		$query = 'mode=login&login=external&oauth_service=' . $service_name_original;
 		$service = $this->get_service($service_name_original, $storage, $service_credentials, $query, $this->service_providers[$service_name]->get_auth_scope());
 
-		if ($this->request->is_set('code', \phpbb\request\request_interface::GET))
+		if (($service::OAUTH_VERSION === 2 && $this->request->is_set('code', \phpbb\request\request_interface::GET))
+			|| ($service::OAUTH_VERSION === 1 && $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET)))
 		{
 			$this->service_providers[$service_name]->set_external_service_provider($service);
 			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
@@ -256,7 +257,15 @@ class oauth extends \phpbb\auth\provider\base
 		}
 		else
 		{
-			$url = $service->getAuthorizationUri();
+			if ($service::OAUTH_VERSION === 1)
+			{
+				$token = $service->requestRequestToken();
+				$url = $service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+			}
+			else
+			{
+				$url = $service->getAuthorizationUri();
+			}
 			header('Location: ' . $url);
 		}
 	}
@@ -520,7 +529,8 @@ class oauth extends \phpbb\auth\provider\base
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
 		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $query, $scopes);
 
-		if ($this->request->is_set('code', \phpbb\request\request_interface::GET))
+		if (($service::OAUTH_VERSION === 2 && $this->request->is_set('code', \phpbb\request\request_interface::GET))
+			|| ($service::OAUTH_VERSION === 1 && $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET)))
 		{
 			$this->service_providers[$service_name]->set_external_service_provider($service);
 			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
@@ -536,7 +546,15 @@ class oauth extends \phpbb\auth\provider\base
 		}
 		else
 		{
-			$url = $service->getAuthorizationUri();
+			if ($service::OAUTH_VERSION === 1)
+			{
+				$token = $service->requestRequestToken();
+				$url = $service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+			}
+			else
+			{
+				$url = $service->getAuthorizationUri();
+			}
 			header('Location: ' . $url);
 		}
 	}
