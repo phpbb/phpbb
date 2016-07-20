@@ -99,3 +99,11 @@ services:
             - '@request'
         tags:
             - { name: auth.provider.oauth.service }
+
+    auth.provider.oauth.service.twitter:
+        class: phpbb\auth\provider\oauth\service\twitter
+        arguments:
+            - @config
+            - @request
+        tags:
+            - { name: auth.provider.oauth.service }
