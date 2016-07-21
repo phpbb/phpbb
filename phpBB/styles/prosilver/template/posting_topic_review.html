@@ -43,7 +43,10 @@
 			</ul>
 			<!-- ENDIF -->
 
+			<!-- EVENT posting_topic_review_row_post_details_before -->
 			<p class="author"><!-- IF S_IS_BOT -->{topic_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{topic_review_row.U_MINI_POST}">{topic_review_row.MINI_POST_IMG}</a><!-- ENDIF --> {L_POST_BY_AUTHOR} <strong>{topic_review_row.POST_AUTHOR_FULL}</strong> &raquo; {topic_review_row.POST_DATE}  </p>
+			<!-- EVENT posting_topic_review_row_post_details_after -->
+
 			<div class="content">{topic_review_row.MESSAGE}</div>
 
 			<!-- IF topic_review_row.S_HAS_ATTACHMENTS -->
