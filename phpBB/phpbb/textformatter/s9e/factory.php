@@ -309,7 +309,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		// Load smilies
 		foreach ($this->data_access->get_smilies() as $row)
 		{
-			$configurator->Emoticons->add(
+			$configurator->Emoticons->set(
 				$row['code'],
 				'<img class="smilies" src="{$T_SMILIES_PATH}/' . htmlspecialchars($row['smiley_url']) . '" alt="{.}" title="' . htmlspecialchars($row['emotion']) . '"/>'
 			);
