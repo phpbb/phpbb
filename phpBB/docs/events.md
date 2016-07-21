@@ -878,16 +878,16 @@ mcp_topic_options_before
 mcp_topic_postrow_post_details_after
 ===
 * Locations:
-    + styles/prosilver/template/mpc_topic.html
-	+ styles/subsilver2/template/mpc_topic.html
+    + styles/prosilver/template/mcp_topic.html
+	+ styles/subsilver2/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content after post details in topic moderation
 
 mcp_topic_postrow_post_details_before
 ===
 * Locations:
-    + styles/prosilver/template/mpc_topic.html
-	+ styles/subsilver2/template/mpc_topic.html
+    + styles/prosilver/template/mcp_topic.html
+	+ styles/subsilver2/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content before post details in topic moderation
 
