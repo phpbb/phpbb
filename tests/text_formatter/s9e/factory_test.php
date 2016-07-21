@@ -170,6 +170,17 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		);
 	}
 
+	public function test_duplicate_smilies()
+	{
+		$fixture = __DIR__ . '/fixtures/smilies_duplicate.xml';
+		$parser = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.parser');
+
+		$this->assertSame(
+			'<r><E>:)</E></r>',
+			$parser->parse(':)')
+		);
+	}
+
 	/**
 	* @testdox {INTTEXT} is supported in custom BBCodes
 	*/
