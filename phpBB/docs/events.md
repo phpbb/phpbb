@@ -879,7 +879,7 @@ mcp_topic_postrow_post_details_after
 ===
 * Locations:
     + styles/prosilver/template/mcp_topic.html
-	+ styles/subsilver2/template/mcp_topic.html
+    + styles/subsilver2/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content after post details in topic moderation
 
@@ -887,7 +887,7 @@ mcp_topic_postrow_post_details_before
 ===
 * Locations:
     + styles/prosilver/template/mcp_topic.html
-	+ styles/subsilver2/template/mcp_topic.html
+    + styles/subsilver2/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content before post details in topic moderation
 
@@ -1584,7 +1584,7 @@ posting_topic_review_row_post_details_after
 ===
 * Locations:
     + styles/prosilver/template/posting_topic_review.html
-	+ styles/subsilver2/template/posting_topic_review.html
+    + styles/subsilver2/template/posting_topic_review.html
 * Since: 3.1.10-RC1
 * Purpose: Add content after post details in topic review
 
@@ -1592,7 +1592,7 @@ posting_topic_review_row_post_details_before
 ===
 * Locations:
     + styles/prosilver/template/posting_topic_review.html
-	+ styles/subsilver2/template/posting_topic_review.html
+    + styles/subsilver2/template/posting_topic_review.html
 * Since: 3.1.10-RC1
 * Purpose: Add content before post details in topic review
 
