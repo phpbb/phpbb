@@ -158,7 +158,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			$data = array('module_langname' => $data);
 		}
 
-		$parent = $data['parent_id'] = $this->get_parent_module_id($parent);
+		$parent = $data['parent_id'] = $this->get_parent_module_id($parent, $data);
 
 		if (!isset($data['module_langname']))
 		{
@@ -463,10 +463,11 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Get parent module id
 	*
 	* @param string|int $parent_id The parent module_id|module_langname
+	* @param array $data The module data array
 	* @return int The parent module_id
 	* @throws \phpbb\db\migration\exception
 	*/
-	public function get_parent_module_id($parent_id)
+	public function get_parent_module_id($parent_id, $data = array())
 	{
 		// Allow '' to be sent as 0
 		$parent_id = $parent_id ?: 0;
@@ -492,8 +493,26 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				break;
 
 				// Several modules with the given module_langname were found
+				// Try to determine the parent_id by the neighbour module parent
 				default:
-					throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
+					if (!empty($data) && (isset($data['before']) || isset($data['after'])))
+					{
+						$neighbour_module_langname = isset($data['before']) ? $data['before'] : $data['after'];
+						$sql = 'SELECT parent_id
+							FROM ' . MODULES_TABLE . '
+							WHERE module_langname ' . $this->db->sql_escape($neighbour_module_langname) . '
+								AND ' . $this->db->sql_in_set('parent_id', $ids);
+						$result = $this->db->sql_query($sql);
+						$parent_id = (int) $this->db->sql_fetchfield('parent_id');
+						if (!$parent_id)
+						{
+							throw new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
+						}
+					}
+					else
+					{
+						throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
+					}
 				break;
 			}
 		}
