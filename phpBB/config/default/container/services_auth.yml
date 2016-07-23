@@ -103,7 +103,7 @@ services:
     auth.provider.oauth.service.twitter:
         class: phpbb\auth\provider\oauth\service\twitter
         arguments:
-            - @config
-            - @request
+            - '@config'
+            - '@request'
         tags:
             - { name: auth.provider.oauth.service }
