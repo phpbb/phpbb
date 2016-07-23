@@ -118,6 +118,40 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			$this->fail($e);
 		}
 		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_NEW_CAT', 'ACP_NEW_MODULE'));
+
+		// Test adding module when plural parent module_langname exists
+		// PHPBB3-14703
+		// Adding fail
+		try
+		{
+			$this->tool->add('acp', 'ACP_FORUM_BASED_PERMISSIONS', array(
+				'module_basename'	=> 'acp_new_permissions_module',
+				'module_langname'	=> 'ACP_NEW_PERMISSIONS_MODULE',
+				'module_mode'		=> 'test',
+				'module_auth'		=> '',
+			));
+			$this->fail('Exception not thrown');
+		}
+		catch (Exception $e) {}
+
+		// Test adding module when plural parent module_langname exists
+		// PHPBB3-14703
+		// Adding success
+		try
+		{
+			$this->tool->add('acp', 'ACP_FORUM_BASED_PERMISSIONS', array(
+				'module_basename'	=> 'acp_new_permissions_module',
+				'module_langname'	=> 'ACP_NEW_PERMISSIONS_MODULE',
+				'module_mode'		=> 'test',
+				'module_auth'		=> '',
+				'after'				=> 'ACP_FORUM_BASED_PERMISSIONS_CHILD_1',
+			));
+		}
+		catch (Exception $e)
+		{
+			$this->fail($e);
+		}
+		$this->assertEquals(true, $this->tool->exists('acp', 'ACP_FORUM_BASED_PERMISSIONS', 'ACP_NEW_PERMISSIONS_MODULE'));
 	}
 
 	public function test_remove()

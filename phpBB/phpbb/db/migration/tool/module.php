@@ -495,13 +495,13 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				// Several modules with the given module_langname were found
 				// Try to determine the parent_id by the neighbour module parent
 				default:
-					if (!empty($data) && (isset($data['before']) || isset($data['after'])))
+					if (isset($data['before']) || isset($data['after']))
 					{
 						$neighbour_module_langname = isset($data['before']) ? $data['before'] : $data['after'];
 						$sql = 'SELECT parent_id
-							FROM ' . MODULES_TABLE . '
-							WHERE module_langname ' . $this->db->sql_escape($neighbour_module_langname) . '
-								AND ' . $this->db->sql_in_set('parent_id', $ids);
+							FROM ' . MODULES_TABLE . "
+							WHERE module_langname = '" . $this->db->sql_escape($neighbour_module_langname) . "'
+								AND " . $this->db->sql_in_set('parent_id', $ids);
 						$result = $this->db->sql_query($sql);
 						$parent_id = (int) $this->db->sql_fetchfield('parent_id');
 						if (!$parent_id)
@@ -509,8 +509,10 @@ class module implements \phpbb\db\migration\tool\tool_interface
 							throw new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
 						}
 					}
-					else
+					else if (!empty($data))
 					{
+						// Only throw exception whhile adding module when the $data is not empty
+						// Otherwise it's just removing or existance checking and no need for exception
 						throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
 					}
 				break;
