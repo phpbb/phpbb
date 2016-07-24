@@ -435,8 +435,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 	/**
 	* Get the list of installed module categories
-	*	key - module_langname
-	*	value - module_id
+	*	key - module_id
+	*	value - module_langname
 	*
 	* @return null
 	*/
