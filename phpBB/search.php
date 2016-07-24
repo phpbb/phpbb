@@ -613,7 +613,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'id_ary',
 		'start',
 		'per_page',
-		'total_match_count'
+		'total_match_count',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.search_backend_search_after', compact($vars)));
 
