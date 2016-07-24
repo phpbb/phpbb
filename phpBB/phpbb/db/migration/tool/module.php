@@ -90,7 +90,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		$parent_sql = '';
 		if ($parent !== false)
 		{
-			$parent = $this->get_parent_module_id($parent);
+			$parent = $this->get_parent_module_id($parent, $module);
 			$parent_sql = 'AND parent_id = ' . (int) $parent;
 		}
 
@@ -336,7 +336,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			$parent_sql = '';
 			if ($parent !== false)
 			{
-				$parent = $this->get_parent_module_id($parent);
+				$parent = $this->get_parent_module_id($parent, $module);
 				$parent_sql = 'AND parent_id = ' . (int) $parent;
 			}
 
@@ -463,14 +463,20 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Get parent module id
 	*
 	* @param string|int $parent_id The parent module_id|module_langname
-	* @param array $data The module data array
+	* @param int|string|array $data The module_id, module_langname for existance checking or module data array for adding
 	* @return int The parent module_id
 	* @throws \phpbb\db\migration\exception
 	*/
-	public function get_parent_module_id($parent_id, $data = array())
+	public function get_parent_module_id($parent_id, $data = '')
 	{
 		// Allow '' to be sent as 0
 		$parent_id = $parent_id ?: 0;
+
+		// If automatic adding is in action, convert array back to string to simplify things
+		if (is_array($data) && sizeof($data) == 1)
+		{
+			$data = $data['module_langname'];
+		}
 
 		if (!is_numeric($parent_id))
 		{
@@ -495,11 +501,11 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				// Several modules with the given module_langname were found
 				// Try to determine the parent_id by the neighbour module parent
 				default:
-					if (isset($data['before']) || isset($data['after']))
+					if (is_array($data) && (isset($data['before']) || isset($data['after'])))
 					{
 						$neighbour_module_langname = isset($data['before']) ? $data['before'] : $data['after'];
 						$sql = 'SELECT parent_id
-							FROM ' . MODULES_TABLE . "
+							FROM ' . $this->modules_table . "
 							WHERE module_langname = '" . $this->db->sql_escape($neighbour_module_langname) . "'
 								AND " . $this->db->sql_in_set('parent_id', $ids);
 						$result = $this->db->sql_query($sql);
@@ -509,10 +515,21 @@ class module implements \phpbb\db\migration\tool\tool_interface
 							throw new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
 						}
 					}
-					else if (!empty($data))
+					else if (!empty($data) && !is_array($data))
 					{
-						// Only throw exception whhile adding module when the $data is not empty
-						// Otherwise it's just removing or existance checking and no need for exception
+						// The module_langname is set, checking for the module existance
+						// As more than 1 parents were found already, there's no way for null parent_id here
+						$sql = 'SELECT m2.module_id as module_parent_id
+							FROM ' . $this->modules_table . ' m1, ' . $this->modules_table . " m2
+							WHERE " . ((is_numeric($data)) ? 'm1.module_id = ' . (int) $data : "m1.module_langname = '" . $this->db->sql_escape($data)) . "'
+								AND m2.module_id = m1.parent_id
+								AND " . $this->db->sql_in_set('m2.module_id', $ids);
+						$result = $this->db->sql_query($sql);
+						$parent_id = (int) $this->db->sql_fetchfield('module_parent_id');
+					}
+					else
+					{
+						//Unable to get the parent module id, throwing an exception
 						throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
 					}
 				break;
