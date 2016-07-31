@@ -1,0 +1,5 @@
+{
+	"require-dev": {
+		"facebook/webdriver": "~1.1"
+	}
+}
