@@ -273,7 +273,7 @@ class kernel implements kernel_interface, TerminableInterface
 	}
 
 	/**
-	 * Initialize stuff after loading the container
+	 * Initializes stuff after loading the container
 	 */
 	protected function initializePostContainer()
 	{
@@ -307,7 +307,7 @@ class kernel implements kernel_interface, TerminableInterface
 	}
 
 	/**
-	 * Register phpBB's legacy hook handler
+	 * Registers phpBB's legacy hook handler
 	 *
 	 * @deprecated To be removed in 4.0
 	 */
@@ -316,7 +316,7 @@ class kernel implements kernel_interface, TerminableInterface
 		global $phpbb_hook;
 
 		require($this->root_dir . 'includes/hooks/index.' . $this->php_ext);
-		$phpbb_hook = new \phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', ['template', 'display']));
+		$phpbb_hook = new \phpbb_hook(['exit_handler', 'phpbb_user_session_handler', 'append_sid', ['template', 'display']]);
 
 		/* @var $phpbb_hook_finder \phpbb\hook\finder */
 		$phpbb_hook_finder = $this->container->get('hook_finder');
