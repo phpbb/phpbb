@@ -284,20 +284,27 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
-		self::$webDriver->get('adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertNotEmpty(count(self::find_element('className', 'submit-buttons')));
+		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertNotEmpty(count(self::find_element('cssSelector', '.submit-buttons')));
 
-		self::find_element('cssSelector', "input[value='Enable'")->submit();
+		self::find_element('cssSelector', "input[value='Enable']")->submit();
 		$this->add_lang('acp/extensions');
 
-		$meta_refresh = self::find_element('cssSelector', 'meta[http-equiv="refresh"]');
-
-		// Wait for extension to be fully enabled
-		while (sizeof($meta_refresh))
+		try
 		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
-			self::$webDriver->execute(array('method' => 'post', 'url' => $match[1]));
 			$meta_refresh = self::find_element('cssSelector', 'meta[http-equiv="refresh"]');
+
+			// Wait for extension to be fully enabled
+			while (sizeof($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				self::$webDriver->execute(array('method' => 'post', 'url' => $match[1]));
+				$meta_refresh = self::find_element('cssSelector', 'meta[http-equiv="refresh"]');
+			}
+		}
+		catch (\Facebook\WebDriver\Exception\NoSuchElementException $e)
+		{
+			// Probably no refresh triggered
 		}
 
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', self::find_element('cssSelector', 'div.successbox')->getText());
@@ -522,6 +529,8 @@ class phpbb_ui_test_case extends phpbb_test_case
 	protected function login($username = 'admin')
 	{
 		$this->add_lang('ucp');
+
+		self::$webDriver->manage()->deleteAllCookies();
 
 		$this->visit('ucp.php');
 		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), self::$webDriver->getPageSource());
