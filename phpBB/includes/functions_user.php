@@ -119,19 +119,29 @@ function user_update_name($old_name, $new_name)
 	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
-		FORUMS_TABLE			=> array('forum_last_poster_name'),
-		MODERATOR_CACHE_TABLE	=> array('username'),
-		POSTS_TABLE				=> array('post_username'),
-		TOPICS_TABLE			=> array('topic_first_poster_name', 'topic_last_poster_name'),
+		FORUMS_TABLE			=> array(
+			'forum_last_poster_id'	=> 'forum_last_poster_name',
+		),
+		MODERATOR_CACHE_TABLE	=> array(
+			'user_id'	=> 'username',
+		),
+		POSTS_TABLE				=> array(
+			'poster_id'	=> 'post_username',
+		),
+		TOPICS_TABLE			=> array(
+			'topic_poster'			=> 'topic_first_poster_name',
+			'topic_last_poster_id'	=> 'topic_last_poster_name',
+		),
 	);
 
 	foreach ($update_ary as $table => $field_ary)
 	{
-		foreach ($field_ary as $field)
+		foreach ($field_ary as $id_field => $name_field)
 		{
 			$sql = "UPDATE $table
-				SET $field = '" . $db->sql_escape($new_name) . "'
-				WHERE $field = '" . $db->sql_escape($old_name) . "'";
+				SET $name_field = '" . $db->sql_escape($new_name) . "'
+				WHERE $name_field = '" . $db->sql_escape($old_name) . "'
+					AND $id_field <> " . ANONYMOUS;
 			$db->sql_query($sql);
 		}
 	}
