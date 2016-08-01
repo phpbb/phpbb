@@ -12,6 +12,7 @@
 */
 
 use phpbb\kernel;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -33,6 +34,13 @@ extract($phpbb_config_php_file->get_all());
 
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
+
+
+if (!defined('PHPBB_INSTALLED'))
+{
+	$response = new RedirectResponse('install/app.php', 302);
+	$response->send();
+}
 
 if (!defined('PHPBB_ENVIRONMENT'))
 {

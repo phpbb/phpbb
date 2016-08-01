@@ -291,6 +291,8 @@ class kernel implements kernel_interface, TerminableInterface
 
 		require($this->root_dir . 'includes/compatibility_globals.' . $this->php_ext);
 
+		register_compatibility_globals();
+
 		$this->load_hook_handler();
 	}
 

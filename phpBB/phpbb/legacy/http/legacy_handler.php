@@ -281,7 +281,7 @@ class legacy_handler
 	{
 		$parts = parse_url($request->getUri());
 
-		if (!isset($parts['path']) || substr($parts['path'], -1) === '/ ')
+		if (!isset($parts['path']) || substr($parts['path'], -1) === '/')
 		{
 			return;
 		}
