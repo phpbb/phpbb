@@ -959,6 +959,14 @@ memberlist_body_username_prepend
 * Purpose: Add information before every username in the memberlist. Works in
 all display modes (leader, group and normal memberlist).
 
+memberlist_email_before
+===
+* Locations:
+    + styles/prosilver/template/memberlist_email.html
+    + styles/subsilver2/template/memberlist_email.html
+* Since: 3.1.10-RC1
+* Purpose: Allow adding customizations before the memberlist_email form.
+
 memberlist_search_fields_after
 ===
 * Locations:
