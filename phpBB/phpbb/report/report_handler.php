@@ -26,7 +26,7 @@ abstract class report_handler implements report_handler_interface
 	protected $dispatcher;
 
 	/**
-	 * @var \phpbb\config\db
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
@@ -60,7 +60,7 @@ abstract class report_handler implements report_handler_interface
 	 * @param \phpbb\user						$user
 	 * @param \phpbb\notification\manager		$notification
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\db $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\notification\manager $notification)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, \phpbb\auth\auth $auth, \phpbb\user $user, \phpbb\notification\manager $notification)
 	{
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
