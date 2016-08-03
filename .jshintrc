@@ -19,6 +19,7 @@
   "jquery": true,
 
   "globals": {
-    "JSON": true
+    "JSON": true,
+    "phpbb": true
   }
 }

@@ -479,6 +479,32 @@ class ucp_profile
 					{
 						$message_parser = new parse_message($signature);
 
+						/**
+						* Modify user signature on editing profile in UCP
+						*
+						* @event core.ucp_profile_modify_signature
+						* @var	bool	enable_bbcode		Whether or not bbcode is enabled
+						* @var	bool	enable_smilies		Whether or not smilies are enabled
+						* @var	bool	enable_urls			Whether or not urls are enabled
+						* @var	string	signature			Users signature text
+						* @var	object	message_parser		The message parser object
+						* @var	array	error				Any error strings
+						* @var	bool	submit				Whether or not the form has been sumitted
+						* @var	bool	preview				Whether or not the signature is being previewed
+						* @since 3.1.10-RC1
+						*/
+						$vars = array(
+							'enable_bbcode',
+							'enable_smilies',
+							'enable_urls',
+							'signature',
+							'message_parser',
+							'error',
+							'submit',
+							'preview',
+						);
+						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature', compact($vars)));
+
 						// Allowing Quote BBCode
 						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
 
@@ -504,6 +530,16 @@ class ucp_profile
 								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
+
+							/**
+							* Modify user registration data before submitting it to the database
+							*
+							* @event core.ucp_profile_modify_signature_sql_ary
+							* @var	array	sql_ary		Array with user signature data to submit to the database
+							* @since 3.1.10-RC1
+							*/
+							$vars = array('sql_ary');
+							extract($phpbb_dispatcher->trigger_event('core.ucp_profile_modify_signature_sql_ary', compact($vars)));
 
 							$sql = 'UPDATE ' . USERS_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '

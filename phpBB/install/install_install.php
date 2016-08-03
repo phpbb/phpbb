@@ -151,10 +151,10 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SETTINGS_EXPLAIN'],
 		));
 
-		// Test the minimum PHP version
+		// Test the minimum and maximum version of PHP
 		$php_version = PHP_VERSION;
 
-		if (version_compare($php_version, '5.3.3') < 0)
+		if ((version_compare($php_version, '5.3.3') < 0) || (version_compare($php_version, '7.0.0-dev', '>=')))
 		{
 			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
@@ -404,7 +404,7 @@ class install_install extends module
 			));
 		}
 
-		// Can we find Imagemagick anywhere on the system?
+		// Can we find ImageMagick anywhere on the system?
 		$exe = (DIRECTORY_SEPARATOR == '\\') ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');

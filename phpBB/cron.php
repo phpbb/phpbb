@@ -55,6 +55,18 @@ if ($cron_lock->acquire())
 	$task = $cron->find_task($cron_type);
 	if ($task)
 	{
+		/**
+		 * This event enables you to catch the task before it runs
+		 *
+		 * @event core.cron_run_before
+		 * @var	\phpbb\cron\task\wrapper	task	Current Cron task
+		 * @since 3.1.8-RC1
+		 */
+		$vars = array(
+			'task',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.cron_run_before', compact($vars)));
+
 		if ($task->is_parametrized())
 		{
 			$task->parse_parameters($request);

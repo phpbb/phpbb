@@ -702,7 +702,7 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	$used_imagick = false;
 
-	// Only use imagemagick if defined and the passthru function not disabled
+	// Only use ImageMagick if defined and the passthru function not disabled
 	if ($config['img_imagick'] && function_exists('passthru'))
 	{
 		if (substr($config['img_imagick'], -1) !== '/')

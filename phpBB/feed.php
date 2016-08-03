@@ -84,6 +84,20 @@ $feed->open();
 // Iterate through items
 while ($row = $feed->get_item())
 {
+	/**
+	* Event to modify the feed row
+	*
+	* @event core.feed_modify_feed_row
+	* @var	int		forum_id	Forum ID
+	* @var	string	mode		Feeds mode (forums|topics|topics_new|topics_active|news)
+	* @var	array	row			Array with feed data
+	* @var	int		topic_id	Topic ID
+	*
+	* @since 3.1.10-RC1
+	*/
+	$vars = array('forum_id', 'mode', 'row', 'topic_id');
+	extract($phpbb_dispatcher->trigger_event('core.feed_modify_feed_row', compact($vars)));
+
 	// BBCode options to correctly disable urls, smilies, bbcode...
 	if ($feed->get('options') === NULL)
 	{

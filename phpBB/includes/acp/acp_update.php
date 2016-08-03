@@ -62,5 +62,17 @@ class acp_update
 
 			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $update_link),
 		));
+
+		// Incomplete update?
+		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
+		{
+			$database_update_link = append_sid($phpbb_root_path . 'install/database_update.' . $phpEx);
+
+			$template->assign_vars(array(
+				'S_UPDATE_INCOMPLETE'		=> true,
+				'FILES_VERSION'				=> PHPBB_VERSION,
+				'INCOMPLETE_INSTRUCTIONS'	=> $user->lang('UPDATE_INCOMPLETE_EXPLAIN', $database_update_link),
+			));
+		}
 	}
 }

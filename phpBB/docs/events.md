@@ -843,6 +843,14 @@ mcp_front_latest_unapproved_before
 * Since: 3.1.3-RC1
 * Purpose: Add content before latest unapproved posts list
 
+mcp_move_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_move.html
+    + styles/subsilver2/template/mcp_move.html
+* Since: 3.1.10-RC1
+* Purpose: Add content before move topic/post form
+
 mcp_post_additional_options
 ===
 * Locations:
@@ -1852,6 +1860,18 @@ topiclist_row_append
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
+
+topiclist_row_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+    + styles/prosilver/template/viewforum_body.html
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/search_results.html
+    + styles/subsilver2/template/viewforum_body.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.10-RC1
+* Purpose: Add content into topic rows (after the elements containing the topic titles)
 
 ucp_agreement_terms_after
 ===
