@@ -49,7 +49,7 @@
 	-->
 	<target name="composer">
 		<exec dir="phpBB"
-			command="php ../composer.phar install --dev"
+			command="php ../composer.phar install"
 			checkreturn="true"
 			passthru="true" />
 	</target>
@@ -143,6 +143,7 @@
 		<phingcall target="export">
 			<property name="revision" value="release-${version}" />
 			<property name="dir" value="build/old_versions/release-${version}" />
+			<property name="skip-composer" value="true" />
 		</phingcall>
 
 		<phingcall target="clean-diff-dir">
@@ -248,26 +249,35 @@
 			<equals arg1="${composer-has-dependencies}" arg2="1" trim="true" />
 			<then>
 				<!-- We have non-dev composer dependencies -->
-				<exec dir="."
-					command="git ls-tree ${revision} composer.phar"
-					checkreturn="true"
-					outputProperty='composer-ls-tree-output' />
 				<if>
-					<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+					<not><isset property="skip-composer" /></not>
 					<then>
-						<fail message="There are composer dependencies, but composer.phar is missing." />
-					</then>
-					<else>
-						<!-- Export the phar, install dependencies, delete phar. -->
 						<exec dir="."
-							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
-							checkreturn="true" />
-						<exec dir="${dir}"
-							command="php composer.phar install --no-dev --optimize-autoloader"
+							command="git ls-tree ${revision} composer.phar"
 							checkreturn="true"
-							passthru="true" />
-						<delete file="${dir}/composer.phar" />
-					</else>
+							outputProperty='composer-ls-tree-output' />
+						<if>
+							<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+							<then>
+								<fail message="There are composer dependencies, but composer.phar is missing." />
+							</then>
+							<else>
+								<!-- Export the phar, install dependencies, delete phar. -->
+								<exec dir="."
+									command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
+									checkreturn="true" />
+								<exec dir="${dir}"
+									command="php composer.phar install --no-dev --optimize-autoloader"
+									checkreturn="true"
+									passthru="true" />
+								<delete file="${dir}/composer.phar" />
+
+								<phingcall target="clean-vendor-dir">
+									<property name="dir" value="${dir}" />
+								</phingcall>
+							</else>
+						</if>
+					</then>
 				</if>
 			</then>
 			<else>
@@ -285,10 +295,6 @@
 		<delete dir="${dir}/install/data" />
 		<delete dir="${dir}/config/development" />
 		<delete dir="${dir}/config/test" />
-
-		<phingcall target="clean-vendor-dir">
-			<property name="dir" value="${dir}" />
-		</phingcall>
 
 		<echo msg="Setting permissions for checkout of ${revision} in ${dir}" />
 		<!-- set permissions of all files to 644, directories to 755 -->
