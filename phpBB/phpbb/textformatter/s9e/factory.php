@@ -349,6 +349,7 @@ class factory implements \phpbb\textformatter\cache_interface
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
 		$configurator->Emoji->setImageSize(18);
+		$configurator->Emoji->useSVG();
 		$tag = $configurator->Emoji->getTag();
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
