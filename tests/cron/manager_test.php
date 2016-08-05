@@ -90,6 +90,7 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 			->willReturn('foobar');
 
 		$request = new \phpbb\request\request();
+		$request->enable_super_globals();
 
 		$routing_helper = new \phpbb\routing\helper(
 			$mock_config,
