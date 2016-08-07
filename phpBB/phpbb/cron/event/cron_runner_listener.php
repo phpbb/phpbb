@@ -56,6 +56,8 @@ class cron_runner_listener implements EventSubscriberInterface
 
 	/**
 	 * Runs the cron job after the response was sent
+	 *
+	 * @param PostResponseEvent	$event	The event
 	 */
 	public function on_kernel_terminate(PostResponseEvent $event)
 	{
