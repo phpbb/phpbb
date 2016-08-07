@@ -23,6 +23,8 @@ class cron
 	/**
 	 * Handles CRON requests
 	 *
+	 * @param string $cron_type
+	 *
 	 * @return Response
 	 */
 	public function handle($cron_type)
