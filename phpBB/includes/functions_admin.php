@@ -65,7 +65,7 @@ function recalc_nested_sets(&$new_id, $pkey, $table, $parent_id = 0, $where = ar
 */
 function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $only_acl_post = false, $return_array = false)
 {
-	global $db, $user, $auth;
+	global $db, $user, $auth, $phpbb_dispatcher;
 
 	// This query is identical to the jumpbox one
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, forum_flags, forum_options, left_id, right_id
@@ -73,16 +73,33 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql, 600);
 
+	$rowset = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$rowset[(int) $row['forum_id']] = $row;
+	}
+	$db->sql_freeresult($result);
+
 	$right = 0;
 	$padding_store = array('0' => '');
 	$padding = '';
 	$forum_list = ($return_array) ? array() : '';
 
+	/**
+	* Modify the forum list data
+	*
+	* @event core.make_forum_select_modify_forum_list
+	* @var	array	rowset	Array with the forums list data
+	* @since 3.1.10-RC1
+	*/
+	$vars = array('rowset');
+	extract($phpbb_dispatcher->trigger_event('core.make_forum_select_modify_forum_list', compact($vars)));
+
 	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
 	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
 	// If this happens, the padding could be "broken"
 
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($rowset as $row)
 	{
 		if ($row['left_id'] < $right)
 		{
@@ -133,8 +150,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 			$forum_list .= '<option value="' . $row['forum_id'] . '"' . (($disabled) ? ' disabled="disabled" class="disabled-option"' : $selected) . '>' . $padding . $row['forum_name'] . '</option>';
 		}
 	}
-	$db->sql_freeresult($result);
-	unset($padding_store);
+	unset($padding_store, $rowset);
 
 	return $forum_list;
 }
