@@ -297,7 +297,7 @@ class manager
 		}
 		else
 		{
-			$this->convert_flag = false;
+			$this->convert_flag = $stored_hash_type->needs_rehash($hash);
 		}
 
 		// Check all legacy hash types if prefix is $CP$

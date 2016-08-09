@@ -29,8 +29,8 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$php_ext = 'php';
 
 		$this->passwords_drivers = array(
-			'passwords.driver.bcrypt_2y'		=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper),
-			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper),
+			'passwords.driver.bcrypt_2y'		=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper, 10),
+			'passwords.driver.bcrypt'		=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper, 10),
 			'passwords.driver.salted_md5'		=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'		=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 			'passwords.driver.convert_password'	=> new \phpbb\passwords\driver\convert_password($config, $this->driver_helper),

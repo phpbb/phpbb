@@ -53,6 +53,14 @@ abstract class base implements driver_interface
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function needs_rehash($hash)
+	{
+		return false;
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_settings_only($hash, $full = false)

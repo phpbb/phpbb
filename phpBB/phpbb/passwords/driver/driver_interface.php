@@ -30,6 +30,14 @@ interface driver_interface
 	public function is_legacy();
 
 	/**
+	 * Check if password needs to be rehashed
+	 *
+	 * @param string $hash Hash to check for rehash
+	 * @return bool True if password needs to be rehashed, false if not
+	 */
+	public function needs_rehash($hash);
+
+	/**
 	* Returns the hash prefix
 	*
 	* @return string	Hash prefix
