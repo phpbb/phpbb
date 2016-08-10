@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>mod=</value>
+			<value></value>
+			<value>1</value>
+			<value>[mod=&quot;{TEXT1}&quot;]{TEXT2}[/mod]</value>
+			<value><![CDATA[<div id="modremark">
+	<div id="modremarkexclamation">!</div>
+	<div>
+		<div id="moderemarktitle">Moderatoropmerking {L_FROM}{L_COLON} {TEXT1}</div>
+		<div id="moderemarktext">{TEXT2}</div>
+	</div>
+</div>]]></value>
+			<value>!\[mod\=&quot;(.*?)&quot;\](.*?)\[/mod\]!ies</value>
+			<value>'[mod=&quot;'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${1}')).'&quot;:$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${2}')).'[/mod:$uid]'</value>
+			<value>!\[mod\=&quot;(.*?)&quot;:$uid\](.*?)\[/mod:$uid\]!s</value>
+			<value><![CDATA[<div id="modremark">
+	<div id="modremarkexclamation">!</div>
+	<div>
+		<div id="moderemarktitle">Moderatoropmerking {L_FROM}{L_COLON} ${1}</div>
+		<div id="moderemarktext">${2}</div>
+	</div>
+</div>]]></value>
+		</row>
+	</table>
+</dataset>
