@@ -87,7 +87,7 @@ class migrator
 	 *
 	 * @var migrator_output_handler_interface
 	 */
-	public $output_handler;
+	protected $output_handler;
 
 	/**
 	* Constructor of the database migrator
@@ -308,7 +308,14 @@ class migrator
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_schema_done'] = ($result === true);
 
-			$this->output_handler->write(array('MIGRATION_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			if ($state['migration_schema_done'])
+			{
+				$this->output_handler->write(array('MIGRATION_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_SCHEMA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 		else if (!$state['migration_data_done'])
 		{
@@ -326,7 +333,7 @@ class migrator
 				$state['migration_data_done'] = ($result === true);
 				$state['migration_end_time'] = ($result === true) ? time() : 0;
 
-				if ($state['migration_schema_done'])
+				if ($state['migration_data_done'])
 				{
 					$this->output_handler->write(array('MIGRATION_DATA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 				}
@@ -340,7 +347,6 @@ class migrator
 				// Revert the schema changes
 				$this->revert_do($name);
 
-				// Rethrow exception
 				throw $e;
 			}
 		}
@@ -416,19 +422,11 @@ class migrator
 
 		if ($state['migration_data_done'])
 		{
-			if ($state['migration_data_state'] !== 'revert_data')
-			{
-				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state'], true);
+			$steps = array_merge($this->helper->reverse_update_data($migration->update_data()), $migration->revert_data());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
-				$state['migration_data_state'] = ($result === true) ? 'revert_data' : $result;
-			}
-			else
-			{
-				$result = $this->process_data_step($migration->revert_data(), '', false);
-
-				$state['migration_data_state'] = ($result === true) ? '' : $result;
-				$state['migration_data_done'] = ($result === true) ? false : true;
-			}
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_data_done'] = ($result === true) ? false : true;
 
 			$this->set_migration_state($name, $state);
 		}
@@ -493,8 +491,10 @@ class migrator
 			try
 			{
 				// Result will be null or true if everything completed correctly
+				// After any schema update step we allow to pause, since
+				// database changes can take quite some time
 				$result = $this->run_step($step, $last_result, $revert);
-				if ($result !== null && $result !== true)
+				if ($result !== null && $result !== true && strpos($step[0], 'dbtools') !== 0)
 				{
 					return serialize(array(
 						'result'	=> $result,
@@ -517,7 +517,6 @@ class migrator
 					$result = $this->run_step($reverse_step, false, !$revert);
 				}
 
-				// rethrow the exception
 				throw $e;
 			}
 		}
@@ -585,6 +584,13 @@ class migrator
 				if (!isset($parameters[1]))
 				{
 					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_MISSING_STEP', $step);
+				}
+
+				if ($reverse)
+				{
+					// We might get unexpected results when trying
+					// to revert this, so just avoid it
+					return false;
 				}
 
 				$condition = $parameters[0];
