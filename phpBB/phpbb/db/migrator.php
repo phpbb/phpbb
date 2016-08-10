@@ -89,7 +89,7 @@ class migrator
 	 *
 	 * @var migrator_output_handler_interface
 	 */
-	public $output_handler;
+	protected $output_handler;
 
 	/**
 	* Constructor of the database migrator
@@ -353,7 +353,7 @@ class migrator
 				$state['migration_data_done'] = ($result === true);
 				$state['migration_end_time'] = ($result === true) ? time() : 0;
 
-				if ($state['migration_schema_done'])
+				if ($state['migration_data_done'])
 				{
 					$this->output_handler->write(array('MIGRATION_DATA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 				}
@@ -367,7 +367,6 @@ class migrator
 				// Revert the schema changes
 				$this->revert_do($name);
 
-				// Rethrow exception
 				throw $e;
 			}
 		}
@@ -557,7 +556,6 @@ class migrator
 					$this->run_step($reverse_step, false, !$revert);
 				}
 
-				// rethrow the exception
 				throw $e;
 			}
 		}
