@@ -308,7 +308,14 @@ class migrator
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_schema_done'] = ($result === true);
 
-			$this->output_handler->write(array('MIGRATION_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			if ($state['migration_schema_done'])
+			{
+				$this->output_handler->write(array('MIGRATION_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_SCHEMA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 		else if (!$state['migration_data_done'])
 		{
@@ -493,8 +500,10 @@ class migrator
 			try
 			{
 				// Result will be null or true if everything completed correctly
+				// After any schema update step we allow to pause, since
+				// database changes can take quite some time
 				$result = $this->run_step($step, $last_result, $revert);
-				if ($result !== null && $result !== true)
+				if ($result !== null && $result !== true && strpos($step[0], 'dbtools') !== 0)
 				{
 					return serialize(array(
 						'result'	=> $result,
