@@ -423,19 +423,11 @@ class migrator
 
 		if ($state['migration_data_done'])
 		{
-			if ($state['migration_data_state'] !== 'revert_data')
-			{
-				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state'], true);
+			$steps = array_merge($this->helper->reverse_update_data($migration->update_data()), $migration->revert_data());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
-				$state['migration_data_state'] = ($result === true) ? 'revert_data' : $result;
-			}
-			else
-			{
-				$result = $this->process_data_step($migration->revert_data(), '', false);
-
-				$state['migration_data_state'] = ($result === true) ? '' : $result;
-				$state['migration_data_done'] = ($result === true) ? false : true;
-			}
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_data_done'] = ($result === true) ? false : true;
 
 			$this->set_migration_state($name, $state);
 		}
@@ -594,6 +586,13 @@ class migrator
 				if (!isset($parameters[1]))
 				{
 					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_MISSING_STEP', $step);
+				}
+
+				if ($reverse)
+				{
+					// We might get unexpected results when trying
+					// to revert this, so just avoid it
+					return false;
 				}
 
 				$condition = $parameters[0];

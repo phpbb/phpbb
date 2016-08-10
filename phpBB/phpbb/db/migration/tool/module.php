@@ -454,6 +454,11 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			case 'remove':
 				$call = 'add';
 			break;
+
+			case 'reverse':
+				// It's like double negative
+				$call = array_shift($arguments);
+			break;
 		}
 
 		if ($call)

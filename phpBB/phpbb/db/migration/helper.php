@@ -81,4 +81,36 @@ class helper
 
 		return $steps;
 	}
+
+	/**
+	 * Reverse the update steps from an array of data changes
+	 *
+	 * 'If' statements and custom methods will be skipped, for all
+	 * other calls the reverse method of the tool class will be called
+	 *
+	 * @param array $steps Update changes from migration
+	 *
+	 * @return array
+	 */
+	public function reverse_update_data($steps)
+	{
+		$reversed_array = array();
+
+		foreach ($steps as $step)
+		{
+			$parts = explode('.', $step[0]);
+			$parameters = $step[1];
+
+			$class = $parts[0];
+			$method = isset($parts[1]) ? $parts[1] : false;
+
+			if ($class !== 'if' && $class !== 'custom')
+			{
+				array_unshift($parameters, $method);
+				$reversed_array[] = array($class . '.reverse', $parameters);
+			}
+		}
+
+		return array_reverse($reversed_array);
+	}
 }
