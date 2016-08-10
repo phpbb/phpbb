@@ -454,7 +454,7 @@ class migrator
 			$this->set_migration_state($name, $state);
 
 			$elapsed_time = microtime(true) - $elapsed_time;
-			if ($state['migration_data_done'])
+			if (!$state['migration_data_done'])
 			{
 				$this->output_handler->write(array('MIGRATION_REVERT_DATA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 			}
@@ -474,6 +474,7 @@ class migrator
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_schema_done'] = ($result === true) ? false : true;
 
+			$elapsed_time = microtime(true) - $elapsed_time;
 			if (!$state['migration_schema_done'])
 			{
 				$sql = 'DELETE FROM ' . $this->migrations_table . "
@@ -481,10 +482,13 @@ class migrator
 				$this->db->sql_query($sql);
 
 				unset($this->migration_state[$name]);
-			}
 
-			$elapsed_time = microtime(true) - $elapsed_time;
-			$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 
 		return true;
