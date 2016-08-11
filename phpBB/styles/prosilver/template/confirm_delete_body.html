@@ -7,7 +7,7 @@
 			<label>
 				<strong>{L_DELETE_PERMANENTLY}{L_COLON}</strong>
 				<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
-				<!-- IF S_TOPIC_MODE -->{L_DELETE_TOPIC_PERMANENTLY}<!-- ELSE -->{L_DELETE_POST_PERMANENTLY}<!-- ENDIF -->
+				<!-- IF S_TOPIC_MODE -->{DELETE_TOPIC_PERMANENTLY_EXPLAIN}<!-- ELSE -->{DELETE_POST_PERMANENTLY_EXPLAIN}<!-- ENDIF -->
 			</label>
 		<!-- ENDIF -->
 
@@ -43,7 +43,7 @@
 				<dd>
 					<label for="delete_permanent">
 						<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
-						<!-- IF S_TOPIC_MODE -->{L_DELETE_TOPIC_PERMANENTLY}<!-- ELSE -->{L_DELETE_POST_PERMANENTLY}<!-- ENDIF -->
+						<!-- IF S_TOPIC_MODE -->{DELETE_TOPIC_PERMANENTLY_EXPLAIN}<!-- ELSE -->{DELETE_POST_PERMANENTLY_EXPLAIN}<!-- ENDIF -->
 					</label>
 				</dd>
 			</dl>
