@@ -457,7 +457,12 @@ class migrator
 					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 
+				$this->last_run_migration = false;
 				unset($this->migration_state[$name]);
+			}
+			else
+			{
+				$this->set_migration_state($name, $state);
 			}
 		}
 
@@ -503,8 +508,8 @@ class migrator
 				// Set state to false since we reached the point we were at
 				$state = false;
 
-				// There is a programmed tendency to get stuck in this case
-				if (strpos($step[0], 'dbtools') === 0 && ($last_result === null || $last_result === true))
+				// There is a tendency to get stuck in some cases
+				if ($last_result === null || $last_result === true)
 				{
 					continue;
 				}
