@@ -310,7 +310,9 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
-			$this->output_handler->write(array('MIGRATION_SCHEMA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+			$verbosity = empty($state['migration_data_state']) ?
+				migrator_output_handler_interface::VERBOSITY_VERBOSE : migrator_output_handler_interface::VERBOSITY_DEBUG;
+			$this->output_handler->write(array('MIGRATION_SCHEMA_RUNNING', $name), $verbosity);
 
 			$this->last_run_migration['task'] = 'process_schema_step';
 			$elapsed_time = microtime(true);
@@ -334,7 +336,9 @@ class migrator
 		{
 			try
 			{
-				$this->output_handler->write(array('MIGRATION_DATA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+				$verbosity = empty($state['migration_data_state']) ?
+					migrator_output_handler_interface::VERBOSITY_VERBOSE : migrator_output_handler_interface::VERBOSITY_DEBUG;
+				$this->output_handler->write(array('MIGRATION_DATA_RUNNING', $name), $verbosity);
 
 				$this->last_run_migration['task'] = 'process_data_step';
 
