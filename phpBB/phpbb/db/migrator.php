@@ -470,6 +470,9 @@ class migrator
 			$steps = array_reverse($steps);
 		}
 
+		end($steps);
+		$last_step_identifier = key($steps);
+
 		foreach ($steps as $step_identifier => $step)
 		{
 			$last_result = 0;
@@ -486,6 +489,12 @@ class migrator
 
 				// Set state to false since we reached the point we were at
 				$state = false;
+
+				// There is a programmed tendency to get stuck in this case
+				if (strpos($step[0], 'dbtools') === 0 && ($last_result === null || $last_result === true))
+				{
+					continue;
+				}
 			}
 
 			try
@@ -494,7 +503,8 @@ class migrator
 				// After any schema update step we allow to pause, since
 				// database changes can take quite some time
 				$result = $this->run_step($step, $last_result, $revert);
-				if ($result !== null && $result !== true && strpos($step[0], 'dbtools') !== 0)
+				if (($result !== null && $result !== true) ||
+					(strpos($step[0], 'dbtools') === 0 && $step_identifier !== $last_step_identifier))
 				{
 					return serialize(array(
 						'result'	=> $result,
