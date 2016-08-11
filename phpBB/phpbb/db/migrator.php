@@ -82,7 +82,7 @@ class migrator
 	*
 	* @var array
 	*/
-	public $last_run_migration = false;
+	protected $last_run_migration = false;
 
 	/**
 	 * The output handler. A null handler is configured by default.
@@ -160,6 +160,19 @@ class migrator
 		$this->db->sql_freeresult($result);
 
 		$this->db->sql_return_on_error(false);
+	}
+
+	/**
+	 * Get an array with information about the last migration run.
+	 *
+	 * The array contains 'name', 'class' and 'state'. 'effectively_installed' is set
+	 * and set to true if the last migration was effectively_installed.
+	 *
+	 * @return array
+	 */
+	public function get_last_run_migration()
+	{
+		return $this->last_run_migration;
 	}
 
 	/**
@@ -481,12 +494,15 @@ class migrator
 					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 
+				$this->last_run_migration = false;
 				unset($this->migration_state[$name]);
 
 				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 			}
 			else
 			{
+				$this->set_migration_state($name, $state);
+
 				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
 			}
 		}
@@ -513,6 +529,9 @@ class migrator
 			$steps = array_reverse($steps);
 		}
 
+		end($steps);
+		$last_step_identifier = key($steps);
+
 		foreach ($steps as $step_identifier => $step)
 		{
 			$last_result = 0;
@@ -529,6 +548,12 @@ class migrator
 
 				// Set state to false since we reached the point we were at
 				$state = false;
+
+				// There is a tendency to get stuck in some cases
+				if ($last_result === null || $last_result === true)
+				{
+					continue;
+				}
 			}
 
 			try
@@ -537,7 +562,8 @@ class migrator
 				// After any schema update step we allow to pause, since
 				// database changes can take quite some time
 				$result = $this->run_step($step, $last_result, $revert);
-				if ($result !== null && $result !== true && strpos($step[0], 'dbtools') !== 0)
+				if (($result !== null && $result !== true) ||
+					(strpos($step[0], 'dbtools') === 0 && $step_identifier !== $last_step_identifier))
 				{
 					return serialize(array(
 						'result'	=> $result,
