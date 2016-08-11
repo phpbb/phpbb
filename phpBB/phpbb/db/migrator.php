@@ -80,7 +80,7 @@ class migrator
 	*
 	* @var array
 	*/
-	public $last_run_migration = false;
+	protected $last_run_migration = false;
 
 	/**
 	 * The output handler. A null handler is configured by default.
@@ -158,6 +158,19 @@ class migrator
 		$this->db->sql_freeresult($result);
 
 		$this->db->sql_return_on_error(false);
+	}
+
+	/**
+	 * Get an array with information about the last migration run.
+	 *
+	 * The array contains 'name', 'class' and 'state'. 'effectively_installed' is set
+	 * and set to true if the last migration was effectively_installed.
+	 *
+	 * @return array
+	 */
+	public function get_last_run_migration()
+	{
+		return $this->last_run_migration;
 	}
 
 	/**
