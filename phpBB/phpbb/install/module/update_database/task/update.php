@@ -140,7 +140,14 @@ class update extends task_base
 			->get_classes();
 
 		$this->migrator->set_migrations($migrations);
-		$migration_count = count($this->migrator->get_migrations());
+
+		$migration_count = $this->installer_config->get('database_update_migrations', -1);
+		if ($migration_count < 0)
+		{
+			$migration_count = count($this->migrator->get_installable_migrations());
+			$this->installer_config->set('database_update_migrations', $migration_count);
+		}
+
 		$this->iohandler->set_task_count($migration_count, true);
 		$this->installer_config->set_task_progress_count($migration_count);
 		$progress_count = $this->installer_config->get('database_update_count', 0);
@@ -150,8 +157,14 @@ class update extends task_base
 			try
 			{
 				$this->migrator->update();
-				$progress_count++;
-				$this->iohandler->set_progress('STAGE_UPDATE_DATABASE', $progress_count);
+
+				$last_run_migration = $this->migrator->get_last_run_migration();
+
+				if ($last_run_migration['state']['migration_data_done'])
+				{
+					$progress_count++;
+					$this->iohandler->set_progress('STAGE_UPDATE_DATABASE', $progress_count);
+				}
 			}
 			catch (exception $e)
 			{

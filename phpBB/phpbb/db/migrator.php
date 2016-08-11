@@ -205,6 +205,28 @@ class migrator
 	}
 
 	/**
+	 * Get the list of available and not installed migration class names
+	 *
+	 * @return array
+	 */
+	public function get_installable_migrations()
+	{
+		$unfinished_migrations = array();
+
+		foreach ($this->migrations as $name)
+		{
+			if (!isset($this->migration_state[$name]) ||
+				!$this->migration_state[$name]['migration_schema_done'] ||
+				!$this->migration_state[$name]['migration_data_done'])
+			{
+				$unfinished_migrations[] = $name;
+			}
+		}
+
+		return $unfinished_migrations;
+	}
+
+	/**
 	* Runs a single update step from the next migration to be applied.
 	*
 	* The update step can either be a schema or a (partial) data update. To
