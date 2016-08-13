@@ -150,6 +150,11 @@ class config implements \phpbb\db\migration\tool\tool_interface
 					$arguments[0],
 				);
 			break;
+
+			case 'reverse':
+				// It's like double negative
+				$call = array_shift($arguments);
+			break;
 		}
 
 		if ($call)
