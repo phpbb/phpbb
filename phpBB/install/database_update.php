@@ -211,13 +211,6 @@ while (!$migrator->finished())
 		phpbb_end_update($cache, $config);
 	}
 
-	$state = array_merge(array(
-			'migration_schema_done' => false,
-			'migration_data_done'	=> false,
-		),
-		$migrator->last_run_migration['state']
-	);
-
 	// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 	if ((time() - $update_start_time) >= $safe_time_limit)
 	{

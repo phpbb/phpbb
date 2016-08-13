@@ -80,14 +80,14 @@ class migrator
 	*
 	* @var array
 	*/
-	public $last_run_migration = false;
+	protected $last_run_migration = false;
 
 	/**
 	 * The output handler. A null handler is configured by default.
 	 *
 	 * @var migrator_output_handler_interface
 	 */
-	public $output_handler;
+	protected $output_handler;
 
 	/**
 	* Constructor of the database migrator
@@ -152,12 +152,26 @@ class migrator
 				$this->migration_state[$migration['migration_name']] = $migration;
 
 				$this->migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
+				$this->migration_state[$migration['migration_name']]['migration_data_state'] = !empty($migration['migration_data_state']) ? unserialize($migration['migration_data_state']) : '';
 			}
 		}
 
 		$this->db->sql_freeresult($result);
 
 		$this->db->sql_return_on_error(false);
+	}
+
+	/**
+	 * Get an array with information about the last migration run.
+	 *
+	 * The array contains 'name', 'class' and 'state'. 'effectively_installed' is set
+	 * and set to true if the last migration was effectively_installed.
+	 *
+	 * @return array
+	 */
+	public function get_last_run_migration()
+	{
+		return $this->last_run_migration;
 	}
 
 	/**
@@ -297,38 +311,66 @@ class migrator
 
 		if (!$state['migration_schema_done'])
 		{
-			$this->output_handler->write(array('MIGRATION_SCHEMA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+			$verbosity = empty($state['migration_data_state']) ?
+				migrator_output_handler_interface::VERBOSITY_VERBOSE : migrator_output_handler_interface::VERBOSITY_DEBUG;
+			$this->output_handler->write(array('MIGRATION_SCHEMA_RUNNING', $name), $verbosity);
 
 			$this->last_run_migration['task'] = 'process_schema_step';
+
+			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
+				$state['migration_data_state']['_total_time'] : 0.0;
 			$elapsed_time = microtime(true);
 			$steps = $this->helper->get_schema_steps($migration->update_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
 			$elapsed_time = microtime(true) - $elapsed_time;
+			$total_time += $elapsed_time;
+
+			if (is_array($result))
+			{
+				$result['_total_time'] = $total_time;
+			}
 
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_schema_done'] = ($result === true);
 
-			$this->output_handler->write(array('MIGRATION_SCHEMA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			if ($state['migration_schema_done'])
+			{
+				$this->output_handler->write(array('MIGRATION_SCHEMA_DONE', $name, $total_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_SCHEMA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 		else if (!$state['migration_data_done'])
 		{
 			try
 			{
-				$this->output_handler->write(array('MIGRATION_DATA_RUNNING', $name), migrator_output_handler_interface::VERBOSITY_VERBOSE);
+				$verbosity = empty($state['migration_data_state']) ?
+					migrator_output_handler_interface::VERBOSITY_VERBOSE : migrator_output_handler_interface::VERBOSITY_DEBUG;
+				$this->output_handler->write(array('MIGRATION_DATA_RUNNING', $name), $verbosity);
 
 				$this->last_run_migration['task'] = 'process_data_step';
 
+				$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
+					$state['migration_data_state']['_total_time'] : 0.0;
 				$elapsed_time = microtime(true);
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
 				$elapsed_time = microtime(true) - $elapsed_time;
+				$total_time += $elapsed_time;
+
+				if (is_array($result))
+				{
+					$result['_total_time'] = $total_time;
+				}
 
 				$state['migration_data_state'] = ($result === true) ? '' : $result;
 				$state['migration_data_done'] = ($result === true);
 				$state['migration_end_time'] = ($result === true) ? time() : 0;
 
-				if ($state['migration_schema_done'])
+				if ($state['migration_data_done'])
 				{
-					$this->output_handler->write(array('MIGRATION_DATA_DONE', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+					$this->output_handler->write(array('MIGRATION_DATA_DONE', $name, $total_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 				}
 				else
 				{
@@ -340,7 +382,6 @@ class migrator
 				// Revert the schema changes
 				$this->revert_do($name);
 
-				// Rethrow exception
 				throw $e;
 			}
 		}
@@ -416,19 +457,11 @@ class migrator
 
 		if ($state['migration_data_done'])
 		{
-			if ($state['migration_data_state'] !== 'revert_data')
-			{
-				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state'], true);
+			$steps = array_merge($this->helper->reverse_update_data($migration->update_data()), $migration->revert_data());
+			$result = $this->process_data_step($steps, $state['migration_data_state']);
 
-				$state['migration_data_state'] = ($result === true) ? 'revert_data' : $result;
-			}
-			else
-			{
-				$result = $this->process_data_step($migration->revert_data(), '', false);
-
-				$state['migration_data_state'] = ($result === true) ? '' : $result;
-				$state['migration_data_done'] = ($result === true) ? false : true;
-			}
+			$state['migration_data_state'] = ($result === true) ? '' : $result;
+			$state['migration_data_done'] = ($result === true) ? false : true;
 
 			$this->set_migration_state($name, $state);
 		}
@@ -446,7 +479,12 @@ class migrator
 					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 
+				$this->last_run_migration = false;
 				unset($this->migration_state[$name]);
+			}
+			else
+			{
+				$this->set_migration_state($name, $state);
 			}
 		}
 
@@ -464,13 +502,16 @@ class migrator
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
 	{
-		$state = ($state) ? unserialize($state) : false;
+		$state = is_array($state) ? $state : false;
 
 		// reverse order of steps if reverting
 		if ($revert === true)
 		{
 			$steps = array_reverse($steps);
 		}
+
+		end($steps);
+		$last_step_identifier = key($steps);
 
 		foreach ($steps as $step_identifier => $step)
 		{
@@ -488,18 +529,27 @@ class migrator
 
 				// Set state to false since we reached the point we were at
 				$state = false;
+
+				// There is a tendency to get stuck in some cases
+				if ($last_result === null || $last_result === true)
+				{
+					continue;
+				}
 			}
 
 			try
 			{
 				// Result will be null or true if everything completed correctly
+				// After any schema update step we allow to pause, since
+				// database changes can take quite some time
 				$result = $this->run_step($step, $last_result, $revert);
-				if ($result !== null && $result !== true)
+				if (($result !== null && $result !== true) ||
+					(strpos($step[0], 'dbtools') === 0 && $step_identifier !== $last_step_identifier))
 				{
-					return serialize(array(
+					return array(
 						'result'	=> $result,
 						'step'		=> $step_identifier,
-					));
+					);
 				}
 			}
 			catch (\phpbb\db\migration\exception $e)
@@ -517,7 +567,6 @@ class migrator
 					$result = $this->run_step($reverse_step, false, !$revert);
 				}
 
-				// rethrow the exception
 				throw $e;
 			}
 		}
@@ -585,6 +634,13 @@ class migrator
 				if (!isset($parameters[1]))
 				{
 					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_MISSING_STEP', $step);
+				}
+
+				if ($reverse)
+				{
+					// We might get unexpected results when trying
+					// to revert this, so just avoid it
+					return false;
 				}
 
 				$condition = $parameters[0];
@@ -664,6 +720,7 @@ class migrator
 	{
 		$migration_row = $state;
 		$migration_row['migration_depends_on'] = serialize($state['migration_depends_on']);
+		$migration_row['migration_data_state'] = !empty($state['migration_data_state']) ? serialize($state['migration_data_state']) : '';
 
 		if (isset($this->migration_state[$name]))
 		{
