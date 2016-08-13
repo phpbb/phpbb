@@ -140,17 +140,36 @@ class update extends task_base
 			->get_classes();
 
 		$this->migrator->set_migrations($migrations);
-		$migration_count = count($this->migrator->get_migrations());
-		$this->iohandler->set_task_count($migration_count, true);
-		$this->installer_config->set_task_progress_count($migration_count);
+
+		$migration_step_count = $this->installer_config->get('database_update_migration_steps', -1);
+		if ($migration_step_count < 0)
+		{
+			$migration_step_count = count($this->migrator->get_installable_migrations()) * 2;
+			$this->installer_config->set('database_update_migration_steps', $migration_step_count);
+		}
+
 		$progress_count = $this->installer_config->get('database_update_count', 0);
+		$restart_progress_bar = ($progress_count === 0); // Only "restart" when the update runs for the first time
+		$this->iohandler->set_task_count($migration_step_count, $restart_progress_bar);
+		$this->installer_config->set_task_progress_count($migration_step_count);
 
 		while (!$this->migrator->finished())
 		{
 			try
 			{
 				$this->migrator->update();
-				$progress_count++;
+
+				$last_run_migration = $this->migrator->get_last_run_migration();
+				if (isset($last_run_migration['effectively_installed']) && $last_run_migration['effectively_installed'])
+				{
+					$progress_count += 2;
+				}
+				else if (($last_run_migration['task'] === 'process_schema_step' && $last_run_migration['state']['migration_schema_done']) ||
+					($last_run_migration['task'] === 'process_data_step' && $last_run_migration['state']['migration_data_done']))
+				{
+					$progress_count++;
+				}
+
 				$this->iohandler->set_progress('STAGE_UPDATE_DATABASE', $progress_count);
 			}
 			catch (exception $e)
