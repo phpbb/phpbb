@@ -25,8 +25,9 @@ class bcrypt extends base
 	 *
 	 * @param \phpbb\config\config $config phpBB config
 	 * @param \phpbb\passwords\driver\helper $helper Password driver helper
+	 * @param int $cost_factor Hashing cost factor (optional)
 	 */
-	public function __construct(\phpbb\config\config $config, helper $helper, $cost_factor)
+	public function __construct(\phpbb\config\config $config, helper $helper, $cost_factor = 10)
 	{
 		parent::__construct($config, $helper);
 
