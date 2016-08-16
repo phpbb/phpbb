@@ -81,7 +81,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			$messenger->assign_vars(array_merge(array(
 				'USERNAME'						=> $user['username'],
 
-				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&amp;mode=notification_options',
+				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
 			), $notification->get_email_template_variables()));
 
 			$messenger->send($notify_method);
