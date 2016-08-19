@@ -379,13 +379,12 @@ class ucp_register
 				* Add access to user_id 
 				*
 				* @event core.ucp_insert_user_row_after
-				* @var	bool	submit		Do we display the form only
-				*							or did the user press submit
 				* @var	array	cp_data		Array with custom profile fields data
 				* @var	array	user_row	Array with current ucp registration data
+				* @var  integer user_id     Var with user_id of inserted user
 				* @since 3.1.10-RC1
 				*/
-				$vars = array('submit', 'cp_data', 'user_row', 'user_id');
+				$vars = array( 'cp_data', 'user_row', 'user_id');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_insert_user_row_after', compact($vars)));
 
 
