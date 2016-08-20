@@ -15,11 +15,11 @@ namespace phpbb\db;
 
 interface migrator_output_handler_interface
 {
-	const VERBOSITY_QUIET        = 0;
-	const VERBOSITY_NORMAL       = 1;
-	const VERBOSITY_VERBOSE      = 2;
-	const VERBOSITY_VERY_VERBOSE = 3;
-	const VERBOSITY_DEBUG        = 4;
+	const VERBOSITY_QUIET        = 16;
+	const VERBOSITY_NORMAL       = 32;
+	const VERBOSITY_VERBOSE      = 64;
+	const VERBOSITY_VERY_VERBOSE = 128;
+	const VERBOSITY_DEBUG        = 256;
 
 	/**
 	 * Write output using the configured closure.
