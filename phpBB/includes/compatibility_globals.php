@@ -42,6 +42,8 @@ function register_compatibility_globals()
 
 	/* @var $request \phpbb\request\request_interface */
 	$request = $phpbb_container->get('request');
+	// Inject request instance, so only this instance is used with request_var
+	request_var('', 0, false, false, $request);
 
 	/* @var $user \phpbb\user */
 	$user = $phpbb_container->get('user');
