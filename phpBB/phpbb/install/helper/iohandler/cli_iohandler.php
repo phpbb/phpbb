@@ -198,6 +198,16 @@ class cli_iohandler extends iohandler_base
 
 		if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_NORMAL)
 		{
+			if ($this->progress_bar !== null)
+			{
+				// Symfony's ProgressBar is immutable regarding task_count, so delete the old and create a new one.
+				$this->progress_bar->clear();
+			}
+			else
+			{
+				$this->io->newLine(2);
+			}
+
 			$this->progress_bar = $this->io->createProgressBar($task_count);
 			$this->progress_bar->setFormat(
 				"    %current:3s%/%max:-3s% %bar%  %percent:3s%%\n" .
@@ -212,7 +222,6 @@ class cli_iohandler extends iohandler_base
 			}
 
 			$this->progress_bar->setMessage('');
-			$this->io->newLine(2);
 			$this->progress_bar->start();
 		}
 	}

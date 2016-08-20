@@ -158,18 +158,23 @@ class update extends task_base
 			try
 			{
 				$this->migrator->update();
+				$progress_count++;
 
 				$last_run_migration = $this->migrator->get_last_run_migration();
 				if (isset($last_run_migration['effectively_installed']) && $last_run_migration['effectively_installed'])
 				{
-					$progress_count += 2;
-				}
-				else if (($last_run_migration['task'] === 'process_schema_step' && $last_run_migration['state']['migration_schema_done']) ||
-					($last_run_migration['task'] === 'process_data_step' && $last_run_migration['state']['migration_data_done']))
-				{
+					// We skipped two step, so increment $progress_count by another one
 					$progress_count++;
 				}
+				else if (($last_run_migration['task'] === 'process_schema_step' && !$last_run_migration['state']['migration_schema_done']) ||
+					($last_run_migration['task'] === 'process_data_step' && !$last_run_migration['state']['migration_data_done']))
+				{
+					// We just run a step that wasn't counted yet so make it count
+					$migration_step_count++;
+				}
 
+				$this->iohandler->set_task_count($migration_step_count);
+				$this->installer_config->set_task_progress_count($migration_step_count);
 				$this->iohandler->set_progress('STAGE_UPDATE_DATABASE', $progress_count);
 			}
 			catch (exception $e)
@@ -184,6 +189,7 @@ class update extends task_base
 			if ($this->installer_config->get_time_remaining() <= 0 || $this->installer_config->get_memory_remaining() <= 0)
 			{
 				$this->installer_config->set('database_update_count', $progress_count);
+				$this->installer_config->set('database_update_migration_steps', $migration_step_count);
 				throw new resource_limit_reached_exception();
 			}
 		}
