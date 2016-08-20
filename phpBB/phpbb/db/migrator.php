@@ -530,7 +530,8 @@ class migrator
 				// Set state to false since we reached the point we were at
 				$state = false;
 
-				// There is a tendency to get stuck in some cases
+				// If the last result is null or true, this means
+				// the last method call was finished and we can move on
 				if ($last_result === null || $last_result === true)
 				{
 					continue;
