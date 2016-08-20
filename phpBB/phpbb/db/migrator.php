@@ -383,7 +383,10 @@ class migrator
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				// Revert the schema changes
+				// Reset data state and revert the schema changes
+				$state['migration_data_state'] = '';
+				$this->set_migration_state($name, $state);
+
 				$this->revert_do($name);
 
 				throw $e;
