@@ -362,8 +362,10 @@ class migrator
 			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
 				$state['migration_data_state']['_total_time'] : 0.0;
 			$elapsed_time = microtime(true);
+
 			$steps = $this->helper->get_schema_steps($migration->update_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
 			$elapsed_time = microtime(true) - $elapsed_time;
 			$total_time += $elapsed_time;
 
@@ -397,7 +399,9 @@ class migrator
 				$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
 					$state['migration_data_state']['_total_time'] : 0.0;
 				$elapsed_time = microtime(true);
+
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
+
 				$elapsed_time = microtime(true) - $elapsed_time;
 				$total_time += $elapsed_time;
 
@@ -421,7 +425,10 @@ class migrator
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				// Revert the schema changes
+				// Reset data state and revert the schema changes
+				$state['migration_data_state'] = '';
+				$this->set_migration_state($name, $state);
+
 				$this->revert_do($name);
 
 				throw $e;
@@ -506,8 +513,10 @@ class migrator
 			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
 				$state['migration_data_state']['_total_time'] : 0.0;
 			$elapsed_time = microtime(true);
+
 			$steps = array_merge($this->helper->reverse_update_data($migration->update_data()), $migration->revert_data());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
 			$elapsed_time = microtime(true) - $elapsed_time;
 			$total_time += $elapsed_time;
 
@@ -539,8 +548,10 @@ class migrator
 			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
 				$state['migration_data_state']['_total_time'] : 0.0;
 			$elapsed_time = microtime(true);
+
 			$steps = $this->helper->get_schema_steps($migration->revert_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
 			$elapsed_time = microtime(true) - $elapsed_time;
 			$total_time += $elapsed_time;
 
@@ -585,6 +596,11 @@ class migrator
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
 	{
+		if (sizeof($steps) === 0)
+		{
+			return true;
+		}
+
 		$state = is_array($state) ? $state : false;
 
 		// reverse order of steps if reverting
@@ -593,65 +609,45 @@ class migrator
 			$steps = array_reverse($steps);
 		}
 
-		end($steps);
-		$last_step_identifier = key($steps);
-
-		foreach ($steps as $step_identifier => $step)
+		$step = $last_result = 0;
+		if ($state)
 		{
-			$last_result = 0;
-			if ($state)
+			$step = $state['step'];
+
+			// We send the result from last time to the callable function
+			$last_result = $state['result'];
+		}
+
+		try
+		{
+			// Result will be null or true if everything completed correctly
+			// Stop after each update step, to let the updater control the script runtime
+			$result = $this->run_step($steps[$step], $last_result, $revert);
+			if (($result !== null && $result !== true) || $step + 1 < sizeof($steps))
 			{
-				// Continue until we reach the step that matches the last step called
-				if ($state['step'] != $step_identifier)
+				return array(
+					'result'	=> $result,
+					// Move on if the last call finished
+					'step'		=> ($result !== null && $result !== true) ? $step : $step + 1,
+				);
+			}
+		}
+		catch (\phpbb\db\migration\exception $e)
+		{
+			// We should try rolling back here
+			foreach ($steps as $reverse_step_identifier => $reverse_step)
+			{
+				// If we've reached the current step we can break because we reversed everything that was run
+				if ($reverse_step_identifier == $step)
 				{
-					continue;
+					break;
 				}
 
-				// We send the result from last time to the callable function
-				$last_result = $state['result'];
-
-				// Set state to false since we reached the point we were at
-				$state = false;
-
-				// There is a tendency to get stuck in some cases
-				if ($last_result === null || $last_result === true)
-				{
-					continue;
-				}
+				// Reverse the step that was run
+				$result = $this->run_step($reverse_step, false, !$revert);
 			}
 
-			try
-			{
-				// Result will be null or true if everything completed correctly
-				// After any schema update step we allow to pause, since
-				// database changes can take quite some time
-				$result = $this->run_step($step, $last_result, $revert);
-				if (($result !== null && $result !== true) ||
-					(strpos($step[0], 'dbtools') === 0 && $step_identifier !== $last_step_identifier))
-				{
-					return array(
-						'result'	=> $result,
-						'step'		=> $step_identifier,
-					);
-				}
-			}
-			catch (\phpbb\db\migration\exception $e)
-			{
-				// We should try rolling back here
-				foreach ($steps as $reverse_step_identifier => $reverse_step)
-				{
-					// If we've reached the current step we can break because we reversed everything that was run
-					if ($reverse_step_identifier == $step_identifier)
-					{
-						break;
-					}
-
-					// Reverse the step that was run
-					$this->run_step($reverse_step, false, !$revert);
-				}
-
-				throw $e;
-			}
+			throw $e;
 		}
 
 		return true;
