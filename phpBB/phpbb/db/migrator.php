@@ -320,8 +320,10 @@ class migrator
 			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
 				$state['migration_data_state']['_total_time'] : 0.0;
 			$elapsed_time = microtime(true);
+
 			$steps = $this->helper->get_schema_steps($migration->update_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
 			$elapsed_time = microtime(true) - $elapsed_time;
 			$total_time += $elapsed_time;
 
@@ -355,7 +357,9 @@ class migrator
 				$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
 					$state['migration_data_state']['_total_time'] : 0.0;
 				$elapsed_time = microtime(true);
+
 				$result = $this->process_data_step($migration->update_data(), $state['migration_data_state']);
+
 				$elapsed_time = microtime(true) - $elapsed_time;
 				$total_time += $elapsed_time;
 
