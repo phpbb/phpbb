@@ -877,11 +877,12 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		}
 
 		$template->assign_vars(array(
-			'S_SHADOW_TOPICS'		=> $only_shadow,
-			'S_SOFTDELETED'			=> $only_softdeleted,
-			'S_TOPIC_MODE'			=> true,
-			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
-			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_SHADOW_TOPICS'					=> $only_shadow,
+			'S_SOFTDELETED'						=> $only_softdeleted,
+			'S_TOPIC_MODE'						=> true,
+			'S_ALLOWED_DELETE'					=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'				=> $auth->acl_get('m_softdelete', $forum_id),
+			'DELETE_TOPIC_PERMANENTLY_EXPLAIN'	=> $user->lang('DELETE_TOPIC_PERMANENTLY', sizeof($topic_ids)),
 		));
 
 		$l_confirm = (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
@@ -1116,9 +1117,10 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		}
 
 		$template->assign_vars(array(
-			'S_SOFTDELETED'			=> $only_softdeleted,
-			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
-			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_SOFTDELETED'						=> $only_softdeleted,
+			'S_ALLOWED_DELETE'					=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'				=> $auth->acl_get('m_softdelete', $forum_id),
+			'DELETE_POST_PERMANENTLY_EXPLAIN'	=> $user->lang('DELETE_POST_PERMANENTLY', sizeof($post_ids)),
 		));
 
 		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
