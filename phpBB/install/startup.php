@@ -62,18 +62,27 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_WARNING:
 		case E_USER_WARNING:
 		case E_USER_NOTICE:
-			$msg = '[phpBB debug] "' . $msg_text . '" in file ' . $errfile . ' on line ' . $errline;
+			$msg = '[phpBB Debug] "' . $msg_text . '" in file ' . $errfile . ' on line ' . $errline;
 
-			try
+			if (!empty($phpbb_installer_container))
 			{
-				/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
-				$iohandler = $phpbb_installer_container->get('installer.helper.iohandler');
-				$iohandler->add_warning_message($msg);
+				try
+				{
+					/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
+					$iohandler = $phpbb_installer_container->get('installer.helper.iohandler');
+					$iohandler->add_warning_message($msg);
+				}
+				catch (\phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception $e)
+				{
+					print($msg);
+				}
 			}
-			catch (\phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception $e)
+			else
 			{
-				print ($msg);
+				print($msg);
 			}
+
+			return;
 		break;
 		case E_USER_ERROR:
 			$msg = '<b>General Error:</b><br />' . $msg_text . '<br /> in file ' . $errfile . ' on line ' . $errline;
