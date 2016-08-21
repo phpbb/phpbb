@@ -57,6 +57,8 @@ function register_compatibility_globals()
 	// Grab global variables, re-cache if necessary
 	/* @var $config phpbb\config\db */
 	$config = $phpbb_container->get('config');
+	set_config('', '', false, $config);
+	set_config_count('', 0, false, $config);
 
 	/* @var $phpbb_log \phpbb\log\log_interface */
 	$phpbb_log = $phpbb_container->get('log');
