@@ -639,7 +639,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			break;
 
 			case 'reverse':
-				// It's like double negative
+				// Reversing a reverse is just the call itself
 				$call = array_shift($arguments);
 			break;
 		}
