@@ -57,8 +57,9 @@ switch ($mode)
 	break;
 
 	case 'sendpassword':
-		$module->load('ucp', 'remind');
-		$module->display($user->lang['UCP_REMIND']);
+	case 'setpassword':
+		$module->load('ucp', 'reset_password', $mode);
+		$module->display($user->lang['UCP_RESET_PASSWORD']);
 	break;
 
 	case 'register':
