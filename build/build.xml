@@ -291,7 +291,7 @@
 		<!-- Checkout latest viglink to ext folder -->
 		<available file="${dir}/ext" type="dir" property="add-viglink-ext" />
 		<exec dir="${dir}"
-			command='php -r "echo version_compare(&apos;${version}&apos;, &apos;3.2.0-b3&apos;, &apos;>=&apos;) ? &apos;true&apos; : &apos;false&apos;;"'
+			command='php -r "echo version_compare(&apos;${version}&apos;, &apos;3.2.0-RC2&apos;, &apos;>=&apos;) ? &apos;true&apos; : &apos;false&apos;;"'
 			checkreturn="true"
 			outputProperty='viglink-available' />
 		<if>

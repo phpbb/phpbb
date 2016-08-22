@@ -176,7 +176,8 @@ class update_extensions extends task_base
 							// Create log
 							$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_UPDATE', time(), array($ext_name));
 							$this->iohandler->add_success_message(array('CLI_EXTENSION_UPDATE_SUCCESS', $ext_name));
-						} else
+						}
+						else
 						{
 							$this->iohandler->add_log_message('CLI_EXTENSION_UPDATE_FAILURE', array($ext_name));
 						}

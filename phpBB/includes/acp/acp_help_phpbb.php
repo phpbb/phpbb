@@ -72,7 +72,7 @@ class acp_help_phpbb
 		$collector->add_data_provider(new phpbb_questionnaire_phpbb_data_provider($config));
 
 		/**
-		 * Event to add and/or modify acp_board configurations
+		 * Event to modify ACP help phpBB page and/or listen to submit
 		 *
 		 * @event core.acp_help_phpbb_submit_before
 		 * @var	boolean	submit			Do we display the form or process the submission
