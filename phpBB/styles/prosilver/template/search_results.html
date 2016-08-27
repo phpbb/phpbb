@@ -84,23 +84,23 @@
 							<!-- EVENT topiclist_row_prepend -->
 							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->
 								<a class="unread" href="{searchresults.U_NEWEST_POST}">
-									<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
+									<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{L_NEW_POST}</span>
 								</a>
 							<!-- ENDIF -->
 							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
-								<a href="{searchresults.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
-									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
+								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
+									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
 								</a>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_DELETED -->
-								<a href="{searchresults.U_MCP_QUEUE}" title="{TOPIC_DELETED}">
-									<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{TOPIC_DELETED}</span>
+								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
+									<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_DELETED}</span>
 								</a>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_REPORTED -->
-								<a href="{searchresults.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
-									<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{TOPIC_REPORTED}</span>
+								<a href="{searchresults.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
+									<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
 								</a>
 							<!-- ENDIF -->
 							<br />
