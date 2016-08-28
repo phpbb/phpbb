@@ -132,7 +132,11 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			));
 			$this->fail('Exception not thrown');
 		}
-		catch (Exception $e) {}
+		catch (Exception $e)
+		{
+			$this->assertEquals('phpbb\db\migration\exception', get_class($e));
+			$this->assertEquals('MODULE_EXIST_MULTIPLE', $e->getMessage());
+		}
 
 		// Test adding module when plural parent module_langname exists
 		// PHPBB3-14703
