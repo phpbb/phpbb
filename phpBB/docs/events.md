@@ -2085,6 +2085,13 @@ viewforum_body_topic_row_prepend
 * Since: 3.1.7-RC1
 * Purpose: Add content at the end of the topic list item.
 
+viewforum_body_topicrow_row_before
+===
+* Locations:
+    + styles/prosilver/template/viewforum_body.html
+* Since: 3.1.10-RC1
+* Purpose: Add content before list of topics.
+
 viewforum_buttons_bottom_before
 ===
 * Locations:
