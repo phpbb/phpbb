@@ -922,6 +922,7 @@ li.breadcrumbs span:first-child > a {
 
 .rtl .search-header .button-search-end {
 	border: 0;
+	border-radius: 4px 0 0 4px;
 }
 
 .rtl .search-header {
