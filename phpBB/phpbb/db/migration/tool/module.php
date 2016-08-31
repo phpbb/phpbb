@@ -41,6 +41,9 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	/** @var string */
 	protected $modules_table;
 
+	/** @var array */
+	protected $module_categories = array();
+
 	/**
 	* Constructor
 	*
@@ -94,30 +97,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		$parent_sql = '';
 		if ($parent !== false)
 		{
-			// Allows '' to be sent as 0
-			$parent = $parent ?: 0;
-
-			if (!is_numeric($parent))
-			{
-				$sql = 'SELECT module_id
-					FROM ' . $this->modules_table . "
-					WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
-						AND module_class = '" . $this->db->sql_escape($class) . "'";
-				$result = $this->db->sql_query($sql);
-				$module_id = $this->db->sql_fetchfield('module_id');
-				$this->db->sql_freeresult($result);
-
-				if (!$module_id)
-				{
-					return false;
-				}
-
-				$parent_sql = 'AND parent_id = ' . (int) $module_id;
-			}
-			else
-			{
-				$parent_sql = 'AND parent_id = ' . (int) $parent;
-			}
+			$parent = $this->get_parent_module_id($parent, $module);
+			$parent_sql = 'AND parent_id = ' . (int) $parent;
 		}
 
 		$sql = 'SELECT module_id
@@ -180,14 +161,13 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	{
 		global $user, $phpbb_log;
 
-		// Allows '' to be sent as 0
-		$parent = $parent ?: 0;
-
 		// allow sending the name as a string in $data to create a category
 		if (!is_array($data))
 		{
 			$data = array('module_langname' => $data);
 		}
+
+		$parent = $data['parent_id'] = $this->get_parent_module_id($parent, $data);
 
 		if (!isset($data['module_langname']))
 		{
@@ -218,31 +198,14 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		}
 
 		// The "manual" way
-		if (!is_numeric($parent))
-		{
-			$sql = 'SELECT module_id
-				FROM ' . $this->modules_table . "
-				WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
-					AND module_class = '" . $this->db->sql_escape($class) . "'";
-			$result = $this->db->sql_query($sql);
-			$module_id = $this->db->sql_fetchfield('module_id');
-			$this->db->sql_freeresult($result);
-
-			if (!$module_id)
-			{
-				throw new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent);
-			}
-
-			$parent = $data['parent_id'] = $module_id;
-		}
-		else if (!$this->exists($class, false, $parent))
+		if (!$this->exists($class, false, $parent))
 		{
 			throw new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent);
 		}
 
 		if ($this->exists($class, $parent, $data['module_langname']))
 		{
-			return;
+			throw new \phpbb\db\migration\exception('MODULE_EXISTS', $module_id);
 		}
 
 		$module_data = array(
@@ -374,26 +337,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			$parent_sql = '';
 			if ($parent !== false)
 			{
-				// Allows '' to be sent as 0
-				$parent = ($parent) ?: 0;
-
-				if (!is_numeric($parent))
-				{
-					$sql = 'SELECT module_id
-						FROM ' . $this->modules_table . "
-						WHERE module_langname = '" . $this->db->sql_escape($parent) . "'
-							AND module_class = '" . $this->db->sql_escape($class) . "'";
-					$result = $this->db->sql_query($sql);
-					$module_id = $this->db->sql_fetchfield('module_id');
-					$this->db->sql_freeresult($result);
-
-					// we know it exists from the module_exists check
-					$parent_sql = 'AND parent_id = ' . (int) $module_id;
-				}
-				else
-				{
-					$parent_sql = 'AND parent_id = ' . (int) $parent;
-				}
+				$parent = $this->get_parent_module_id($parent, $module);
+				$parent_sql = 'AND parent_id = ' . (int) $parent;
 			}
 
 			$module_ids = array();
@@ -474,5 +419,111 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		}
 
 		return array_pop($module);
+	}
+
+	/**
+	* Get the list of installed module categories
+	*	key - module_id
+	*	value - module_langname
+	*
+	* @return null
+	*/
+	protected function get_categories_list()
+	{
+		// Select the top level categories
+		// and 2nd level [sub]categories which exist for ACP only
+		$sql = 'SELECT m2.module_id, m2.module_langname
+			FROM ' . $this->modules_table . ' m1, ' . $this->modules_table . " m2
+			WHERE m1.parent_id = 0
+				AND (m1.module_id = m2.module_id
+				OR m2.module_class = 'acp' AND m2.parent_id = m1.module_id)
+			ORDER BY m1.module_id, m2.module_id ASC";
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$this->module_categories[(int) $row['module_id']] = $row['module_langname'];
+		}
+		$this->db->sql_freeresult($result);
+	}
+
+	/**
+	* Get parent module id
+	*
+	* @param string|int $parent_id The parent module_id|module_langname
+	* @param int|string|array $data The module_id, module_langname for existance checking or module data array for adding
+	* @return int The parent module_id
+	* @throws \phpbb\db\migration\exception
+	*/
+	public function get_parent_module_id($parent_id, $data = '')
+	{
+		// Allow '' to be sent as 0
+		$parent_id = $parent_id ?: 0;
+
+		// If automatic adding is in action, convert array back to string to simplify things
+		if (is_array($data) && sizeof($data) == 1)
+		{
+			$data = $data['module_langname'];
+		}
+
+		if (!is_numeric($parent_id))
+		{
+			// Refresh the $module_categories array
+			$this->get_categories_list();
+
+			// Search for the parent module_langname
+			$ids = array_keys($this->module_categories, $parent_id);
+
+			switch (sizeof($ids))
+			{
+				// No parent with the given module_langname exist
+				case 0:
+					throw new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
+				break;
+
+				// Return the module id
+				case 1:
+					$parent_id = (int) $ids[0];
+				break;
+
+				// Several modules with the given module_langname were found
+				// Try to determine the parent_id by the neighbour module parent
+				default:
+					if (is_array($data) && (isset($data['before']) || isset($data['after'])))
+					{
+						$neighbour_module_langname = isset($data['before']) ? $data['before'] : $data['after'];
+						$sql = 'SELECT parent_id
+							FROM ' . $this->modules_table . "
+							WHERE module_langname = '" . $this->db->sql_escape($neighbour_module_langname) . "'
+								AND " . $this->db->sql_in_set('parent_id', $ids);
+						$result = $this->db->sql_query($sql);
+						$parent_id = (int) $this->db->sql_fetchfield('parent_id');
+						if (!$parent_id)
+						{
+							throw new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
+						}
+					}
+					else if (!empty($data) && !is_array($data))
+					{
+						// The module_langname is set, checking for the module existance
+						// As more than 1 parents were found already, there's no way for null parent_id here
+						$sql = 'SELECT m2.module_id as module_parent_id
+							FROM ' . $this->modules_table . ' m1, ' . $this->modules_table . " m2
+							WHERE " . ((is_numeric($data)) ? 'm1.module_id = ' . (int) $data : "m1.module_langname = '" . $this->db->sql_escape($data)) . "'
+								AND m2.module_id = m1.parent_id
+								AND " . $this->db->sql_in_set('m2.module_id', $ids);
+						$result = $this->db->sql_query($sql);
+						$parent_id = (int) $this->db->sql_fetchfield('module_parent_id');
+					}
+					else
+					{
+						//Unable to get the parent module id, throwing an exception
+						throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
+					}
+				break;
+			}
+		}
+
+		return $parent_id;
 	}
 }
