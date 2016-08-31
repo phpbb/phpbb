@@ -274,7 +274,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['height'] : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
-			'DELETED_IMG'			=> ($topic_deleted) ? $user->img('icon_topic_deleted', 'POSTS_DELETED') : '',
+			'DELETED_IMG'			=> ($topic_deleted) ? $user->img('icon_topic_deleted', 'TOPIC_DELETED') : '',
 
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
 			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
