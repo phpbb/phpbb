@@ -129,6 +129,26 @@ $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
+/**
+* This event allows you to alter the above parameters, such as keywords and submit
+*
+* @event core.search_modify_submit_parameters
+* @var	string	keywords	The search keywords
+* @var	string	author		Specifies the author match, when ANONYMOUS is also a search-match
+* @var	int		author_id	ID of the author to search by
+* @var	string	search_id	Predefined search type name
+* @var	bool	submit		Whether or not the form has been submitted
+* @since 3.1.10-RC1
+*/
+$vars = array(
+	'keywords',
+	'author',
+	'author_id',
+	'search_id',
+	'submit',
+);
+extract($phpbb_dispatcher->trigger_event('core.search_modify_submit_parameters', compact($vars)));
+
 if ($keywords || $author || $author_id || $search_id || $submit)
 {
 	// clear arrays
