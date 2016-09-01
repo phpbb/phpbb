@@ -360,6 +360,11 @@ switch ($mode)
 			}
 		}
 
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $page_title,
+			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=team"),
+		));
+
 		$template->assign_vars(array(
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
 		);
@@ -455,6 +460,11 @@ switch ($mode)
 				}
 			break;
 		}
+
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $page_title,
+			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=$action&amp;u=$user_id"),
+		));
 
 		// Send vars to the template
 		$template->assign_vars(array(
@@ -783,6 +793,15 @@ switch ($mode)
 		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $member['username']);
 		$template_html = 'memberlist_view.html';
 
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $user->lang('MEMBERLIST'),
+			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
+		));
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $member['username'],
+			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&u=$user_id"),
+		));
+
 	break;
 
 	case 'contactadmin':
@@ -832,6 +851,41 @@ switch ($mode)
 		$template_html = $form->get_template_file();
 		$form->render($template);
 
+		if ($user_id)
+		{
+			$navlink_name = $user->lang('SEND_EMAIL');
+			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&u=$user_id");
+		}
+		else if ($topic_id)
+		{
+			$sql = 'SELECT f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, f.forum_options, t.topic_title
+					FROM ' . FORUMS_TABLE . ' as f,
+						' . TOPICS_TABLE . ' as t
+					WHERE t.forum_id = f.forum_id';
+			$result = $db->sql_query($sql);
+			$topic_data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			generate_forum_nav($topic_data);
+			$template->assign_block_vars('navlinks', array(
+				'FORUM_NAME'	=> $topic_data['topic_title'],
+				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id"),
+			));
+
+			$navlink_name = $user->lang('EMAIL_TOPIC');
+			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&t=$topic_id");
+		}
+		else if ($mode === 'contactadmin')
+		{
+			$navlink_name = $user->lang('CONTACT_ADMIN');
+			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
+		}
+
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $navlink_name,
+			'U_VIEW_FORUM'	=> $navlink_url,
+		));
+
 	break;
 
 	case 'livesearch':
@@ -868,6 +922,11 @@ switch ($mode)
 		// The basic memberlist
 		$page_title = $user->lang['MEMBERLIST'];
 		$template_html = 'memberlist_body.html';
+
+		$template->assign_block_vars('navlinks', array(
+			'FORUM_NAME'	=> $page_title,
+			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
+		));
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
@@ -1173,6 +1232,11 @@ switch ($mode)
 				}
 				unset($module);
 			}
+
+			$template->assign_block_vars('navlinks', array(
+				'FORUM_NAME'	=> $group_helper->get_name($group_row['group_name']),
+				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g=$group_id"),
+			));
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),

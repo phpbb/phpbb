@@ -362,6 +362,11 @@ if (!$config['allow_topic_notify'] && !$config['allow_forum_notify'])
 $vars = array('module', 'id', 'mode');
 extract($phpbb_dispatcher->trigger_event('core.ucp_display_module_before', compact($vars)));
 
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=> $user->lang('UCP'),
+	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
+));
+
 // Select the active module
 $module->set_active($id, $mode);
 
