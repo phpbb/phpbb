@@ -279,6 +279,7 @@ class ucp_profile
 				// Do not display profile information panel if not authed to do so
 				if (!$auth->acl_get('u_chgprofileinfo'))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NO_AUTH_PROFILEINFO');
 				}
 
@@ -464,6 +465,7 @@ class ucp_profile
 
 				if (!$auth->acl_get('u_sig'))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
 

@@ -166,6 +166,7 @@ class ucp_pm
 
 				if (!$auth->acl_get('u_readpm'))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NO_AUTH_READ_MESSAGE');
 				}
 

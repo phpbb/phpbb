@@ -79,6 +79,7 @@ class ucp_remind
 
 			if (!$auth2->acl_get('u_chgpasswd'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_PASSWORD_REMINDER');
 			}
 

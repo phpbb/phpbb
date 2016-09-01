@@ -171,6 +171,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		case 'post':
 			if (!$auth->acl_get('u_sendpm'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 		break;
@@ -186,6 +187,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			if (!$auth->acl_get('u_sendpm'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 
@@ -226,6 +228,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		case 'delete':
 			if (!$auth->acl_get('u_pm_delete'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_DELETE_MESSAGE');
 			}
 
@@ -251,11 +254,13 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_FORWARD_MESSAGE');
 	}
 
 	if ($action == 'edit' && !$auth->acl_get('u_pm_edit'))
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_EDIT_MESSAGE');
 	}
 
@@ -321,6 +326,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (($post['forum_id'] && !$auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NOT_AUTHORISED');
 			}
 
@@ -456,6 +462,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')))
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
 

@@ -223,6 +223,7 @@ class acp_groups
 				}
 				else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -235,6 +236,7 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
+								send_status_line(403, 'Forbidden');
 								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
@@ -313,6 +315,7 @@ class acp_groups
 
 				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 

@@ -127,6 +127,7 @@ if (!$auth->acl_getf_global('m_'))
 
 	if (!$allow_user)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NOT_AUTHORISED');
 	}
 }
@@ -134,6 +135,7 @@ if (!$auth->acl_getf_global('m_'))
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
 if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
+	send_status_line(403, 'Forbidden');
 	trigger_error('NOT_AUTHORISED');
 }
 

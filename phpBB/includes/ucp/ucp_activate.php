@@ -67,6 +67,7 @@ class ucp_activate
 			{
 				login_box('', $user->lang['NO_AUTH_OPERATION']);
 			}
+			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_OPERATION');
 		}
 

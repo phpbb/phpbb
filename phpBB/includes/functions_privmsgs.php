@@ -801,6 +801,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if (!$row)
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NOT_AUTHORISED');
 			}
 
@@ -965,6 +966,7 @@ function handle_mark_actions($user_id, $mark_action)
 
 			if (!$auth->acl_get('u_pm_delete'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_DELETE_MESSAGE');
 			}
 
