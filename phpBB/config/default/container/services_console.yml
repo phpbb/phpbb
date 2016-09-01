@@ -223,9 +223,9 @@ services:
     console.command.update.check:
         class: phpbb\console\command\update\check
         arguments:
-            - @user
-            - @config
-            - @service_container
+            - '@user'
+            - '@config'
+            - '@service_container'
         tags:
             - { name: console.command }
 

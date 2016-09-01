@@ -13,7 +13,7 @@
 
 namespace phpbb;
 
-use phpbb\exception\runtime_exception;
+use phpbb\exception\version_check_exception;
 
 /**
  * Class to handle version checking and comparison
@@ -172,7 +172,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return string
-	* @throws runtime_exception
+	* @throws version_check_exception
 	*/
 	public function get_latest_on_current_branch($force_update = false, $force_cache = false)
 	{
@@ -203,7 +203,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return string
-	* @throws runtime_exception
+	* @throws version_check_exception
 	*/
 	public function get_suggested_updates($force_update = false, $force_cache = false)
 	{
@@ -224,7 +224,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return string Version info
-	* @throws runtime_exception
+	* @throws version_check_exception
 	*/
 	public function get_versions_matching_stability($force_update = false, $force_cache = false)
 	{
@@ -244,7 +244,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return string Version info, includes stable and unstable data
-	* @throws runtime_exception
+	* @throws version_check_exception
 	*/
 	public function get_versions($force_update = false, $force_cache = false)
 	{
@@ -254,7 +254,7 @@ class version_helper
 
 		if ($info === false && $force_cache)
 		{
-			throw new runtime_exception('VERSIONCHECK_FAIL');
+			throw new version_check_exception('VERSIONCHECK_FAIL');
 		}
 		else if ($info === false || $force_update)
 		{
@@ -263,7 +263,7 @@ class version_helper
 
 			if (!empty($error_string))
 			{
-				throw new runtime_exception($error_string);
+				throw new version_check_exception($error_string);
 			}
 
 			$info = json_decode($info, true);
@@ -280,7 +280,7 @@ class version_helper
 
 			if (empty($info['stable']) && empty($info['unstable']))
 			{
-				throw new runtime_exception('VERSIONCHECK_FAIL');
+				throw new version_check_exception('VERSIONCHECK_FAIL');
 			}
 
 			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];

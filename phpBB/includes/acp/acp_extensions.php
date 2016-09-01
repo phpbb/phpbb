@@ -12,6 +12,7 @@
 */
 
 use phpbb\exception\exception_interface;
+use phpbb\exception\version_check_exception;
 
 /**
 * @ignore
@@ -518,6 +519,10 @@ class acp_extensions
 					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 				}
 			}
+			catch (version_check_exception $e)
+			{
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+			}
 			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
@@ -525,10 +530,6 @@ class acp_extensions
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
 				));
-			}
-			catch (\RuntimeException $e)
-			{
-				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
