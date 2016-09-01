@@ -83,6 +83,7 @@ class mcp_logs
 
 				if (!in_array($forum_id, $forum_list))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NOT_AUTHORISED');
 				}
 
@@ -101,6 +102,7 @@ class mcp_logs
 
 				if (!in_array($forum_id, $forum_list))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NOT_AUTHORISED');
 				}
 

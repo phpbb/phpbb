@@ -376,6 +376,7 @@ if (!$overrides_f_read_check && !$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('SORRY_AUTH_READ');
 	}
 

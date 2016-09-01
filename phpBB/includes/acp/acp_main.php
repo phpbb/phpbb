@@ -118,6 +118,7 @@ class acp_main
 					case 'online':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -134,6 +135,7 @@ class acp_main
 					case 'stats':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -189,6 +191,7 @@ class acp_main
 					case 'user':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -256,6 +259,7 @@ class acp_main
 					case 'date':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -372,6 +376,7 @@ class acp_main
 					case 'purge_sessions':
 						if ((int) $user->data['user_type'] !== USER_FOUNDER)
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 

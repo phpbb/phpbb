@@ -622,6 +622,7 @@ class mcp_queue
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 
@@ -877,6 +878,7 @@ class mcp_queue
 
 		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 
@@ -1074,6 +1076,7 @@ class mcp_queue
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 
