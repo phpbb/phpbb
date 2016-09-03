@@ -10,7 +10,7 @@ phpbb.prepareSendStats = function () {
 	var $dark = $('#darkenwrapper');
 	var $loadingIndicator;
 
-	$form.on('submit', function () {
+	$form.on('submit', function (event) {
 		var $this = $(this),
 			currentTime = Math.floor(new Date().getTime() / 1000),
 			statsTime = parseInt($this.find('input[name=help_send_statistics_time]').val(), 10);
