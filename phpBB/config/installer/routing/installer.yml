@@ -43,7 +43,7 @@ phpbb_convert_intro:
         start_new: 0
 
 phpbb_convert_settings:
-    path: /convert/settings/{convertor}
+    path: /convert/settings/{converter}
     defaults:
         _controller: phpbb.installer.controller.convert:settings
     requirements:
