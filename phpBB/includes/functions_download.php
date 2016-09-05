@@ -134,9 +134,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
-	// Correct the mime type - we force application/octetstream for all files, except images
+	// Correct the mime type - we force application/octetstream for all files, except images and audio
 	// Please do not change this, it is a security precaution
-	if ($category != ATTACHMENT_CATEGORY_IMAGE || strpos($attachment['mimetype'], 'image') !== 0)
+	if (($category != ATTACHMENT_CATEGORY_IMAGE || strpos($attachment['mimetype'], 'image') !== 0) &&
+	    ($category != ATTACHMENT_CATEGORY_AUDIO || strpos($attachment['mimetype'], 'audio') !== 0))
 	{
 		$attachment['mimetype'] = (strpos(strtolower($user->browser), 'msie') !== false || strpos(strtolower($user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
 	}
