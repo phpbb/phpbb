@@ -177,8 +177,10 @@ class fulltext_mysql extends \phpbb\search\base
 			$engine === 'MyISAM' ||
 			// FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
 			// http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
+			// We also require https://bugs.mysql.com/bug.php?id=67004 to be
+			// fixed for proper overall operation. Hence we require 5.6.8.
 			$engine === 'InnoDB' &&
-			phpbb_version_compare($this->db->sql_server_info(true), '5.6.4', '>=');
+			phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>=');
 
 		if (!$fulltext_supported)
 		{
