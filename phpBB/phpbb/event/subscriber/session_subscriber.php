@@ -52,6 +52,9 @@ class session_subscriber implements EventSubscriberInterface
 		$this->user->setup('app');
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	static public function getSubscribedEvents()
 	{
 		return array(

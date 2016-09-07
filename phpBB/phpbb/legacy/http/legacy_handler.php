@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use phpbb\legacy\httpkernel\legacy_http_kernel as HttpKernel;
 
 /**
- * A class which handles the legacy
+ * A class which handles the legacy front controllers
  */
 class legacy_handler
 {
@@ -52,6 +52,11 @@ class legacy_handler
 	/** @var \Symfony\Component\Stopwatch\Stopwatch */
 	private $stopwatch;
 
+	/**
+	 * @param HttpKernel	$httpKernel
+	 * @param string		$legacyDir
+	 * @param bool			$debug
+	 */
 	public function __construct(HttpKernel $httpKernel, $legacyDir, $debug = false)
 	{
 		$this->httpKernel = $httpKernel;
@@ -160,16 +165,6 @@ class legacy_handler
 			E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE & ~E_WARNING
 		);
 
-		// Override some globals, to fake direct entry from the legcay
-		/*$url = $this->request->server->get('REDIRECT_SCRIPT_URL');
-		$this->request->server->set('SCRIPT_NAME', $url);
-		$this->request->server->set('PHP_SELF', $url);
-		$this->request->server->set('SCRIPT_FILENAME', $this->legacyPath);
-		$this->request->overrideGlobals(); // Do the same in phpBB object*/
-
-		// Change path to the script's path
-		//chdir(dirname($this->legacyPath));
-
 		// Enable output buffering to be able to fetch the legacy's content
 		// and encapsulate later in a response object.
 		ob_start();
@@ -192,7 +187,6 @@ class legacy_handler
 		$content = ob_get_clean();
 
 		// Restore the path
-		//chdir($this->basePath);
 		$rawHeaders = array_map(function ($header)
 		{
 			return explode(': ', $header);
@@ -277,6 +271,13 @@ class legacy_handler
 		throw new NotFoundHttpException();
 	}
 
+	/**
+	 * Ensure that all incoming requests ends with a slash
+	 *
+	 * @param Request $request
+	 *
+	 * @return RedirectResponse|void
+	 */
 	public function handleTrailingSlash(Request $request)
 	{
 		$parts = parse_url($request->getUri());
@@ -295,7 +296,7 @@ class legacy_handler
 
 		if (isset($parts['query']))
 		{
-			$url .= '?'.$parts['query'];
+			$url .= '?' . $parts['query'];
 		}
 
 		return new RedirectResponse($url);

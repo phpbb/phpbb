@@ -31,6 +31,9 @@ class legacy_http_kernel implements HttpKernelInterface, TerminableInterface
 {
 	private $kernel;
 
+	/**
+	 * @param HttpKernel $kernel
+	 */
 	public function __construct(HttpKernel $kernel)
 	{
 		$this->kernel = $kernel;
@@ -43,11 +46,16 @@ class legacy_http_kernel implements HttpKernelInterface, TerminableInterface
 	{
 		$request->headers->set('X-Php-Ob-Level', ob_get_level());
 
-		try {
+		try
+		{
 			return $this->handleRaw($request);
-		} catch (NotFoundHttpException $e) {
+		}
+		catch (NotFoundHttpException $e)
+		{
 			throw $e;
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e)
+		{
 			return $this->handleException($e, $request);
 		}
 	}
@@ -60,16 +68,39 @@ class legacy_http_kernel implements HttpKernelInterface, TerminableInterface
 		return $this->kernel->terminate($request, $response);
 	}
 
+	/**
+	 * @see \Symfony\Component\HttpKernel\HttpKernel::filterResponse()
+	 *
+	 * @param Response $response
+	 * @param Request $request
+	 *
+	 * @return Response
+	 */
 	public function filterResponse(Response $response, Request $request)
 	{
 		return $this->callEmbeddedHttpKernelMethod('filterResponse', $response, $request);
 	}
 
+	/**
+	 * @see \Symfony\Component\HttpKernel\HttpKernel::handleException()
+	 *
+	 * @param \Exception $e
+	 * @param Request $request
+	 *
+	 * @return Response
+	 */
 	public function handleException(\Exception $e, Request $request)
 	{
 		return $this->callEmbeddedHttpKernelMethod('handleException', $e, $request);
 	}
 
+	/**
+	 * @see \Symfony\Component\HttpKernel\HttpKernel::handleRaw()
+	 *
+	 * @param Request $request
+	 *
+	 * @return Response
+	 */
 	private function handleRaw(Request $request)
 	{
 		return $this->callEmbeddedHttpKernelMethod('handleRaw', $request);
