@@ -33,7 +33,7 @@ trait translate_composer_trait
 	/**
 	 * {@inheritdoc}
 	 */
-	public function write($messages, $newline = true)
+	public function write($messages, $newline = true, $verbosity = self::NORMAL)
 	{
 		$messages = (array) $messages;
 		$translated_messages = [];
@@ -96,7 +96,7 @@ trait translate_composer_trait
 	/**
 	 * {@inheritdoc}
 	 */
-	public function writeError($messages, $newline = true)
+	public function writeError($messages, $newline = true, $verbosity = self::NORMAL)
 	{
 		$messages = (array) $messages;
 		$translated_messages = [];

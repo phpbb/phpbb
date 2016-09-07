@@ -27,6 +27,7 @@ use phpbb\composer\io\null_io;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
+use Seld\JsonLint\ParsingException;
 
 /**
  * Class to install packages through composer while freezing core dependencies.
@@ -513,7 +514,19 @@ class installer
 
 		$this->ext_json_file_backup = null;
 		$json_file = new JsonFile($this->get_composer_ext_json_filename());
-		$ext_json_file_backup = $json_file->read();
+
+		try
+		{
+			$ext_json_file_backup = $json_file->read();
+		}
+		catch (ParsingException $e)
+		{
+			$ext_json_file_backup = '{}';
+
+			$lockFile = new JsonFile(substr($this->get_composer_ext_json_filename(), 0, -5) . '.lock');
+			$lockFile->write([]);
+		}
+
 		$json_file->write($ext_json_data);
 		$this->ext_json_file_backup = $ext_json_file_backup;
 	}

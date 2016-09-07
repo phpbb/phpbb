@@ -624,7 +624,14 @@ class acp_extensions
 					$enable_on_install = $this->request->variable('enable_on_install', false);
 					$purge_on_remove = $this->request->variable('purge_on_remove', false);
 					$minimum_stability = $this->request->variable('minimum_stability', 'stable');
-					$repositories = array_unique(explode("\n", $this->request->variable('repositories', '')));
+					$repositories = array_unique(
+						array_filter(
+							array_map(
+								'trim',
+								explode("\n", $this->request->variable('repositories', ''))
+							)
+						)
+					);
 
 					$previous_minimum_stability = $this->config['exts_composer_minimum_stability'];
 					$previous_repositories = $this->config['exts_composer_repositories'];
