@@ -18,7 +18,7 @@ class add_help_phpbb extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v320\v320a2',
+			'\phpbb\db\migration\data\v320\v320rc1',
 		);
 	}
 

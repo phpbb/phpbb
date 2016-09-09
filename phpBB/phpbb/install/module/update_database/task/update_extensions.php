@@ -76,7 +76,7 @@ class update_extensions extends task_base
 	 *				they were added
 	 */
 	static public $default_extensions_update = [
-		'3.2.0-b3' => ['phpbb/viglink']
+		'3.2.0-RC2' => ['phpbb/viglink']
 	];
 
 	/**

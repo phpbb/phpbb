@@ -199,13 +199,13 @@ acp_groups_position_teampage_add_button_before
 acp_help_phpbb_stats_after
 ===
 * Location: adm/style/acp_help_phpbb.html
-* Since: 3.2.0-b2
+* Since: 3.2.0-RC2
 * Purpose: Add content after send statistics tile
 
 acp_help_phpbb_stats_before
 ===
 * Location: adm/style/acp_help_phpbb.html
-* Since: 3.2.0-b2
+* Since: 3.2.0-RC2
 * Purpose: Add content before send statistics tile
 
 acp_logs_quick_select_forum_button_append

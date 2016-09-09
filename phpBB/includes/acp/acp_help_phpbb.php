@@ -76,7 +76,7 @@ class acp_help_phpbb
 		 *
 		 * @event core.acp_help_phpbb_submit_before
 		 * @var	boolean	submit			Do we display the form or process the submission
-		 * @since 3.2.0-b2
+		 * @since 3.2.0-RC2
 		 */
 		$vars = array('submit');
 		extract($phpbb_dispatcher->trigger_event('core.acp_help_phpbb_submit_before', compact($vars)));
