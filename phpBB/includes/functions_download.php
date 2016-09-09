@@ -284,7 +284,7 @@ function header_filename($file)
 
 	// There be dragons here.
 	// Not many follows the RFC...
-	if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Safari') !== false || strpos($user_agent, 'Konqueror') !== false)
+	if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Konqueror') !== false)
 	{
 		return "filename=" . rawurlencode($file);
 	}
