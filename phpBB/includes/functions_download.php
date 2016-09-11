@@ -254,11 +254,21 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 				send_status_line(206, 'Partial Content');
 				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
 				header('Content-Length: ' . $range['bytes_requested']);
-			}
 
-			while (!feof($fp))
+				// First read chunks
+				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
+				{
+					echo fread($fp, 8192);
+				}
+				// Then, read the remainder
+				echo fread($fp, $range['bytes_requested'] % 8192);
+			}
+			else
 			{
-				echo fread($fp, 8192);
+				while (!feof($fp))
+				{
+					echo fread($fp, 8192);
+				}
 			}
 			fclose($fp);
 		}
@@ -529,6 +539,9 @@ function phpbb_find_range_request()
 */
 function phpbb_parse_range_request($request_array, $filesize)
 {
+	$first_byte_pos	= -1;
+	$last_byte_pos	= -1;
+
 	// Go through all ranges
 	foreach ($request_array as $range_string)
 	{
@@ -540,62 +553,61 @@ function phpbb_parse_range_request($request_array, $filesize)
 			continue;
 		}
 
+		// Substitute defaults
 		if ($range[0] === '')
 		{
-			// Return last $range[1] bytes.
-
-			if (!$range[1])
-			{
-				continue;
-			}
-
-			if ($range[1] >= $filesize)
-			{
-				return false;
-			}
-
-			$first_byte_pos	= $filesize - (int) $range[1];
-			$last_byte_pos	= $filesize - 1;
-		}
-		else
-		{
-			// Return bytes from $range[0] to $range[1]
-
-			$first_byte_pos	= (int) $range[0];
-			$last_byte_pos	= (int) $range[1];
-
-			if ($last_byte_pos && $last_byte_pos < $first_byte_pos)
-			{
-				// The requested range contains 0 bytes.
-				continue;
-			}
-
-			if ($first_byte_pos >= $filesize)
-			{
-				// Requested range not satisfiable
-				return false;
-			}
-
-			// Adjust last-byte-pos if it is absent or greater than the content.
-			if ($range[1] === '' || $last_byte_pos >= $filesize)
-			{
-				$last_byte_pos = $filesize - 1;
-			}
+			$range[0] = 0;
 		}
 
-		// We currently do not support range requests that end before the end of the file
-		if ($last_byte_pos != $filesize - 1)
+		if ($range[1] === '')
 		{
+			$range[1] = $filesize - 1;
+		}
+
+		if ($last_byte_pos >= 0 && $last_byte_pos + 1 != $range[0])
+		{
+			// We only support contiguous ranges, no multipart stuff :(
+			return false;
+		}
+
+		if ($range[1] && $range[1] < $range[0])
+		{
+			// The requested range contains 0 bytes.
 			continue;
 		}
 
-		return array(
-			'byte_pos_start'	=> $first_byte_pos,
-			'byte_pos_end'		=> $last_byte_pos,
-			'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
-			'bytes_total'		=> $filesize,
-		);
+		// Return bytes from $range[0] to $range[1]
+		if ($first_byte_pos < 0)
+		{
+			$first_byte_pos	= (int) $range[0];
+		}
+
+		$last_byte_pos	= (int) $range[1];
+
+		if ($first_byte_pos >= $filesize)
+		{
+			// Requested range not satisfiable
+			return false;
+		}
+
+		// Adjust last-byte-pos if it is absent or greater than the content.
+		if ($range[1] === '' || $last_byte_pos >= $filesize)
+		{
+			$last_byte_pos = $filesize - 1;
+		}
 	}
+
+	if ($first_byte_pos < 0 || $last_byte_pos < 0)
+	{
+		return false;
+	}
+
+	return array(
+		'byte_pos_start'	=> $first_byte_pos,
+		'byte_pos_end'		=> $last_byte_pos,
+		'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
+		'bytes_total'		=> $filesize,
+	);
 }
 
 /**
