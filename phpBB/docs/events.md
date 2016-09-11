@@ -1400,12 +1400,26 @@ posting_editor_subject_after
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen after the subject
 
+posting_editor_subject_append
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.10-RC1
+* Purpose: Add field, text, etc. to the posting after the subject text box
+
 posting_editor_subject_before
 ===
 * Locations:
     + styles/prosilver/template/posting_editor.html
 * Since: 3.1.0-a2
 * Purpose: Add field (e.g. textbox) to the posting screen before the subject
+
+posting_editor_subject_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_editor.html
+* Since: 3.1.10-RC1
+* Purpose: Add field, text, etc. to the posting before the subject text box
 
 posting_editor_submit_buttons
 ===

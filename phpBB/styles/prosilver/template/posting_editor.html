@@ -23,7 +23,11 @@
 	<!-- IF S_POST_ACTION or S_PRIVMSGS or S_EDIT_DRAFT -->
 	<dl style="clear: left;">
 		<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
-		<dd><input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" /></dd>
+		<dd>
+			<!-- EVENT posting_editor_subject_prepend -->
+			<input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" />
+			<!-- EVENT posting_editor_subject_append -->
+		</dd>
 	</dl>
 	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
 		<!-- DEFINE $CAPTCHA_TAB_INDEX = 3 -->
