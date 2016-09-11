@@ -86,15 +86,12 @@ class acp_help_phpbb
 			$config->set('help_send_statistics', $request->variable('help_send_statistics', false));
 			$response = $request->variable('send_statistics_response', '');
 
+			$config->set('help_send_statistics_time', time());
+
 			if (!empty($response))
 			{
 				if ((strpos($response, 'Thank you') !== false || strpos($response, 'Flood protection') !== false))
 				{
-					// Update time when statistics were actually sent
-					if (strpos($response, 'Thank you') !== false)
-					{
-						$config->set('help_send_statistics_time', time());
-					}
 					trigger_error($user->lang('THANKS_SEND_STATISTICS') . adm_back_link($this->u_action));
 				}
 				else
