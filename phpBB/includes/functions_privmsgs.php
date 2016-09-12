@@ -2162,7 +2162,7 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 	$max_setting = (int) $row['max_setting'];
 	$min_setting = (int) $row['min_setting'];
 
-	return ($min_setting > 0) ? $max_setting : 0;
+	return ($min_setting > 0) ? $min_setting : $max_setting;
 }
 
 /**
