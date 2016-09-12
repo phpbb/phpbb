@@ -3086,7 +3086,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_root_path, $phpEx, $config, $phpbb_container;
+	global $db, $auth, $phpbb_root_path, $phpEx, $config, $phpbb_container, $phpbb_dispatcher;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -3216,6 +3216,28 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			$log = 'LOG_GROUP_DEFAULTS';
 		break;
 	}
+
+	/**
+	* Event to perform additional actions on setting user group attributes
+	*
+	* @event core.user_set_group_attributes
+	* @var	int		group_id			ID of the group
+	* @var	string	group_name			Name of the group
+	* @var	array	user_id_ary			IDs of the users to set group attributes
+	* @var	array	username_ary		Names of the users to set group attributes
+	* @var	array	group_attributes	Group attributes which were changed
+	* @var	string	action				Action to perform over the group members
+	* @since 3.1.10-RC1
+	*/
+	$vars = array(
+		'group_id',
+		'group_name',
+		'user_id_ary',
+		'username_ary',
+		'group_attributes',
+		'action',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.user_set_group_attributes', compact($vars)));
 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
