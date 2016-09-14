@@ -343,6 +343,13 @@ acp_posting_buttons_before
 * Since: 3.1.0-b4
 * Purpose: Add content before BBCode posting buttons in the ACP
 
+acp_posting_buttons_custom_tags_before
+===
+* Locations:
+    + adm/style/acp_posting_buttons.html
+* Since: 3.1.10-RC1
+* Purpose: Add content before the custom BBCodes in the ACP
+
 acp_profile_contact_before
 ===
 * Locations:
