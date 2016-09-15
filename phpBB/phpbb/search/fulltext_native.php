@@ -1262,7 +1262,7 @@ class fulltext_native extends \phpbb\search\base
 		if (!$total_results && $is_mysql)
 		{
 			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
-			$sql_calc = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
+			$sql_calc = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS ' . $select, $sql);
 
 			$result = $this->db->sql_query($sql_calc);
 			$this->db->sql_freeresult($result);
