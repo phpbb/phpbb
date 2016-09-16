@@ -1123,28 +1123,6 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 }
 
 /**
-* Delete Attachments
-*
-* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
-*
-* @param string $mode can be: post|message|topic|attach|user
-* @param mixed $ids can be: post_ids, message_ids, topic_ids, attach_ids, user_ids
-* @param bool $resync set this to false if you are deleting posts or topics
-*/
-function delete_attachments($mode, $ids, $resync = true)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
-	$num_deleted = $attachment_manager->delete($mode, $ids, $resync);
-
-	unset($attachment_manager);
-
-	return $num_deleted;
-}
-
-/**
 * Deletes shadow topics pointing to a specified forum.
 *
 * @param int		$forum_id		The forum id
@@ -1253,23 +1231,6 @@ function update_posted_info(&$topic_ids)
 	unset($posted);
 
 	$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
-}
-
-/**
-* Delete attached file
-*
-* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
-*/
-function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
-	$unlink = $attachment_manager->unlink($filename, $mode, $entry_removed);
-	unset($attachment_manager);
-
-	return $unlink;
 }
 
 /**
