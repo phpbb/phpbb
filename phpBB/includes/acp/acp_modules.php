@@ -46,6 +46,9 @@ class acp_modules
 		$user->add_lang('acp/modules');
 		$this->tpl_name = 'acp_modules';
 
+		$form_key = 'acp_modules';
+		add_form_key($form_key);
+
 		// module class
 		$this->module_class = $mode;
 
@@ -119,6 +122,11 @@ class acp_modules
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_modules'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
 					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
@@ -148,6 +156,11 @@ class acp_modules
 				if (!$module_id)
 				{
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_modules'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -273,6 +286,11 @@ class acp_modules
 
 				if ($submit)
 				{
+					if (!check_form_key($form_key))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					}
+
 					if (!$module_data['module_langname'])
 					{
 						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
@@ -460,12 +478,12 @@ class acp_modules
 					'S_ACP_MODULE_MANAGEMENT'	=> ($this->module_class == 'acp' && ($row['module_basename'] == 'modules' || $row['module_langname'] == 'ACP_MODULE_MANAGEMENT')) ? true : false,
 
 					'U_MODULE'			=> $this->u_action . '&amp;parent_id=' . $row['module_id'],
-					'U_MOVE_UP'			=> $url . '&amp;action=move_up',
-					'U_MOVE_DOWN'		=> $url . '&amp;action=move_down',
+					'U_MOVE_UP'			=> $url . '&amp;action=move_up&amp;hash=' . generate_link_hash('acp_modules'),
+					'U_MOVE_DOWN'		=> $url . '&amp;action=move_down&amp;hash=' . generate_link_hash('acp_modules'),
 					'U_EDIT'			=> $url . '&amp;action=edit',
 					'U_DELETE'			=> $url . '&amp;action=delete',
-					'U_ENABLE'			=> $url . '&amp;action=enable',
-					'U_DISABLE'			=> $url . '&amp;action=disable')
+					'U_ENABLE'			=> $url . '&amp;action=enable&amp;hash=' . generate_link_hash('acp_modules'),
+					'U_DISABLE'			=> $url . '&amp;action=disable&amp;hash=' . generate_link_hash('acp_modules'))
 				);
 			}
 			while ($row = $db->sql_fetchrow($result));
@@ -484,8 +502,8 @@ class acp_modules
 
 				'U_EDIT'			=> $url . '&amp;action=edit',
 				'U_DELETE'			=> $url . '&amp;action=delete',
-				'U_ENABLE'			=> $url . '&amp;action=enable',
-				'U_DISABLE'			=> $url . '&amp;action=disable')
+				'U_ENABLE'			=> $url . '&amp;action=enable&amp;hash=' . generate_link_hash('acp_modules'),
+				'U_DISABLE'			=> $url . '&amp;action=disable&amp;hash=' . generate_link_hash('acp_modules'))
 			);
 		}
 		$db->sql_freeresult($result);
