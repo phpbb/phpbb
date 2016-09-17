@@ -1375,11 +1375,11 @@ overall_header_head_append
 * Since: 3.1.0-a1
 * Purpose: Add asset calls directly before the `</head>` tag
 
-overall_header_headerbar_append
+overall_header_headerbar_after
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
-* Since: 3.1.9
+* Since: 3.1.10-RC1
 * Purpose: Add content at the end of the headerbar
 
 overall_header_navbar_before
