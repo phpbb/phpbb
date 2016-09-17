@@ -843,9 +843,26 @@ class acp_forums
 			ORDER BY left_id";
 		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		$rowset = array();
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
+			$rowset[(int) $row['forum_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		/**
+		* Modify the forum list data
+		*
+		* @event core.acp_manage_forums_modify_forum_list
+		* @var	array	rowset	Array with the forums list data
+		* @since 3.1.10-RC1
+		*/
+		$vars = array('rowset');
+		extract($phpbb_dispatcher->trigger_event('core.acp_manage_forums_modify_forum_list', compact($vars)));
+
+		if (!empty($rowset))
+		{
+			foreach ($rowset as $row)
 			{
 				$forum_type = $row['forum_type'];
 
@@ -889,7 +906,6 @@ class acp_forums
 					'U_SYNC'			=> $url . '&amp;action=sync')
 				);
 			}
-			while ($row = $db->sql_fetchrow($result));
 		}
 		else if ($this->parent_id)
 		{
@@ -905,7 +921,7 @@ class acp_forums
 				'U_SYNC'			=> $url . '&amp;action=sync')
 			);
 		}
-		$db->sql_freeresult($result);
+		unset($rowset);
 
 		$template->assign_vars(array(
 			'ERROR_MSG'		=> (sizeof($errors)) ? implode('<br />', $errors) : '',

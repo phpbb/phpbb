@@ -163,16 +163,33 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql, 600);
 
+	$rowset = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$rowset[(int) $row['forum_id']] = $row;
+	}
+	$db->sql_freeresult($result);
+
 	$right = $padding = 0;
 	$padding_store = array('0' => 0);
 	$display_jumpbox = false;
 	$iteration = 0;
 
+	/**
+	* Modify the jumpbox forum list data
+	*
+	* @event core.make_jumpbox_modify_forum_list
+	* @var	array	rowset	Array with the forums list data
+	* @since 3.1.10-RC1
+	*/
+	$vars = array('rowset');
+	extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_forum_list', compact($vars)));
+
 	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
 	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
 	// If this happens, the padding could be "broken"
 
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($rowset as $row)
 	{
 		if ($row['left_id'] < $right)
 		{
@@ -254,8 +271,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		}
 		$iteration++;
 	}
-	$db->sql_freeresult($result);
-	unset($padding_store);
+	unset($padding_store, $rowset);
 
 	$url_parts = $phpbb_path_helper->get_url_parts($action);
 
