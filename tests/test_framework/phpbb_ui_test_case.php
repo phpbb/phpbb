@@ -340,10 +340,6 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$this->assertContains($this->lang('ADMIN_PANEL'), $this->find_element('cssSelector', 'h1')->getText());
 
 		$cookies = self::$webDriver->manage()->getCookies();
-
-		copy($config_file, $config_file_test);
-
-		self::$install_success = true;
 	}
 
 	public function install_ext($extension)
