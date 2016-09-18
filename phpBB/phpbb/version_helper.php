@@ -36,7 +36,7 @@ class version_helper
 	/**
 	 * @var bool Use SSL or not
 	 */
-	protected $use_ssl = false;
+	protected $use_ssl = true;
 
 	/**
 	 * @var string Current version installed
