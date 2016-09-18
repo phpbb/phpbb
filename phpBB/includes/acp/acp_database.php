@@ -38,6 +38,14 @@ class acp_database
 
 		$action	= $request->variable('action', '');
 
+		$form_key = 'acp_database';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		$template->assign_vars(array(
 			'MODE'	=> $mode
 		));

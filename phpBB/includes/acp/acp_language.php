@@ -244,6 +244,11 @@ class acp_language
 			break;
 
 			case 'install':
+				if (!check_link_hash($request->variable('hash', ''), 'acp_language'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$lang_iso = $request->variable('iso', '');
 				$lang_iso = basename($lang_iso);
 
@@ -405,7 +410,7 @@ class acp_language
 					'ISO'			=> htmlspecialchars($lang_ary['iso']),
 					'LOCAL_NAME'	=> htmlspecialchars($lang_ary['local_name'], ENT_COMPAT, 'UTF-8'),
 					'NAME'			=> htmlspecialchars($lang_ary['name'], ENT_COMPAT, 'UTF-8'),
-					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']))
+					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']) . '&amp;hash=' . generate_link_hash('acp_language'))
 				);
 			}
 		}
