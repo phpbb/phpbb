@@ -254,7 +254,7 @@ class acp_search
 		$submit = $request->is_set_post('submit', false);
 
 		$form_key = 'acp_search';
-		//add_form_key($form_key);
+		add_form_key($form_key);
 
 		if (!check_form_key($form_key) && in_array($action, array('delete', 'create')))
 		{
