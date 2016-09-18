@@ -53,6 +53,9 @@ class acp_profile
 		$error = array();
 		$s_hidden_fields = '';
 
+		$form_key = 'acp_profile';
+		add_form_key($form_key);
+
 		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
 		{
 			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -161,6 +164,11 @@ class acp_profile
 
 			case 'activate':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_profile'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
@@ -201,6 +209,11 @@ class acp_profile
 
 			case 'deactivate':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_profile'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 0
 					WHERE field_id = $field_id";
@@ -229,6 +242,11 @@ class acp_profile
 
 			case 'move_up':
 			case 'move_down':
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_profile'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$sql = 'SELECT field_order
 					FROM ' . PROFILE_FIELDS_TABLE . "
@@ -579,6 +597,11 @@ class acp_profile
 
 				if (!sizeof($error))
 				{
+					if (!check_form_key($form_key))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					if (($step == 3 && (sizeof($this->lang_defs['iso']) == 1 || $save)) || ($action == 'edit' && $save))
 					{
 						$this->save_profile_field($cp, $field_type, $action);
@@ -735,12 +758,12 @@ class acp_profile
 				'FIELD_TYPE'		=> $profile_field->get_name(),
 
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
-				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
+				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
 				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
 				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
-				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id",
-				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id",
+				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
+				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
 
 				'S_NEED_EDIT'				=> $s_need_edit)
 			);

@@ -54,6 +54,13 @@ class acp_search
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
+		$form_key = 'acp_search';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		$search_types = $this->get_search_types();
 
@@ -232,7 +239,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$action = request_var('action', '');
@@ -243,6 +250,15 @@ class acp_search
 			$action = '';
 			$this->state = array();
 			$this->save_state();
+		}
+		$submit = $request->is_set_post('submit', false);
+
+		$form_key = 'acp_search';
+		add_form_key($form_key);
+
+		if (!check_form_key($form_key) && in_array($action, array('delete', 'create')))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($action)

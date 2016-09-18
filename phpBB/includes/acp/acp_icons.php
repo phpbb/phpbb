@@ -40,6 +40,15 @@ class acp_icons
 		$action = (isset($_POST['edit'])) ? 'edit' : $action;
 		$action = (isset($_POST['import'])) ? 'import' : $action;
 		$icon_id = request_var('id', 0);
+		$submit = $request->is_set_post('submit', false);
+
+		$form_key = 'acp_icons';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
 
@@ -811,6 +820,11 @@ class acp_icons
 			case 'move_up':
 			case 'move_down':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				// Get current order id...
 				$sql = "SELECT {$fields}_order as current_order
 					FROM $table
@@ -928,8 +942,8 @@ class acp_icons
 				'EMOTION'		=> (isset($row['emotion'])) ? $row['emotion'] : '',
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
 			));
 
 			if (!$spacer && !$row['display_on_posting'])

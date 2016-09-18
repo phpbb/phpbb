@@ -366,6 +366,11 @@ class acp_permission_roles
 			case 'move_up':
 			case 'move_down':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_permission_roles'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$sql = 'SELECT role_order
 					FROM ' . ACL_ROLES_TABLE . "
 					WHERE role_id = $role_id";
@@ -440,8 +445,8 @@ class acp_permission_roles
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'],
-				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'],
+				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
+				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 

@@ -282,6 +282,11 @@ class acp_reasons
 			case 'move_up':
 			case 'move_down':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_reasons'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$sql = 'SELECT reason_order
 					FROM ' . REPORTS_REASONS_TABLE . "
 					WHERE reason_id = $reason_id";
@@ -383,8 +388,8 @@ class acp_reasons
 
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['reason_id'],
 				'U_DELETE'		=> (!$other_reason) ? $this->u_action . '&amp;action=delete&amp;id=' . $row['reason_id'] : '',
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row['reason_id'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row['reason_id'])
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row['reason_id'] . '&amp;hash=' . generate_link_hash('acp_reasons'),
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row['reason_id'] . '&amp;hash=' . generate_link_hash('acp_reasons'))
 			);
 		}
 		$db->sql_freeresult($result);
