@@ -585,7 +585,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	array		sort_by_sql					Array of SQL sorting instructions
 	* @var	string		sort_key					The sort key
 	* @var	string		sort_dir					The sort direction
-	* @var	string		sort_days					Limit the age of results
+	* @var	int			sort_days					Limit the age of results
 	* @var	array		ex_fid_ary					Array of excluded forum ids
 	* @var	string		m_approve_posts_fid_sql		Specifies which types of posts the user can view in which forums
 	* @var	int			topic_id					is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
