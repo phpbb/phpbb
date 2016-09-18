@@ -1,6 +1,6 @@
 /**
 *
-* phpBB © Copyright phpBB Limited 2003-2014
+* phpBB © Copyright phpBB Limited 2003-2016
 * http://www.phpbb.com
 *
 * phpBB is free software. You can redistribute it and/or modify it
@@ -20,13 +20,13 @@
 
 phpBB Project Manager:   Marshalrusty (Yuriy Rusko)
 
-phpBB Lead Developer:    naderman (Nils Adermann)
+phpBB Product Manager:   naderman (Nils Adermann)
+
+phpBB Lead Developer:    Marc (Marc Alexander)
 
 phpBB Developers:        bantu (Andreas Fischer)
                          CHItA (Máté Bartus)
-                         dhruv.goel92 (Dhruv Goel)
                          Elsensee (Oliver Schramm)
-                         marc1706 (Marc Alexander)
                          nickvergessen (Joas Schilling)
                          Nicofuma (Tristan Darricau)
                          prototech (Cesar Gallegos)
@@ -54,6 +54,7 @@ phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                          ckwalsh (Cullen Walsh)        [01/2010 - 07/2011]
                          DavidMJ (David M.)            [12/2005 - 08/2009]
                          dhn (Dominik Dröscher)        [05/2007 - 01/2011]
+                         dhruv.goel92 (Dhruv Goel)     [04/2013 - 05/2016]
                          EXreaction (Nathan Guse)      [07/2012 - 05/2014]
                          GrahamJE (Graham Eames)       [09/2005 - 11/2006]
                          igorw (Igor Wiedler)          [08/2010 - 02/2013]
