@@ -174,8 +174,6 @@ class phpbb_ui_test_case extends phpbb_test_case
 
 		self::recreate_database(self::$config);
 
-		$db = self::get_db();
-
 		$config_file = $phpbb_root_path . "config.$phpEx";
 		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
 		$config_file_test = $phpbb_root_path . "config_test.$phpEx";
@@ -299,49 +297,6 @@ class phpbb_ui_test_case extends phpbb_test_case
 		}
 	}
 
-	protected function logout()
-	{
-		$this->add_lang('ucp');
-
-		if (empty($this->sid))
-		{
-			return;
-		}
-
-		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('REGISTER'), self::$webDriver->getPageSource());
-		unset($this->sid);
-
-	}
-
-	/**
-	 * Login to the ACP
-	 * You must run login() before calling this.
-	 */
-	protected function admin_login($username = 'admin')
-	{
-		$this->add_lang('acp/common');
-
-		// Requires login first!
-		if (empty($this->sid))
-		{
-			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
-			return;
-		}
-
-		self::$webDriver->manage()->deleteAllCookies();
-
-		$this->visit('adm/index.php?sid=' . $this->sid);
-		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), self::$webDriver->getPageSource());
-
-		self::find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);
-		self::find_element('cssSelector', 'input[type=password]')->sendKeys($username . $username);
-		self::find_element('cssSelector', 'input[name=login]')->click();
-		$this->assertContains($this->lang('ADMIN_PANEL'), $this->find_element('cssSelector', 'h1')->getText());
-
-		$cookies = self::$webDriver->manage()->getCookies();
-	}
-
 	public function install_ext($extension)
 	{
 		$this->login();
@@ -448,6 +403,62 @@ class phpbb_ui_test_case extends phpbb_test_case
 			$this->db = $db;
 		}
 		return $this->db;
+	}
+
+	protected function logout()
+	{
+		$this->add_lang('ucp');
+
+		if (empty($this->sid))
+		{
+			return;
+		}
+
+		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
+		$this->assertContains($this->lang('REGISTER'), self::$webDriver->getPageSource());
+		unset($this->sid);
+
+	}
+
+	/**
+	 * Login to the ACP
+	 * You must run login() before calling this.
+	 */
+	protected function admin_login($username = 'admin')
+	{
+		$this->add_lang('acp/common');
+
+		// Requires login first!
+		if (empty($this->sid))
+		{
+			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			return;
+		}
+
+		self::$webDriver->manage()->deleteAllCookies();
+
+		$this->visit('adm/index.php?sid=' . $this->sid);
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), self::$webDriver->getPageSource());
+
+		self::find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);
+		self::find_element('cssSelector', 'input[type=password]')->sendKeys($username . $username);
+		self::find_element('cssSelector', 'input[name=login]')->click();
+		$this->assertContains($this->lang('ADMIN_PANEL'), $this->find_element('cssSelector', 'h1')->getText());
+
+		$cookies = self::$webDriver->manage()->getCookies();
+
+		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
+		foreach ($cookies as $cookie)
+		{
+			if (substr($cookie['name'], -4) == '_sid')
+			{
+				$this->sid = $cookie['value'];
+
+				break;
+			}
+		}
+
+		$this->assertNotEmpty($this->sid);
 	}
 
 	protected function add_lang($lang_file)
