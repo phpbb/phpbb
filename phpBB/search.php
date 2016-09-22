@@ -645,14 +645,16 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @event core.search_modify_url_parameters
 	* @var	string	u_search		Search URL parameters string
 	* @var	string	search_id		Predefined search type name
+	* @var	string	show_results	String indicating the show results mode
 	* @var	string	sql_where		The SQL WHERE string used by search to get topic data
 	* @var	int		total_match_count	The total number of search matches
 	* @since 3.1.7-RC1
-	* @changed 3.1.10-RC1 Added sql_where, total_match_count
+	* @changed 3.1.10-RC1 Added show_results, sql_where, total_match_count
 	*/
 	$vars = array(
 		'u_search',
 		'search_id',
+		'show_results',
 		'sql_where',
 		'total_match_count',
 	);
