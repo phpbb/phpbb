@@ -79,7 +79,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$this->add_lang('acp/search');
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$form_values = $crawler->selectButton('Delete index')->form()->getValues();
+		$form_values = $crawler->selectButton('Create index')->form()->getValues();
 		$crawler = self::request(
 			'POST',
 			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
