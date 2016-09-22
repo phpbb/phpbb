@@ -286,7 +286,7 @@ class base
 
 		$sql = 'DELETE
 			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE search_time < ' . (time() - $config['search_store_results']);
+			WHERE search_time < ' . (time() - (int) $config['search_store_results']);
 		$db->sql_query($sql);
 	}
 }
