@@ -1711,8 +1711,8 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if ($url_parts === false)
 	{
-		// Malformed url, redirect to current page...
-		$url = generate_board_url() . '/' . $user->page['page'];
+		// Malformed url
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
