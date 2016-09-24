@@ -402,7 +402,7 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
-		$sql = 'DELETE FROM ' . LOG_TABLE . "
+		$sql = 'DELETE FROM ' . $this->log_table . "
 					$sql_where";
 		$this->db->sql_query($sql);
 
