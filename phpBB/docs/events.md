@@ -1377,16 +1377,16 @@ overall_header_head_append
 
 overall_header_headerbar_after
 ===
-* Loacations:
+* Locations:
    + styles/prosilver/template/overall_header.html
-* Since: 3.1.10-RC1
+* Since: 3.1.11-RC1
 * Purpose: Add content at the end of the headerbar
 
 overall_header_headerbar_before
 ===
 * Locations:
     + styles/prosilver/template/overall_header.html
-* Since: 3.1.10-RC1
+* Since: 3.1.11-RC1
 * Purpose: Add content at the beginning of the headerbar
 
 overall_header_navbar_before
