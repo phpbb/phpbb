@@ -55,6 +55,7 @@
 		<li><a href="#v320a2">Changes since 3.2.0-a2</a></li>
 		<li><a href="#v320a1">Changes since 3.2.0-a1</a></li>
 		<li><a href="#v31x">Changes since 3.1.x</a></li>
+		<li><a href="#v319">Changes since 3.1.9</a></li>
 		<li><a href="#v318">Changes since 3.1.8</a></li>
 		<li><a href="#v317pl1">Changes since 3.1.7-PL1</a></li>
 		<li><a href="#v317">Changes since 3.1.7</a></li>
@@ -527,7 +528,88 @@
 				<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14265">PHPBB3-14265</a>] - Make all tables available in the container</li>
 			</ul>
 
-			<a name="v318"></a><h3>Changes since 3.1.8</h3>
+	<a name="v319"></a><h3>Changes since 3.1.9</h3>
+
+	<h4>Bug</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-11446">PHPBB3-11446</a>] - Use sql_in_set as designed and consistent with the rest of phpBB code in phpbb_notification_manager</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12230">PHPBB3-12230</a>] - Do not auto remove user group when Newly Registered Users group was disabled</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12925">PHPBB3-12925</a>] - Use plural for permanent delete posts/topics confirmation</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14109">PHPBB3-14109</a>] - MySQL InnoDB does not support multiple index definitions on the same query.</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14291">PHPBB3-14291</a>] - Function send_file_to_browser() endlessly overwrites 'filesize' in ATTACHMENTS_TABLE</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14610">PHPBB3-14610</a>] - Q&amp;A CAPTCHA logs error when it has been solved</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14615">PHPBB3-14615</a>] - delete avatar triggers the new min max value in the HTML5 inputs</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14616">PHPBB3-14616</a>] - Auto-prune fails on large forums</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14631">PHPBB3-14631</a>] - 3.1.9 DB cli update crashes with PHP Fatal error: Call to undefined function phpbb\truncate_string()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14654">PHPBB3-14654</a>] - Imagemagick &gt; ImageMagick</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14661">PHPBB3-14661</a>] - Fix a typo in twig.php</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14673">PHPBB3-14673</a>] - Missing Language Variable</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14683">PHPBB3-14683</a>] - Typos in operators in some email templates</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14703">PHPBB3-14703</a>] - module.add adds a module to the wrong parent</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14704">PHPBB3-14704</a>] - Remove unused language files and corresponding  functions</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14721">PHPBB3-14721</a>] - New registrants choosing old deleted usernames get linked to old accounts with namechange</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14742">PHPBB3-14742</a>] - Improvements to migrator</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14745">PHPBB3-14745</a>] - &quot;U_NOTIFICATION_SETTINGS&quot; contains an HTML entity but is printed in a plaintext email</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14755">PHPBB3-14755</a>] - Error in MCP Move posts</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14782">PHPBB3-14782</a>] - Quick Links &gt; Your Posts gives mysql error</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14788">PHPBB3-14788</a>] - Update developer list to reflect team changes</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14796">PHPBB3-14796</a>] - Log table is using constant in log delete method</li>
+	</ul>
+	<h4>Improvement</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13709">PHPBB3-13709</a>] - Fallback to english in email templates by extensions</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13716">PHPBB3-13716</a>] - Check phpBB version constant against config version</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13865">PHPBB3-13865</a>] - Complement core event search_modify_param</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14184">PHPBB3-14184</a>] - Missing info on SMTP mail function option</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14429">PHPBB3-14429</a>] - core.obtain_users_online_string_modify</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14466">PHPBB3-14466</a>] - Add an event to cron.php</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14469">PHPBB3-14469</a>] - [Template] - &lt;!-- EVENT viewforum_topicrow_before --&gt;</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14516">PHPBB3-14516</a>] - [Template] - memberlist_email_before</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14581">PHPBB3-14581</a>] - Add core events relating to soft delete</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14592">PHPBB3-14592</a>] - [PHP] - core.search_backend_search_after</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14596">PHPBB3-14596</a>] - Prevent installs of 3.1 on PHP 7</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14624">PHPBB3-14624</a>] - Add event to ucp_profile in signature section</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14630">PHPBB3-14630</a>] - Add event to ucp_pm_compose</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14638">PHPBB3-14638</a>] - [PHP] - multiple UCP subscription events for form data and template variables</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14643">PHPBB3-14643</a>] - Select newest file in restore list</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14652">PHPBB3-14652</a>] - Typo birthdays</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14664">PHPBB3-14664</a>] - Fix PHPDoc comment in cron manager</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14672">PHPBB3-14672</a>] - Add template event to viewforum</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14685">PHPBB3-14685</a>] - PHP event for altering announcements sql</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14687">PHPBB3-14687</a>] - Modify viewforum_modify_topicrow</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14688">PHPBB3-14688</a>] - Add core events to the feeds</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14689">PHPBB3-14689</a>] - Build 3.2.x API docs</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14695">PHPBB3-14695</a>] - Add posting_editor_subject_prepend/append template events</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14712">PHPBB3-14712</a>] - Add search.php core event to allow modifying the forum select list</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14713">PHPBB3-14713</a>] - Add core event to the admin function get_forum_list()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14715">PHPBB3-14715</a>] - Add template events in posting_topic_review &amp; mcp_topic</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14720">PHPBB3-14720</a>] - Add global javascript variable 'phpbb' to jshint settings</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14727">PHPBB3-14727</a>] - Event core.search_modify_submit_parameters</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14738">PHPBB3-14738</a>] - Add core events to improve modifying forum lists</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14747">PHPBB3-14747</a>] - Add topic_last_poster_id and topic_last_post_time to Event core.modify_posting_auth</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14762">PHPBB3-14762</a>] - Add core event to session.php to alter IP address</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14781">PHPBB3-14781</a>] - Add core event to the function group_user_attributes()</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14783">PHPBB3-14783</a>] - Event - ACP Posting Buttons Before Custom BBCodes</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14784">PHPBB3-14784</a>] - missing rewrite for lighttpd</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14785">PHPBB3-14785</a>] - [Template event] - overall_header_headerbar_append</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14787">PHPBB3-14787</a>] - Add more parameters to the core.search_modify_url_parameters event</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14789">PHPBB3-14789</a>] - Add missing link hash and form token checks to ACP</li>
+	</ul>
+	<h4>New Feature</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-13978">PHPBB3-13978</a>] - [PHP] - User control panel - on signature change</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14484">PHPBB3-14484</a>] - Support extensions in UI tests</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14506">PHPBB3-14506</a>] - [Template] - mcp_move_before</li>
+	</ul>
+	<h4>Task</h4>
+	<ul>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-12133">PHPBB3-12133</a>] - Update list of browsers supporting filename* in Content-Disposition</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14538">PHPBB3-14538</a>] - Update composer dependencies</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14598">PHPBB3-14598</a>] - Phing Sniffer Testing Use Statements in DocBlocks</li>
+		<li>[<a href="http://tracker.phpbb.com/browse/PHPBB3-14743">PHPBB3-14743</a>] - Remove PHP7 from test matrix in 3.1.x</li>
+	</ul>
+
+	<a name="v318"></a><h3>Changes since 3.1.8</h3>
 
 	<h4>Bug</h4>
 	<ul>
