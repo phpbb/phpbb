@@ -1,5 +1,5 @@
 {
 	"require-dev": {
-		"facebook/webdriver": "dev-master"
+		"facebook/webdriver": "~1.1"
 	}
 }
