@@ -219,7 +219,7 @@ class session
 	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
-		global $request, $phpbb_container, $user, $phpbb_log;
+		global $request, $phpbb_container, $user, $phpbb_log, $phpbb_dispatcher;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -281,11 +281,21 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = htmlspecialchars_decode($request->server('REMOTE_ADDR'));
-		$this->ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $this->ip));
+		$ip = htmlspecialchars_decode($request->server('REMOTE_ADDR'));
+		$ip = preg_replace('# {2,}#', ' ', str_replace(',', ' ', $ip));
+
+		/**
+		* Event to alter user IP address
+		*
+		* @event core.session_ip_after
+		* @var	string	ip	REMOTE_ADDR
+		* @since 3.1.10-RC1
+		*/
+		$vars = array('ip');
+		extract($phpbb_dispatcher->trigger_event('core.session_ip_after', compact($vars)));
 
 		// split the list of IPs
-		$ips = explode(' ', trim($this->ip));
+		$ips = explode(' ', trim($ip));
 
 		// Default IP if REMOTE_ADDR is invalid
 		$this->ip = '127.0.0.1';
