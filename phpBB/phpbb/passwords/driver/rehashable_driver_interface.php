@@ -13,7 +13,7 @@
 
 namespace phpbb\passwords\driver;
 
-interface driver_interface
+interface rehashable_driver_interface
 {
 	/**
 	* Check if hash type is supported
@@ -28,6 +28,14 @@ interface driver_interface
 	* @return bool		True if it's a legacy hash type, false if not
 	*/
 	public function is_legacy();
+
+	/**
+	 * Check if password needs to be rehashed
+	 *
+	 * @param string $hash Hash to check for rehash
+	 * @return bool True if password needs to be rehashed, false if not
+	 */
+	public function needs_rehash($hash);
 
 	/**
 	* Returns the hash prefix
