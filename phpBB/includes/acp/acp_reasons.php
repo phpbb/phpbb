@@ -231,7 +231,6 @@ class acp_reasons
 						break;
 
 						// Standard? What's that?
-						case 'mssql':
 						case 'mssql_odbc':
 						case 'mssqlnative':
 							// Change the reports using this reason to 'other'

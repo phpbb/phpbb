@@ -110,7 +110,6 @@ class mssql extends tools
 		// Determine mapping database type
 		switch ($this->db->get_sql_layer())
 		{
-			case 'mssql':
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
