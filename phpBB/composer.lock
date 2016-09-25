@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "63b20e6f5099b514286ff23fa070e7f1",
-    "content-hash": "1369fbe6bfe057da9b7c8bfb4cacfe73",
+    "hash": "5426763a1b0cea586211be11218ec457",
+    "content-hash": "b6de2d81609b99acc0d3aaf0ee4cc886",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -3315,7 +3315,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4,<7.1"
+        "php": ">=5.4"
     },
     "platform-dev": [],
     "platform-overrides": {

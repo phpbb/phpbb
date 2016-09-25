@@ -25,7 +25,7 @@
 		"phpbb/phpbb-core": "self.version"
 	},
 	"require": {
-		"php": ">=5.4,<7.1",
+		"php": ">=5.4",
 		"bantu/ini-get-wrapper": "1.0.*",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": "~5.3",
