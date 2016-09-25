@@ -1918,8 +1918,7 @@
             "authors": [
                 {
                     "name": "Michiel Rook",
-                    "email": "mrook@php.net",
-                    "role": "Lead"
+                    "email": "mrook@php.net"
                 },
                 {
                     "name": "Phing Community",
