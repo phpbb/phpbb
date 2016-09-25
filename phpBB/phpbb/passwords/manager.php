@@ -174,7 +174,7 @@ class manager
 
 		// Be on the lookout for multiple hashing algorithms
 		// 2 is correct: H\2a > 2, H\P > 2
-		if (strlen($match[1]) > 2)
+		if (strlen($match[1]) > 2 && strpos($match[1], '\\') !== false)
 		{
 			$hash_types = explode('\\', $match[1]);
 			$return_ary = array();
