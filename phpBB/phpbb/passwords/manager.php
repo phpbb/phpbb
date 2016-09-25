@@ -297,7 +297,14 @@ class manager
 		}
 		else
 		{
-			$this->convert_flag = $stored_hash_type->needs_rehash($hash);
+			if ($stored_hash_type instanceof driver\rehashable_driver_interface)
+			{
+				$this->convert_flag = $stored_hash_type->needs_rehash($hash);
+			}
+			else
+			{
+				$this->convert_flag = false;
+			}
 		}
 
 		// Check all legacy hash types if prefix is $CP$
