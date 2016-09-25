@@ -134,7 +134,7 @@ class add_default_data extends \phpbb\install\task_base
 	 */
 	protected function replace_dbms_specific_sql($query)
 	{
-		if ($this->db instanceof \phpbb\db\driver\mssql_base || $this->db instanceof \phpbb\db\driver\mssql)
+		if ($this->db instanceof \phpbb\db\driver\mssql_base)
 		{
 			$query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $query);
 		}

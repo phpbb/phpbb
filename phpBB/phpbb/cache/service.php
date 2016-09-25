@@ -302,7 +302,6 @@ class service
 		{
 			switch ($this->db->get_sql_layer())
 			{
-				case 'mssql':
 				case 'mssql_odbc':
 				case 'mssqlnative':
 					$sql = 'SELECT user_id, bot_agent, bot_ip
