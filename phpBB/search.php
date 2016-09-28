@@ -690,8 +690,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	string	show_results	String indicating the show results mode
 	* @var	string	sql_where		The SQL WHERE string used by search to get topic data
 	* @var	int		total_match_count	The total number of search matches
+	* @var	array	ex_fid_ary		Array of excluded forum ids
 	* @since 3.1.7-RC1
 	* @changed 3.1.10-RC1 Added show_results, sql_where, total_match_count
+	* @changed 3.1.11-RC1 Added ex_fid_ary
 	*/
 	$vars = array(
 		'u_search',
@@ -699,6 +701,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'show_results',
 		'sql_where',
 		'total_match_count',
+		'ex_fid_ary',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.search_modify_url_parameters', compact($vars)));
 
