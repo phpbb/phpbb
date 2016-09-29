@@ -1822,7 +1822,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_title'];
 		$this->bbcode_bitfield = $bbcode_bitfield;
 
-		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
+		$poll['poll_options'] = preg_split('/\s*?\n\s*/', trim($poll['poll_option_text']));
 		$poll['poll_options_size'] = sizeof($poll['poll_options']);
 
 		if (!$poll['poll_title'] && $poll['poll_options_size'])
