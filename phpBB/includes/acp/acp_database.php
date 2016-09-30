@@ -233,11 +233,6 @@ class acp_database
 						$file = request_var('file', '');
 						$download = request_var('download', '');
 
-						if (!check_form_key($form_key))
-						{
-							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
 						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 						{
 							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
