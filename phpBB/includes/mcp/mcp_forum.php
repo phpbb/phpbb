@@ -506,16 +506,16 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		/**
 		 * Perform additional actions after merging topics.
 		 *
-		 * @event core.mcp_merge_after
+		 * @event core.mcp_forum_merge_topics_after
 		 * @var	array	all_topic_data			The data from all topics involved in the merge
 		 * @var	int		to_topic_id				The ID of the topic into which the rest are merged
-		 * @since 3.1.10-RC1
+		 * @since 3.1.11-RC1
 		 */
 		$vars = array(
 			'all_topic_data',
 			'to_topic_id',
 		);
-		extract($phpbb_dispatcher->trigger_event('core.mcp_merge_after', compact($vars)));
+		extract($phpbb_dispatcher->trigger_event('core.mcp_forum_merge_topics_after', compact($vars)));
 
 		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
