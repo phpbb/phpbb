@@ -476,7 +476,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		$to_forum_id = $to_topic_data['forum_id'];
 
 		move_posts($post_id_list, $to_topic_id, false);
-		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $topic_data['topic_title']);
+		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $to_topic_data['topic_title']);
 
 		// Message and return links
 		$success_msg = 'POSTS_MERGED_SUCCESS';
