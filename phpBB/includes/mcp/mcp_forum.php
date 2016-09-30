@@ -396,7 +396,7 @@ function mcp_resync_topics($topic_ids)
 */
 function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $phpbb_dispatcher;
 
 	if (!sizeof($topic_ids))
 	{
@@ -411,21 +411,21 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	$sync_topics = array_merge($topic_ids, array($to_topic_id));
 
-	$topic_data = phpbb_get_topic_data($sync_topics, 'm_merge');
+	$all_topic_data = phpbb_get_topic_data($sync_topics, 'm_merge');
 
-	if (!sizeof($topic_data) || empty($topic_data[$to_topic_id]))
+	if (!sizeof($all_topic_data) || empty($all_topic_data[$to_topic_id]))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
 	$sync_forums = array();
-	foreach ($topic_data as $data)
+	foreach ($all_topic_data as $data)
 	{
 		$sync_forums[$data['forum_id']] = $data['forum_id'];
 	}
 
-	$topic_data = $topic_data[$to_topic_id];
+	$to_topic_data = $all_topic_data[$to_topic_id];
 
 	$post_id_list	= request_var('post_id_list', array(0));
 	$start			= request_var('start', 0);
@@ -473,7 +473,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (confirm_box(true))
 	{
-		$to_forum_id = $topic_data['forum_id'];
+		$to_forum_id = $to_topic_data['forum_id'];
 
 		move_posts($post_id_list, $to_topic_id, false);
 		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $topic_data['topic_title']);
@@ -502,6 +502,20 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = request_var('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
+
+		/**
+		 * Perform additional actions after merging topics.
+		 *
+		 * @event core.mcp_merge_after
+		 * @var	array	all_topic_data			The data from all topics involved in the merge
+		 * @var	int		to_topic_id				The ID of the topic into which the rest are merged
+		 * @since 3.1.10-RC1
+		 */
+		$vars = array(
+			'all_topic_data',
+			'to_topic_id',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_merge_after', compact($vars)));
 
 		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
