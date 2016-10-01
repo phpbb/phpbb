@@ -428,9 +428,11 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	}
 
 	$sync_forums = array();
+	$topic_views = 0;
 	foreach ($topic_data as $data)
 	{
 		$sync_forums[$data['forum_id']] = $data['forum_id'];
+		$topic_views += $data['topic_views'];
 	}
 
 	$topic_data = $topic_data[$to_topic_id];
@@ -490,6 +492,12 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 			'topic_id' => $to_topic_id,
 			$topic_data['topic_title']
 		));
+
+		// Update topic views count
+		$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_views = ' . $topic_views . '
+				WHERE topic_id = ' . $to_topic_id;
+		$db->sql_query($sql);
 
 		// Message and return links
 		$success_msg = 'POSTS_MERGED_SUCCESS';
