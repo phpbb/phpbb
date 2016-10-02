@@ -45,11 +45,6 @@ class acp_icons
 		$form_key = 'acp_icons';
 		add_form_key($form_key);
 
-		if ($submit && !check_form_key($form_key))
-		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-		}
-
 		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
 
 		$this->tpl_name = 'acp_icons';
@@ -334,6 +329,11 @@ class acp_icons
 			case 'create':
 			case 'modify':
 
+				if (!check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				// Get items to create/modify
 				$images = (isset($_POST['image'])) ? array_keys($request->variable('image', array('' => 0))) : array();
 
@@ -531,6 +531,11 @@ class acp_icons
 				{
 					$order = 0;
 
+					if (!check_form_key($form_key))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
 					{
 						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -717,7 +722,7 @@ class acp_icons
 
 				$template->assign_vars(array(
 					'MESSAGE_TITLE'		=> $user->lang['EXPORT_' . $lang],
-					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send">', '</a>'),
+					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
 
 					'S_USER_NOTICE'		=> true,
 					)
@@ -728,6 +733,11 @@ class acp_icons
 			break;
 
 			case 'send':
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$sql = "SELECT *
 					FROM $table
