@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3b01eb342cbfb7147e0bf53e68b7e991",
-    "content-hash": "5794ac0aeeae2c08bf9f8d6f26778e4a",
+    "hash": "f8c36b90de055ba0b43285a066e66805",
+    "content-hash": "1968761eb0667a7c4745caaf65992fe3",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -460,16 +460,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v1.4.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "c7e26a21ba357863de030f0b9e701c7d04593774"
+                "reference": "088c04e2f261c33bed6ca5245491cfca69195ccf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/c7e26a21ba357863de030f0b9e701c7d04593774",
-                "reference": "c7e26a21ba357863de030f0b9e701c7d04593774",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/088c04e2f261c33bed6ca5245491cfca69195ccf",
+                "reference": "088c04e2f261c33bed6ca5245491cfca69195ccf",
                 "shasum": ""
             },
             "require": {
@@ -504,7 +504,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2016-03-18 20:34:03"
+            "time": "2016-04-03 06:00:07"
         },
         {
             "name": "patchwork/utf8",
@@ -649,16 +649,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "0.7.1",
+            "version": "0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "5ac94a32e63573fca4e92739b80563d71ac60704"
+                "reference": "48158ca7c52ea637ff625e495d6046eb6a4c8efd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/5ac94a32e63573fca4e92739b80563d71ac60704",
-                "reference": "5ac94a32e63573fca4e92739b80563d71ac60704",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/48158ca7c52ea637ff625e495d6046eb6a4c8efd",
+                "reference": "48158ca7c52ea637ff625e495d6046eb6a4c8efd",
                 "shasum": ""
             },
             "require": {
@@ -705,7 +705,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2016-09-24 11:59:09"
+            "time": "2016-10-09 13:58:36"
         },
         {
             "name": "symfony/config",
