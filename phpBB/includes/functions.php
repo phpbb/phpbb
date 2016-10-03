@@ -4441,10 +4441,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
-		'T_SMILIES_PATH'		=> "{$web_path}",	// {$config['icons_path']}/ is not used as for 3.2 smiley path is dumped into the DB for every smiley
+		'T_SMILIES_PATH'		=> $web_path,	// {$config['icons_path']}/ is not used as for 3.2 smiley path is dumped into the DB for every smiley
 		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$web_path}{$config['avatar_gallery_path']}/",
-		'T_ICONS_PATH'			=> "{$web_path}",	// {$config['icons_path']}/ is not used as for 3.2 icon path is dumped into the DB for every icon
+		'T_ICONS_PATH'			=> $web_path,	// {$config['icons_path']}/ is not used as for 3.2 icon path is dumped into the DB for every icon
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
