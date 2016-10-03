@@ -1860,7 +1860,7 @@ class parse_message extends bbcode_firstpass
 		// Parse Poll Option text
 		$tmp_message = $this->message;
 
-		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
+		$poll['poll_options'] = preg_split('/\s*?\n\s*/', trim($poll['poll_option_text']));
 		$poll['poll_options_size'] = sizeof($poll['poll_options']);
 
 		foreach ($poll['poll_options'] as &$poll_option)
