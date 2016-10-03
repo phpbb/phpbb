@@ -794,6 +794,22 @@ mcp_ban_unban_before
 * Since: 3.1.0-RC3
 * Purpose: Add additional fields to the unban form in MCP
 
+mcp_forum_actions_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.11-RC1
+* Purpose: Add some information after actions fieldset
+
+mcp_forum_actions_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.11-RC1
+* Purpose: Add some information before actions fieldset
+
 mcp_forum_topic_title_before
 ===
 * Locations:

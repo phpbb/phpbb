@@ -49,7 +49,7 @@
 	-->
 	<target name="composer">
 		<exec dir="phpBB"
-			command="php ../composer.phar install"
+			command="php ../composer.phar install --ignore-platform-reqs"
 			checkreturn="true"
 			passthru="true" />
 	</target>
@@ -270,7 +270,7 @@
 									command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
 									checkreturn="true" />
 								<exec dir="${dir}"
-									command="php composer.phar install --no-dev --optimize-autoloader"
+									command="php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs"
 									checkreturn="true"
 									passthru="true" />
 								<delete file="${dir}/composer.phar" />
