@@ -130,6 +130,22 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		}
 	}
 
+	public function test_post_poll()
+	{
+		$this->login();
+
+		$post = $this->create_topic(
+			2,
+			'[ticket/14802] Test Poll Option Spacing',
+			'Empty/blank lines should not be additional poll options.',
+			array('poll_title' => 'Poll Title', 'poll_option_text' => "\n A \nB\n\nC \n D\nE\n\n \n")
+		);
+
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertEquals('Poll Title', $crawler->filter('.poll-title')->text());
+		$this->assertEquals(5, $crawler->filter('*[data-poll-option-id]')->count());
+	}
+
 	protected function set_quote_depth($depth)
 	{
 		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
