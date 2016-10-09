@@ -42,6 +42,7 @@ require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 $phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file);
