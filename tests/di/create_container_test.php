@@ -73,8 +73,6 @@ namespace
 			// Checks the construction of a dumped container
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('phpbb_cache_container', $container);
-			$this->assertFalse($container->isFrozen());
-			$container->getParameterBag(); // needed, otherwise the container is not marked as frozen
 			$this->assertTrue($container->isFrozen());
 		}
 
