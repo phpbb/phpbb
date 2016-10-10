@@ -12,7 +12,6 @@
 */
 
 namespace phpbb\template\twig;
-use Twig_Loader_Filesystem;
 
 /**
 * Twig Template loader
