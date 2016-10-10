@@ -101,6 +101,16 @@ class loader extends \Twig_Loader_Filesystem
 	}
 
 	/**
+	 * Adds a realpath call to fix a BC break in Twig 1.26 (https://github.com/twigphp/Twig/issues/2145)
+	 *
+	 * {@inheritdoc}
+	 */
+	public function addPath($path, $namespace = self::MAIN_NAMESPACE)
+	{
+		return parent::addPath($this->filesystem->realpath($path), $namespace);
+	}
+
+	/**
 	* Find the template
 	*
 	* Override for Twig_Loader_Filesystem::findTemplate to add support
