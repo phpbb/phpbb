@@ -52,18 +52,6 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 }
 
 /**
-* Casts a variable to the given type.
-*
-* @deprecated
-*/
-function set_var(&$result, $var, $type, $multibyte = false)
-{
-	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new \phpbb\request\type_cast_helper();
-	$type_cast_helper->set_var($result, $var, $type, $multibyte);
-}
-
-/**
 * Generates an alphanumeric random string of given length
 *
 * @return string
@@ -1647,13 +1635,6 @@ function generate_board_url($without_script_path = false)
 	global $config, $user, $request;
 
 	$server_name = $user->host;
-	$server_port = $request->server('SERVER_PORT', 0);
-	$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
-
-	if (!empty($forwarded_proto) && $forwarded_proto === 'https')
-	{
-		$server_port = 443;
-	}
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -1668,6 +1649,13 @@ function generate_board_url($without_script_path = false)
 	}
 	else
 	{
+		$server_port = $request->server('SERVER_PORT', 0);
+		$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
+
+		if (!empty($forwarded_proto) && $forwarded_proto === 'https')
+		{
+			$server_port = 443;
+		}
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
 		$cookie_secure = $request->is_secure() ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;

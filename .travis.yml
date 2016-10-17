@@ -2,22 +2,20 @@ language: php
 
 matrix:
   include:
-    - php: 5.4
+    - php: 5.5
       env: DB=none;NOTESTS=1
-    - php: 5.4
-      env: DB=mysqli # MyISAM
-    - php: 5.4
-      env: DB=mysql
-    - php: 5.4
-      env: DB=mariadb
-    - php: 5.4
-      env: DB=postgres
-    - php: 5.4
-      env: DB=sqlite3
-    - php: 5.4
-      env: DB=mysqli;SLOWTESTS=1
     - php: 5.5
       env: DB=mysqli
+    - php: 5.5
+      env: DB=mysql
+    - php: 5.5
+      env: DB=mariadb
+    - php: 5.5
+      env: DB=postgres
+    - php: 5.5
+      env: DB=sqlite3
+    - php: 5.5
+      env: DB=mysqli;SLOWTESTS=1
     - php: 5.6
       env: DB=mysqli
     - php: 7.0
