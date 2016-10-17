@@ -62,6 +62,7 @@ services:
             - @auth.provider.oauth.service_collection
             - %tables.users%
             - @service_container
+            - @dispatcher
             - %core.root_path%
             - %core.php_ext%
         tags:

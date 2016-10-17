@@ -71,6 +71,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$oauth_provider_collection,
 			'phpbb_users',
 			$phpbb_container,
+			$phpbb_dispatcher,
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
