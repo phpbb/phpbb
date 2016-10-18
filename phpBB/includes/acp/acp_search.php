@@ -253,7 +253,7 @@ class acp_search
 		}
 		$submit = $request->is_set_post('submit', false);
 
-		if (!check_link_hash($request->variable('hash', ''), 'acp_search'))
+		if (!check_link_hash($request->variable('hash', ''), 'acp_search') && in_array($action, array('create', 'delete')))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
