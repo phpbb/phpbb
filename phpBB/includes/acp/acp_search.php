@@ -253,10 +253,7 @@ class acp_search
 		}
 		$submit = $request->is_set_post('submit', false);
 
-		$form_key = 'acp_search';
-		add_form_key($form_key);
-
-		if (!check_form_key($form_key) && in_array($action, array('delete', 'create')))
+		if (!check_link_hash($request->variable('hash', ''), 'acp_search'))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -355,7 +352,7 @@ class acp_search
 							$mtime = explode(' ', microtime());
 							$totaltime = $mtime[0] + $mtime[1] - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
 							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter, $rows_per_second));
 						}
 					}
@@ -445,7 +442,7 @@ class acp_search
 							$mtime = explode(' ', microtime());
 							$totaltime = $mtime[0] + $mtime[1] - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
 							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
 						}
 					}
@@ -524,7 +521,7 @@ class acp_search
 
 		$template->assign_vars(array(
 			'S_INDEX'				=> true,
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
 			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
 			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
 		));
@@ -533,7 +530,7 @@ class acp_search
 		{
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
-				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1],
+				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1] . '&amp;hash=' . generate_link_hash('acp_search'),
 				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
 				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
 			);
