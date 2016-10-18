@@ -69,7 +69,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		}
 
 		// Show <strong> text in bold
-		$message = preg_replace('#&lt;(/?)(strong)&gt;#i', '<$1$2>', $message);
+		$message = preg_replace('#&lt;(/?strong)&gt;#i', '<$1>', $message);
 
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{
