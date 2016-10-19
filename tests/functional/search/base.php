@@ -38,7 +38,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid . '&hash=' . generate_link_hash('acp_search'));
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid);
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
@@ -75,11 +75,11 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function create_search_index()
 	{
 		$this->add_lang('acp/search');
-		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid . '&hash=' . generate_link_hash('acp_search'));
-		$form_values = $crawler->selectButton('Delete index')->form()->getValues();
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
+		$form_values = $crawler->selectButton('Create index')->form()->getValues();
 		$crawler = self::request(
 			'POST',
-			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid . '&hash=' . generate_link_hash('acp_search'),
+			'adm/index.php?i=acp_search&mode=index&hash=' . generate_link_hash('acp_search') . '&sid=' . $this->sid,
 			array(
 				'search_type'	=> $this->search_backend,
 				'action'		=> 'create',
@@ -94,11 +94,11 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function delete_search_index()
 	{
 		$this->add_lang('acp/search');
-		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid . '&hash=' . generate_link_hash('acp_search'));
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
 		$form_values = $crawler->selectButton('Delete index')->form()->getValues();
 		$crawler = self::request(
 			'POST',
-			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid . '&hash=' . generate_link_hash('acp_search'),
+			'adm/index.php?i=acp_search&mode=index&hash=' . generate_link_hash('acp_search') . '&sid=' . $this->sid,
 			array(
 				'search_type'	=> $this->search_backend,
 				'action'		=> 'delete',
