@@ -50,14 +50,12 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
+		global $db, $user, $auth, $template, $cache, $request;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
-		$form_key = 'acp_search';
-		add_form_key($form_key);
 
-		if ($submit && !check_form_key($form_key))
+		if ($submit && !check_link_hash($request->variable('hash', ''), 'acp_search'))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -233,7 +231,7 @@ class acp_search
 			'S_YES_SEARCH'			=> (bool) $config['load_search'],
 			'S_SETTINGS'			=> true,
 
-			'U_ACTION'				=> $this->u_action)
+			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'))
 		);
 	}
 
