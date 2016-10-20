@@ -70,6 +70,9 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 			$message = $this->language->lang_array($message, $exception->get_parameters());
 		}
 
+		// Show <strong> text in bold
+		$message = preg_replace('#&lt;(/?strong)&gt;#i', '<$1>', $message);
+
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{
 			page_header($this->language->lang('INFORMATION'));
