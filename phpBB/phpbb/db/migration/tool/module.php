@@ -197,7 +197,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 		if ($this->exists($class, $parent, $data['module_langname']))
 		{
-			throw new \phpbb\db\migration\exception('MODULE_EXISTS', $module_id);
+			throw new \phpbb\db\migration\exception('MODULE_EXISTS', $data['module_langname']);
 		}
 
 		if (!class_exists('acp_modules'))
@@ -448,12 +448,11 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	protected function get_categories_list()
 	{
 		// Select the top level categories
-		// and 2nd level [sub]categories which exist for ACP only
+		// and 2nd level [sub]categories
 		$sql = 'SELECT m2.module_id, m2.module_langname
 			FROM ' . $this->modules_table . ' m1, ' . $this->modules_table . " m2
 			WHERE m1.parent_id = 0
-				AND (m1.module_id = m2.module_id
-				OR m2.module_class = 'acp' AND m2.parent_id = m1.module_id)
+				AND (m1.module_id = m2.module_id OR m2.parent_id = m1.module_id)
 			ORDER BY m1.module_id, m2.module_id ASC";
 
 		$result = $this->db->sql_query($sql);
