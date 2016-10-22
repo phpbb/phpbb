@@ -264,6 +264,9 @@ class migrator
 
 		foreach ($state['migration_depends_on'] as $depend)
 		{
+			// Make sure migration starts with backslash
+			$depend = $depend[0] == '\\' ? $depend : '\\' . $depend;
+
 			if ($this->unfulfillable($depend) !== false)
 			{
 				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $depend);
