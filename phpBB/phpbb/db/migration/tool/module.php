@@ -482,7 +482,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	public function get_parent_module_id($parent_id, $data = '', $throw_exception = true)
 	{
 		// Initialize exception object placeholder
-		$e = false;
+		$exception = false;
 
 		// Allow '' to be sent as 0
 		$parent_id = $parent_id ?: 0;
@@ -505,7 +505,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			{
 				// No parent with the given module_langname exist
 				case 0:
-					$e = new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
+					$exception = new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
 				break;
 
 				// Return the module id
@@ -527,7 +527,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 						$parent_id = (int) $this->db->sql_fetchfield('parent_id');
 						if (!$parent_id)
 						{
-							$e = new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
+							$exception = new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
 						}
 					}
 					else if (!empty($data) && !is_array($data))
@@ -545,17 +545,17 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					else
 					{
 						//Unable to get the parent module id, throwing an exception
-						$e = new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
+						$exception = new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
 					}
 				break;
 			}
 		}
 
-		if ($e !== false)
+		if ($exception !== false)
 		{
 			if ($throw_exception)
 			{
-				throw $e;
+				throw $exception;
 			}
 			return false;
 		}
