@@ -55,21 +55,21 @@ class migrations_deduplicate_entries extends \phpbb\db\migration\migration
 			$prepended_name = preg_replace('#^(?!\\\)#', '\\\$0', $name);
 			$prefixless_name = preg_replace('#(^\\\)([^\\\].+)#', '$2', $name);
 
-			if ($prepended_name !== $name && isset($migration_state[$prepended_name]) && $migration_state[$prepended_name] === $migration_state[$name])
+			if ($prepended_name != $name && isset($migration_state[$prepended_name]) && $migration_state[$prepended_name]['migration_depends_on'] == $migration_state[$name]['migration_depends_on'])
 			{
 				$duplicate_migrations[] = $name;
 				unset($migration_state[$prepended_name]);
 			}
-			else if ($prefixless_name !== $name && isset($migration_state[$prefixless_name]) && $migration_state[$prefixless_name] === $migration_state[$name])
+			else if ($prefixless_name != $name && isset($migration_state[$prefixless_name]) && $migration_state[$prefixless_name]['migration_depends_on'] == $migration_state[$name]['migration_depends_on'])
 			{
-				$duplicate_migrations[] = $name;
+				$duplicate_migrations[] = $prefixless_name;
 				unset($migration_state[$prefixless_name]);
 			}
 		}
 
 		if (count($duplicate_migrations))
 		{
-			$sql = 'DELETE *
+			$sql = 'DELETE
 				FROM ' . $this->table_prefix . 'migrations
 				WHERE '  . $this->db->sql_in_set('migration_name', $duplicate_migrations);
 			$this->db->sql_query($sql);
