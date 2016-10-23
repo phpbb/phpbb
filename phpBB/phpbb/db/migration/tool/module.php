@@ -90,8 +90,15 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		$parent_sql = '';
 		if ($parent !== false)
 		{
-			$parent = $this->get_parent_module_id($parent, $module);
-			$parent_sql = 'AND parent_id = ' . (int) $parent;
+			$parent = $this->get_parent_module_id($parent, $module, false);
+			if ($parent !== false)
+			{
+				$parent_sql = 'AND parent_id = ' . (int) $parent;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		$sql = 'SELECT module_id
@@ -468,11 +475,15 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*
 	* @param string|int $parent_id The parent module_id|module_langname
 	* @param int|string|array $data The module_id, module_langname for existance checking or module data array for adding
-	* @return int The parent module_id
+	* @param bool $throw_exception The flag indicating if exception should be thrown on error
+	* @return mixed The int parent module_id or false
 	* @throws \phpbb\db\migration\exception
 	*/
-	public function get_parent_module_id($parent_id, $data = '')
+	public function get_parent_module_id($parent_id, $data = '', $throw_exception = true)
 	{
+		// Initialize exception object placeholder
+		$e = false;
+
 		// Allow '' to be sent as 0
 		$parent_id = $parent_id ?: 0;
 
@@ -494,7 +505,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			{
 				// No parent with the given module_langname exist
 				case 0:
-					throw new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
+					$e = new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
 				break;
 
 				// Return the module id
@@ -516,7 +527,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 						$parent_id = (int) $this->db->sql_fetchfield('parent_id');
 						if (!$parent_id)
 						{
-							throw new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
+							$e = new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
 						}
 					}
 					else if (!empty($data) && !is_array($data))
@@ -534,10 +545,19 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					else
 					{
 						//Unable to get the parent module id, throwing an exception
-						throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
+						$e = new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
 					}
 				break;
 			}
+		}
+
+		if ($e !== false)
+		{
+			if ($throw_exception)
+			{
+				throw $e;
+			}
+			return false;
 		}
 
 		return $parent_id;
