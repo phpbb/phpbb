@@ -90,5 +90,44 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>7</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>ucp</value>
+			<value>0</value>
+			<value>13</value>
+			<value>18</value>
+			<value>UCP_MAIN_CAT</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>1</value>
+			<value>1</value>
+			<value>ucp_subcat</value>
+			<value>ucp</value>
+			<value>7</value>
+			<value>14</value>
+			<value>17</value>
+			<value>UCP_SUBCATEGORY</value>
+			<value>ucp_test</value>
+			<value></value>
+		</row>
+		<row>
+			<value>9</value>
+			<value>1</value>
+			<value>1</value>
+			<value>ucp_module</value>
+			<value>ucp</value>
+			<value>8</value>
+			<value>15</value>
+			<value>16</value>
+			<value>UCP_MODULE</value>
+			<value>ucp_module_test</value>
+			<value></value>
+		</row>
 	</table>
 </dataset>

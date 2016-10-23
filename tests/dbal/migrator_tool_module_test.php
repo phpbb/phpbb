@@ -91,9 +91,68 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 	/**
 	* @dataProvider exists_data_acp
 	*/
-	public function test_exists($parent, $module, $expected)
+	public function test_exists_acp($parent, $module, $expected)
 	{
 		$this->assertEquals($expected, $this->tool->exists('acp', $parent, $module));
+	}
+
+	public function exists_data_ucp()
+	{
+		return array(
+			// Test the existing category
+			array(
+				'',
+				'UCP_MAIN_CAT',
+				true,
+			),
+			array(
+				0,
+				'UCP_MAIN_CAT',
+				true,
+			),
+
+			// Test the existing module
+			array(
+				'',
+				'UCP_SUBCATEGORY',
+				false,
+			),
+			array(
+				false,
+				'UCP_SUBCATEGORY',
+				true,
+			),
+			array(
+				'UCP_MAIN_CAT',
+				'UCP_SUBCATEGORY',
+				true,
+			),
+			array(
+				'UCP_SUBCATEGORY',
+				'UCP_MODULE',
+				true,
+			),
+
+			// Test for non-existant modules
+			array(
+				'',
+				'UCP_NON_EXISTANT_CAT',
+				false,
+			),
+			array(
+				'UCP_MAIN_CAT',
+				'UCP_NON_EXISTANT_MODULE',
+				false,
+			),
+		);
+	}
+
+	/**
+	* @dataProvider exists_data_ucp
+	*/
+	public function test_exists_ucp($parent, $module, $expected)
+	{
+		$this->assertEquals($expected, $this->tool->exists('ucp', $parent, $module));
 	}
 
 	public function test_add()
