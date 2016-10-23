@@ -209,6 +209,19 @@ class migrator
 	{
 		foreach ($this->migrations as $name)
 		{
+			// Try falling back to a valid migration name with or without leading backslash
+			if (!isset($this->migration_state[$name]))
+			{
+				if (isset($this->migration_state[preg_replace('#^(?!\\\)#', '\\\$0', $name)]))
+				{
+					$name = preg_replace('#^(?!\\\)#', '\\\$0', $name);
+				}
+				else if (isset($this->migration_state[preg_replace('#(^\\\)([^\\\].+)#', '$2', $name)]))
+				{
+					$name = preg_replace('#(^\\\)([^\\\].+)#', '$2', $name);
+				}
+			}
+
 			if (!isset($this->migration_state[$name]) ||
 				!$this->migration_state[$name]['migration_schema_done'] ||
 				!$this->migration_state[$name]['migration_data_done'])
@@ -264,10 +277,22 @@ class migrator
 
 		foreach ($state['migration_depends_on'] as $depend)
 		{
-			// Make sure migration starts with backslash
-			$depend = $depend[0] == '\\' ? $depend : '\\' . $depend;
+			// Try falling back to a valid migration name with or without leading backslash
+			if (!isset($this->migration_state[$name]))
+			{
+				if (isset($this->migration_state[preg_replace('#^(?!\\\)#', '\\\$0', $name)]))
+				{
+					$name = preg_replace('#^(?!\\\)#', '\\\$0', $name);
+				}
+				else if (isset($this->migration_state[preg_replace('#(^\\\)([^\\\].+)#', '$2', $name)]))
+				{
+					$name = preg_replace('#(^\\\)([^\\\].+)#', '$2', $name);
+				}
+			}
 
-			if ($this->unfulfillable($depend) !== false)
+			// Test all possible namings before throwing exception
+			if ($this->unfulfillable($depend) !== false && $this->unfulfillable(preg_replace('#(^\\\)([^\\\].+)#', '$2', $depend)) !== false &&
+				$this->unfulfillable(preg_replace('#^(?!\\\)#', '\\\$0', $name)))
 			{
 				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $depend);
 			}
