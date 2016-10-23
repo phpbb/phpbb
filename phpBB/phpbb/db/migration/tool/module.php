@@ -91,14 +91,12 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		if ($parent !== false)
 		{
 			$parent = $this->get_parent_module_id($parent, $module, false);
-			if ($parent !== false)
-			{
-				$parent_sql = 'AND parent_id = ' . (int) $parent;
-			}
-			else
+			if ($parent === false)
 			{
 				return false;
 			}
+
+			$parent_sql = 'AND parent_id = ' . (int) $parent;
 		}
 
 		$sql = 'SELECT module_id
