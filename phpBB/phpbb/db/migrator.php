@@ -212,12 +212,12 @@ class migrator
 		// Try falling back to a valid migration name with or without leading backslash
 		if (!isset($this->migration_state[$name]))
 		{
-			$appended_name = preg_replace('#^(?!\\\)#', '\\\$0', $name);
+			$prepended_name = preg_replace('#^(?!\\\)#', '\\\$0', $name);
 			$prefixless_name = preg_replace('#(^\\\)([^\\\].+)#', '$2', $name);
 
-			if (isset($this->migration_state[$appended_name]))
+			if (isset($this->migration_state[$prepended_name]))
 			{
-				$name = $appended_name;
+				$name = $prepended_name;
 			}
 			else if (isset($this->migration_state[$prefixless_name]))
 			{
