@@ -2609,8 +2609,9 @@ function check_link_hash($token, $link_name)
 /**
 * Add a secret token to the form (requires the S_FORM_TOKEN template variable)
 * @param string  $form_name The name of the form; has to match the name used in check_form_key, otherwise no restrictions apply
+* @param string  $template_variable_suffix A string that is appended to the name of the template variable to which the form elements are assigned
 */
-function add_form_key($form_name)
+function add_form_key($form_name, $template_variable_suffix = '')
 {
 	global $config, $template, $user, $phpbb_dispatcher;
 
@@ -2627,13 +2628,15 @@ function add_form_key($form_name)
 	* Perform additional actions on creation of the form token
 	*
 	* @event core.add_form_key
-	* @var	string	form_name			The form name
-	* @var	int		now					Current time timestamp
-	* @var	string	s_fields			Generated hidden fields
-	* @var	string	token				Form token
-	* @var	string	token_sid			User session ID
+	* @var	string	form_name					The form name
+	* @var	int		now							Current time timestamp
+	* @var	string	s_fields					Generated hidden fields
+	* @var	string	token						Form token
+	* @var	string	token_sid					User session ID
+	* @var	string	template_variable_suffix	The string that is appended to template variable name
 	*
 	* @since 3.1.0-RC3
+	* @changed 3.1.11-RC1 Added template_variable_suffix
 	*/
 	$vars = array(
 		'form_name',
@@ -2641,12 +2644,11 @@ function add_form_key($form_name)
 		's_fields',
 		'token',
 		'token_sid',
+		'template_variable_suffix',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.add_form_key', compact($vars)));
 
-	$template->assign_vars(array(
-		'S_FORM_TOKEN'	=> $s_fields,
-	));
+	$template->assign_var('S_FORM_TOKEN' . $template_variable_suffix, $s_fields);
 }
 
 /**
