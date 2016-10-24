@@ -597,7 +597,7 @@ class acp_profile
 
 				if (!sizeof($error))
 				{
-					if (!check_form_key($form_key))
+					if (($submit || $save) && !check_form_key($form_key))
 					{
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
