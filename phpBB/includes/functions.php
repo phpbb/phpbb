@@ -2233,13 +2233,6 @@ function generate_board_url($without_script_path = false)
 	global $config, $user, $request;
 
 	$server_name = $user->host;
-	$server_port = $request->server('SERVER_PORT', 0);
-	$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
-
-	if (!empty($forwarded_proto) && $forwarded_proto === 'https')
-	{
-		$server_port = 443;
-	}
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -2254,6 +2247,13 @@ function generate_board_url($without_script_path = false)
 	}
 	else
 	{
+		$server_port = $request->server('SERVER_PORT', 0);
+		$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
+
+		if (!empty($forwarded_proto) && $forwarded_proto === 'https')
+		{
+			$server_port = 443;
+		}
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
 		$cookie_secure = $request->is_secure() ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
