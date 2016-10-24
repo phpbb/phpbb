@@ -97,7 +97,12 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		$parent_sql = '';
 		if ($parent !== false)
 		{
-			$parent = $this->get_parent_module_id($parent, $module);
+			$parent = $this->get_parent_module_id($parent, $module, false);
+			if ($parent === false)
+			{
+				return false;
+			}
+
 			$parent_sql = 'AND parent_id = ' . (int) $parent;
 		}
 
@@ -205,7 +210,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 		if ($this->exists($class, $parent, $data['module_langname']))
 		{
-			throw new \phpbb\db\migration\exception('MODULE_EXISTS', $module_id);
+			throw new \phpbb\db\migration\exception('MODULE_EXISTS', $data['module_langname']);
 		}
 
 		$module_data = array(
@@ -431,12 +436,11 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	protected function get_categories_list()
 	{
 		// Select the top level categories
-		// and 2nd level [sub]categories which exist for ACP only
+		// and 2nd level [sub]categories
 		$sql = 'SELECT m2.module_id, m2.module_langname
 			FROM ' . $this->modules_table . ' m1, ' . $this->modules_table . " m2
 			WHERE m1.parent_id = 0
-				AND (m1.module_id = m2.module_id
-				OR m2.module_class = 'acp' AND m2.parent_id = m1.module_id)
+				AND (m1.module_id = m2.module_id OR m2.parent_id = m1.module_id)
 			ORDER BY m1.module_id, m2.module_id ASC";
 
 		$result = $this->db->sql_query($sql);
@@ -452,11 +456,15 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*
 	* @param string|int $parent_id The parent module_id|module_langname
 	* @param int|string|array $data The module_id, module_langname for existance checking or module data array for adding
-	* @return int The parent module_id
+	* @param bool $throw_exception The flag indicating if exception should be thrown on error
+	* @return mixed The int parent module_id or false
 	* @throws \phpbb\db\migration\exception
 	*/
-	public function get_parent_module_id($parent_id, $data = '')
+	public function get_parent_module_id($parent_id, $data = '', $throw_exception = true)
 	{
+		// Initialize exception object placeholder
+		$exception = false;
+
 		// Allow '' to be sent as 0
 		$parent_id = $parent_id ?: 0;
 
@@ -478,7 +486,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			{
 				// No parent with the given module_langname exist
 				case 0:
-					throw new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
+					$exception = new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $parent_id);
 				break;
 
 				// Return the module id
@@ -500,7 +508,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 						$parent_id = (int) $this->db->sql_fetchfield('parent_id');
 						if (!$parent_id)
 						{
-							throw new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
+							$exception = new \phpbb\db\migration\exception('PARENT_MODULE_FIND_ERROR', $data['parent_id']);
 						}
 					}
 					else if (!empty($data) && !is_array($data))
@@ -518,10 +526,19 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					else
 					{
 						//Unable to get the parent module id, throwing an exception
-						throw new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
+						$exception = new \phpbb\db\migration\exception('MODULE_EXIST_MULTIPLE', $parent_id);
 					}
 				break;
 			}
+		}
+
+		if ($exception !== false)
+		{
+			if ($throw_exception)
+			{
+				throw $exception;
+			}
+			return false;
 		}
 
 		return $parent_id;
