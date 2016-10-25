@@ -14,7 +14,7 @@
 
 namespace phpbb\db\migration\data\v31x;
 
-class migrations_deduplicate_entries extends \phpbb\db\migration\migration
+class remove_duplicate_migrations extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -44,7 +44,6 @@ class migrations_deduplicate_entries extends \phpbb\db\migration\migration
 				$migration_state[$migration['migration_name']] = $migration;
 
 				$migration_state[$migration['migration_name']]['migration_depends_on'] = unserialize($migration['migration_depends_on']);
-				$migration_state[$migration['migration_name']]['migration_data_state'] = !empty($migration['migration_data_state']) ? unserialize($migration['migration_data_state']) : '';
 			}
 		}
 
@@ -52,8 +51,8 @@ class migrations_deduplicate_entries extends \phpbb\db\migration\migration
 
 		foreach ($migration_state as $name => $migration)
 		{
-			$prepended_name = preg_replace('#^(?!\\\)#', '\\\$0', $name);
-			$prefixless_name = preg_replace('#(^\\\)([^\\\].+)#', '$2', $name);
+			$prepended_name = ($name[0] == '\\' ? '' : '\\') . $name;
+			$prefixless_name = $name[0] == '\\' ? substr($name, 1) : $name;
 
 			if ($prepended_name != $name && isset($migration_state[$prepended_name]) && $migration_state[$prepended_name]['migration_depends_on'] == $migration_state[$name]['migration_depends_on'])
 			{
