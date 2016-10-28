@@ -597,13 +597,13 @@ class acp_profile
 
 				if (!sizeof($error))
 				{
-					if (!check_form_key($form_key))
-					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
 					if (($step == 3 && (sizeof($this->lang_defs['iso']) == 1 || $save)) || ($action == 'edit' && $save))
 					{
+						if (!check_form_key($form_key))
+						{
+							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
 						$this->save_profile_field($cp, $field_type, $action);
 					}
 				}
