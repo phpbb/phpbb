@@ -25,7 +25,7 @@ class config_user_delete_own_post extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-            array('config.add', array('limit_delete_own_post_to_new', '1')),
+			array('config.add', array('limit_delete_own_post_to_new', '1')),
 		);
 	}
 }
