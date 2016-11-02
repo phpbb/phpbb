@@ -1806,7 +1806,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			!$auth->acl_get('f_delete', $forum_id) &&
 			(!$auth->acl_get('f_softdelete', $forum_id) || $row['post_visibility'] == ITEM_DELETED)
 	);
-	$s_cannot_delete_lastpost = $topic_data['topic_last_post_id'] != $row['post_id'];
+	$s_cannot_delete_lastpost = $row['post_id'] != $topic_data['topic_last_post_id'] && ($config['limit_delete_own_post_to_new'] || $row['post_id'] == $topic_data['topic_first_post_id']);
 	$s_cannot_delete_time = $config['delete_time'] && $row['post_time'] <= time() - ($config['delete_time'] * 60);
 	// we do not want to allow removal of the last post if a moderator locked it!
 	$s_cannot_delete_locked = $topic_data['topic_status'] == ITEM_LOCKED || $row['post_edit_locked'];

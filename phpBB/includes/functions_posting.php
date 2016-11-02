@@ -2510,9 +2510,10 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 	global $phpbb_root_path, $phpEx, $phpbb_log;
 
 	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
+	$check_post_deletable_position = $post_id == $post_data['topic_last_post_id'] || (!$config['limit_delete_own_post_to_new'] && $post_id != $post_data['topic_first_post_id']);
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
+	if ($auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $check_post_deletable_position && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
 	{
 		$s_hidden_fields = array(
 			'p'		=> $post_id,
