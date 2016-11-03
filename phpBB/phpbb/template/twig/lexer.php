@@ -22,6 +22,11 @@ class lexer extends \Twig_Lexer
 
 	public function tokenize($code, $filename = null)
 	{
+		if ($code instanceof \Twig_Source)
+		{
+			$filename = $code->getName();
+			$code = $code->getCode();
+		}
 		// Our phpBB tags
 		// Commented out tokens are handled separately from the main replace
 		$phpbb_tags = array(
@@ -125,7 +130,7 @@ class lexer extends \Twig_Lexer
 		// Appends any filters
 		$code = preg_replace('#{([a-zA-Z0-9_\.]+)(\|[^}]+?)?}#', '{{ $1$2 }}', $code);
 
-		return parent::tokenize($code, $filename);
+		return parent::tokenize(new \Twig_Source($code, $filename));
 	}
 
 	/**
