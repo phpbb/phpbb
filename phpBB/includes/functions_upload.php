@@ -294,7 +294,7 @@ class filespec
 	*/
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		global $user, $phpbb_root_path;
+		global $user, $phpbb_root_path, $phpbb_dispatcher, $mode;
 
 		if (sizeof($this->error))
 		{
@@ -330,6 +330,26 @@ class filespec
 			if (file_exists($this->destination_file))
 			{
 				@unlink($this->destination_file);
+			}
+
+			/**
+			* Event to modify avatars before writing to filesystem
+			*
+			* @event core.avatar_upload
+			* @var  string  filename     filename for upload
+			* @var  string  max_width    max_width board setting
+			* @var  string  max_height   max_height board setting
+			* @var  string  extension    extension of avatar
+			* @since 3.1.11-RC1
+			*/
+			if ($mode === 'avatar')
+			{
+				$filename=$this->filename;
+				$max_width=$this->upload->max_width;
+				$max_height=$this->upload->max_height;
+				$extension=$this->extension;
+				$vars = array('filename', 'max_width', 'max_height', 'extension');
+				extract($phpbb_dispatcher->trigger_event('core.avatar_upload', compact($vars)));
 			}
 
 			switch ($upload_mode)
