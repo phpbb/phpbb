@@ -677,6 +677,8 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 */
 function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 {
+	global $phpbb_dispatcher;
+
 	if (!$auth->acl_get('u_pm_download'))
 	{
 		send_status_line(403, 'Forbidden');
@@ -684,6 +686,18 @@ function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 	}
 
 	$allowed = phpbb_download_check_pm_auth($db, $user_id, $msg_id);
+
+	/**
+	* Event to modify PM attachments download auth
+	*
+	* @event core.modify_pm_attach_download_auth
+	* @var	bool	allowed		Whether the user is allowed to download from that PM or not
+	* @var	int		msg_id		The id of the PM to download from
+	* @var	int		user_id		The user id for auth check
+	* @since 3.1.11-RC1
+	*/
+	$vars = array('allowed', 'msg_id', 'user_id');
+	extract($phpbb_dispatcher->trigger_event('core.modify_pm_attach_download_auth', compact($vars)));
 
 	if (!$allowed)
 	{
