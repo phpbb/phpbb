@@ -1251,7 +1251,8 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
-.notification-alert {
+.notification-alert,
+.compact .notification-alert {
 	border-radius: 50px;
 	font-size: 0.9em;
 	opacity: 0.8;
@@ -1286,10 +1287,6 @@ ul.linklist:after,
 
 .compact .icon-notification > a > span, .compact .icon-pm > a > span {
 	display: none;
-}
-
-.compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
-	padding-left: 2px;
 }
 
 .dropdown-page-jump .dropdown {
