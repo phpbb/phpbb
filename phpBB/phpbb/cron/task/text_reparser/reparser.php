@@ -99,7 +99,7 @@ class reparser extends \phpbb\cron\task\base
 			$this->reparser_manager->get_resume_data($this->reparser_name);
 		}
 
-		if (empty($this->resume_data['range-max']) || $this->resume_data['range-max'] >= $this->resume_data['range-min'])
+		if (!isset($this->resume_data['range-max']) || $this->resume_data['range-max'] >= $this->resume_data['range-min'])
 		{
 			return true;
 		}
@@ -147,9 +147,9 @@ class reparser extends \phpbb\cron\task\base
 			 */
 			$reparser = $this->reparsers[$this->reparser_name];
 
-			$min = !empty($this->resume_data['range-min']) ? $this->resume_data['range-min'] : self::MIN;
-			$current = !empty($this->resume_data['range-max']) ? $this->resume_data['range-max'] : $reparser->get_max_id();
-			$size = !empty($this->resume_data['range-size']) ? $this->resume_data['range-size'] : self::SIZE;
+			$min = isset($this->resume_data['range-min']) ? $this->resume_data['range-min'] : self::MIN;
+			$current = isset($this->resume_data['range-max']) ? $this->resume_data['range-max'] : $reparser->get_max_id();
+			$size = isset($this->resume_data['range-size']) ? $this->resume_data['range-size'] : self::SIZE;
 
 			if ($current >= $min)
 			{

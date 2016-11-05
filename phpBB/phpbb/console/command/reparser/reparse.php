@@ -208,7 +208,7 @@ class reparse extends \phpbb\console\command\command
 		$size = $this->get_option('range-size');
 
 		// range-max has no default value, it must be computed for each reparser
-		if ($max == null)
+		if ($max === null)
 		{
 			$max = $reparser->get_max_id();
 		}
