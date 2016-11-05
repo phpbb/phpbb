@@ -13,6 +13,9 @@
 
 namespace phpbb\db\migration\data\v320;
 
+use phpbb\textreparser\manager;
+use phpbb\textreparser\reparser_interface;
+
 class text_reparser extends \phpbb\db\migration\container_aware_migration
 {
 	static public function depends_on()
@@ -48,7 +51,19 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 
 	public function reparse($resume_data)
 	{
-		// Somtimes a cron job is too much
+		/** @var manager $reparser_manager */
+		$reparser_manager = $this->container->get('text_reparser.manager');
+
+		/** @var reparser_interface[] $reparsers */
+		$reparsers = $this->container->get('text_reparser_collection');
+
+		// Initialize all reparsers
+		foreach ($reparsers as $name => $reparser)
+		{
+			$reparser_manager->update_resume_data($name, 1, $reparser->get_max_id(), 100);
+		}
+
+		// Sometimes a cron job is too much
 		$limit = 100;
 		$fast_reparsers = array(
 			'text_reparser.contact_admin_info',
@@ -65,7 +80,7 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 			);
 		}
 
-		$fast_reparsers_size = sizeof($fast_reparsers);
+		$fast_reparsers_size = count($fast_reparsers);
 		$processed_records = 0;
 		while ($processed_records < $limit && $resume_data['reparser'] < $fast_reparsers_size)
 		{
@@ -87,7 +102,6 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 			if ($start === 1)
 			{
 				// Prevent CLI command from running these reparsers again
-				$reparser_manager = $this->container->get('text_reparser.manager');
 				$reparser_manager->update_resume_data($fast_reparsers[$resume_data['reparser']], 1, 0, $limit);
 
 				$resume_data['reparser']++;
