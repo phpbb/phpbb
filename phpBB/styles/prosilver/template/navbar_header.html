@@ -18,7 +18,7 @@
 						<!-- IF S_USER_LOGGED_IN -->
 							<li class="small-icon icon-search-new"><a href="{U_SEARCH_NEW}" role="menuitem">{L_SEARCH_NEW}</a></li>
 						<!-- ENDIF -->
-						<!-- IF S_LOAD_UNREADS --> 
+						<!-- IF S_LOAD_UNREADS -->
 							<li class="small-icon icon-search-unread"><a href="{U_SEARCH_UNREAD}" role="menuitem">{L_SEARCH_UNREAD}</a></li>
 						<!-- ENDIF -->
 						<li class="small-icon icon-search-unanswered"><a href="{U_SEARCH_UNANSWERED}" role="menuitem">{L_SEARCH_UNANSWERED}</a></li>
@@ -55,14 +55,14 @@
 					<div class="pointer"><div class="pointer-inner"></div></div>
 					<ul class="dropdown-contents" role="menu">
 						<!-- IF U_RESTORE_PERMISSIONS --><li class="small-icon icon-restore-permissions"><a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a></li><!-- ENDIF -->
-	
+
 						<!-- EVENT navbar_header_profile_list_before -->
-	
+
 						<li class="small-icon icon-ucp"><a href="{U_PROFILE}" title="{L_PROFILE}" role="menuitem">{L_PROFILE}</a></li>
 						<li class="small-icon icon-profile"><a href="{U_USER_PROFILE}" title="{L_READ_PROFILE}" role="menuitem">{L_READ_PROFILE}</a></li>
-	
+
 						<!-- EVENT navbar_header_profile_list_after -->
-	
+
 						<li class="separator"></li>
 						<li class="small-icon icon-logout"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="x" role="menuitem">{L_LOGIN_LOGOUT}</a></li>
 					</ul>
@@ -72,12 +72,12 @@
 		</li>
 		<!-- IF S_DISPLAY_PM -->
 			<li class="small-icon icon-pm rightside" data-skip-responsive="true">
-				<a href="{U_PRIVATEMSGS}" role="menuitem"><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></a>
+				<a href="{U_PRIVATEMSGS}" role="menuitem"><span>{L_PRIVATE_MESSAGES} </span><!-- IF PRIVATE_MESSAGE_COUNT --><strong class="notification-alert">{PRIVATE_MESSAGE_COUNT}</strong><!-- ENDIF --><span></span></a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF S_NOTIFICATIONS_DISPLAY -->
 			<li class="small-icon icon-notification dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
-				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger"><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></a>
+				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger"><span>{L_NOTIFICATIONS} </span><!-- IF NOTIFICATIONS_COUNT --><strong class="notification-alert">{NOTIFICATIONS_COUNT}</strong><!-- ENDIF --><span></span></a>
 				<!-- INCLUDE notification_dropdown.html -->
 			</li>
 		<!-- ENDIF -->

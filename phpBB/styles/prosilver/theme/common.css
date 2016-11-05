@@ -1251,6 +1251,13 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
+.notification-alert {
+	border-radius: 50px;
+	font-size: 0.9em;
+	opacity: 0.8;
+	padding: 4px 7px;
+}
+
 /* Navbar specific list items
 ----------------------------------------*/
 

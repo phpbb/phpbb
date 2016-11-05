@@ -1161,3 +1161,8 @@ ul.linklist li.responsive-menu a.responsive-menu-link:hover:before, ul.linklist 
 li.notification-reported strong, li.notification-disapproved strong {
 	color: #D31141;
 }
+
+.notification-alert {
+	background-color: #D31141;
+	color: #ffffff;
+}
