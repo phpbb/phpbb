@@ -134,7 +134,7 @@ phpbb.markNotifications = function($popup, unreadCount) {
 	$('strong', '#notification_list_button').html(unreadCount);
 	// Remove the Mark all read link if there are no unread notifications.
 	if (!unreadCount) {
-		$('#mark_all_notifications').remove();
+		$('#mark_all_notifications, #notification_list_button > strong').remove();
 	}
 
 	// Update page title
