@@ -371,11 +371,6 @@ class acp_users
 								if ($user_row['user_type'] == USER_NORMAL)
 								{
 									user_active_flip('deactivate', $user_id, INACTIVE_REMIND);
-
-									$sql = 'UPDATE ' . USERS_TABLE . "
-										SET user_actkey = '" . $db->sql_escape($user_actkey) . "'
-										WHERE user_id = $user_id";
-									$db->sql_query($sql);
 								}
 								else
 								{
@@ -384,8 +379,18 @@ class acp_users
 										FROM ' . USERS_TABLE . '
 										WHERE user_id = ' . $user_id;
 									$result = $db->sql_query($sql);
-									$user_actkey = (string) $db->sql_fetchfield('user_actkey');
+									$user_activation_key = (string) $db->sql_fetchfield('user_actkey');
 									$db->sql_freeresult($result);
+
+									$user_actkey = empty($user_activation_key) ? $user_actkey : $user_activation_key;
+								}
+
+								if ($user_row['user_type'] == USER_NORMAL || empty($user_activation_key))
+								{
+									$sql = 'UPDATE ' . USERS_TABLE . "
+										SET user_actkey = '" . $db->sql_escape($user_actkey) . "'
+										WHERE user_id = $user_id";
+									$db->sql_query($sql);
 								}
 
 								$messenger = new messenger(false);
