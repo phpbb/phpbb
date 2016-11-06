@@ -432,7 +432,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	foreach ($topic_data as $data)
 	{
 		$sync_forums[$data['forum_id']] = $data['forum_id'];
-		$topic_views += $data['topic_views'];
+		$topic_views = max($topic_views, $data['topic_views']);
 	}
 
 	$topic_data = $topic_data[$to_topic_id];
