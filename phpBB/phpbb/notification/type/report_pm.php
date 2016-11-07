@@ -52,7 +52,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*
 	* @var string Permission name
 	*/
-	protected $permission = 'm_report';
+	protected $permission = 'm_pm_report';
 
 	/**
 	* Notification option data (for outputting to the user)
