@@ -87,7 +87,7 @@ phpbb.prepareSendStats = function () {
 		$.ajax({
 			url: $this.attr('data-ajax-action').replace('&amp;', '&'),
 			type: 'POST',
-			data: 'systemdata=' + $this.find('input[name=systemdata]').val(),
+			data: 'systemdata=' + encodeURIComponent($this.find('input[name=systemdata]').val()),
 			success: returnHandler,
 			error: errorHandler,
 			cache: false
