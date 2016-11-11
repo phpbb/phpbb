@@ -72,12 +72,12 @@
 		</li>
 		<!-- IF S_DISPLAY_PM -->
 			<li class="small-icon icon-pm rightside" data-skip-responsive="true">
-				<a href="{U_PRIVATEMSGS}" role="menuitem"><span>{L_PRIVATE_MESSAGES} </span><!-- IF PRIVATE_MESSAGE_COUNT --><strong class="notification-alert">{PRIVATE_MESSAGE_COUNT}</strong><!-- ENDIF --><span></span></a>
+				<a href="{U_PRIVATEMSGS}" role="menuitem"><span>{L_PRIVATE_MESSAGES} </span><!-- IF PRIVATE_MESSAGE_COUNT --><strong class="notification-alert">{PRIVATE_MESSAGE_COUNT}</strong><!-- ENDIF --></a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF S_NOTIFICATIONS_DISPLAY -->
 			<li class="small-icon icon-notification dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
-				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger"><span>{L_NOTIFICATIONS} </span><!-- IF NOTIFICATIONS_COUNT --><strong class="notification-alert">{NOTIFICATIONS_COUNT}</strong><!-- ENDIF --><span></span></a>
+				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger"><span>{L_NOTIFICATIONS} </span><!-- IF NOTIFICATIONS_COUNT --><strong class="notification-alert">{NOTIFICATIONS_COUNT}</strong><!-- ENDIF --></a>
 				<!-- INCLUDE notification_dropdown.html -->
 			</li>
 		<!-- ENDIF -->

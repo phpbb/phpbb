@@ -1251,12 +1251,21 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
-.notification-alert,
-.compact .notification-alert {
-	border-radius: 50px;
-	font-size: 0.9em;
+.notification-alert {
+	border-radius: 10px;
 	opacity: 0.8;
-	padding: 4px 7px;
+	min-width: 10px;
+	text-align: center;
+	white-space: nowrap;
+	font-size: 9px;
+	line-height: 1;
+	float: right;
+	display: inline-block;
+	margin-left: 3px;
+	vertical-align: baseline;
+	position: relative;
+	top: 3px;
+	padding: 4px 6px;
 }
 
 /* Navbar specific list items
