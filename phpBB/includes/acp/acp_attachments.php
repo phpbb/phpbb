@@ -42,7 +42,7 @@ class acp_attachments
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $phpbb_container;
+		global $db, $user, $auth, $template, $cache, $phpbb_container, $phpbb_dispatcher;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$this->id = $id;
@@ -161,6 +161,18 @@ class acp_attachments
 						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
 				);
+
+				/**
+				* Event to add and/or modify acp_attachement configurations
+				*
+				* @event core.acp_attachments_config_edit_add
+				* @var	array	display_vars	Array of config values to display and process
+				* @var	string	mode			Mode of the config page we are displaying
+				* @var	boolean	submit			Do we display the form or process the submission
+				* @since 3.1.11-RC1
+				*/
+				$vars = array('display_vars', 'mode', 'submit');
+				extract($phpbb_dispatcher->trigger_event('core.acp_attachments_config_edit_add', compact($vars)));
 
 				$this->new_config = $config;
 				$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : $this->new_config;
