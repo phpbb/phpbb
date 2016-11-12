@@ -1074,7 +1074,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
+		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe, uu.username as post_delete_username, uu.user_colour as post_delete_user_colour',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
@@ -1085,6 +1085,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			array(
 				'FROM'	=> array(ZEBRA_TABLE => 'z'),
 				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+			),
+			array(
+				'FROM'	=> array(USERS_TABLE => 'uu'),
+				'ON'	=> 'uu.user_id = p.post_delete_user',
 			),
 		),
 
@@ -1194,6 +1198,31 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$post_anchor = ($mode == 'post_review') ? 'ppr' . $row['post_id'] : 'pr' . $row['post_id'];
 		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "f=$forum_id&amp;t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
 
+		$l_deleted_message = '';
+		if ($row['post_visibility'] == ITEM_DELETED)
+		{
+			$display_postername = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+
+			// User having deleted the post also being the post author?
+			if (!$row['post_delete_user'] || $row['post_delete_user'] == $poster_id)
+			{
+				$display_username = $display_postername;
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_delete_user'], $row['post_delete_username'], $row['post_delete_user_colour']);
+			}
+
+			if ($row['post_delete_reason'])
+			{
+				$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']);
+			}
+			else
+			{
+				$l_deleted_message = $user->lang('POST_DELETED_BY', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true));
+			}
+		}
+
 		$post_row = array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1204,6 +1233,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
 			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
+			'L_DELETE_POST'		=> $l_deleted_message,
 
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
