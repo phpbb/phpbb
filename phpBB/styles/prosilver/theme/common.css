@@ -1205,6 +1205,22 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
+.badge {
+	border-radius: 10px;
+	opacity: 0.8;
+	text-align: center;
+	white-space: nowrap;
+	font-size: 10px;
+	line-height: 1;
+	float: right;
+	display: inline-block;
+	margin-left: 3px;
+	vertical-align: baseline;
+	position: relative;
+	top: 3px;
+	padding: 4px 6px;
+}
+
 /* Navbar specific list items
 ----------------------------------------*/
 
@@ -1214,10 +1230,6 @@ ul.linklist:after,
 
 .linklist.compact .rightside > a > span span {
 	display: none;
-}
-
-.linklist.compact .rightside > a strong {
-	padding-left: 2px;
 }
 
 .dropdown-page-jump .dropdown {
