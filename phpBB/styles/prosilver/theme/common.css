@@ -1251,6 +1251,22 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
+.badge {
+	border-radius: 10px;
+	opacity: 0.8;
+	text-align: center;
+	white-space: nowrap;
+	font-size: 10px;
+	line-height: 1;
+	float: right;
+	display: inline-block;
+	margin-left: 3px;
+	vertical-align: baseline;
+	position: relative;
+	top: 3px;
+	padding: 4px 6px;
+}
+
 /* Navbar specific list items
 ----------------------------------------*/
 
@@ -1279,10 +1295,6 @@ ul.linklist:after,
 
 .compact .icon-notification > a > span, .compact .icon-pm > a > span {
 	display: none;
-}
-
-.compact .icon-notification > a > strong, .compact .icon-pm > a > strong {
-	padding-left: 2px;
 }
 
 .dropdown-page-jump .dropdown {
