@@ -30,7 +30,7 @@
 						{forumrow.FORUM_DESC}
 						<!-- IF forumrow.LAST_POST_TIME -->
 						<div class="responsive-show" style="display: none;">
-							{L_LAST_POST} {L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}">{forumrow.LAST_POST_TIME}</a>
+							{L_LAST_POST} {L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_TIME}</a>
 						</div>
 						<!-- ENDIF -->
 					</div>
@@ -113,9 +113,9 @@
 	<div class="action-bar bottom">
 		<div class="pagination">
 			{TOTAL_TOPICS}
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
