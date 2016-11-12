@@ -145,14 +145,14 @@
 		<!-- IF S_DISPLAY_PM -->
 			<li class="rightside" data-skip-responsive="true">
 				<a href="{U_PRIVATEMSGS}" role="menuitem">
-					<i class="icon fa-inbox fa-fw" aria-hidden="true"></i><span><span>{L_PRIVATE_MESSAGES} [</span><strong>{PRIVATE_MESSAGE_COUNT}</strong><span>]</span></span>
+					<i class="icon fa-inbox fa-fw" aria-hidden="true"></i><span><span>{L_PRIVATE_MESSAGES} <!-- IF PRIVATE_MESSAGE_COUNT --><strong class="badge">{PRIVATE_MESSAGE_COUNT}</strong><!-- ENDIF --></span>
 				</a>
 			</li>
 		<!-- ENDIF -->
 		<!-- IF S_NOTIFICATIONS_DISPLAY -->
 			<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside" data-skip-responsive="true">
 				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger">
-					<i class="icon fa-bell fa-fw" aria-hidden="true"></i><span><span>{L_NOTIFICATIONS} [</span><strong>{NOTIFICATIONS_COUNT}</strong><span>]</span></span>
+					<i class="icon fa-bell fa-fw" aria-hidden="true"></i><span><span>{L_NOTIFICATIONS} <!-- IF NOTIFICATIONS_COUNT --><strong class="badge">{NOTIFICATIONS_COUNT}</strong><!-- ENDIF --></span>
 				</a>
 				<!-- INCLUDE notification_dropdown.html -->
 			</li>

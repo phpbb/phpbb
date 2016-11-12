@@ -1168,3 +1168,8 @@ input.disabled {
 li.notification-reported strong, li.notification-disapproved strong {
 	color: #D31141;
 }
+
+.badge {
+	background-color: #D31141;
+	color: #ffffff;
+}
