@@ -1251,10 +1251,9 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
-.notification-alert {
+.badge {
 	border-radius: 10px;
 	opacity: 0.8;
-	min-width: 10px;
 	text-align: center;
 	white-space: nowrap;
 	font-size: 9px;

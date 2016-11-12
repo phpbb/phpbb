@@ -1162,7 +1162,7 @@ li.notification-reported strong, li.notification-disapproved strong {
 	color: #D31141;
 }
 
-.notification-alert {
+.badge {
 	background-color: #D31141;
 	color: #ffffff;
 }
