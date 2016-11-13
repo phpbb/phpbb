@@ -148,7 +148,7 @@
 			<li>Oracle</li>
 		</ul>
 		</li>
-		<li><strong>PHP 5.3.3+</strong> and <strong>PHP < 7.0</strong> with support for the database you intend to use.</li>
+		<li><strong>PHP 5.3.3+</strong> and <strong>PHP &lt; 7.0</strong> with support for the database you intend to use.</li>
 		<li>The following PHP modules are required:
 		<ul>
 			<li>json</li>
@@ -455,9 +455,21 @@
 
 <a name="webserver_configuration"></a><h3>6.ii. Webserver configuration</h3>
 
-	<p>Depending on your web server, you may have to configure your server to deny web access to the <code>cache/</code>, <code>files/</code>, <code>store/</code> and other directories. This is to prevent users from accessing sensitive files.</p>
+	<p>Depending on your web server, you may have to configure your server to deny web access to the <code>cache/</code>, <code>files/</code>, <code>includes</code>, <code>phpbb</code>, <code>store/</code>, and <code>vendor</code> directories. This is to prevent users from accessing sensitive files.</p>
 
-	<p>For <strong>Apache</strong> there are <code>.htaccess</code> files already in place to do this for you. Similarly, for <strong>Windows</strong> based servers using <strong>IIS</strong> there are <code>web.config</code> files already in place to do this for you. For other webservers, you will have to adjust the configuration yourself. Sample files for <strong>nginx</strong> and <strong>lighttpd</strong> to help you get started may be found in <code>docs/</code> directory.</p>
+	<p>
+		For <strong>Apache</strong> there are <code>.htaccess</code> files already in place to do this for the most sensitive files and folders. We do however recommend to completely deny all access to the aforementioned folders and their respective subfolders in your Apache configuration.<br />
+		On Apache 2.4, denying access to the <code>phpbb</code> folder in a phpBB instance located at <code>/var/www/html/</code> would work like this:
+		<pre>
+&lt;Directory /var/www/html/phpbb/*&gt;
+	Require all denied
+&lt;/Directory&gt;
+&lt;Directory /var/www/html/phpbb>
+	Require all denied
+&lt;/Directory&gt;</pre>
+		<br />
+	<p>The same settings can be applied to the other mentioned directories by replacing <code>phpbb</code> by the respective directory name. Please pay attention to the difference in syntax between Apache version <a href="https://httpd.apache.org/docs/2.2/howto/access.html">2.2</a> and <a href="https://httpd.apache.org/docs/2.4/howto/access.html">2.4</a>.</p>
+	<p>For <strong>Windows</strong> based servers using <strong>IIS</strong> there are <code>web.config</code> files already in place to do this for you. For other webservers, you will have to adjust the configuration yourself. Sample files for <strong>nginx</strong> and <strong>lighttpd</strong> to help you get started may be found in <code>docs/</code> directory.</p>
 
 		</div>
 
