@@ -2279,7 +2279,7 @@ function phpbb_avatar_explanation_string()
 {
 	global $config, $user;
 
-	return $user->lang('AVATAR_EXPLAIN',
+	return $user->lang(($config['avatar_filesize'] == 0) ? 'AVATAR_EXPLAIN_NO_FILESIZE' : 'AVATAR_EXPLAIN',
 		$user->lang('PIXELS', (int) $config['avatar_max_width']),
 		$user->lang('PIXELS', (int) $config['avatar_max_height']),
 		round($config['avatar_filesize'] / 1024));
