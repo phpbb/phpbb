@@ -563,7 +563,6 @@ class acp_icons
 					{
 						switch ($db->get_sql_layer())
 						{
-							case 'sqlite':
 							case 'sqlite3':
 								$db->sql_query('DELETE FROM ' . $table);
 							break;

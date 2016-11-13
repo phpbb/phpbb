@@ -878,7 +878,6 @@ class fulltext_native extends \phpbb\search\base
 
 				break;
 
-				case 'sqlite':
 				case 'sqlite3':
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
 					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
@@ -1185,7 +1184,7 @@ class fulltext_native extends \phpbb\search\base
 					}
 					else
 					{
-						if ($this->db->get_sql_layer() == 'sqlite' || $this->db->get_sql_layer() == 'sqlite3')
+						if ($this->db->get_sql_layer() == 'sqlite3')
 						{
 							$sql = 'SELECT COUNT(topic_id) as total_results
 								FROM (SELECT DISTINCT t.topic_id';
@@ -1202,7 +1201,7 @@ class fulltext_native extends \phpbb\search\base
 								$post_visibility
 								$sql_fora
 								AND t.topic_id = p.topic_id
-								$sql_time" . (($this->db->get_sql_layer() == 'sqlite' || $this->db->get_sql_layer() == 'sqlite3') ? ')' : '');
+								$sql_time" . ($this->db->get_sql_layer() == 'sqlite3' ? ')' : '');
 					}
 					$result = $this->db->sql_query($sql);
 
@@ -1667,7 +1666,6 @@ class fulltext_native extends \phpbb\search\base
 	{
 		switch ($this->db->get_sql_layer())
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$this->db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
 				$this->db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
