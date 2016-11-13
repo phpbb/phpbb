@@ -105,6 +105,13 @@ class oauth extends \phpbb\auth\provider\base
 	protected $phpbb_container;
 
 	/**
+	* phpBB event dispatcher
+	*
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $dispatcher;
+
+	/**
 	* phpBB root path
 	*
 	* @var string
@@ -132,10 +139,11 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	\phpbb\di\service_collection	$service_providers Contains \phpbb\auth\provider\oauth\service_interface
 	* @param	string			$users_table
 	* @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
+	* @param	\phpbb\event\dispatcher_interface $dispatcher phpBB event dispatcher
 	* @param	string			$phpbb_root_path
 	* @param	string			$php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_state_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_state_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, \phpbb\event\dispatcher_interface $dispatcher, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -148,6 +156,7 @@ class oauth extends \phpbb\auth\provider\base
 		$this->service_providers = $service_providers;
 		$this->users_table = $users_table;
 		$this->phpbb_container = $phpbb_container;
+		$this->dispatcher = $dispatcher;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -247,6 +256,18 @@ class oauth extends \phpbb\auth\provider\base
 
 			// Update token storage to store the user_id
 			$storage->set_user_id($row['user_id']);
+
+			/**
+			* Event is triggered after user is successfuly logged in via OAuth.
+			*
+			* @event core.auth_oauth_login_after
+			* @var    array    row    User row
+			* @since 3.1.11-RC1
+			*/
+			$vars = array(
+				'row',
+			);
+			extract($this->dispatcher->trigger_event('core.auth_oauth_login_after', compact($vars)));
 
 			// The user is now authenticated and can be logged in
 			return array(
@@ -569,6 +590,18 @@ class oauth extends \phpbb\auth\provider\base
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
 			' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
+
+		/**
+		 * Event is triggered after user links account.
+		 *
+		 * @event core.auth_oauth_link_after
+		 * @var    array    data    User row
+		 * @since 3.1.11-RC1
+		 */
+		$vars = array(
+			'data',
+		);
+		extract($this->dispatcher->trigger_event('core.auth_oauth_link_after', compact($vars)));
 	}
 
 	/**
