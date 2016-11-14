@@ -201,6 +201,34 @@ class migrator
 	}
 
 	/**
+	 * Get a valid migration name from the migration state array in case the
+	 * supplied name is not in the migration state list.
+	 *
+	 * @param string $name Migration name
+	 * @return string Migration name
+	 */
+	protected function get_valid_name($name)
+	{
+		// Try falling back to a valid migration name with or without leading backslash
+		if (!isset($this->migration_state[$name]))
+		{
+			$prepended_name = ($name[0] == '\\' ? '' : '\\') . $name;
+			$prefixless_name = $name[0] == '\\' ? substr($name, 1) : $name;
+
+			if (isset($this->migration_state[$prepended_name]))
+			{
+				$name = $prepended_name;
+			}
+			else if (isset($this->migration_state[$prefixless_name]))
+			{
+				$name = $prefixless_name;
+			}
+		}
+
+		return $name;
+	}
+
+	/**
 	 * Effectively runs a single update step from the next migration to be applied.
 	 *
 	 * @return null
@@ -209,6 +237,8 @@ class migrator
 	{
 		foreach ($this->migrations as $name)
 		{
+			$name = $this->get_valid_name($name);
+
 			if (!isset($this->migration_state[$name]) ||
 				!$this->migration_state[$name]['migration_schema_done'] ||
 				!$this->migration_state[$name]['migration_data_done'])
@@ -264,6 +294,9 @@ class migrator
 
 		foreach ($state['migration_depends_on'] as $depend)
 		{
+			$depend = $this->get_valid_name($depend);
+
+			// Test all possible namings before throwing exception
 			if ($this->unfulfillable($depend) !== false)
 			{
 				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $depend);
@@ -742,6 +775,8 @@ class migrator
 	*/
 	public function unfulfillable($name)
 	{
+		$name = $this->get_valid_name($name);
+
 		if (isset($this->migration_state[$name]) || isset($this->fulfillable_migrations[$name]))
 		{
 			return false;
@@ -757,6 +792,7 @@ class migrator
 
 		foreach ($depends as $depend)
 		{
+			$depend = $this->get_valid_name($depend);
 			$unfulfillable = $this->unfulfillable($depend);
 			if ($unfulfillable !== false)
 			{
