@@ -34,7 +34,7 @@ class acp_extensions
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $cache;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $cache, $phpbb_dispatcher;
 
 		$this->db = $db;
 		$this->config = $config;
@@ -43,6 +43,7 @@ class acp_extensions
 		$this->cache = $cache;
 		$this->request = $request;
 		$this->log = $phpbb_log;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
 
@@ -54,6 +55,21 @@ class acp_extensions
 		// What is a safe limit of execution time? Half the max execution time should be safe.
 		$safe_time_limit = (ini_get('max_execution_time') / 2);
 		$start_time = time();
+
+		/**
+		* Event to run a specific action on extension
+		*
+		* @event core.acp_extensions_run_action
+		* @var	string	action			Action to run
+		* @var	string	u_action		Url we are at
+		* @var	string	ext_name		Extension name from request
+		* @var	int		safe_time_limit	Safe limit of execution time
+		* @var	int		start_time		Start time
+		* @since 3.1.11-RC1
+		*/
+		$u_action = $this->u_action;
+		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time');
+		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action', compact($vars)));
 
 		// Cancel action
 		if ($request->is_set_post('cancel'))
