@@ -13,7 +13,7 @@
 			<value>1</value>
 			<value>:D</value>
 			<value>Very Happy</value>
-			<value>icon_e_biggrin.gif</value>
+			<value>images/smilies/icon_e_biggrin.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>1</value>
@@ -23,7 +23,7 @@
 			<value>2</value>
 			<value>:-D</value>
 			<value>Very Happy</value>
-			<value>icon_e_biggrin.gif</value>
+			<value>images/smilies/icon_e_biggrin.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>2</value>
@@ -33,7 +33,7 @@
 			<value>3</value>
 			<value>:grin:</value>
 			<value>Very Happy</value>
-			<value>icon_e_biggrin.gif</value>
+			<value>images/smilies/icon_e_biggrin.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>3</value>
@@ -43,7 +43,7 @@
 			<value>4</value>
 			<value>:)</value>
 			<value>Smile</value>
-			<value>icon_e_smile.gif</value>
+			<value>images/smilies/icon_e_smile.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>4</value>
@@ -53,7 +53,7 @@
 			<value>5</value>
 			<value>:-)</value>
 			<value>Smile</value>
-			<value>icon_e_smile.gif</value>
+			<value>images/smilies/icon_e_smile.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>5</value>
@@ -63,7 +63,7 @@
 			<value>6</value>
 			<value>:smile:</value>
 			<value>Smile</value>
-			<value>icon_e_smile.gif</value>
+			<value>images/smilies/icon_e_smile.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>6</value>
@@ -73,7 +73,7 @@
 			<value>7</value>
 			<value>;)</value>
 			<value>Wink</value>
-			<value>icon_e_wink.gif</value>
+			<value>images/smilies/icon_e_wink.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>7</value>
@@ -83,7 +83,7 @@
 			<value>8</value>
 			<value>;-)</value>
 			<value>Wink</value>
-			<value>icon_e_wink.gif</value>
+			<value>images/smilies/icon_e_wink.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>8</value>
@@ -93,7 +93,7 @@
 			<value>9</value>
 			<value>:wink:</value>
 			<value>Wink</value>
-			<value>icon_e_wink.gif</value>
+			<value>images/smilies/icon_e_wink.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>9</value>
@@ -103,7 +103,7 @@
 			<value>10</value>
 			<value>:(</value>
 			<value>Sad</value>
-			<value>icon_e_sad.gif</value>
+			<value>images/smilies/icon_e_sad.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>10</value>
@@ -113,7 +113,7 @@
 			<value>11</value>
 			<value>:-(</value>
 			<value>Sad</value>
-			<value>icon_e_sad.gif</value>
+			<value>images/smilies/icon_e_sad.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>11</value>
@@ -123,7 +123,7 @@
 			<value>12</value>
 			<value>:sad:</value>
 			<value>Sad</value>
-			<value>icon_e_sad.gif</value>
+			<value>images/smilies/icon_e_sad.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>12</value>
@@ -133,7 +133,7 @@
 			<value>13</value>
 			<value>:o</value>
 			<value>Surprised</value>
-			<value>icon_e_surprised.gif</value>
+			<value>images/smilies/icon_e_surprised.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>13</value>
@@ -143,7 +143,7 @@
 			<value>14</value>
 			<value>:-o</value>
 			<value>Surprised</value>
-			<value>icon_e_surprised.gif</value>
+			<value>images/smilies/icon_e_surprised.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>14</value>
@@ -153,7 +153,7 @@
 			<value>15</value>
 			<value>:eek:</value>
 			<value>Surprised</value>
-			<value>icon_e_surprised.gif</value>
+			<value>images/smilies/icon_e_surprised.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>15</value>
@@ -163,7 +163,7 @@
 			<value>16</value>
 			<value>:shock:</value>
 			<value>Shocked</value>
-			<value>icon_eek.gif</value>
+			<value>images/smilies/icon_eek.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>16</value>
@@ -173,7 +173,7 @@
 			<value>17</value>
 			<value>:?</value>
 			<value>Confused</value>
-			<value>icon_e_confused.gif</value>
+			<value>images/smilies/icon_e_confused.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>17</value>
@@ -183,7 +183,7 @@
 			<value>18</value>
 			<value>:-?</value>
 			<value>Confused</value>
-			<value>icon_e_confused.gif</value>
+			<value>images/smilies/icon_e_confused.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>18</value>
@@ -193,7 +193,7 @@
 			<value>19</value>
 			<value>:???:</value>
 			<value>Confused</value>
-			<value>icon_e_confused.gif</value>
+			<value>images/smilies/icon_e_confused.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>19</value>
@@ -203,7 +203,7 @@
 			<value>20</value>
 			<value>8-)</value>
 			<value>Cool</value>
-			<value>icon_cool.gif</value>
+			<value>images/smilies/icon_cool.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>20</value>
@@ -213,7 +213,7 @@
 			<value>21</value>
 			<value>:cool:</value>
 			<value>Cool</value>
-			<value>icon_cool.gif</value>
+			<value>images/smilies/icon_cool.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>21</value>
@@ -223,7 +223,7 @@
 			<value>22</value>
 			<value>:lol:</value>
 			<value>Laughing</value>
-			<value>icon_lol.gif</value>
+			<value>images/smilies/icon_lol.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>22</value>
@@ -233,7 +233,7 @@
 			<value>23</value>
 			<value>:x</value>
 			<value>Mad</value>
-			<value>icon_mad.gif</value>
+			<value>images/smilies/icon_mad.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>23</value>
@@ -243,7 +243,7 @@
 			<value>24</value>
 			<value>:-x</value>
 			<value>Mad</value>
-			<value>icon_mad.gif</value>
+			<value>images/smilies/icon_mad.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>24</value>
@@ -253,7 +253,7 @@
 			<value>25</value>
 			<value>:mad:</value>
 			<value>Mad</value>
-			<value>icon_mad.gif</value>
+			<value>images/smilies/icon_mad.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>25</value>
@@ -263,7 +263,7 @@
 			<value>26</value>
 			<value>:P</value>
 			<value>Razz</value>
-			<value>icon_razz.gif</value>
+			<value>images/smilies/icon_razz.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>26</value>
@@ -273,7 +273,7 @@
 			<value>27</value>
 			<value>:-P</value>
 			<value>Razz</value>
-			<value>icon_razz.gif</value>
+			<value>images/smilies/icon_razz.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>27</value>
@@ -283,7 +283,7 @@
 			<value>28</value>
 			<value>:razz:</value>
 			<value>Razz</value>
-			<value>icon_razz.gif</value>
+			<value>images/smilies/icon_razz.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>28</value>
@@ -293,7 +293,7 @@
 			<value>29</value>
 			<value>:oops:</value>
 			<value>Embarrassed</value>
-			<value>icon_redface.gif</value>
+			<value>images/smilies/icon_redface.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>29</value>
@@ -303,7 +303,7 @@
 			<value>30</value>
 			<value>:cry:</value>
 			<value>Crying or Very Sad</value>
-			<value>icon_cry.gif</value>
+			<value>images/smilies/icon_cry.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>30</value>
@@ -313,7 +313,7 @@
 			<value>31</value>
 			<value>:evil:</value>
 			<value>Evil or Very Mad</value>
-			<value>icon_evil.gif</value>
+			<value>images/smilies/icon_evil.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>31</value>
@@ -323,7 +323,7 @@
 			<value>32</value>
 			<value>:twisted:</value>
 			<value>Twisted Evil</value>
-			<value>icon_twisted.gif</value>
+			<value>images/smilies/icon_twisted.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>32</value>
@@ -333,7 +333,7 @@
 			<value>33</value>
 			<value>:roll:</value>
 			<value>Rolling Eyes</value>
-			<value>icon_rolleyes.gif</value>
+			<value>images/smilies/icon_rolleyes.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>33</value>
@@ -343,7 +343,7 @@
 			<value>34</value>
 			<value>:!:</value>
 			<value>Exclamation</value>
-			<value>icon_exclaim.gif</value>
+			<value>images/smilies/icon_exclaim.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>34</value>
@@ -353,7 +353,7 @@
 			<value>35</value>
 			<value>:?:</value>
 			<value>Question</value>
-			<value>icon_question.gif</value>
+			<value>images/smilies/icon_question.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>35</value>
@@ -363,7 +363,7 @@
 			<value>36</value>
 			<value>:idea:</value>
 			<value>Idea</value>
-			<value>icon_idea.gif</value>
+			<value>images/smilies/icon_idea.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>36</value>
@@ -373,7 +373,7 @@
 			<value>37</value>
 			<value>:arrow:</value>
 			<value>Arrow</value>
-			<value>icon_arrow.gif</value>
+			<value>images/smilies/icon_arrow.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>37</value>
@@ -383,7 +383,7 @@
 			<value>38</value>
 			<value>:|</value>
 			<value>Neutral</value>
-			<value>icon_neutral.gif</value>
+			<value>images/smilies/icon_neutral.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>38</value>
@@ -393,7 +393,7 @@
 			<value>39</value>
 			<value>:-|</value>
 			<value>Neutral</value>
-			<value>icon_neutral.gif</value>
+			<value>images/smilies/icon_neutral.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>39</value>
@@ -403,7 +403,7 @@
 			<value>40</value>
 			<value>:mrgreen:</value>
 			<value>Mr. Green</value>
-			<value>icon_mrgreen.gif</value>
+			<value>images/smilies/icon_mrgreen.gif</value>
 			<value>15</value>
 			<value>17</value>
 			<value>40</value>
@@ -413,7 +413,7 @@
 			<value>41</value>
 			<value>:geek:</value>
 			<value>Geek</value>
-			<value>icon_e_geek.gif</value>
+			<value>images/smilies/icon_e_geek.gif</value>
 			<value>17</value>
 			<value>17</value>
 			<value>41</value>
@@ -423,7 +423,7 @@
 			<value>42</value>
 			<value>:ugeek:</value>
 			<value>Uber Geek</value>
-			<value>icon_e_ugeek.gif</value>
+			<value>images/smilies/icon_e_ugeek.gif</value>
 			<value>17</value>
 			<value>18</value>
 			<value>42</value>
@@ -433,7 +433,7 @@
 			<value>43</value>
 			<value>8)</value>
 			<value>8)</value>
-			<value>custom.gif</value>
+			<value>images/smilies/custom.gif</value>
 			<value>17</value>
 			<value>18</value>
 			<value>42</value>

@@ -130,18 +130,17 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* Automatically set the smilies path based on config
 	*
-	* @param  \phpbb\config\config $config
-	* @param  \phpbb\path_helper   $path_helper
+	* @param  \phpbb\path_helper $path_helper
 	* @return null
 	*/
-	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
+	public function configure_smilies_path(\phpbb\path_helper $path_helper)
 	{
 		/**
 		* @see smiley_text()
 		*/
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $path_helper->get_web_root_path();
 
-		$this->set_smilies_path($root_path . $config['smilies_path']);
+		$this->set_smilies_path($root_path);
 	}
 
 	/**
