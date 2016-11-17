@@ -49,7 +49,7 @@ $classes = $finder->core_path('phpbb/')
 	->directory('/db/migration/data')
 	->get_classes();
 
-$db = new \phpbb\db\driver\sqlite();
+$db = new \phpbb\db\driver\sqlite3();
 $factory = new \phpbb\db\tools\factory();
 $db_tools = $factory->get($db, true);
 

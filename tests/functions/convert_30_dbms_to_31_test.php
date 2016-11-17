@@ -22,7 +22,6 @@ class phpbb_convert_30_dbms_to_31_test extends phpbb_test_case
 			array('mysqli'),
 			array('oracle'),
 			array('postgres'),
-			array('sqlite'),
 		);
 	}
 

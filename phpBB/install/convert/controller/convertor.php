@@ -410,7 +410,6 @@ class convertor
 
 		switch ($this->db->get_sql_layer())
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$this->db->sql_query('DELETE FROM ' . $this->session_keys_table);
 				$this->db->sql_query('DELETE FROM ' . $this->session_table);

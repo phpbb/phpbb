@@ -2364,7 +2364,6 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	// Clear table
 	switch ($db->get_sql_layer())
 	{
-		case 'sqlite':
 		case 'sqlite3':
 			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
 		break;
@@ -2822,7 +2821,6 @@ function get_database_size()
 			}
 		break;
 
-		case 'sqlite':
 		case 'sqlite3':
 			global $dbhost;
 

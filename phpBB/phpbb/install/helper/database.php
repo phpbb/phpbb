@@ -90,15 +90,6 @@ class database
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'sqlite'		=> array(
-			'LABEL'			=> 'SQLite',
-			'SCHEMA'		=> 'sqlite',
-			'MODULE'		=> 'sqlite',
-			'DELIM'			=> ';',
-			'DRIVER'		=> 'phpbb\db\driver\sqlite',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
-		),
 		'sqlite3'		=> array(
 			'LABEL'			=> 'SQLite3',
 			'SCHEMA'		=> 'sqlite',
@@ -387,14 +378,6 @@ class database
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_MYSQLI',
-						);
-					}
-				break;
-				case 'sqlite':
-					if (version_compare($db->sql_server_info(true), '2.8.2', '<'))
-					{
-						$errors[] = array(
-							'title' => 'INST_ERR_DB_NO_SQLITE',
 						);
 					}
 				break;

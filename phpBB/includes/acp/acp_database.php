@@ -115,7 +115,6 @@ class acp_database
 								// We might wanna empty out all that junk :D
 								switch ($db->get_sql_layer())
 								{
-									case 'sqlite':
 									case 'sqlite3':
 										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
 									break;
@@ -304,7 +303,6 @@ class acp_database
 								case 'mysql':
 								case 'mysql4':
 								case 'mysqli':
-								case 'sqlite':
 								case 'sqlite3':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{

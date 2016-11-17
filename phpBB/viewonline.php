@@ -127,7 +127,6 @@ if (!$show_guests)
 {
 	switch ($db->get_sql_layer())
 	{
-		case 'sqlite':
 		case 'sqlite3':
 			$sql = 'SELECT COUNT(session_ip) as num_guests
 				FROM (
