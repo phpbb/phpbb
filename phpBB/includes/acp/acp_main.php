@@ -275,7 +275,6 @@ class acp_main
 					case 'db_track':
 						switch ($db->get_sql_layer())
 						{
-							case 'sqlite':
 							case 'sqlite3':
 								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 							break;
@@ -386,7 +385,6 @@ class acp_main
 						{
 							switch ($db->get_sql_layer())
 							{
-								case 'sqlite':
 								case 'sqlite3':
 									$db->sql_query("DELETE FROM $table");
 								break;

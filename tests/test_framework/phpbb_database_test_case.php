@@ -76,7 +76,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 			global $table_prefix;
 
-			$db = new \phpbb\db\driver\sqlite();
+			$db = new \phpbb\db\driver\sqlite3();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($db, true);
 

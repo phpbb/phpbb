@@ -144,7 +144,6 @@ class convertor
 		$convert->mysql_convert = false;
 		switch ($src_db->sql_layer)
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$convert->src_truncate_statement = 'DELETE FROM ';
 				break;
@@ -176,7 +175,6 @@ class convertor
 
 		switch ($db->get_sql_layer())
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$convert->truncate_statement = 'DELETE FROM ';
 				break;

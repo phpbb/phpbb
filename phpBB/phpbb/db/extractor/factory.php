@@ -65,10 +65,6 @@ class factory
 		{
 			return $this->container->get('dbal.extractor.extractors.postgres_extractor');
 		}
-		else if ($this->db instanceof \phpbb\db\driver\sqlite)
-		{
-			return $this->container->get('dbal.extractor.extractors.sqlite_extractor');
-		}
 		else if ($this->db instanceof \phpbb\db\driver\sqlite3)
 		{
 			return $this->container->get('dbal.extractor.extractors.sqlite3_extractor');

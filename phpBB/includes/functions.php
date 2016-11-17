@@ -3522,7 +3522,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 
 	// Get number of online guests
 
-	if ($db->get_sql_layer() === 'sqlite' || $db->get_sql_layer() === 'sqlite3')
+	if ($db->get_sql_layer() === 'sqlite3')
 	{
 		$sql = 'SELECT COUNT(session_ip) as num_guests
 			FROM (
