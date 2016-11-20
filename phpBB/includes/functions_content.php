@@ -1035,7 +1035,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user, $phpbb_path_helper;
+	global $config, $user, $phpbb_path_helper, $phpbb_dispatcher;
 
 	if ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
@@ -1044,6 +1044,16 @@ function smiley_text($text, $force_option = false)
 	else
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
+
+		/**
+		* Event to override the root_path for smilies
+		*
+		* @event core.smiley_text_root_path
+		* @var string root_path root_path for smilies
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('root_path');
+		extract($phpbb_dispatcher->trigger_event('core.smiley_text_root_path', compact($vars)));
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
