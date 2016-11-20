@@ -431,7 +431,7 @@ class messenger
 	*/
 	function build_header($to, $cc, $bcc)
 	{
-		global $config;
+		global $config, $phpbb_dispatcher;
 
 		// We could use keys here, but we won't do this for 3.0.x to retain backwards compatibility
 		$headers = array();
@@ -462,6 +462,16 @@ class messenger
 		$headers[] = 'X-Mailer: phpBB3';
 		$headers[] = 'X-MimeOLE: phpBB3';
 		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
+
+		/**
+		* Event to modify email header entries
+		*
+		* @event core.modify_email_headers
+		* @var	array	headers	Array containing email header entries
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('headers');
+		extract($phpbb_dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
 
 		if (sizeof($this->extra_headers))
 		{
