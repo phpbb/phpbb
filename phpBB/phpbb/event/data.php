@@ -63,4 +63,17 @@ class data extends Event implements \ArrayAccess
 	{
 		unset($this->data[$offset]);
 	}
+
+	/**
+	 * Returns data with updated key in specified offset.
+	 *
+	 * @param	string	$offset	Data array offset
+	 * @param	string	$key	Offset key
+	 * @param	mixed	$value	Value to update
+	 * @return	mixed	Value of $value
+	 */
+	public function update_subarray($offset, $key, $value)
+	{
+		return $this->data[$offset][$key] = $value;
+	}
 }
