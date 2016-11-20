@@ -782,9 +782,11 @@ $topic_tracking_info = $tracking_topics = array();
 * @var	array	topic_list			Array with current viewforum page topic ids
 * @var	array	rowset				Array with topics data (in topic_id => topic_data format)
 * @var	int		total_topic_count	Forum's total topic count
+* @var	int		forum_id			Forum identifier
 * @since 3.1.0-b3
+* @changed 3.1.11-RC1 Added forum_id
 */
-$vars = array('topic_list', 'rowset', 'total_topic_count');
+$vars = array('topic_list', 'rowset', 'total_topic_count', 'forum_id');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topics_data', compact($vars)));
 
 // Okay, lets dump out the page ...
