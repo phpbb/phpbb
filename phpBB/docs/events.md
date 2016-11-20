@@ -2113,6 +2113,13 @@ ucp_pm_viewmessage_custom_fields_before
 * Purpose: Add data before the custom fields on the user profile when viewing
 a private message
 
+ucp_pm_viewmessage_options_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.11-RC1
+* Purpose: Add content right before display options
+
 ucp_pm_viewmessage_post_buttons_after
 ===
 * Locations:
