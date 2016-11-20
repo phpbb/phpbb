@@ -2636,7 +2636,7 @@ function add_form_key($form_name, $template_variable_suffix = '')
 	* @var	string	template_variable_suffix	The string that is appended to template variable name
 	*
 	* @since 3.1.0-RC3
-	* @changed 3.1.11-RC1 Added template_variable_suffix
+	* @change 3.1.11-RC1 Added template_variable_suffix
 	*/
 	$vars = array(
 		'form_name',
@@ -2928,7 +2928,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			* @var  string	redirect	Redirect string
 			* @var	bool	admin		Is admin?
 			* @since 3.1.0-RC5
-			* @changed 3.1.9-RC1 Removed undefined return variable
+			* @change 3.1.9-RC1 Removed undefined return variable
 			*/
 			$vars = array('redirect', 'admin');
 			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
@@ -4310,7 +4310,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 		*								session_forum_id
 		* @var	array	sql_ary			SQL query array to obtain users online data
 		* @since 3.1.4-RC1
-		* @changed 3.1.7-RC1			Change sql query into array and adjust var accordingly. Allows extension authors the ability to adjust the sql_ary.
+		* @change 3.1.7-RC1			Change sql query into array and adjust var accordingly. Allows extension authors the ability to adjust the sql_ary.
 		*/
 		$vars = array('online_users', 'item_id', 'item', 'sql_ary');
 		extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_sql', compact($vars)));

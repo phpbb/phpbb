@@ -2611,7 +2611,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	* @var string	sql_and			SQL text appended to where clause
 	* @var int		prune_limit		The prune limit
 	* @since 3.1.3-RC1
-	* @changed 3.1.10-RC1			Added prune_limit
+	* @change 3.1.10-RC1			Added prune_limit
 	*/
 	$vars = array(
 		'forum_id',

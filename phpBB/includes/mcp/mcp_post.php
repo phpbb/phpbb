@@ -556,7 +556,7 @@ function change_poster(&$post_info, $userdata)
 	* @var	array	userdata	Information on a post's new poster
 	* @var	array	post_info	Information on the affected post
 	* @since 3.1.6-RC1
-	* @changed 3.1.7-RC1		Change location to prevent post_info from being set to the new post information
+	* @change 3.1.7-RC1		Change location to prevent post_info from being set to the new post information
 	*/
 	$vars = array('userdata', 'post_info');
 	extract($phpbb_dispatcher->trigger_event('core.mcp_change_poster_after', compact($vars)));

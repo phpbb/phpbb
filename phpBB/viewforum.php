@@ -631,7 +631,7 @@ $sql_ary = array(
 *
 * @since 3.1.0-RC4
 *
-* @changed 3.1.3 Added forum_data
+* @change 3.1.3 Added forum_data
 */
 $vars = array(
 	'forum_data',
@@ -945,7 +945,7 @@ if (sizeof($topic_list))
 		* @var	bool	s_type_switch_test	Flag indicating if the test topic type is [global] announcement
 		* @since 3.1.0-a1
 		*
-		* @changed 3.1.10-RC1 Added s_type_switch, s_type_switch_test
+		* @change 3.1.10-RC1 Added s_type_switch, s_type_switch_test
 		*/
 		$vars = array('row', 'topic_row', 's_type_switch', 's_type_switch_test');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));

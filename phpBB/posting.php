@@ -373,7 +373,7 @@ switch ($mode)
 * @var	bool	is_authed	Does the user have the required permissions?
 * @var	array	post_data	All post data from database
 * @since 3.1.3-RC1
-* @changed 3.1.10-RC1 Added post_data
+* @change 3.1.10-RC1 Added post_data
 */
 $vars = array(
 	'post_id',
@@ -1385,7 +1385,7 @@ if ($submit || $preview || $refresh)
 			* @var	bool	update_subject		Boolean if the post subject was changed
 			*				NOTE: Should be actual language strings, NOT language keys.
 			* @since 3.1.0-RC5
-			* @changed 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
+			* @change 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
 			*/
 			$vars = array(
 				'post_data',
@@ -1424,7 +1424,7 @@ if ($submit || $preview || $refresh)
 			* @var	string	redirect_url		URL the user is going to be redirected to
 			*				NOTE: Should be actual language strings, NOT language keys.
 			* @since 3.1.0-RC5
-			* @changed 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
+			* @change 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
 			*/
 			$vars = array(
 				'post_data',

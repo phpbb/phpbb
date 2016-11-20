@@ -186,7 +186,7 @@ class upload extends \phpbb\avatar\driver\driver
 		* @var	array	row					Array with avatar row data
 		* @var	array	error				Array of errors, if filled in by this event file will not be moved
 		* @since 3.1.6-RC1
-		* @changed 3.1.9-RC1 Added filedata
+		* @change 3.1.9-RC1 Added filedata
 		*/
 		$vars = array(
 			'filedata',

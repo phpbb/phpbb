@@ -665,8 +665,8 @@ switch ($mode)
 		* @var	bool	foe						Is the user foe?
 		* @var	array	profile_fields			Array with user's profile field data
 		* @since 3.1.0-a1
-		* @changed 3.1.0-b2 Added friend and foe status
-		* @changed 3.1.0-b3 Added profile fields data
+		* @change 3.1.0-b2 Added friend and foe status
+		* @change 3.1.0-b3 Added profile fields data
 		*/
 		$vars = array(
 			'member',

@@ -343,7 +343,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	array	id_ary			Array of post or topic ids for search result
 	* @var	string	show_results	'posts' or 'topics' type of ids
 	* @since 3.1.3-RC1
-	* @changed 3.1.10-RC1 Added id_ary, show_results
+	* @change 3.1.10-RC1 Added id_ary, show_results
 	*/
 	$vars = array(
 		'keywords',
@@ -692,8 +692,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	int		total_match_count	The total number of search matches
 	* @var	array	ex_fid_ary		Array of excluded forum ids
 	* @since 3.1.7-RC1
-	* @changed 3.1.10-RC1 Added show_results, sql_where, total_match_count
-	* @changed 3.1.11-RC1 Added ex_fid_ary
+	* @change 3.1.10-RC1 Added show_results, sql_where, total_match_count
+	* @change 3.1.11-RC1 Added ex_fid_ary
 	*/
 	$vars = array(
 		'u_search',
@@ -830,8 +830,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	string	sort_key		The sorting key
 			* @var	string	sql_order_by	The SQL ORDER BY string used by search to get topic data
 			* @since 3.1.0-a1
-			* @changed 3.1.0-RC5 Added total_match_count
-			* @changed 3.1.7-RC1 Added sort_by_sql, sort_dir, sort_key, sql_order_by
+			* @change 3.1.0-RC5 Added total_match_count
+			* @change 3.1.7-RC1 Added sort_by_sql, sort_dir, sort_key, sql_order_by
 			*/
 			$vars = array(
 				'sql_select',
@@ -1021,7 +1021,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		* @var	string	view					Search results view mode
 		* @var	array	zebra					Array with zebra data for the current user
 		* @since 3.1.0-b4
-		* @changed 3.1.0-b5 Added var show_results
+		* @change 3.1.0-b5 Added var show_results
 		*/
 		$vars = array(
 			'attachments',
@@ -1198,7 +1198,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			* @var	array	zebra			The zebra data of the current user
 			* @var	array	attachments		All the attachments of the search results
 			* @since 3.1.0-a1
-			* @changed 3.1.0-b3 Added vars show_results, topic_title, replies,
+			* @change 3.1.0-b3 Added vars show_results, topic_title, replies,
 			*		view_topic_url, folder_img, folder_alt, topic_type, unread_topic,
 			*		topic_unapproved, posts_unapproved, topic_deleted, u_mcp_queue,
 			*		zebra, attachments
@@ -1302,7 +1302,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	* @var	int		total_match_count	The count of search results
 	* @var	string	keywords			The search keywords
 	* @since 3.1.0-RC4
-	* @changed 3.1.6-RC1 Added total_match_count and keywords
+	* @change 3.1.6-RC1 Added total_match_count and keywords
 	*/
 	$vars = array(
 		'author_id',
