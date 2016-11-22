@@ -20,6 +20,7 @@ class acp_extensions_info
 			'title'		=> 'ACP_EXTENSION_MANAGEMENT',
 			'modes'		=> array(
 				'main'		=> array('title' => 'ACP_EXTENSIONS', 'auth' => 'acl_a_extensions', 'cat' => array('ACP_EXTENSION_MANAGEMENT')),
+				'order'		=> array('title' => 'ACP_EXTENSIONS_ORDER', 'auth' => 'acl_a_extensions', 'cat' => array('ACP_EXTENSION_MANAGEMENT')),
 			),
 		);
 	}
