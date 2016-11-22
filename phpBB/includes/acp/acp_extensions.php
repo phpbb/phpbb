@@ -54,7 +54,7 @@ class acp_extensions
 				$this->page_title = 'ACP_EXTENSIONS_ORDER';
 				$this->tpl_name = 'acp_ext_order';
 
-				
+
 
 			break;
 
@@ -205,6 +205,8 @@ class acp_extensions
 
 						try
 						{
+							$phpbb_extension_manager->store_template_events($ext_name);
+
 							while ($phpbb_extension_manager->enable_step($ext_name))
 							{
 								// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
@@ -291,6 +293,8 @@ class acp_extensions
 
 						try
 						{
+							$phpbb_extension_manager->delete_template_events($ext_name);
+
 							while ($phpbb_extension_manager->purge_step($ext_name))
 							{
 								// Are we approaching the time limit? If so we want to pause the update and continue after refreshing

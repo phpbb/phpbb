@@ -29,6 +29,7 @@ class manager
 	protected $php_ext;
 	protected $extensions;
 	protected $extension_table;
+	protected $extension_events_table;
 	protected $phpbb_root_path;
 	protected $cache_name;
 
@@ -40,12 +41,13 @@ class manager
 	* @param \phpbb\config\config $config Config object
 	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param string $extension_table The name of the table holding extensions
+	* @param string $extension_events_table The name of the table holding extensions events
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
 	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $extension_events_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
@@ -53,6 +55,7 @@ class manager
 		$this->container = $container;
 		$this->db = $db;
 		$this->extension_table = $extension_table;
+		$this->extension_events_table = $extension_events_table;
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -401,6 +404,59 @@ class manager
 		// @codingStandardsIgnoreStart
 		while ($this->purge_step($name));
 		// @codingStandardsIgnoreEnd
+	}
+
+	/**
+	* Store template events to ext_events table
+	*
+	* @param string $name The extension's name
+	* @return null
+	*/
+	public function store_template_events($name)
+	{
+		// holds list of all template events
+		$files = array();
+		$sql_defaults = array(
+			'ext_event_name'		=> '',
+			'ext_event_ext_name'	=> $name,
+			'ext_event_order'		=> 0,
+			'ext_event_active'		=> true,
+		);
+		$sql_query = 'INSERT INTO ' . $this->extension_events_table . ' VALUES ';
+		// holds list of all insertions
+		$sql_values = array();
+
+		// find all template events extension uses
+		foreach(glob($this->phpbb_root_path . 'ext/' . $name . '/styles/*/template/event/*.html') as $path)
+		{
+			$path = explode('/', $path);
+			$files[] = str_replace('.html', '', end($path));
+		}
+
+		// prepare query to store all template events to ext_events table
+		foreach (array_unique($files) as $file)
+		{
+			$sql_defaults['ext_event_name'] = $file;
+			$sql_values[] = '("' . implode('","', array_values($sql_defaults)) . '")';
+		}
+
+		// concantenate query
+		$sql_query .= implode(',', $sql_values);
+		// store all template events to ext_events table in one query
+		$this->db->sql_query($sql_query);
+	}
+
+	/**
+	* Delete template events from ext_events table
+	*
+	* @param string $name The extension's name
+	* @return null
+	*/
+	public function delete_template_events($name)
+	{
+		$sql = 'DELETE FROM ' . $this->extension_events_table . "
+				WHERE ext_event_ext_name = '$name'";
+		$this->db->sql_query($sql);
 	}
 
 	/**

@@ -106,6 +106,7 @@ services:
             - '@config'
             - '@filesystem'
             - '%tables.ext%'
+            - '%tables.ext_events%'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '@cache.driver'
