@@ -34,7 +34,7 @@ class acp_extensions
 	function main($id, $mode)
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $cache, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $cache, $phpbb_dispatcher, $table_prefix;
 
 		$this->db = $db;
 		$this->config = $config;
@@ -44,8 +44,11 @@ class acp_extensions
 		$this->request = $request;
 		$this->log = $phpbb_log;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->table_prefix = $table_prefix;
 
 		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
+
+		$action = $request->variable('action', 'list');
 
 		switch ($mode)
 		{
@@ -54,7 +57,51 @@ class acp_extensions
 				$this->page_title = 'ACP_EXTENSIONS_ORDER';
 				$this->tpl_name = 'acp_ext_order';
 
+				switch ($action)
+				{
+					case 'edit':
 
+						$event = $this->request->variable('event', '');
+
+						if ($event)
+						{
+							$sql = 'SELECT *
+									FROM ' . $this->table_prefix . 'ext_events
+									WHERE ext_event_name = "' . $this->db->sql_escape($event) . '"
+									ORDER BY ext_event_order';
+							$result = $this->db->sql_query($sql);
+							while ($row = $this->db->sql_fetchrow($result))
+							{
+								$this->template->assign_block_vars('extensions', array(
+									'EXT_NAME'	=> $row['ext_event_ext_name'],
+									'ACTIVE'	=> (bool) $row['ext_event_active'],
+									'U_DETAILS'	=> append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_extensions&mode=main&action=details&ext_name=' . urlencode($row['ext_event_ext_name'])),
+								));
+							}
+						}
+
+						$this->template->assign_vars(array(
+							'S_EDIT'	=> true,
+						));
+
+					break;
+
+					default:
+
+						$sql = 'SELECT ext_event_name, COUNT(ext_event_name) as ext_event_count, SUM(ext_event_active) as ext_event_active
+								FROM ' . $this->table_prefix . 'ext_events
+								GROUP BY ext_event_name';
+						$result = $this->db->sql_query($sql);
+						while ($row = $this->db->sql_fetchrow($result))
+						{
+							$this->template->assign_block_vars('events', array(
+								'NAME'		=> $row['ext_event_name'],
+								'COUNT'		=> $row['ext_event_count'],
+								'ACTIVE'	=> $row['ext_event_active'],
+								'U_EDIT'	=> $this->u_action . '&amp;action=edit&amp;event=' . $row['ext_event_name'],
+							));
+						}
+				}
 
 			break;
 
@@ -63,7 +110,6 @@ class acp_extensions
 
 				$this->page_title = 'ACP_EXTENSIONS';
 
-				$action = $request->variable('action', 'list');
 				$ext_name = $request->variable('ext_name', '');
 
 				// What is a safe limit of execution time? Half the max execution time should be safe.
