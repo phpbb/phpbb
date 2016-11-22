@@ -60,6 +60,11 @@ class installer
 	protected $web_root;
 
 	/**
+	 * @var \phpbb\user
+	 */
+	protected $user;
+
+	/**
 	 * Stores the number of steps that a given module has
 	 *
 	 * @var array
@@ -87,6 +92,7 @@ class installer
 		$this->installer_modules	= null;
 		$this->web_root				= $path_helper->get_web_root_path();
 		$this->purge_cache_before	= false;
+		$this->user = $container->get('user');
 	}
 
 	/**
@@ -243,8 +249,14 @@ class installer
 			}
 			else
 			{
-				global $SID;
-				$acp_url = $this->web_root . 'adm/index.php' . $SID . '&i=acp_help_phpbb&mode=help_phpbb';
+				// Start session and try to apply session id
+				$auth = $this->container_factory->get('auth');
+				$this->user->session_begin();
+				$auth->acl($this->user->data);
+				$this->user->setup();
+				$phpbb_root_path = $this->container_factory->get_parameter('core.root_path');
+
+				$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $this->user->session_id);
 				$this->iohandler->add_success_message('INSTALLER_FINISHED', array(
 					'ACP_LINK',
 					$acp_url,
