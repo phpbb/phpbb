@@ -427,7 +427,7 @@ class manager
 		$sql_values = array();
 
 		// find all template events extension uses
-		foreach(glob($this->phpbb_root_path . 'ext/' . $name . '/styles/*/template/event/*.html') as $path)
+		foreach (glob($this->phpbb_root_path . 'ext/' . $name . '/styles/*/template/event/*.html') as $path)
 		{
 			$path = explode('/', $path);
 			$files[] = str_replace('.html', '', end($path));
