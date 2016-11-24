@@ -503,10 +503,6 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	border-top: 1px solid transparent;
 }
 
-.jumpbox .dropdown-select {
-	margin: 0;
-}
-
 .jumpbox .dropdown-contents {
 	text-decoration: none;
 	padding: 0;
@@ -532,17 +528,8 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	width: 20px;
 }
 
-.dropdown-contents a {
-	display: block;
-	padding: 5px;
-}
-
 .jumpbox .dropdown-select {
 	margin: 0;
-}
-
-.jumpbox .dropdown-contents a {
-	text-decoration: none;
 }
 
 .dropdown li {
