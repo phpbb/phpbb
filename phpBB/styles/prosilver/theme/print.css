@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------- /*
 	$Print
 /* -------------------------------------------------------------- */
-
+/* stylelint-disable selector-max-compound-selectors */
 
 /* Lots still TODO here! */
 
@@ -213,3 +213,4 @@ ul {
 .codebox p {
 	display: none;
 }
+/* stylelint-enable */
