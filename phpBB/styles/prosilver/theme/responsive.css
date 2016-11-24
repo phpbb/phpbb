@@ -267,9 +267,6 @@
 		display: none;
 	}
 
-	ul.topiclist dd.mark {
-		display: block;
-	}
 	ul.topiclist.forums dt {
 		margin-right: -250px;
 	}
