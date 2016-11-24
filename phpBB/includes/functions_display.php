@@ -282,6 +282,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 			$subforums[$parent_id][$forum_id]['children'] = array();
+			$subforums[$parent_id][$forum_id]['type'] = $row['forum_type'];
 
 			if (isset($subforums[$parent_id][$row['parent_id']]) && !$row['display_on_index'])
 			{
@@ -490,6 +491,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 						'link'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
 						'name'		=> $subforum_row['name'],
 						'unread'	=> $subforum_unread,
+						'type'		=> $subforum_row['type'],
 					);
 				}
 				else
@@ -571,6 +573,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'U_SUBFORUM'	=> $subforum['link'],
 				'SUBFORUM_NAME'	=> $subforum['name'],
 				'S_UNREAD'		=> $subforum['unread'],
+				'IS_LINK'		=> $subforum['type'] == FORUM_LINK,
 			);
 		}
 		$s_subforums_list = (string) implode($user->lang['COMMA_SEPARATOR'], $s_subforums_list);
