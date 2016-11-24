@@ -176,9 +176,12 @@ button::-moz-focus-inner {
 	padding: 0 0 0 18px;
 }
 
+
+/* stylelint-disable selector-no-qualifying-type */
 ul.linklist.bulletin > li.small-icon:before {
 	display: none;
 }
+/* stylelint-enable */
 
 .dropdown .small-icon > a {
 	display: block;
