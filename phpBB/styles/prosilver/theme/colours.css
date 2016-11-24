@@ -1,8 +1,12 @@
-/*
---------------------------------------------------------------
-colours and backgrounds for common.css
--------------------------------------------------------------- */
+/* -------------------------------------------------------------- /*
+	$Colours
+/* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable no-indistinguishable-colors */
 
+/*	colours and backgrounds for common.css
+	------------------------------------------------------------- */
 html,
 body {
 	background-color: #f5f7fa;
@@ -27,11 +31,8 @@ hr {
 	border-top-color: #cccccc;
 }
 
-/*
---------------------------------------------------------------
-colours and backgrounds for links.css
--------------------------------------------------------------- */
-
+/*	colours and backgrounds for links.css
+	------------------------------------------------------------- */
 a {
 	color: #105289;
 }
@@ -90,8 +91,7 @@ th a:hover {
 	color: #368ad2;
 }
 
-/* round cornered boxes and backgrounds
----------------------------------------- */
+/* round cornered boxes and backgrounds */
 .wrap {
 	background-color: #ffffff;
 	border-color: #e6e9ed;
@@ -165,15 +165,13 @@ ul.zebra-list li:nth-child(even) {
 	background-image: url('./images/site_logo.gif');
 }
 
-/* horizontal lists
----------------------------------------- */
+/* horizontal lists */
 
 ul.navlinks {
 	border-top-color: #ffffff;
 }
 
-/* table styles
----------------------------------------- */
+/* table styles */
 table.table1 thead th {
 	color: #ffffff;
 }
@@ -206,8 +204,7 @@ table.info tbody th {
 	color: #000000;
 }
 
-/* misc layout styles
----------------------------------------- */
+/* misc layout styles */
 dl.details dt {
 	color: #000000;
 }
@@ -220,8 +217,7 @@ dl.details dd {
 	color: #1198d9;
 }
 
-/* icon styles
----------------------------------------- */
+/* icon styles */
 .icon.icon-blue,
 a:hover .icon.icon-blue {
 	color: #196db5;
@@ -303,8 +299,7 @@ a:hover .icon.icon-black {
 	background-color: #f1f8ff;
 }
 
-/* miscellaneous styles
----------------------------------------- */
+/* miscellaneous styles */
 
 .copyright {
 	color: #555555;
@@ -337,10 +332,8 @@ p.post-notice {
 	background-image: none;
 }
 
-/*
---------------------------------------------------------------
-colours and backgrounds for content.css
--------------------------------------------------------------- */
+/*	colours and backgrounds for content.css
+	------------------------------------------------------------- */
 
 ul.forums {
 	background-color: #eef5f9; /* old browsers */ /* ff3.6+ */
@@ -388,14 +381,12 @@ li.header dd {
 	color: #ffffff;
 }
 
-/* post body styles
----------------------------------------- */
+/* post body styles */
 .postbody {
 	color: #333333;
 }
 
-/* content container styles
----------------------------------------- */
+/* content container styles */
 .content {
 	color: #333333;
 }
@@ -430,8 +421,7 @@ dl.faq dt {
 	border-top-color: #cccccc;
 }
 
-/* bb code styles
----------------------------------------- */
+/* bb code styles */
 
 /* quote block */
 blockquote {
@@ -492,8 +482,7 @@ blockquote blockquote blockquote {
 	color: #dd0000;
 }
 
-/* attachments
----------------------------------------- */
+/* attachments */
 .attachbox {
 	background-color: #ffffff;
 	border-color: #c9d2d8;
@@ -542,8 +531,7 @@ dl.thumbnail dt a:hover img {
 	border-color: #368ad2;
 }
 
-/* post poll styles
----------------------------------------- */
+/* post poll styles */
 
 fieldset.polls dl {
 	border-top-color: #dcdee2;
@@ -616,8 +604,7 @@ fieldset.polls dd div {
 	border-left-color: #d11a4e;
 }
 
-/* poster profile block
----------------------------------------- */
+/* poster profile block */
 .postprofile {
 	border-color: #ffffff;
 	color: #666666;
@@ -639,10 +626,8 @@ dd.profile-warnings {
 	color: #bc2a4d;
 }
 
-/*
---------------------------------------------------------------
-colours and backgrounds for buttons.css
--------------------------------------------------------------- */
+/*	colours and backgrounds for buttons.css
+	------------------------------------------------------------- */
 .button {
 	background-color: #e9e9e9; /* old browsers */ /* ff3.6+ */
 	background-image: linear-gradient(to bottom, #ffffff 0%, #e9e9e9 100%); /* w3c */
@@ -695,8 +680,7 @@ colours and backgrounds for buttons.css
 	background-color: #f2f6f9;
 }
 
-/* pagination
----------------------------------------- */
+/* pagination */
 
 .pagination li a {
 	background: #ecedee;
@@ -731,8 +715,7 @@ colours and backgrounds for buttons.css
 	filter: none;
 }
 
-/* search box
---------------------------------------------- */
+/* search box */
 
 .search-box .inputbox,
 .search-box .inputbox:hover,
@@ -744,8 +727,7 @@ colours and backgrounds for buttons.css
 	box-shadow: 0 0 10px #0075b0;
 }
 
-/* icon images
----------------------------------------- */
+/* icon images */
 
 .contact-icon {
 	background-image: url('./images/icons_contact.png');
@@ -984,13 +966,10 @@ colours and backgrounds for buttons.css
 }
 
 
-/*
---------------------------------------------------------------
-colours and backgrounds for cp.css
--------------------------------------------------------------- */
+/*	colours and backgrounds for cp.css
+	------------------------------------------------------------- */
 
-/* main cp box
----------------------------------------- */
+/* main cp box */
 
 .panel-container h3,
 .panel-container hr,
@@ -1022,8 +1001,7 @@ ul.cplist {
 	border-color: #dbdee2;
 }
 
-/* cp tabbed menu
----------------------------------------- */
+/* cp tabbed menu */
 .tabs .tab > a {
 	background: #baccd9;
 	color: #536482;
@@ -1048,8 +1026,7 @@ ul.cplist {
 	color: #000000;
 }
 
-/* mini tabbed menu used in mcp
----------------------------------------- */
+/* mini tabbed menu used in mcp */
 .minitabs .tab > a {
 	background-color: #e1ebf2;
 }
@@ -1060,8 +1037,7 @@ ul.cplist {
 	color: #333333;
 }
 
-/* responsive tabs
----------------------------------------- */
+/* responsive tabs */
 .responsive-tab .responsive-tab-link:before {
 	border-color: #536482;
 }
@@ -1070,8 +1046,7 @@ ul.cplist {
 	border-color: #d31141;
 }
 
-/* ucp navigation menu
----------------------------------------- */
+/* ucp navigation menu */
 
 /* link styles for the sub-section links */
 .navigation a {
@@ -1111,8 +1086,11 @@ ul.cplist {
 	}
 }
 
-/* preferences pane layout
----------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable no-indistinguishable-colors */
+
+/* preferences pane layout */
 .panel-container h2 {
 	color: #333333;
 }
@@ -1134,8 +1112,7 @@ dl.mini dt {
 	color: #425067;
 }
 
-/* pm styles
----------------------------------------- */
+/* pm styles */
 
 /* pm message history */
 .current {
@@ -1179,13 +1156,10 @@ dl.mini dt {
 	background-color: #eeeeee;
 }
 
-/*
---------------------------------------------------------------
-colours and backgrounds for forms.css
--------------------------------------------------------------- */
+/*	colours and backgrounds for forms.css
+	------------------------------------------------------------- */
 
-/* general form styles
----------------------------------------- */
+/* general form styles */
 select {
 	background-color: #fafafa;
 	border-color: #666666;
@@ -1200,8 +1174,7 @@ option.disabled-option {
 	color: graytext;
 }
 
-/* definition list layout for forms
----------------------------------------- */
+/* definition list layout for forms */
 dd label {
 	color: #333333;
 }
@@ -1224,8 +1197,7 @@ fieldset.quick-login input.inputbox {
 	background-color: #f2f3f3;
 }
 
-/* posting page styles
----------------------------------------- */
+/* posting page styles */
 
 .message-box textarea {
 	color: #333333;
@@ -1239,8 +1211,7 @@ fieldset.quick-login input.inputbox {
 	outline-color: rgba(17, 163, 234, 0.5);
 }
 
-/* input field styles
----------------------------------------- */
+/* input field styles */
 .inputbox {
 	background-color: #ffffff;
 	border-color: #b4bac0;
@@ -1272,8 +1243,7 @@ fieldset.quick-login input.inputbox {
 }
 
 
-/* form button styles
----------------------------------------- */
+/* form button styles */
 
 a.button1,
 input.button1,
@@ -1333,8 +1303,7 @@ input.disabled {
 	color: #666666;
 }
 
-/* jquery popups
----------------------------------------- */
+/* jquery popups */
 .phpbb_alert {
 	background-color: #ffffff;
 	border-color: #999999;
@@ -1406,8 +1375,7 @@ input.disabled {
 	border-color: #dcdcdc;
 }
 
-/* notifications
----------------------------------------- */
+/* notifications */
 
 .notification_list p.notification-time {
 	color: #4c5d77;
