@@ -1076,10 +1076,12 @@ ul.cplist {
 
 /* This ID needs factored out */
 @media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
+	/* stylelint-disable selector-no-id */
 	#navigation a,
 	.rtl #navigation a {
 		background: #b2c2cf;
 	}
+	/* stylelint-enable */
 }
 
 /* stylelint-disable selector-max-compound-selectors */
@@ -1386,3 +1388,5 @@ li.notification-disapproved strong {
 	background-color: #D31141;
 	color: #ffffff;
 }
+/* stylelint-enable */
+
