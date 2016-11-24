@@ -1,9 +1,12 @@
 /* -------------------------------------------------------------- /*
-	$Base
+	$Tweaks
 /* -------------------------------------------------------------- /*
 	These style definitions are IE 8 & 9 only.
 	They are required due to the poor CSS support in IE browsers.
 /* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
+
 
 /* IE 8 Tweaks (value)\9 equates to  IE <= 8
 ----------------------------------------------------------------- */
@@ -52,3 +55,4 @@ dd label input {
 .tabs .tab > a {
 	border-radius: 0;
 }
+/* stylelint-enable */
