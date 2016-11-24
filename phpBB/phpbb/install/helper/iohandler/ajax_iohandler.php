@@ -121,6 +121,22 @@ class ajax_iohandler extends iohandler_base
 	}
 
 	/**
+	 * Returns untrimmed input variable
+	 *
+	 * @param string	$name		Name of the input variable to obtain
+	 * @param mixed		$default	A default value that is returned if the variable was not set.
+	 * 								This function will always return a value of the same type as the default.
+	 * @param bool		$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+	 *								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+	 *
+	 * @return mixed	Value of the untrimmed input variable
+	 */
+	public function get_untrimmed_input($name, $default, $multibyte = false)
+	{
+		return $this->request->untrimmed_variable($name, $default, $multibyte);
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function get_server_variable($name, $default = '')
