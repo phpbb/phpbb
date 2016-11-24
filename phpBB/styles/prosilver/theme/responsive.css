@@ -10,7 +10,7 @@
 }
 
 /* Notifications list
-----------------------------------------*/
+---------------------------------------------------------------- */
 
 @media (max-width: 350px) {
 	.dropdown-extended .dropdown-contents {
@@ -139,8 +139,9 @@
 	.responsive-show-inline-block {
 		display: inline-block !important;
 	}
+
 	/* Content wrappers
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	html {
 		height: auto;
 	}
@@ -156,8 +157,9 @@
 		margin: 0;
 		padding: 0 5px;
 	}
+
 	/* Common block wrappers
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.headerbar,
 	.navbar,
 	.forabg,
@@ -175,8 +177,9 @@
 	.cp-main .panel {
 		border-radius: 7px;
 	}
+
 	/* Logo block
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.site-description {
 		text-align: center;
 		float: none;
@@ -204,18 +207,21 @@
 	.search-header {
 		display: none;
 	}
+
 	/* Navigation
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.headerbar + .navbar {
 		margin-top: -5px;
 	}
+
 	/* Search
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.responsive-search {
 		display: block !important;
 	}
-	/* .topiclist lists
-	----------------------------------------*/
+
+	/* Forums and topicslists
+	---------------------------------------------------------------- */
 	li.header dt {
 		font-size: 1.2em;
 		line-height: 1em;
@@ -264,8 +270,6 @@
 	ul.topiclist dd.mark {
 		display: block;
 	}
-	/* Forums and topics lists
-	----------------------------------------*/
 	ul.topiclist.forums dt {
 		margin-right: -250px;
 	}
@@ -301,8 +305,9 @@
 		overflow: hidden;
 		max-width: 100px;
 	}
+
 	/* Pagination
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.pagination > ul {
 		margin: 5px 0 0;
 	}
@@ -315,8 +320,9 @@
 	.row .pagination .ellipsis + li {
 		display: none !important;
 	}
+
 	/* Responsive tables
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	table.responsive,
 	table.responsive tbody,
 	table.responsive tr,
@@ -371,8 +377,9 @@
 	table.responsive.memberlist td:first-child input[type='checkbox'] {
 		float: right;
 	}
+
 	/* Forms
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	fieldset dt,
 	fieldset.fields1 dt,
 	fieldset.fields2 dt {
@@ -459,16 +466,18 @@
 		display: inline-block;
 		min-width: 50%;
 	}
+
 	/* User profile
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.column1,
 	.column2,
 	.left-box.profile-details {
 		float: none;
 		width: auto;
 	}
+
 	/* Polls
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	fieldset.polls dt {
 		width: 90%;
 	}
@@ -485,8 +494,9 @@
 	fieldset.polls dd.poll_option_percent {
 		margin-top: 5px;
 	}
+
 	/* Post
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.postbody {
 		position: inherit;
 	}
@@ -554,8 +564,9 @@
 	.online {
 		background-size: 40px;
 	}
+
 	/* Misc stuff
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	h2 {
 		margin-top: 0.5em;
 	}
