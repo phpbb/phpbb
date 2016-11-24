@@ -1,6 +1,8 @@
 /* -------------------------------------------------------------- /*
 	$Forms
 /* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 /* General form styles
 ---------------------------------------- */
@@ -472,3 +474,4 @@ input.search {
 .tiny {
 	width: 10%;
 }
+/* stylelint-enable */
