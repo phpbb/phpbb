@@ -6,20 +6,39 @@
 
 /* General markup styles */
 * {
-	padding: 0;
 	margin: 0;
+	padding: 0;
 }
 
 body {
 	font: 11pt Verdana, Arial, Helvetica, sans-serif;
-	color:#000000;
+	color: #000000;
 }
 
-a:link		{ color: #000000; text-decoration: none; }
-a:visited	{ color: #000000; text-decoration: none; }
-a:active	{ color: #000000; text-decoration: none; }
+a:link {
+	text-decoration: none;
+	color: #000000;
+}
 
-img, .noprint, .navbar, .box1, .divider, .signature { display: none; }
+a:visited {
+	text-decoration: none;
+	color: #000000;
+}
+
+a:active {
+	text-decoration: none;
+	color: #000000;
+}
+
+img,
+.noprint,
+.navbar,
+.box1,
+.divider,
+.signature {
+	display: none;
+}
+
 /* Display smilies (Bug #47265) */
 .content img {
 	display: inline;
@@ -30,50 +49,80 @@ img, .noprint, .navbar, .box1, .divider, .signature { display: none; }
 	margin: 0 2em;
 }
 
-p { font-size: 85%; }
-.copyright { font-size: 75%; }
-.page-number { float:right; width: auto; text-align: right; font-size: 75%; }
-
-h1, h2, h3, h1 a, h2 a, h3 a {
-	font-family: "Trebuchet MS",georgia,Verdana,Sans-serif;
-	color: #000000;
-	background: none;
-	text-decoration: none;
-	font-weight: bold;
+p {
+	font-size: 85%;
 }
 
-h1 { font-size: 20pt; }
-h2 { font-size: 16pt; margin-top: 1em; }
-h3 { font-size: 14pt; margin-top: 1em; }
+.copyright {
+	font-size: 75%;
+}
+
+.page-number {
+	font-size: 75%;
+	text-align: right;
+	float: right;
+	width: auto;
+}
+
+h1,
+h2,
+h3,
+h1 a,
+h2 a,
+h3 a {
+	font-family: 'Trebuchet MS', georgia, Verdana, sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+	background: none;
+	color: #000000;
+}
+
+h1 {
+	font-size: 20pt;
+}
+
+h2 {
+	font-size: 16pt;
+	margin-top: 1em;
+}
+
+h3 {
+	font-size: 14pt;
+	margin-top: 1em;
+}
 
 .content {
+	font-family: 'Lucida Grande', 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif;
 	font-size: 11pt;
 	line-height: 14pt;
-	margin-bottom: 1em;
-	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	overflow: hidden;
+	margin-bottom: 1em;
 }
 
 /* CSS2 Print tip from: http://www.alistapart.com/articles/goingtoprint/ */
-.postbody a:link, .postbody a:visited, .postbody a:hover, .postbody a:active {
-	text-decoration: underline;
-	padding: 0.1em 0.2em;
-	margin: -0.1em -0.2em;
-	color: #666;
-	background: none;
+.postbody a:link,
+.postbody a:visited,
+.postbody a:hover,
+.postbody a:active {
 	font-size: 100%;
+	text-decoration: underline;
+	background: none;
+	color: #666666;
+	margin: -0.1em -0.2em;
+	padding: 0.1em 0.2em;
 }
 
-html>body .postbody a:link:after, html>body .postbody a:visited:after {
-	content: " (" attr(href) ") ";
+html > body .postbody a:link:after,
+html > body .postbody a:visited:after {
 	font-size: 90%;
 	text-decoration: none;
+	content: ' (' attr(href) ') ';
 }
 
 hr {
-	height: 1px;
 	background-color: #999999;
 	border-width: 0;
+	height: 1px;
 }
 
 .author {
@@ -84,56 +133,82 @@ hr {
 
 .date {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	float: right;
-	position: relative;
-	text-align: right;
 	font-size: 75%;
+	text-align: right;
+	position: relative;
+	float: right;
 }
 
 /* Dont want to print url for names or titles in content area */
-.postbody .author a:link, .postbody .author a:visited,
-html>body .postbody .author a:link:after,
-html>body .postbody .author a:visited:after,
-.postquote .quote-by a:link, .postquote .quote-by a:visited,
-html>body .postquote .quote-by a:link:after,
-html>body .postquote .quote-by a:visited:after,
-html>body .postbody h1 a:link:after, html>body .postbody h2 a:link:after {
+.postbody .author a:link,
+.postbody .author a:visited,
+html > body .postbody .author a:link:after,
+html > body .postbody .author a:visited:after,
+.postquote .quote-by a:link,
+.postquote .quote-by a:visited,
+html > body .postquote .quote-by a:link:after,
+html > body .postquote .quote-by a:visited:after,
+html > body .postbody h1 a:link:after,
+html > body .postbody h2 a:link:after {
 	text-decoration: none;
-	content: "";
+	content: '';
 }
 
 /* Poster profile */
-.postprofile { display: none; }
-.grip-show { display:none; }
-
-/* Quote */
-.postquote, blockquote {
-	font-size: 85%;
-	margin: 1em 18% 1em 4%;
-	padding: 0.5em;
-	position: relative;
-	line-height: 1.5em;
-	border: 1px #999999 solid;
+.postprofile {
+	display: none;
 }
 
-.postquote img { display: none; }
-.postquote span { display: block; }
-.postquote span .postquote { font-size: 100%; }
-.quote-by, blockquote cite {
-	color: black;
-	display : block;
+.grip-show {
+	display: none;
+}
+
+/* Quote */
+.postquote,
+blockquote {
+	font-size: 85%;
+	line-height: 1.5em;
+	border: 1px #999999 solid;
+	position: relative;
+	margin: 1em 18% 1em 4%;
+	padding: 0.5em;
+}
+
+.postquote img {
+	display: none;
+}
+
+.postquote span {
+	display: block;
+}
+
+.postquote span .postquote {
+	font-size: 100%;
+}
+
+.quote-by,
+blockquote cite {
 	font-weight: bold;
+	color: #000000;
+	display: block;
 }
 
 /* List */
-ol, ul {
-	margin-left: 15pt
+ol,
+ul {
+	margin-left: 15pt;
 }
 
 /* Misc page elements */
-div.spacer { clear: both; }
+div.spacer {
+	clear: both;
+}
 
 /* Accessibility tweaks: Mozilla.org */
-.skip_link { display: none; }
+.skip_link {
+	display: none;
+}
 
-.codebox p { display: none; }
+.codebox p {
+	display: none;
+}

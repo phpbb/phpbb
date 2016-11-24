@@ -3,14 +3,14 @@
 
 ul.topiclist {
 	display: block;
-	list-style-type: none;
 	margin: 0;
+	list-style-type: none;
 }
 
 ul.topiclist li {
 	display: block;
-	list-style-type: none;
 	margin: 0;
+	list-style-type: none;
 }
 
 ul.topiclist dl {
@@ -21,15 +21,16 @@ ul.topiclist li.row dl {
 	padding: 2px 0;
 }
 
-ul.topiclist dt, ul.topiclist dd {
+ul.topiclist dt,
+ul.topiclist dd {
 	display: block;
 	float: left;
 }
 
 ul.topiclist dt {
+	font-size: 1.1em;
 	width: 100%;
 	margin-right: -440px;
-	font-size: 1.1em;
 }
 
 ul.topiclist.missing-column dt {
@@ -46,8 +47,8 @@ ul.topiclist.two-columns dt {
 
 ul.topiclist dt .list-inner {
 	margin-right: 440px;
-	padding-left: 5px;
 	padding-right: 5px;
+	padding-left: 5px;
 }
 
 ul.topiclist.missing-column dt .list-inner {
@@ -64,10 +65,8 @@ ul.topiclist.two-columns dt .list-inner {
 
 ul.topiclist dd {
 	border-left: 1px solid transparent;
-	padding: 4px 0;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	padding: 4px 0;
 }
 
 ul.topiclist dfn {
@@ -79,8 +78,8 @@ ul.topiclist dfn {
 
 .forum-image {
 	float: left;
-	padding-top: 5px;
 	margin-right: 5px;
+	padding-top: 5px;
 }
 
 li.row {
@@ -92,15 +91,16 @@ li.row strong {
 	font-weight: normal;
 }
 
-li.header dt, li.header dd {
+li.header dt,
+li.header dd {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1em;
 	line-height: 1em;
+	text-transform: uppercase;
 	border-left-width: 0;
-	margin: 2px 0 4px 0;
+	margin: 2px 0 4px;
 	padding-top: 2px;
 	padding-bottom: 2px;
-	font-size: 1em;
-	font-family: Arial, Helvetica, sans-serif;
-	text-transform: uppercase;
 }
 
 li.header dt {
@@ -114,20 +114,20 @@ li.header dt .list-inner {
 }
 
 li.header dd {
-	padding-left: 1px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	padding-left: 1px;
 }
 
-li.header dl.row-item dt, li.header dl.row-item dd {
+li.header dl.row-item dt,
+li.header dl.row-item dd {
 	min-height: 0;
 }
 
 li.header dl.row-item dt .list-inner {
+	padding-right: 50px;
+
 	/* Tweak for headers alignment when folder icon used */
 	padding-left: 0;
-	padding-right: 50px;
 }
 
 /* Forum list column styles */
@@ -137,15 +137,16 @@ dl.row-item {
 }
 
 dl.row-item dt {
-	background-repeat: no-repeat;
 	background-position: 5px 95%;		/* Position of topic icon */
+	background-repeat: no-repeat;
 }
 
 dl.row-item dt .list-inner {
 	padding-left: 45px;					/* Space for folder icon */
 }
 
-dl.row-item dt, dl.row-item dd {
+dl.row-item dt,
+dl.row-item dd {
 	min-height: 35px;
 }
 
@@ -154,33 +155,39 @@ dl.row-item dt a {
 }
 
 dl a.row-item-link {						/* topic row icon links */
-	display: block;
-	width: 30px;
-	height: 30px;
-	padding: 0;
 	position: absolute;
 	top: 50%;
 	left: 0;
+	display: block;
+	width: 30px;
+	height: 30px;
 	margin-top: -15px;
 	margin-left: 9px;
+	padding: 0;
 }
 
-dd.posts, dd.topics, dd.views, dd.extra, dd.mark {
-	width: 80px;
-	text-align: center;
-	line-height: 2.2em;
+dd.posts,
+dd.topics,
+dd.views,
+dd.extra,
+dd.mark {
 	font-size: 1.2em;
+	line-height: 2.2em;
+	text-align: center;
+	width: 80px;
 }
 
-dd.posts, dd.topics, dd.views {
+dd.posts,
+dd.topics,
+dd.views {
 	width: 95px;
 }
 
 /* List in forum description */
 dl.row-item dt ol,
 dl.row-item dt ul {
-	list-style-position: inside;
 	margin-left: 1em;
+	list-style-position: inside;
 }
 
 dl.row-item dt li {
@@ -188,9 +195,13 @@ dl.row-item dt li {
 	list-style-type: inherit;
 }
 
-dd.lastpost, dd.redirect, dd.moderation, dd.time, dd.info {
-	width: 250px;
+dd.lastpost,
+dd.redirect,
+dd.moderation,
+dd.time,
+dd.info {
 	font-size: 1.1em;
+	width: 250px;
 }
 
 dd.redirect {
@@ -201,30 +212,35 @@ dd.time {
 	line-height: 200%;
 }
 
-dd.lastpost > span, ul.topiclist dd.info > span, ul.topiclist dd.time > span, dd.redirect > span, dd.moderation > span {
+dd.lastpost > span,
+ul.topiclist dd.info > span,
+ul.topiclist dd.time > span,
+dd.redirect > span,
+dd.moderation > span {
 	display: block;
 	padding-left: 5px;
 }
 
-dd.extra, dd.mark {
+dd.extra,
+dd.mark {
 	line-height: 200%;
 }
 
 dd.option {
-	width: 125px;
+	font-size: 1.1em;
 	line-height: 200%;
 	text-align: center;
-	font-size: 1.1em;
+	width: 125px;
 }
 
 /* Post body styles
-----------------------------------------*/
+---------------------------------------- */
 .postbody {
-	padding: 0;
 	line-height: 1.48em;
-	width: 76%;
-	float: left;
 	position: relative;
+	float: left;
+	width: 76%;
+	padding: 0;
 }
 
 .postbody .ignore {
@@ -237,16 +253,17 @@ dd.option {
 }
 
 .postbody h3 {
-	/* Postbody requires a different h3 format - so change it here */
-	float: left;
+	font-family: 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.5em;
-	padding: 2px 0 0 0;
-	margin-top: 0 !important;
-	margin-bottom: 0.3em !important;
+	line-height: 125%;
 	text-transform: none;
 	border: none;
-	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	line-height: 125%;
+
+	/* Postbody requires a different h3 format - so change it here */
+	float: left;
+	margin-top: 0 !important;
+	margin-bottom: 0.3em !important;
+	padding: 2px 0 0;
 }
 
 .postbody h3 img {
@@ -265,33 +282,31 @@ dd.option {
 }
 
 .postbody img.postimage {
-	max-width: 100%;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+	max-width: 100%;
 }
 
 .search .postbody {
-	width: 68%
+	width: 68%;
 }
 
 /* Topic review panel
-----------------------------------------*/
+---------------------------------------- */
 .panel .review {
 	margin-top: 2em;
 }
 
 .topicreview {
-	padding-right: 5px;
 	overflow: auto;
 	height: 300px;
+	padding-right: 5px;
 }
 
 .topicreview .postbody {
-	width: auto;
 	float: none;
-	margin: 0;
+	width: auto;
 	height: auto;
+	margin: 0;
 }
 
 .topicreview .post {
@@ -307,7 +322,7 @@ dd.option {
 }
 
 /* MCP Post details
-----------------------------------------*/
+---------------------------------------- */
 .post_details {
 	/* This will only work in IE7+, plus the others */
 	overflow: auto;
@@ -315,21 +330,22 @@ dd.option {
 }
 
 /* Content container styles
-----------------------------------------*/
+---------------------------------------- */
 .content {
-	clear: both;
-	min-height: 3em;
-	overflow: hidden;
-	line-height: 1.4em;
-	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-family: 'Lucida Grande', 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
+	line-height: 1.4em;
+	clear: both;
+	overflow: hidden;
+	min-height: 3em;
 	padding-bottom: 1px;
 }
 
-.content h2, .panel h2 {
+.content h2,
+.panel h2 {
+	font-size: 1.6em;
 	font-weight: normal;
 	border-bottom: 1px solid transparent;
-	font-size: 1.6em;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
 	padding-bottom: 0.5em;
@@ -341,23 +357,23 @@ dd.option {
 
 .panel p {
 	font-size: 1.2em;
-	margin-bottom: 1em;
 	line-height: 1.4em;
+	margin-bottom: 1em;
 }
 
 .content p {
-	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-family: 'Lucida Grande', 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.2em;
-	margin-bottom: 1em;
 	line-height: 1.4em;
+	margin-bottom: 1em;
 }
 
 dl.faq {
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
+	line-height: 1.4em;
 	margin-top: 1em;
 	margin-bottom: 2em;
-	line-height: 1.4em;
 }
 
 dl.faq dt {
@@ -373,34 +389,35 @@ dl.faq dt {
 	list-style-type: inherit;
 }
 
-.content ul, .content ol {
+.content ul,
+.content ol {
 	margin: 0.8em 0 0.9em 3em;
 }
 
 .posthilit {
-	padding: 0 2px 1px 2px;
+	padding: 0 2px 1px;
 }
 
 /* Post author */
 p.author {
-	margin-bottom: 0.6em;
-	padding: 0 0 5px 0;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	line-height: 1.2em;
 	clear: both;
+	margin-bottom: 0.6em;
+	padding: 0 0 5px;
 }
 
 /* Post signature */
 .signature {
-	margin-top: 1.5em;
-	padding-top: 0.2em;
 	font-size: 1.1em;
+	line-height: 140%;
 	border-top: 1px solid transparent;
 	clear: left;
-	line-height: 140%;
 	overflow: hidden;
 	width: 100%;
+	margin-top: 1.5em;
+	padding-top: 0.2em;
 }
 
 .signature.standalone {
@@ -409,48 +426,50 @@ p.author {
 }
 
 dd .signature {
+	border: none;
+	clear: none;
 	margin: 0;
 	padding: 0;
-	clear: none;
-	border: none;
 }
 
 .signature li {
 	list-style-type: inherit;
 }
 
-.signature ul, .signature ol {
+.signature ul,
+.signature ol {
 	margin: 0.8em 0 0.9em 3em;
 }
 
 /* Post noticies */
 .notice {
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1em;
+	line-height: 130%;
+	border-top: 1px dashed transparent;
+	clear: left;
 	width: auto;
 	margin-top: 1.5em;
 	padding-top: 0.2em;
-	font-size: 1em;
-	border-top: 1px dashed transparent;
-	clear: left;
-	line-height: 130%;
 }
 
 /* Jump to post link for now */
 ul.searchresults {
-	list-style: none;
 	text-align: right;
 	clear: both;
+	list-style: none;
 }
 
 /* BB Code styles
-----------------------------------------*/
+---------------------------------------- */
+
 /* Quote block */
 blockquote {
+	font-size: 0.95em;
 	background: transparent none 6px 8px no-repeat;
 	border: 1px solid transparent;
-	font-size: 0.95em;
-	margin: 1em 1px 1em 25px;
 	overflow: hidden;
+	margin: 1em 1px 1em 25px;
 	padding: 5px;
 }
 
@@ -461,12 +480,13 @@ blockquote blockquote {
 }
 
 blockquote cite {
+	font-size: 0.9em;
+
 	/* Username/source of quoter */
 	font-style: normal;
 	font-weight: bold;
-	margin-left: 20px;
 	display: block;
-	font-size: 0.9em;
+	margin-left: 20px;
 }
 
 blockquote cite cite {
@@ -478,8 +498,8 @@ blockquote.uncited {
 }
 
 blockquote cite > div {
-	float: right;
 	font-weight: normal;
+	float: right;
 }
 
 .postbody .content li blockquote {
@@ -489,19 +509,19 @@ blockquote cite > div {
 
 /* Code block */
 .codebox {
-	padding: 3px;
-	border: 1px solid transparent;
 	font-size: 1em;
-	margin: 1em 0 1.2em 0;
+	border: 1px solid transparent;
+	margin: 1em 0 1.2em;
+	padding: 3px;
 }
 
 .codebox p {
-	text-transform: uppercase;
-	border-bottom: 1px solid transparent;
-	margin-bottom: 3px;
 	font-size: 0.8em !important;
 	font-weight: bold;
+	text-transform: uppercase;
+	border-bottom: 1px solid transparent;
 	display: block;
+	margin-bottom: 3px;
 }
 
 blockquote .codebox {
@@ -509,29 +529,27 @@ blockquote .codebox {
 }
 
 .codebox code {
-	overflow: auto;
+	font: 0.9em Monaco, 'Andale Mono', 'Courier New', Courier, mono;
+	line-height: 1.3em;
 	display: block;
+	overflow: auto;
 	height: auto;
 	max-height: 200px;
-	padding-top: 5px;
-	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
-	line-height: 1.3em;
 	margin: 2px 0;
+	padding-top: 5px;
 }
 
 /* Attachments
-----------------------------------------*/
+---------------------------------------- */
 .attachbox {
+	border: 1px dashed transparent;
 	float: left;
+	clear: left;
+	box-sizing: border-box;
 	width: auto;
 	max-width: 100%;
 	margin: 5px 5px 5px 0;
 	padding: 6px;
-	border: 1px dashed transparent;
-	clear: left;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
 }
 
 .attachbox dt {
@@ -540,11 +558,11 @@ blockquote .codebox {
 }
 
 .attachbox dd {
+	border-top: 1px solid transparent;
+	clear: left;
+	overflow-x: auto;
 	margin-top: 4px;
 	padding-top: 4px;
-	clear: left;
-	border-top: 1px solid transparent;
-	overflow-x: auto;
 }
 
 .attachbox dd dd {
@@ -552,31 +570,32 @@ blockquote .codebox {
 }
 
 .attachbox p {
-	line-height: 110%;
 	font-weight: normal;
+	line-height: 110%;
 	clear: left;
 }
 
-.attachbox p.stats
-{
-	line-height: 110%;
+.attachbox p.stats {
 	font-weight: normal;
+	line-height: 110%;
 	clear: left;
 }
 
 .attach-image {
-	margin: 3px 0;
 	max-width: 100%;
+	margin: 3px 0;
 }
 
 .attach-image img {
 	border: 1px solid transparent;
-/*	cursor: move; */
+
+	/*	cursor: move; */
 	cursor: default;
 }
 
 /* Inline image thumbnails */
-div.inline-attachment dl.thumbnail, div.inline-attachment dl.file {
+div.inline-attachment dl.thumbnail,
+div.inline-attachment dl.file {
 	display: block;
 	margin-bottom: 4px;
 }
@@ -591,11 +610,11 @@ dl.file {
 }
 
 dl.file dt {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-weight: bold;
 	text-transform: none;
 	margin: 0;
 	padding: 0;
-	font-weight: bold;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
 dl.file dd {
@@ -604,14 +623,14 @@ dl.file dd {
 }
 
 dl.thumbnail img {
-	padding: 3px;
 	border: 1px solid transparent;
 	box-sizing: border-box;
+	padding: 3px;
 }
 
 dl.thumbnail dd {
-	font-style: italic;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-style: italic;
 }
 
 .attachbox dl.thumbnail dd {
@@ -623,16 +642,16 @@ dl.thumbnail dt a:hover img {
 }
 
 /* Post poll styles
-----------------------------------------*/
+---------------------------------------- */
 fieldset.polls {
-	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-family: 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
 }
 
 fieldset.polls dl {
-	margin-top: 5px;
-	border-top: 1px solid transparent;
-	padding: 5px 0 0 0;
 	line-height: 120%;
+	border-top: 1px solid transparent;
+	margin-top: 5px;
+	padding: 5px 0 0;
 }
 
 fieldset.polls dl.voted {
@@ -640,23 +659,23 @@ fieldset.polls dl.voted {
 }
 
 fieldset.polls dt {
-	text-align: left;
-	float: left;
-	display: block;
-	width: 30%;
-	border-right: none;
-	padding: 0;
-	margin: 0;
 	font-size: 1.1em;
+	text-align: left;
+	border-right: none;
+	display: block;
+	float: left;
+	width: 30%;
+	margin: 0;
+	padding: 0;
 }
 
 fieldset.polls dd {
+	font-size: 1.1em;
+	border-left: none;
 	float: left;
 	width: 10%;
-	border-left: none;
-	padding: 0 5px;
 	margin-left: 0;
-	font-size: 1.1em;
+	padding: 0 5px;
 }
 
 fieldset.polls dd.resultbar {
@@ -668,17 +687,21 @@ fieldset.polls dd input {
 }
 
 fieldset.polls dd div {
-	text-align: right;
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;
-	padding: 2px 2px 0 2px;
+	text-align: right;
 	overflow: visible;
 	min-width: 8px;
+	padding: 2px 2px 0;
 }
 
-.pollbar1, .pollbar2, .pollbar3, .pollbar4, .pollbar5 {
-	border-bottom: 1px solid transparent;
+.pollbar1,
+.pollbar2,
+.pollbar3,
+.pollbar4,
+.pollbar5 {
 	border-right: 1px solid transparent;
+	border-bottom: 1px solid transparent;
 }
 
 .vote-submitted {
@@ -688,39 +711,42 @@ fieldset.polls dd div {
 }
 
 /* Poster profile block
-----------------------------------------*/
+---------------------------------------- */
 .postprofile {
-	margin: 5px 0 10px 0;
-	min-height: 80px;
 	border: 1px solid transparent;
 	border-width: 0 0 0 1px;
-	width: 22%;
-	float: right;
 	display: inline;
+	float: right;
+	width: 22%;
+	min-height: 80px;
+	margin: 5px 0 10px;
 }
 
-.postprofile dd, .postprofile dt {
+.postprofile dd,
+.postprofile dt {
 	line-height: 1.2em;
 	margin-left: 8px;
 }
 
 .postprofile dd {
-	overflow: hidden;
 	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .postprofile strong {
 	font-weight: normal;
 }
 
-.postprofile dt.no-profile-rank, .postprofile dd.profile-rank, .postprofile .search-result-date {
+.postprofile dt.no-profile-rank,
+.postprofile dd.profile-rank,
+.postprofile .search-result-date {
 	margin-bottom: 10px;
 }
 
 /* Post-profile avatars */
 .postprofile .has-avatar .avatar-container {
-	margin-bottom: 3px;
 	overflow: hidden;
+	margin-bottom: 3px;
 }
 
 .postprofile .avatar {
@@ -731,8 +757,8 @@ fieldset.polls dd div {
 
 .postprofile .avatar img {
 	display: block;
-	height: auto !important;
 	max-width: 100%;
+	height: auto !important;
 }
 
 .postprofile .profile-posts a {
@@ -765,7 +791,7 @@ dd.profile-contact {
 	background-repeat: no-repeat;
 }
 
-/* Poster profile used by search*/
+/* Poster profile used by search */
 .search .postprofile {
 	width: 30%;
 }
@@ -785,8 +811,8 @@ dl.pmlist dt textarea {
 }
 
 dl.pmlist dd {
-	margin-left: 61% !important;
 	margin-bottom: 2px;
+	margin-left: 61% !important;
 }
 
 .action-bar div.dl_links {
@@ -794,8 +820,8 @@ dl.pmlist dd {
 }
 
 div.dl_links {
-	display: inline-block;
 	text-transform: none;
+	display: inline-block;
 }
 
 .dl_links strong {
@@ -803,9 +829,9 @@ div.dl_links {
 }
 
 .dl_links ul {
-	list-style-type: none;
-	margin: 0;
 	display: inline-block;
+	margin: 0;
+	list-style-type: none;
 }
 
 .dl_links li {
@@ -817,10 +843,10 @@ div.dl_links {
 }
 
 .ellipsis-text {
-	display: inline-block;
-	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	display: inline-block;
+	overflow: hidden;
 }
 
 table.fixed-width-table {
@@ -828,20 +854,34 @@ table.fixed-width-table {
 }
 
 /* Show scrollbars for items with overflow on iOS devices
-----------------------------------------*/
-.postbody .content::-webkit-scrollbar, .topicreview::-webkit-scrollbar, .post_details::-webkit-scrollbar, .codebox code::-webkit-scrollbar, .attachbox dd::-webkit-scrollbar, .attach-image::-webkit-scrollbar, .dropdown-extended ul::-webkit-scrollbar {
+---------------------------------------- */
+.postbody .content::-webkit-scrollbar,
+.topicreview::-webkit-scrollbar,
+.post_details::-webkit-scrollbar,
+.codebox code::-webkit-scrollbar,
+.attachbox dd::-webkit-scrollbar,
+.attach-image::-webkit-scrollbar,
+.dropdown-extended ul::-webkit-scrollbar {
+	background: rgba(0, 0, 0, 0.1);
+	border-radius: 3px;
 	width: 8px;
 	height: 8px;
 	-webkit-appearance: none;
-	background: rgba(0, 0, 0, .1);
+}
+
+.postbody .content::-webkit-scrollbar-thumb,
+.topicreview::-webkit-scrollbar-thumb,
+.post_details::-webkit-scrollbar-thumb,
+.codebox code::-webkit-scrollbar-thumb,
+.attachbox dd::-webkit-scrollbar-thumb,
+.attach-image::-webkit-scrollbar-thumb,
+.dropdown-extended ul::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.3);
 	border-radius: 3px;
 }
 
-.postbody .content::-webkit-scrollbar-thumb, .topicreview::-webkit-scrollbar-thumb, .post_details::-webkit-scrollbar-thumb, .codebox code::-webkit-scrollbar-thumb, .attachbox dd::-webkit-scrollbar-thumb, .attach-image::-webkit-scrollbar-thumb, .dropdown-extended ul::-webkit-scrollbar-thumb {
-	background: rgba(0, 0, 0, .3);
-	border-radius: 3px;
-}
-
-#memberlist tr.inactive, #team tr.inactive {
+/* Factor out this ID */
+#memberlist tr.inactive,
+#team tr.inactive {
 	font-style: italic;
 }

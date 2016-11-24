@@ -2,30 +2,29 @@
 ---------------------------------------- */
 
 .button {
-	display: inline-block;
-	padding: 2px 8px;
+	font-family: 'Open Sans', 'Droid Sans', Verdana, Arial, Helvetica;
 	font-size: 13px;
 	font-weight: normal;
-	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
 	line-height: 1.4;
 	text-align: center;
-	white-space: nowrap;
 	vertical-align: middle;
-	-ms-touch-action: manipulation;
-	    touch-action: manipulation;
-	cursor: pointer;
-	-webkit-user-select: none;
-	   -moz-user-select: none;
-	    -ms-user-select: none;
-	        user-select: none;
+	white-space: nowrap;
 	border: 1px solid transparent;
 	border-radius: 4px;
+	display: inline-block;
+	padding: 2px 8px;
+	cursor: pointer;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	touch-action: manipulation;
 }
 
 .button:focus,
 .button:hover {
- 	text-decoration: none;
- 	outline: none;
+	text-decoration: none;
+	outline: none;
 }
 
 .caret {
@@ -39,18 +38,18 @@
 }
 
 /* Posting page styles
-----------------------------------------*/
+---------------------------------------- */
 .button-search,
-.button-search-end  {
-	float: left;
+.button-search-end {
 	border-radius: 0;
+	float: left;
 	margin: 0;
 	padding: 2px 5px;
 }
 
 .button-search-end {
-	border-left-width: 0;
 	border-radius: 0 4px 4px 0;
+	border-left-width: 0;
 }
 
 .search-header .button-search,
@@ -65,27 +64,28 @@
 }
 
 .button-icon-only {
-	padding-left: 3px;
 	padding-right: 3px;
+	padding-left: 3px;
 }
 
 /* Poster contact icons
-----------------------------------------*/
+---------------------------------------- */
 .contact-icons.dropdown-contents {
+	font-size: 0;
 	min-width: 0;
 	padding: 0;
-	font-size: 0;
 }
 
 .contact-icon {
 	background-repeat: no-repeat;
 	display: block;
-	height: 16px;
 	width: 16px;
+	height: 16px;
 }
+
 .contact-icons a {
-	border-bottom: 1px dotted;
 	border-right: 1px dotted;
+	border-bottom: 1px dotted;
 	display: block;
 	float: left;
 	padding: 8px;
@@ -107,16 +107,15 @@
 --------------------------------------------- */
 .post-buttons {
 	float: right;
-	list-style: none;
 	margin-top: 2px;
+	list-style: none;
 }
 
 .has-profile .post-buttons {
-	float: none;
 	position: absolute;
-	margin: 0;
-	right: 0;
 	top: 5px;
+	right: 0;
+	margin: 0;
 }
 
 .post-buttons > li {
@@ -124,9 +123,10 @@
 	margin-right: 3px;
 }
 
-.post-buttons .button, .format-buttons .button {
-	padding-left: 3px;
+.post-buttons .button,
+.format-buttons .button {
 	padding-right: 3px;
+	padding-left: 3px;
 }
 
 .hastouch .post-buttons {
@@ -143,9 +143,9 @@
 }
 
 .post-buttons .dropdown a {
-	display: block;
 	font-size: 1.2em;
 	text-align: right;
+	display: block;
 }
 
 .hasjs .postbody .post-buttons {
@@ -154,16 +154,16 @@
 
 /* Browser-specific tweaks */
 button::-moz-focus-inner {
+	border: 0;
 	padding: 0;
-	border: 0
 }
 
 /* Deprecated as of version 3.2
--------------------------------------------------*/
+------------------------------------------------- */
 .small-icon {
+	background-image: none;
 	background-position: 0 50%;
 	background-repeat: no-repeat;
-	background-image: none;
 }
 
 .dropdown .small-icon {
@@ -188,6 +188,6 @@ ul.linklist.bulletin > li.small-icon:before {
 }
 
 .rtl .small-icon > a {
-	padding-left: 0;
 	padding-right: 19px;
+	padding-left: 0;
 }

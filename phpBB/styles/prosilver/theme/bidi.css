@@ -14,8 +14,8 @@
 }
 
 .rtl div.rules ul {
-	margin-left: 0;
 	margin-right: 20px;
+	margin-left: 0;
 }
 
 /* Main blocks
@@ -47,48 +47,52 @@
 }
 
 /* Horizontal lists
-----------------------------------------*/
+---------------------------------------- */
 .rtl ul.linklist > li {
 	float: right;
 	margin-right: 0;
 	margin-left: 7px;
 }
 
-.rtl ul.linklist > li.rightside, .rtl p.rightside, .rtl a.rightside {
+.rtl ul.linklist > li.rightside,
+.rtl p.rightside,
+.rtl a.rightside {
+	text-align: left;
 	float: left;
 	margin-right: 7px;
 	margin-left: 0;
-	text-align: left;
 }
 
-.rtl ul.leftside > li, .rtl ul.rightside > li {
+.rtl ul.leftside > li,
+.rtl ul.rightside > li {
 	float: left;
 }
 
 .rtl ul.leftside {
-	float: right;
-	margin-left: 5px;
-	margin-right: 0;
 	text-align: right;
+	float: right;
+	margin-right: 0;
+	margin-left: 5px;
 }
 
 .rtl ul.rightside {
-	float: left;
-	margin-left: -5px;
-	margin-right: 5px;
 	text-align: left;
+	float: left;
+	margin-right: 5px;
+	margin-left: -5px;
 }
 
 /* Bulletin icons for list items
-----------------------------------------*/
+---------------------------------------- */
 .rtl ul.linklist.bulletin > li:before {
-	padding-left: 4px;
 	padding-right: 0;
+	padding-left: 4px;
 }
 
 /* Dropdown menu
 ---------------------------------------- */
-.rtl .dropdown-container.topic-tools, .rtl .dropdown-container-left {
+.rtl .dropdown-container.topic-tools,
+.rtl .dropdown-container-left {
 	float: right;
 }
 
@@ -97,8 +101,8 @@
 }
 
 .rtl .dropdown-contents > li {
-	padding-left: 15px;
 	padding-right: 0;
+	padding-left: 15px;
 }
 
 .rtl .dropdown-nonscroll > li {
@@ -106,34 +110,35 @@
 }
 
 .rtl .dropdown li li {
-	padding-left: 0;
 	padding-right: 18px;
+	padding-left: 0;
 }
 
 .rtl .dropdown-extended .header {
 	text-align: right;
 }
 
-.rtl .dropdown-extended .header .header_settings, .rtl .dropdown-container-right {
+.rtl .dropdown-extended .header .header_settings,
+.rtl .dropdown-container-right {
 	float: left;
 }
 
 /* Notifications
------------------------------------------*/
+----------------------------------------- */
 .rtl .notification_list ul li img {
 	float: right;
-	margin-left: 5px;
 	margin-right: 0;
+	margin-left: 5px;
 }
 
 .rtl .notification_list div.notifications {
-	margin-left: 0;
 	margin-right: 50px;
+	margin-left: 0;
 }
 
 .rtl .notification_text {
-	margin-left: 0;
 	margin-right: 58px;
+	margin-left: 0;
 }
 
 .rtl .notification_list p.notification-time {
@@ -141,20 +146,20 @@
 }
 
 /* Responsive breadcrumbs
-----------------------------------------*/
+---------------------------------------- */
 .rtl .breadcrumbs .crumb {
 	float: right;
 }
 
 /* Table styles
-----------------------------------------*/
+---------------------------------------- */
 .rtl table.table1 thead th {
 	padding: 0 3px 4px 0;
 }
 
 .rtl table.table1 thead th span {
-	padding-left: 0;
 	padding-right: 7px;
+	padding-left: 0;
 }
 
 .rtl table.table1 tbody th {
@@ -162,11 +167,26 @@
 }
 
 /* Specific column styles */
-.rtl table.table1 .name		{ text-align: right; }
-.rtl table.table1 .joined	{ text-align: right; }
-.rtl table.table1 .active	{ text-align: right; }
-.rtl table.table1 .info		{ text-align: right; }
-.rtl table.table1 thead .autocol { padding-left: 0; padding-right: 1em; }
+.rtl table.table1 .name {
+	text-align: right;
+}
+
+.rtl table.table1 .joined {
+	text-align: right;
+}
+
+.rtl table.table1 .active {
+	text-align: right;
+}
+
+.rtl table.table1 .info {
+	text-align: right;
+}
+
+.rtl table.table1 thead .autocol {
+	padding-right: 1em;
+	padding-left: 0;
+}
 
 .rtl table.table1 span.rank-img {
 	float: left;
@@ -182,6 +202,7 @@
 
 /* Misc layout styles
 ---------------------------------------- */
+
 /* column[1-2] styles are containers for two column layouts */
 .rtl .column1 {
 	float: right;
@@ -195,37 +216,37 @@
 
 /* General classes for placing floating blocks */
 .rtl .left-box {
-	float: right;
 	text-align: right;
+	float: right;
 }
 
 .rtl .right-box {
-	float: left;
 	text-align: left;
+	float: left;
 }
 
 .rtl dl.details dt {
+	text-align: left;
 	float: right;
 	clear: right;
-	text-align: left;
 }
 
 .rtl dl.details dd {
+	float: right;
 	margin-right: 0;
 	margin-left: 0;
 	padding-right: 5px;
 	padding-left: 0;
-	float: right;
 }
 
-*:first-child+html dl.details dd {
-	margin-right: 30%;
+*:first-child + html dl.details dd {
 	float: none;
+	margin-right: 30%;
 }
 
 * html dl.details dd {
-	margin-right: 30%;
 	float: none;
+	margin-right: 30%;
 }
 
 /* Pagination
@@ -236,16 +257,16 @@
 }
 
 .rtl .pagination > ul {
-	margin-left: 0;
 	margin-right: 5px;
+	margin-left: 0;
 }
 
 /* Pagination in viewforum for multipage topics */
 .rtl .row .pagination {
 	background-position: 100% 50%;
 	float: left;
-	padding-left: 0;
 	padding-right: 15px;
+	padding-left: 0;
 }
 
 .rtl .row .pagination > ul {
@@ -257,21 +278,21 @@
 }
 
 .pagination li.page-jump {
-	margin-left: 5px;
 	margin-right: 0;
+	margin-left: 5px;
 }
 
 
 /* Action Bar styles
 ---------------------------------------- */
 .rtl .action-bar .button {
-	margin-right: 0;
 	float: right;
+	margin-right: 0;
 }
 
 .rtl .action-bar > .button {
-	margin-left: 5px;
 	float: right;
+	margin-left: 5px;
 }
 
 .rtl .action-bar .dropdown-button-control .button {
@@ -282,14 +303,14 @@
 /* Miscellaneous styles
 ---------------------------------------- */
 .rtl .quick-links {
-	margin-left: 7px;
 	margin-right: 0;
+	margin-left: 7px;
 }
 
 .rtl .header-avatar span:after {
 	float: left;
-	padding-left: 0;
 	padding-right: 2px;
+	padding-left: 0;
 }
 
 .rtl .member-search {
@@ -313,8 +334,8 @@ li.breadcrumbs span:first-child > a {
 /* Notification mark read link */
 .rtl .dropdown-extended a.mark_read {
 	border-radius: 0 3px 3px 0;
-	left: 0;
 	right: auto;
+	left: 0;
 }
 
 .rtl .back2top .top {
@@ -323,9 +344,10 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .skiplink {
+	right: -999px;
+
 	/* invisible skip link, used for accessibility  */
 	left: 0;
-	right: -999px;
 }
 
 .rtl a.feed-icon-forum {
@@ -335,7 +357,8 @@ li.breadcrumbs span:first-child > a {
 /**
 * content.css
 */
-.rtl ul.topiclist dt, .rtl li.header dt {
+.rtl ul.topiclist dt,
+.rtl li.header dt {
 	float: right;
 	margin-right: 0;
 	margin-left: -440px;
@@ -377,21 +400,21 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl ul.topiclist dd {
-	float: right;
-	border-right-width: 1px;
 	border-right-style: solid;
+	border-right-width: 1px;
 	border-left: none;
+	float: right;
 }
 
 .rtl ul.topiclist dfn {
-	left: auto;
 	right: -999px;
+	left: auto;
 }
 
 .rtl ul.topiclist li.row dt a.subforum {
-	padding-right: 12px;
 	background-position: right;
 	position: static;
+	padding-right: 12px;
 }
 
 .rtl .forum-image {
@@ -400,16 +423,17 @@ li.breadcrumbs span:first-child > a {
 	margin-left: 5px;
 }
 
-.rtl li.header dt, .rtl li.header dd {
+.rtl li.header dt,
+.rtl li.header dd {
 	border-right-width: 0;
 }
 
 .rtl li.header dd {
-	padding-left: 0;
 	padding-right: 1px;
+	padding-left: 0;
 }
 
-.rtl dl.row-item{
+.rtl dl.row-item {
 	background-position: 99.5% 50%;
 }
 
@@ -420,30 +444,35 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl dl.row-item dt {
-	background-position: 99.5% 95%;			/* Position of topic icon */
+	background-position: 99.5% 95%; /* Position of topic icon */
 }
 
 .rtl dl.row-item dt .list-inner {
+	padding-right: 45px; /* Space for folder icon */
 	padding-left: 5px;
-	padding-right: 45px;					/* Space for folder icon */
 }
 
-.rtl dl a.row-item-link {						/* topic row icon links */
-	display: inline-block;
-	left: auto;
+.rtl dl a.row-item-link { /* topic row icon links */
 	right: 0;
-	margin-left: 0;
+	left: auto;
+	display: inline-block;
 	margin-right: 2px;
+	margin-left: 0;
 }
 
-.rtl dd.lastpost > span, .rtl ul.topiclist dd.info > span, .rtl ul.topiclist dd.time > span, .rtl dd.redirect > span, .rtl dd.moderation > span {
-	padding-left: 0;
+.rtl dd.lastpost > span,
+.rtl ul.topiclist dd.info > span,
+.rtl ul.topiclist dd.time > span,
+.rtl dd.redirect > span,
+.rtl dd.moderation > span {
 	padding-right: 5px;
+	padding-left: 0;
 }
 
 /* Post body styles
-----------------------------------------*/
-.rtl .postbody, .rtl .postbody h3 {
+---------------------------------------- */
+.rtl .postbody,
+.rtl .postbody h3 {
 	float: right;
 }
 
@@ -457,20 +486,21 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl p.post-notice:before {
-	left: auto;
 	right: 0;
+	left: auto;
 }
 
 /* Topic review panel
-----------------------------------------*/
+---------------------------------------- */
 .rtl .topicreview {
 	padding-right: 0;
 	padding-left: 5px;
 }
 
 /* Content container styles
-----------------------------------------*/
-.rtl .content ul, .rtl .content ol {
+---------------------------------------- */
+.rtl .content ul,
+.rtl .content ol {
 	margin-right: 3em;
 	margin-left: 0;
 }
@@ -489,11 +519,12 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* BB Code styles
-----------------------------------------*/
+---------------------------------------- */
+
 /* Quote block */
 .rtl blockquote {
-	margin: 0.5em 25px 0 1px;
 	background-position: 99% 8px;
+	margin: 0.5em 25px 0 1px;
 }
 
 .rtl blockquote blockquote {
@@ -516,11 +547,11 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Attachments
-----------------------------------------*/
+---------------------------------------- */
 .rtl .attachbox {
 	float: right;
-	margin: 5px 0 5px 5px;
 	clear: right;
+	margin: 5px 0 5px 5px;
 }
 
 .rtl .attachbox dd {
@@ -536,16 +567,16 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Post poll styles
-----------------------------------------*/
+---------------------------------------- */
 .rtl fieldset.polls dt {
 	text-align: right;
-	float: right;
 	border-left: none;
+	float: right;
 }
 
 .rtl fieldset.polls dd {
-	float: right;
 	border-right: none;
+	float: right;
 	margin-right: 0;
 }
 
@@ -553,29 +584,35 @@ li.breadcrumbs span:first-child > a {
 	text-align: left;
 }
 
-.rtl .pollbar1, .rtl .pollbar2, .rtl .pollbar3, .rtl .pollbar4, .rtl .pollbar5 {
-	border-left-width: 1px;
-	border-left-style: solid;
+.rtl .pollbar1,
+.rtl .pollbar2,
+.rtl .pollbar3,
+.rtl .pollbar4,
+.rtl .pollbar5 {
 	border-right: none;
+	border-left-style: solid;
+	border-left-width: 1px;
 }
 
 /* Poster profile block
-----------------------------------------*/
+---------------------------------------- */
 .rtl .postprofile {
 	border-width: 0 1px 0 0;
 	float: left;
-/*	text-align: right; */
+
+	/*	text-align: right; */
 }
 
 .rtl .pm .postprofile {
-	border-right-width: 1px;
 	border-right-style: solid;
+	border-right-width: 1px;
 	border-left: none;
 }
 
-.rtl .postprofile dd, .rtl .postprofile dt {
-	margin-left: 0;
+.rtl .postprofile dd,
+.rtl .postprofile dt {
 	margin-right: 8px;
+	margin-left: 0;
 }
 
 .rtl .postprofile .avatar {
@@ -608,8 +645,8 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .has-profile .post-buttons {
-	left: 0;
 	right: auto;
+	left: 0;
 }
 
 .rtl .post-buttons li {
@@ -617,11 +654,11 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Poster contact icons
- ----------------------------------------*/
+ ---------------------------------------- */
 .rtl .contact-icons a {
-	border-left-width: 1px;
-	border-left-style: dotted;
 	border-right: none;
+	border-left-style: dotted;
+	border-left-width: 1px;
 	float: right;
 }
 
@@ -632,12 +669,13 @@ li.breadcrumbs span:first-child > a {
 /**
 * cp.css
 */
+
 /* Control Panel Styles
 ---------------------------------------- */
 
 
 /* Main CP box
-----------------------------------------*/
+---------------------------------------- */
 .rtl .cp-menu {
 	float: right;
 }
@@ -661,10 +699,10 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* CP tabbed menu
-----------------------------------------*/
+---------------------------------------- */
 .rtl .tabs {
-	margin-left: 0;
 	margin-right: 7px;
+	margin-left: 0;
 }
 
 .rtl .tabs .tab {
@@ -672,12 +710,12 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .tabs .tab > a {
-	margin-left: 1px;
 	margin-right: 0;
+	margin-left: 1px;
 }
 
 /* Mini tabbed menu used in MCP
-----------------------------------------*/
+---------------------------------------- */
 .rtl .minitabs {
 	float: left;
 	margin-right: 0;
@@ -694,7 +732,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Responsive tabs
-----------------------------------------*/
+---------------------------------------- */
 .rtl .tabs .dropdown {
 	margin-left: -2px;
 }
@@ -712,22 +750,24 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Responsive *CP navigation
-----------------------------------------*/
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
-{
-	.rtl .cp-menu, .rtl .navigation, .rtl .cp-main {
+---------------------------------------- */
+
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
+	.rtl .cp-menu,
+	.rtl .navigation,
+	.rtl .cp-main {
 		float: none;
 	}
 }
 
 /* UCP navigation menu
-----------------------------------------*/
+---------------------------------------- */
 
 /* Preferences pane layout
-----------------------------------------*/
+---------------------------------------- */
 .rtl .cp-main h2 {
-	margin-left: 0;
 	margin-right: 10px;
+	margin-left: 0;
 }
 
 /* Friends list */
@@ -736,7 +776,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* PM Styles
-----------------------------------------*/
+---------------------------------------- */
 
 /* PM panel adjustments */
 .rtl .reply-all a.right {
@@ -758,11 +798,11 @@ li.breadcrumbs span:first-child > a {
 
 /* PM marking colours */
 .rtl .pm-legend {
-	border-right-width: 10px;
 	border-right-style: solid;
+	border-right-width: 10px;
 	border-left-width: 0;
-	padding-left: 0;
 	padding-right: 3px;
+	padding-left: 0;
 }
 
 /* Avatar gallery */
@@ -771,10 +811,12 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Responsive *CP navigation
-----------------------------------------*/
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
-{
-	.rtl .cp-menu, .rtl .navigation, .rtl .cp-main {
+---------------------------------------- */
+
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
+	.rtl .cp-menu,
+	.rtl .navigation,
+	.rtl .cp-main {
 		float: none;
 	}
 }
@@ -784,7 +826,7 @@ li.breadcrumbs span:first-child > a {
 */
 
 /* General form styles
-----------------------------------------*/
+---------------------------------------- */
 
 .rtl option {
 	padding-right: 0;
@@ -799,26 +841,26 @@ li.breadcrumbs span:first-child > a {
 /* Definition list layout for forms
 ---------------------------------------- */
 .rtl fieldset dt {
-	float: right;
 	text-align: right;
+	float: right;
 }
 
 .rtl fieldset dd {
-	margin-left: 0;
 	margin-right: 41%;
+	margin-left: 0;
 }
 
 /* Specific layout 1 */
 .rtl fieldset.fields1 dt {
-	border-left-width: 0;
 	border-right-width: 1px;
+	border-left-width: 0;
 }
 
 .rtl fieldset.fields1 dd {
-	margin-right: 15em;
-	margin-left: 0;
 	border-right-width: 0;
 	border-left-width: 1px;
+	margin-right: 15em;
+	margin-left: 0;
 }
 
 /* Specific layout 2 */
@@ -828,10 +870,10 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl fieldset.fields2 dd {
+	border-right-width: 0;
+	border-left-width: 1px;
 	margin-right: 16em;
 	margin-left: 0;
-	border-left-width: 1px;
-	border-right-width: 0;
 }
 
 /* Form elements */
@@ -839,26 +881,27 @@ li.breadcrumbs span:first-child > a {
 	text-align: right;
 }
 
-.rtl dd input, .rtl dd textarea {
-	margin-left: 3px;
+.rtl dd input,
+.rtl dd textarea {
 	margin-right: 0;
+	margin-left: 3px;
 }
 
 /* Quick-login on index page */
 .rtl fieldset.quick-login input.inputbox {
-	margin-left: 5px;
 	margin-right: 0;
+	margin-left: 5px;
 }
 
 .rtl fieldset.quick-login label {
-	padding-left: 2px;
 	padding-right: 0;
+	padding-left: 2px;
 }
 
 /* Display options on viewtopic/viewforum pages  */
 .rtl fieldset.display-options label {
-	padding-left: 2px;
 	padding-right: 0;
+	padding-left: 2px;
 }
 
 .rtl .dropdown fieldset.display-options label {
@@ -868,16 +911,16 @@ li.breadcrumbs span:first-child > a {
 /* Display actions for ucp and mcp pages */
 .rtl fieldset.display-actions {
 	text-align: left;
-	padding-left: 1em;
 	padding-right: 0;
+	padding-left: 1em;
 }
 
 .rtl fieldset.display-actions label {
-	padding-left: 2px;
 	padding-right: 0;
+	padding-left: 2px;
 }
 
-/* MCP forum selection*/
+/* MCP forum selection */
 .rtl fieldset.forum-selection {
 	float: left;
 }
@@ -887,7 +930,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* Posting page styles
-----------------------------------------*/
+---------------------------------------- */
 
 /* Emoticons panel */
 .rtl .smiley-box {
@@ -903,9 +946,9 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .search-box .inputbox {
-	border-left-width: 0;
-	border-right-width: 1px;
 	border-radius: 0 4px 4px 0;
+	border-right-width: 1px;
+	border-left-width: 0;
 	float: right;
 	padding: 3px;
 }
@@ -916,8 +959,8 @@ li.breadcrumbs span:first-child > a {
 }
 
 .button-search-end {
-	border-left-width: 1px;
 	border-right-width: 0;
+	border-left-width: 1px;
 }
 
 .rtl .search-header .button-search-end {
@@ -935,7 +978,10 @@ li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 
 /** Reference: Bug #27155 */
-.rtl .wrap, .rtl .headerbar, .rtl .site-description, .rtl .navbar {
+.rtl .wrap,
+.rtl .headerbar,
+.rtl .site-description,
+.rtl .navbar {
 	position: relative;
 }
 
@@ -950,19 +996,24 @@ li.breadcrumbs span:first-child > a {
 /**
 * responsive.css
 */
-@media only screen and (max-width: 700px), only screen and (max-device-width: 700px)
-{
+
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
 	/* .topiclist lists
-	----------------------------------------*/
-	.rtl ul.topiclist li.header dt, .rtl ul.topiclist li.header dt .list-inner {
+	---------------------------------------- */
+	.rtl ul.topiclist li.header dt,
+	.rtl ul.topiclist li.header dt .list-inner {
 		margin-left: 0 !important;
 		padding-left: 0;
 	}
 
-	.rtl ul.topiclist dt, .rtl ul.topiclist dt .list-inner,
-	.rtl ul.topiclist.missing-column dt, .rtl ul.topiclist.missing-column dt .list-inner,
-	.rtl ul.topiclist.two-long-columns dt, .rtl ul.topiclist.two-long-columns dt .list-inner,
-	.rtl ul.topiclist.two-columns dt, .rtl ul.topiclist.two-columns dt .list-inner {
+	.rtl ul.topiclist dt,
+	.rtl ul.topiclist dt .list-inner,
+	.rtl ul.topiclist.missing-column dt,
+	.rtl ul.topiclist.missing-column dt .list-inner,
+	.rtl ul.topiclist.two-long-columns dt,
+	.rtl ul.topiclist.two-long-columns dt .list-inner,
+	.rtl ul.topiclist.two-columns dt,
+	.rtl ul.topiclist.two-columns dt .list-inner {
 		margin-left: 0;
 	}
 
@@ -971,21 +1022,23 @@ li.breadcrumbs span:first-child > a {
 	}
 
 	/* Forums and topics lists
-	----------------------------------------*/
+	---------------------------------------- */
 	.rtl ul.topiclist.forums dt {
 		margin-left: -250px;
 	}
+
 	.rtl ul.topiclist.forums dt .list-inner {
 		margin-left: 250px;
 	}
 
 	.rtl ul.topiclist dd.mark {
-		left: 5px;
-		right: auto;
 		text-align: right;
+		right: auto;
+		left: 5px;
 	}
 
-	.rtl table.responsive.show-header thead, .rtl table.responsive.show-header th:first-child {
+	.rtl table.responsive.show-header thead,
+	.rtl table.responsive.show-header th:first-child {
 		text-align: right !important;
 	}
 
@@ -994,28 +1047,34 @@ li.breadcrumbs span:first-child > a {
 	}
 
 	/* User profile
-	----------------------------------------*/
-	.rtl .column1, .rtl .column2, .rtl .left-box.profile-details {
+	---------------------------------------- */
+	.rtl .column1,
+	.rtl .column2,
+	.rtl .left-box.profile-details {
 		float: none;
 	}
 
 	/* Post
-	----------------------------------------*/
-	.rtl .postprofile, .rtl .postbody, .rtl .search .postbody {
+	---------------------------------------- */
+	.rtl .postprofile,
+	.rtl .postbody,
+	.rtl .search .postbody {
 		float: none;
 	}
 
 	.rtl .post .postprofile {
-		border-width: 0 0 1px 0;
+		border-width: 0 0 1px;
 	}
 
-	.rtl .postprofile dt, .rtl .postprofile dd.profile-rank, .rtl .search .postprofile dd {
+	.rtl .postprofile dt,
+	.rtl .postprofile dd.profile-rank,
+	.rtl .search .postprofile dd {
 		margin: 0;
 	}
 
 	.rtl .postprofile .avatar {
-		margin-left: 5px;
 		margin-right: 0;
+		margin-left: 5px;
 	}
 
 	.rtl .has-profile .post-buttons {
@@ -1023,20 +1082,23 @@ li.breadcrumbs span:first-child > a {
 	}
 
 	/* Forms
-	----------------------------------------*/
-	.rtl fieldset dt, .rtl fieldset.fields1 dt, .rtl fieldset.fields2 dt {
+	---------------------------------------- */
+	.rtl fieldset dt,
+	.rtl fieldset.fields1 dt,
+	.rtl fieldset.fields2 dt {
 		float: none;
 	}
 
-	.rtl fieldset dd, .rtl fieldset.fields1 dd, .rtl fieldset.fields2 dd {
+	.rtl fieldset dd,
+	.rtl fieldset.fields1 dd,
+	.rtl fieldset.fields2 dd {
 		margin-right: 20px;
 	}
 }
 
-@media only screen and (max-width: 550px), only screen and (max-device-width: 550px)
-{
+@media only screen and (max-width: 550px), only screen and (max-device-width: 550px) {
 	/* .topiclist lists
-	----------------------------------------*/
+	---------------------------------------- */
 	.rtl ul.topiclist.forums dt {
 		margin-left: 0;
 	}
@@ -1046,16 +1108,16 @@ li.breadcrumbs span:first-child > a {
 	}
 }
 
-@media only screen and (max-width: 500px), only screen and (max-device-width: 500px)
-{
-	.rtl dl.details dt, .rtl dl.details dd {
-		float: none;
+@media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
+	.rtl dl.details dt,
+	.rtl dl.details dd {
 		text-align: right;
+		float: none;
 	}
 
 	.rtl dl.details dd {
-		margin-left: 0;
 		margin-right: 20px;
+		margin-left: 0;
 	}
 
 	.captcha-panel dd.captcha {
