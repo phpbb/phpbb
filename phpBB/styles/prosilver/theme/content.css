@@ -1,6 +1,8 @@
 /* -------------------------------------------------------------- /*
 	$Content
 /* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 ul.topiclist {
 	display: block;
@@ -880,7 +882,9 @@ table.fixed-width-table {
 }
 
 /* Factor out this ID */
+/* stylelint-disable selector-no-id */
 #memberlist tr.inactive,
 #team tr.inactive {
 	font-style: italic;
 }
+/* stylelint-enable */
