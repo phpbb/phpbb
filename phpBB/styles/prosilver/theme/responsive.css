@@ -1,6 +1,8 @@
 /* -------------------------------------------------------------- /*
 	$Responsive
 /* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 @media (max-width: 320px) {
 	select,
@@ -645,3 +647,4 @@
 		width: 80px;
 	}
 }
+/* stylelint-enable */
