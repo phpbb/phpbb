@@ -1,7 +1,8 @@
 /* -------------------------------------------------------------- /*
 	$Contorl Panel
 /* -------------------------------------------------------------- */
-
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 /* Main CP box
 ---------------------------------------- */
@@ -389,3 +390,4 @@ ol.def-rules li {
 		border-bottom-right-radius: 5px;
 	}
 }
+/* stylelint-enable */
