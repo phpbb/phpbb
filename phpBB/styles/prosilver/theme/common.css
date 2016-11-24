@@ -1,6 +1,9 @@
 /* -------------------------------------------------------------- /*
 	$Common
 /* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
+
 html {
 	font-size: 100%;
 
