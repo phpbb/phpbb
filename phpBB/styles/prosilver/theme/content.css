@@ -863,7 +863,6 @@ table.fixed-width-table {
 .attachbox dd::-webkit-scrollbar,
 .attach-image::-webkit-scrollbar,
 .dropdown-extended ul::-webkit-scrollbar {
-	background: rgba(0, 0, 0, 0.1);
 	border-radius: 3px;
 	width: 8px;
 	height: 8px;
@@ -877,7 +876,6 @@ table.fixed-width-table {
 .attachbox dd::-webkit-scrollbar-thumb,
 .attach-image::-webkit-scrollbar-thumb,
 .dropdown-extended ul::-webkit-scrollbar-thumb {
-	background: rgba(0, 0, 0, 0.3);
 	border-radius: 3px;
 }
 

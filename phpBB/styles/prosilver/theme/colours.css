@@ -626,6 +626,28 @@ dd.profile-warnings {
 	color: #bc2a4d;
 }
 
+/* Show scrollbars for items with overflow on iOS devices
+---------------------------------------- */
+.postbody .content::-webkit-scrollbar,
+.topicreview::-webkit-scrollbar,
+.post_details::-webkit-scrollbar,
+.codebox code::-webkit-scrollbar,
+.attachbox dd::-webkit-scrollbar,
+.attach-image::-webkit-scrollbar,
+.dropdown-extended ul::-webkit-scrollbar {
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.postbody .content::-webkit-scrollbar-thumb,
+.topicreview::-webkit-scrollbar-thumb,
+.post_details::-webkit-scrollbar-thumb,
+.codebox code::-webkit-scrollbar-thumb,
+.attachbox dd::-webkit-scrollbar-thumb,
+.attach-image::-webkit-scrollbar-thumb,
+.dropdown-extended ul::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.3);
+}
+
 /*	colours and backgrounds for buttons.css
 	------------------------------------------------------------- */
 .button {
