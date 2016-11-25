@@ -79,18 +79,9 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 		$dbhost			= $this->io_handler->get_input('dbhost', '', true);
 		$dbport			= $this->io_handler->get_input('dbport', '');
 		$dbuser			= $this->io_handler->get_input('dbuser', '');
+		$dbpasswd		= $this->io_handler->get_raw_input('dbpasswd', '');
 		$dbname			= $this->io_handler->get_input('dbname', '');
 		$table_prefix	= $this->io_handler->get_input('table_prefix', '');
-
-		// Need to get untrimmed password when using ajax IO handler
-		if ($this->io_handler instanceof \phpbb\install\helper\iohandler\ajax_iohandler)
-		{
-			$dbpasswd		= htmlspecialchars_decode(htmlspecialchars_decode($this->io_handler->get_untrimmed_input('dbpasswd', '', true)));
-		}
-		else
-		{
-			$dbpasswd		= $this->io_handler->get_input('dbpasswd', '', true);
-		}
 
 		// Check database data
 		$user_data_vaild = $this->check_database_data($dbms, $dbhost, $dbport, $dbuser, $dbpasswd, $dbname, $table_prefix);

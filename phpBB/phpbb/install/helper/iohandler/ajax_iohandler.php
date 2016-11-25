@@ -27,7 +27,7 @@ class ajax_iohandler extends iohandler_base
 	protected $path_helper;
 
 	/**
-	 * @var \phpbb\request\request_interface
+	 * @var \phpbb\request\request
 	 */
 	protected $request;
 
@@ -90,12 +90,12 @@ class ajax_iohandler extends iohandler_base
 	 * Constructor
 	 *
 	 * @param path_helper						$path_helper
-	 * @param \phpbb\request\request_interface	$request	HTTP request interface
+	 * @param \phpbb\request\request	$request	HTTP request interface
 	 * @param \phpbb\template\template			$template	Template engine
 	 * @param router 							$router		Router
 	 * @param string 							$root_path	Path to phpBB's root
 	 */
-	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router, $root_path)
+	public function __construct(path_helper $path_helper, \phpbb\request\request $request, \phpbb\template\template $template, router $router, $root_path)
 	{
 		$this->path_helper = $path_helper;
 		$this->request	= $request;
@@ -121,19 +121,11 @@ class ajax_iohandler extends iohandler_base
 	}
 
 	/**
-	 * Returns untrimmed input variable
-	 *
-	 * @param string	$name		Name of the input variable to obtain
-	 * @param mixed		$default	A default value that is returned if the variable was not set.
-	 * 								This function will always return a value of the same type as the default.
-	 * @param bool		$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
-	 *								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-	 *
-	 * @return mixed	Value of the untrimmed input variable
+	 * {@inheritdoc}
 	 */
-	public function get_untrimmed_input($name, $default, $multibyte = false)
+	public function get_raw_input($name, $default)
 	{
-		return $this->request->untrimmed_variable($name, $default, $multibyte);
+		return $this->request->raw_variable($name, $default);
 	}
 
 	/**

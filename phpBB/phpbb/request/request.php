@@ -225,6 +225,68 @@ class request implements \phpbb\request\request_interface
 	}
 
 	/**
+	 * Get a variable without trimming strings and without escaping.
+	 * This method MUST NOT be used with queries.
+	 * Same functionality as variable(), except does not run trim() on strings
+	 * and does not escape input.
+	 * This method should only be used when the raw input is needed without
+	 * any escaping, i.e. for database password during the installation.
+	 *
+	 * @param	string|array	$var_name	The form variable's name from which data shall be retrieved.
+	 * 										If the value is an array this may be an array of indizes which will give
+	 * 										direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+	 * 										then specifying array("var", 1) as the name will return "a".
+	 * @param	mixed			$default	A default value that is returned if the variable was not set.
+	 * 										This function will always return a value of the same type as the default.
+	 * @param	\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE	$super_global
+	 * 										Specifies which super global should be used
+	 *
+	 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+	 *					the same as that of $default. If the variable is not set $default is returned.
+	 */
+	public function raw_variable($var_name, $default, $super_global = \phpbb\request\request_interface::REQUEST)
+	{
+		$path = false;
+
+		// deep direct access to multi dimensional arrays
+		if (is_array($var_name))
+		{
+			$path = $var_name;
+			// make sure at least the variable name is specified
+			if (empty($path))
+			{
+				return (is_array($default)) ? array() : $default;
+			}
+			// the variable name is the first element on the path
+			$var_name = array_shift($path);
+		}
+
+		if (!isset($this->input[$super_global][$var_name]))
+		{
+			return (is_array($default)) ? array() : $default;
+		}
+		$var = $this->input[$super_global][$var_name];
+
+		if ($path)
+		{
+			// walk through the array structure and find the element we are looking for
+			foreach ($path as $key)
+			{
+				if (is_array($var) && isset($var[$key]))
+				{
+					$var = $var[$key];
+				}
+				else
+				{
+					return (is_array($default)) ? array() : $default;
+				}
+			}
+		}
+
+		return $var;
+	}
+
+	/**
 	* Shortcut method to retrieve SERVER variables.
 	*
 	* Also fall back to getenv(), some CGI setups may need it (probably not, but

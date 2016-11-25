@@ -39,6 +39,17 @@ interface iohandler_interface
 	public function get_input($name, $default, $multibyte = false);
 
 	/**
+	 * Returns raw input variable
+	 *
+	 * @param string	$name		Name of the input variable to obtain
+	 * @param mixed		$default	A default value that is returned if the variable was not set.
+	 * 								This function will always return a value of the same type as the default.
+	 *
+	 * @return mixed	Value of the raw input variable
+	 */
+	public function get_raw_input($name, $default);
+
+	/**
 	 * Returns server variable
 	 *
 	 * This function should work the same as request_interterface::server().
