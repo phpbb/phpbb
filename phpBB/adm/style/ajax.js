@@ -74,7 +74,7 @@ function submitPermissions() {
 		$submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
 
 	// Set proper start values for handling refresh of page
-	var permissionSubmitSize = formDataSets.length,
+	var permissionSubmitSize = 0,
 		permissionRequestCount = 0,
 		forumIds = [],
 		permissionSubmitFailed = false;
@@ -90,6 +90,8 @@ function submitPermissions() {
 			formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
 		}
 	});
+
+	permissionSubmitSize = formDataSets.length;
 
 	// Add each forum ID to forum ID list to preserve selected forums
 	$.each($form.find('input[type=hidden][name^=forum_id]'), function (key, value) {
@@ -119,7 +121,7 @@ function submitPermissions() {
 				// Create form to submit instead of normal "Back to previous page" link
 				if ($alertBoxLink) {
 					// Remove forum_id[] from URL
-					$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/, ''));
+					$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/g, ''));
 					var previousPageForm = '<form action="' + $alertBoxLink.attr('href') + '" method="post">';
 					$.each(forumIds, function (key, value) {
 						previousPageForm += '<input type="text" name="forum_id[]" value="' + value + '" />';
@@ -142,7 +144,7 @@ function submitPermissions() {
 					setTimeout(function () {
 						// Create forum to submit using POST. This will prevent
 						// exceeding the maximum length of URLs
-						var form = '<form action="' + res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/, '') + '" method="post">';
+						var form = '<form action="' + res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/g, '') + '" method="post">';
 						$.each(forumIds, function (key, value) {
 							form += '<input type="text" name="forum_id[]" value="' + value + '" />';
 						});
