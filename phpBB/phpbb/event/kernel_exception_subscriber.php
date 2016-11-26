@@ -63,7 +63,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		$exception = $event->getException();
 
 		$message = $exception->getMessage();
-		$this->type_caster->set_var($message, $message, 'string', false, false);
+		$this->type_caster->set_var($message, $message, 'string', true, false);
 
 		if ($exception instanceof \phpbb\exception\exception_interface)
 		{
