@@ -70,6 +70,7 @@ function submitPermissions() {
 	var $form = $('form#set-permissions'),
 		fieldsetList = $form.find('fieldset[id^=perm]'),
 		formDataSets = [],
+		dataSetIndex = 0,
 		$submitAllButton = $form.find('input[type=submit][name^=action]')[0],
 		$submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
 
@@ -84,10 +85,21 @@ function submitPermissions() {
 	}
 
 	$.each(fieldsetList, function (key, value) {
+		dataSetIndex = Math.floor(key / 5);
+		var $fieldset = $('fieldset#' + value.id);
 		if (key % 5 === 0) {
-			formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id).serialize();
+			formDataSets[dataSetIndex] = $fieldset.find('select:visible, input:not([data-name])').serialize();
 		} else {
-			formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
+			formDataSets[dataSetIndex] += '&' + $fieldset.find('select:visible, input:not([data-name])').serialize();
+		}
+
+		// Find proper role value
+		var roleInput = $fieldset.find('input[name^=role][data-name]');
+		if (roleInput.val()) {
+			formDataSets[dataSetIndex] += '&' + roleInput.attr('name') + '=' + roleInput.val();
+		} else {
+			formDataSets[dataSetIndex] += '&' + roleInput.attr('name') + '=' +
+				$fieldset.find('select[name="' + roleInput.attr('name') + '"]').val();
 		}
 	});
 
