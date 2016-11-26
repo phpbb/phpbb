@@ -79,17 +79,17 @@ function submitPermissions() {
 		forumIds = [],
 		permissionSubmitFailed = false;
 
-	if ($submitAllButton === $submitButton) {
-		$.each(fieldsetList, function (key, value) {
-			if (key % 5 === 0) {
-				formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id).serialize();
-			} else {
-				formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
-			}
-		});
-	} else {
-		formDataSets[0] = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id).serialize();
+	if ($submitAllButton !== $submitButton) {
+		fieldsetList = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id);
 	}
+
+	$.each(fieldsetList, function (key, value) {
+		if (key % 5 === 0) {
+			formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id).serialize();
+		} else {
+			formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
+		}
+	});
 
 	// Add each forum ID to forum ID list to preserve selected forums
 	$.each($form.find('input[type=hidden][name^=forum_id]'), function (key, value) {
