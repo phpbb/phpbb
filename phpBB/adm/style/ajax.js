@@ -70,21 +70,32 @@ function submitPermissions() {
 	var $form = $('form#set-permissions'),
 		fieldsetList = $form.find('fieldset[id^=perm]'),
 		formDataSets = [],
-		$submitAllButton = $form.find('input[type=submit][name^=action]')[0];
-
-	$.each(fieldsetList, function (key, value) {
-		if (key % 5 === 0) {
-			formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id).serialize();
-		} else {
-			formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
-		}
-	});
+		$submitAllButton = $form.find('input[type=submit][name^=action]')[0],
+		$submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
 
 	// Set proper start values for handling refresh of page
 	var permissionSubmitSize = formDataSets.length,
 		permissionRequestCount = 0,
 		forumIds = [],
 		permissionSubmitFailed = false;
+
+	if ($submitAllButton === $submitButton) {
+		$.each(fieldsetList, function (key, value) {
+			if (key % 5 === 0) {
+				formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id).serialize();
+			} else {
+				formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
+			}
+		});
+	} else {
+		formDataSets[0] = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id).serialize();
+		// Add each forum ID to forum ID list to preserve selected forums
+		$.each($form.find('input[type=hidden][name^=forum_id]'), function (key, value) {
+			if (value.name.match(/^forum_id\[([0-9]+)\]$/)) {
+				forumIds.push(value.value);
+			}
+		});
+	}
 
 	/**
 	 * Handler for submitted permissions form chunk
@@ -185,6 +196,10 @@ $(function() {
 		$setPermissionsForm.on('submit', function (e) {
 			submitPermissions();
 			e.preventDefault();
+		});
+		$setPermissionsForm.find('input[type=submit]').click(function() {
+			$('input[type=submit]', $(this).parents($('form#set-permissions'))).removeAttr('data-clicked');
+			$(this).attr('data-clicked', true);
 		});
 	}
 });
