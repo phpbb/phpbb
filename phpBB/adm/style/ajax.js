@@ -89,13 +89,14 @@ function submitPermissions() {
 		});
 	} else {
 		formDataSets[0] = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id).serialize();
-		// Add each forum ID to forum ID list to preserve selected forums
-		$.each($form.find('input[type=hidden][name^=forum_id]'), function (key, value) {
-			if (value.name.match(/^forum_id\[([0-9]+)\]$/)) {
-				forumIds.push(value.value);
-			}
-		});
 	}
+
+	// Add each forum ID to forum ID list to preserve selected forums
+	$.each($form.find('input[type=hidden][name^=forum_id]'), function (key, value) {
+		if (value.name.match(/^forum_id\[([0-9]+)\]$/)) {
+			forumIds.push(value.value);
+		}
+	});
 
 	/**
 	 * Handler for submitted permissions form chunk
@@ -110,21 +111,29 @@ function submitPermissions() {
 			phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 			permissionSubmitFailed = true;
 		} else if (!permissionSubmitFailed && res.S_USER_NOTICE) {
-			// Fill list of selected forums
-			if (typeof res.REFRESH_DATA !== 'undefined') {
-				$.each(res.REFRESH_DATA.url.split('&'), function (key, value){
-					var forumIdMatch = value.match(/^forum_id\[\]=([0-9]+)$/);
-					if (forumIdMatch !== null) {
-						forumIds.push(forumIdMatch[1]);
-						// Remove added forum IDs from refresh URL
-						res.REFRESH_DATA.url = res.REFRESH_DATA.url.replace('&' + forumIdMatch[0], '');
-					}
-				});
-			}
-
 			// Display success message at the end of submitting the form
 			if (permissionRequestCount >= permissionSubmitSize) {
 				var $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+				var $alertBoxLink = $alert.find('p.alert_text > a');
+
+				// Create form to submit instead of normal "Back to previous page" link
+				if ($alertBoxLink) {
+					// Remove forum_id[] from URL
+					$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/, ''));
+					var previousPageForm = '<form action="' + $alertBoxLink.attr('href') + '" method="post">';
+					$.each(forumIds, function (key, value) {
+						previousPageForm += '<input type="text" name="forum_id[]" value="' + value + '" />';
+					});
+					previousPageForm += '</form>';
+
+					$alertBoxLink.on('click', function (e) {
+						var $previousPageForm = $(previousPageForm);
+						$('body').append($previousPageForm);
+						e.preventDefault();
+						$previousPageForm.submit();
+					});
+				}
+
 				// Do not allow closing alert
 				$dark.off('click');
 				$alert.find('.alert_close').hide();
@@ -133,7 +142,7 @@ function submitPermissions() {
 					setTimeout(function () {
 						// Create forum to submit using POST. This will prevent
 						// exceeding the maximum length of URLs
-						var form = '<form action="' + res.REFRESH_DATA.url + '" method="post">';
+						var form = '<form action="' + res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/, '') + '" method="post">';
 						$.each(forumIds, function (key, value) {
 							form += '<input type="text" name="forum_id[]" value="' + value + '" />';
 						});
