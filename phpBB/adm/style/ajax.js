@@ -74,15 +74,16 @@ function submitPermissions() {
 
 	$.each(fieldsetList, function (key, value) {
 		if (key % 5 === 0) {
-			formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id + ' input').serialize();
+			formDataSets[Math.floor(key / 5)] = $form.find('fieldset#' + value.id).serialize();
 		} else {
-			formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id + ' input').serialize();
+			formDataSets[Math.floor(key / 5)] += '&' + $form.find('fieldset#' + value.id).serialize();
 		}
 	});
 
 	// Set proper start values for handling refresh of page
 	var permissionSubmitSize = formDataSets.length,
 		permissionRequestCount = 0,
+		forumIds = [],
 		permissionSubmitFailed = false;
 
 	/**
@@ -98,6 +99,19 @@ function submitPermissions() {
 			phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 			permissionSubmitFailed = true;
 		} else if (!permissionSubmitFailed && res.S_USER_NOTICE) {
+			// Fill list of selected forums
+			if (typeof res.REFRESH_DATA !== 'undefined') {
+				$.each(res.REFRESH_DATA.url.split('&'), function (key, value){
+					var forumIdMatch = value.match(/^forum_id\[\]=([0-9]+)$/);
+					if (forumIdMatch !== null) {
+						forumIds.push(forumIdMatch[1]);
+						// Remove added forum IDs from refresh URL
+						res.REFRESH_DATA.url = res.REFRESH_DATA.url.replace('&' + forumIdMatch[0], '');
+					}
+				});
+			}
+
+			// Display success message at the end of submitting the form
 			if (permissionRequestCount >= permissionSubmitSize) {
 				var $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 				// Do not allow closing alert
@@ -106,7 +120,15 @@ function submitPermissions() {
 
 				if (typeof res.REFRESH_DATA !== 'undefined') {
 					setTimeout(function () {
-						window.location = res.REFRESH_DATA.url;
+						// Create forum to submit using POST. This will prevent
+						// exceeding the maximum length of URLs
+						var form = '<form action="' + res.REFRESH_DATA.url + '" method="post">';
+						$.each(forumIds, function (key, value) {
+							form += '<input type="text" name="forum_id[]" value="' + value + '" />';
+						});
+						form += '</form>';
+						$form = $(form);
+						$('body').append($form);
 
 						// Hide the alert even if we refresh the page, in case the user
 						// presses the back button.
@@ -115,12 +137,16 @@ function submitPermissions() {
 								$alert.hide();
 							}
 						});
+
+						// Submit form
+						$form.submit();
 					}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 				}
 			}
 		}
 	}
 
+	// Create AJAX request for each form data set
 	$.each(formDataSets, function (key, formData) {
 		$.ajax({
 			url: $form.action,
