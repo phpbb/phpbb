@@ -311,7 +311,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->Emoticons->set(
 				$row['code'],
-				'<img class="smilies" src="{$T_SMILIES_PATH}/' . htmlspecialchars($row['smiley_url']) . '" alt="{.}" title="' . htmlspecialchars($row['emotion']) . '"/>'
+				'<img class="smilies" src="{$T_SMILIES_PATH}/' . htmlspecialchars($row['smiley_url']) . '" width="' . $row['smiley_width'] . '" height="' . $row['smiley_height'] . '" alt="{.}" title="' . htmlspecialchars($row['emotion']) . '"/>'
 			);
 		}
 
