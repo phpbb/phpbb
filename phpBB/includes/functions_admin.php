@@ -642,7 +642,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	 * @event core.move_posts_before
 	 * @var	array	post_ids	Array of post ids to move
 	 * @var	string	topic_id	The topic id the posts are moved to
-	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @var	bool	auto_sync	Whether or not to perform auto sync
 	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
 	 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
@@ -674,7 +674,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	 * @event core.move_posts_after
 	 * @var	array	post_ids	Array of the moved post ids
 	 * @var	string	topic_id	The topic id the posts are moved to
-	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @var	bool	auto_sync	Whether or not to perform auto sync
 	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
 	 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
@@ -698,6 +698,28 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		sync('topic_attachment', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true, true);
+
+		/**
+		 * Perform additional actions after move post sync
+		 *
+		 * @event core.move_posts_sync_after
+		 * @var	array	post_ids	Array of the moved post ids
+		 * @var	string	topic_id	The topic id the posts are moved to
+		 * @var	bool	auto_sync	Whether or not to perform auto sync
+		 * @var	array	forum_ids	Array of the forum ids the posts are moved from
+		 * @var	array	topic_ids	Array of the topic ids the posts are moved from
+		 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
+		 * @since 3.1.11-RC1
+		 */
+		$vars = array(
+			'post_ids',
+			'topic_id',
+			'auto_sync',
+			'forum_ids',
+			'topic_ids',
+			'forum_row',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.move_posts_sync_after', compact($vars)));
 	}
 
 	// Update posted information
