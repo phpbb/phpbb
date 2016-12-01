@@ -96,9 +96,10 @@ include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
-if (PHPBB_ENVIRONMENT === 'development' || DEBUG === true)
+if (PHPBB_ENVIRONMENT === 'development' || (defined('DEBUG') && DEBUG === true) )
 {
-	\phpbb\debug\debug::enable(DEBUG_ERROR_LEVEL);
+	$log_level = (defined('DEBUG_PHP_ERROR_LEVEL') ? constant('DEBUG_PHP_ERROR_LEVEL') : null);
+	\phpbb\debug\debug::enable($log_level);
 }
 else
 {
