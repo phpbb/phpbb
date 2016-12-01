@@ -165,7 +165,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$renderer = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.renderer');
 
 		$this->assertSame(
-			'<img class="smilies" src="phpBB/images/smilies/%22%27%3C&amp;%3E.png" alt="&quot;\'&lt;&amp;&gt;" title="&quot;\'&lt;&amp;&gt;">',
+			'<img class="smilies" src="phpBB/images/smilies/%22%27%3C&amp;%3E.png" width="15" height="17" alt="&quot;\'&lt;&amp;&gt;" title="&quot;\'&lt;&amp;&gt;">',
 			$renderer->render('<r><E>"\'&lt;&amp;&gt;</E></r>')
 		);
 	}
