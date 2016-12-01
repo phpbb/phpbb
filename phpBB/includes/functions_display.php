@@ -739,9 +739,9 @@ function generate_forum_rules(&$forum_data)
 	global $template;
 
 	$template->assign_vars(array(
-			'S_FORUM_RULES'	=> true,
-			'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
-			'FORUM_RULES'	=> $forum_data['forum_rules'])
+		'S_FORUM_RULES'	=> true,
+		'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
+		'FORUM_RULES'	=> $forum_data['forum_rules'])
 	);
 }
 
