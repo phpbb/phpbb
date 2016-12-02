@@ -52,7 +52,7 @@ interface iohandler_interface
 	/**
 	 * Returns server variable
 	 *
-	 * This function should work the same as request_interterface::server().
+	 * This function should work the same as request_interface::server().
 	 *
 	 * @param string	$name		Name of the server variable
 	 * @param mixed		$default	Default value to return when the requested variable does not exist
@@ -62,7 +62,7 @@ interface iohandler_interface
 	public function get_server_variable($name, $default = '');
 
 	/**
-	 * Wrapper function for request_interterface::header()
+	 * Wrapper function for request_interface::header()
 	 *
 	 * @param string	$name		Name of the request header variable
 	 * @param mixed		$default	Default value to return when the requested variable does not exist

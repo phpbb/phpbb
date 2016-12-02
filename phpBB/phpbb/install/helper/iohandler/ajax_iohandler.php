@@ -27,7 +27,7 @@ class ajax_iohandler extends iohandler_base
 	protected $path_helper;
 
 	/**
-	 * @var \phpbb\request\request
+	 * @var \phpbb\request\request_interface
 	 */
 	protected $request;
 
@@ -90,12 +90,12 @@ class ajax_iohandler extends iohandler_base
 	 * Constructor
 	 *
 	 * @param path_helper						$path_helper
-	 * @param \phpbb\request\request	$request	HTTP request interface
+	 * @param \phpbb\request\request_interface	$request	HTTP request interface
 	 * @param \phpbb\template\template			$template	Template engine
 	 * @param router 							$router		Router
 	 * @param string 							$root_path	Path to phpBB's root
 	 */
-	public function __construct(path_helper $path_helper, \phpbb\request\request $request, \phpbb\template\template $template, router $router, $root_path)
+	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router, $root_path)
 	{
 		$this->path_helper = $path_helper;
 		$this->request	= $request;
