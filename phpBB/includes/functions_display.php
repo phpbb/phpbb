@@ -729,17 +729,17 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 */
 function generate_forum_rules(&$forum_data)
 {
+	if ($forum_data['forum_rules'])
+	{
+		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
+	}
+
 	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
 	{
 		return;
 	}
 
 	global $template;
-
-	if ($forum_data['forum_rules'])
-	{
-		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
-	}
 
 	$template->assign_vars(array(
 		'S_FORUM_RULES'	=> true,
