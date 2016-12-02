@@ -88,7 +88,9 @@ p.right {
 }
 
 p.jumpbox-return {
-	margin-top: 1em;
+	margin-top: 10px;
+	margin-bottom: 0;
+	float: left;
 }
 
 b, strong {
