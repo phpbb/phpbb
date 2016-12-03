@@ -309,6 +309,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
+		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
+		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
 		$container->compile();
 
 		$language = $container->get('language');

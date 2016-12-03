@@ -301,6 +301,7 @@ $lang = array_merge($lang, array(
 	'TASK_ADD_MODULES'		=> 'Installing modules',
 
 	// Install finish tasks
+	'TASK_INSTALL_EXTENSIONS'	=> 'Installing packaged extensions',
 	'TASK_NOTIFY_USER'			=> 'Sending notification e-mail',
 	'TASK_POPULATE_MIGRATIONS'	=> 'Populating migrations',
 
@@ -457,6 +458,8 @@ $lang = array_merge($lang, array(
 	'STAGE_UPDATE_DATABASE'		=> 'Update database',
 
 	'INLINE_UPDATE_SUCCESSFUL'		=> 'The database update was successful.',
+
+	'TASK_UPDATE_EXTENSIONS'	=> 'Updating extensions',
 ));
 
 // Converter
