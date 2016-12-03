@@ -63,7 +63,7 @@ class type_string extends type_string_common
 		$options = array(
 			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'),
 			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'),
-			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0 max="99999"" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
 			3 => array('TITLE' => $this->user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options($field_data) . '</select>'),
 		);
 
@@ -148,12 +148,16 @@ class type_string extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
-	public function display_options(&$template_vars, &$field_data)
+	public function display_options($action, &$field_data)
 	{
-		$template_vars = array_merge($template_vars, array(
-			'S_STRING'					=> true,
-			'L_DEFAULT_VALUE_EXPLAIN'	=> $this->user->lang['STRING_DEFAULT_VALUE_EXPLAIN'],
-			'LANG_DEFAULT_VALUE'		=> $field_data['lang_default_value'],
-		));
+		$doptions = array(
+			0 => array(
+					'TITLE' => $this->user->lang['DEFAULT_VALUE'],
+					'EXPLAIN' => $this->user->lang['TEXT_DEFAULT_VALUE_EXPLAIN'],
+					'FIELD' => '<textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">' . $field_data['lang_default_value'] . '</textarea>'
+				),
+		);
+
+		return $doptions;
 	}
 }

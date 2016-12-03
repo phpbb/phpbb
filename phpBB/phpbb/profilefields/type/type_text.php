@@ -193,12 +193,16 @@ class type_text extends type_string_common
 	/**
 	* {@inheritDoc}
 	*/
-	public function display_options(&$template_vars, &$field_data)
+	public function display_options($action, &$field_data)
 	{
-		$template_vars = array_merge($template_vars, array(
-			'S_TEXT'					=> true,
-			'L_DEFAULT_VALUE_EXPLAIN'	=> $this->user->lang['TEXT_DEFAULT_VALUE_EXPLAIN'],
-			'LANG_DEFAULT_VALUE'		=> $field_data['lang_default_value'],
-		));
+		$doptions = array(
+			0 => array(
+					'TITLE' => $this->user->lang['DEFAULT_VALUE'],
+					'EXPLAIN' => $this->user->lang['TEXT_DEFAULT_VALUE_EXPLAIN'],
+					'FIELD' => '<input class="text medium" type="text" id="lang_default_value" name="lang_default_value" value="' . $field_data['lang_default_value'] . '" />'
+				),
+		);
+
+		return $doptions;
 	}
 }

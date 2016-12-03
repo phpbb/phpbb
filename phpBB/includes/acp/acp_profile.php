@@ -625,7 +625,7 @@ class acp_profile
 				{
 					// Create basic options - only small differences between field types
 					case 1:
-						$template_vars = array(
+						$template->assign_vars(array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
 							'S_FIELD_SHOW_NOVALUE'=> ($cp->vars['field_show_novalue']) ? true : false,
@@ -645,22 +645,26 @@ class acp_profile
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
 							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
-						);
+						));
 
+						// Build options based on profile type
 						$field_data = $cp->vars;
-						$profile_field->display_options($template_vars, $field_data);
+						$options = $profile_field->display_options($action, $field_data);
 						$cp->vars = $field_data;
 
-						// Build common create options
-						$template->assign_vars($template_vars);
+						foreach ($options as $num => $option_ary)
+						{
+							$template->assign_block_vars('option', $option_ary);
+						}
+
 					break;
 
 					case 2:
 
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
-						);
+							'L_NEXT_STEP'		=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'],
+						));
 
 						// Build options based on profile type
 						$options = $profile_field->get_options($this->lang_defs['iso'][$config['default_lang']], $cp->vars);
@@ -950,7 +954,6 @@ class acp_profile
 			'profile_fields',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.acp_profile_create_edit_save_before', compact($vars)));
-
 		if ($action == 'create')
 		{
 			$profile_fields += array(

@@ -395,7 +395,7 @@ class type_bool extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function display_options(&$template_vars, &$field_data)
+	public function display_options($action, &$field_data)
 	{
 		// Initialize these array elements if we are creating a new field
 		if (!sizeof($field_data['lang_options']))
@@ -405,11 +405,14 @@ class type_bool extends type_base
 			$field_data['lang_options'][1] = '';
 		}
 
-		$template_vars = array_merge($template_vars, array(
-			'S_BOOL'					=> true,
-			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['BOOL_ENTRIES_EXPLAIN'],
-			'FIRST_LANG_OPTION'			=> $field_data['lang_options'][0],
-			'SECOND_LANG_OPTION'		=> $field_data['lang_options'][1],
-		));
+		$doptions = array(
+			0 => array(
+					'TITLE' => $this->user->lang['ENTRIES'],
+					'EXPLAIN' => $this->user->lang['BOOL_ENTRIES_EXPLAIN'],
+					'FIELD' => '<input class="medium" id="lang_options" name="lang_options[0]" value="' . $field_data['lang_options'][0] . '" /> ' . $this->user->lang['FIRST_OPTION'] . '</dd><dd><input class="medium" name="lang_options[1]" value="' . $field_data['lang_options'][1] . '" /> ' . $this->user->lang['SECOND_OPTION']
+				),
+		);
+
+		return $doptions;
 	}
 }
