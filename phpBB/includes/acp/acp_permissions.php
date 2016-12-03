@@ -758,6 +758,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
 
+		meta_refresh(5, $this->u_action);
 		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
@@ -829,10 +830,12 @@ class acp_permissions
 
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
+			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids));
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
 		}
 		else
 		{
+			meta_refresh(5, $this->u_action);
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 		}
 	}
@@ -904,10 +907,12 @@ class acp_permissions
 
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
+			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id));
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
 		}
 		else
 		{
+			meta_refresh(5, $this->u_action);
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 		}
 	}
