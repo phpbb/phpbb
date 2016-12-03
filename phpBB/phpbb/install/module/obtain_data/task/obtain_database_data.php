@@ -79,7 +79,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 		$dbhost			= $this->io_handler->get_input('dbhost', '', true);
 		$dbport			= $this->io_handler->get_input('dbport', '');
 		$dbuser			= $this->io_handler->get_input('dbuser', '');
-		$dbpasswd		= $this->io_handler->get_input('dbpasswd', '', true);
+		$dbpasswd		= $this->io_handler->get_raw_input('dbpasswd', '');
 		$dbname			= $this->io_handler->get_input('dbname', '');
 		$table_prefix	= $this->io_handler->get_input('table_prefix', '');
 
