@@ -893,9 +893,29 @@ class log implements \phpbb\log\log_interface
 		$forum_auth = array('f_read' => array(), 'm_' => array());
 		$topic_ids = array_unique($topic_ids);
 
-		$sql = 'SELECT topic_id, forum_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids));
+		$sql_ary = array(
+			'SELECT'	=> 'topic_id, forum_id',
+			'FROM'		=> array(
+				TOPICS_TABLE	=> 't',
+			),
+			'WHERE'		=> $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids)),
+		);
+
+		/**
+		* Allow modifying SQL query before topic data is retrieved.
+		*
+		* @event core.phpbb_log_get_topic_auth_sql_before
+		* @var	array	topic_ids	Array with unique topic IDs
+		* @var	array	sql_ary		SQL array
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'topic_ids',
+			'sql_ary',
+		);
+		extract($this->dispatcher->trigger_event('core.phpbb_log_get_topic_auth_sql_before', compact($vars)));
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
