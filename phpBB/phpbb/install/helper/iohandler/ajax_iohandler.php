@@ -123,6 +123,14 @@ class ajax_iohandler extends iohandler_base
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_raw_input($name, $default)
+	{
+		return $this->request->raw_variable($name, $default);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_server_variable($name, $default = '')
 	{
 		return $this->request->server($name, $default);

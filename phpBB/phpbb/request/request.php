@@ -225,6 +225,51 @@ class request implements \phpbb\request\request_interface
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function raw_variable($var_name, $default, $super_global = \phpbb\request\request_interface::REQUEST)
+	{
+		$path = false;
+
+		// deep direct access to multi dimensional arrays
+		if (is_array($var_name))
+		{
+			$path = $var_name;
+			// make sure at least the variable name is specified
+			if (empty($path))
+			{
+				return (is_array($default)) ? array() : $default;
+			}
+			// the variable name is the first element on the path
+			$var_name = array_shift($path);
+		}
+
+		if (!isset($this->input[$super_global][$var_name]))
+		{
+			return (is_array($default)) ? array() : $default;
+		}
+		$var = $this->input[$super_global][$var_name];
+
+		if ($path)
+		{
+			// walk through the array structure and find the element we are looking for
+			foreach ($path as $key)
+			{
+				if (is_array($var) && isset($var[$key]))
+				{
+					$var = $var[$key];
+				}
+				else
+				{
+					return (is_array($default)) ? array() : $default;
+				}
+			}
+		}
+
+		return $var;
+	}
+
+	/**
 	* Shortcut method to retrieve SERVER variables.
 	*
 	* Also fall back to getenv(), some CGI setups may need it (probably not, but
@@ -369,41 +414,14 @@ class request implements \phpbb\request\request_interface
 	*/
 	protected function _variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST, $trim = true)
 	{
-		$path = false;
+		$var = $this->raw_variable($var_name, $default, $super_global);
 
-		// deep direct access to multi dimensional arrays
-		if (is_array($var_name))
+		// Return prematurely if raw variable is empty array or the same as
+		// the default. Using strict comparison to ensure that one can't
+		// prevent proper type checking on any input variable
+		if ($var === array() || $var === $default)
 		{
-			$path = $var_name;
-			// make sure at least the variable name is specified
-			if (empty($path))
-			{
-				return (is_array($default)) ? array() : $default;
-			}
-			// the variable name is the first element on the path
-			$var_name = array_shift($path);
-		}
-
-		if (!isset($this->input[$super_global][$var_name]))
-		{
-			return (is_array($default)) ? array() : $default;
-		}
-		$var = $this->input[$super_global][$var_name];
-
-		if ($path)
-		{
-			// walk through the array structure and find the element we are looking for
-			foreach ($path as $key)
-			{
-				if (is_array($var) && isset($var[$key]))
-				{
-					$var = $var[$key];
-				}
-				else
-				{
-					return (is_array($default)) ? array() : $default;
-				}
-			}
+			return $var;
 		}
 
 		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, $trim);
