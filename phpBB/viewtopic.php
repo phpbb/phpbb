@@ -498,6 +498,28 @@ if ($config['allow_topic_notify'])
 	}
 }
 
+/**
+* Event to modify highlight.
+*
+* @event core.viewtopic_highlight_modify
+* @var	string	highlight			String to be highlighted
+* @var	string	highlight_match		Highlight string to be used in preg_replace
+* @var	array	topic_data			Topic data
+* @var	int		start				Pagination start
+* @var	int		total_posts			Number of posts
+* @var	string	viewtopic_url		Current viewtopic URL
+* @since 3.1.11-RC1
+*/
+$vars = array(
+	'highlight',
+	'highlight_match',
+	'topic_data',
+	'start',
+	'total_posts',
+	'viewtopic_url',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_highlight_modify', compact($vars)));
+
 // Bookmarks
 if ($config['allow_bookmarks'] && $user->data['is_registered'] && $request->variable('bookmark', 0))
 {
