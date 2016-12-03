@@ -135,6 +135,10 @@ class installer_configuration implements ConfigurationInterface
 							->end()
 					->end()
 				->end()
+				->arrayNode('extensions')
+					->prototype('scalar')->end()
+					->defaultValue([])
+				->end()
 			->end()
 		;
 		return $treeBuilder;

@@ -118,6 +118,17 @@ class file_check extends task_base
 		$this->iohandler->set_task_count($task_count);
 		$this->iohandler->set_progress('UPDATE_CHECK_FILES', 0);
 
+		// Create list of default extensions that should have been added prior
+		// to this update
+		$default_update_extensions = [];
+		foreach (\phpbb\install\module\update_database\task\update_extensions::$default_extensions_update as $version => $extensions)
+		{
+			if ($this->update_helper->phpbb_version_compare($update_info['version']['from'], $version, '>'))
+			{
+				$default_update_extensions = array_merge($default_update_extensions, $extensions);
+			}
+		}
+
 		foreach ($update_info['files'] as $key => $filename)
 		{
 			$old_file = $old_path . $filename;
@@ -137,6 +148,27 @@ class file_check extends task_base
 
 			$progress_count++;
 			$this->iohandler->set_progress('UPDATE_CHECK_FILES', $progress_count);
+
+			// Do not copy default extension again if the previous version was
+			// packaged with it but it does not exist (e.g. deleted by admin)
+			if (strpos($file, $this->phpbb_root_path . 'ext/') !== false)
+			{
+				$skip_file = false;
+				foreach ($default_update_extensions as $ext_name)
+				{
+					if (strpos($file, $this->phpbb_root_path . 'ext/' . $ext_name) !== false &&
+						!$this->filesystem->exists($this->phpbb_root_path . 'ext/' . $ext_name . '/composer.json'))
+					{
+						$skip_file = true;
+						break;
+					}
+				}
+
+				if ($skip_file)
+				{
+					continue;
+				}
+			}
 
 			if (!$this->filesystem->exists($file))
 			{
