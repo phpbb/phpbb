@@ -94,7 +94,7 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 				$translated_message = '[DEBUG] ' . $translated_message;
 			}
 
-			fwrite($this->file_handle, $translated_message);
+			fwrite($this->file_handle, $translated_message . "\n");
 			fflush($this->file_handle);
 		}
 	}
