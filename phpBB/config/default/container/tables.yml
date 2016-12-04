@@ -23,6 +23,7 @@ parameters:
     tables.ext: '%core.table_prefix%ext'
     tables.extensions: '%core.table_prefix%extensions'
     tables.extension_groups: '%core.table_prefix%extension_groups'
+    tables.ext_events: '%core.table_prefix%ext_events'
     tables.forums: '%core.table_prefix%forums'
     tables.forums_access: '%core.table_prefix%forums_access'
     tables.forums_track: '%core.table_prefix%forums_track'

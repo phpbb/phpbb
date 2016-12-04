@@ -1,0 +1,41 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<!-- IF S_EDIT -->
+	<table class="table1">
+	<thead>
+		<tr>
+			<th>{L_EVENT_NAME}</th>
+			<th style="text-align: center; width: 20%;">{L_EVENT_ACTIVE}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- BEGIN extensions -->
+		<tr class="ext_enabled row-highlight">
+			<td><a href="{extensions.U_DETAILS}"><strong>{extensions.EXT_NAME}</strong></a></td>
+			<td style="text-align: center;">{extensions.ACTIVE}</td>
+		</tr>
+		<!-- END extensions -->
+	</tbody>
+	</table>
+<!-- ELSE -->
+	<table class="table1">
+	<thead>
+		<tr>
+			<th>{L_EVENT_NAME}</th>
+			<th style="text-align: center; width: 20%;">{L_EVENT_COUNT}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<!-- BEGIN events -->
+		<tr class="ext_enabled row-highlight">
+			<td><a href="{events.U_EDIT}"><strong>{events.NAME}</strong></a></td>
+			<td style="text-align: center;">{events.ACTIVE} / {events.COUNT}</td>
+		</tr>
+		<!-- END events -->
+	</tbody>
+	</table>
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->
