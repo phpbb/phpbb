@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class check extends \phpbb\console\command\command
@@ -40,13 +41,13 @@ class check extends \phpbb\console\command\command
 	*/
 	public function __construct(user $user, config $config, ContainerInterface $phpbb_container, language $language)
 	{
-		parent::__construct($user);
-
 		$this->config = $config;
 		$this->phpbb_container = $phpbb_container;
 		$this->language = $language;
 
 		$this->language->add_lang(array('acp/common', 'acp/extensions'));
+
+		parent::__construct($user);
 	}
 
 	/**
@@ -81,6 +82,8 @@ class check extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$recheck = true;
 		if ($input->getOption('cache'))
 		{
@@ -93,7 +96,8 @@ class check extends \phpbb\console\command\command
 			$stability = $input->getOption('stability');
 			if (!($stability == 'stable') && !($stability == 'unstable'))
 			{
-				throw new \RuntimeException($this->language->lang('CLI_ERROR_INVALID_STABILITY', $stability));
+				$io->error($this->language->lang('CLI_ERROR_INVALID_STABILITY', $stability));
+				return 3;
 			}
 		}
 
@@ -102,30 +106,29 @@ class check extends \phpbb\console\command\command
 		{
 			if ($ext_name == 'all')
 			{
-				return $this->check_all_ext($input, $output, $stability, $recheck);
+				return $this->check_all_ext($io, $stability, $recheck);
 			}
 			else
 			{
-				return $this->check_ext($input, $output, $stability, $recheck, $ext_name);
+				return $this->check_ext($io, $stability, $recheck, $ext_name);
 			}
 		}
 		else
 		{
-			return $this->check_core($input, $output, $stability, $recheck);
+			return $this->check_core($io,$stability, $recheck);
 		}
 	}
 
 	/**
-	* Check if a given extension is up to date
-	*
-	* @param InputInterface 		$input 		Input stream, used to get the options.
-	* @param OutputInterface 		$output		Output stream, used to print messages.
-	* @param OutputInterface		$stability	Force a given stability
-	* @param bool					$recheck	Disallow the use of the cache
-	* @param string					$ext_name	The extension name
-	* @return int
-	*/
-	protected function check_ext(InputInterface $input, OutputInterface $output, $stability, $recheck, $ext_name)
+	 * Check if a given extension is up to date
+	 *
+	 * @param SymfonyStyle	$io			IO handler, for formatted and unified IO
+	 * @param string		$stability	Force a given stability
+	 * @param bool			$recheck	Disallow the use of the cache
+	 * @param string		$ext_name	The extension name
+	 * @return int
+	 */
+	protected function check_ext(SymfonyStyle $io, $stability, $recheck, $ext_name)
 	{
 		try
 		{
@@ -134,34 +137,29 @@ class check extends \phpbb\console\command\command
 			$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 
 			$metadata = $md_manager->get_metadata('all');
-			if ($input->getOption('verbose'))
+			if ($io->isVerbose())
 			{
-				$output->writeln('<info>' . $md_manager->get_metadata('display-name') . '</info>');
-				$output->writeln('');
+				$io->title($md_manager->get_metadata('display-name'));
 
-				$output->writeln('<comment>' . $this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . '</comment> ' . $metadata['version']);
+				$io->note($this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . ' ' . $metadata['version']);
 			}
 
 			if (!empty($updates_available))
 			{
-				$output->writeln('');
-				$output->writeln('<question>' . $this->language->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
-
-				if ($input->getOption('verbose'))
+				if ($io->isVerbose())
 				{
-					$this->display_versions($output, $updates_available);
+					$io->caution($this->language->lang('NOT_UP_TO_DATE', $metadata['name']));
+
+					$this->display_versions($io, $updates_available);
 				}
 
 				return 1;
 			}
 			else
 			{
-				$output->writeln('');
-				$output->writeln('<question>' . $this->language->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
-
-				if ($input->getOption('verbose'))
+				if ($io->isVerbose())
 				{
-					$output->writeln('<info>' . $this->language->lang('UPDATE_NOT_NEEDED') . '</info>');
+					$io->success($this->language->lang('UPDATE_NOT_NEEDED'));
 				}
 
 				return 0;
@@ -169,54 +167,50 @@ class check extends \phpbb\console\command\command
 		}
 		catch (\RuntimeException $e)
 		{
-			$output->writeln('<error>'.$this->language->lang('EXTENSION_NOT_INSTALLED', $ext_name).'</error>');
+			$io->error($this->language->lang('EXTENSION_NOT_INSTALLED', $ext_name));
 
 			return 1;
 		}
 	}
 
 	/**
-	* Check if the core is up to date
-	*
-	* @param InputInterface 		$input 		Input stream, used to get the options.
-	* @param OutputInterface 		$output		Output stream, used to print messages.
-	* @param OutputInterface		$stability	Force a given stability
-	* @param bool					$recheck	Disallow the use of the cache
-	* @return int
-	*/
-	protected function check_core(InputInterface $input, OutputInterface $output, $stability, $recheck)
+	 * Check if the core is up to date
+	 *
+	 * @param SymfonyStyle	$io			IO handler, for formatted and unified IO
+	 * @param string		$stability	Force a given stability
+	 * @param bool			$recheck	Disallow the use of the cache
+	 * @return int
+	 */
+	protected function check_core(SymfonyStyle $io, $stability, $recheck)
 	{
 		$version_helper = $this->phpbb_container->get('version_helper');
 		$version_helper->force_stability($stability);
 
 		$updates_available = $version_helper->get_suggested_updates($recheck);
 
-		if ($input->getOption('verbose'))
+		if ($io->isVerbose())
 		{
-			$output->writeln('<info>phpBB core</info>');
-			$output->writeln('');
+			$io->title('phpBB core');
 
-			$output->writeln('<comment>' . $this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . '</comment> ' . $this->config['version']);
+			$io->note( $this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . ' ' . $this->config['version']);
 		}
 
 		if (!empty($updates_available))
 		{
-			$output->writeln('');
-			$output->writeln('<question>' . $this->language->lang('UPDATE_NEEDED') . '</question>');
+			$io->caution($this->language->lang('UPDATE_NEEDED'));
 
-			if ($input->getOption('verbose'))
+			if ($io->isVerbose())
 			{
-				$this->display_versions($output, $updates_available);
+				$this->display_versions($io, $updates_available);
 			}
 
 			return 1;
 		}
 		else
 		{
-			if ($input->getOption('verbose'))
+			if ($io->isVerbose())
 			{
-				$output->writeln('');
-				$output->writeln('<question>' . $this->language->lang('UPDATE_NOT_NEEDED') . '</question>');
+				$io->success($this->language->lang('UPDATE_NOT_NEEDED'));
 			}
 
 			return 0;
@@ -226,27 +220,22 @@ class check extends \phpbb\console\command\command
 	/**
 	* Check if all the available extensions are up to date
 	*
-	* @param InputInterface 		$input 		Input stream, used to get the options.
-	* @param OutputInterface 		$output		Output stream, used to print messages.
-	* @param OutputInterface		$stability	Force a given stability
-	* @param bool					$recheck	Disallow the use of the cache
+	 * @param SymfonyStyle	$io			IO handler, for formatted and unified IO
+	* @param bool			$recheck	Disallow the use of the cache
 	* @return int
 	*/
-	protected function check_all_ext(InputInterface $input, OutputInterface $output, $stability, $recheck)
+	protected function check_all_ext(SymfonyStyle $io, $stability, $recheck)
 	{
 		/** @var \phpbb\extension\manager $ext_manager */
 		$ext_manager = $this->phpbb_container->get('ext.manager');
 
-		$ext_name_length = max(30, strlen($this->language->lang('EXTENSION_NAME')));
-		$current_version_length = max(15, strlen($this->language->lang('CURRENT_VERSION')));
-		$latest_version_length = max(15, strlen($this->language->lang('LATEST_VERSION')));
+		$rows = [];
 
-		$output->writeln(sprintf("%-{$ext_name_length}s | %-{$current_version_length}s | %s", $this->language->lang('EXTENSION_NAME'), $this->language->lang('CURRENT_VERSION'), $this->language->lang('LATEST_VERSION')));
-		$output->writeln(sprintf("%'-{$ext_name_length}s-+-%'-{$current_version_length}s-+-%'-{$latest_version_length}s", '', '', ''));
 		foreach ($ext_manager->all_available() as $ext_name => $ext_path)
 		{
-			$message = sprintf("<info>%-{$ext_name_length}s</info>", $ext_name);
-			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name, null);
+			$row = [];
+			$row[] = sprintf("<info>%s</info>", $ext_name);
+			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name);
 			try
 			{
 				$metadata = $md_manager->get_metadata('all');
@@ -261,38 +250,43 @@ class check extends \phpbb\console\command\command
 								return $entry['current'];
 							}, $updates_available);
 
-							$message .= sprintf(" | <comment>%-{$current_version_length}s</comment> | %s",
-								$metadata['version'],
-								implode(', ', $versions)
-							);
+							$row[] = sprintf("<comment>%s</comment>", $metadata['version']);
+							$row[] = implode(', ', $versions);
 						}
 						else
 						{
-							$message .= sprintf(" | <info>%-{$current_version_length}s</info> | ",
-								$metadata['version']
-							);
+							$row[] = sprintf("<info>%s</info>", $metadata['version']);
+							$row[] = '';
 						}
 					} catch (\RuntimeException $e) {
-						$message .= ' | ';
+						$row[] = $metadata['version'];
+						$row[] = '';
 					}
 				}
 				else
 				{
-					$message .= sprintf(" | %-{$current_version_length}s | ", $metadata['version']);
+					$row[] = $metadata['version'];
+					$row[] = '';
 				}
 			}
 			catch (exception_interface $e)
 			{
 				$exception_message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$message .= ('<error>' . $exception_message . '</error>');
+				$row[] = '<error>' . $exception_message . '</error>';
 			}
 			catch (\RuntimeException $e)
 			{
-				$message .= ('<error>' . $e->getMessage() . '</error>');
+				$row[] = '<error>' . $e->getMessage() . '</error>';
 			}
 
-			$output->writeln($message);
+			$rows[] = $row;
 		}
+
+		$io->table([
+			$this->language->lang('EXTENSION_NAME'),
+			$this->language->lang('CURRENT_VERSION'),
+			$this->language->lang('LATEST_VERSION'),
+		], $rows);
 
 		return 0;
 	}
@@ -300,31 +294,36 @@ class check extends \phpbb\console\command\command
 	/**
 	* Display the details of the available updates
 	*
-	* @param OutputInterface	$output				Output stream, used to print messages.
-	* @param array				$updates_available	The list of the available updates
+	* @param SymfonyStyle	$io					IO handler, for formatted and unified IO
+	* @param array			$updates_available	The list of the available updates
 	*/
-	protected function display_versions(OutputInterface $output, $updates_available)
+	protected function display_versions(SymfonyStyle $io, $updates_available)
 	{
-		$output->writeln('');
-		$output->writeln('<comment>' . $this->language->lang('UPDATES_AVAILABLE') . '</comment>');
+		$io->section($this->language->lang('UPDATES_AVAILABLE'));
+
+		$rows = [];
 		foreach ($updates_available as $version_data)
 		{
-			$messages = array();
-			$messages[] = sprintf("\t%-30s| %s", $this->language->lang('VERSION'), $version_data['current']);
+			$row = ['', '', ''];
+			$row[0] = $version_data['current'];
 
 			if (isset($version_data['announcement']))
 			{
-				$messages[] = sprintf("\t%-30s| %s", $this->language->lang('ANNOUNCEMENT_TOPIC'), $version_data['announcement']);
+				$row[1] = $version_data['announcement'];
 			}
 
 			if (isset($version_data['download']))
 			{
-				$messages[] = sprintf("\t%-30s| %s", $this->language->lang('DOWNLOAD_LATEST'), $version_data['download']);
+				$row[2] = $version_data['download'];
 			}
 
-			$messages[] = '';
-
-			$output->writeln(implode("\n", $messages));
+			$rows[] = $row;
 		}
+
+		$io->table([
+			$this->language->lang('VERSION'),
+			$this->language->lang('ANNOUNCEMENT_TOPIC'),
+		    $this->language->lang('DOWNLOAD_LATEST'),
+		], $rows);
 	}
 }

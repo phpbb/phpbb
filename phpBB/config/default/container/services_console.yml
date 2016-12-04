@@ -226,6 +226,7 @@ services:
             - '@user'
             - '@config'
             - '@service_container'
+            - '@language'
         tags:
             - { name: console.command }
 
