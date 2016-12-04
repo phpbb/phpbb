@@ -13,11 +13,15 @@
 
 namespace phpbb\console\command\update;
 
+use phpbb\config\config;
 use phpbb\exception\exception_interface;
+use phpbb\language\language;
+use phpbb\user;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class check extends \phpbb\console\command\command
 {
@@ -26,17 +30,23 @@ class check extends \phpbb\console\command\command
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerBuilder */
 	protected $phpbb_container;
+	/**
+	 * @var language
+	 */
+	private $language;
 
 	/**
 	* Construct method
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\config\config $config, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container)
+	public function __construct(user $user, config $config, ContainerInterface $phpbb_container, language $language)
 	{
 		parent::__construct($user);
 
 		$this->config = $config;
 		$this->phpbb_container = $phpbb_container;
-		$this->user->add_lang(array('acp/common', 'acp/extensions'));
+		$this->language = $language;
+
+		$this->language->add_lang(array('acp/common', 'acp/extensions'));
 	}
 
 	/**
@@ -50,10 +60,10 @@ class check extends \phpbb\console\command\command
 	{
 		$this
 			->setName('update:check')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK'))
-			->addArgument('ext-name', InputArgument::OPTIONAL, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_ARGUMENT_1'))
-			->addOption('stability', null, InputOption::VALUE_REQUIRED, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY'))
-			->addOption('cache', 'c', InputOption::VALUE_NONE, $this->user->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_UPDATE_CHECK'))
+			->addArgument('ext-name', InputArgument::OPTIONAL, $this->language->lang('CLI_DESCRIPTION_UPDATE_CHECK_ARGUMENT_1'))
+			->addOption('stability', null, InputOption::VALUE_REQUIRED, $this->language->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_STABILITY'))
+			->addOption('cache', 'c', InputOption::VALUE_NONE, $this->language->lang('CLI_DESCRIPTION_UPDATE_CHECK_OPTION_CACHE'))
 		;
 	}
 
@@ -83,7 +93,7 @@ class check extends \phpbb\console\command\command
 			$stability = $input->getOption('stability');
 			if (!($stability == 'stable') && !($stability == 'unstable'))
 			{
-				throw new \RuntimeException($this->user->lang('CLI_ERROR_INVALID_STABILITY', $stability));
+				throw new \RuntimeException($this->language->lang('CLI_ERROR_INVALID_STABILITY', $stability));
 			}
 		}
 
@@ -117,42 +127,51 @@ class check extends \phpbb\console\command\command
 	*/
 	protected function check_ext(InputInterface $input, OutputInterface $output, $stability, $recheck, $ext_name)
 	{
-		$ext_manager = $this->phpbb_container->get('ext.manager');
-		$md_manager = $ext_manager->create_extension_metadata_manager($ext_name, null);
-		$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
-
-		$metadata = $md_manager->get_metadata('all');
-		if ($input->getOption('verbose'))
+		try
 		{
-			$output->writeln('<info>' . $md_manager->get_metadata('display-name') . '</info>');
-			$output->writeln('');
+			$ext_manager = $this->phpbb_container->get('ext.manager');
+			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name, null);
+			$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 
-			$output->writeln('<comment>' . $this->user->lang('CURRENT_VERSION') . $this->user->lang('COLON') . '</comment> ' . $metadata['version']);
-		}
-
-		if (!empty($updates_available))
-		{
-			$output->writeln('');
-			$output->writeln('<question>' . $this->user->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
-
+			$metadata = $md_manager->get_metadata('all');
 			if ($input->getOption('verbose'))
 			{
-				$this->display_versions($output, $updates_available);
+				$output->writeln('<info>' . $md_manager->get_metadata('display-name') . '</info>');
+				$output->writeln('');
+
+				$output->writeln('<comment>' . $this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . '</comment> ' . $metadata['version']);
 			}
+
+			if (!empty($updates_available))
+			{
+				$output->writeln('');
+				$output->writeln('<question>' . $this->language->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
+
+				if ($input->getOption('verbose'))
+				{
+					$this->display_versions($output, $updates_available);
+				}
+
+				return 1;
+			}
+			else
+			{
+				$output->writeln('');
+				$output->writeln('<question>' . $this->language->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
+
+				if ($input->getOption('verbose'))
+				{
+					$output->writeln('<info>' . $this->language->lang('UPDATE_NOT_NEEDED') . '</info>');
+				}
+
+				return 0;
+			}
+		}
+		catch (\RuntimeException $e)
+		{
+			$output->writeln('<error>'.$this->language->lang('EXTENSION_NOT_INSTALLED', $ext_name).'</error>');
 
 			return 1;
-		}
-		else
-		{
-			$output->writeln('');
-			$output->writeln('<question>' . $this->user->lang('NOT_UP_TO_DATE', $metadata['name']) . '</question>');
-
-			if ($input->getOption('verbose'))
-			{
-				$output->writeln('<info>' . $this->user->lang('UPDATE_NOT_NEEDED') . '</info>');
-			}
-
-			return 0;
 		}
 	}
 
@@ -177,13 +196,13 @@ class check extends \phpbb\console\command\command
 			$output->writeln('<info>phpBB core</info>');
 			$output->writeln('');
 
-			$output->writeln('<comment>' . $this->user->lang('CURRENT_VERSION') . $this->user->lang('COLON') . '</comment> ' . $this->config['version']);
+			$output->writeln('<comment>' . $this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . '</comment> ' . $this->config['version']);
 		}
 
 		if (!empty($updates_available))
 		{
 			$output->writeln('');
-			$output->writeln('<question>' . $this->user->lang('UPDATE_NEEDED') . '</question>');
+			$output->writeln('<question>' . $this->language->lang('UPDATE_NEEDED') . '</question>');
 
 			if ($input->getOption('verbose'))
 			{
@@ -197,7 +216,7 @@ class check extends \phpbb\console\command\command
 			if ($input->getOption('verbose'))
 			{
 				$output->writeln('');
-				$output->writeln('<question>' . $this->user->lang('UPDATE_NOT_NEEDED') . '</question>');
+				$output->writeln('<question>' . $this->language->lang('UPDATE_NOT_NEEDED') . '</question>');
 			}
 
 			return 0;
@@ -218,11 +237,11 @@ class check extends \phpbb\console\command\command
 		/** @var \phpbb\extension\manager $ext_manager */
 		$ext_manager = $this->phpbb_container->get('ext.manager');
 
-		$ext_name_length = max(30, strlen($this->user->lang('EXTENSION_NAME')));
-		$current_version_length = max(15, strlen($this->user->lang('CURRENT_VERSION')));
-		$latest_version_length = max(15, strlen($this->user->lang('LATEST_VERSION')));
+		$ext_name_length = max(30, strlen($this->language->lang('EXTENSION_NAME')));
+		$current_version_length = max(15, strlen($this->language->lang('CURRENT_VERSION')));
+		$latest_version_length = max(15, strlen($this->language->lang('LATEST_VERSION')));
 
-		$output->writeln(sprintf("%-{$ext_name_length}s | %-{$current_version_length}s | %s", $this->user->lang('EXTENSION_NAME'), $this->user->lang('CURRENT_VERSION'), $this->user->lang('LATEST_VERSION')));
+		$output->writeln(sprintf("%-{$ext_name_length}s | %-{$current_version_length}s | %s", $this->language->lang('EXTENSION_NAME'), $this->language->lang('CURRENT_VERSION'), $this->language->lang('LATEST_VERSION')));
 		$output->writeln(sprintf("%'-{$ext_name_length}s-+-%'-{$current_version_length}s-+-%'-{$latest_version_length}s", '', '', ''));
 		foreach ($ext_manager->all_available() as $ext_name => $ext_path)
 		{
@@ -287,20 +306,20 @@ class check extends \phpbb\console\command\command
 	protected function display_versions(OutputInterface $output, $updates_available)
 	{
 		$output->writeln('');
-		$output->writeln('<comment>' . $this->user->lang('UPDATES_AVAILABLE') . '</comment>');
+		$output->writeln('<comment>' . $this->language->lang('UPDATES_AVAILABLE') . '</comment>');
 		foreach ($updates_available as $version_data)
 		{
 			$messages = array();
-			$messages[] = sprintf("\t%-30s| %s", $this->user->lang('VERSION'), $version_data['current']);
+			$messages[] = sprintf("\t%-30s| %s", $this->language->lang('VERSION'), $version_data['current']);
 
 			if (isset($version_data['announcement']))
 			{
-				$messages[] = sprintf("\t%-30s| %s", $this->user->lang('ANNOUNCEMENT_TOPIC'), $version_data['announcement']);
+				$messages[] = sprintf("\t%-30s| %s", $this->language->lang('ANNOUNCEMENT_TOPIC'), $version_data['announcement']);
 			}
 
 			if (isset($version_data['download']))
 			{
-				$messages[] = sprintf("\t%-30s| %s", $this->user->lang('DOWNLOAD_LATEST'), $version_data['download']);
+				$messages[] = sprintf("\t%-30s| %s", $this->language->lang('DOWNLOAD_LATEST'), $version_data['download']);
 			}
 
 			$messages[] = '';
