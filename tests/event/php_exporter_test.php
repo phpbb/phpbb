@@ -552,7 +552,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 					'* @since 3.1.0-a1',
 					'/**',
 					'* @since 3.1.0-a1',
-					'* @change 3.1.0-a2',
+					'* @changed 3.1.0-a2',
 					'*/',
 					'$phpbb_dispatcher->dispatch(\'test\');',
 				),
@@ -590,9 +590,9 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array(
 				array(
 					'/**',
-					'* @change 3.1.0-a1',
-					'* @change 3.1.0-a2',
-					'* @change 3.1.0-a3',
+					'* @changed 3.1.0-a1',
+					'* @changed 3.1.0-a2',
+					'* @changed 3.1.0-a3',
 					'*/',
 					'$phpbb_dispatcher->dispatch(\'test\');',
 				),
@@ -657,7 +657,7 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 					'	* Hello Bertie!',
 					'	*',
 					'	* @since 3.1.0-a1',
-					'	* @change 3.1.0-a2',
+					'	* @changed 3.1.0-a2',
 					'	*/',
 					'	$phpbb_dispatcher->dispatch(\'test\');',
 				),
@@ -691,9 +691,9 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 			array(
 				array(
 					'/**',
-					'* @change 3.1.0-a1',
-					'* @change 3.1.0-a2',
-					'* @change 3.1.0-a3',
+					'* @changed 3.1.0-a1',
+					'* @changed 3.1.0-a2',
+					'* @changed 3.1.0-a3',
 					'*/',
 					'$phpbb_dispatcher->dispatch(\'test\');',
 				),

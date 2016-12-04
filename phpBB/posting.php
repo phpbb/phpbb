@@ -84,7 +84,7 @@ $current_time = time();
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
 * @since 3.1.0-a1
-* @change 3.1.2-RC1			Removed 'delete' var as it does not exist
+* @changed 3.1.2-RC1			Removed 'delete' var as it does not exist
 */
 $vars = array(
 	'post_id',
@@ -373,7 +373,7 @@ switch ($mode)
 * @var	bool	is_authed	Does the user have the required permissions?
 * @var	array	post_data	All post data from database
 * @since 3.1.3-RC1
-* @change 3.1.10-RC1 Added post_data
+* @changed 3.1.10-RC1 Added post_data
 */
 $vars = array(
 	'post_id',
@@ -1261,7 +1261,7 @@ if ($submit || $preview || $refresh)
 	* @var	array	error		Any error strings; a non-empty array aborts form submission.
 	*				NOTE: Should be actual language strings, NOT language keys.
 	* @since 3.1.0-RC5
-	* @change 3.1.5-RC1 Added poll array to the event
+	* @changed 3.1.5-RC1 Added poll array to the event
 	*/
 	$vars = array(
 		'post_data',
@@ -1385,7 +1385,7 @@ if ($submit || $preview || $refresh)
 			* @var	bool	update_subject		Boolean if the post subject was changed
 			*				NOTE: Should be actual language strings, NOT language keys.
 			* @since 3.1.0-RC5
-			* @change 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
+			* @changed 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
 			*/
 			$vars = array(
 				'post_data',
@@ -1424,7 +1424,7 @@ if ($submit || $preview || $refresh)
 			* @var	string	redirect_url		URL the user is going to be redirected to
 			*				NOTE: Should be actual language strings, NOT language keys.
 			* @since 3.1.0-RC5
-			* @change 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
+			* @changed 3.1.6-RC1 remove submit and error from event  Submit and Error are checked previously prior to running event
 			*/
 			$vars = array(
 				'post_data',
@@ -1869,13 +1869,13 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 *				posting page via $template->assign_vars()
 * @var	object	message_parser	The message parser object
 * @since 3.1.0-a1
-* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
+* @changed 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
 *		s_topic_icons, form_enctype, s_action, s_hidden_fields,
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
-* @change 3.1.2-RC1 Removed 'delete' var as it does not exist
-* @change 3.1.5-RC1 Added poll variables to the page_data array
-* @change 3.1.6-RC1 Added 'draft_id' var
+* @changed 3.1.2-RC1 Removed 'delete' var as it does not exist
+* @changed 3.1.5-RC1 Added poll variables to the page_data array
+* @changed 3.1.6-RC1 Added 'draft_id' var
 */
 $vars = array(
 	'post_data',

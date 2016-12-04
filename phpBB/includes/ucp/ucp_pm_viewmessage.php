@@ -267,7 +267,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var	array	msg_data	Template array with message data
 	* @var 	array	user_info	User data of the sender
 	* @since 3.1.0-a1
-	* @change 3.1.6-RC1		Added user_info into event
+	* @changed 3.1.6-RC1		Added user_info into event
 	*/
 	$vars = array(
 		'id',

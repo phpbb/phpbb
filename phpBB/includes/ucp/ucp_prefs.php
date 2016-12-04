@@ -69,7 +69,7 @@ class ucp_prefs
 				* @var	array	data		Array with current ucp options data
 				* @var	array	error		Array with list of errors
 				* @since 3.1.0-a1
-				* @change 3.1.4-RC1 Added error variable to the event
+				* @changed 3.1.4-RC1 Added error variable to the event
 				*/
 				$vars = array('submit', 'data', 'error');
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_personal_data', compact($vars)));

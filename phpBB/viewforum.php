@@ -431,9 +431,9 @@ $sql_array = array(
 *									Author, Post time, Replies, Subject, Views
 * @var	string	sort_dir			Either "a" for ascending or "d" for descending
 * @since 3.1.0-a1
-* @change 3.1.0-RC4 Added forum_data var
-* @change 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
-* @change 3.1.9-RC1 Fix types of properties
+* @changed 3.1.0-RC4 Added forum_data var
+* @changed 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
+* @changed 3.1.9-RC1 Fix types of properties
 */
 $vars = array(
 	'forum_data',
@@ -631,7 +631,7 @@ $sql_ary = array(
 *
 * @since 3.1.0-RC4
 *
-* @change 3.1.3 Added forum_data
+* @changed 3.1.3 Added forum_data
 */
 $vars = array(
 	'forum_data',
@@ -945,7 +945,7 @@ if (sizeof($topic_list))
 		* @var	bool	s_type_switch_test	Flag indicating if the test topic type is [global] announcement
 		* @since 3.1.0-a1
 		*
-		* @change 3.1.10-RC1 Added s_type_switch, s_type_switch_test
+		* @changed 3.1.10-RC1 Added s_type_switch, s_type_switch_test
 		*/
 		$vars = array('row', 'topic_row', 's_type_switch', 's_type_switch_test');
 		extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topicrow', compact($vars)));
