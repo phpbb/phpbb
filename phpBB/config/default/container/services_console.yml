@@ -220,6 +220,16 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.update.check:
+        class: phpbb\console\command\update\check
+        arguments:
+            - '@user'
+            - '@config'
+            - '@service_container'
+            - '@language'
+        tags:
+            - { name: console.command }
+
     console.command.user.activate:
         class: phpbb\console\command\user\activate
         arguments:
