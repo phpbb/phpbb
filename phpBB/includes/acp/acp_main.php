@@ -450,9 +450,10 @@ class acp_main
 			}
 			catch (\RuntimeException $e)
 			{
+				$message = call_user_func_array(array($user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$template->assign_vars(array(
 					'S_VERSIONCHECK_FAIL'		=> true,
-					'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+					'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
 				));
 			}
 		}

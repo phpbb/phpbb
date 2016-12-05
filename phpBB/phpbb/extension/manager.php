@@ -13,6 +13,8 @@
 
 namespace phpbb\extension;
 
+use phpbb\exception\runtime_exception;
+use phpbb\file_downloader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -42,10 +44,10 @@ class manager
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
-	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
+	* @param \phpbb\cache\service $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
@@ -146,12 +148,11 @@ class manager
 	* Instantiates the metadata manager for the extension with the given name
 	*
 	* @param string $name The extension name
-	* @param \phpbb\template\template $template The template manager
 	* @return \phpbb\extension\metadata_manager Instance of the metadata manager
 	*/
-	public function create_extension_metadata_manager($name, \phpbb\template\template $template)
+	public function create_extension_metadata_manager($name)
 	{
-		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
+		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $this->phpbb_root_path);
 	}
 
 	/**
@@ -563,6 +564,35 @@ class manager
 	public function is_configured($name)
 	{
 		return isset($this->extensions[$name]);
+	}
+
+	/**
+	* Check the version and return the available updates (for an extension).
+	*
+	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @param string $stability Force the stability (null by default).
+	* @return string
+	* @throws runtime_exception
+	*/
+	public function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false, $stability = null)
+	{
+		$meta = $md_manager->get_metadata('all');
+
+		if (!isset($meta['extra']['version-check']))
+		{
+			throw new runtime_exception('NO_VERSIONCHECK');
+		}
+
+		$version_check = $meta['extra']['version-check'];
+
+		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new file_downloader());
+		$version_helper->set_current_version($meta['version']);
+		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename']);
+		$version_helper->force_stability($stability);
+
+		return $updates = $version_helper->get_suggested_updates($force_update, $force_cache);
 	}
 
 	/**
