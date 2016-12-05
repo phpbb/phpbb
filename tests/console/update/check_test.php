@@ -28,6 +28,9 @@ class phpbb_console_command_check_test extends phpbb_test_case
 
 	protected $version_helper;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	public function test_up_to_date()
 	{
 		$command_tester = $this->get_command_tester('100000');
@@ -40,7 +43,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 	{
 		$command_tester = $this->get_command_tester('100000');
 		$status = $command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true, '--verbose' => true));
-		$this->assertContains('UPDATE_NOT_NEEDED', $command_tester->getDisplay());
+		$this->assertContains($this->language->lang('UPDATE_NOT_NEEDED'), $command_tester->getDisplay());
 		$this->assertSame($status, 0);
 	}
 
@@ -49,7 +52,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 	{
 		$command_tester = $this->get_command_tester('0');
 		$status = $command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true));
-		$this->assertContains('UPDATE_NEEDED', $command_tester->getDisplay());
+		$this->assertContains($this->language->lang('UPDATE_NEEDED'), $command_tester->getDisplay());
 		$this->assertSame($status, 1);
 	}
 
@@ -57,8 +60,8 @@ class phpbb_console_command_check_test extends phpbb_test_case
 	{
 		$command_tester = $this->get_command_tester('0');
 		$status = $command_tester->execute(array('command' => $this->command_name, '--no-ansi' => true, '--verbose' => true));
-		$this->assertContains('UPDATE_NEEDED', $command_tester->getDisplay());
-		$this->assertContains('UPDATES_AVAILABLE', $command_tester->getDisplay());
+		$this->assertContains($this->language->lang('UPDATE_NEEDED'), $command_tester->getDisplay());
+		$this->assertContains($this->language->lang('UPDATES_AVAILABLE'), $command_tester->getDisplay());
 		$this->assertSame($status, 1);
 	}
 
@@ -77,10 +80,12 @@ class phpbb_console_command_check_test extends phpbb_test_case
 
 	public function get_command_tester($current_version)
 	{
-		global $user;
+		global $user, $phpbb_root_path, $phpEx;
+
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		$user = $this->getMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			$this->language,
 			'\phpbb\datetime'
 		));
 		$user->method('lang')->will($this->returnArgument(0));
@@ -96,7 +101,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 		$container->set('version_helper', $this->version_helper);
 
 		$application = new Application();
-		$application->add(new check($user, $config, $container));
+		$application->add(new check($user, $config, $container, $this->language));
 
 		$command = $application->find('update:check');
 		$this->command_name = $command->getName();

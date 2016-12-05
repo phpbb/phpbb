@@ -110,25 +110,26 @@ class check extends \phpbb\console\command\command
 			}
 			else
 			{
-				return $this->check_ext($io, $stability, $recheck, $ext_name);
+				return $this->check_ext($input, $io, $stability, $recheck, $ext_name);
 			}
 		}
 		else
 		{
-			return $this->check_core($io,$stability, $recheck);
+			return $this->check_core($input, $io, $stability, $recheck);
 		}
 	}
 
 	/**
 	 * Check if a given extension is up to date
 	 *
-	 * @param SymfonyStyle	$io			IO handler, for formatted and unified IO
-	 * @param string		$stability	Force a given stability
-	 * @param bool			$recheck	Disallow the use of the cache
-	 * @param string		$ext_name	The extension name
+	 * @param InputInterface	$input		Input stream, used to get the options.
+	 * @param SymfonyStyle		$io			IO handler, for formatted and unified IO
+	 * @param string			$stability	Force a given stability
+	 * @param bool				$recheck	Disallow the use of the cache
+	 * @param string			$ext_name	The extension name
 	 * @return int
 	 */
-	protected function check_ext(SymfonyStyle $io, $stability, $recheck, $ext_name)
+	protected function check_ext(InputInterface $input, SymfonyStyle $io, $stability, $recheck, $ext_name)
 	{
 		try
 		{
@@ -137,7 +138,7 @@ class check extends \phpbb\console\command\command
 			$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 
 			$metadata = $md_manager->get_metadata('all');
-			if ($io->isVerbose())
+			if ($input->getOption('verbose'))
 			{
 				$io->title($md_manager->get_metadata('display-name'));
 
@@ -146,7 +147,7 @@ class check extends \phpbb\console\command\command
 
 			if (!empty($updates_available))
 			{
-				if ($io->isVerbose())
+				if ($input->getOption('verbose'))
 				{
 					$io->caution($this->language->lang('NOT_UP_TO_DATE', $metadata['name']));
 
@@ -157,7 +158,7 @@ class check extends \phpbb\console\command\command
 			}
 			else
 			{
-				if ($io->isVerbose())
+				if ($input->getOption('verbose'))
 				{
 					$io->success($this->language->lang('UPDATE_NOT_NEEDED'));
 				}
@@ -176,19 +177,20 @@ class check extends \phpbb\console\command\command
 	/**
 	 * Check if the core is up to date
 	 *
-	 * @param SymfonyStyle	$io			IO handler, for formatted and unified IO
-	 * @param string		$stability	Force a given stability
-	 * @param bool			$recheck	Disallow the use of the cache
+	 * @param InputInterface	$input		Input stream, used to get the options.
+	 * @param SymfonyStyle		$io			IO handler, for formatted and unified IO
+	 * @param string			$stability	Force a given stability
+	 * @param bool				$recheck	Disallow the use of the cache
 	 * @return int
 	 */
-	protected function check_core(SymfonyStyle $io, $stability, $recheck)
+	protected function check_core(InputInterface $input, SymfonyStyle $io, $stability, $recheck)
 	{
 		$version_helper = $this->phpbb_container->get('version_helper');
 		$version_helper->force_stability($stability);
 
 		$updates_available = $version_helper->get_suggested_updates($recheck);
 
-		if ($io->isVerbose())
+		if ($input->getOption('verbose'))
 		{
 			$io->title('phpBB core');
 
@@ -199,7 +201,7 @@ class check extends \phpbb\console\command\command
 		{
 			$io->caution($this->language->lang('UPDATE_NEEDED'));
 
-			if ($io->isVerbose())
+			if ($input->getOption('verbose'))
 			{
 				$this->display_versions($io, $updates_available);
 			}
@@ -208,7 +210,7 @@ class check extends \phpbb\console\command\command
 		}
 		else
 		{
-			if ($io->isVerbose())
+			if ($input->getOption('verbose'))
 			{
 				$io->success($this->language->lang('UPDATE_NOT_NEEDED'));
 			}
@@ -220,7 +222,7 @@ class check extends \phpbb\console\command\command
 	/**
 	* Check if all the available extensions are up to date
 	*
-	 * @param SymfonyStyle	$io			IO handler, for formatted and unified IO
+	* @param SymfonyStyle	$io			IO handler, for formatted and unified IO
 	* @param bool			$recheck	Disallow the use of the cache
 	* @return int
 	*/
