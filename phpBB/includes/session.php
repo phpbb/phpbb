@@ -443,7 +443,7 @@ class session
 								$db->sql_query($sql);
 							}
 
-							if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+							if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
 							{
 								$this->leave_newly_registered();
 							}
