@@ -42,8 +42,7 @@ class version_helper_remote_test extends \phpbb_test_case
 		$this->version_helper = new \phpbb\version_helper(
 			$this->cache,
 			$config,
-			$this->file_downloader,
-			new \phpbb\user(new \phpbb\language\language($lang_loader), '\phpbb\datetime')
+			$this->file_downloader
 		);
 		$this->user = new \phpbb\user(new \phpbb\language\language($lang_loader), '\phpbb\datetime');
 		$this->user->add_lang('acp/common');
@@ -161,8 +160,8 @@ class version_helper_remote_test extends \phpbb_test_case
 		{
 			try {
 				$return = $this->version_helper->get_versions();
-			} catch (\RuntimeException $e) {
-				$this->assertEquals((string)$e->getMessage(), $this->user->lang('VERSIONCHECK_FAIL'));
+			} catch (\phpbb\exception\runtime_exception $e) {
+				$this->assertEquals((string)$e->getMessage(), 'VERSIONCHECK_FAIL');
 			}
 		}
 		else
