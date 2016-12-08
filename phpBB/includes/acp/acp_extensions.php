@@ -451,6 +451,10 @@ class acp_extensions
 					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 				}
 			}
+			catch (version_check_exception $e)
+			{
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+			}
 			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
@@ -461,7 +465,7 @@ class acp_extensions
 			}
 			catch (\RuntimeException $e)
 			{
-				$disabeld_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
