@@ -50,7 +50,7 @@ class get extends command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return null
+	* @return void
 	* @see \phpbb\config\config::offsetGet()
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)

@@ -18,35 +18,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class revert extends \phpbb\console\command\db\migration_command
+class revert extends \phpbb\console\command\db\migrate
 {
-	/** @var string phpBB root path */
-	protected $phpbb_root_path;
-
-	/** @var  \phpbb\filesystem\filesystem_interface */
-	protected $filesystem;
-
-	/** @var \phpbb\language\language */
-	protected $language;
-
-	function __construct(\phpbb\user $user, \phpbb\language\language $language, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
-	{
-		$this->filesystem = $filesystem;
-		$this->language = $language;
-		$this->phpbb_root_path = $phpbb_root_path;
-		parent::__construct($user, $migrator, $extension_manager, $config, $cache);
-		$this->user->add_lang(array('common', 'migrator'));
-	}
-
 	protected function configure()
 	{
 		$this
 			->setName('db:revert')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_DB_REVERT'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_DB_REVERT'))
 			->addArgument(
 				'name',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_MIGRATION_NAME')
+				$this->language->lang('CLI_MIGRATION_NAME')
 			)
 		;
 	}

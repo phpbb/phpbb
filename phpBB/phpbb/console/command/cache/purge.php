@@ -40,7 +40,7 @@ class purge extends \phpbb\console\command\command
 	* @param \phpbb\cache\driver\driver_interface	$cache	Cache instance
 	* @param \phpbb\db\driver\driver_interface		$db		Database connection
 	* @param \phpbb\auth\auth						$auth	Auth instance
-	* @param \phpbb\log\log							$log	Logger instance
+	* @param \phpbb\log\log_interface				$log	Logger instance
 	* @param \phpbb\config\config					$config	Config instance
 	*/
 	public function __construct(\phpbb\user $user, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\config\config $config)
@@ -72,7 +72,7 @@ class purge extends \phpbb\console\command\command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return null
+	* @return void
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{

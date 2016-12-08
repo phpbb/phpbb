@@ -52,7 +52,7 @@ class cron_list extends \phpbb\console\command\command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return null
+	* @return void
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{

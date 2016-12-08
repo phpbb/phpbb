@@ -43,7 +43,7 @@ class delete extends command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return null
+	* @return void
 	* @see \phpbb\config\config::delete()
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
