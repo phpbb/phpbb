@@ -369,6 +369,13 @@ acp_profile_contact_before
 * Since: 3.1.6-RC1
 * Purpose: Add extra options to custom profile field configuration in the ACP
 
+acp_profile_step_one_lang_after
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.1.11-RC1
+* Purpose: Add extra lang specific options to custom profile field step one configuration in the ACP
+
 acp_prune_forums_append
 ===
 * Locations:
