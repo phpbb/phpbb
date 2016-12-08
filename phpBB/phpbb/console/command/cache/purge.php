@@ -14,6 +14,7 @@ namespace phpbb\console\command\cache;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class purge extends \phpbb\console\command\command
 {
@@ -84,6 +85,7 @@ class purge extends \phpbb\console\command\command
 
 		$this->log->add('admin', ANONYMOUS, '', 'LOG_PURGE_CACHE', time(), array());
 
-		$output->writeln($this->user->lang('PURGE_CACHE_SUCCESS'));
+		$io = new SymfonyStyle($input, $output);
+		$io->success($this->user->lang('PURGE_CACHE_SUCCESS'));
 	}
 }

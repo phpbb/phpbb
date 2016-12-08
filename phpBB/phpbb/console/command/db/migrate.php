@@ -15,6 +15,7 @@ namespace phpbb\console\command\db;
 use phpbb\db\output_handler\log_wrapper_migrator_output_handler;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class migrate extends \phpbb\console\command\db\migration_command
 {
@@ -50,6 +51,8 @@ class migrate extends \phpbb\console\command\db\migration_command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$this->migrator->set_output_handler(new log_wrapper_migrator_output_handler($this->language, new console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log', $this->filesystem));
 
 		$this->migrator->create_migrations_table();
@@ -66,7 +69,7 @@ class migrate extends \phpbb\console\command\db\migration_command
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				$output->writeln('<error>' . $e->getLocalisedMessage($this->user) . '</error>');
+				$io->error($e->getLocalisedMessage($this->user));
 				$this->finalise_update();
 				return 1;
 			}
@@ -78,6 +81,6 @@ class migrate extends \phpbb\console\command\db\migration_command
 		}
 
 		$this->finalise_update();
-		$output->writeln($this->user->lang['DATABASE_UPDATE_COMPLETE']);
+		$io->success($this->language->lang('INLINE_UPDATE_SUCCESSFUL'));
 	}
 }

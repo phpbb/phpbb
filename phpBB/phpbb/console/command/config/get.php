@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class get extends command
 {
@@ -54,6 +55,8 @@ class get extends command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$key = $input->getArgument('key');
 
 		if (isset($this->config[$key]) && $input->getOption('no-newline'))
@@ -66,7 +69,7 @@ class get extends command
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CLI_CONFIG_NOT_EXISTS', $key) . '</error>');
+			$io->error($this->user->lang('CLI_CONFIG_NOT_EXISTS', $key));
 		}
 	}
 }

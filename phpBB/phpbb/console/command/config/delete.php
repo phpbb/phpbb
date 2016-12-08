@@ -15,6 +15,7 @@ namespace phpbb\console\command\config;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class delete extends command
 {
@@ -47,17 +48,19 @@ class delete extends command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$key = $input->getArgument('key');
 
 		if (isset($this->config[$key]))
 		{
 			$this->config->delete($key);
 
-			$output->writeln('<info>' . $this->user->lang('CLI_CONFIG_DELETE_SUCCESS', $key) . '</info>');
+			$io->success($this->user->lang('CLI_CONFIG_DELETE_SUCCESS', $key));
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CLI_CONFIG_NOT_EXISTS', $key) . '</error>');
+			$io->error($this->user->lang('CLI_CONFIG_NOT_EXISTS', $key));
 		}
 	}
 }

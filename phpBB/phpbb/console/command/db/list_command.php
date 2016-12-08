@@ -15,6 +15,7 @@ namespace phpbb\console\command\db;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class list_command extends \phpbb\console\command\db\migration_command
 {
@@ -34,6 +35,8 @@ class list_command extends \phpbb\console\command\db\migration_command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$show_installed = !$input->getOption('available');
 		$installed = $available = array();
 
@@ -51,23 +54,28 @@ class list_command extends \phpbb\console\command\db\migration_command
 
 		if ($show_installed)
 		{
-			$output->writeln('<info>' . $this->user->lang('CLI_MIGRATIONS_INSTALLED') . $this->user->lang('COLON') . '</info>');
-			$output->writeln($installed);
+			$io->section($this->user->lang('CLI_MIGRATIONS_INSTALLED'));
 
-			if (empty($installed))
+			if (!empty($installed))
 			{
-				$output->writeln($this->user->lang('CLI_MIGRATIONS_EMPTY'));
+				$io->listing($installed);
 			}
-
-			$output->writeln('');
+			else
+			{
+				$io->text($this->user->lang('CLI_MIGRATIONS_EMPTY'));
+				$io->newLine();
+			}
 		}
 
-		$output->writeln('<info>' . $this->user->lang('CLI_MIGRATIONS_AVAILABLE') . $this->user->lang('COLON') . '</info>');
-		$output->writeln($available);
-
-		if (empty($available))
+		$io->section($this->user->lang('CLI_MIGRATIONS_AVAILABLE'));
+		if (!empty($available))
 		{
-			$output->writeln($this->user->lang('CLI_MIGRATIONS_EMPTY'));
+			$io->listing($available);
+		}
+		else
+		{
+			$io->text($this->user->lang('CLI_MIGRATIONS_EMPTY'));
+			$io->newLine();
 		}
 	}
 }
