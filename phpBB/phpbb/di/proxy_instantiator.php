@@ -17,7 +17,6 @@ use \bantu\IniGetWrapper\IniGetWrapper;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
-use ProxyManager\Proxy\LazyLoadingInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\LazyProxy\Instantiator\InstantiatorInterface;
@@ -62,7 +61,7 @@ class proxy_instantiator implements InstantiatorInterface
 	{
 		return $this->factory->createProxy(
 			$definition->getClass(),
-			function (&$wrappedInstance, LazyLoadingInterface $proxy) use ($realInstantiator) {
+			function (&$wrappedInstance, \ProxyManager\Proxy\LazyLoadingInterface $proxy) use ($realInstantiator) {
 				$wrappedInstance = call_user_func($realInstantiator);
 
 				$proxy->setProxyInitializer(null);
