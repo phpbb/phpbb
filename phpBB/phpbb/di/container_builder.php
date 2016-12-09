@@ -488,7 +488,7 @@ class container_builder
 	protected function create_container(array $extensions)
 	{
 		$container = new ContainerBuilder(new ParameterBag($this->get_core_parameters()));
-		$container->setProxyInstantiator(new RuntimeInstantiator());
+		$container->setProxyInstantiator(new proxy_instantiator($this->get_cache_dir()));
 
 		$extensions_alias = array();
 
