@@ -81,13 +81,13 @@ class cron_list extends \phpbb\console\command\command
 
 		if (!empty($ready_tasks))
 		{
-			$io->section($this->user->lang('TASKS_READY'));
+			$io->title($this->user->lang('TASKS_READY'));
 			$io->listing($ready_tasks);
 		}
 
 		if (!empty($not_ready_tasks))
 		{
-			$io->section($this->user->lang('TASKS_NOT_READY'));
+			$io->title($this->user->lang('TASKS_NOT_READY'));
 			$io->listing($not_ready_tasks);
 		}
 	}
