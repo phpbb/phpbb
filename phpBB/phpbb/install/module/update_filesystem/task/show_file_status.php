@@ -92,7 +92,7 @@ class show_file_status extends task_base
 			// Create archive for merge conflicts
 			if (!empty($merge_conflicts))
 			{
-				$compression_method = $this->installer_config->get('compression_method', '');
+				$compression_method = $this->installer_config->get('file_update_compression', '');
 				$conflict_archive = $this->file_updater->init($compression_method);
 				$this->installer_config->set('update_file_conflict_archive', $conflict_archive);
 
