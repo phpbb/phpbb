@@ -91,6 +91,7 @@ class acp_extensions
 			try
 			{
 				$md_manager->get_metadata('all');
+				$md_manager->load_info_language_file();
 			}
 			catch (\phpbb\extension\exception $e)
 			{

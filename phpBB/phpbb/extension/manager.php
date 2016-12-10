@@ -146,6 +146,53 @@ class manager
 	}
 
 	/**
+	 * Add custom Extension info language file
+	 */
+	public function add_ext_info()
+	{
+		$finder = $this->get_finder(true);
+		// We grab the language files from the default, English and user's language.
+		// So we can fall back to the other files like we do when using add_lang()
+		$default_lang_files = $english_lang_files = $user_lang_files = array();
+
+		// Search for board default language if it's not the user language
+		if ($this->config['default_lang'] != $this->user->lang_name)
+		{
+			$default_lang_files = $finder
+				->prefix('info_ext_')
+				->suffix('.' . $this->php_ext)
+				->extension_directory('/language/' . basename($this->config['default_lang']))
+				->core_path('language/' . basename($this->config['default_lang']) . '/mods/')
+				->find();
+		}
+
+		// Search for english, if its not the default or user language
+		if ($this->config['default_lang'] != 'en' && $this->user->lang_name != 'en')
+		{
+			$english_lang_files = $finder
+				->prefix('info_ext_')
+				->suffix('.' . $this->php_ext)
+				->extension_directory('/language/en')
+				->core_path('language/en/mods/')
+				->find();
+		}
+
+		// Find files in the user's language
+		$user_lang_files = $finder
+			->prefix('info_ext_')
+			->suffix('.' . $this->php_ext)
+			->extension_directory('/language/' . $this->user->lang_name)
+			->core_path('language/' . $this->user->lang_name . '/mods/')
+			->find();
+
+		$lang_files = array_merge($english_lang_files, $default_lang_files, $user_lang_files);
+		foreach ($lang_files as $lang_file => $ext_name)
+		{
+			$this->user->add_lang_ext($ext_name, $lang_file);
+		}
+	}
+
+	/**
 	* Instantiates the metadata manager for the extension with the given name
 	*
 	* @param string $name The extension name
