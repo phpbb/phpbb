@@ -82,6 +82,7 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		// Get form token
 		$link = $crawler->selectLink($this->lang('NOTIFICATIONS_MARK_ALL_READ'))->link()->getUri();
 		$crawler = self::request('GET', substr($link, strpos($link, 'ucp.')));
-		$this->assertEquals(0, $crawler->filter('#notification_list_button strong.badge.hidden')->text());
+		$this->assertCount(1, $crawler->filter('#notification_list_button strong.badge.hidden'));
+		$this->assertEquals("0", $crawler->filter('#notification_list_button strong.badge.hidden')->text());
 	}
 }
