@@ -339,18 +339,19 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	vertical-align: top;
 }
 
-.header-avatar:hover {
+a.header-avatar,
+a.header-avatar:hover {
 	text-decoration: none;
 }
 
-.header-avatar img {
+a.header-avatar img {
 	margin-bottom: 2px;
 	max-height: 20px;
 	vertical-align: middle;
 	width: auto;
 }
 
-.header-avatar span:after {
+a.header-avatar span:after {
 	content: '\f0dd';
 	display: inline-block;
 	font: normal normal normal 14px/1 FontAwesome;
