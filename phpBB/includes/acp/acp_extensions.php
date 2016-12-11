@@ -56,21 +56,6 @@ class acp_extensions
 		$safe_time_limit = (ini_get('max_execution_time') / 2);
 		$start_time = time();
 
-		/**
-		* Event to run a specific action on extension
-		*
-		* @event core.acp_extensions_run_action
-		* @var	string	action			Action to run
-		* @var	string	u_action		Url we are at
-		* @var	string	ext_name		Extension name from request
-		* @var	int		safe_time_limit	Safe limit of execution time
-		* @var	int		start_time		Start time
-		* @since 3.1.11-RC1
-		*/
-		$u_action = $this->u_action;
-		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time');
-		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action', compact($vars)));
-
 		// Cancel action
 		if ($request->is_set_post('cancel'))
 		{
@@ -81,6 +66,33 @@ class acp_extensions
 		if (in_array($action, array('enable', 'disable', 'delete_data')) && !check_link_hash($request->variable('hash', ''), $action . '.' . $ext_name))
 		{
 			trigger_error('FORM_INVALID', E_USER_WARNING);
+		}
+
+		/**
+		* Event to run a specific action on extension
+		*
+		* @event core.acp_extensions_run_action
+		* @var	string	action			Action to run
+		* @var	string	u_action		Url we are at
+		* @var	string	ext_name		Extension name from request
+		* @var	int		safe_time_limit	Safe limit of execution time
+		* @var	int		start_time		Start time
+		* @var	string	tpl_name		Template file to load; leave empty to continue execution, filled in if ready to finish
+		* @since 3.1.11-RC1
+		*/
+		$u_action = $this->u_action;
+		$tpl_name = '';
+		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
+		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action', compact($vars)));
+
+		// In case they have been updated by the event
+		$this->u_action = $u_action;
+		$this->tpl_name = $tpl_name;
+
+		// If tpl_name was set by the prior event, we are done
+		if ($tpl_name)
+		{
+			return;
 		}
 
 		// If they've specified an extension, let's load the metadata manager and validate it.
