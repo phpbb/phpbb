@@ -1319,7 +1319,6 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_title'		=> '',
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
-				'sig'				=> '',
 				'pm'				=> '',
 				'email'				=> '',
 				'jabber'			=> '',
