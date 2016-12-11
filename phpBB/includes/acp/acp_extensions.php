@@ -308,29 +308,37 @@ class acp_extensions
 				// Output it to the template
 				$md_manager->output_template_data($template);
 
-				try
+				$meta = $md_manager->get_metadata('all');
+				if (isset($meta['extra']['version-check']))
 				{
-					$updates_available = $phpbb_extension_manager->version_check($md_manager, $request->variable('versioncheck_force', false), $this->config['extension_force_unstable'] ? 'unstable' : null);
-
-					$template->assign_vars(array(
-						'S_UP_TO_DATE'		=> empty($updates_available),
-						'S_VERSIONCHECK'	=> true,
-						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-					));
-
-					foreach ($updates_available as $branch => $version_data)
+					try
 					{
-						$template->assign_block_vars('updates_available', $version_data);
-					}
-				}
-				catch (exception_interface $e)
-				{
-					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+						$updates_available = $phpbb_extension_manager->version_check($md_manager, $request->variable('versioncheck_force', false), $this->config['extension_force_unstable'] ? 'unstable' : null);
 
-					$template->assign_vars(array(
-						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
-						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
-					));
+						$template->assign_vars(array(
+							'S_UP_TO_DATE' => empty($updates_available),
+							'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
+						));
+
+						foreach ($updates_available as $branch => $version_data)
+						{
+							$template->assign_block_vars('updates_available', $version_data);
+						}
+					}
+					catch (exception_interface $e)
+					{
+						$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+
+						$template->assign_vars(array(
+							'S_VERSIONCHECK_FAIL' => true,
+							'VERSIONCHECK_FAIL_REASON' => ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
+						));
+					}
+					$template->assign_var('S_VERSIONCHECK', true);
+				}
+				else
+				{
+					$template->assign_var('S_VERSIONCHECK', false);
 				}
 
 				$template->assign_vars(array(
