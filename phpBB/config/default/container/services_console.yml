@@ -111,15 +111,7 @@ services:
 
     console.command.db.revert:
         class: phpbb\console\command\db\revert
-        arguments:
-            - '@user'
-            - '@language'
-            - '@migrator'
-            - '@ext.manager'
-            - '@config'
-            - '@cache'
-            - '@filesystem'
-            - '%core.root_path%'
+        parent: console.command.db.migrate
         tags:
             - { name: console.command }
 
