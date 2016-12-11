@@ -54,7 +54,7 @@ class list_all extends \phpbb\console\command\command
 	}
 
 	/**
-	* Executes the command reparser:reparse
+	* Executes the command reparser:list
 	*
 	* @param InputInterface $input
 	* @param OutputInterface $output
@@ -62,7 +62,11 @@ class list_all extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$output->writeln('<info>' . implode(', ', $this->reparser_names) . '</info>');
+		$output->writeln('<info>' . $this->user->lang('CLI_DESCRIPTION_REPARSER_AVAILABLE') . '</info>');
+		foreach ($this->reparser_names as $reparser_name)
+		{
+			$output->writeln($reparser_name);
+		}
 
 		return 0;
 	}
