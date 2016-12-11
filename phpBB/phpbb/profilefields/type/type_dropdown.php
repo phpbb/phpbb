@@ -307,7 +307,7 @@ class type_dropdown extends type_base
 	/**
 	* {@inheritDoc}
 	*/
-	public function display_options(&$template_vars, &$field_data)
+	public function display_options($action, &$field_data)
 	{
 		// Initialize these array elements if we are creating a new field
 		if (!sizeof($field_data['lang_options']))
@@ -316,10 +316,14 @@ class type_dropdown extends type_base
 			$field_data['lang_options'] = array();
 		}
 
-		$template_vars = array_merge($template_vars, array(
-			'S_DROPDOWN'				=> true,
-			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['DROPDOWN_ENTRIES_EXPLAIN'],
-			'LANG_OPTIONS'				=> implode("\n", $field_data['lang_options']),
-		));
+		$doptions = array(
+			0 => array(
+					'TITLE' => $this->user->lang['ENTRIES'],
+					'EXPLAIN' => $this->user->lang[($action == 'edit') ? 'EDIT_DROPDOWN_LANG_EXPLAIN' : 'DROPDOWN_ENTRIES_EXPLAIN'],
+					'FIELD' => '<textarea id="lang_options" name="lang_options" rows="5" cols="80">' . implode("\n", $field_data['lang_options']) . '</textarea>'
+				),
+		);
+
+		return $doptions;
 	}
 }
