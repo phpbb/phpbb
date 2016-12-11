@@ -177,9 +177,9 @@ abstract class type_base implements type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function display_options(&$template_vars, &$field_data)
+	public function display_options($action, &$field_data)
 	{
-		return;
+		return array();
 	}
 
 	/**
