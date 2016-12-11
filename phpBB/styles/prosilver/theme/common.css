@@ -1223,6 +1223,10 @@ ul.linklist:after,
 	padding: 4px 6px;
 }
 
+.badge.hidden {
+	display: none;
+}
+
 /* Navbar specific list items
 ----------------------------------------*/
 
