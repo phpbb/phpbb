@@ -142,7 +142,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_email_template_variables()
 	{
-		$user_data = $this->user_loader->get_username($this->get_data('reporter_id'), 'no_profile');
+		$user_data = $this->user_loader->get_user($this->get_data('reporter_id'));
 
 		return array(
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username']),
