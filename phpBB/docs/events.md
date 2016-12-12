@@ -803,6 +803,13 @@ mcp_forum_actions_after
 * Since: 3.1.11-RC1
 * Purpose: Add some information after actions fieldset
 
+mcp_forum_actions_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+* Since: 3.1.11-RC1
+* Purpose: Add additional options to actions select
+
 mcp_forum_actions_before
 ===
 * Locations:
