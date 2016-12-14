@@ -955,7 +955,10 @@ class fulltext_mysql extends \phpbb\search\base
 				$alter[] = 'MODIFY post_subject text NOT NULL';
 			}
 			$alter[] = 'ADD FULLTEXT (post_subject)';
+			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
+
+		$alter = array();
 
 		if (!isset($this->stats['post_content']))
 		{
@@ -969,10 +972,6 @@ class fulltext_mysql extends \phpbb\search\base
 			}
 
 			$alter[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
-		}
-
-		if (sizeof($alter))
-		{
 			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
