@@ -179,6 +179,7 @@ services:
         class: phpbb\console\command\reparser\reparse
         arguments:
             - '@user'
+            - '@dispatcher'
             - '@text_reparser.lock'
             - '@text_reparser.manager'
             - '@text_reparser_collection'
