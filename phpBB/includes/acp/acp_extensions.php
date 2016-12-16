@@ -361,6 +361,7 @@ class acp_extensions
 		* @since 3.1.11-RC1
 		*/
 		$u_action = $this->u_action;
+		$tpl_name = $this->tpl_name;
 		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
 		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_after', compact($vars)));
 
