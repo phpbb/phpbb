@@ -347,6 +347,26 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_details';
 			break;
 		}
+
+		/**
+		* Event to run after a specific action on extension has completed
+		*
+		* @event core.acp_extensions_run_action_after
+		* @var	string	action			Action that has run
+		* @var	string	u_action		Url we are at
+		* @var	string	ext_name		Extension name from request
+		* @var	int		safe_time_limit	Safe limit of execution time
+		* @var	int		start_time		Start time
+		* @var	string	tpl_name		Template file to load
+		* @since 3.1.11-RC1
+		*/
+		$u_action = $this->u_action;
+		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
+		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_after', compact($vars)));
+
+		// In case they have been updated by the event
+		$this->u_action = $u_action;
+		$this->tpl_name = $tpl_name;
 	}
 
 	/**
