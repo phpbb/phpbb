@@ -22,21 +22,22 @@ if (!defined('IN_PHPBB'))
 class acp_extensions
 {
 	var $u_action;
+	var $tpl_name;
 
-	private $db;
 	private $config;
 	private $template;
 	private $user;
 	private $cache;
 	private $log;
 	private $request;
+	private $php_dispatcher;
+	private $ext_manager;
 
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpEx, $phpbb_log, $cache, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpEx, $phpbb_log, $cache, $phpbb_dispatcher;
 
-		$this->db = $db;
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
@@ -44,13 +45,14 @@ class acp_extensions
 		$this->request = $request;
 		$this->log = $phpbb_log;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->ext_manager = $phpbb_extension_manager;
 
-		$user->add_lang(array('install', 'acp/extensions', 'migrator'));
+		$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
 
 		$this->page_title = 'ACP_EXTENSIONS';
 
-		$action = $request->variable('action', 'list');
-		$ext_name = $request->variable('ext_name', '');
+		$action = $this->request->variable('action', 'list');
+		$ext_name = $this->request->variable('ext_name', '');
 
 		// What is a safe limit of execution time? Half the max execution time should be safe.
 		$safe_time_limit = (ini_get('max_execution_time') / 2);
@@ -72,13 +74,13 @@ class acp_extensions
 		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action', compact($vars)));
 
 		// Cancel action
-		if ($request->is_set_post('cancel'))
+		if ($this->request->is_set_post('cancel'))
 		{
 			$action = 'list';
 			$ext_name = '';
 		}
 
-		if (in_array($action, array('enable', 'disable', 'delete_data')) && !check_link_hash($request->variable('hash', ''), $action . '.' . $ext_name))
+		if (in_array($action, array('enable', 'disable', 'delete_data')) && !check_link_hash($this->request->variable('hash', ''), $action . '.' . $ext_name))
 		{
 			trigger_error('FORM_INVALID', E_USER_WARNING);
 		}
@@ -86,7 +88,7 @@ class acp_extensions
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
-			$md_manager = new \phpbb\extension\metadata_manager($ext_name, $config, $phpbb_extension_manager, $template, $user, $phpbb_root_path);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($ext_name, $this->template);
 
 			try
 			{
@@ -110,12 +112,12 @@ class acp_extensions
 						'force_unstable'	=> $force_unstable,
 					));
 
-					confirm_box(false, $user->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
+					confirm_box(false, $this->user->lang('EXTENSION_FORCE_UNSTABLE_CONFIRM'), $s_hidden_fields);
 				}
 				else
 				{
-					$config->set('extension_force_unstable', false);
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					$this->config->set('extension_force_unstable', false);
+					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				}
 				break;
 
@@ -123,17 +125,17 @@ class acp_extensions
 			default:
 				if (confirm_box(true))
 				{
-					$config->set('extension_force_unstable', true);
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					$this->config->set('extension_force_unstable', true);
+					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				}
 
-				$this->list_enabled_exts($phpbb_extension_manager);
-				$this->list_disabled_exts($phpbb_extension_manager);
-				$this->list_available_exts($phpbb_extension_manager);
+				$this->list_enabled_exts();
+				$this->list_disabled_exts();
+				$this->list_available_exts();
 
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
-					'FORCE_UNSTABLE'		=> $config['extension_force_unstable'],
+					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
 				));
 
@@ -143,28 +145,28 @@ class acp_extensions
 			case 'enable_pre':
 				if (!$md_manager->validate_dir())
 				{
-					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$extension = $phpbb_extension_manager->get_extension($ext_name);
+				$extension = $this->ext_manager->get_extension($ext_name);
 				if (!$extension->is_enableable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if ($phpbb_extension_manager->is_enabled($ext_name))
+				if ($this->ext_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'PRE'				=> true,
 					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name),
@@ -174,55 +176,55 @@ class acp_extensions
 			case 'enable':
 				if (!$md_manager->validate_dir())
 				{
-					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$md_manager->validate_enable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$extension = $phpbb_extension_manager->get_extension($ext_name);
+				$extension = $this->ext_manager->get_extension($ext_name);
 				if (!$extension->is_enableable())
 				{
-					trigger_error($user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($this->user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				try
 				{
-					while ($phpbb_extension_manager->enable_step($ext_name))
+					while ($this->ext_manager->enable_step($ext_name))
 					{
 						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 						if ((time() - $start_time) >= $safe_time_limit)
 						{
-							$template->assign_var('S_NEXT_STEP', true);
+							$this->template->assign_var('S_NEXT_STEP', true);
 
 							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
 						}
 					}
-					$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
+					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'U_RETURN'		=> $this->u_action . '&amp;action=list',
 				));
 			break;
 
 			case 'disable_pre':
-				if (!$phpbb_extension_manager->is_enabled($ext_name))
+				if (!$this->ext_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
 
 				$this->tpl_name = 'acp_ext_disable';
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'PRE'				=> true,
 					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name),
@@ -230,38 +232,38 @@ class acp_extensions
 			break;
 
 			case 'disable':
-				if (!$phpbb_extension_manager->is_enabled($ext_name))
+				if (!$this->ext_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
 
-				while ($phpbb_extension_manager->disable_step($ext_name))
+				while ($this->ext_manager->disable_step($ext_name))
 				{
 					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 					if ((time() - $start_time) >= $safe_time_limit)
 					{
-						$template->assign_var('S_NEXT_STEP', true);
+						$this->template->assign_var('S_NEXT_STEP', true);
 
 						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
 					}
 				}
-				$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
 
 				$this->tpl_name = 'acp_ext_disable';
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'U_RETURN'	=> $this->u_action . '&amp;action=list',
 				));
 			break;
 
 			case 'delete_data_pre':
-				if ($phpbb_extension_manager->is_enabled($ext_name))
+				if ($this->ext_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
 				$this->tpl_name = 'acp_ext_delete_data';
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'PRE'				=> true,
 					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')),
 					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name),
@@ -269,33 +271,33 @@ class acp_extensions
 			break;
 
 			case 'delete_data':
-				if ($phpbb_extension_manager->is_enabled($ext_name))
+				if ($this->ext_manager->is_enabled($ext_name))
 				{
 					redirect($this->u_action);
 				}
 
 				try
 				{
-					while ($phpbb_extension_manager->purge_step($ext_name))
+					while ($this->ext_manager->purge_step($ext_name))
 					{
 						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 						if ((time() - $start_time) >= $safe_time_limit)
 						{
-							$template->assign_var('S_NEXT_STEP', true);
+							$this->template->assign_var('S_NEXT_STEP', true);
 
 							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
 						}
 					}
-					$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_PURGE', time(), array($ext_name));
+					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_PURGE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					$template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($user));
+					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
 				}
 
 				$this->tpl_name = 'acp_ext_delete_data';
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'U_RETURN'	=> $this->u_action . '&amp;action=list',
 				));
 			break;
@@ -306,9 +308,9 @@ class acp_extensions
 
 				try
 				{
-					$updates_available = $this->version_check($md_manager, $request->variable('versioncheck_force', false));
+					$updates_available = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
 
-					$template->assign_vars(array(
+					$this->template->assign_vars(array(
 						'S_UP_TO_DATE'		=> empty($updates_available),
 						'S_VERSIONCHECK'	=> true,
 						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
@@ -316,18 +318,18 @@ class acp_extensions
 
 					foreach ($updates_available as $branch => $version_data)
 					{
-						$template->assign_block_vars('updates_available', $version_data);
+						$this->template->assign_block_vars('updates_available', $version_data);
 					}
 				}
 				catch (\RuntimeException $e)
 				{
-					$template->assign_vars(array(
+					$this->template->assign_vars(array(
 						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
-						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $this->user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
 					));
 				}
 
-				$template->assign_vars(array(
+				$this->template->assign_vars(array(
 					'U_BACK'				=> $this->u_action . '&amp;action=list',
 					'U_VERSIONCHECK_FORCE'	=> $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name')),
 				));
@@ -340,16 +342,15 @@ class acp_extensions
 	/**
 	* Lists all the enabled extensions and dumps to the template
 	*
-	* @param  $phpbb_extension_manager     An instance of the extension manager
 	* @return null
 	*/
-	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
+	public function list_enabled_exts()
 	{
 		$enabled_extension_meta_data = array();
 
-		foreach ($phpbb_extension_manager->all_enabled() as $name => $location)
+		foreach ($this->ext_manager->all_enabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
@@ -397,16 +398,15 @@ class acp_extensions
 	/**
 	* Lists all the disabled extensions and dumps to the template
 	*
-	* @param  $phpbb_extension_manager     An instance of the extension manager
 	* @return null
 	*/
-	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager)
+	public function list_disabled_exts()
 	{
 		$disabled_extension_meta_data = array();
 
-		foreach ($phpbb_extension_manager->all_disabled() as $name => $location)
+		foreach ($this->ext_manager->all_disabled() as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
@@ -455,18 +455,17 @@ class acp_extensions
 	/**
 	* Lists all the available extensions and dumps to the template
 	*
-	* @param  $phpbb_extension_manager     An instance of the extension manager
 	* @return null
 	*/
-	public function list_available_exts(\phpbb\extension\manager $phpbb_extension_manager)
+	public function list_available_exts()
 	{
-		$uninstalled = array_diff_key($phpbb_extension_manager->all_available(), $phpbb_extension_manager->all_configured());
+		$uninstalled = array_diff_key($this->ext_manager->all_available(), $this->ext_manager->all_configured());
 
 		$available_extension_meta_data = array();
 
 		foreach ($uninstalled as $name => $location)
 		{
-			$md_manager = $phpbb_extension_manager->create_extension_metadata_manager($name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($name, $this->template);
 
 			try
 			{
