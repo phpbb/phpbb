@@ -1860,12 +1860,26 @@ ucp_main_front_user_activity_after
 * Since: 3.1.6-RC1
 * Purpose: Add content right after the user activity info viewing UCP front page
 
+ucp_main_front_user_activity_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after last user activity info viewing UCP front page
+
 ucp_main_front_user_activity_before
 ===
 * Locations:
     + styles/prosilver/template/ucp_main_front.html
 * Since: 3.1.6-RC1
 * Purpose: Add content right before the user activity info viewing UCP front page
+
+ucp_main_front_user_activity_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before first user activity info viewing UCP front page
 
 ucp_pm_history_post_buttons_after
 ===
