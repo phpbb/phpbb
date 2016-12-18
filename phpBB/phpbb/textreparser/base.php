@@ -16,6 +16,11 @@ namespace phpbb\textreparser;
 abstract class base implements reparser_interface
 {
 	/**
+	 * @var string The reparser name
+	 */
+	protected $name;
+
+	/**
 	* @var bool Whether to save changes to the database
 	*/
 	protected $save_changes = true;
@@ -87,6 +92,26 @@ abstract class base implements reparser_interface
 		}
 
 		return $record;
+	}
+
+	/**
+	 * Returns the name of the reparser
+	 *
+	 * @return string Name of reparser
+	 */
+	public function get_name()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Sets the name of the reparser
+	 *
+	 * @param string $name The reparser name
+	 */
+	public function set_name($name)
+	{
+		$this->name = $name;
 	}
 
 	/**
@@ -231,7 +256,7 @@ abstract class base implements reparser_interface
 			$unparsed['enable_flash_bbcode'],
 			$unparsed['enable_quote_bbcode'],
 			$unparsed['enable_url_bbcode'],
-			'reparse'
+			$this->get_name()
 		);
 
 		// Save the new text if it has changed and it's not a dry run
