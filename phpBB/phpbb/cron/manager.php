@@ -28,6 +28,11 @@ class manager
 	*/
 	protected $tasks = array();
 
+	/**
+	 * @var \phpbb\event\dispatcher
+	 */
+	protected $dispatcher;
+
 	protected $phpbb_root_path;
 	protected $php_ext;
 
@@ -35,11 +40,13 @@ class manager
 	* Constructor. Loads all available tasks.
 	*
 	* @param array|\Traversable $tasks Provides an iterable set of task names
+	* @param \phpbb\event\dispatcher $dispatcher Event dispatcher
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct($tasks, $phpbb_root_path, $php_ext)
+	public function __construct($tasks, \phpbb\event\dispatcher $dispatcher, $phpbb_root_path, $php_ext)
 	{
+		$this->dispatcher = $dispatcher;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -114,6 +121,16 @@ class manager
 	*/
 	public function find_task($name)
 	{
+		/**
+		 * Event to access the name of the cron task to find
+		 *
+		 * @event core.cron_manager_find_task_name
+		 * @var	string	name	cron.task.core.tidy_cache, cron.task.core.prune_forum, etc.
+		 * @since 3.2.0-RC3
+		 */
+		$vars = array('name');
+		extract($this->dispatcher->trigger_event('core.cron_manager_find_task_name', compact($vars)));
+
 		foreach ($this->tasks as $task)
 		{
 			if ($task->get_name() == $name)

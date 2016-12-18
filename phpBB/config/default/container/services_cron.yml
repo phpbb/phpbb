@@ -3,6 +3,7 @@ services:
         class: phpbb\cron\manager
         arguments:
             - '@cron.task_collection'
+            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
 
