@@ -266,7 +266,7 @@ class plupload
 		if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0)
 		{
 			$resize = sprintf(
-				'resize: {width: %d, height: %d, quality: 90},',
+				'resize: {width: %d, height: %d, quality: 85},',
 				(int) $this->config['img_max_width'],
 				(int) $this->config['img_max_height']
 			);
