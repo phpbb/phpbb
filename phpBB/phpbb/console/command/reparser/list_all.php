@@ -34,10 +34,10 @@ class list_all extends \phpbb\console\command\command
 	{
 		parent::__construct($user);
 		$this->reparser_names = array();
-		foreach ($reparsers as $name => $reparser)
+		foreach ($reparsers as $reparser)
 		{
 			// Store the names without the "text_reparser." prefix
-			$this->reparser_names[] = preg_replace('(^text_reparser\\.)', '', $name);
+			$this->reparser_names[] = $reparser->get_name();
 		}
 	}
 
