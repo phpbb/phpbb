@@ -2309,6 +2309,14 @@ ucp_profile_register_details_after
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after confirm password field.
 
+ucp_register_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_register.html
+    + styles/subsilver2/template/ucp_register.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before buttons in registration form.
+
 ucp_register_credentials_before
 ===
 * Locations:
