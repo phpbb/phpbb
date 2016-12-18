@@ -662,10 +662,19 @@ class ucp_profile
 										'user_avatar_height' => $result['avatar_height'],
 									);
 
+									/**
+									* Trigger events on successfull avatar change
+									*
+									* @event core.ucp_profile_avatar_sql
+									* @var	array	result	Array with data to be stored in DB
+									* @since 3.1.11-RC1
+									*/
+									$vars = array('result');
+									extract($phpbb_dispatcher->trigger_event('core.ucp_profile_avatar_sql', compact($vars)));
+
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . (int) $user->data['user_id'];
-
 									$db->sql_query($sql);
 
 									meta_refresh(3, $this->u_action);
