@@ -175,7 +175,8 @@ function submitPermissions() {
 			type: 'POST',
 			data: formData + '&' + $submitAllButton.name + '=' + encodeURIComponent($submitAllButton.value) +
 				'&creation_time=' + $form.find('input[type=hidden][name=creation_time]')[0].value +
-				'&form_token=' + $form.find('input[type=hidden][name=form_token]')[0].value,
+				'&form_token=' + $form.find('input[type=hidden][name=form_token]')[0].value +
+				'&' + $form.children('input[type=hidden]').serialize(),
 			success: handlePermissionReturn,
 			error: handlePermissionReturn
 		});
