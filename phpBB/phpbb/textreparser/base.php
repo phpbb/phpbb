@@ -256,7 +256,7 @@ abstract class base implements reparser_interface
 			$unparsed['enable_flash_bbcode'],
 			$unparsed['enable_quote_bbcode'],
 			$unparsed['enable_url_bbcode'],
-			$this->get_name()
+			'text_reparser.' . $this->get_name()
 		);
 
 		// Save the new text if it has changed and it's not a dry run
