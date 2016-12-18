@@ -1546,6 +1546,23 @@ function phpbb_get_user_rank($user_data, $user_posts)
 		}
 	}
 
+	/**
+	* Modify a user's rank before displaying
+	*
+	* @event core.get_user_rank_after
+	* @var	array	user_data		Array with user's data
+	* @var	int		user_posts		User_posts to change
+	* @var	array	user_rank_data	User rank data
+	* @since 3.1.11-RC1
+	*/
+
+	$vars = array(
+		'user_data',
+		'user_posts',
+		'user_rank_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.get_user_rank_after', compact($vars)));
+
 	return $user_rank_data;
 }
 
