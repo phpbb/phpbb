@@ -23,6 +23,7 @@ class acp_extensions
 {
 	var $u_action;
 	var $tpl_name;
+	var $page_title;
 
 	private $config;
 	private $template;
