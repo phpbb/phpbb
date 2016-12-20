@@ -118,8 +118,9 @@ class metadata_manager
 				return $this->metadata;
 			break;
 
+			case 'version':
 			case 'name':
-				return ($this->validate('name')) ? $this->metadata['name'] : false;
+				return ($this->validate($element)) ? $this->metadata[$element] : false;
 			break;
 
 			case 'display-name':
