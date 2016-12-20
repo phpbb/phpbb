@@ -641,7 +641,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	 *
 	 * @event core.move_posts_before
 	 * @var	array	post_ids	Array of post ids to move
-	 * @var	string	topic_id	The topic id the posts are moved to
+	 * @var	int		topic_id	The topic id the posts are moved to
 	 * @var	bool	auto_sync	Whether or not to perform auto sync
 	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
@@ -673,7 +673,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	 *
 	 * @event core.move_posts_after
 	 * @var	array	post_ids	Array of the moved post ids
-	 * @var	string	topic_id	The topic id the posts are moved to
+	 * @var	int		topic_id	The topic id the posts are moved to
 	 * @var	bool	auto_sync	Whether or not to perform auto sync
 	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
@@ -704,7 +704,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		 *
 		 * @event core.move_posts_sync_after
 		 * @var	array	post_ids	Array of the moved post ids
-		 * @var	string	topic_id	The topic id the posts are moved to
+		 * @var	int		topic_id	The topic id the posts are moved to
 		 * @var	bool	auto_sync	Whether or not to perform auto sync
 		 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 		 * @var	array	topic_ids	Array of the topic ids the posts are moved from
