@@ -275,10 +275,10 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	* @var array	user_row			Array of user details submited to user_add
 	* @var array	cp_data				Array of Custom profile fields submited to user_add
 	* @var array	sql_ary				Array of data to be inserted when a user is added
+	* @var array	notifications_data	Array of notification data to be inserted when a user is added
 	* @since 3.1.0-a1
 	* @changed 3.1.0-b5 Added user_row and cp_data
-	* @var array	notifications_data	Array of notification data to be inserted when a user is added
-	* @change 3.2.0
+	* @changed 3.1.11-RC1 Added notifications_data
 	*/
 	$vars = array(
 		'user_row',
