@@ -31,7 +31,7 @@ class acp_extensions
 	private $cache;
 	private $log;
 	private $request;
-	private $php_dispatcher;
+	private $phpbb_dispatcher;
 	private $ext_manager;
 
 	function main()
