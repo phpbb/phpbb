@@ -528,7 +528,7 @@ class manager
 	public function disable_profilefields($profilefield_type_name)
 	{
 		// Get list of profile fields affected by this operation, if any
-		$pfs = array();
+		$profile_fields = array();
 		$sql = 'SELECT field_id, field_ident
 			FROM ' . PROFILE_FIELDS_TABLE . "
 			WHERE field_active = 1
@@ -536,12 +536,12 @@ class manager
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$pfs[(int) $row['field_id']] = $row['field_ident'];
+			$profile_fields[(int) $row['field_id']] = $row['field_ident'];
 		}
 		$this->db->sql_freeresult($result);
 
 		// If no profile fields affected, then nothing to do
-		if (!sizeof($pfs))
+		if (!sizeof($profile_fields))
 		{
 			return;
 		}
@@ -554,10 +554,10 @@ class manager
 		$this->db->sql_query($sql);
 
 		// Save modified information into a config_text field to recover on enable
-		$this->config_text->set($profilefield_type_name . '.saved', base64_encode(serialize($pfs)));
+		$this->config_text->set($profilefield_type_name . '.saved', json_encode($profile_fields));
 
 		// Log activity
-		foreach ($pfs as $field_ident)
+		foreach ($profile_fields as $field_ident)
 		{
 			add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
 		}
@@ -577,19 +577,19 @@ class manager
 		$this->config_text->delete($profilefield_type_name . '.saved');
 
 		// Get list of profile fields affected by this operation, if any
-		$pfs = array();
+		$profile_fields = array();
 		$sql = 'SELECT field_id, field_ident
 			FROM ' . PROFILE_FIELDS_TABLE . "
 			WHERE field_type = '" . $this->db->sql_escape($profilefield_type_name) . "'";
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$pfs[(int) $row['field_id']] = $row['field_ident'];
+			$profile_fields[(int) $row['field_id']] = $row['field_ident'];
 		}
 		$this->db->sql_freeresult($result);
 
 		// If no profile fields exist, then nothing to do
-		if (!sizeof($pfs))
+		if (!sizeof($profile_fields))
 		{
 			return;
 		}
@@ -597,13 +597,13 @@ class manager
 		$this->db->sql_transaction('begin');
 
 		// Delete entries from all profile field definition tables
-		$where = $this->db->sql_in_set('field_id', array_keys($pfs));
+		$where = $this->db->sql_in_set('field_id', array_keys($profile_fields));
 		$this->db->sql_query('DELETE FROM ' . PROFILE_FIELDS_TABLE . ' WHERE ' . $where);
 		$this->db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE ' . $where);
 		$this->db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE ' . $where);
 
 		// Drop columns from the Profile Fields data table
-		foreach ($pfs as $field_ident)
+		foreach ($profile_fields as $field_ident)
 		{
 			$this->db_tools->sql_column_remove(PROFILE_FIELDS_DATA_TABLE, 'pf_' . $field_ident);
 		}
@@ -632,7 +632,7 @@ class manager
 		$this->db->sql_transaction('commit');
 
 		// Log activity
-		foreach ($pfs as $field_ident)
+		foreach ($profile_fields as $field_ident)
 		{
 			add_log('admin', 'LOG_PROFILE_FIELD_REMOVED', $field_ident);
 		}
@@ -649,25 +649,29 @@ class manager
 	*/
 	public function enable_profilefields($profilefield_type_name)
 	{
-		// Read the modified information saved on disable from a config_text field to recover values, then remove it
-		$pfs = $this->config_text->get($profilefield_type_name . '.saved');
-		$this->config_text->delete($profilefield_type_name . '.saved');
+		// Read the modified information saved on disable from a config_text field to recover values
+		$profile_fields = $this->config_text->get($profilefield_type_name . '.saved');
 
 		// If nothing saved, then nothing to do
-		if ($pfs == '')
+		if (empty($profile_fields))
 		{
 			return;
 		}
 
-		$pfs = unserialize(base64_decode($pfs));
+		$profile_fields = json_decode($profile_fields, true);
 
 		// Restore the affected profile fields to "active"
 		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 			SET field_active = 1
 			WHERE field_active = 0
-				AND " . $this->db->sql_in_set('field_id', array_keys($pfs));
+				AND " . $this->db->sql_in_set('field_id', array_keys($profile_fields));
 		$this->db->sql_query($sql);
-		foreach ($pfs as $field_ident)
+
+		// Remove the information saved in the config_text field, not needed any longer
+		$this->config_text->delete($profilefield_type_name . '.saved');
+
+		// Log activity
+		foreach ($profile_fields as $field_ident)
 		{
 			add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
 		}
