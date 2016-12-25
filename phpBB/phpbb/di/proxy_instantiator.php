@@ -49,7 +49,7 @@ class proxy_instantiator implements InstantiatorInterface
 		$filesystem = new filesystem();
 		$tmp_dir = (function_exists('sys_get_temp_dir')) ? sys_get_temp_dir() : '';
 		if (empty($tmp_dir) || $ini_wrapper->getString('open_basedir') &&
-			(!$filesystem->exists($tmp_dir) || !$filesystem->is_writable($tmp_dir)))
+			(!@file_exists($tmp_dir) || !@is_writable($tmp_dir)))
 		{
 			$config->setProxiesTargetDir($cache_dir);
 		}
