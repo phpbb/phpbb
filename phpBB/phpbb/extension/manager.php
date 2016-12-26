@@ -524,7 +524,29 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		return file_exists($this->get_extension_path($name, true));
+		// Not available if the folder does not exist
+		if (!file_exists($this->get_extension_path($name, true)))
+		{
+			return false;
+		}
+
+		$composer_file = $this->get_extension_path($name, true) . '/composer.json';
+
+		// Not available if there is no composer.json.
+		if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
+		{
+			return false;
+		}
+		$ext_info = json_decode($ext_info, true);
+
+		// Not available if malformed name or if the directory structure
+		// does not match the name value specified in composer.json.
+		if (substr_count($name, '/') !== 1 || !isset($ext_info['name']) || $name != $ext_info['name'])
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
