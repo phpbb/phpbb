@@ -243,7 +243,7 @@ class version_helper
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string Version info
+	* @return array Version info
 	* @throws \RuntimeException
 	*/
 	public function get_versions_matching_stability($force_update = false, $force_cache = false)
@@ -350,7 +350,7 @@ class version_helper
 		{
 			foreach ($versions_data as $branch => &$version_data)
 			{
-				if (!preg_match('/^[0-9]+\.[0-9]+$/', $branch))
+				if (!preg_match('/^[0-9a-z\-\.]+$/i', $branch))
 				{
 					unset($versions_data[$branch]);
 					continue;
