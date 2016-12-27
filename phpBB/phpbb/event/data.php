@@ -70,10 +70,9 @@ class data extends Event implements \ArrayAccess
 	 * @param	string	$offset	Data array offset
 	 * @param	string	$key	Offset key
 	 * @param	mixed	$value	Value to update
-	 * @return	mixed	Value of $value
 	 */
 	public function update_subarray($offset, $key, $value)
 	{
-		return $this->data[$offset][$key] = $value;
+		$this->data[$offset][$key] = $value;
 	}
 }
