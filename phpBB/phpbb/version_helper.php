@@ -315,7 +315,7 @@ class version_helper
 			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];
 			$info['unstable'] = (empty($info['unstable'])) ? $info['stable'] : $info['unstable'];
 
-			$this->validate_versions($info);
+			$info = $this->validate_versions($info);
 
 			$this->cache->put($cache_file, $info, 86400); // 24 hours
 		}
@@ -328,8 +328,10 @@ class version_helper
 	 *
 	 * @param array $versions_info Decoded json data array. Will be modified
 	 *		and cleaned by this method
+	 *
+	 * @return array Versions info array
 	 */
-	public function validate_versions(&$versions_info)
+	public function validate_versions($versions_info)
 	{
 		$array_diff = array_diff_key($versions_info, array($this->version_schema));
 
@@ -362,7 +364,7 @@ class version_helper
 					$version_data = array();
 					foreach ($this->version_schema[$stability_type] as $key => $value)
 					{
-						if (isset($old_version_data[$key]) || $old_version_data[$key] === null)
+						if (isset($old_version_data[$key]))
 						{
 							$version_data[$key] = $old_version_data[$key];
 						}
@@ -388,16 +390,13 @@ class version_helper
 							if (!empty($value) && !preg_match('#^' . get_preg_expression('url') . '$#iu', $value) &&
 								!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $value))
 							{
-								$value = '';
 								throw new \RuntimeException($this->user->lang('VERSIONCHECK_INVALID_URL'));
 							}
 						break;
 
 						case 'version':
-							$value = $value ?: '';
-							if (!preg_match(get_preg_expression('semantic_version'), $value))
+							if (!empty($value) && !preg_match(get_preg_expression('semantic_version'), $value))
 							{
-								$value = '';
 								throw new \RuntimeException($this->user->lang('VERSIONCHECK_INVALID_VERSION'));
 							}
 						break;
@@ -409,5 +408,7 @@ class version_helper
 				}
 			}
 		}
+
+		return $versions_info;
 	}
 }

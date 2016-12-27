@@ -172,7 +172,20 @@ class version_helper_remote_test extends \phpbb_test_case
 				'current' => '1.0.1',
 				'download'	=> 'https://www.phpbb.com/customise/db/download/104136',
 				'announcement'	=> 'https://www.phpbb.com/customise/db/extension/boardrules/',
-				'eol'		=> null,
+				'security'	=> false,
+			))), 'VERSIONCHECK_INVALID_ENTRY'),
+			array('{
+    "unstable": {
+        "1.0": {
+            "current<script>alert(\'foo\');</script>": "1.0.1",
+            "download2": "https://www.phpbb.com/customise/db/download/104136",
+            "bannouncement": "https://www.phpbb.com/customise/db/extension/boardrules/",
+            "eol": null,
+            "security": false,
+            "foobar": "<script>alert(\'test\');<script>"
+        }
+    }
+}', true, array('stable' => array(), 'unstable' => array('1.0' => array(
 				'security'	=> false,
 			))), 'VERSIONCHECK_INVALID_ENTRY'),
 		);
