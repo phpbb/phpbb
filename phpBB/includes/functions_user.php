@@ -1299,7 +1299,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $cache, $phpbb_log;
+	global $db, $user, $cache, $phpbb_log, $phpbb_dispatcher;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1373,6 +1373,20 @@ function user_unban($mode, $ban)
 				));
 			}
 		}
+
+		/**
+		* Use this event to perform actions after the unban has been performed
+		*
+		* @event core.user_unban
+		* @var	string	mode			One of the following: user, ip, email
+		* @var	array	user_ids_ary	Array with user_ids
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'mode',
+			'user_ids_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.user_unban', compact($vars)));
 	}
 
 	$cache->destroy('sql', BANLIST_TABLE);
