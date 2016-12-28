@@ -264,6 +264,77 @@ class context
 	}
 
 	/**
+	* Find the index for a specified key in the innermost specified block
+	*
+	* @param	string	$blockname	the blockname, for example 'loop'
+	* @param	mixed	$key		Key to search for
+	*
+	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
+	*
+	* int: Position [the position to search for]
+	*
+	* If key is false the position is set to 0
+	* If key is true the position is set to the last entry
+	*
+	* @return mixed false if not found, index position otherwise; be sure to test with ===
+	*/
+	public function find_key_index($blockname, $key = false)
+	{
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = sizeof($blocks) - 1;
+
+		$block = &$this->tpldata;
+		for ($i = 0; $i < $blockcount; $i++)
+		{
+			if (($pos = strpos($blocks[$i], '[')) !== false)
+			{
+				$name = substr($blocks[$i], 0, $pos);
+
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = sizeof($block[$name]) - 1;
+				}
+				else
+				{
+					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
+				}
+			}
+			else
+			{
+				$name = $blocks[$i];
+				$index = sizeof($block[$name]) - 1;
+			}
+			$block = &$block[$name];
+			$block = &$block[$index];
+		}
+
+		$block = &$block[$blocks[$i]]; // Traverse the last block
+
+		// Change key to zero (change first position) if false and to last position if true
+		if ($key === false || $key === true)
+		{
+			return ($key === false) ? 0 : sizeof($block);
+		}
+
+		// Get correct position if array given
+		if (is_array($key))
+		{
+			// Search array to get correct position
+			list($search_key, $search_value) = @each($key);
+			foreach ($block as $i => $val_ary)
+			{
+				if ($val_ary[$search_key] === $search_value)
+				{
+					return $i;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
 	* An example of how to use this function:
