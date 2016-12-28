@@ -185,6 +185,7 @@ class container_builder
 		}
 
 		$this->container->set('config.php', $this->config_php_file);
+		$this->inject_dbal_driver();
 
 		if ($this->compile_container)
 		{
@@ -304,6 +305,17 @@ class container_builder
 	}
 
 	/**
+	 * Inject the dbal connection driver into container
+	 */
+	protected function inject_dbal_driver()
+	{
+		if (!empty($this->config_php_file->get_all()))
+		{
+			$this->container->set('dbal.conn.driver', $this->get_dbal_connection());
+		}
+	}
+
+	/**
 	* Get DB connection.
 	*
 	* @return \phpbb\db\driver\driver_interface
@@ -320,6 +332,7 @@ class container_builder
 				$this->config_php_file->get('dbpasswd'),
 				$this->config_php_file->get('dbname'),
 				$this->config_php_file->get('dbport'),
+				false,
 				defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
 			);
 		}
