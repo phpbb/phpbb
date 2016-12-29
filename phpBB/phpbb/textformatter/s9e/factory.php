@@ -348,10 +348,10 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->registeredVars['max_img_width'] = 0;
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
-		$configurator->Emoji->setImageSize(18);
+		$configurator->Emoji->omitImageSize();
 		$configurator->Emoji->useSVG();
 		$tag = $configurator->Emoji->getTag();
-		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
+		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set
