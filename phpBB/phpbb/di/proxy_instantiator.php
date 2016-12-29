@@ -13,8 +13,6 @@
 
 namespace phpbb\di;
 
-use bantu\IniGetWrapper\IniGetWrapper;
-use phpbb\filesystem\filesystem;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingValueHolderFactory;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
@@ -45,11 +43,8 @@ class proxy_instantiator implements InstantiatorInterface
 
 		// Prevent trying to write to system temp dir in case of open_basedir
 		// restrictions being in effect
-		$ini_wrapper = new IniGetWrapper();
-		$filesystem = new filesystem();
 		$tmp_dir = (function_exists('sys_get_temp_dir')) ? sys_get_temp_dir() : '';
-		if (empty($tmp_dir) || $ini_wrapper->getString('open_basedir') &&
-			(!$filesystem->exists($tmp_dir) || !$filesystem->is_writable($tmp_dir)))
+		if (empty($tmp_dir) || !@file_exists($tmp_dir) || !@is_writable($tmp_dir))
 		{
 			$config->setProxiesTargetDir($cache_dir);
 		}
