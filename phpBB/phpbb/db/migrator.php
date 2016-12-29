@@ -215,13 +215,13 @@ class migrator
 			$prepended_name = ($name[0] == '\\' ? '' : '\\') . $name;
 			$prefixless_name = $name[0] == '\\' ? substr($name, 1) : $name;
 
-			if (isset($this->migration_state[$prepended_name]))
-			{
-				$name = $prepended_name;
-			}
-			else if (isset($this->migration_state[$prefixless_name]))
+			if (!isset($this->migration_state[$prepended_name]) && isset($this->migration_state[$prefixless_name]))
 			{
 				$name = $prefixless_name;
+			}
+			else
+			{
+				$name = $prepended_name;
 			}
 		}
 
