@@ -433,25 +433,11 @@ class manager
 			if ($file_info->isFile() && $file_info->getFilename() == 'composer.json')
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
-				$composer_file = $iterator->getPath() . '/composer.json';
-
-				// Ignore the extension if there is no composer.json.
-				if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
-				{
-					continue;
-				}
-
-				$ext_info = json_decode($ext_info, true);
 				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
-
-				// Ignore the extension if directory depth is not correct or if the directory structure
-				// does not match the name value specified in composer.json.
-				if (substr_count($ext_name, '/') !== 1 || !isset($ext_info['name']) || $ext_name != $ext_info['name'])
+				if ($this->is_available($ext_name))
 				{
-					continue;
+					$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 				}
-
-				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}
 		}
 		ksort($available);
@@ -530,7 +516,7 @@ class manager
 			return false;
 		}
 
-		$composer_file = $this->get_extension_path($name, true) . '/composer.json';
+		$composer_file = $this->get_extension_path($name, true) . 'composer.json';
 
 		// Not available if there is no composer.json.
 		if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
