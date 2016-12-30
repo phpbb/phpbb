@@ -72,12 +72,12 @@ class acp_extensions
 		* Event to run a specific action on extension
 		*
 		* @event core.acp_extensions_run_action
-		* @var	string	action			Action to run
+		* @var	string	action			Action to run; if the event executes completely the action, should be set to 'none'
 		* @var	string	u_action		Url we are at
 		* @var	string	ext_name		Extension name from request
 		* @var	int		safe_time_limit	Safe limit of execution time
 		* @var	int		start_time		Start time
-		* @var	string	tpl_name		Template file to load; leave empty to continue execution, filled in if ready to finish
+		* @var	string	tpl_name		Template file to load
 		* @since 3.1.11-RC1
 		*/
 		$u_action = $this->u_action;
@@ -88,12 +88,6 @@ class acp_extensions
 		// In case they have been updated by the event
 		$this->u_action = $u_action;
 		$this->tpl_name = $tpl_name;
-
-		// If tpl_name was set by the prior event, we are done
-		if ($tpl_name)
-		{
-			return;
-		}
 
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
@@ -113,6 +107,10 @@ class acp_extensions
 		// What are we doing?
 		switch ($action)
 		{
+			case 'none':
+				// Intentionally empty, used by extensions that execute additional actions in the prior event
+				break;
+
 			case 'set_config_version_check_force_unstable':
 				$force_unstable = $this->request->variable('force_unstable', false);
 
