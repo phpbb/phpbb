@@ -665,7 +665,7 @@ class manager
 	* @param bool	$active					True to limit output to active profile fields,  false for all
 	* @return array Array with profile field ids as keys and idents as values
 	*/
-	private function list_profilefields($profilefield_type_name, $active=false)
+	private function list_profilefields($profilefield_type_name, $active = false)
 	{
 		// Get list of profile fields affected by this operation, if any
 		$profile_fields = array();
