@@ -27,6 +27,7 @@ class phpbb_test_case extends PHPUnit_Framework_TestCase
 			'PHP_Token_Stream_CachingFactory' => array('cache'),
 
 			'phpbb_database_test_case' => array('already_connected', 'last_post_timestamp'),
+			'Prophecy\Doubler\NameGenerator' => array('counter'),
 		);
 	}
 
