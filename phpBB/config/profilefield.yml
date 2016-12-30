@@ -4,11 +4,13 @@ services:
         arguments:
             - @auth
             - @dbal.conn
+            - @dbal.tools
             - @dispatcher
             - @request
             - @template
             - @profilefields.type_collection
             - @user
+            - @config_text
             - %tables.profile_fields%
             - %tables.profile_fields_language%
             - %tables.profile_fields_data%
