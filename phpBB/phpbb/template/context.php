@@ -365,15 +365,15 @@ class context
 		if ($mode == 'insert')
 		{
 			// Make sure we are not exceeding the last iteration
-			if ($key >= sizeof($this->tpldata[$blockname]))
+			if ($key >= sizeof($block))
 			{
-				$key = sizeof($this->tpldata[$blockname]);
-				unset($this->tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
+				$key = sizeof($block);
+				unset($block[($key - 1)]['S_LAST_ROW']);
 				$vararray['S_LAST_ROW'] = true;
 			}
 			else if ($key === 0)
 			{
-				unset($this->tpldata[$blockname][0]['S_FIRST_ROW']);
+				unset($block[0]['S_FIRST_ROW']);
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
