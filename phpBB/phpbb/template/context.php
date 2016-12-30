@@ -284,7 +284,7 @@ class context
 		$blocks = explode('.', $blockname);
 		$blockcount = sizeof($blocks) - 1;
 
-		$block = &$this->tpldata;
+		$block = $this->tpldata;
 		for ($i = 0; $i < $blockcount; $i++)
 		{
 			if (($pos = strpos($blocks[$i], '[')) !== false)
@@ -305,11 +305,11 @@ class context
 				$name = $blocks[$i];
 				$index = sizeof($block[$name]) - 1;
 			}
-			$block = &$block[$name];
-			$block = &$block[$index];
+			$block = $block[$name];
+			$block = $block[$index];
 		}
 
-		$block = &$block[$blocks[$i]]; // Traverse the last block
+		$block = $block[$blocks[$i]]; // Traverse the last block
 
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
@@ -331,7 +331,7 @@ class context
 			}
 		}
 
-		return false;
+		return is_int($key) ? $key : false;
 	}
 
 	/**
