@@ -527,18 +527,8 @@ class manager
 	*/
 	public function disable_profilefields($profilefield_type_name)
 	{
-		// Get list of profile fields affected by this operation, if any
-		$profile_fields = array();
-		$sql = 'SELECT field_id, field_ident
-			FROM ' . PROFILE_FIELDS_TABLE . "
-			WHERE field_active = 1
-				AND field_type = '" . $this->db->sql_escape($profilefield_type_name) . "'";
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$profile_fields[(int) $row['field_id']] = $row['field_ident'];
-		}
-		$this->db->sql_freeresult($result);
+		// Get the list of active profile fields of this type
+		$profile_fields = $this->list_profilefields($profilefield_type_name, true);
 
 		// If no profile fields affected, then nothing to do
 		if (!sizeof($profile_fields))
@@ -547,10 +537,10 @@ class manager
 		}
 
 		// Update the affected profile fields to "inactive"
-		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
+		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . '
 			SET field_active = 0
 			WHERE field_active = 1
-				AND field_type = '" . $this->db->sql_escape($profilefield_type_name) . "'";
+				AND ' . $this->db->sql_in_set('field_id', array_keys($profile_fields));
 		$this->db->sql_query($sql);
 
 		// Save modified information into a config_text field to recover on enable
@@ -576,17 +566,8 @@ class manager
 		// Remove the information saved on disable in a config_text field, not needed any longer
 		$this->config_text->delete($profilefield_type_name . '.saved');
 
-		// Get list of profile fields affected by this operation, if any
-		$profile_fields = array();
-		$sql = 'SELECT field_id, field_ident
-			FROM ' . PROFILE_FIELDS_TABLE . "
-			WHERE field_type = '" . $this->db->sql_escape($profilefield_type_name) . "'";
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$profile_fields[(int) $row['field_id']] = $row['field_ident'];
-		}
-		$this->db->sql_freeresult($result);
+		// Get the list of all profile fields of this type
+		$profile_fields = $this->list_profilefields($profilefield_type_name);
 
 		// If no profile fields exist, then nothing to do
 		if (!sizeof($profile_fields))
@@ -661,10 +642,10 @@ class manager
 		$profile_fields = json_decode($profile_fields, true);
 
 		// Restore the affected profile fields to "active"
-		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
+		$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . '
 			SET field_active = 1
 			WHERE field_active = 0
-				AND " . $this->db->sql_in_set('field_id', array_keys($profile_fields));
+				AND ' . $this->db->sql_in_set('field_id', array_keys($profile_fields));
 		$this->db->sql_query($sql);
 
 		// Remove the information saved in the config_text field, not needed any longer
@@ -675,5 +656,29 @@ class manager
 		{
 			add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
 		}
+	}
+
+	/**
+	* Get list of profile fields of a certain type, if any
+	*
+	* @param string $profilefield_type_name Type identifier of the profile fields
+	* @param bool	$active					True to limit output to active profile fields,  false for all
+	* @return array Array with profile field ids as keys and idents as values
+	*/
+	private function list_profilefields($profilefield_type_name, $active=false)
+	{
+		// Get list of profile fields affected by this operation, if any
+		$profile_fields = array();
+		$sql = 'SELECT field_id, field_ident
+			FROM ' . PROFILE_FIELDS_TABLE . "
+			WHERE field_type = '" . $this->db->sql_escape($profilefield_type_name) . "'" .
+				($active) ? 'AND field_active = 1' : '';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$profile_fields[(int) $row['field_id']] = $row['field_ident'];
+		}
+		$this->db->sql_freeresult($result);
+		return $profile_fields;
 	}
 }

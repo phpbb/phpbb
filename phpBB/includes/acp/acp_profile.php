@@ -783,10 +783,6 @@ class acp_profile
 				$s_one_need_edit = true;
 			}
 
-			if (!isset($this->type_collection[$row['field_type']]))
-			{
-				continue;
-			}
 			$profile_field = $this->type_collection[$row['field_type']];
 
 			$field_block = array(
