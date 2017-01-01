@@ -325,11 +325,13 @@ class context
 			}
 
 			$block = &$block[$blocks[$i]]; // Traverse the last block
+			$name = $blocks[$i];
 		}
 		else
 		{
 			// Top-level block.
 			$block = &$this->tpldata[$blockname];
+			$name = $blockname;
 		}
 
 		// Change key to zero (change first position) if false and to last position if true
@@ -378,7 +380,7 @@ class context
 			}
 
 			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blockname;
+			$vararray['S_BLOCK_NAME'] = $name;
 
 			// Re-position template blocks
 			for ($i = sizeof($block); $i > $key; $i--)
