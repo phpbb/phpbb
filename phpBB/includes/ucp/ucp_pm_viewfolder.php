@@ -547,7 +547,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 			AND $folder_sql
 			AND t.msg_id = p.msg_id
 			$sql_limit_time",
-		'ORDER'	=> $sql_sort_order,
+		'ORDER_BY'	=> $sql_sort_order,
 	);
 
 	/**
