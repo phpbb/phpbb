@@ -25,19 +25,19 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 		$this->visit('adm/index.php?i=acp_permissions&mode=setting_forum_local&sid=' . $this->sid);
 
 		// Select forums
-		$elements = self::find_element('cssSelector', 'select#forum')
+		$elements = $this->find_element('cssSelector', 'select#forum')
 			->findElements(\Facebook\WebDriver\WebDriverBy::tagName('option'));
 
 		foreach ($elements as $element)
 		{
 			$element->click();
 		}
-		self::find_element('cssSelector', 'form#select_victim')
+		$this->find_element('cssSelector', 'form#select_victim')
 			->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('input[type=submit]'))
 			->click();
 
 		// Select administrators and guests
-		$groups_form = self::find_element('cssSelector', 'form#groups');
+		$groups_form = $this->find_element('cssSelector', 'form#groups');
 		$elements = $groups_form
 			->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('select'))
 			->findElements(\Facebook\WebDriver\WebDriverBy::tagName('option'));
@@ -51,7 +51,7 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 		}
 		$groups_form->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('input[name=submit_edit_options]'))->click();
 
-		$first_fieldset = self::find_element('cssSelector', '#perm11');
+		$first_fieldset = $this->find_element('cssSelector', '#perm11');
 		$this->assertEquals('none', $first_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('div.dropdown'))->getCSSValue('display'));
 		$first_fieldset
 			->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('span.dropdown-toggle'))
@@ -74,14 +74,14 @@ class ui_permission_roles_test extends phpbb_ui_test_case
 		$this->assertEquals($this->lang('ROLE_FORUM_LIMITED'), $first_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('span.dropdown-toggle'))->getText());
 
 		// Check that admin settings didn't get changed
-		$second_fieldset = self::find_element('cssSelector', '#perm10');
+		$second_fieldset = $this->find_element('cssSelector', '#perm10');
 		$this->assertEquals('none', $second_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('div.dropdown'))->getCSSValue('display'));
 		// Full access = 14
 		$this->assertEquals(14, $second_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('input[type=hidden]'))->getAttribute('value'));
 		$this->assertEquals($this->lang('ROLE_FORUM_FULL'), $second_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('span.dropdown-toggle'))->getText());
 
 		// Check that category settings were not modified
-		$category_fieldset = self::find_element('cssSelector', '#perm00');
+		$category_fieldset = $this->find_element('cssSelector', '#perm00');
 		$this->assertEquals('none', $category_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('div.dropdown'))->getCSSValue('display'));
 		// No settings
 		$this->assertEquals('', $category_fieldset->findElement(\Facebook\WebDriver\WebDriverBy::cssSelector('input[type=hidden]'))->getAttribute('value'));
