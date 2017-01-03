@@ -525,7 +525,8 @@ class container_builder
 	 */
 	protected function inject_dbal_driver()
 	{
-		if (!empty($this->config_php_file) && !empty($this->config_php_file->get_all()))
+		$config_data = $this->config_php_file->get_all();
+		if (!empty($config_data))
 		{
 			if ($this->dbal_connection === null)
 			{
