@@ -5,9 +5,7 @@ services:
             - '@service_container'
 
     dbal.conn.driver:
-        class: '%dbal.driver.class%'
-        calls:
-            - [sql_connect, ['%dbal.dbhost%', '%dbal.dbuser%', '%dbal.dbpasswd%', '%dbal.dbname%', '%dbal.dbport%', false, '%dbal.new_link%']]
+        synthetic: true
 
 # ----- DB Tools -----
     dbal.tools.factory:
