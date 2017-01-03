@@ -309,7 +309,8 @@ class container_builder
 	 */
 	protected function inject_dbal_driver()
 	{
-		if (!empty($this->config_php_file->get_all()))
+		$config_data = $this->config_php_file->get_all();
+		if (!empty($config_data))
 		{
 			$this->container->set('dbal.conn.driver', $this->get_dbal_connection());
 		}
