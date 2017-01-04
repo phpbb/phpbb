@@ -55,6 +55,8 @@ class topics extends \phpbb\feed\topic_base
 			return false;
 		}
 
+		parent::fetch_attachments($post_ids);
+
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_views, t.topic_time, t.topic_last_post_time,
