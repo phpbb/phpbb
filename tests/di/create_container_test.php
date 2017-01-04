@@ -46,6 +46,7 @@ namespace
 		{
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
+			$this->assertFalse($container->hasParameter('container_exception'));
 
 			// Checks the core services
 			$this->assertTrue($container->hasParameter('core'));
@@ -54,7 +55,7 @@ namespace
 			$this->assertTrue($container->isFrozen());
 
 			// Checks inject_config
-			$this->assertTrue($container->hasParameter('dbal.dbhost'));
+			$this->assertTrue($container->hasParameter('core.table_prefix'));
 
 			// Checks use_extensions
 			$this->assertTrue($container->hasParameter('enabled'));
