@@ -2158,7 +2158,7 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 	}
 
 	// Get maximum number of allowed recipients
-	$sql = 'SELECT MIN(g.group_' . $setting . ') as min_setting, MAX(g.group_' . $setting . ') as max_setting
+	$sql = 'SELECT MAX(g.group_' . $setting . ') as max_setting
 		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 		WHERE ug.user_id = ' . (int) $user_id . '
 			AND ug.user_pending = 0
@@ -2167,9 +2167,8 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 	$max_setting = (int) $row['max_setting'];
-	$min_setting = (int) $row['min_setting'];
 
-	return ($min_setting > 0) ? $max_setting : 0;
+	return $max_setting;
 }
 
 /**
