@@ -1063,6 +1063,22 @@ memberlist_search_sorting_options_before
 * Since: 3.1.2-RC1
 * Purpose: Add information before the search sorting options field.
 
+memberlist_team_username_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_team.html
+    + styles/subsilver2/template/memberlist_team.html
+* Since: 3.1.11-RC1
+* Purpose: Append information to username of team member
+
+memberlist_team_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_team.html
+    + styles/subsilver2/template/memberlist_team.html
+* Since: 3.1.11-RC1
+* Purpose: Add information before team user username
+
 memberlist_view_contact_after
 ===
 * Locations:
