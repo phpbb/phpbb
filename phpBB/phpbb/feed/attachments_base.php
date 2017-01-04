@@ -85,14 +85,6 @@ abstract class attachments_base extends \phpbb\feed\base
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
-	public function open()
-	{
-		parent::open();
-	}
-
-	/**
 	* Get attachments related to a given post
 	*
 	* @param $post_id  int  Post id
