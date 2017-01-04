@@ -304,6 +304,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				],
 				'cache.driver.class' => 'phpbb\cache\driver\file'
 			])
+			->with_config(new \phpbb\config_php_file($phpbb_root_path, $phpEx))
 			->without_compiled_container()
 			->get_container();
 
