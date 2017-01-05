@@ -59,6 +59,28 @@
 	</script>
 <!-- ENDIF -->
 
+<!-- IF S_COOKIE_NOTICE -->
+	<script src="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.js?assets_version={T_ASSETS_VERSION}"></script>
+	<script>
+		window.addEventListener("load", function(){
+			window.cookieconsent.initialise({
+				"palette": {
+					"popup": {
+						"background": "#0F538A"
+					},
+					"button": {
+						"background": "#E5E5E5"
+					}
+				},
+				"theme": "classic",
+				"content": {
+					"message": "{LA_COOKIE_CONSENT_MSG}",
+					"dismiss": "{LA_COOKIE_CONSENT_OK}"
+				}
+			})});
+	</script>
+<!-- ENDIF -->
+
 <!-- EVENT overall_footer_after -->
 
 <!-- IF S_PLUPLOAD --><!-- INCLUDE plupload.html --><!-- ENDIF -->

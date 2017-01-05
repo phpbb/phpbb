@@ -323,6 +323,7 @@ class acp_board
 						'cookie_name'	=> array('lang' => 'COOKIE_NAME',	'validate' => 'string',	'type' => 'text::16', 'explain' => false),
 						'cookie_path'	=> array('lang'	=> 'COOKIE_PATH',	'validate' => 'string',	'type' => 'text::255', 'explain' => false),
 						'cookie_secure'	=> array('lang' => 'COOKIE_SECURE',	'validate' => 'bool',	'type' => 'radio:disabled_enabled', 'explain' => true),
+						'cookie_notice'	=> array('lang' => 'COOKIE_NOTICE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
 					)
 				);
 			break;
