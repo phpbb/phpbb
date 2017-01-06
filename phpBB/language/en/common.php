@@ -178,6 +178,7 @@ $lang = array_merge($lang, array(
 	'CONTACT'				=> 'Contact',
 	'CONTACT_USER'			=> 'Contact %s',
 	'CONTACT_US'			=> 'Contact us',
+	'COOKIE_CONSENT_INFO'	=> 'Learn more',
 	'COOKIE_CONSENT_MSG'	=> 'This website uses cookies to ensure you get the best experience on our website.',
 	'COOKIE_CONSENT_OK'		=> 'Got it!',
 	'COOKIES_DELETED'		=> 'All board cookies successfully deleted.',
