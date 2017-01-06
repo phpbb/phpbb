@@ -878,7 +878,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
-	margin-top: -12px;
 }
 
 .row .pagination > ul {
@@ -887,8 +886,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .row .pagination li a, .row .pagination li span {
 	border-radius: 2px;
-    padding: 1px 3px;
-    font-size: 9px;
+	padding: 1px 3px;
+	font-size: 9px;
+}
+
+.topic-poster {
+	float: left;
+	padding-right: 0.5em;
 }
 
 /* jQuery popups
