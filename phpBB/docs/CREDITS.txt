@@ -75,9 +75,7 @@ Major contributions by:  leviatan21 (Gabriel Vazquez)
 
 Visual Confirmation:   Xore (Robert Hetzler)
 
-Original subSilver by subBlue Design, Tom Beddard, (c) 2001 phpBB Limited
 prosilver by subBlue Design, Tom Beddard, (c) 2004 phpBB Limited
-subsilver2 by subBlue Design, Tom Beddard, (c) 2004 phpBB Limited
 
 phpBB contains code from the following applications:
 
@@ -99,4 +97,5 @@ Pear (c) 2001-2004 PHP Group, http://pear.php.net
 Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
 
 MIT licenced:
-Symfony2 (c) 2004-2011 Fabien Potencier, http://symfony.com/
+Symfony2 (c) 2004-2011 Fabien Potencier, https://symfony.com/
+Cookie Consent (c) 2015 Silktide Ltd, https://cookieconsent.insites.com
