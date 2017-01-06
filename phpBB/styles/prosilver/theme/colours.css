@@ -640,35 +640,36 @@ Colours and backgrounds for buttons.css
 .contact-icons a		{ border-color: #DCDCDC; }
 .contact-icons a:hover	{ background-color: #F2F6F9; }
 
-/* Pagination
----------------------------------------- */
-
-.pagination li a {
+.button-paging {
 	background: #ECEDEE;
 	filter: none;
 	border-color: #B4BAC0;
 	box-shadow: none;
 	-webkit-box-shadow: none;
-	color: #5C758C;
+	color: #8f8f8f;
 }
 
-.pagination li.ellipsis span {
-	background: transparent;
-	color:	#000000;
-}
-
-.pagination li.active span {
-	background: #4692BF;
-	border-color: #4692BF;
-	color: #FFFFFF;
-}
-
-.pagination li a:hover, .pagination li a:hover .icon, .pagination .dropdown-visible a.dropdown-trigger, .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
+.dropdown-visible .button-paging,
+.button-paging:hover,
+.button-paging:focus,
+.button-active {
 	background: #368AD2;
 	border-color: #368AD2;
 	filter: none;
 	color: #FFFFFF;
 	text-shadow: none;
+}
+
+.dropdown-visible .button-paging .icon,
+.button-paging:hover .icon,
+.button-paging:focus .icon {
+	color: #FFFFFF;
+}
+/* Pagination
+---------------------------------------- */
+.pagination li.ellipsis span {
+	background: transparent;
+	color:	#000000;
 }
 
 /* Search box
