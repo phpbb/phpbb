@@ -889,13 +889,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Signature
 		if ($enable_sig && $config['allow_sig'] && $preview_signature)
 		{
-			$parse_sig = new parse_message($preview_signature);
-			$parse_sig->bbcode_uid = $preview_signature_uid;
-			$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
-
-			$parse_sig->format_display($config['allow_sig_bbcode'], $config['allow_sig_links'], $config['allow_sig_smilies']);
-			$preview_signature = $parse_sig->message;
-			unset($parse_sig);
+			$bbcode_flags = ($enable_bbcode ? OPTION_FLAG_BBCODE : 0) + ($enable_smilies ? OPTION_FLAG_SMILIES : 0) + ($enable_urls ? OPTION_FLAG_LINKS : 0);
+			$preview_signature = generate_text_for_display($preview_signature, $preview_signature_uid, $preview_signature_bitfield, $bbcode_flags);
 		}
 		else
 		{
