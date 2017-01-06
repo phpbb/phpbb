@@ -816,6 +816,7 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
+$bbcode_utils = $phpbb_container->get('text_formatter.utils');
 
 if ($submit || $preview || $refresh)
 {
@@ -1178,7 +1179,7 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_title'] = '';
 		$post_data['poll_start'] = $post_data['poll_length'] = $post_data['poll_max_options'] = $post_data['poll_last_vote'] = $post_data['poll_vote_change'] = 0;
 	}
-	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
+	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && !$bbcode_utils->is_empty($original_poll_data['poll_title']))
 	{
 		// We have a poll but the editing user is not permitted to create/edit it.
 		// So we just keep the original poll-data.
@@ -1601,7 +1602,7 @@ if ($generate_quote)
 
 	if ($config['allow_bbcode'])
 	{
-		$message_parser->message = $phpbb_container->get('text_formatter.utils')->generate_quote(
+		$message_parser->message = $bbcode_utils->generate_quote(
 			censor_text($message_parser->message),
 			array(
 				'author'  => $post_data['quote_username'],
@@ -1639,7 +1640,7 @@ $attachment_data = $message_parser->attachment_data;
 $filename_data = $message_parser->filename_data;
 $post_data['post_text'] = $message_parser->message;
 
-if (sizeof($post_data['poll_options']) || !empty($post_data['poll_title']))
+if (sizeof($post_data['poll_options']) || (isset($post_data['poll_title']) && !$bbcode_utils->is_empty($post_data['poll_title'])))
 {
 	$message_parser->message = $post_data['poll_title'];
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];

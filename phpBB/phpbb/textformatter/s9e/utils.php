@@ -136,4 +136,17 @@ class utils implements \phpbb\textformatter\utils_interface
 	{
 		return \s9e\TextFormatter\Unparser::unparse($xml);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function is_empty($text)
+	{
+		if ($text === null || $text === '')
+		{
+			return true;
+		}
+
+		return trim($this->unparse($text)) === '';
+	}
 }
