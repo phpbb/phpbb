@@ -4454,6 +4454,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
 		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $config['assets_version'],
 		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
+		'S_COOKIE_NOTICE'		=> !empty($config['cookie_notice']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
