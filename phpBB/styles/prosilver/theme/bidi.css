@@ -261,6 +261,10 @@
 	margin-right: 0;
 }
 
+.rtl .topic-poster {
+	float: right;
+	padding-left: 0.5em;
+}
 
 /* Action Bar styles
 ---------------------------------------- */
