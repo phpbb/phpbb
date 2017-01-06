@@ -92,13 +92,16 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	public function test_edit()
 	{
 		$this->login();
-		$this->create_topic(2, 'Test Topic 1', 'Test topic');
+		$this->create_topic(2, 'Test Topic post', 'Test topic post');
 
 		$url =  self::$client->getCrawler()->selectLink('Edit')->link()->getUri();
 		$post_id = $this->get_parameter_from_link($url, 'p');
-		$this->submit_post("posting.php?mode=edit&f=2&p={$post_id}", 'EDIT_POST', array('message' => 'Edited post'));
+		$crawler = self::request('GET', "posting.php?mode=edit&f=2&p={$post_id}&sid={$this->sid}");
+		$form = $crawler->selectButton('Submit')->form();
+		$form->setValues(array('message' => 'Edited post'));
+		$crawler = self::submit($form);
 
-		$this->assertContains('Edited post', self::$client->getCrawler()->filter("#post_content{$post_id} .content")->text());
+		$this->assertContains('Edited post', $crawler->filter("#post_content{$post_id} .content")->text());
 	}
 
 	/**
