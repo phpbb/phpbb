@@ -170,8 +170,7 @@ class extension extends \Twig_Extension
 		$args = func_get_args();
 		$key = $args[0];
 
-		$context = $this->context->get_data_ref();
-		$context_vars = $context['.'][0];
+		$context_vars = $this->context->get_root_ref();
 
 		if (isset($context_vars['L_' . $key]))
 		{
