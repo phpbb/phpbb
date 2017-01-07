@@ -138,7 +138,7 @@ class update_extensions extends task_base
 			$default_update_extensions = [];
 			foreach (self::$default_extensions_update as $version => $extensions)
 			{
-				if ($this->update_helper->phpbb_version_compare($version_from, $version, '<='))
+				if ($this->update_helper->phpbb_version_compare($version_from, $version, '<'))
 				{
 					$default_update_extensions = array_merge($default_update_extensions, $extensions);
 				}
