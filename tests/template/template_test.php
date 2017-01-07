@@ -624,12 +624,12 @@ EOT
 		$expect = 'outer - 0 - zero[outer|4]outer - 1 - one[outer|4]middle - 0 - 1A[middle|1]outer - 2 - two[outer|4]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 3 - three[outer|4]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
 
-		$this->template->alter_block_array('outer', array(), true, 'delete');
+		$this->template->alter_block_array('outer', array(), false, 'delete');
 
 		$expect = 'outer - 0 - one[outer|3]middle - 0 - 1A[middle|1]outer - 1 - two[outer|3]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 2 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting at the beginning of outer loop');
 
-		$this->template->alter_block_array('outer[0].middle', array(), false, 'delete');
+		$this->template->alter_block_array('outer[0].middle', array(), true, 'delete');
 
 		$expect = 'outer - 0 - one[outer|3]outer - 1 - two[outer|3]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 2 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting at the end of first middle loop, delete complete loop');
