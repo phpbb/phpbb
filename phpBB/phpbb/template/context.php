@@ -305,16 +305,28 @@ class context
 				$name = $blocks[$i];
 				$index = sizeof($block[$name]) - 1;
 			}
+			if (!isset($block[$name]))
+			{
+				return false;
+			}
 			$block = $block[$name];
+			if (!isset($block[$index]))
+			{
+				return false;
+			}
 			$block = $block[$index];
 		}
 
+		if (!isset($block[$blocks[$i]]))
+		{
+			return false;
+		}
 		$block = $block[$blocks[$i]]; // Traverse the last block
 
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
-			return ($key === false) ? 0 : sizeof($block);
+			return ($key === false) ? 0 : sizeof($block) - 1;
 		}
 
 		// Get correct position if array given
@@ -331,7 +343,7 @@ class context
 			}
 		}
 
-		return is_int($key) ? $key : false;
+		return (is_int($key) && ((0 <= $key) && ($key < sizeof($block)))) ? $key : false;
 	}
 
 	/**
