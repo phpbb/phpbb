@@ -603,6 +603,48 @@ EOT
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
 	}
 
+	public function test_delete_alter_block_array()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'zero'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'one'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '1A'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'two'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '2A'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '2B'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'three'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3A'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3B'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3C'));
+
+		$expect = 'outer - 0 - zero[outer|4]outer - 1 - one[outer|4]middle - 0 - 1A[middle|1]outer - 2 - two[outer|4]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 3 - three[outer|4]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->alter_block_array('outer', array(), true, 'delete');
+
+		$expect = 'outer - 0 - one[outer|3]middle - 0 - 1A[middle|1]outer - 1 - two[outer|3]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 2 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting at the beginning of outer loop');
+
+		$this->template->alter_block_array('outer[0].middle', array(), false, 'delete');
+
+		$expect = 'outer - 0 - one[outer|3]outer - 1 - two[outer|3]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 2 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting at the end of first middle loop, delete complete loop');
+
+		$this->template->alter_block_array('outer', array(), 1, 'delete');
+
+		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|2]middle - 0 - 3A[middle|2]middle - 1 - 3C[middle|2]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index at top level');
+
+		$this->template->alter_block_array('outer', array(), 4, 'delete');
+
+		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|2]middle - 0 - 3A[middle|2]middle - 1 - 3C[middle|2]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index out of bounds, ignored');
+	}
+
 	public function assign_block_vars_array_data()
 	{
 		return array(
