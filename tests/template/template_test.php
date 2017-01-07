@@ -528,11 +528,11 @@ EOT
 			),
 			array(
 				'outer',
-				array('VARIABLE' => 'pos #1'),
+				array('VARIABLE' => 'changed'),
 				0,
 				'change',
 				<<<EOT
-outer - 0 - pos #1
+outer - 0 - changed
 middle - 0
 middle - 1
 outer - 1
@@ -543,7 +543,124 @@ middle - 0
 middle - 1
 EOT
 ,
-				'Test inserting at 1 on top level block',
+				'Test changing at 0 on top level block',
+			),
+			array(
+				'outer',
+				array('VARIABLE' => 'changed'),
+				array('S_ROW_NUM' => 2),
+				'change',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2 - changed
+middle - 0
+middle - 1
+EOT
+,
+				'Test changing at KEY on top level block',
+			),
+			array(
+				'outer.middle',
+				array('VARIABLE' => 'before'),
+				false,
+				'insert',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0 - before
+middle - 1
+middle - 2
+EOT
+,
+				'Test inserting before on middle level block',
+			),
+			array(
+				'outer.middle',
+				array('VARIABLE' => 'after'),
+				true,
+				'insert',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1
+middle - 2 - after
+EOT
+,
+				'Test inserting after on middle level block',
+			),
+			array(
+				'outer[1].middle',
+				array('VARIABLE' => 'pos #1'),
+				1,
+				'insert',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1 - pos #1
+middle - 2
+outer - 2
+middle - 0
+middle - 1
+EOT
+,
+				'Test inserting at 1 on middle level block',
+			),
+			array(
+				'outer[].middle',
+				array('VARIABLE' => 'changed'),
+				0,
+				'change',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0 - changed
+middle - 1
+EOT
+,
+				'Test changing at beginning of last top level block',
+			),
+			array(
+				'outer.middle',
+				array('VARIABLE' => 'changed'),
+				array('S_ROW_NUM' => 1),
+				'change',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1 - changed
+EOT
+,
+				'Test changing at beginning of last top level block',
 			),
 		);
 	}
