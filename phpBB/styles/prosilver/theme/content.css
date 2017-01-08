@@ -34,7 +34,7 @@ ul.topiclist dd {
 }
 
 ul.topiclist dt {
-	font-size: 1.1em;
+	font-size: 11px;
 	width: 100%;
 	margin-right: -440px;
 }
@@ -112,8 +112,8 @@ li.row strong {
 li.header dt,
 li.header dd {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 1em;
-	line-height: 1em;
+	font-size: 10px;
+	line-height: 10px;
 	text-transform: uppercase;
 	border-left-width: 0;
 	margin: 2px 0 4px;
@@ -193,8 +193,8 @@ dd.topics,
 dd.views,
 dd.extra,
 dd.mark {
-	font-size: 1.2em;
-	line-height: 2.2em;
+	font-size: 12px;
+	line-height: 26px;
 	text-align: center;
 	width: 80px;
 }
@@ -258,7 +258,7 @@ dd.option {
 /* Post body styles
 ---------------------------------------- */
 .postbody {
-	line-height: 1.48em;
+	line-height: 16px;
 	position: relative;
 	float: left;
 	width: 76%;
@@ -365,12 +365,12 @@ dd.option {
 
 .content h2,
 .panel h2 {
-	font-size: 1.6em;
+	font-size: 16px;
 	font-weight: normal;
 	border-bottom: 1px solid transparent;
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
-	padding-bottom: 0.5em;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	padding-bottom: 8px;
 }
 
 .panel h3 {
@@ -378,16 +378,13 @@ dd.option {
 }
 
 .panel p {
-	font-size: 1.2em;
-	line-height: 1.4em;
-	margin-bottom: 1em;
+	font-size: 12px;
+	line-height: 16px;
+	margin-bottom: 12px;
 }
 
 .content p {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.2em;
-	line-height: 1.4em;
-	margin-bottom: 1em;
 }
 
 dl.faq {
@@ -423,10 +420,10 @@ dl.faq dt {
 /* Post author */
 p.author {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1em;
-	line-height: 1.2em;
+	font-size: 10px;
+	line-height: 12px;
 	clear: both;
-	margin-bottom: 0.6em;
+	margin-bottom: 8px;
 	padding: 0 0 5px;
 }
 
