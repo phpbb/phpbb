@@ -230,7 +230,7 @@
 
 	.site-description h1,
 	.site-description p {
-		line-height: 1.2em;
+		line-height: 24px;
 		text-align: inherit;
 		text-overflow: ellipsis;
 		float: none;
@@ -258,8 +258,8 @@
 	/* Forums and topicslists
 	---------------------------------------------------------------- */
 	li.header dt {
-		font-size: 1.2em;
-		line-height: 1em;
+		font-size: 12px;
+		line-height: 12px;
 		text-align: center;
 		text-transform: none;
 		padding-bottom: 4px;
@@ -591,12 +591,12 @@
 	/* Misc stuff
 	---------------------------------------------------------------- */
 	h2 {
-		margin-top: 0.5em;
+		margin-top: 12px;
 	}
 
 	p {
 		overflow: hidden;
-		margin-bottom: 0.5em;
+		margin-bottom: 8px;
 	}
 
 	p.rightside {

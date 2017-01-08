@@ -12,7 +12,7 @@
 .cp-menu {
 	float: left;
 	width: 19%;
-	margin-top: 1em;
+	margin-top: 10px;
 	margin-bottom: 5px;
 }
 
@@ -26,12 +26,12 @@
 }
 
 .panel-container .panel p {
-	font-size: 1.1em;
+	font-size: 11px;
 }
 
 .panel-container .panel ol {
-	font-size: 1.1em;
-	margin-left: 2em;
+	font-size: 11px;
+	margin-left: 22px;
 }
 
 .panel-container .panel li.row {
@@ -50,7 +50,7 @@ ul.cplist {
 }
 
 .panel-container table.table1 {
-	margin-bottom: 1em;
+	margin-bottom: 10px;
 }
 
 .panel-container table.table1 thead th {
@@ -82,7 +82,7 @@ ul.cplist {
 }
 
 .panel-container .postbody p.author {
-	font-size: 1.1em;
+	/* font-size: 11px; */
 }
 
 .cp-main .buttons {
@@ -120,9 +120,9 @@ ul.cplist {
 
 .tabs .tab,
 .minitabs .tab {
-	font-size: 1em;
+	font-size: 10px;
 	font-weight: bold;
-	line-height: 1.4em;
+	line-height: 14px;
 	display: block;
 	float: left;
 }
@@ -182,8 +182,8 @@ ul.cplist {
 }
 
 .responsive-tab > a.responsive-tab-link {
-	font-size: 1.6em;
-	line-height: 0.9em;
+	font-size: 16px;
+	line-height: 14px;
 	text-decoration: none;
 	position: relative;
 	display: block;
@@ -191,19 +191,19 @@ ul.cplist {
 }
 
 .responsive-tab .responsive-tab-link:before {
-	border-top: 0.375em double transparent;
-	border-bottom: 0.125em solid transparent;
+	border-top: 6px double rgba(0, 0, 0, 0);
+	border-bottom: 2px solid rgba(0, 0, 0, 0);
 	position: absolute;
 	top: 7px;
 	left: 10px;
 	width: 14px;
-	height: 0.125em;
+	height: 2px;
 	content: "";
 }
 
 .tabs .dropdown,
 .minitabs .dropdown {
-	font-size: 1.1em;
+	font-size: 11px;
 	font-weight: normal;
 	top: 20px;
 	margin-right: -2px;
