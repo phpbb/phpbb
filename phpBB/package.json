@@ -28,5 +28,6 @@
   },
   "homepage": "https://github.com/phpbb/phpbb#readme",
   "devDependencies": {
+    "stylelint": "^7.7.1"
   }
 }
