@@ -636,7 +636,7 @@ EOT
 
 		$this->template->alter_block_array('outer', array(), 1, 'delete');
 
-		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|2]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index at top level');
 
 		$this->template->alter_block_array('outer.middle', array(), 1, 'delete');
