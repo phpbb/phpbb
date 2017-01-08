@@ -219,6 +219,12 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				0,
 				'PAGE_OF-1-1',
 			),
+			array(
+				'10',
+				'10',
+				'0',
+				'PAGE_OF-1-1',
+			),
 		);
 	}
 
