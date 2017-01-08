@@ -1,14 +1,19 @@
-/* Responsive Design
----------------------------------------- */
+/* -------------------------------------------------------------- /*
+	$Responsive
+/* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 @media (max-width: 320px) {
-	select, .inputbox {
+	select,
+	.inputbox {
 		max-width: 240px;
 	}
 }
 
 /* Notifications list
-----------------------------------------*/
+---------------------------------------------------------------- */
+
 @media (max-width: 350px) {
 	.dropdown-extended .dropdown-contents {
 		width: auto;
@@ -25,16 +30,16 @@
 	}
 
 	.action-bar .search-box .inputbox ::-moz-placeholder {
-    	content: "Search...";
-  	}
+		content: 'Search...';
+	}
 
-  	.action-bar .search-box .inputbox :-ms-input-placeholder {
-  		content: "Search...";
-  	}
+	.action-bar .search-box .inputbox :-ms-input-placeholder {
+		content: 'Search...';
+	}
 
-  	.action-bar .search-box .inputbox ::-webkit-input-placeholder {
-  		content: "Search...";
-  	}
+	.action-bar .search-box .inputbox ::-webkit-input-placeholder {
+		content: 'Search...';
+	}
 }
 
 @media (max-width: 500px) {
@@ -42,7 +47,8 @@
 		white-space: normal;
 	}
 
-	select, .inputbox {
+	select,
+	.inputbox {
 		max-width: 260px;
 	}
 
@@ -54,10 +60,11 @@
 		width: 100%;
 	}
 
-	dl.details dt, dl.details dd {
-		width: auto;
-		float: none;
+	dl.details dt,
+	dl.details dd {
 		text-align: left;
+		float: none;
+		width: auto;
 	}
 
 	dl.details dd {
@@ -65,20 +72,20 @@
 	}
 
 	p.responsive-center {
-		float: none;
 		text-align: center;
+		float: none;
 		margin-bottom: 5px;
 	}
 
 	.action-bar > div {
 		margin-bottom: 5px;
- 	}
+	}
 
 	.action-bar > .pagination {
+		text-align: center;
 		float: none;
 		clear: both;
 		padding-bottom: 1px;
-		text-align: center;
 	}
 
 	.action-bar > .pagination li.page-jump {
@@ -95,8 +102,8 @@
 	}
 
 	.attach-controls {
-		margin-top: 5px;
 		width: 100%;
+		margin-top: 5px;
 	}
 
 	.quick-links .dropdown-trigger span {
@@ -119,13 +126,24 @@
 }
 
 @media (max-width: 700px) {
-	.responsive-hide { display: none !important; }
-	.responsive-show { display: block !important; }
-	.responsive-show-inline { display: inline !important; }
-	.responsive-show-inline-block { display: inline-block !important; }
+	.responsive-hide {
+		display: none !important;
+	}
+
+	.responsive-show {
+		display: block !important;
+	}
+
+	.responsive-show-inline {
+		display: inline !important;
+	}
+
+	.responsive-show-inline-block {
+		display: inline-block !important;
+	}
 
 	/* Content wrappers
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	html {
 		height: auto;
 	}
@@ -137,29 +155,37 @@
 	.wrap {
 		border: none;
 		border-radius: 0;
-		margin: 0;
 		min-width: 290px;
+		margin: 0;
 		padding: 0 5px;
 	}
 
 	/* Common block wrappers
-	----------------------------------------*/
-	.headerbar, .navbar, .forabg, .forumbg, .post, .panel {
+	---------------------------------------------------------------- */
+	.headerbar,
+	.navbar,
+	.forabg,
+	.forumbg,
+	.post,
+	.panel {
 		border-radius: 0;
-		margin-left: -5px;
 		margin-right: -5px;
+		margin-left: -5px;
 	}
 
-	.cp-main .forabg, .cp-main .forumdb, .cp-main .post, .cp-main .panel {
+	.cp-main .forabg,
+	.cp-main .forumdb,
+	.cp-main .post,
+	.cp-main .panel {
 		border-radius: 7px;
 	}
 
 	/* Logo block
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.site-description {
+		text-align: center;
 		float: none;
 		width: auto;
-		text-align: center;
 	}
 
 	.logo {
@@ -169,40 +195,45 @@
 		padding: 10px;
 	}
 
-	.site-description h1, .site-description p {
-		text-align: inherit;
-		float: none;
-		margin: 5px;
+	.site-description h1,
+	.site-description p {
 		line-height: 1.2em;
-		overflow: hidden;
+		text-align: inherit;
 		text-overflow: ellipsis;
+		float: none;
+		overflow: hidden;
+		margin: 5px;
 	}
 
-	.site-description p, .search-header {
+	.site-description p,
+	.search-header {
 		display: none;
 	}
 
 	/* Navigation
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.headerbar + .navbar {
 		margin-top: -5px;
 	}
 
 	/* Search
-	----------------------------------------*/
-	.responsive-search { display: block !important; }
+	---------------------------------------------------------------- */
+	.responsive-search {
+		display: block !important;
+	}
 
-	/* .topiclist lists
-	----------------------------------------*/
+	/* Forums and topicslists
+	---------------------------------------------------------------- */
 	li.header dt {
+		font-size: 1.2em;
+		line-height: 1em;
 		text-align: center;
 		text-transform: none;
-		line-height: 1em;
-		font-size: 1.2em;
 		padding-bottom: 4px;
 	}
 
-	ul.topiclist li.header dt, ul.topiclist li.header dt .list-inner {
+	ul.topiclist li.header dt,
+	ul.topiclist li.header dt .list-inner {
 		margin-right: 0 !important;
 		padding-right: 0;
 	}
@@ -211,10 +242,14 @@
 		display: none !important;
 	}
 
-	ul.topiclist dt, ul.topiclist dt .list-inner,
-	ul.topiclist.missing-column dt, ul.topiclist.missing-column dt .list-inner,
-	ul.topiclist.two-long-columns dt, ul.topiclist.two-long-columns dt .list-inner,
-	ul.topiclist.two-columns dt, ul.topiclist.two-columns dt .list-inner {
+	ul.topiclist dt,
+	ul.topiclist dt .list-inner,
+	ul.topiclist.missing-column dt,
+	ul.topiclist.missing-column dt .list-inner,
+	ul.topiclist.two-long-columns dt,
+	ul.topiclist.two-long-columns dt .list-inner,
+	ul.topiclist.two-columns dt,
+	ul.topiclist.two-columns dt .list-inner {
 		margin-right: 0;
 	}
 
@@ -233,33 +268,29 @@
 	ul.topiclist dd {
 		display: none;
 	}
-	ul.topiclist dd.mark {
-		display: block;
-	}
 
-	/* Forums and topics lists
-	----------------------------------------*/
 	ul.topiclist.forums dt {
 		margin-right: -250px;
 	}
 
 	ul.topiclist dd.mark {
-		display: block;
+		text-align: left;
 		position: absolute;
-		right: 5px;
 		top: 0;
-		margin: 0;
+		right: 5px;
+		display: block;
 		width: auto;
 		min-width: 0;
-		text-align: left;
+		margin: 0;
 	}
 
-	ul.topiclist.forums dd.topics dfn, ul.topiclist.topics dd.posts dfn {
+	ul.topiclist.forums dd.topics dfn,
+	ul.topiclist.topics dd.posts dfn {
+		font-weight: normal;
 		position: relative;
 		left: 0;
-		width: auto;
 		display: inline;
-		font-weight: normal;
+		width: auto;
 	}
 
 	li.row .responsive-show strong {
@@ -268,14 +299,14 @@
 	}
 
 	ul.topiclist li.row dt a.subforum {
+		text-overflow: ellipsis;
 		vertical-align: bottom;
 		overflow: hidden;
-		text-overflow: ellipsis;
 		max-width: 100px;
 	}
 
 	/* Pagination
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.pagination > ul {
 		margin: 5px 0 0;
 	}
@@ -290,19 +321,24 @@
 	}
 
 	/* Responsive tables
-	----------------------------------------*/
-	table.responsive, table.responsive tbody, table.responsive tr, table.responsive td {
+	---------------------------------------------------------------- */
+	table.responsive,
+	table.responsive tbody,
+	table.responsive tr,
+	table.responsive td {
 		display: block;
 	}
 
-	table.responsive thead, table.responsive th {
+	table.responsive thead,
+	table.responsive th {
 		display: none;
 	}
 
-	table.responsive.show-header thead, table.responsive.show-header th:first-child {
+	table.responsive.show-header thead,
+	table.responsive.show-header th:first-child {
+		text-align: left !important;
 		display: block;
 		width: auto !important;
-		text-align: left !important;
 	}
 
 	table.responsive.show-header th:first-child span.rank-img {
@@ -314,8 +350,8 @@
 	}
 
 	table.responsive td {
-		width: auto !important;
 		text-align: left !important;
+		width: auto !important;
 		padding: 4px;
 	}
 
@@ -328,8 +364,8 @@
 	}
 
 	table.responsive td > dfn:after {
-		content: ':';
 		padding-right: 5px;
+		content: ':';
 	}
 
 	table.responsive span.rank-img {
@@ -337,25 +373,30 @@
 		padding-right: 5px;
 	}
 
-	table.responsive.memberlist td:first-child input[type="checkbox"] {
+	table.responsive.memberlist td:first-child input[type='checkbox'] {
 		float: right;
 	}
 
 	/* Forms
-	----------------------------------------*/
-	fieldset dt, fieldset.fields1 dt, fieldset.fields2 dt {
-		width: auto;
+	---------------------------------------------------------------- */
+	fieldset dt,
+	fieldset.fields1 dt,
+	fieldset.fields2 dt {
 		float: none;
+		width: auto;
 	}
 
-	fieldset dd, fieldset.fields1 dd, fieldset.fields2 dd {
+	fieldset dd,
+	fieldset.fields1 dd,
+	fieldset.fields2 dd {
 		margin-left: 20px;
 	}
 
-	textarea, dd textarea, .message-box textarea {
-		width: 100%;
-		-moz-box-sizing: border-box;
+	textarea,
+	dd textarea,
+	.message-box textarea {
 		box-sizing: border-box;
+		width: 100%;
 	}
 
 	dl.pmlist dt {
@@ -372,7 +413,8 @@
 		padding-left: 20px;
 	}
 
-	.smiley-box, .message-box {
+	.smiley-box,
+	.message-box {
 		float: none;
 		width: auto;
 	}
@@ -385,7 +427,9 @@
 		display: none;
 	}
 
-	.colour-palette, .colour-palette tbody, .colour-palette tr {
+	.colour-palette,
+	.colour-palette tbody,
+	.colour-palette tr {
 		display: block;
 	}
 
@@ -394,14 +438,15 @@
 		margin-right: 2px;
 	}
 
-	.horizontal-palette td:nth-child(2n), .vertical-palette tr:nth-child(2n) {
+	.horizontal-palette td:nth-child(2n),
+	.vertical-palette tr:nth-child(2n) {
 		display: none;
 	}
 
 	fieldset.quick-login label {
+		white-space: normal;
 		display: block;
 		margin-bottom: 5px;
-		white-space: normal;
 	}
 
 	fieldset.quick-login label > span {
@@ -415,21 +460,23 @@
 		margin-left: 20px;
 	}
 
-	fieldset.quick-login label[for="autologin"] {
-		display: inline-block;
+	fieldset.quick-login label[for='autologin'] {
 		text-align: right;
+		display: inline-block;
 		min-width: 50%;
 	}
 
 	/* User profile
-	----------------------------------------*/
-	.column1, .column2, .left-box.profile-details {
+	---------------------------------------------------------------- */
+	.column1,
+	.column2,
+	.left-box.profile-details {
 		float: none;
 		width: auto;
 	}
 
 	/* Polls
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	fieldset.polls dt {
 		width: 90%;
 	}
@@ -442,46 +489,51 @@
 		width: 20%;
 	}
 
-	fieldset.polls dd.resultbar, fieldset.polls dd.poll_option_percent {
+	fieldset.polls dd.resultbar,
+	fieldset.polls dd.poll_option_percent {
 		margin-top: 5px;
 	}
 
 	/* Post
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	.postbody {
 		position: inherit;
 	}
 
-	.postprofile, .postbody, .search .postbody {
+	.postprofile,
+	.postbody,
+	.search .postbody {
 		display: block;
-		width: auto;
 		float: none;
-		padding: 0;
+		width: auto;
 		min-height: 0;
+		padding: 0;
 	}
 
 	.post .postprofile {
+		border-width: 0 0 1px;
+		overflow: hidden;
 		width: auto;
-		border-width: 0 0 1px 0;
-		padding-bottom: 5px;
+		min-height: 40px;
 		margin: 0;
 		margin-bottom: 5px;
-		min-height: 40px;
-		overflow: hidden;
+		padding-bottom: 5px;
 	}
 
 	.postprofile dd {
 		display: none;
 	}
 
-	.postprofile dt, .postprofile dd.profile-rank, .search .postprofile dd {
+	.postprofile dt,
+	.postprofile dd.profile-rank,
+	.search .postprofile dd {
 		display: block;
 		margin: 0;
 	}
 
 	.postprofile .has-avatar .avatar-container {
-		margin: 0;
 		overflow: inherit;
+		margin: 0;
 	}
 
 	.postprofile .avatar-container:after {
@@ -499,13 +551,13 @@
 	}
 
 	.has-profile .postbody h3 {
-		margin-left: 0 !important;
 		margin-right: 0 !important;
+		margin-left: 0 !important;
 	}
 
 	.has-profile .post-buttons {
-		right: 30px;
 		top: 15px;
+		right: 30px;
 	}
 
 	.online {
@@ -513,14 +565,14 @@
 	}
 
 	/* Misc stuff
-	----------------------------------------*/
+	---------------------------------------------------------------- */
 	h2 {
-		margin-top: .5em;
+		margin-top: 0.5em;
 	}
 
 	p {
-		margin-bottom: .5em;
 		overflow: hidden;
+		margin-bottom: 0.5em;
 	}
 
 	p.rightside {
@@ -558,15 +610,21 @@
 }
 
 @media (min-width: 700px) {
-	.postbody { width: 70%; }
+	.postbody {
+		width: 70%;
+	}
 }
 
 @media (min-width: 850px) {
-	.postbody { width: 76%; }
+	.postbody {
+		width: 76%;
+	}
 }
 
 @media (max-width: 850px) {
-	.postprofile { width: 28%; }
+	.postprofile {
+		width: 28%;
+	}
 }
 
 @media (min-width: 701px) and (max-width: 950px) {
@@ -576,15 +634,17 @@
 	}
 
 	ul.topiclist dt {
-    	margin-right: -410px;
+		margin-right: -410px;
 	}
 
 	ul.topiclist dt .list-inner {
-    	margin-right: 410px;
+		margin-right: 410px;
 	}
 
-	dd.posts, dd.topics, dd.views {
-    	width: 80px;
+	dd.posts,
+	dd.topics,
+	dd.views {
+		width: 80px;
 	}
 }
-
+/* stylelint-enable */

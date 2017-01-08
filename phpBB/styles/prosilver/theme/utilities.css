@@ -1,26 +1,26 @@
-/* --------------------------------------------------------------
+/* -------------------------------------------------------------- /*
 	$Utilities
--------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
 
 .sr-only {
+	border: 0;
 	position: absolute;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
 	width: 1px;
 	height: 1px;
 	margin: -1px;
 	padding: 0;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	border: 0;
 }
 
 .sr-only-focusable:active,
 .sr-only-focusable:focus {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  clip: auto;
+	position: static;
+	overflow: visible;
+	clip: auto;
+	width: auto;
+	height: auto;
+	margin: 0;
 }
 
 .clearfix:before,
@@ -31,36 +31,55 @@
 .container-fluid:after,
 .row:before,
 .row:after {
-	content: " ";
 	display: table;
+	content: ' ';
 }
+
 .clearfix:after,
 .container:after,
 .container-fluid:after,
-.row:after { clear: both }
+.row:after {
+	clear: both;
+}
 
 .center-block {
 	display: block;
-	margin-left: auto;
 	margin-right: auto;
+	margin-left: auto;
 }
 
-.pull-right { float: right !important }
-.pull-left { float: left !important }
-.hide { display: none !important }
-.show { display: block !important }
-.invisible { visibility: hidden }
+.pull-right {
+	float: right !important;
+}
+
+.pull-left {
+	float: left !important;
+}
+
+.hide {
+	display: none !important;
+}
+
+.show {
+	display: block !important;
+}
+
+.invisible {
+	visibility: hidden;
+}
 
 .text-hide {
 	font: 0/0 a;
-	color: transparent;
-	text-shadow: none;
 	background-color: transparent;
 	border: 0;
+	color: transparent;
+	text-shadow: none;
 }
 
 .hidden {
-	display: none ;
+	display: none;
 }
 
-.affix { position: fixed }
+.affix {
+	position: fixed;
+}

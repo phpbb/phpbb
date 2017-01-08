@@ -1,30 +1,33 @@
-/* Form Styles
----------------------------------------- */
+/* -------------------------------------------------------------- /*
+	$Forms
+/* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 /* General form styles
-----------------------------------------*/
+---------------------------------------- */
 fieldset {
-	border-width: 0;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
+	border-width: 0;
 }
 
 input {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1em;
 	font-weight: normal;
 	vertical-align: middle;
 	padding: 0 3px;
-	font-size: 1em;
-	font-family: Verdana, Helvetica, Arial, sans-serif;
 }
 
 select {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1em;
 	font-weight: normal;
-	cursor: pointer;
 	vertical-align: middle;
 	border: 1px solid transparent;
 	padding: 1px;
-	font-size: 1em;
+	cursor: pointer;
 }
 
 select:focus {
@@ -36,21 +39,21 @@ option {
 }
 
 select optgroup option {
-	padding-right: 1em;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
+	padding-right: 1em;
 }
 
 textarea {
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	width: 60%;
-	padding: 2px;
+	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	line-height: 1.4em;
+	width: 60%;
+	padding: 2px;
 }
 
 label {
-	cursor: default;
 	padding-right: 5px;
+	cursor: default;
 }
 
 label input {
@@ -68,27 +71,27 @@ fieldset dl {
 }
 
 fieldset dt {
-	float: left;
-	width: 40%;
 	text-align: left;
 	display: block;
+	float: left;
+	width: 40%;
 }
 
 fieldset dd {
-	margin-left: 41%;
 	vertical-align: top;
 	margin-bottom: 3px;
+	margin-left: 41%;
 }
 
 /* Specific layout 1 */
 fieldset.fields1 dt {
-	width: 15em;
 	border-right-width: 0;
+	width: 15em;
 }
 
 fieldset.fields1 dd {
-	margin-left: 15em;
 	border-left-width: 0;
+	margin-left: 15em;
 }
 
 fieldset.fields1 div {
@@ -102,13 +105,13 @@ fieldset.fields1 .live-search div {
 
 /* Specific layout 2 */
 fieldset.fields2 dt {
-	width: 15em;
 	border-right-width: 0;
+	width: 15em;
 }
 
 fieldset.fields2 dd {
-	margin-left: 16em;
 	border-left-width: 0;
+	margin-left: 16em;
 }
 
 /* Form elements */
@@ -121,7 +124,8 @@ dd label {
 	white-space: nowrap;
 }
 
-dd input, dd textarea {
+dd input,
+dd textarea {
 	margin-right: 3px;
 }
 
@@ -144,8 +148,8 @@ dd textarea {
 
 /* Browser-specific tweaks */
 button::-moz-focus-inner {
+	border: 0;
 	padding: 0;
-	border: 0
 }
 
 /* Quick-login on index page */
@@ -158,8 +162,8 @@ fieldset.quick-login input {
 }
 
 fieldset.quick-login input.inputbox {
-	width: 15%;
 	vertical-align: middle;
+	width: 15%;
 	margin-right: 5px;
 }
 
@@ -171,7 +175,7 @@ fieldset.quick-login label {
 /* Display options on viewtopic/viewforum pages  */
 fieldset.display-options {
 	text-align: center;
-	margin: 3px 0 5px 0;
+	margin: 3px 0 5px;
 }
 
 fieldset.display-options label {
@@ -190,11 +194,11 @@ fieldset.display-options a {
 }
 
 .dropdown fieldset.display-options label {
+	text-align: right;
+	white-space: nowrap;
 	display: block;
 	margin: 4px;
 	padding: 0;
-	text-align: right;
-	white-space: nowrap;
 }
 
 .dropdown fieldset.display-options select {
@@ -203,8 +207,8 @@ fieldset.display-options a {
 
 /* Display actions for ucp and mcp pages */
 fieldset.display-actions {
-	text-align: right;
 	line-height: 2em;
+	text-align: right;
 	white-space: nowrap;
 	padding-right: 1em;
 }
@@ -218,15 +222,15 @@ fieldset.sort-options {
 	line-height: 2em;
 }
 
-/* MCP forum selection*/
+/* MCP forum selection */
 fieldset.forum-selection {
-	margin: 5px 0 3px 0;
 	float: right;
+	margin: 5px 0 3px;
 }
 
 fieldset.forum-selection2 {
-	margin: 13px 0 3px 0;
 	float: right;
+	margin: 13px 0 3px;
 }
 
 /* Submit button fieldset */
@@ -241,14 +245,15 @@ fieldset.submit-buttons input {
 }
 
 /* Posting page styles
-----------------------------------------*/
+---------------------------------------- */
 
 /* Buttons used in the editor */
 .format-buttons {
-	margin: 15px 0 2px 0;
+	margin: 15px 0 2px;
 }
 
-.format-buttons input, .format-buttons select {
+.format-buttons input,
+.format-buttons select {
 	vertical-align: middle;
 }
 
@@ -258,26 +263,22 @@ fieldset.submit-buttons input {
 }
 
 .message-box textarea {
-	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	width: 450px;
-	height: 270px;
-	min-width: 100%;
-	max-width: 100%;
+	font-family: 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.2em;
-	resize: vertical;
 	outline: 3px dashed transparent;
 	outline-offset: -4px;
-	-webkit-transition: all .5s ease;
-	-moz-transition: all .5s ease;
-	-ms-transition: all .5s ease;
-	-o-transition: all .5s ease;
-	transition: all .5s ease;
+	width: 450px;
+	min-width: 100%;
+	max-width: 100%;
+	height: 270px;
+	resize: vertical;
+	transition: all 0.5s ease;
 }
 
 /* Emoticons panel */
 .smiley-box {
-	width: 18%;
 	float: right;
+	width: 18%;
 }
 
 .smiley-box img {
@@ -291,15 +292,27 @@ fieldset.submit-buttons input {
 	padding: 2px;
 }
 
-.inputbox:hover, .inputbox:focus {
+.inputbox:hover,
+.inputbox:focus {
 	border: 1px solid transparent;
 	outline-style: none;
 }
 
-input.inputbox	{ width: 85%; }
-input.medium	{ width: 50%; }
-input.narrow	{ width: 25%; }
-input.tiny	{ width: 150px; }
+input.inputbox {
+	width: 85%;
+}
+
+input.medium {
+	width: 50%;
+}
+
+input.narrow {
+	width: 25%;
+}
+
+input.tiny {
+	width: 150px;
+}
 
 textarea.inputbox {
 	width: 85%;
@@ -309,70 +322,89 @@ textarea.inputbox {
 	width: auto !important;
 }
 
-input[type="number"] {
+input[type='number'] {
 	-moz-padding-end: inherit;
 }
 
-input[type="search"] {
-	-webkit-appearance: textfield;
+input[type='search'] {
 	-webkit-box-sizing: content-box;
+	-webkit-appearance: textfield;
 }
 
-input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-results-button, input[type="search"]::-webkit-search-results-decoration {
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
 	display: none;
 }
 
-input[type="search"]::-webkit-search-cancel-button {
+input[type='search']::-webkit-search-cancel-button {
 	cursor: pointer;
 }
 
 /* Form button styles
 ---------------------------------------- */
-input.button1, input.button2 {
+input.button1,
+input.button2 {
 	font-size: 1em;
 }
 
-a.button1, input.button1, input.button3, a.button2, input.button2 {
+a.button1,
+input.button1,
+input.button3,
+a.button2,
+input.button2 {
+	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	background: transparent none repeat-x top left;
 	width: auto !important;
 	padding-top: 1px;
 	padding-bottom: 1px;
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	background: transparent none repeat-x top left;
-	line-height: 1.5;
 }
 
-a.button1, input.button1 {
+a.button1,
+input.button1 {
 	font-weight: bold;
 	border: 1px solid transparent;
 }
 
 input.button3 {
-	padding: 0;
-	margin: 0;
-	line-height: 5px;
-	height: 12px;
-	background-image: none;
 	font-variant: small-caps;
+	line-height: 5px;
+	background-image: none;
+	height: 12px;
+	margin: 0;
+	padding: 0;
 }
 
-input[type="button"], input[type="submit"], input[type="reset"], input[type="checkbox"], input[type="radio"] {
+input[type='button'],
+input[type='submit'],
+input[type='reset'],
+input[type='checkbox'],
+input[type='radio'] {
 	cursor: pointer;
 }
 
 /* Alternative button */
-a.button2, input.button2, input.button3 {
+a.button2,
+input.button2,
+input.button3 {
 	border: 1px solid transparent;
 }
 
 /* <a> button in the style of the form buttons */
-a.button1, a.button2 {
+a.button1,
+a.button2 {
 	text-decoration: none;
-	padding: 0 3px;
 	vertical-align: text-bottom;
+	padding: 0 3px;
 }
 
 /* Hover states */
-a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
+a.button1:hover,
+input.button1:hover,
+a.button2:hover,
+input.button2:hover,
+input.button3:hover {
 	border: 1px solid transparent;
 }
 
@@ -381,7 +413,9 @@ input.disabled {
 }
 
 /* Focus states */
-input.button1:focus, input.button2:focus, input.button3:focus {
+input.button1:focus,
+input.button2:focus,
+input.button3:focus {
 	outline-style: none;
 }
 
@@ -392,14 +426,12 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 
 .search-box .inputbox {
 	background-image: none;
-	border-right-width: 0;
 	border-radius: 4px 0 0 4px;
+	border-right-width: 0;
 	float: left;
+	box-sizing: border-box;
 	height: 24px;
 	padding: 3px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
 }
 
 /* Search box (header)
@@ -408,22 +440,38 @@ input.button1:focus, input.button2:focus, input.button3:focus {
 	border-radius: 4px;
 	display: block;
 	float: right;
-	margin-right: 5px;
 	margin-top: 30px;
+	margin-right: 5px;
 }
 
-.search-header .inputbox { border: 0; }
+.search-header .inputbox {
+	border: 0;
+}
 
-.navbar .linklist > li.responsive-search { display: none; }
+.navbar .linklist > li.responsive-search {
+	display: none;
+}
 
 input.search {
 	background-image: none;
-	background-repeat: no-repeat;
 	background-position: left 1px;
+	background-repeat: no-repeat;
 	padding-left: 17px;
 }
 
-.full { width: 95%; }
-.medium { width: 50%;}
-.narrow { width: 25%;}
-.tiny { width: 10%;}
+.full {
+	width: 95%;
+}
+
+.medium {
+	width: 50%;
+}
+
+.narrow {
+	width: 25%;
+}
+
+.tiny {
+	width: 10%;
+}
+/* stylelint-enable */
