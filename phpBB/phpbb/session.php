@@ -572,12 +572,12 @@ class session
 		$provider = $provider_collection->get_provider();
 		$this->data = $provider->autologin();
 
-		if ($user_id !== false && sizeof($this->data) && $this->data['user_id'] != $user_id)
+		if ($user_id !== false && isset($this->data['user_id']) && $this->data['user_id'] != $user_id)
 		{
 			$this->data = array();
 		}
 
-		if (sizeof($this->data))
+		if (isset($this->data['user_id']))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $this->data['user_id'];
@@ -585,7 +585,7 @@ class session
 
 		// If we're presented with an autologin key we'll join against it.
 		// Else if we've been passed a user_id we'll grab data based on that
-		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
+		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && empty($this->data))
 		{
 			$sql = 'SELECT u.*
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
@@ -605,7 +605,7 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		if ($user_id !== false && !sizeof($this->data))
+		if ($user_id !== false && empty($this->data))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $user_id;
@@ -633,7 +633,7 @@ class session
 		// User does not exist
 		// User is inactive
 		// User is bot
-		if (!sizeof($this->data) || !is_array($this->data))
+		if (!is_array($this->data) || !sizeof($this->data))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = ($bot) ? $bot : ANONYMOUS;
