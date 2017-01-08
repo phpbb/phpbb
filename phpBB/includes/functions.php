@@ -590,7 +590,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 	if ($mode == 'all')
 	{
-		if ($forum_id === false || !sizeof($forum_id))
+		if (empty($forum_id))
 		{
 			// Mark all forums read (index page)
 			/* @var $phpbb_notifications \phpbb\notification\manager */
@@ -715,7 +715,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 			$db->sql_freeresult($result);
 
-			if (sizeof($sql_update))
+			if (count($sql_update))
 			{
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
 					SET mark_time = $post_time
@@ -851,7 +851,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 				// We get the ten most minimum stored time offsets and its associated topic ids
 				$time_keys = array();
-				for ($i = 0; $i < 10 && sizeof($tracking['t']); $i++)
+				for ($i = 0; $i < 10 && count($tracking['t']); $i++)
 				{
 					$min_value = min($tracking['t']);
 					$m_tkey = array_search($min_value, $tracking['t']);
@@ -947,7 +947,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 
 	$topic_ids = array_diff($topic_ids, array_keys($last_read));
 
-	if (sizeof($topic_ids))
+	if (count($topic_ids))
 	{
 		$mark_time = array();
 
@@ -999,7 +999,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		$topic_ids = array_diff($topic_ids, array_keys($last_read));
 
-		if (sizeof($topic_ids))
+		if (count($topic_ids))
 		{
 			$sql = 'SELECT forum_id, mark_time
 				FROM ' . FORUMS_TRACK_TABLE . "
@@ -1026,7 +1026,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 	{
 		global $tracking_topics;
 
-		if (!isset($tracking_topics) || !sizeof($tracking_topics))
+		if (!isset($tracking_topics) || !count($tracking_topics))
 		{
 			$tracking_topics = $request->variable($config['cookie_name'] . '_track', '', true, \phpbb\request\request_interface::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
@@ -1053,7 +1053,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		$topic_ids = array_diff($topic_ids, array_keys($last_read));
 
-		if (sizeof($topic_ids))
+		if (count($topic_ids))
 		{
 			$mark_time = array();
 
@@ -1395,7 +1395,7 @@ function tracking_unserialize($string, $max_depth = 3)
 				switch ($string[$i])
 				{
 					case '(':
-						if (sizeof($stack) >= $max_depth)
+						if (count($stack) >= $max_depth)
 						{
 							die('Invalid data supplied');
 						}
@@ -1449,7 +1449,7 @@ function tracking_unserialize($string, $max_depth = 3)
 		}
 	}
 
-	if (sizeof($stack) != 0 || ($mode != 0 && $mode != 3))
+	if (count($stack) != 0 || ($mode != 0 && $mode != 3))
 	{
 		die('Invalid data supplied');
 	}
@@ -2663,9 +2663,9 @@ function parse_cfg_file($filename, $lines = false)
 		{
 			$value = '';
 		}
-		else if (($value[0] == "'" && $value[sizeof($value) - 1] == "'") || ($value[0] == '"' && $value[sizeof($value) - 1] == '"'))
+		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
 		{
-			$value = htmlspecialchars(substr($value, 1, sizeof($value)-2));
+			$value = htmlspecialchars(substr($value, 1, strlen($value)-2));
 		}
 		else
 		{
@@ -2994,7 +2994,7 @@ function phpbb_inet_pton($address)
 	if (preg_match(get_preg_expression('ipv6'), $address))
 	{
 		$parts = explode(':', $address);
-		$missing_parts = 8 - sizeof($parts) + 1;
+		$missing_parts = 8 - count($parts) + 1;
 
 		if (substr($address, 0, 2) === '::')
 		{
@@ -3011,7 +3011,7 @@ function phpbb_inet_pton($address)
 
 		if (preg_match(get_preg_expression('ipv4'), $last_part))
 		{
-			$parts[sizeof($parts) - 1] = '';
+			$parts[count($parts) - 1] = '';
 			$last_part = phpbb_inet_pton($last_part);
 			$embedded_ipv4 = true;
 			--$missing_parts;
@@ -3023,7 +3023,7 @@ function phpbb_inet_pton($address)
 			{
 				$ret .= str_pad($part, 4, '0', STR_PAD_LEFT);
 			}
-			else if ($i && $i < sizeof($parts) - 1)
+			else if ($i && $i < count($parts) - 1)
 			{
 				$ret .= str_repeat('0000', $missing_parts);
 			}
@@ -3619,7 +3619,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	// Need caps version of $item for language-strings
 	$item_caps = strtoupper($item);
 
-	if (sizeof($online_users['online_users']))
+	if (count($online_users['online_users']))
 	{
 		$sql_ary = array(
 			'SELECT'	=> 'u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour',
