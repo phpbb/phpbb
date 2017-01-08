@@ -2402,7 +2402,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	$hold_ary = $auth->acl_user_raw_data(false, 'm_%', false);
 
 	// Add users?
-	if (sizeof($hold_ary))
+	if (!empty($hold_ary))
 	{
 		// At least one moderative option warrants a display
 		$ug_id_ary = array_keys($hold_ary);
@@ -2487,7 +2487,7 @@ function phpbb_cache_moderators($db, $cache, $auth)
 	// Now to the groups...
 	$hold_ary = $auth->acl_group_raw_data(false, 'm_%', false);
 
-	if (sizeof($hold_ary))
+	if (!empty($hold_ary))
 	{
 		$ug_id_ary = array_keys($hold_ary);
 
