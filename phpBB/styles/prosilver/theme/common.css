@@ -93,9 +93,9 @@ p.right {
 }
 
 p.jumpbox-return {
+	float: left;
 	margin-top: 10px;
 	margin-bottom: 0;
-	float: left;
 }
 
 b,
@@ -1128,10 +1128,10 @@ ul.linklist:after,
 }
 
 .emoji {
-	min-height: 18px;
+	width: 1em;
 	min-width: 18px;
 	height: 1em;
-	width: 1em;
+	min-height: 18px;
 }
 
 .smilies {
@@ -1299,18 +1299,17 @@ ul.linklist:after,
 }
 
 .badge {
-	border-radius: 10px;
-	opacity: 0.8;
-	text-align: center;
-	white-space: nowrap;
 	font-size: 10px;
 	line-height: 1;
-	float: right;
-	display: inline-block;
-	margin-left: 3px;
-	vertical-align: baseline;
+	text-align: center;
+	white-space: nowrap;
+	border-radius: 10px;
+	opacity: 0.8;
 	position: relative;
 	top: 3px;
+	display: inline-block;
+	float: right;
+	margin-left: 3px;
 	padding: 4px 6px;
 }
 
