@@ -250,6 +250,7 @@ ul.cplist {
 
 /* Link styles for the sub-section links */
 .navigation a {
+	font-size: 10px;
 	text-decoration: none;
 	display: block;
 	margin: 1px 0;
@@ -270,6 +271,7 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
+	font-size: 10px;
 	border-radius: 7px;
 	overflow-y: auto;
 	max-height: 200px;
@@ -351,6 +353,10 @@ ol.def-rules li {
 	width: auto;
 	margin: 10px;
 	padding: 5px;
+}
+
+.cplist .topictitle {
+	line-height: 30px;
 }
 
 /* stylelint-enable selector-max-compound-selectors */

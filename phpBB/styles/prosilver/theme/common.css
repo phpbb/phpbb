@@ -15,7 +15,7 @@ html {
 
 body {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 10px;
+	font-size: 16px;
 	line-height: normal;
 	word-wrap: break-word;
 	margin: 0;
@@ -1083,6 +1083,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Miscellaneous styles
 ---------------------------------------- */
 .copyright {
+	font-size: 10px;
 	text-align: center;
 	padding: 5px;
 }
