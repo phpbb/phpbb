@@ -41,7 +41,7 @@ img,
 .box1,
 .divider,
 .signature {
-	/* display: none; */
+	display: none;
 }
 
 /* Display smilies (Bug #47265) */
