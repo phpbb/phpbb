@@ -9,7 +9,7 @@
 # the docs/CREDITS.txt file.
 #
 set -e
-set -x
+set +x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
@@ -25,14 +25,15 @@ then
 	# Their version of NVM is probably old.
 	rm -rf ~/.nvm
 	# Grab NVM.
-	git clone https://github.com/creationix/nvm.git ~/.nvm
+	git clone https://github.com/creationix/nvm.git ~/.nvm > /dev/null
 	# Checkout the latest stable tag.
 	# Note that you can just hardcode a preferred version here.
 	(cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`)
 	# Install the desired version of Node
 	source ~/.nvm/nvm.sh
-	nvm install $TRAVIS_NODE_VERSION
-	npm install -g
-	npm install
+	nvm install $TRAVIS_NODE_VERSION > /dev/null
+	npm install -g > /dev/null
+	npm install > /dev/null
+	set -x
 	stylelint --config ../.stylelintrc "styles/prosilver/theme/*.css"
 fi
