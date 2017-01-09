@@ -294,9 +294,12 @@ class factory implements \phpbb\textformatter\cache_interface
 				$row['bbcode_tpl']
 			);
 
+			// Note: BBCode usage is stored as HTML
+			$usage = htmlspecialchars_decode($row['bbcode_match']);
+
 			try
 			{
-				$configurator->BBCodes->addCustom($row['bbcode_match'], new UnsafeTemplate($tpl));
+				$configurator->BBCodes->addCustom($usage, new UnsafeTemplate($tpl));
 			}
 			catch (\Exception $e)
 			{
