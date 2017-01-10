@@ -15,7 +15,7 @@
 		<!-- ENDIF -->
 		<!-- IF U_VIEW_NEXT_HISTORY -->
 			<a href="{U_VIEW_NEXT_HISTORY}" class="right-box arrow-{S_CONTENT_FLOW_END}">
-				<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_HISTORY}</span>
+				<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_HISTORY}</span>
 			</a>
 		<!-- ENDIF -->
 	</fieldset>
@@ -179,7 +179,7 @@
 	<!-- ENDIF -->
 	<!-- IF U_NEXT_PM -->
 		<a href="{U_NEXT_PM}" class="right-box arrow-{S_CONTENT_FLOW_END}">
-			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_PM}</span>
+			<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_PM}</span>
 		</a>
 	<!-- ENDIF -->
 	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button2" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->
