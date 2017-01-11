@@ -85,6 +85,7 @@ services:
             - null
             - '@template.twig.loader'
             - []
+            - null
         calls:
             - [setLexer, ['@template.twig.lexer']]
 

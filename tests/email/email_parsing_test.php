@@ -86,7 +86,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 				'debug'			=> false,
 				'auto_reload'	=> true,
 				'autoescape'	=> false,
-			)
+			),
+			new \phpbb\event\dispatcher($phpbb_container)
 		);
 		$twig->addExtension($twig_extension);
 		$phpbb_container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));

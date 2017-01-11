@@ -656,7 +656,7 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
@@ -671,7 +671,9 @@ class messenger
 			$phpbb_container->get('ext.manager'),
 			new \phpbb\template\twig\loader(
 				$phpbb_container->get('filesystem')
-			)
+			),
+			array(),
+			$phpbb_dispatcher
 		);
 		$template_environment->setLexer($phpbb_container->get('template.twig.lexer'));
 

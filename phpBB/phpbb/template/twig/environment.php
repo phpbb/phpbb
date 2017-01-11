@@ -32,9 +32,7 @@ class environment extends \Twig_Environment
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
-	/**
-	 * @var \phpbb\event\dispatcher_interface
-	 */
+	/** @var \phpbb\event\dispatcher_interface */
 	protected $phpbb_dispatcher;
 
 	/** @var string */
@@ -61,7 +59,7 @@ class environment extends \Twig_Environment
 	* @param array $options Array of options to pass to Twig
 	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	*/
-	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array(), \phpbb\event\dispatcher_interface	$phpbb_dispatcher = null)
+	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array(), \phpbb\event\dispatcher_interface $phpbb_dispatcher = null)
 	{
 		$this->phpbb_config = $phpbb_config;
 
@@ -213,26 +211,32 @@ class environment extends \Twig_Environment
 		* Allow changing the template output stream before rendering
 		*
 		* @event core.twig_environment_render_template_before
-		* @var	array	$context	Array with template variables
-		* @var	string  $name		The template name
+		* @var	array	context		Array with template variables
+		* @var	string  name		The template name
 		* @since 3.2.1-RC1
 		*/
-		$vars = array('context', 'name');
-		extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_render_template_before', compact($vars)));
+		if ($this->phpbb_dispatcher)
+		{
+			$vars = array('context', 'name');
+			extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_render_template_before', compact($vars)));
+		}
 
 		$output = parent::render($name, $context);
 
 		/**
 		* Allow changing the template output stream after rendering
 		*
-		* @event core.twig_environment_render_template_before
-		* @var	array	$context	Array with template variables
-		* @var	string  $name		The template name
-		* @var	string	$output		Rendered template output stream
+		* @event core.twig_environment_render_template_after
+		* @var	array	context		Array with template variables
+		* @var	string  name		The template name
+		* @var	string	output		Rendered template output stream
 		* @since 3.2.1-RC1
 		*/
-		$vars = array('context', 'name', 'output');
-		extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_render_template_after', compact($vars)));
+		if ($this->phpbb_dispatcher)
+		{
+			$vars = array('context', 'name', 'output');
+			extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_render_template_after', compact($vars)));
+		}
 
 		return $this->inject_assets($output, $placeholder_salt);
 	}
