@@ -190,69 +190,64 @@ class context
 	public function assign_block_vars($blockname, array $vararray)
 	{
 		$this->num_rows_is_set = false;
-		if (strpos($blockname, '.') !== false)
+
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = sizeof($blocks) - 1;
+
+		$block = &$this->tpldata;
+		for ($i = 0; $i < $blockcount; $i++)
 		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$str = &$this->tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
+			if (($pos = strpos($blocks[$i], '[')) !== false)
 			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
+				$name = substr($blocks[$i], 0, $pos);
+
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = sizeof($block[$name]) - 1;
+				}
+				else
+				{
+					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
+				}
 			}
-
-			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
-			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
+			else
 			{
-				$vararray['S_FIRST_ROW'] = true;
+				$name = $blocks[$i];
+				$index = sizeof($block[$name]) - 1;
 			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blocks[$blockcount];
-
-			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
-			// This is much more clever than going through the complete template data on display (phew)
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($str[$blocks[$blockcount]][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Now we add the block that we're actually assigning to.
-			// We're adding a new iteration to this block with the given
-			// variable assignments.
-			$str[$blocks[$blockcount]][] = $vararray;
+			$block = &$block[$name];
+			$block = &$block[$index];
 		}
-		else
+
+		// $block = &$block[$blocks[$i]]; // Do not traverse the last block as it might be empty
+		$name = $blocks[$i];
+
+		// Assign S_ROW_COUNT and S_ROW_NUM
+		$s_row_count = isset($block[$name]) ? sizeof($block[$name]) : 0;
+		$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
+
+		// Assign S_FIRST_ROW
+		if (!$s_row_count)
 		{
-			// Top-level block.
-			$s_row_count = (isset($this->tpldata[$blockname])) ? sizeof($this->tpldata[$blockname]) : 0;
-			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blockname;
-
-			// We always assign S_LAST_ROW and remove the entry before
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($this->tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Add a new iteration to this block with the variable assignments we were given.
-			$this->tpldata[$blockname][] = $vararray;
+			$vararray['S_FIRST_ROW'] = true;
 		}
+
+		// Assign S_BLOCK_NAME
+		$vararray['S_BLOCK_NAME'] = $name;
+
+		// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
+		// This is much more clever than going through the complete template data on display (phew)
+		$vararray['S_LAST_ROW'] = true;
+		if ($s_row_count > 0)
+		{
+			unset($block[$name][($s_row_count - 1)]['S_LAST_ROW']);
+		}
+
+		// Now we add the block that we're actually assigning to.
+		// We're adding a new iteration to this block with the given
+		// variable assignments.
+		$block[$name][] = $vararray;
 
 		return true;
 	}
