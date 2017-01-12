@@ -46,6 +46,18 @@ acp_email_find_username_append
 * Since: 3.1.7-RC1
 * Purpose: Add content at the end of the fimd username link
 
+acp_ext_list_disabled_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after the name of disabled extensions in the list
+
+acp_ext_list_enabled_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after the name of enabled extensions in the list
+
 acp_email_find_username_prepend
 ===
 * Location: adm/style/acp_email.html
