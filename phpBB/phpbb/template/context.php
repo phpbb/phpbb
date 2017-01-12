@@ -413,7 +413,7 @@ class context
 		if ($mode == 'delete')
 		{
 			// If we are exceeding last iteration, do not delete anything
-			if ($key > sizeof($block))
+			if ($key > sizeof($block) || $key < 0)
 			{
 				return false;
 			}
