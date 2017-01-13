@@ -57,7 +57,7 @@ function marklist(id, name, state) {
 
 	jQuery('#' + id + ' input[type=checkbox][name]').each(function() {
 		var $this = jQuery(this);
-		if ($this.attr('name').substr(0, name.length) === name) {
+		if ($this.attr('name').substr(0, name.length) === name && !$this.prop('disabled')) {
 			$this.prop('checked', state);
 		}
 	});
