@@ -148,6 +148,10 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 				'disablePlugin',   'Emoticons'
 			),
 			array(
+				'disable_smilies', null,
+				'disablePlugin',   'Emoji'
+			),
+			array(
 				'enable_bbcode', 'url',
 				'enableTag',     'URL'
 			),
@@ -162,7 +166,11 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			array(
 				'enable_smilies', null,
 				'enablePlugin',   'Emoticons'
-			)
+			),
+			array(
+				'enable_smilies', null,
+				'enablePlugin',   'Emoji'
+			),
 		);
 	}
 
