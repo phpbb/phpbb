@@ -54,7 +54,7 @@ function marklist(id, name, state)
 
 	for (var r = 0; r < rb.length; r++)
 	{
-		if (rb[r].name.substr(0, name.length) == name)
+		if (rb[r].name.substr(0, name.length) == name && rb[r].disabled !== true)
 		{
 			rb[r].checked = state;
 		}
