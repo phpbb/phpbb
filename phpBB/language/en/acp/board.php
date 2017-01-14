@@ -158,11 +158,11 @@ $lang = array_merge($lang, array(
 
 // Post Settings
 $lang = array_merge($lang, array(
-	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
-	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
-	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
-	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag in posts',
-	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
+	'ACP_POST_SETTINGS_EXPLAIN'			   => 'Here you can set all default settings for posting.',
+	'ALLOW_POST_LINKS'					   => 'Allow links in posts/private messages',
+	'ALLOW_POST_LINKS_EXPLAIN'			   => 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
+	'ALLOW_POST_FLASH'					   => 'Allow use of <code>[FLASH]</code> BBCode tag in posts',
+	'ALLOW_POST_FLASH_EXPLAIN'			   => 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump that topic. Setting the value to 0 disables bumping entirely.',
@@ -178,6 +178,8 @@ $lang = array_merge($lang, array(
 	'FLOOD_INTERVAL_EXPLAIN'		=> 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.',
 	'HOT_THRESHOLD'					=> 'Popular topic threshold',
 	'HOT_THRESHOLD_EXPLAIN'			=> 'Posts per topic threshold required for the popular topic annotation. Set to 0 to disable popular topics.',
+	'LIMIT_DELETE_OWN_POST_TO_NEW'		   => 'Limit post deletion to last post in topic',
+	'LIMIT_DELETE_OWN_POST_TO_NEW_EXPLAIN' => 'Choose whether normal users can delete their own posts at any time, or only when trying to delete the last post in a topic. The time limit on deleting a new post still applies regardless. Users will still not be able to delete the first post of a topic unless it is the only post in a topic.',
 	'MAX_POLL_OPTIONS'				=> 'Maximum number of poll options',
 	'MAX_POST_FONT_SIZE'			=> 'Maximum font size per post',
 	'MAX_POST_FONT_SIZE_EXPLAIN'	=> 'Maximum font size allowed in a post. Set to 0 for unlimited font size.',
