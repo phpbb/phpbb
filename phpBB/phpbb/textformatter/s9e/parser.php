@@ -142,6 +142,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	public function disable_smilies()
 	{
 		$this->parser->disablePlugin('Emoticons');
+		$this->parser->disablePlugin('Emoji');
 	}
 
 	/**
@@ -183,6 +184,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	public function enable_smilies()
 	{
 		$this->parser->enablePlugin('Emoticons');
+		$this->parser->enablePlugin('Emoji');
 	}
 
 	/**
