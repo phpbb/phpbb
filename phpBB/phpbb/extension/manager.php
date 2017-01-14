@@ -62,10 +62,10 @@ class manager
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
-//		if ($this->extensions === false)
-//		{
+		if ($this->extensions === false)
+		{
 			$this->load_extensions();
-//		}
+		}
 	}
 
 	/**
@@ -96,18 +96,16 @@ class manager
 
 		foreach ($extensions as $extension)
 		{
-			if ($this->is_available($extension['ext_name']))
-			{
-				$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
-				$this->extensions[$extension['ext_name']] = $extension;
-			}
+			$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
+			$extension['ext_active'] = ($extension['ext_active'] && $this->is_available($extension['ext_name']));
+			$this->extensions[$extension['ext_name']] = $extension;
 		}
 
 		ksort($this->extensions);
 
 		if ($this->cache)
 		{
-			$this->cache->put($this->cache_name, $this->extensions);
+			$this->cache->put($this->cache_name, $this->extensions, 600);
 		}
 	}
 
