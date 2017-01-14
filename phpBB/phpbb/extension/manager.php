@@ -62,10 +62,10 @@ class manager
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
-		if ($this->extensions === false)
-		{
+//		if ($this->extensions === false)
+//		{
 			$this->load_extensions();
-		}
+//		}
 	}
 
 	/**
@@ -96,8 +96,11 @@ class manager
 
 		foreach ($extensions as $extension)
 		{
-			$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
-			$this->extensions[$extension['ext_name']] = $extension;
+			if ($this->is_available($extension['ext_name']))
+			{
+				$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
+				$this->extensions[$extension['ext_name']] = $extension;
+			}
 		}
 
 		ksort($this->extensions);
@@ -433,25 +436,11 @@ class manager
 			if ($file_info->isFile() && $file_info->getFilename() == 'composer.json')
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
-				$composer_file = $iterator->getPath() . '/composer.json';
-
-				// Ignore the extension if there is no composer.json.
-				if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
-				{
-					continue;
-				}
-
-				$ext_info = json_decode($ext_info, true);
 				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
-
-				// Ignore the extension if directory depth is not correct or if the directory structure
-				// does not match the name value specified in composer.json.
-				if (substr_count($ext_name, '/') !== 1 || !isset($ext_info['name']) || $ext_name != $ext_info['name'])
+				if ($this->is_available($ext_name))
 				{
-					continue;
+					$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 				}
-
-				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}
 		}
 		ksort($available);
@@ -524,7 +513,29 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		return file_exists($this->get_extension_path($name, true));
+		// Not available if the folder does not exist
+		if (!file_exists($this->get_extension_path($name, true)))
+		{
+			return false;
+		}
+
+		$composer_file = $this->get_extension_path($name, true) . 'composer.json';
+
+		// Not available if there is no composer.json.
+		if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
+		{
+			return false;
+		}
+		$ext_info = json_decode($ext_info, true);
+
+		// Not available if malformed name or if the directory structure
+		// does not match the name value specified in composer.json.
+		if (substr_count($name, '/') !== 1 || !isset($ext_info['name']) || $name != $ext_info['name'])
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
