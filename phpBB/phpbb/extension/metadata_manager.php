@@ -216,7 +216,7 @@ class metadata_manager
 
 				if (!$this->validate_enable())
 				{
-					throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', $name));
+					throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array($name));
 				}
 			break;
 
