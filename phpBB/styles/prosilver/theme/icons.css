@@ -67,6 +67,10 @@
 	margin-left: -5px;
 }
 
+.arrow-left .icon {
+	float: left;
+}
+
 .arrow-right:hover .icon {
 	margin-right: -5px;
 	margin-left: 5px;
