@@ -47,7 +47,7 @@ class ftp_file_updater implements file_updater_interface
 	 * @param string		$phpbb_root_path
 	 * @param string		$php_ext
 	 */
-	public function __constructor(update_helper $update_helper, $phpbb_root_path, $php_ext)
+	public function __construct(update_helper $update_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->transfer			= null;
 		$this->update_helper	= $update_helper;
