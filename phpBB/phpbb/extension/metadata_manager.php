@@ -214,7 +214,10 @@ class metadata_manager
 			case 'all':
 				$this->validate('display');
 
-				$this->validate_enable();
+				if (!$this->validate_enable())
+				{
+					throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', $name));
+				}
 			break;
 
 			case 'display':
