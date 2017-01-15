@@ -421,11 +421,11 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.3', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4.0', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="https://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 
