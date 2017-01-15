@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "71da80ba275535787acd4570ccc0627c",
-    "content-hash": "3de4cd17b0e17d6e273ef2b6e16631ad",
+    "hash": "8541642eb4b706f15c466e0dd547a7fa",
+    "content-hash": "68fd1a0bc57151f27948642c75b08114",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -640,16 +640,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "0.8.4",
+            "version": "0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "919fd772aae4dd889618da1cb18ae746f2a14bb6"
+                "reference": "9dc4227779f8a753dbf0c4f8cb129320522d325c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/919fd772aae4dd889618da1cb18ae746f2a14bb6",
-                "reference": "919fd772aae4dd889618da1cb18ae746f2a14bb6",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/9dc4227779f8a753dbf0c4f8cb129320522d325c",
+                "reference": "9dc4227779f8a753dbf0c4f8cb129320522d325c",
                 "shasum": ""
             },
             "require": {
@@ -657,6 +657,11 @@
                 "ext-filter": "*",
                 "lib-pcre": ">=7.2",
                 "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "matthiasmullie/minify": "*",
+                "php": ">=5.3.3",
+                "s9e/regexp-builder": ">=1.3.0"
             },
             "suggest": {
                 "ext-curl": "Improves the performance of the MediaEmbed plugin and some JavaScript minifiers",
@@ -696,7 +701,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2016-11-22 20:10:24"
+            "time": "2017-01-15 10:15:45"
         },
         {
             "name": "symfony/config",
