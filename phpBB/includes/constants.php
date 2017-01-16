@@ -200,7 +200,7 @@ define('BBCODE_ID_ATTACH', 12);
 define('BBCODE_LIMIT', 1511);
 
 // Smiley hard limit
-define('SMILEY_LIMIT', 1000);
+define('SMILEY_LIMIT', 2000);
 
 // Magic url types
 define('MAGIC_URL_EMAIL', 1);
