@@ -957,7 +957,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
-	margin-top: 0.3em;
+	margin-top: -12px;
 }
 
 .row .pagination > ul {
@@ -969,12 +969,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	font-size: 9px;
 	border-radius: 2px;
 	padding: 1px 3px;
-}
-
-.topic-poster {
-	float: left;
-	padding-right: 0.5em;
-	margin-top: 0.3em;
 }
 
 /* jQuery popups
