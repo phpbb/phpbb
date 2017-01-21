@@ -291,6 +291,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
+		$install_config_file = $phpbb_root_path . 'store/install_config.php';
+
+		if (file_exists($install_config_file))
+		{
+			unlink($install_config_file);
+		}
+
 		$container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 		$container = $container_builder
 			->with_environment('installer')
