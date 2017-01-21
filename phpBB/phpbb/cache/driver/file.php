@@ -601,6 +601,6 @@ class file extends \phpbb\cache\driver\base
 	*/
 	protected function clean_varname($varname)
 	{
-		return str_replace('/', '-', $varname);
+		return preg_replace('#[\\\\\\\/]#', '-', $varname);
 	}
 }
