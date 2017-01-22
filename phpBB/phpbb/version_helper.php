@@ -201,6 +201,49 @@ class version_helper
 	}
 
 	/**
+	 * Gets the latest update for the current branch the user is on
+	 * Will suggest versions from newer branches when EoL has been reached
+	 * and/or version from newer branch is needed for having all known security
+	 * issues fixed.
+	 *
+	 * @param bool $force_update Ignores cached data. Defaults to false.
+	 * @param bool $force_cache Force the use of the cache. Override $force_update.
+	 * @return array Version info or empty array if there are no updates
+	 * @throws \RuntimeException
+	 */
+	public function get_update_on_branch($force_update = false, $force_cache = false)
+	{
+		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
+
+		$self = $this;
+		$current_version = $this->current_version;
+
+		// Filter out any versions less than to the current version
+		$versions = array_filter($versions, function($data) use ($self, $current_version) {
+			return $self->compare($data['current'], $current_version, '>=');
+		});
+
+		// Get the lowest version from the previous list.
+		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
+			if ($value === null && $self->compare($data['current'], $current_version, '>='))
+			{
+				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				{
+					return ($self->compare($data['current'], $current_version, '>')) ? $data : array();
+				}
+				else
+				{
+					return null;
+				}
+			}
+
+			return $value;
+		});
+
+		return $update_info === null ? array() : $update_info;
+	}
+
+	/**
 	* Obtains the latest version information
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
