@@ -419,7 +419,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 			array(
 				'1.1.0',
 				array(),
-				null,
+				array(),
 			),
 			// Latest safe release is 1.0.1
 			array(
@@ -500,7 +500,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 						'eol'			=> true,
 					),
 				),
-				null,
+				array(),
 			),
 		);
 	}
