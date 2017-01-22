@@ -439,14 +439,22 @@ class acp_main
 
 		if ($auth->acl_get('a_board'))
 		{
-			/* @var $version_helper \phpbb\version_helper */
 			$version_helper = $phpbb_container->get('version_helper');
 			try
 			{
 				$recheck = $request->variable('versioncheck_force', false);
-				$updates_available = $version_helper->get_suggested_updates($recheck);
+				$updates_available = $version_helper->get_update_on_branch($recheck);
+				$upgrades_available = $version_helper->get_suggested_updates();
+				if (!empty($upgrades_available))
+				{
+					$upgrades_available = array_pop($upgrades_available);
+				}
 
-				$template->assign_var('S_VERSION_UP_TO_DATE', empty($updates_available));
+				$template->assign_vars(array(
+					'S_VERSION_UP_TO_DATE'		=> empty($updates_available),
+					'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
+					'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
+				));
 			}
 			catch (\RuntimeException $e)
 			{
