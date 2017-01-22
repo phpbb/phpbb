@@ -444,7 +444,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 				array(
 					'1.0'	=> array(
 						'current'		=> '1.0.1',
-						'security'		=> '1.0.1',
+						'security'		=> '1.0.0',
 					),
 					'1.1'	=> array(
 						'current'		=> '1.1.1',
@@ -452,7 +452,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 				),
 				array(
 					'current'		=> '1.0.1',
-					'security'		=> '1.0.1',
+					'security'		=> '1.0.0',
 				),
 			),
 			// Latest safe release is 1.1.0
