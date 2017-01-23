@@ -450,6 +450,17 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$message_attachment = 0;
 		$message_text = $message_subject = '';
 
+		/**
+		* Predefine message text and subject
+		*
+		* @event core.ucp_pm_compose_predefined_message
+		* @var	string	message_text	Message text
+		* @var	string	message_subject	Messate subject
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('message_text', 'message_subject');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_predefined_message', compact($vars)));
+
 		if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
 		{
 			$address_list['u'][$to_user_id] = 'to';
