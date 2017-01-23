@@ -237,6 +237,19 @@ switch ($mode)
 		add_log('admin', 'LOG_ACL_TRANSFER_PERMISSIONS', $user_row['username']);
 
 		$message = sprintf($user->lang['PERMISSIONS_TRANSFERRED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+
+		/**
+		* Event to run code after permissions are switched
+		*
+		* @event core.ucp_switch_permissions
+		* @var	int		user_id		User ID to switch permission to
+		* @var	array	user_row	User data
+		* @var	string	message		Success message
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('user_id', 'user_row', 'message');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_switch_permissions', compact($vars)));
+
 		trigger_error($message);
 
 	break;
