@@ -140,6 +140,7 @@ dl.row-item {
 dl.row-item dt {
 	background-repeat: no-repeat;
 	background-position: 5px 95%;		/* Position of topic icon */
+	background-size: 17px;
 }
 
 dl.row-item dt .list-inner {
