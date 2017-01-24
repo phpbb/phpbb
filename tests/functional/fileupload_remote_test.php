@@ -100,7 +100,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
 		$upload->set_error_prefix('')
 			->set_allowed_extensions(array('gif'))
-			->set_max_filesize(1100);
+			->set_max_filesize(2000);
 		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'develop/test.gif');
 		$this->assertEquals(0, sizeof($file->error));
 		$this->assertTrue(file_exists($file->get('filename')));
