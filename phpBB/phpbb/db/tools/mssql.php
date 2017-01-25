@@ -524,8 +524,6 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		$this->check_index_name_length($table_name, $index_name);
-
 		$statements[] = 'CREATE UNIQUE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 
 		return $this->_sql_run_sql($statements);
@@ -537,8 +535,6 @@ class mssql extends tools
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
-
-		$this->check_index_name_length($table_name, $index_name);
 
 		// remove index length
 		$column = preg_replace('#:.*$#', '', $column);
