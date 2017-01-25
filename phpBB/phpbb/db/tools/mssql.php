@@ -713,6 +713,7 @@ class mssql extends tools
 						AND cols.object_id = ix.object_id
 				WHERE ix.object_id = object_id('{$table_name}')
 					AND cols.name = '{$column_name}'
+					AND ix.is_primary_key = 0
 					AND ix.is_unique = " . ($unique ? '1' : '0');
 		}
 
