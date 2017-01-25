@@ -477,7 +477,7 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
+		$statements[] = 'DROP INDEX [' . $table_name . '].[' . $index_name . ']';
 
 		return $this->_sql_run_sql($statements);
 	}
