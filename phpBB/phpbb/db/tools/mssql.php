@@ -597,7 +597,7 @@ class mssql extends tools
 		// Change the column
 		$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
-		if (!empty($column_data['default']))
+		if (!empty($column_data['default']) && !$this->mssql_is_column_identity($table_name, $column_name))
 		{
 			// Add new default value constraint
 			$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $column_data['default'] . ' FOR [' . $column_name . ']';
@@ -672,6 +672,37 @@ class mssql extends tools
 		$this->db->sql_freeresult($result);
 
 		return $statements;
+	}
+
+	/**
+	 * Checks to see if column is an identity column
+	 *
+	 * Identity columns cannot have defaults set for them.
+	 *
+	 * @param string $table_name
+	 * @param string $column_name
+	 * @return bool		true if identity, false if not
+	 */
+	protected function mssql_is_column_identity($table_name, $column_name)
+	{
+		if ($this->mssql_is_sql_server_2000())
+		{
+			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+			// Deprecated in SQL Server 2005
+			$sql = "SELECT COLUMNPROPERTY(object_id('{$table_name}'), '{$column_name}', 'IsIdentity') AS is_identity";
+		}
+		else
+		{
+			$sql = "SELECT is_identity FROM sys.columns
+					WHERE object_id = object_id('{$table_name}')
+					AND name = '{$column_name}'";
+		}
+
+		$result = $this->db->sql_query($sql);
+		$is_identity = $this->db->sql_fetchfield('is_identity');
+		$this->db->sql_freeresult($result);
+
+		return (bool)$is_identity;
 	}
 
 	/**
