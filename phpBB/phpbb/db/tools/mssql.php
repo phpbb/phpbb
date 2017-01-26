@@ -524,6 +524,11 @@ class mssql extends tools
 	{
 		$statements = array();
 
+		if ($this->is_sql_server_2000())
+		{
+			$this->check_index_name_length($table_name, $index_name);
+		}
+
 		$statements[] = 'CREATE UNIQUE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 
 		return $this->_sql_run_sql($statements);
@@ -535,6 +540,11 @@ class mssql extends tools
 	function sql_create_index($table_name, $index_name, $column)
 	{
 		$statements = array();
+
+		if ($this->is_sql_server_2000())
+		{
+			$this->check_index_name_length($table_name, $index_name);
+		}
 
 		// remove index length
 		$column = preg_replace('#:.*$#', '', $column);
@@ -702,7 +712,7 @@ class mssql extends tools
 		$is_identity = $this->db->sql_fetchfield('is_identity');
 		$this->db->sql_freeresult($result);
 
-		return (bool)$is_identity;
+		return (bool) $is_identity;
 	}
 
 	/**
