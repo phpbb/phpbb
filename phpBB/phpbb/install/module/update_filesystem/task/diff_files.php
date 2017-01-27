@@ -172,9 +172,9 @@ class diff_files extends task_base
 			}
 			else
 			{
-				$new_file_content  = file_get_contents($new_path . $filename);
+				$new_file_content = file_get_contents($new_path . $filename);
 
-				if ($new_file_content  === false)
+				if ($new_file_content === false)
 				{
 					$this->iohandler->add_error_message(array('FILE_DIFFER_ERROR_FILE_CANNOT_BE_READ', $files_to_diff));
 					unset($new_file_content );
