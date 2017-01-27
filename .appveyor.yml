@@ -33,7 +33,10 @@ before_test:
   - echo extension=php_pdo_sqlsrv_56_nts.dll >> php.ini
   - cd c:\projects\phpbb\phpBB
   - php ..\composer.phar install
+  - cd c:\projects\phpbb\tests
+  - touch test_config.php
+  - ps: $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\mssqlnative';`n`$dbhost = '.\\sql2014';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'sa';`n`$dbpasswd = 'Password12!';"; $data | Out-File -Encoding "Default" "test_config.php"
 
 test_script:
   - cd c:\projects\phpbb
-  - php -e phpBB\vendor\phpunit\phpunit\phpunit
+  - php -e phpBB\vendor\phpunit\phpunit\phpunit --verbose
