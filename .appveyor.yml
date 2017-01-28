@@ -39,4 +39,4 @@ before_test:
 
 test_script:
   - cd c:\projects\phpbb
-  - php -e phpBB\vendor\phpunit\phpunit\phpunit --verbose
+  - php -e phpBB\vendor\phpunit\phpunit\phpunit --verbose --stop-on-error
