@@ -278,7 +278,7 @@ class context
 	*
 	* @return mixed false if not found, index position otherwise; be sure to test with ===
 	*/
-	public function find_key_index($blockname, $key = false)
+	public function find_key_index($blockname, $key)
 	{
 		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
 		$blocks = explode('.', $blockname);

@@ -135,7 +135,7 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function find_key_index($blockname, $key = false)
+	public function find_key_index($blockname, $key)
 	{
 		return $this->context->find_key_index($blockname, $key);
 	}

@@ -187,7 +187,7 @@ interface template
 	*
 	* @return mixed false if not found, index position otherwise; be sure to test with ===
 	*/
-	public function find_key_index($blockname, $key = false);
+	public function find_key_index($blockname, $key);
 
 	/**
 	* Get path to template for handle (required for BBCode parser)

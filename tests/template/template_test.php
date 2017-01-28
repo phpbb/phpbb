@@ -637,8 +637,8 @@ EOT
 		$this->assertEquals(1, $this->template->find_key_index('outer[2].middle', array('VARIABLE' => '2B')), 'Find index by key in middle loop');
 		$this->assertEquals(2, $this->template->find_key_index('outer.middle', true), 'Find index at the end of middle loop');
 
-		$this->assertEquals(false, $this->template->find_key_index('outer.wrong'), 'Wrong middle block name');
-		$this->assertEquals(false, $this->template->find_key_index('wrong.middle'), 'Wrong outer block name');
+		$this->assertEquals(false, $this->template->find_key_index('outer.wrong', true), 'Wrong middle block name');
+		$this->assertEquals(false, $this->template->find_key_index('wrong.middle', false), 'Wrong outer block name');
 	}
 	public function assign_block_vars_array_data()
 	{
