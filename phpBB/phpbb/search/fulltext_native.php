@@ -120,7 +120,7 @@ class fulltext_native extends \phpbb\search\base
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 
-		$this->word_length = array('min' => $this->config['fulltext_native_min_chars'], 'max' => $this->config['fulltext_native_max_chars']);
+		$this->word_length = array('min' => (int) $this->config['fulltext_native_min_chars'], 'max' => (int) $this->config['fulltext_native_max_chars']);
 
 		/**
 		* Load the UTF tools
