@@ -1,8 +1,13 @@
 build: false
 clone_folder: c:\projects\phpbb
+version: '{build}'
 
 services:
   - mssql2014
+  - iis
+
+hosts:
+  phpbb.test: 127.0.0.1
 
 init:
   - SET PATH=c:\php;%PATH%
@@ -33,7 +38,23 @@ before_test:
   - php ..\composer.phar install
   - cd c:\projects\phpbb\tests
   - touch test_config.php
-  - ps: $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\mssqlnative';`n`$dbhost = '.\\sql2014';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'sa';`n`$dbpasswd = 'Password12!';"; $data | Out-File -Encoding "Default" "test_config.php"
+  - ps: $data = "<?php`n`n`$dbms = 'phpbb\\db\\driver\\mssqlnative';`n`$dbhost = '.\\sql2014';`n`$dbport = '';`n`$dbname = 'phpbb_test';`n`$dbuser = 'sa';`n`$dbpasswd = 'Password12!';`n`$phpbb_functional_url = 'http://phpbb.test/';"; $data | Out-File -Encoding "Default" "test_config.php"
+  - choco install -y urlrewrite
+  - ps: New-WebSite -Name 'phpBBTest' -PhysicalPath 'c:\projects\phpbb\phpBB' -Force
+  - ps: Import-Module WebAdministration; Set-ItemProperty 'IIS:\Sites\phpBBTest' -name Bindings -value @{protocol='http';bindingInformation='*:80:phpbb.test'}
+  - SET PATH=%systemroot%\system32\inetsrv\;%PATH%
+  - echo Change default anonymous user AUTH to ApplicationPool
+  - appcmd set config -section:anonymousAuthentication /username:"" --password
+  - echo Setup FAST-CGI configuration
+  - appcmd set config /section:system.webServer/fastCGI /+[fullPath='C:\tools\php\php-cgi.exe']
+  - echo Setup FACT-CGI handler
+  - appcmd set config /section:system.webServer/handlers /+[name='PHP-FastCGI',path='*.php',verb='*',modules='FastCgiModule',scriptProcessor='C:\tools\php\php-cgi.exe',resourceType='Either']
+  - iisreset
+  - NET START W3SVC
+  - icacls "C:\projects\phpbb\phpBB\cache" /grant Users:F /T
+  - icacls "C:\projects\phpbb\phpBB\files" /grant Users:F /T
+  - icacls "C:\projects\phpbb\phpBB\store" /grant Users:F /T
+  - icacls "C:\projects\phpbb\phpBB\images\avatars\upload" /grant Users:F /T
 
 test_script:
   - cd c:\projects\phpbb
