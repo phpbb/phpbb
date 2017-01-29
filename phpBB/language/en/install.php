@@ -297,9 +297,10 @@ $lang = array_merge($lang, array(
 	'TASK_CREATE_TABLES'				=> 'Creating tables',
 
 	// Install data
-	'TASK_ADD_BOTS'			=> 'Registering bots',
-	'TASK_ADD_LANGUAGES'	=> 'Installing available languages',
-	'TASK_ADD_MODULES'		=> 'Installing modules',
+	'TASK_ADD_BOTS'				=> 'Registering bots',
+	'TASK_ADD_LANGUAGES'		=> 'Installing available languages',
+	'TASK_ADD_MODULES'			=> 'Installing modules',
+	'TASK_CREATE_SEARCH_INDEX'	=> 'Creating search index',
 
 	// Install finish tasks
 	'TASK_INSTALL_EXTENSIONS'	=> 'Installing packaged extensions',
