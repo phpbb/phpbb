@@ -51,6 +51,8 @@ before_test:
   - appcmd set config /section:system.webServer/handlers /+[name='PHP-FastCGI',path='*.php',verb='*',modules='FastCgiModule',scriptProcessor='C:\tools\php\php-cgi.exe',resourceType='Either']
   - iisreset
   - NET START W3SVC
+  - mkdir "C:\projects\phpbb\phpBB\cache\test"
+  - mkdir "C:\projects\phpbb\phpBB\cache\installer"
   - icacls "C:\projects\phpbb\phpBB\cache" /grant Users:F /T
   - icacls "C:\projects\phpbb\phpBB\files" /grant Users:F /T
   - icacls "C:\projects\phpbb\phpBB\store" /grant Users:F /T
