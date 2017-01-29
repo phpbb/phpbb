@@ -253,7 +253,7 @@ class acp_bbcodes
 
 						if ($row)
 						{
-							$bbcode_id = $row['max_bbcode_id'] + 1;
+							$bbcode_id = (int) $row['max_bbcode_id'] + 1;
 
 							// Make sure it is greater than the core bbcode ids...
 							if ($bbcode_id <= NUM_CORE_BBCODES)
