@@ -448,6 +448,10 @@ class mssql extends tools
 			}
 		}
 
+		// Drop primary keys depending on this column
+		$result = $this->mssql_get_drop_default_primary_key_queries($table_name, $column_name);
+		$statements = array_merge($statements, $result);
+
 		// Drop default value constraint
 		$result = $this->mssql_get_drop_default_constraints_queries($table_name, $column_name);
 		$statements = array_merge($statements, $result);
@@ -678,6 +682,37 @@ class mssql extends tools
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $row['def_name'] . ']';
+		}
+		$this->db->sql_freeresult($result);
+
+		return $statements;
+	}
+
+	/**
+	 * Get queries to drop the primary keys depending on the specified column
+	 *
+	 * We need to drop primary keys depending on this column before being able
+	 * to delete them.
+	 *
+	 * @param string $table_name
+	 * @param string $column_name
+	 * @return array		Array with SQL statements
+	 */
+	protected function mssql_get_drop_default_primary_key_queries($table_name, $column_name)
+	{
+		$statements = array();
+
+		$sql = "SELECT ccu.CONSTRAINT_NAME, ccu.COLUMN_NAME
+			FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+				JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu ON tc.CONSTRAINT_NAME = ccu.Constraint_name
+			WHERE tc.TABLE_NAME = '{$table_name}'
+				AND tc.CONSTRAINT_TYPE = 'Primary Key'";
+
+		$result = $this->db->sql_query($sql);
+
+		while ($primary_key = $this->db->sql_fetchrow($result))
+		{
+			$statements[] = 'ALTER TABLE [' . $table_name . '] DROP CONSTRAINT [' . $primary_key['CONSTRAINT_NAME'] . ']';
 		}
 		$this->db->sql_freeresult($result);
 

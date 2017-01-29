@@ -203,8 +203,15 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_list_columns()
 	{
+		$config = $this->get_database_config();
+		$table_columns = $this->table_data['COLUMNS'];
+
+		if (strpos($config['dbms'], 'mssql') !== false)
+		{
+			ksort($table_columns);
+		}
 		$this->assertEquals(
-			array_keys($this->table_data['COLUMNS']),
+			array_keys($table_columns),
 			array_values($this->tools->sql_list_columns('prefix_table_name'))
 		);
 	}
