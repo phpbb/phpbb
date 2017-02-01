@@ -129,4 +129,10 @@ $lang = array_merge($lang, array(
 
 	'META_FIELD_NOT_SET'	=> 'Required meta field %s has not been set.',
 	'META_FIELD_INVALID'	=> 'Meta field %s is invalid.',
+
+	'EXTENSION_REENABLE'				=> 'Reenable',
+	'EXTENSION_REENABLE_EXPLAIN'		=> 'Reenabling an extension allows you to use it again on your board, after it has been invalidated by a file system error.',
+	'EXTENSION_REENABLE_IN_PROGRESS'	=> 'The extension is currently being disabled, to later be enabled. Please do not leave or refresh this page until it is completed.',
+	'EXTENSION_PROCEED_TO_ENABLE'		=> 'The extension was disabled successfully, now proceeding to reenable. Please do not leave or refresh this page until it is completed.',
+	'EXTENSION_REENABLE_CONFIRM'		=> 'Are you sure that you wish to reenable the “%s” extension?',
 ));
