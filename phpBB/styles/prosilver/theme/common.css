@@ -1313,10 +1313,6 @@ ul.linklist:after,
 	margin: 0 7px 0 0;
 }
 
-.linklist.compact .rightside > a > span span {
-	display: none;
-}
-
 .dropdown-page-jump .dropdown {
 	top: 20px;
 }
