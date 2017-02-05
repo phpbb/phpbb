@@ -518,6 +518,8 @@ blockquote cite > div {
 	border: 1px solid transparent;
 	margin: 1em 0 1.2em;
 	padding: 3px;
+	overflow-x: scroll;
+	word-wrap: normal;
 }
 
 .codebox p {
