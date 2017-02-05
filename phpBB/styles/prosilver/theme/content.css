@@ -493,6 +493,8 @@ blockquote.uncited {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
+	overflow-x: scroll;
+	word-wrap: normal;
 }
 
 .codebox p {
