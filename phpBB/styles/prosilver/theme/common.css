@@ -151,12 +151,6 @@ a:hover {
 	padding: 15px;
 }
 
-@media only screen and (max-width: 1220px), only screen and (max-device-width: 1220px) {
-	.wrap {
-		margin: 0 12px;
-	}
-}
-
 .page-body {
 	clear: both;
 	margin: 4px 0;
@@ -984,12 +978,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	width: 620px;
 	margin: 0 auto;
 	padding: 0 25px 20px;
-}
-
-@media only screen and (max-height: 500px), only screen and (max-device-width: 500px) {
-	.phpbb_alert {
-		top: 25px;
-	}
 }
 
 .phpbb_alert .alert_close {
