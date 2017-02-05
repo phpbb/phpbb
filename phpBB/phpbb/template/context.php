@@ -87,6 +87,17 @@ class context
 	}
 
 	/**
+	* Retreive a single scalar value from a single key.
+	*
+	* @param string $varname Variable name
+	* @return mixed Variable value, or null if not set
+	*/
+	public function retrieve_var($varname)
+	{
+		return isset($this->rootref[$varname]) ? $this->rootref[$varname] : null;
+	}
+
+	/**
 	* Returns a reference to template data array.
 	*
 	* This function is public so that template renderer may invoke it.
@@ -261,6 +272,52 @@ class context
 		}
 
 		return true;
+	}
+
+	/**
+	* Retrieve key variable pairs from the specified block
+	*
+	* @param string $blockname Name of block to retrieve $vararray from
+	* @param array $vararray An array of variable names
+	* @return array of hashes with variable name as key and retrieved value or null as value
+	*/
+	public function retrieve_block_vars($blockname, array $vararray)
+	{
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = sizeof($blocks) - 1;
+
+		$block = $this->tpldata;
+		for ($i = 0; $i <= $blockcount; $i++)
+		{
+			if (($pos = strpos($blocks[$i], '[')) !== false)
+			{
+				$name = substr($blocks[$i], 0, $pos);
+
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = sizeof($block[$name]) - 1;
+				}
+				else
+				{
+					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
+				}
+			}
+			else
+			{
+				$name = $blocks[$i];
+				$index = sizeof($block[$name]) - 1;
+			}
+			$block = $block[$name];
+			$block = $block[$index];
+		}
+
+		$result = array();
+		foreach ($vararray as $varname)
+		{
+			$result[$varname] = isset($block[$varname]) ? $block[$varname] : null;
+		}
+		return $result;
 	}
 
 	/**
