@@ -203,7 +203,7 @@ class context
 	*/
 	public function assign_block_vars_array($block_selector, array $block_vars_array)
 	{
-		return (empty($block_vars_array) || $this->alter_block_array($block_selector, $block_vars_array, null, 'multiinsert'));
+		return $this->alter_block_array($block_selector, $block_vars_array, null, 'multiinsert');
 	}
 
 	/**
@@ -391,12 +391,14 @@ class context
 	{
 		$this->num_rows_is_set = false;
 
-		/* // Commented for now; should be active, but for backward compatibility, this has to remain unchecked for now
 		if (($numarrays = count($vararrays)) == 0)
 		{
+			if (count($block) == 0)
+			{
+				$block = null; // Do not leave an empty block
+			}
 			return false; // Nothing to insert
 		}
-		*/
 
 		// Fix S_FIRST_ROW and S_LAST_ROW
 		if ($index == count($block))
