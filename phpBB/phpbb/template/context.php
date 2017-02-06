@@ -391,10 +391,12 @@ class context
 	{
 		$this->num_rows_is_set = false;
 
+		/* // Commented for now; should be active, but for backward compatibility, this has to remain unchecked for now
 		if (($numarrays = count($vararrays)) == 0)
 		{
 			return false; // Nothing to insert
 		}
+		*/
 
 		// Fix S_FIRST_ROW and S_LAST_ROW
 		if ($index == count($block))
