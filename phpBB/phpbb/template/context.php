@@ -122,7 +122,7 @@ class context
 			*/
 			foreach ($ref as $loop_name => &$loop_data)
 			{
-				if ($loop_name === '.')
+				if ($loop_name === '.' || !is_array($loop_data))
 				{
 					continue;
 				}
