@@ -448,10 +448,6 @@ input.button3:focus {
 	border: 0;
 }
 
-.navbar .linklist > li.responsive-search {
-	display: none;
-}
-
 input.search {
 	background-image: none;
 	background-position: left 1px;

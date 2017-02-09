@@ -172,32 +172,6 @@ ul.cplist {
 	text-decoration: none;
 }
 
-/* Responsive tabs
----------------------------------------- */
-.responsive-tab {
-	position: relative;
-}
-
-.responsive-tab > a.responsive-tab-link {
-	font-size: 1.6em;
-	line-height: 0.9em;
-	text-decoration: none;
-	position: relative;
-	display: block;
-	width: 16px;
-}
-
-.responsive-tab .responsive-tab-link:before {
-	border-top: 0.375em double transparent;
-	border-bottom: 0.125em solid transparent;
-	position: absolute;
-	top: 7px;
-	left: 10px;
-	width: 14px;
-	height: 0.125em;
-	content: '';
-}
-
 .tabs .dropdown,
 .minitabs .dropdown {
 	font-size: 1.1em;

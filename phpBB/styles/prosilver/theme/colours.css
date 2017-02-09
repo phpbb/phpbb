@@ -1055,15 +1055,6 @@ ul.cplist {
 	color: #333333;
 }
 
-/* responsive tabs */
-.responsive-tab .responsive-tab-link:before {
-	border-color: #536482;
-}
-
-.responsive-tab .responsive-tab-link:hover:before {
-	border-color: #d31141;
-}
-
 /* ucp navigation menu */
 
 /* link styles for the sub-section links */
