@@ -149,10 +149,10 @@ class manager
 	* Instantiates the metadata manager for the extension with the given name
 	*
 	* @param string $name The extension name
-	* @param \phpbb\template\template $template The template manager
+	* @param \phpbb\template\template $template The template manager or null
 	* @return \phpbb\extension\metadata_manager Instance of the metadata manager
 	*/
-	public function create_extension_metadata_manager($name, \phpbb\template\template $template)
+	public function create_extension_metadata_manager($name, \phpbb\template\template $template = null)
 	{
 		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $template, $this->user, $this->phpbb_root_path);
 	}
@@ -510,7 +510,7 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		$md_manager = $this->create_extension_metadata_manager($name, $this->container->get('template'));
+		$md_manager = $this->create_extension_metadata_manager($name);
 		try
 		{
 			return $md_manager->get_metadata('all') && $md_manager->validate_enable();

@@ -72,11 +72,11 @@ class metadata_manager
 	* @param string				$ext_name			Name (including vendor) of the extension
 	* @param \phpbb\config\config		$config				phpBB Config instance
 	* @param \phpbb\extension\manager	$extension_manager	An instance of the phpBB extension manager
-	* @param \phpbb\template\template	$template			phpBB Template instance
+	* @param \phpbb\template\template	$template			phpBB Template instance or null
 	* @param \phpbb\user 		$user 				User instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path)
+	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template = null, \phpbb\user $user, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->extension_manager = $extension_manager;
