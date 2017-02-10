@@ -256,7 +256,7 @@ class acp_extensions
 			break;
 
 			case 'disable_pre':
-				if (!$phpbb_extension_manager->is_enabled($ext_name))
+				if (!$phpbb_extension_manager->is_enabled($ext_name) && !$phpbb_extension_manager->is_incomplete($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -271,12 +271,12 @@ class acp_extensions
 			break;
 
 			case 'disable':
-				if (!$phpbb_extension_manager->is_enabled($ext_name))
+				if (!$phpbb_extension_manager->is_enabled($ext_name) && !$phpbb_extension_manager->is_incomplete($ext_name))
 				{
 					redirect($this->u_action);
 				}
 
-				while ($phpbb_extension_manager->disable_step($ext_name))
+				while ($phpbb_extension_manager->disable_step($ext_name, $phpbb_extension_manager->is_incomplete($ext_name)))
 				{
 					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 					if ((time() - $start_time) >= $safe_time_limit)
@@ -490,6 +490,7 @@ class acp_extensions
 			{
 				$this->output_actions('disabled', array(
 					'REENABLE'		=> $this->u_action . '&amp;action=reenable_pre&amp;ext_name=' . urlencode($name),
+					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
 				));
 			}
 			else
