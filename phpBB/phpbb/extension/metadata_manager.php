@@ -118,8 +118,9 @@ class metadata_manager
 				return $this->metadata;
 			break;
 
+			case 'version':
 			case 'name':
-				return ($this->validate('name')) ? $this->metadata['name'] : false;
+				return ($this->validate($element)) ? $this->metadata[$element] : false;
 			break;
 
 			case 'display-name':
@@ -229,7 +230,20 @@ class metadata_manager
 			case 'all':
 				$this->validate('display');
 
-				$this->validate_enable();
+				if (!$this->validate_dir())
+				{
+					throw new \phpbb\extension\exception($this->user->lang('EXTENSION_DIR_INVALID'));
+				}
+
+				if (!$this->validate_require_phpbb())
+				{
+					throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'soft-require'));
+				}
+
+				if (!$this->validate_require_php())
+				{
+					throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'require php'));
+				}
 			break;
 
 			case 'display':

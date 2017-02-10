@@ -463,7 +463,7 @@ function change_topic_type($action, $topic_ids)
 */
 function mcp_move_topic($topic_ids)
 {
-	global $auth, $user, $db, $template, $phpbb_log, $request;
+	global $auth, $user, $db, $template, $phpbb_log, $request, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path;
 
 	// Here we limit the operation to one forum only
@@ -624,6 +624,18 @@ function mcp_move_topic($topic_ids)
 					'poll_max_options'		=>	(int) $row['poll_max_options'],
 					'poll_last_vote'		=>	(int) $row['poll_last_vote']
 				);
+
+				/**
+				* Perform actions before shadow topic is created.
+				*
+				* @event core.mcp_main_modify_shadow_sql
+				* @var	array	shadow	SQL array to be used by $db->sql_build_array
+				* @since 3.1.11-RC1
+				*/
+				$vars = array(
+					'shadow',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_shadow_sql', compact($vars)));
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
@@ -1280,6 +1292,18 @@ function mcp_fork_topic($topic_ids)
 				'poll_max_options'			=> (int) $topic_row['poll_max_options'],
 				'poll_vote_change'			=> (int) $topic_row['poll_vote_change'],
 			);
+
+			/**
+			* Perform actions before forked topic is created.
+			*
+			* @event core.mcp_main_modify_fork_sql
+			* @var	array	sql_ary	SQL array to be used by $db->sql_build_array
+			* @since 3.1.11-RC1
+			*/
+			$vars = array(
+				'sql_ary',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_fork_sql', compact($vars)));
 
 			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 			$new_topic_id = $db->sql_nextid();

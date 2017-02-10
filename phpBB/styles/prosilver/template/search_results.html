@@ -76,6 +76,7 @@
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_DELETED --><a href="{searchresults.U_MCP_QUEUE}">{DELETED_IMG}</a> <!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+							<!-- EVENT topiclist_row_topic_title_after -->
 							<!-- IF .searchresults.pagination -->
 							<div class="pagination">
 								<ul>
@@ -91,7 +92,6 @@
 							</div>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_HAS_POLL -->{POLL_IMG} <!-- ENDIF -->
-							<!-- EVENT topiclist_row_topic_title_after -->
 							{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
 							<!-- EVENT topiclist_row_append -->
 
