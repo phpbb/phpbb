@@ -58,6 +58,12 @@ acp_email_options_after
 * Since: 3.1.2-RC1
 * Purpose: Add settings to mass email form
 
+acp_ext_details_notice
+===
+* Location: adm/style/acp_ext_details.html
+* Since: 3.1.11-RC1
+* Purpose: Add extension detail notices after version check information.
+
 acp_ext_list_disabled_title_after
 ===
 * Location: adm/style/acp_ext_list.html
