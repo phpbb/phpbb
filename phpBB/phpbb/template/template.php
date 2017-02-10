@@ -201,7 +201,7 @@ interface template
 	*								- true refers to the end of the block
 	*									last element, index == count(block)-1 for most operations
 	*									or after it for last level of insertion, index == count(block)
-	*								- int refers to the exact position of index to take; valid values 0..count(block)
+	*								- int refers to the exact position of index to take; valid values 0..count(block)-1
 	*								- array('KEY' => value) search block for index where block[index]['KEY'] === value
 	*								- null is equivalent to true except for last level deletion, where it is used to delete whole block (all indexes)
 	*				EXAMPLES of block_selector:
@@ -214,7 +214,7 @@ interface template
 	* @param	mixed	$key		Provided for backward compatibility, only considered if last level block selector value === null
 	* @param	string	$mode		Mode to execute (valid modes are 'find', 'retrieve', 'insert', 'multiinsert', 'change' and 'delete')
 	*			'find'			the vararray is ignored (but must be an array), and the integer index of the last block is returned; use find_key_index instead.
-	*			'retrieve'		the vararray is a list of variable names to retrieve from the selected block; use retrieve_block_var instead.
+	*			'retrieve'		the vararray is a list of variable names to retrieve from the selected block; use retrieve_block_vars instead.
 	*			'insert'		the vararray is inserted at the given position (position counting from zero).
 	*			'multiinsert'	the vararray is an array of arrays, inserted at the given position (position counting from zero); use assign_block_vars_array instead.
 	*			'change'		the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).

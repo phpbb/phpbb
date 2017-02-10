@@ -122,7 +122,7 @@ class context
 			*/
 			foreach ($ref as $loop_name => &$loop_data)
 			{
-				if ($loop_name === '.' || !is_array($loop_data))
+				if ($loop_name === '.')
 				{
 					continue;
 				}
@@ -261,7 +261,7 @@ class context
 	*								- true refers to the end of the block
 	*									last element, index == count(block)-1 for most operations
 	*									or after it for last level of insertion, index == count(block)
-	*								- int refers to the exact position of index to take; valid values 0..count(block)
+	*								- int refers to the exact position of index to take; valid values 0..count(block)-1
 	*								- array('KEY' => value) search block for index where block[index]['KEY'] === value
 	*								- null is equivalent to true except for last level deletion, where it is used to delete whole block (all indexes)
 	*				EXAMPLES of block_selector:
@@ -271,10 +271,10 @@ class context
 	*						not possible as string == array(array('loop' => array('VARNAME' => varvalue), 'inner' => true)
 	*
 	* @param	array	$vararray	the var array to operate with
-	* @param	mixed	$key		Provided for backward compatibility, only considered if last level block selector value === null
+	* @param	mixed	$key		Provided for backward compatibility, only considered if last level block selector value === null, same semantics
 	* @param	string	$mode		Mode to execute (valid modes are 'find', 'retrieve', 'insert', 'multiinsert', 'change' and 'delete')
 	*			'find'			the vararray is ignored (but must be an array), and the integer index of the last level block is returned; use find_key_index instead.
-	*			'retrieve'		the vararray is a list of variable names to retrieve from the selected block; use retrieve_block_var instead.
+	*			'retrieve'		the vararray is a list of variable names to retrieve from the selected block; use retrieve_block_vars instead.
 	*			'insert'		the vararray is inserted at the given position (position counting from zero).
 	*			'multiinsert'	the vararray is an array of vararrays, inserted at the given position (position counting from zero); use assign_block_vars_array instead.
 	*			'change'		the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).
@@ -296,14 +296,20 @@ class context
 	*/
 	public function alter_block_array($block_selector, array $vararray, $key = false, $mode = 'insert')
 	{
+		// Convert block selector to array format and validate
 		if (is_string($block_selector))
 		{
 			$block_selector = $this->block_selector_array($block_selector);
 		}
-
 		if (!is_array($block_selector))
 		{
 			return false;
+		}
+
+		// If last block selector key is null, then we take into considertion the param, otherwise ignored
+		if (!is_null($key) && is_null(end($block_selector)))
+		{
+			$block_selector[key($block_selector)] = $key;
 		}
 
 		$block = &$this->tpldata;
@@ -311,57 +317,29 @@ class context
 		reset($block_selector);
 		while (list($name, $search_key) = each($block_selector))
 		{
-			// If last block selector key is null, then we take into considertion the param, otherwise ignored
-			$search_key = (!key($block_selector) && is_null($search_key)) ? $key : $search_key;
-
 			// Find the index in the block for the given key
 			if (($index = $this->find_block_index(@$block[$name], $search_key)) === false)
 			{
 				return false;
 			}
 
-			if (!key($block_selector)) // Last iteration, action depends on $mode
+			// Last iteration, we do not traverse last level, and keep $name and $search_key at its latest values
+			if (!key($block_selector))
 			{
-				if (!isset($block[$name]))
-				{
-					// If we are inserting, we create the block empty if it does not exist
-					if (in_array($mode, array('insert', 'multiinsert')))
-					{
-						$block[$name] = array();
-					}
-					else
-					{
-						return false;
-					}
-				}
-				$block = &$block[$name];
-
-				// If we are deleting whole block, we mark it
-				if (is_null($search_key) && in_array($mode, array('delete')))
-				{
-					$index = null;
-				}
-				break; // We want to keep $name at its latest value
+				break;
 			}
-			else
+
+			// Traverse this block level
+			if (!isset($block[$name]))
 			{
-				if (!isset($block[$name]))
-				{
-					return false;
-				}
-				$block = &$block[$name];
-
-				// If we are positioned at the end, we access the last element
-				if ($index == count($block))
-				{
-					$index--;
-				}
-				$block = &$block[$index];
+				return false;
 			}
+			$block = &$block[$name];
+			$block = &$block[$index];
 		}
 
 		// Now we perform the specific action with the selected block; we use call_user_func_array to be able to pass block by ref
-		return call_user_func_array(array($this, $mode . '_block_array'), array(&$block, $vararray, $index, $name));
+		return call_user_func_array(array($this, $mode . '_block_array'), array(&$block, $vararray, $search_key, $name, $index));
 	}
 
 	/**
@@ -369,13 +347,14 @@ class context
 	*
 	* @param	array	$block			a reference to the block where we have to insert
 	* @param	array	$vararray		the var array to insert
-	* @param	int		$index			index where we have to insert
+	* @param	mixed	$key			search key used in last block, true or null to insert past the end of the block
 	* @param	string	$name			name of the block where we are inserting
+	* @param	int		$index			index where we have to insert
 	* @return bool false on error, true on success
 	*/
-	protected function insert_block_array(&$block, array $vararray, $index, $name)
+	protected function insert_block_array(&$block, array $vararray, $key, $name, $index)
 	{
-		return $this->multiinsert_block_array($block, array($vararray), $index, $name);
+		return $this->multiinsert_block_array($block, array($vararray), $key, $name, $index);
 	}
 
 	/**
@@ -383,21 +362,30 @@ class context
 	*
 	* @param	array	$block			a reference to the block where we have to insert
 	* @param	array	$vararrays		the array of var arrays to insert
-	* @param	int		$index			index where we have to insert
+	* @param	mixed	$key			search key used in last block, true or null to insert past the end of the block
 	* @param	string	$name			name of the block where we are inserting
+	* @param	int		$index			index where we have to insert
 	* @return bool false on error, true on success
 	*/
-	protected function multiinsert_block_array(&$block, array $vararrays, $index, $name)
+	protected function multiinsert_block_array(&$block, array $vararrays, $key, $name, $index)
 	{
-		$this->num_rows_is_set = false;
-
 		if (($numarrays = count($vararrays)) == 0)
 		{
-			if (count($block) == 0)
-			{
-				$block = null; // Do not leave an empty block
-			}
 			return false; // Nothing to insert
+		}
+
+		$this->num_rows_is_set = false;
+
+		if (!isset($block[$name]))
+		{
+			$block[$name] = array();
+		}
+		$block = &$block[$name];
+
+		// If inserting at the end, we need to reposition
+		if ($key === null || $key === true)
+		{
+			$index++;
 		}
 
 		// Fix S_FIRST_ROW and S_LAST_ROW
@@ -416,7 +404,6 @@ class context
 		for ($i = count($block) + $numarrays - 1; $i > $index + $numarrays - 1; $i--)
 		{
 			$block[$i] = $block[$i - $numarrays];
-
 			$block[$i]['S_ROW_COUNT'] = $block[$i]['S_ROW_NUM'] = $i;
 		}
 
@@ -440,21 +427,21 @@ class context
 	*
 	* @param	array	$block			a reference to the block where we have to change
 	* @param	array	$vararray		the var array to change
+	* @param	mixed	$key			search key used in last block, ignored
+	* @param	string	$name			name of the block where we are changing
 	* @param	int		$index			index where we have to change
-	* @param	string	$name			name of the block where we are changing, ignored
 	* @return bool false on error, true on success
 	*/
-	protected function change_block_array(&$block, array $vararray, $index, $name)
+	protected function change_block_array(&$block, array $vararray, $key, $name, $index)
 	{
-		$this->num_rows_is_set = false;
-
-		// If we are positioned at the end, we change the last element
-		if ($index == count($block))
+		if (!isset($block[$name]))
 		{
-			$index--;
+			return false;
 		}
 
-		$block[$index] = array_merge($block[$index], $vararray);
+		$this->num_rows_is_set = false;
+
+		$block[$name][$index] = array_merge($block[$name][$index], $vararray);
 
 		return true;
 	}
@@ -464,26 +451,28 @@ class context
 	*
 	* @param	array	$block			a reference to the block where we have to delete
 	* @param	array	$vararray		the var array is ignored, but must be an array
-	* @param	mixed	$index			index we have to delete, or null to delete whole block
-	* @param	string	$name			name of the block where we are deleting, ignored
+	* @param	mixed	$key			search key used in last block, used to identify full-block deletion
+	* @param	string	$name			name of the block where we are deleting
+	* @param	mixed	$index			index we have to delete
 	* @return bool false on error, true on success
 	*/
-	protected function delete_block_array(&$block, array $vararray, $index, $name)
+	protected function delete_block_array(&$block, array $vararray, $key, $name, $index)
 	{
+		if (!isset($block[$name]))
+		{
+			return false;
+		}
+
 		$this->num_rows_is_set = false;
 
 		// Delete the whole block if so specified, or when deleting the only element in block
-		if ($index === null || count($block) === 1)
+		if (is_null($key) || count($block[$name]) === 1)
 		{
-			$block = null; // unset($block); does not work on references
+			unset($block[$name]);
 			return true;
 		}
 
-		// If we are positioned at the end, we remove the last element
-		if ($index == count($block))
-		{
-			$index--;
-		}
+		$block = &$block[$name];
 
 		// Re-position template blocks to fill the gap
 		for ($i = $index; $i < count($block)-1; $i++)
@@ -507,23 +496,24 @@ class context
 	*
 	* @param	array	$block			a reference to the block where we have to retrieve the key variable pairs
 	* @param	array	$vararray		an array of variablle names to be retrieved
+	* @param	mixed	$key			search key used in last block, ignored
+	* @param	string	$name			name of the block where we are retrieving
 	* @param	int		$index			index were we have to retrieve the vars
-	* @param	string	$name			name of the block where we are retrieving, ignored
 	* @return bool false on error, an array of hashes with variable name as key and retrieved value or null as value
 	*/
-	protected function retrieve_block_array(&$block, array $vararray, $index, $name)
+	protected function retrieve_block_array(&$block, array $vararray, $key, $name, $index)
 	{
-		// If we are positioned at the end, we retrieve data from the last element
-		if ($index == count($block))
+		if (!isset($block[$name]))
 		{
-			$index--;
+			return false;
 		}
 
 		$result = array();
 		foreach ($vararray as $varname)
 		{
-			$result[$varname] = isset($block[$index][$varname]) ? $block[$index][$varname] : null;
+			$result[$varname] = isset($block[$name][$index][$varname]) ? $block[$name][$index][$varname] : null;
 		}
+
 		return $result;
 	}
 
@@ -532,17 +522,18 @@ class context
 	*
 	* @param	array	$block			a reference to the block where we have to get the index
 	* @param	array	$vararray		ignored, but must be an array
+	* @param	mixed	$key			search key used in last block, ignored
+	* @param	string	$name			name of the block where we are finding
 	* @param	int		$index			index
-	* @param	string	$name			name of the block where we are finding, ignored
 	* @return 	int 					index position within the block
 	*/
-	protected function find_block_array(&$block, array $vararray, $index, $name)
+	protected function find_block_array(&$block, array $vararray, $key, $name, $index)
 	{
-		// If we are positioned at the end, we get the existing last element
-		if ($index == count($block))
+		if (!isset($block[$name]))
 		{
-			$index--;
+			return false;
 		}
+
 		return $index;
 	}
 
@@ -589,15 +580,13 @@ class context
 	*
 	* @param	array	$block		The block of variables where the key is searched for
 	* @param	mixed	$key		The search key to find in the block
-	*			bool					true for past last element, false for first element
+	*			bool					true for last element, false for first element
 	*			int						the actual index number of the element
 	*			array					VARNAME => varvalue to search for in the block
 	*			null					last element
-	* @return	mixed				false if not found, index position otherwise; be sure to test with ===
+	* @return	mixed				false if not found or out of bounds, index position otherwise; be sure to test with ===
 	*								note that in case the $block is empty (non-existent), the function returns 0
 	*									except in case the $key is an array, that the function returns false
-	*								also note that the returned $index may be PAST the last element, to enable inserting at the end
-	*									for other operations you should use $index-- to access the last element
 	*/
 	protected function find_block_index($block, $key)
 	{
@@ -606,7 +595,7 @@ class context
 		// Change key to zero if false and to last position if true or null
 		if ($key === false || $key === true || $key === null)
 		{
-			$index = ($key === false) ? 0 : count($block);
+			$index = ($key === false) ? 0 : count($block) - 1;
 		}
 
 		// Get correct position if array given
@@ -625,7 +614,7 @@ class context
 			}
 		}
 
-		if (is_int($key) && ($key == (int) min(max($key, 0), count($block))))
+		if (is_int($key) && ($key == (int) min(max($key, 0), count($block) - 1)))
 		{
 			$index = $key;
 		}
