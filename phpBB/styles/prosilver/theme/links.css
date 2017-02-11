@@ -89,6 +89,10 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
+a.unread {
+	text-decoration: none;
+}
+
 /* Post body links */
 .postlink {
 	text-decoration: none;
