@@ -276,7 +276,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	* @var array	cp_data			Array of Custom profile fields submited to user_add
 	* @var array	sql_ary		Array of data to be inserted when a user is added
 	* @since 3.1.0-a1
-	* @change 3.1.0-b5
+	* @changed 3.1.0-b5 Added user_row and cp_data
 	*/
 	$vars = array('user_row', 'cp_data', 'sql_ary');
 	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
