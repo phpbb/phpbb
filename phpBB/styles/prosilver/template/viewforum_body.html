@@ -3,7 +3,7 @@
 <h2 class="forum-title"><!-- EVENT viewforum_forum_name_prepend --><a href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- EVENT viewforum_forum_name_append --></h2>
 <!-- EVENT viewforum_forum_title_after -->
 <!-- IF FORUM_DESC or MODERATORS or U_MCP -->
-<div>
+<div class="forum-desc">
 	<!-- NOTE: remove the style="display: none" when you want to have the forum description on the forum body -->
 	<!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
 	<!-- IF MODERATORS --><p><strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON}</strong> {MODERATORS}</p><!-- ENDIF -->

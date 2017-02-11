@@ -29,7 +29,7 @@
 		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<!-- IF topicrow.S_DELETED_TOPIC -->
 				<dl>
-					<dt><div class="list-inner"><strong>{L_DELETED_TOPIC}</strong></div></dt>
+					<dt><div class="list-inner bookmarks"><strong>{L_DELETED_TOPIC}</strong></div></dt>
 					<dd class="lastpost"><span>&nbsp;</span></dd>
 					<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
 				</dl>
@@ -37,7 +37,7 @@
 			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
 					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
-					<div class="list-inner">
+					<div class="list-inner with-mark">
 						<!-- IF topicrow.S_UNREAD_TOPIC -->
 							<a class="unread" href="{topicrow.U_NEWEST_POST}">
 								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
@@ -68,11 +68,11 @@
 							</ul>
 						</div>
 						<!-- ENDIF -->
-						<div class="responsive-hide">
+						<div class="attach-icon u-hidden-xs-down">
 							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
-						<div class="responsive-show" style="display: none;">
+						<div class="attach-icon u-hidden-sm-up">
 							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo;
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
