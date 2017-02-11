@@ -23,12 +23,16 @@
 	<!-- BEGIN forumrow -->
 		<li class="row<!-- IF forumrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl class="row-item">
-				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}">
+				<dt>
 					<div class="list-inner">
 						<!-- IF forumrow.S_UNREAD_FORUM -->
-							<a class="imageset {forumrow.FORUM_IMG_STYLE}" href="{forumrow.U_VIEWFORUM}"></a>
+							<a class="imageset" href="{forumrow.U_VIEWFORUM}" title="{forumrow.FORUM_FOLDER_IMG_ALT}">
+								<svg class="o-icon"><use xlink:href="#{forumrow.FORUM_IMG_STYLE}"></use></svg>
+							</a>
 						<!-- ELSE -->
-							<span class="imageset {forumrow.FORUM_IMG_STYLE}"></span>
+							<span class="imageset" title="{forumrow.FORUM_FOLDER_IMG_ALT}">
+								<svg class="o-icon"><use xlink:href="#{forumrow.FORUM_IMG_STYLE}"></use></svg>
+							</span>
 						<!-- ENDIF -->
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a><br />
 						{forumrow.FORUM_DESC}
