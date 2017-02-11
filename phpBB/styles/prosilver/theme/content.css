@@ -54,6 +54,7 @@ ul.topiclist.two-columns dt {
 ul.topiclist dt .list-inner {
 	margin-right: 440px;
 	padding-right: 5px;
+	padding-left: 5px;
 }
 
 ul.topiclist.missing-column dt .list-inner {
@@ -149,6 +150,9 @@ dl.row-item dd {
 	width: 32px;
 	height: 32px;
 	margin: 6px 12px;
+
+	/* set left to left minus ul.topiclist dt .list-inner padding-left */
+	margin-left: 7px;
 }
 
 .o-icon {
