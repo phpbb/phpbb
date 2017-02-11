@@ -508,7 +508,7 @@ class ucp_profile
 				* @var	bool	submit				Whether or not the form has been sumitted
 				* @var	bool	preview				Whether or not the signature is being previewed
 				* @since 3.1.10-RC1
-				* @change 3.2.0-RC2 Removed message parser
+				* @changed 3.2.0-RC2 Removed message parser
 				*/
 				$vars = array(
 					'enable_bbcode',
