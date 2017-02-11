@@ -137,3 +137,10 @@ div.spacer { clear: both; }
 .skip_link { display: none; }
 
 .codebox p { display: none; }
+
+.emoji {
+	min-height: 18px;
+	min-width: 18px;
+	height: 1em;
+	width: 1em;
+}

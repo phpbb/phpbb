@@ -2691,3 +2691,10 @@ fieldset.permissions .padding {
 	word-wrap: break-word;
 	word-break: break-all;
 }
+
+.emoji {
+	min-height: 18px;
+	min-width: 18px;
+	height: 1em;
+	width: 1em;
+}
