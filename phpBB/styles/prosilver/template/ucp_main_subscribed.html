@@ -22,10 +22,14 @@
 
 	<!-- BEGIN forumrow -->
 		<li class="row<!-- IF forumrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-			<dl class="row-item {forumrow.FORUM_IMG_STYLE}">
-				<dt>
-					<!-- IF forumrow.S_UNREAD_FORUM --><a href="{forumrow.U_VIEWFORUM}" class="row-item-link"></a><!-- ENDIF -->
+			<dl class="row-item">
+				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}">
 					<div class="list-inner">
+						<!-- IF forumrow.S_UNREAD_FORUM -->
+							<a class="imageset {forumrow.FORUM_IMG_STYLE}" href="{forumrow.U_VIEWFORUM}"></a>
+						<!-- ELSE -->
+							<span class="imageset {forumrow.FORUM_IMG_STYLE}"></span>
+						<!-- ENDIF -->
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a><br />
 						{forumrow.FORUM_DESC}
 						<!-- IF forumrow.LAST_POST_TIME -->
@@ -77,10 +81,18 @@
 
 	<!-- BEGIN topicrow -->
 		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
-				<dt<!-- IF topicrow.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
+			<dl class="row-item">
+				<dt>
 					<div class="list-inner">
+						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT -->
+							<a class="imageset" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+								<svg class="o-icon"><use xlink:href="#{topicrow.TOPIC_IMG_STYLE}"></use></svg>
+							</a>
+						<!-- ELSE -->
+							<span class="imageset" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+								<svg class="o-icon"><use xlink:href="#{topicrow.TOPIC_IMG_STYLE}"></use></svg>
+							</span>
+						<!-- ENDIF -->
 						<!-- IF topicrow.S_UNREAD_TOPIC -->
 							<a class="unread" href="{topicrow.U_NEWEST_POST}">
 								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>

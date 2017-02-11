@@ -77,10 +77,24 @@
 		<!-- BEGIN searchresults -->
 			<!-- EVENT search_results_topic_before -->
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-				<dl class="row-item {searchresults.TOPIC_IMG_STYLE}">
-					<dt<!-- IF searchresults.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
-						<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{searchresults.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
+				<dl class="row-item">
+					<dt>
 						<div class="list-inner">
+							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->
+								<a class="imageset" href="{searchresults.U_NEWEST_POST}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+									<!-- IF searchresults.TOPIC_ICON_IMG -->
+										<i class="topic-img" style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG});"></i>
+									<!-- ENDIF -->
+									<svg class="o-icon"><use xlink:href="#{searchresults.TOPIC_IMG_STYLE}"></use></svg>
+								</a>
+							<!-- ELSE -->
+								<span class="imageset" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+									<!-- IF searchresults.TOPIC_ICON_IMG -->
+										<i class="topic-img" style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG});"></i>
+									<!-- ENDIF -->
+									<svg class="o-icon"><use xlink:href="#{searchresults.TOPIC_IMG_STYLE}"></use></svg>
+								</span>
+							<!-- ENDIF -->
 							<!-- EVENT topiclist_row_prepend -->
 							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->
 								<a class="unread" href="{searchresults.U_NEWEST_POST}">
