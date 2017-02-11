@@ -941,7 +941,9 @@ if ($submit || $preview || $refresh)
 	*				is posting a new topic or editing a post)
 	* @var	bool	refresh		Whether or not to retain previously submitted data
 	* @var	object	message_parser	The message parser object
+	* @var	array	error		Array of errors
 	* @since 3.1.2-RC1
+	* @changed 3.1.11-RC1 Added error
 	*/
 	$vars = array(
 		'post_data',
@@ -956,6 +958,7 @@ if ($submit || $preview || $refresh)
 		'cancel',
 		'refresh',
 		'message_parser',
+		'error',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_message_text', compact($vars)));
 
