@@ -2386,7 +2386,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	* @var	string	url					The "Return to topic" URL
 	*
 	* @since 3.1.0-a3
-	* @change 3.1.0-RC3 Added vars mode, subject, username, topic_type,
+	* @changed 3.1.0-RC3 Added vars mode, subject, username, topic_type,
 	*		poll, update_message, update_search_index
 	*/
 	$vars = array(
