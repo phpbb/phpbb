@@ -54,7 +54,6 @@ ul.topiclist.two-columns dt {
 ul.topiclist dt .list-inner {
 	margin-right: 440px;
 	padding-right: 5px;
-	padding-left: 5px;
 }
 
 ul.topiclist.missing-column dt .list-inner {
@@ -137,41 +136,39 @@ li.header dl.row-item dt .list-inner {
 }
 
 /* Forum list column styles */
-dl.row-item {
-	background-repeat: no-repeat;
-	background-position: 10px 50%;		/* Position of folder icon */
-	background-size: 32px;
-}
-
-dl.row-item dt {
-	background-repeat: no-repeat;
-	background-position: 5px 95%;		/* Position of topic icon */
-	background-size: 17px;
-}
-
-dl.row-item dt .list-inner {
-	padding-left: 52px;					/* Space for folder icon */
-}
 
 dl.row-item dt,
 dl.row-item dd {
 	min-height: 35px;
 }
 
-dl.row-item dt a {
-	display: inline;
+.imageset {
+	position: relative;
+	display: inline-block;
+	float: left;
+	width: 32px;
+	height: 32px;
+	margin: 6px 12px;
 }
 
-dl a.row-item-link {						/* topic row icon links */
-	position: absolute;
-	top: 50%;
+.o-icon {
+	width: 32px;
+	height: 32px;
+}
+
+.topic-img {
+	background-size: 100%;
+	position: relative;
+	top: 32px;
+	bottom: 0;
 	left: 0;
+	z-index: 10;
 	display: block;
-	width: 30px;
-	height: 30px;
-	margin-top: -15px;
-	margin-left: 9px;
-	padding: 0;
+	float: left;
+	width: 16px;
+	height: 16px;
+	margin-top: -16px;
+	margin-left: -2px;
 }
 
 dd.posts,
@@ -797,8 +794,8 @@ dd.profile-contact {
 
 .online {
 	background-image: none;
-	background-repeat: no-repeat;
 	background-position: 100% 0;
+	background-repeat: no-repeat;
 }
 
 /* Poster profile used by search */
