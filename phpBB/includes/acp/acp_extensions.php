@@ -307,23 +307,23 @@ class acp_extensions
 
 			case 'details':
 				// Output it to the template
-				$md_manager->output_template_data($this->template);
-
 				$meta = $md_manager->get_metadata('all');
+				$this->output_metadata_to_template($meta);
+
 				if (isset($meta['extra']['version-check']))
 				{
 					try
 					{
 						$updates_available = $this->ext_manager->version_check($md_manager, $this->request->variable('versioncheck_force', false), $this->config['extension_force_unstable'] ? 'unstable' : null);
 
-					$this->template->assign_vars(array(
+						$this->template->assign_vars(array(
 							'S_UP_TO_DATE' => empty($updates_available),
 							'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
 						));
 
 						foreach ($updates_available as $branch => $version_data)
 						{
-						$this->template->assign_block_vars('updates_available', $version_data);
+							$this->template->assign_block_vars('updates_available', $version_data);
 						}
 					}
 					catch (exception_interface $e)
@@ -582,5 +582,42 @@ class acp_extensions
 	protected function sort_extension_meta_data_table($val1, $val2)
 	{
 		return strnatcasecmp($val1['META_DISPLAY_NAME'], $val2['META_DISPLAY_NAME']);
+	}
+
+	/**
+	* Outputs extension metadata into the template
+	*
+	* @param array $metadata Array with all metadata for the extension
+	* @return null
+	*/
+	public function output_metadata_to_template($metadata)
+	{
+		$this->template->assign_vars(array(
+			'META_NAME'			=> $metadata['name'],
+			'META_TYPE'			=> $metadata['type'],
+			'META_DESCRIPTION'	=> (isset($metadata['description'])) ? $metadata['description'] : '',
+			'META_HOMEPAGE'		=> (isset($metadata['homepage'])) ? $metadata['homepage'] : '',
+			'META_VERSION'		=> $metadata['version'],
+			'META_TIME'			=> (isset($metadata['time'])) ? $metadata['time'] : '',
+			'META_LICENSE'		=> $metadata['license'],
+
+			'META_REQUIRE_PHP'		=> (isset($metadata['require']['php'])) ? $metadata['require']['php'] : '',
+			'META_REQUIRE_PHP_FAIL'	=> (isset($metadata['require']['php'])) ? false : true,
+
+			'META_REQUIRE_PHPBB'		=> (isset($metadata['extra']['soft-require']['phpbb/phpbb'])) ? $metadata['extra']['soft-require']['phpbb/phpbb'] : '',
+			'META_REQUIRE_PHPBB_FAIL'	=> (isset($metadata['extra']['soft-require']['phpbb/phpbb'])) ? false : true,
+
+			'META_DISPLAY_NAME'	=> (isset($metadata['extra']['display-name'])) ? $metadata['extra']['display-name'] : '',
+		));
+
+		foreach ($metadata['authors'] as $author)
+		{
+			$this->template->assign_block_vars('meta_authors', array(
+				'AUTHOR_NAME'		=> $author['name'],
+				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
+				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
+				'AUTHOR_ROLE'		=> (isset($author['role'])) ? $author['role'] : '',
+			));
+		}
 	}
 }
