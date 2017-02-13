@@ -236,14 +236,7 @@ class manager
 			'ext_state'		=> serialize($state),
 		);
 
-		$sql = 'SELECT COUNT(ext_name) as row_count
-			FROM ' . $this->extension_table . "
-			WHERE ext_name = '" . $this->db->sql_escape($name) . "'";
-		$result = $this->db->sql_query($sql);
-		$count = $this->db->sql_fetchfield('row_count');
-		$this->db->sql_freeresult($result);
-
-		$this->update_state($name, $extension_data, ($count) ? 'update' : 'insert');
+		$this->update_state($name, $extension_data, ($this->is_configured($name)) ? 'update' : 'insert');
 
 		if ($active)
 		{
