@@ -1487,17 +1487,17 @@ class tools implements tools_interface
 	{
 		$statements = array();
 
-		$this->check_index_name_length($table_name, $index_name);
-
 		switch ($this->sql_layer)
 		{
 			case 'oracle':
 			case 'sqlite3':
+				$this->check_index_name_length($table_name, $table_name . '_' . $index_name);
 				$statements[] = 'CREATE UNIQUE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mysql_40':
 			case 'mysql_41':
+				$this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD UNIQUE INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
 			break;
 		}
@@ -1512,8 +1512,6 @@ class tools implements tools_interface
 	{
 		$statements = array();
 
-		$this->check_index_name_length($table_name, $index_name);
-
 		// remove index length unless MySQL4
 		if ('mysql_40' != $this->sql_layer)
 		{
@@ -1524,6 +1522,7 @@ class tools implements tools_interface
 		{
 			case 'oracle':
 			case 'sqlite3':
+				$this->check_index_name_length($table_name, $table_name . '_' . $index_name);
 				$statements[] = 'CREATE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
@@ -1539,6 +1538,7 @@ class tools implements tools_interface
 				}
 			// no break
 			case 'mysql_41':
+				$this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . ' (' . implode(', ', $column) . ')';
 			break;
 		}
@@ -1554,11 +1554,9 @@ class tools implements tools_interface
 	 */
 	protected function check_index_name_length($table_name, $index_name)
 	{
-		$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
-		if (strlen($table_name . $index_name) - strlen($table_prefix) > 24)
+		if (strlen($index_name) > 30)
 		{
-			$max_length = strlen($table_prefix) + 24;
-			trigger_error("Index name '{$table_name}_$index_name' on table '$table_name' is too long. The maximum is $max_length characters.", E_USER_ERROR);
+			trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
 		}
 	}
 
