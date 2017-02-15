@@ -109,28 +109,18 @@ class metadata_manager
 		{
 			case 'all':
 			default:
-				// Validate the metadata
-				if (!$this->validate())
-				{
-					return false;
-				}
-
+				$this->validate();
 				return $this->metadata;
 			break;
 
+			case 'version':
 			case 'name':
-				return ($this->validate('name')) ? $this->metadata['name'] : false;
+				$this->validate($element);
+				return $this->metadata[$element];
 			break;
 
 			case 'display-name':
-				if (isset($this->metadata['extra']['display-name']))
-				{
-					return $this->metadata['extra']['display-name'];
-				}
-				else
-				{
-					return ($this->validate('name')) ? $this->metadata['name'] : false;
-				}
+				return (isset($this->metadata['extra']['display-name'])) ? $this->metadata['extra']['display-name'] : $this->get_metadata('name');
 			break;
 		}
 	}
@@ -227,13 +217,8 @@ class metadata_manager
 		switch ($name)
 		{
 			case 'all':
-				$this->validate('display');
-
-				if (!$this->validate_enable())
-				{
-					throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', $name));
-				}
-			break;
+				$this->validate_enable();
+				// no break
 
 			case 'display':
 				foreach ($fields as $field => $data)
@@ -290,40 +275,43 @@ class metadata_manager
 	/**
 	* This array handles the verification that this extension can be enabled on this board
 	*
-	* @return bool True if validation succeeded, False if failed
+	* @return bool True if validation succeeded, throws an exception if invalid
+	* @throws \phpbb\extension\exception
 	*/
 	public function validate_enable()
 	{
 		// Check for valid directory & phpBB, PHP versions
-		if (!$this->validate_dir() || !$this->validate_require_phpbb() || !$this->validate_require_php())
-		{
-			return false;
-		}
-
-		return true;
+		return $this->validate_dir() && $this->validate_require_phpbb() && $this->validate_require_php();
 	}
 
 	/**
 	* Validates the most basic directory structure to ensure it follows <vendor>/<ext> convention.
 	*
-	* @return boolean True when passes validation
+	* @return boolean True when passes validation, throws an exception if invalid
+	* @throws \phpbb\extension\exception
 	*/
 	public function validate_dir()
 	{
-		return (substr_count($this->ext_name, '/') === 1 && $this->ext_name == $this->get_metadata('name'));
+		if (substr_count($this->ext_name, '/') !== 1 || $this->ext_name != $this->get_metadata('name'))
+		{
+			throw new \phpbb\extension\exception($this->user->lang('EXTENSION_DIR_INVALID'));
+		}
+
+		return true;
 	}
 
 
 	/**
 	* Validates the contents of the phpbb requirement field
 	*
-	* @return boolean True when passes validation
+	* @return boolean True when passes validation, throws an exception if invalid
+	* @throws \phpbb\extension\exception
 	*/
 	public function validate_require_phpbb()
 	{
 		if (!isset($this->metadata['extra']['soft-require']['phpbb/phpbb']))
 		{
-			return false;
+			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'soft-require'));
 		}
 
 		return true;
@@ -332,13 +320,14 @@ class metadata_manager
 	/**
 	* Validates the contents of the php requirement field
 	*
-	* @return boolean True when passes validation
+	* @return boolean True when passes validation, throws an exception if invalid
+	* @throws \phpbb\extension\exception
 	*/
 	public function validate_require_php()
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
-			return false;
+			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'require php'));
 		}
 
 		return true;
@@ -361,10 +350,10 @@ class metadata_manager
 			'META_LICENSE'		=> $this->metadata['license'],
 
 			'META_REQUIRE_PHP'		=> (isset($this->metadata['require']['php'])) ? $this->metadata['require']['php'] : '',
-			'META_REQUIRE_PHP_FAIL'	=> !$this->validate_require_php(),
+			'META_REQUIRE_PHP_FAIL'	=> (isset($this->metadata['require']['php'])) ? false : true,
 
 			'META_REQUIRE_PHPBB'		=> (isset($this->metadata['extra']['soft-require']['phpbb/phpbb'])) ? $this->metadata['extra']['soft-require']['phpbb/phpbb'] : '',
-			'META_REQUIRE_PHPBB_FAIL'	=> !$this->validate_require_phpbb(),
+			'META_REQUIRE_PHPBB_FAIL'	=> (isset($this->metadata['extra']['soft-require']['phpbb/phpbb'])) ? false : true,
 
 			'META_DISPLAY_NAME'	=> (isset($this->metadata['extra']['display-name'])) ? $this->metadata['extra']['display-name'] : '',
 		));
