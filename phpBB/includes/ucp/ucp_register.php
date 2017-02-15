@@ -45,6 +45,28 @@ class ucp_register
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
+		/**
+		* Add UCP register data before they are assigned to the template or submitted
+		*
+		* To assign data to the template, use $template->assign_vars()
+		*
+		* @event core.ucp_register_requests_after
+		* @var	bool	coppa		Is set coppa
+		* @var	bool	agreed		Did user agree to coppa?
+		* @var	bool	submit		Is set post submit?
+		* @var	string	change_lang	Change language request
+		* @var	string	user_lang	User language request
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'coppa',
+			'agreed',
+			'submit',
+			'change_lang',
+			'user_lang',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.ucp_register_requests_after', compact($vars)));
+
 		if ($agreed)
 		{
 			add_form_key('ucp_register');

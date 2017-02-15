@@ -493,6 +493,8 @@ blockquote.uncited {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
+	overflow-x: scroll;
+	word-wrap: normal;
 }
 
 .codebox p {
@@ -515,7 +517,7 @@ blockquote .codebox {
 	max-height: 200px;
 	white-space: normal;
 	padding-top: 5px;
-	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
+	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, monospace;
 	line-height: 1.3em;
 	margin: 2px 0;
 }

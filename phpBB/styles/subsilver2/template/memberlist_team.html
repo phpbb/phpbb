@@ -17,7 +17,7 @@
 <!-- BEGIN user -->
 	<!-- IF group.user.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
-	<td class="gen" align="center"><strong>{group.user.USERNAME_FULL}</strong><!-- IF group.user.S_INACTIVE --> <em>({L_INACTIVE})</em><!-- ENDIF --></td>
+	<td class="gen" align="center"><!-- EVENT memberlist_team_username_prepend --><strong>{group.user.USERNAME_FULL}</strong><!-- IF group.user.S_INACTIVE --> <em>({L_INACTIVE})</em><!-- ENDIF --><!-- EVENT memberlist_team_username_append --></td>
 	<!-- IF S_DISPLAY_MODERATOR_FORUMS --><td class="gensmall" align="center"><!-- IF group.user.FORUM_OPTIONS --><select style="width: 100%;">{group.user.FORUMS}</select><!-- ELSEIF group.user.FORUMS -->{group.user.FORUMS}<!-- ELSE -->-<!-- ENDIF --></td><!-- ENDIF -->
 	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
 		<!-- IF group.user.U_GROUP -->

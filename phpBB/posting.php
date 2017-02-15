@@ -84,7 +84,7 @@ $current_time = time();
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
 * @since 3.1.0-a1
-* @change 3.1.2-RC1			Removed 'delete' var as it does not exist
+* @changed 3.1.2-RC1			Removed 'delete' var as it does not exist
 */
 $vars = array(
 	'post_id',
@@ -941,7 +941,9 @@ if ($submit || $preview || $refresh)
 	*				is posting a new topic or editing a post)
 	* @var	bool	refresh		Whether or not to retain previously submitted data
 	* @var	object	message_parser	The message parser object
+	* @var	array	error		Array of errors
 	* @since 3.1.2-RC1
+	* @changed 3.1.11-RC1 Added error
 	*/
 	$vars = array(
 		'post_data',
@@ -956,6 +958,7 @@ if ($submit || $preview || $refresh)
 		'cancel',
 		'refresh',
 		'message_parser',
+		'error',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_message_text', compact($vars)));
 
@@ -1261,7 +1264,7 @@ if ($submit || $preview || $refresh)
 	* @var	array	error		Any error strings; a non-empty array aborts form submission.
 	*				NOTE: Should be actual language strings, NOT language keys.
 	* @since 3.1.0-RC5
-	* @change 3.1.5-RC1 Added poll array to the event
+	* @changed 3.1.5-RC1 Added poll array to the event
 	*/
 	$vars = array(
 		'post_data',
@@ -1869,13 +1872,13 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 *				posting page via $template->assign_vars()
 * @var	object	message_parser	The message parser object
 * @since 3.1.0-a1
-* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
+* @changed 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
 *		s_topic_icons, form_enctype, s_action, s_hidden_fields,
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
-* @change 3.1.2-RC1 Removed 'delete' var as it does not exist
-* @change 3.1.5-RC1 Added poll variables to the page_data array
-* @change 3.1.6-RC1 Added 'draft_id' var
+* @changed 3.1.2-RC1 Removed 'delete' var as it does not exist
+* @changed 3.1.5-RC1 Added poll variables to the page_data array
+* @changed 3.1.6-RC1 Added 'draft_id' var
 */
 $vars = array(
 	'post_data',

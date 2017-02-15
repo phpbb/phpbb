@@ -431,9 +431,9 @@ $sql_array = array(
 *									Author, Post time, Replies, Subject, Views
 * @var	string	sort_dir			Either "a" for ascending or "d" for descending
 * @since 3.1.0-a1
-* @change 3.1.0-RC4 Added forum_data var
-* @change 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
-* @change 3.1.9-RC1 Fix types of properties
+* @changed 3.1.0-RC4 Added forum_data var
+* @changed 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
+* @changed 3.1.9-RC1 Fix types of properties
 */
 $vars = array(
 	'forum_data',
@@ -782,9 +782,11 @@ $topic_tracking_info = $tracking_topics = array();
 * @var	array	topic_list			Array with current viewforum page topic ids
 * @var	array	rowset				Array with topics data (in topic_id => topic_data format)
 * @var	int		total_topic_count	Forum's total topic count
+* @var	int		forum_id			Forum identifier
 * @since 3.1.0-b3
+* @changed 3.1.11-RC1 Added forum_id
 */
-$vars = array('topic_list', 'rowset', 'total_topic_count');
+$vars = array('topic_list', 'rowset', 'total_topic_count', 'forum_id');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topics_data', compact($vars)));
 
 // Okay, lets dump out the page ...
