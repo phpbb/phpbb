@@ -674,6 +674,29 @@ dd.profile-warnings {
 	color: #8f8f8f;
 }
 
+.button-form,
+.button-form-bold {
+	border-color: #666666;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: #333333;
+}
+
+.button-form:hover,
+.button-form-bold:hover {
+	border-color: #d31141;
+	color: #d31141;
+	text-shadow: none;
+}
+
+.button-form:focus,
+.button-form-bold:focus {
+	border-color: #0a8ed0;
+	color: #0a8ed0;
+	text-shadow: none;
+}
+
+
 .button-secondary:focus,
 .button-secondary:hover,
 .button:focus .icon,
