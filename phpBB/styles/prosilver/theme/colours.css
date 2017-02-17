@@ -1333,6 +1333,10 @@ input.disabled {
 	background-color: #000000;
 }
 
+.loading_indicator .darken {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
 .loader {
 	color: #ffffff;
 }
