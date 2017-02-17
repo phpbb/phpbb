@@ -850,12 +850,6 @@ fieldset.fields1 dd.recipients {
 	margin-left: 1em;
 }
 
-fieldset.fields1 ul.recipients input.button2 {
-	font-size: 0.8em;
-	margin-right: 0;
-	padding: 0;
-}
-
 fieldset.fields1 dl.pmlist > dt {
 	width: auto !important;
 }
