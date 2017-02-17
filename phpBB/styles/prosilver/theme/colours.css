@@ -1333,9 +1333,8 @@ input.disabled {
 	background-color: #000000;
 }
 
-.loading_indicator {
-	background-color: #000000;
-	background-image: url('./images/loading.gif');
+.loader {
+	color: #ffffff;
 }
 
 .dropdown-extended ul li {
@@ -1411,4 +1410,3 @@ li.notification-disapproved strong {
 	color: #ffffff;
 }
 /* stylelint-enable */
-
