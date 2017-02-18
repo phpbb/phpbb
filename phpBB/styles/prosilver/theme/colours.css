@@ -1341,16 +1341,6 @@ input.disabled {
 	background: #ffffff;
 }
 
-@-webkit-keyframes animate {
-	0% {
-		background: #0076b1;
-	}
-
-	50% {
-		background: #d31141;
-	}
-}
-
 @keyframes animate {
 	0% {
 		background: #0076b1;

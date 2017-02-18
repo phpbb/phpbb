@@ -1065,26 +1065,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	animation: before 1s ease-in-out infinite;
 }
 
-@-webkit-keyframes before {
-	0% {
-		opacity: 0.5;
-		transform: rotateY(0);
-		transform-origin: left center;
-	}
-
-	30%,
-	70% {
-		opacity: 0.2;
-		transform: rotateY(180deg);
-		transform-origin: left center;
-	}
-
-	100% {
-		opacity: 0.5;
-		transform: rotateY(0);
-	}
-}
-
 @keyframes before {
 	0% {
 		opacity: 0.5;
