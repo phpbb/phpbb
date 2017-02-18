@@ -1333,12 +1333,32 @@ input.disabled {
 	background-color: #000000;
 }
 
-.loading_indicator .darken {
-	background-color: rgba(0, 0, 0, 0.5);
+.loader {
+	background: #0076b1;
 }
 
-.loader {
-	color: #ffffff;
+.loader:before {
+	background: #ffffff;
+}
+
+@-webkit-keyframes animate {
+	0% {
+		background: #0076b1;
+	}
+
+	50% {
+		background: #d31141;
+	}
+}
+
+@keyframes animate {
+	0% {
+		background: #0076b1;
+	}
+
+	50% {
+		background: #d31141;
+	}
 }
 
 .dropdown-extended ul li {

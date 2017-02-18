@@ -1017,8 +1017,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	font-size: 1.1em;
 }
 
-.darkenwrapper,
-.loading_indicator {
+.darkenwrapper {
 	position: relative;
 	z-index: 44;
 	display: none;
@@ -1034,108 +1033,78 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	height: 100%;
 }
 
-.loading_indicator .darken {
-	opacity: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.loading_indicator {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: 51;
+	display: none;
 }
 
 .loader {
-	font-size: 90px;
-	text-indent: -9999em;
+	text-indent: -9999px;
 	border-radius: 50%;
 	position: relative;
-	overflow: hidden;
-	width: 1em;
-	height: 1em;
-	margin: 72px auto;
-	-ms-transform: translateZ(0);
-	-webkit-transform: translateZ(0);
-	transform: translateZ(0);
-	-webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
-	animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+	display: inline-block;
+	box-sizing: border-box;
+	width: 24px;
+	height: 24px;
+	animation: animate 1s ease-in-out infinite;
 }
 
-@-webkit-keyframes load6 {
+.loader:before {
+	border-radius: 0 12px 12px 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: inline-block;
+	box-sizing: border-box;
+	width: 12px;
+	height: 24px;
+	content: '';
+	animation: before 1s ease-in-out infinite;
+}
+
+@-webkit-keyframes before {
 	0% {
-		box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+		opacity: 0.5;
+		transform: rotateY(0);
+		transform-origin: left center;
 	}
 
-	5%,
-	95% {
-		box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-	}
-
-	10%,
-	59% {
-		box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
-	}
-
-	20% {
-		box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
-	}
-
-	38% {
-		box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, -0.82em -0.09em 0 -0.477em;
+	30%,
+	70% {
+		opacity: 0.2;
+		transform: rotateY(180deg);
+		transform-origin: left center;
 	}
 
 	100% {
-		box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+		opacity: 0.5;
+		transform: rotateY(0);
 	}
 }
 
-@keyframes load6 {
+@keyframes before {
 	0% {
-		box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+		opacity: 0.5;
+		transform: rotateY(0);
+		transform-origin: left center;
 	}
 
-	5%,
-	95% {
-		box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
-	}
-
-	10%,
-	59% {
-		box-shadow: 0 -0.83em 0 -0.4em, -0.087em -0.825em 0 -0.42em, -0.173em -0.812em 0 -0.44em, -0.256em -0.789em 0 -0.46em, -0.297em -0.775em 0 -0.477em;
-	}
-
-	20% {
-		box-shadow: 0 -0.83em 0 -0.4em, -0.338em -0.758em 0 -0.42em, -0.555em -0.617em 0 -0.44em, -0.671em -0.488em 0 -0.46em, -0.749em -0.34em 0 -0.477em;
-	}
-
-	38% {
-		box-shadow: 0 -0.83em 0 -0.4em, -0.377em -0.74em 0 -0.42em, -0.645em -0.522em 0 -0.44em, -0.775em -0.297em 0 -0.46em, -0.82em -0.09em 0 -0.477em;
+	30%,
+	70% {
+		opacity: 0.2;
+		transform: rotateY(180deg);
+		transform-origin: left center;
 	}
 
 	100% {
-		box-shadow: 0 -0.83em 0 -0.4em, 0 -0.83em 0 -0.42em, 0 -0.83em 0 -0.44em, 0 -0.83em 0 -0.46em, 0 -0.83em 0 -0.477em;
+		opacity: 0.5;
+		transform: rotateY(0);
 	}
 }
 
-@-webkit-keyframes round {
-	0% {
-		-webkit-transform: rotate(0deg);
-		transform: rotate(0deg);
-	}
-
-	100% {
-		-webkit-transform: rotate(360deg);
-		transform: rotate(360deg);
-	}
-}
-
-@keyframes round {
-	0% {
-		-webkit-transform: rotate(0deg);
-		transform: rotate(0deg);
-	}
-
-	100% {
-		-webkit-transform: rotate(360deg);
-		transform: rotate(360deg);
-	}
-}
 
 /* Miscellaneous styles
 ---------------------------------------- */
