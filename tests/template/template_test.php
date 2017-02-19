@@ -603,6 +603,43 @@ EOT
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
 	}
 
+	public function test_find_key_index()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'zero'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'one'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '1A'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'two'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '2A'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '2B'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'three'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3A'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3B'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3C'));
+
+		$expect = 'outer - 0 - zero[outer|4]outer - 1 - one[outer|4]middle - 0 - 1A[middle|1]outer - 2 - two[outer|4]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 3 - three[outer|4]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->find_key_index('outer', false);
+
+		$this->assertEquals(0, $this->template->find_key_index('outer', false), 'Find index at the beginning of outer loop');
+		$this->assertEquals(1, $this->template->find_key_index('outer', 1), 'Find index by index in outer loop');
+		$this->assertEquals(2, $this->template->find_key_index('outer', array('VARIABLE' => 'two')), 'Find index by key in outer loop');
+		$this->assertEquals(3, $this->template->find_key_index('outer', true), 'Find index at the end of outer loop');
+		$this->assertEquals(false, $this->template->find_key_index('outer', 7), 'Find index out of bounds of outer loop');
+
+		$this->assertEquals(false, $this->template->find_key_index('outer[0].middle', false), 'Find index at the beginning of middle loop, no middle block');
+		$this->assertEquals(false, $this->template->find_key_index('outer[1].middle', 1), 'Find index by index in inner loop, out of bounds');
+		$this->assertEquals(1, $this->template->find_key_index('outer[2].middle', array('VARIABLE' => '2B')), 'Find index by key in middle loop');
+		$this->assertEquals(2, $this->template->find_key_index('outer.middle', true), 'Find index at the end of middle loop');
+
+		$this->assertEquals(false, $this->template->find_key_index('outer.wrong', true), 'Wrong middle block name');
+		$this->assertEquals(false, $this->template->find_key_index('wrong.middle', false), 'Wrong outer block name');
+	}
 	public function assign_block_vars_array_data()
 	{
 		return array(
