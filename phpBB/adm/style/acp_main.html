@@ -94,15 +94,45 @@
 
 	<!-- EVENT acp_main_notice_after -->
 
+	<table class="table1 no-header" style="width: auto;" data-no-responsive-header="true">
+		<caption>{L_SOFTWARE_HEADING}</caption>
+		<col class="col1" /><col class="col2" />
+	<thead>
+	<tr>
+		<th>{L_SOFTWARE_PRODUCT}</th>
+		<th>{L_SOFTWARE_VERSION}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td>{L_BOARD_VERSION}</td>
+	<!-- IF S_VERSIONCHECK -->
+		<td><strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;" <!-- ELSEIF not S_VERSIONCHECK_FAIL -->style="color: #BC2A4D;" <!-- ENDIF -->title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
+		</td>
+	<!-- ELSE -->
+		<td><strong>{BOARD_VERSION}</strong></td>
+	<!-- ENDIF -->
+	</tr>
+	<tr>
+		<td>{L_PHP_VERSION}</td>
+		<td><strong>{PHP_VERSION_INFO}</strong></td>
+	</tr>
+	<tr>
+		<td>{L_DATABASE_SERVER_INFO}</td>
+		<td><strong>{DATABASE_INFO}</strong></td>
+	</tr>
+	</tbody>
+	</table>
+
 	<table class="table1 two-columns no-header" data-no-responsive-header="true">
 		<caption>{L_FORUM_STATS}</caption>
 		<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
 	<thead>
 	<tr>
-		<th>{L_STATISTIC}</th>
-		<th>{L_VALUE}</th>
-		<th>{L_STATISTIC}</th>
-		<th>{L_VALUE}</th>
+		<th style="width: 25%">{L_STATISTIC}</th>
+		<th style="width: 25%">{L_VALUE}</th>
+		<th style="width: 25%">{L_STATISTIC}</th>
+		<th style="width: 25%">{L_VALUE}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -130,8 +160,6 @@
 		<td>{L_FILES_PER_DAY}{L_COLON} </td>
 		<td><strong>{FILES_PER_DAY}</strong></td>
 	</tr>
-
-
 	<tr>
 		<td>{L_BOARD_STARTED}{L_COLON} </td>
 		<td><strong>{START_DATE}</strong></td>
@@ -145,33 +173,16 @@
 		<td><strong>{UPLOAD_DIR_SIZE}</strong></td>
 	</tr>
 	<tr>
-		<td>{L_DATABASE_SERVER_INFO}{L_COLON} </td>
-		<td><strong>{DATABASE_INFO}</strong></td>
 		<td>{L_GZIP_COMPRESSION}{L_COLON} </td>
 		<td><strong>{GZIP_COMPRESSION}</strong></td>
-	</tr>
-	<!-- IF S_TOTAL_ORPHAN or S_VERSIONCHECK -->
-	<tr>
-	<!-- IF S_VERSIONCHECK -->
-		<td>{L_BOARD_VERSION}{L_COLON} </td>
-		<td>
-			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;" <!-- ELSEIF not S_VERSIONCHECK_FAIL -->style="color: #BC2A4D;" <!-- ENDIF -->title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
-		</td>
-	<!-- ENDIF -->
 	<!-- IF S_TOTAL_ORPHAN -->
 		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
 		<td><strong>{TOTAL_ORPHAN}</strong></td>
-	<!-- ENDIF -->
-	<!-- IF not S_TOTAL_ORPHAN or not S_VERSIONCHECK -->
+	<!-- ELSE -->
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 	<!-- ENDIF -->
 	</tr>
-        <tr>
-        <td>{L_PHP_VERSION}{L_COLON} </td>
-        <td><strong>{PHP_VERSION_INFO}</strong></td>
-    </tr>
-	<!-- ENDIF -->
 	</tbody>
 	</table>
 
