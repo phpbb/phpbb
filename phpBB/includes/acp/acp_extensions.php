@@ -71,19 +71,20 @@ class acp_extensions
 		/**
 		* Event to run a specific action on extension
 		*
-		* @event core.acp_extensions_run_action
-		* @var	string	action			Action to run; if the event executes completely the action, should be set to 'none'
+		* @event core.acp_extensions_run_action_before
+		* @var	string	action			Action to run; if the event completes execution of the action, should be set to 'none'
 		* @var	string	u_action		Url we are at
 		* @var	string	ext_name		Extension name from request
 		* @var	int		safe_time_limit	Safe limit of execution time
 		* @var	int		start_time		Start time
 		* @var	string	tpl_name		Template file to load
 		* @since 3.1.11-RC1
+		* @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
 		*/
 		$u_action = $this->u_action;
 		$tpl_name = '';
 		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
-		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action', compact($vars)));
+		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_before', compact($vars)));
 
 		// In case they have been updated by the event
 		$this->u_action = $u_action;
