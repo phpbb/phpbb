@@ -89,15 +89,14 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
-a.unread {
-	text-decoration: none;
+.row-item a:hover {
+	text-decoration: none
 }
 
-dd.lastpost a:hover {
-	text-decoration: none;
-}
-
-dd.lastpost a.username-coloured:hover, dd.lastpost a.username {
+.row-item .topictitle:hover,
+.row-item .subforum:hover,
+.row-item .username:hover,
+.row-item .username-coloured:hover {
 	text-decoration: underline;
 }
 
