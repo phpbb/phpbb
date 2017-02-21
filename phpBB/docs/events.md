@@ -64,11 +64,23 @@ acp_ext_details_end
 * Since: 3.1.11-RC1
 * Purpose: Add more detailed information on extension after the available information.
 
+acp_ext_list_disabled_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after the name of disabled extensions in the list
+
 acp_ext_list_disabled_title_after
 ===
 * Location: adm/style/acp_ext_list.html
 * Since: 3.1.11-RC1
 * Purpose: Add text after disabled extensions section title.
+
+acp_ext_list_enabled_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after the name of enabled extensions in the list
 
 acp_ext_list_enabled_title_after
 ===
