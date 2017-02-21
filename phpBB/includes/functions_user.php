@@ -280,11 +280,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	* @changed 3.1.0-b5 Added user_row and cp_data
 	* @changed 3.1.11-RC1 Added notifications_data
 	*/
-	$vars = array(
-		'user_row',
-		'cp_data',
-		'sql_ary',
-		'notifications_data');
+	$vars = array('user_row', 'cp_data', 'sql_ary', 'notifications_data');
 	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
 
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
