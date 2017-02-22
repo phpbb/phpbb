@@ -158,7 +158,7 @@ html > body .postbody h1 a:link:after,
 html > body .postbody h2 a:link:after,
 .post-buttons a:after {
 	text-decoration: none;
-	content: "";
+	content: "" !important;
 }
 
 /* Poster profile */
