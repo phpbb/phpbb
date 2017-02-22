@@ -28,6 +28,7 @@
   },
   "homepage": "https://www.phpbb.com",
   "devDependencies": {
-    "stylelint": "^7.7.1"
+    "stylelint": "^7.7.1",
+    "stylelint-order": "^0.3.0"
   }
 }
