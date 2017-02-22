@@ -123,7 +123,7 @@
 }
 
 .rtl .jumpbox .dropdown-contents a {
-	margin-right: 0px;
+	margin-right: 0;
 	margin-left: 20px;
 }
 
@@ -604,14 +604,11 @@ li.breadcrumbs span:first-child > a {
 */
 
 .rtl .caret {
-	left: -6px;
-	right: inherit;
 	border-right: 1px solid;
 	border-right-color: inherit;
 	border-left: none;
+	right: 6px;
 }
-
-
 
 /* Post control buttons
 --------------------------------------------- */
@@ -928,9 +925,9 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .button-search-end {
+	border-radius: 4px 0 0 4px;
 	border-left-width: 1px;
 	border-right-width: 0;
-	border-radius: 4px 0 0 4px;
 }
 
 .rtl .search-header .button-search-end {
