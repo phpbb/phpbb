@@ -11,9 +11,7 @@
 set -e
 set +x
 
-DB=$1
-TRAVIS_PHP_VERSION=$2
-NOTESTS=$3
+NOTESTS=$1
 
 if [ "$NOTESTS" == '1' ]
 then
