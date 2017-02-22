@@ -24,9 +24,9 @@
   "author": "",
   "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/phpbb/phpbb/issues"
+    "url": "https://tracker.phpbb.com"
   },
-  "homepage": "https://github.com/phpbb/phpbb#readme",
+  "homepage": "https://www.phpbb.com",
   "devDependencies": {
     "stylelint": "^7.7.1"
   }
