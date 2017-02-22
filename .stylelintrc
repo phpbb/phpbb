@@ -62,7 +62,7 @@
 		"declaration-empty-line-before": "never",
 
 		"declaration-property-unit-blacklist": {
-			"line-height": ["rem", "px", "em", "%"]
+			"line-height": ["rem", "em", "%"]
 		},
 		"declaration-property-unit-whitelist": {
 			"height": ["px", "%", "vh"],
