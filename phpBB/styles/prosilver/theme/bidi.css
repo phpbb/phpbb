@@ -16,6 +16,10 @@
 	text-align: left;
 }
 
+.rtl p.jumpbox-return {
+	float: right;
+}
+
 .rtl div.rules ul {
 	margin-right: 20px;
 	margin-left: 0;
@@ -124,6 +128,11 @@
 .rtl .dropdown-extended .header .header_settings,
 .rtl .dropdown-container-right {
 	float: left;
+}
+
+.rtl .jumpbox .dropdown-contents a {
+	margin-right: 0;
+	margin-left: 20px;
 }
 
 /* Notifications
@@ -635,10 +644,11 @@ li.breadcrumbs span:first-child > a {
 */
 
 .rtl .caret {
-	float: right;
+	border-right: 1px solid;
+	border-right-color: inherit;
+	border-left: none;
+	right: 6px;
 }
-
-
 
 /* Post control buttons
 --------------------------------------------- */
@@ -960,7 +970,8 @@ li.breadcrumbs span:first-child > a {
 	float: right;
 }
 
-.button-search-end {
+.rtl .button-search-end {
+	border-radius: 4px 0 0 4px;
 	border-right-width: 0;
 	border-left-width: 1px;
 }
