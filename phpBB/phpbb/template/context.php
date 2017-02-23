@@ -376,44 +376,48 @@ class context
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
 		$this->num_rows_is_set = false;
-		if (strpos($blockname, '.') !== false)
+
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = sizeof($blocks) - 1;
+
+		$block = &$this->tpldata;
+		for ($i = 0; $i < $blockcount; $i++)
 		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$block = &$this->tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
+			if (($pos = strpos($blocks[$i], '[')) !== false)
 			{
-				if (($pos = strpos($blocks[$i], '[')) !== false)
-				{
-					$name = substr($blocks[$i], 0, $pos);
+				$name = substr($blocks[$i], 0, $pos);
 
-					if (strpos($blocks[$i], '[]') === $pos)
-					{
-						$index = sizeof($block[$name]) - 1;
-					}
-					else
-					{
-						$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-					}
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = sizeof($block[$name]) - 1;
 				}
 				else
 				{
-					$name = $blocks[$i];
-					$index = sizeof($block[$name]) - 1;
+					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
 				}
-				$block = &$block[$name];
-				$block = &$block[$index];
 			}
+			else
+			{
+				$name = $blocks[$i];
+				$index = sizeof($block[$name]) - 1;
+			}
+			$block = &$block[$name];
+			$block = &$block[$index];
+		}
+		$name = $blocks[$i];
 
-			$block = &$block[$blocks[$i]]; // Traverse the last block
-		}
-		else
+		// If last block does not exist and we are inserting, and not searching for key, we create it empty; otherwise, nothing to do
+		if (!isset($block[$name]))
 		{
-			// Top-level block.
-			$block = &$this->tpldata[$blockname];
+			if ($mode != 'insert' || is_array($key))
+			{
+				return false;
+			}
+			$block[$name] = array();
 		}
+
+		$block = &$block[$name]; // Now we can traverse the last block
 
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
@@ -454,14 +458,15 @@ class context
 				unset($block[($key - 1)]['S_LAST_ROW']);
 				$vararray['S_LAST_ROW'] = true;
 			}
-			else if ($key === 0)
+			if ($key <= 0)
 			{
+				$key = 0;
 				unset($block[0]['S_FIRST_ROW']);
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
 			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blockname;
+			$vararray['S_BLOCK_NAME'] = $name;
 
 			// Re-position template blocks
 			for ($i = sizeof($block); $i > $key; $i--)
@@ -481,6 +486,12 @@ class context
 		// Which block to change?
 		if ($mode == 'change')
 		{
+			// If key is out of bounds, do not change anything
+			if ($key > sizeof($block) || $key < 0)
+			{
+				return false;
+			}
+
 			if ($key == sizeof($block))
 			{
 				$key--;
