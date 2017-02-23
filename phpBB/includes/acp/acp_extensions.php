@@ -313,7 +313,7 @@ class acp_extensions
 				{
 					try
 					{
-						$updates_available = $phpbb_extension_manager->version_check($md_manager, $request->variable('versioncheck_force', false), $this->config['extension_force_unstable'] ? 'unstable' : null);
+						$updates_available = $phpbb_extension_manager->version_check($md_manager, $request->variable('versioncheck_force', false), false, $this->config['extension_force_unstable'] ? 'unstable' : null);
 
 						$template->assign_vars(array(
 							'S_UP_TO_DATE' => empty($updates_available),
