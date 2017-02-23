@@ -680,11 +680,11 @@ EOT
 			),
 			array(
 				'outer',
-				array('VARIABLE' => 'pos #1'),
+				array('VARIABLE' => 'changed'),
 				0,
 				'change',
 				<<<EOT
-outer - 0 - pos #1
+outer - 0 - changed
 middle - 0
 middle - 1
 outer - 1
@@ -695,7 +695,124 @@ middle - 0
 middle - 1
 EOT
 ,
-				'Test inserting at 1 on top level block',
+				'Test changing at 0 on top level block',
+			),
+			array(
+				'outer',
+				array('VARIABLE' => 'changed'),
+				array('S_ROW_NUM' => 2),
+				'change',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2 - changed
+middle - 0
+middle - 1
+EOT
+,
+				'Test changing at KEY on top level block',
+			),
+			array(
+				'outer.middle',
+				array('VARIABLE' => 'before'),
+				false,
+				'insert',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0 - before
+middle - 1
+middle - 2
+EOT
+,
+				'Test inserting before on middle level block',
+			),
+			array(
+				'outer.middle',
+				array('VARIABLE' => 'after'),
+				true,
+				'insert',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1
+middle - 2 - after
+EOT
+,
+				'Test inserting after on middle level block',
+			),
+			array(
+				'outer[1].middle',
+				array('VARIABLE' => 'pos #1'),
+				1,
+				'insert',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1 - pos #1
+middle - 2
+outer - 2
+middle - 0
+middle - 1
+EOT
+,
+				'Test inserting at 1 on middle level block',
+			),
+			array(
+				'outer[].middle',
+				array('VARIABLE' => 'changed'),
+				0,
+				'change',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0 - changed
+middle - 1
+EOT
+,
+				'Test changing at beginning of last top level block',
+			),
+			array(
+				'outer.middle',
+				array('VARIABLE' => 'changed'),
+				array('S_ROW_NUM' => 1),
+				'change',
+				<<<EOT
+outer - 0
+middle - 0
+middle - 1
+outer - 1
+middle - 0
+middle - 1
+outer - 2
+middle - 0
+middle - 1 - changed
+EOT
+,
+				'Test changing at beginning of last top level block',
 			),
 		);
 	}
@@ -753,6 +870,16 @@ EOT
 
 		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification');
+
+		$this->template->alter_block_array('outer.middle', array());
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|4]middle - 1[middle|4]middle - 2[middle|4]middle - 3[middle|4]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after insertion at middle level');
+
+		$this->template->alter_block_array('outer.middle', array('VARIABLE' => 'test'), 2, 'change');
+
+		$expect = 'outer - 0[outer|4]outer - 1[outer|4]middle - 0[middle|1]outer - 2 - test[outer|4]middle - 0[middle|2]middle - 1[middle|2]outer - 3[outer|4]middle - 0[middle|4]middle - 1[middle|4]middle - 2 - test[middle|4]middle - 3[middle|4]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring S_NUM_ROWS is correct after modification at middle level');
 	}
 
 	public function test_find_key_index()
