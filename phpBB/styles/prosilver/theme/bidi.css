@@ -502,8 +502,16 @@ li.breadcrumbs span:first-child > a {
 
 .rtl blockquote cite {
 	/* Username/source of quoter */
-	margin-right: 20px;
+	margin-right: 0px;
 	margin-left: 0;
+}
+
+blockquote cite:before {
+	/* Font Awesome quote-right */
+	content: '\f10e';
+	font-family: FontAwesome;
+	padding-right: 0px;
+	padding-left: 5px;
 }
 
 .rtl blockquote .codebox {

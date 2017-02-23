@@ -466,9 +466,16 @@ blockquote cite {
 	/* Username/source of quoter */
 	font-style: normal;
 	font-weight: bold;
-	margin-left: 20px;
+	margin-left: 0px;
 	display: block;
 	font-size: 0.9em;
+}
+
+blockquote cite:before {
+	/* Font Awesome quote-left */
+	content: '\f10d';
+	font-family: FontAwesome;
+	padding-right: 5px;
 }
 
 blockquote cite cite {
