@@ -1333,13 +1333,26 @@ input.disabled {
 	background-color: #000000;
 }
 
-.loader,
-.loader:after {
-	background: #1481b8;
-}
+@keyframes colors {
+	0% {
+		stroke: #4285f4;
+	}
 
-.loader:before {
-	background: #13a4ec;
+	25% {
+		stroke: #de3e35;
+	}
+
+	50% {
+		stroke: #f7c223;
+	}
+
+	75% {
+		stroke: #1b9a59;
+	}
+
+	100% {
+		stroke: #4285f4;
+	}
 }
 
 .dropdown-extended ul li {

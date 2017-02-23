@@ -9,7 +9,12 @@
 		<div id="darken" class="darken">&nbsp;</div>
 	</div>
 	<div id="loading_indicator" class="loading_indicator">
-		<div class="loader">{L_Loading}...</div>
+		<div class="loader">
+			<svg class="spinner" width="48px" height="48px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg" aria-labelledby="loader-title" role="img">
+				<title id="loader-title">Loading...</title>
+				<circle class="spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+			</svg>
+		</div>
 	</div>
 	<div id="phpbb_alert" class="phpbb_alert" data-l-err="{L_ERROR}" data-l-timeout-processing-req="{L_TIMEOUT_PROCESSING_REQ}">
 		<a href="#" class="alert_close">
