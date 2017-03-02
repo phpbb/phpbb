@@ -460,6 +460,9 @@ class session
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
 						$this->data['user_lang'] = basename($this->data['user_lang']);
 
+						// Is user banned? Are they excluded? Won't return on ban, exists within method
+						$this->check_ban_for_current_session($config);
+
 						return true;
 					}
 				}
@@ -666,19 +669,7 @@ class session
 		// session exists in which case session_id will also be set
 
 		// Is user banned? Are they excluded? Won't return on ban, exists within method
-		if ($this->data['user_type'] != USER_FOUNDER)
-		{
-			if (!$config['forwarded_for_check'])
-			{
-				$this->check_ban($this->data['user_id'], $this->ip);
-			}
-			else
-			{
-				$ips = explode(' ', $this->forwarded_for);
-				$ips[] = $this->ip;
-				$this->check_ban($this->data['user_id'], $ips);
-			}
-		}
+		$this->check_ban_for_current_session($config);
 
 		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 		$this->data['is_bot'] = ($bot) ? true : false;
@@ -1268,9 +1259,6 @@ class session
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
 			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
 
-			// To circumvent session_begin returning a valid value and the check_ban() not called on second page view, we kill the session again
-			$this->session_kill(false);
-
 			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
 			if (defined('IN_CRON'))
 			{
@@ -1279,10 +1267,35 @@ class session
 				exit;
 			}
 
+			// To circumvent session_begin returning a valid value and the check_ban() not called on second page view, we kill the session again
+			$this->session_kill(false);
+
 			trigger_error($message);
 		}
 
 		return ($banned && $ban_row['ban_give_reason']) ? $ban_row['ban_give_reason'] : $banned;
+	}
+
+	/**
+	 * Check the current session for bans
+	 *
+	 * @return true if session user is banned.
+	 */
+	protected function check_ban_for_current_session($config)
+	{
+		if (!defined('SKIP_CHECK_BAN') && $this->data['user_type'] != USER_FOUNDER)
+		{
+			if (!$config['forwarded_for_check'])
+			{
+				$this->check_ban($this->data['user_id'], $this->ip);
+			}
+			else
+			{
+				$ips = explode(' ', $this->forwarded_for);
+				$ips[] = $this->ip;
+				$this->check_ban($this->data['user_id'], $ips);
+			}
+		}
 	}
 
 	/**
@@ -1576,7 +1589,7 @@ class session
 		}
 
 		// Only update session DB a minute or so after last update or if page changes
-		if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+		if ($this->time_now - ((isset($this->data['session_time'])) ? $this->data['session_time'] : 0) > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 		{
 			$sql_ary = array('session_time' => $this->time_now);
 
