@@ -946,7 +946,8 @@ class tools implements tools_interface
 			{
 				case 'oracle':
 				case 'sqlite3':
-					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+					$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name, false);
+					$row[$col] = strpos($row[$col], $table_name) === 0 ? substr($row[$col], strlen($table_name) + 1) : $row[$col];
 				break;
 			}
 
@@ -1359,12 +1360,14 @@ class tools implements tools_interface
 		{
 			case 'mysql_40':
 			case 'mysql_41':
+				$index_name = $this->check_index_name_length($table_name, $index_name, false);
 				$statements[] = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
 			break;
 
 			case 'oracle':
 			case 'sqlite3':
-				$statements[] = 'DROP INDEX ' . $table_name . '_' . $index_name;
+				$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name, false);
+				$statements[] = 'DROP INDEX ' . $index_name;
 			break;
 		}
 
@@ -1491,13 +1494,13 @@ class tools implements tools_interface
 		{
 			case 'oracle':
 			case 'sqlite3':
-				$this->check_index_name_length($table_name, $table_name . '_' . $index_name);
-				$statements[] = 'CREATE UNIQUE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name);
+				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$this->check_index_name_length($table_name, $index_name);
+				$index_name = $this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD UNIQUE INDEX ' . $index_name . '(' . implode(', ', $column) . ')';
 			break;
 		}
@@ -1522,8 +1525,8 @@ class tools implements tools_interface
 		{
 			case 'oracle':
 			case 'sqlite3':
-				$this->check_index_name_length($table_name, $table_name . '_' . $index_name);
-				$statements[] = 'CREATE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+				$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name);
+				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
 			case 'mysql_40':
@@ -1538,7 +1541,7 @@ class tools implements tools_interface
 				}
 			// no break
 			case 'mysql_41':
-				$this->check_index_name_length($table_name, $index_name);
+				$index_name = $this->check_index_name_length($table_name, $index_name);
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD INDEX ' . $index_name . ' (' . implode(', ', $column) . ')';
 			break;
 		}
@@ -1551,13 +1554,35 @@ class tools implements tools_interface
 	 *
 	 * @param string $table_name
 	 * @param string $index_name
+	 * @param bool $throw_error
+	 * @return string	The index name, shortened if too long
 	 */
-	protected function check_index_name_length($table_name, $index_name)
+	protected function check_index_name_length($table_name, $index_name, $throw_error = true)
 	{
 		if (strlen($index_name) > 30)
 		{
-			trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			// Try removing the table prefix if it's at the beginning
+			$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+			if (strpos($index_name, $table_prefix) === 0)
+			{
+				$index_name = substr($index_name, strlen($table_prefix) + 1);
+				return $this->check_index_name_length($table_name, $index_name);
+			}
+
+			// Try removing the table name then
+			if (strpos($index_name, $table_name) === 0)
+			{
+				$index_name = substr($index_name, strlen($table_name) + 1);
+				return $this->check_index_name_length($table_name, $index_name);
+			}
+
+			if ($throw_error)
+			{
+				trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+			}
 		}
+
+		return $index_name;
 	}
 
 	/**

@@ -13,12 +13,12 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-class user_notifications_table_indexes extends \phpbb\db\migration\migration
+class user_notifications_table_index_p3 extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v32x\cookie_notice_p2',
+			'\phpbb\db\migration\data\v32x\user_notifications_table_index_p2',
 		);
 	}
 
@@ -27,9 +27,7 @@ class user_notifications_table_indexes extends \phpbb\db\migration\migration
 		return array(
 			'add_index' => array(
 				$this->table_prefix . 'user_notifications' => array(
-					'user_id'							=> array('user_id'),
-					'user_id_item_id'					=> array('user_id', 'item_id'),
-					'user_itm_type_id'					=> array('user_id', 'item_type', 'item_id'),
+					'usr_itm_tpe'					=> array('user_id', 'item_type', 'item_id'),
 				),
 			),
 		);
@@ -40,9 +38,7 @@ class user_notifications_table_indexes extends \phpbb\db\migration\migration
 		return array(
 			'drop_keys' => array(
 				$this->table_prefix . 'user_notifications' => array(
-					'user_id',
-					'user_id_item_id',
-					'user_itm_type_id',
+					'usr_itm_tpe',
 				),
 			),
 		);

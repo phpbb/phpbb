@@ -18,7 +18,7 @@ class user_notifications_table_remove_duplicates extends \phpbb\db\migration\mig
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v32x\user_notifications_table_indexes',
+			'\phpbb\db\migration\data\v32x\user_notifications_table_temp_index',
 		);
 	}
 
