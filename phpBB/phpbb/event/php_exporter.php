@@ -510,7 +510,7 @@ class php_exporter
 	/**
 	* Find the "@changed" Information lines
 	*
-	* @param string $tag_name Should be 'changed' or 'change'
+	* @param string $tag_name Should be 'change', not 'changed'
 	* @return array Absolute line numbers
 	* @throws \LogicException
 	*/
@@ -658,7 +658,7 @@ class php_exporter
 	{
 		$match = array();
 		$line = str_replace("\t", ' ', ltrim($line, "\t "));
-		preg_match('#^\* @change(d)? (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)( (?:.*))?$#', $line, $match);
+		preg_match('#^\* @changed (\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?)( (?:.*))?$#', $line, $match);
 		if (!isset($match[2]))
 		{
 			throw new \LogicException("Invalid '@changed' information for event "
