@@ -1,4 +1,5 @@
 <?php
+
 /**
 *
 * This file is part of the phpBB Forum Software package.
@@ -16,6 +17,7 @@
 */
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
+
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
@@ -31,6 +33,58 @@ $forum_id	= $request->variable('f', 0);
 $topic_id	= $request->variable('t', 0);
 $post_id	= $request->variable('p', 0);
 $voted_id	= $request->variable('vote_id', array('' => 0));
+
+//generate meta tags
+
+//extract forum image
+
+	$sql = 'SELECT *
+		    FROM ' . FORUMS_TABLE . "
+			WHERE forum_id = $forum_id";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$phpbb_forum_image = $row['forum_image'];
+			$db->sql_freeresult($result);
+
+
+
+
+
+
+//extract topic title
+
+	$sql = 'SELECT *
+			FROM ' . TOPICS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$phpbb_topic_title = $row['topic_title'];
+
+		$phpbb_topic_author = $row['topic_first_poster_name'];
+
+
+
+
+
+//extract topic description
+$sql = 'SELECT *
+			FROM ' . POSTS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+$phpbb_topic_description = $row['post_text'];
+$phpbb_domain = $request->server("HTTP_HOST");
+
+$phpbb_meta_data = phpbb_make_meta_tags($phpbb_topic_author, $phpbb_forum_image, $phpbb_topic_title, $phpbb_topic_description, $phpbb_domain);
+
+
+
+
+
 
 $voted_id = (sizeof($voted_id) > 1) ? array_unique($voted_id) : $voted_id;
 
@@ -48,6 +102,11 @@ $sort_dir	= $request->variable('sd', $default_sort_dir);
 
 $update		= $request->variable('update', false);
 
+
+
+
+
+
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
@@ -62,6 +121,10 @@ if (!$topic_id && !$post_id)
 {
 	trigger_error('NO_TOPIC');
 }
+
+
+
+
 
 /* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
@@ -100,6 +163,12 @@ if ($view && !$post_id)
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+
+
+
+
+
 
 		if (!$row)
 		{
@@ -688,6 +757,9 @@ if (!empty($_EXTRA_URL))
 // If we've got a hightlight set pass it on to pagination.
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
 
+
+
+
 /**
 * Event to modify data before template variables are being assigned
 *
@@ -717,12 +789,19 @@ $vars = array(
 	'total_posts',
 	'viewtopic_url',
 );
+
+
+
+
+
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_assign_template_vars_before', compact($vars)));
 
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_posts, $config['posts_per_page'], $start);
 
+
 // Send vars to template
 $template->assign_vars(array(
+	'META'          => $phpbb_meta_data,
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME' 	=> $topic_data['forum_name'],
 	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield'], $topic_data['forum_desc_options']),
@@ -799,6 +878,10 @@ $template->assign_vars(array(
 	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
 	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
 );
+
+
+
+
 
 // Does this topic contain a poll?
 if (!empty($topic_data['poll_start']))
@@ -1216,6 +1299,8 @@ $vars = array(
 	'start',
 	'sql_ary',
 );
+
+
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_get_post_data', compact($vars)));
 
 $sql = $db->sql_build_query('SELECT', $sql_ary);
@@ -1250,6 +1335,11 @@ while ($row = $db->sql_fetchrow($result))
 			$has_approved_attachments = true;
 		}
 	}
+
+
+
+
+
 
 	$rowset_data = array(
 		'hide_post'			=> (($row['foe'] || $row['post_visibility'] == ITEM_DELETED) && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
@@ -1286,6 +1376,8 @@ while ($row = $db->sql_fetchrow($result))
 		'foe'				=> $row['foe'],
 	);
 
+
+
 	/**
 	* Modify the post rowset containing data to be displayed with posts
 	*
@@ -1294,6 +1386,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @var	array	row			Array with original user and post data
 	* @since 3.1.0-a1
 	*/
+
 	$vars = array('rowset_data', 'row');
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_post_rowset_data', compact($vars)));
 
@@ -1652,6 +1745,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Parse the message and subject
 	$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 	$message = generate_text_for_display($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, true);
+
+
+
 
 	if (!empty($attachments[$row['post_id']]))
 	{
@@ -2268,6 +2364,9 @@ if (!$request->variable('t', 0) && !empty($topic_id))
 
 $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang['PAGE_TITLE_NUMBER'], $pagination->get_on_page($config['posts_per_page'], $start)) : '');
 
+
+
+
 /**
 * You can use this event to modify the page title of the viewtopic page
 *
@@ -2292,3 +2391,4 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 page_footer();
+
