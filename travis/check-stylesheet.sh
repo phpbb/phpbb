@@ -34,4 +34,6 @@ then
 	npm install > /dev/null
 	set -x
 	stylelint --config ../.stylelintrc "styles/prosilver/theme/*.css"
+	# Disable admin stylelint for now
+	# stylelint --config ../.stylelintrc "adm/style/*.css"
 fi
