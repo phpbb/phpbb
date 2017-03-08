@@ -208,4 +208,14 @@ a.feed-icon-forum {
 a.anchor {
 	display: block;
 }
+
+.linklist .footer-links {
+	float: right;
+}
+
+.footer-links li:last-child {
+	padding-top: 4px;
+	padding-left: 6px;
+}
+
 /* stylelint-enable */

@@ -26,7 +26,7 @@
 	<!-- IF .draftrow -->
 		<ul class="topiclist missing-column">
 			<li class="header">
-				<dl>
+				<dl class="row-item">
 					<dt><div class="list-inner">{L_DRAFT_TITLE}</div></dt>
 					<dd class="info"><span>{L_SAVE_DATE}</span></dd>
 					<dd class="mark">{L_MARK}</dd>
@@ -39,13 +39,13 @@
 			<li class="row<!-- IF draftrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
-						<div class="list-inner">
+						<div class="list-inner with-mark">
 							<a class="topictitle" href="{draftrow.U_VIEW_EDIT}">{draftrow.DRAFT_SUBJECT}</a><br />
 							<!-- IF draftrow.S_LINK_TOPIC -->{L_TOPIC}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 							<!-- ELSEIF draftrow.S_LINK_FORUM -->{L_FORUM}{L_COLON} <a href="{draftrow.U_VIEW}">{draftrow.TITLE}</a>
 							<!-- ELSEIF S_PRIVMSGS -->
 							<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF -->
-							<div class="responsive-show" style="display: none;">
+							<div class="draft-date">
 								{L_SAVE_DATE}{L_COLON} <strong>{draftrow.DATE}</strong><br />
 								<!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a> &bull; <!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a>
 							</div>

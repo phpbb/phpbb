@@ -15,11 +15,11 @@
 	<!-- IF S_SHOW_GROUP -->
 		<h2 class="group-title"<!-- IF GROUP_COLOR --> style="color:#{GROUP_COLOR};"<!-- ENDIF -->>{GROUP_NAME}</h2>
 		<!-- IF U_MANAGE -->
-			<p class="right responsive-center manage rightside"><a href="{U_MANAGE}">{L_MANAGE_GROUP}</a></p>
+			<p class="right manage rightside"><a href="{U_MANAGE}">{L_MANAGE_GROUP}</a></p>
 		<!-- ENDIF -->
-		<p>{GROUP_DESC} {GROUP_TYPE}</p>
+		<p class="group-desc">{GROUP_DESC} {GROUP_TYPE}</p>
 
-		<p>
+		<p class="group-extras">
 			<!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ENDIF -->
 			<!-- IF RANK_IMG -->{RANK_IMG}<!-- ENDIF -->
 			<!-- IF GROUP_RANK -->{GROUP_RANK}<!-- ENDIF -->
