@@ -66,11 +66,6 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 				'[code:]unparsed code[/code:]',
 			),
 			array(
-				'Test default bbcodes: simple php code',
-				'[code=php]unparsed code[/code]',
-				'[code=php:]<span class="syntaxdefault">unparsed&nbsp;code</span>[/code:]',
-			),
-			array(
 				'Test default bbcodes: simple list',
 				'[list]no item[/list]',
 				'[list:]no item[/list:u:]',
