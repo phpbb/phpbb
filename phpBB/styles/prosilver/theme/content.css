@@ -515,11 +515,11 @@ blockquote cite > div {
 /* Code block */
 .codebox {
 	font-size: 1em;
+	word-wrap: normal;
 	border: 1px solid transparent;
+	overflow-x: scroll;
 	margin: 1em 0 1.2em;
 	padding: 3px;
-	overflow-x: scroll;
-	word-wrap: normal;
 }
 
 .codebox p {
