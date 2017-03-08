@@ -471,7 +471,7 @@ blockquote cite {
 	font-size: 0.9em;
 }
 
-blockquote cite:before {
+blockquote cite:before, .uncited:before {
 	/* Font Awesome quote-left */
 	content: '\f10d';
 	font-family: FontAwesome;
@@ -484,13 +484,6 @@ blockquote cite cite {
 
 blockquote.uncited {
 	padding-top: 0;
-}
-
-blockquote.uncited:before {
-	/* Font Awesome quote-left */
-	content: '\f10d';
-	font-family: FontAwesome;
-	padding-right: 5px;
 }
 
 blockquote cite > div {
