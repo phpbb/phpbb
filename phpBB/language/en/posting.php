@@ -182,8 +182,10 @@ $lang = array_merge($lang, array(
 	'NO_POLL_TITLE'				=> 'You have to enter a poll title.',
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified.',
+	'NO_TEMP_DIR'				=> 'Temporary folder could not be found or is not writable.',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded.',
+	'PHP_UPLOAD_STOPPED'		=> 'A PHP extension has stopped the file upload.',
 	'PHP_SIZE_NA'				=> 'The attachment’s file size is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
 	'PHP_SIZE_OVERRUN'			=> 'The attachment’s file size is too large, the maximum upload size is %1$d %2$s.<br />Please note this is set in php.ini and cannot be overridden.',
 	'PLACE_INLINE'				=> 'Place inline',

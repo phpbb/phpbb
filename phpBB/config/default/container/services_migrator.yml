@@ -1,0 +1,64 @@
+services:
+# ----- Migrator -----
+    migrator:
+        class: phpbb\db\migrator
+        arguments:
+            - '@service_container'
+            - '@config'
+            - '@dbal.conn'
+            - '@dbal.tools'
+            - '%tables.migrations%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%core.table_prefix%'
+            - '@migrator.tool_collection'
+            - '@migrator.helper'
+
+    migrator.helper:
+        class: phpbb\db\migration\helper
+
+# ----- Migrator's tools -----
+    migrator.tool_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: migrator.tool }
+
+    migrator.tool.config:
+        class: phpbb\db\migration\tool\config
+        arguments:
+            - '@config'
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.config_text:
+        class: phpbb\db\migration\tool\config_text
+        arguments:
+            - '@config_text'
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.module:
+        class: phpbb\db\migration\tool\module
+        arguments:
+            - '@dbal.conn'
+            - '@cache'
+            - '@user'
+            - '@module.manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.modules%'
+        tags:
+            - { name: migrator.tool }
+
+    migrator.tool.permission:
+        class: phpbb\db\migration\tool\permission
+        arguments:
+            - '@dbal.conn'
+            - '@cache'
+            - '@auth'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: migrator.tool }

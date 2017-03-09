@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\tool;
 
+use phpbb\module\exception\module_exception;
+
 /**
 * Migration module management tool
 */
@@ -26,6 +28,9 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 	/** @var \phpbb\user */
 	protected $user;
+
+	/** @var \phpbb\module\module_manager */
+	protected $module_manager;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -45,15 +50,17 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
+	* @param \phpbb\module\module_manager	$module_manager
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $modules_table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, $phpbb_root_path, $php_ext, $modules_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $phpbb_root_path, $php_ext, $modules_table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->user = $user;
+		$this->module_manager = $module_manager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->modules_table = $modules_table;
@@ -157,6 +164,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*/
 	public function add($class, $parent = 0, $data = array())
 	{
+		global $user, $phpbb_log;
+
 		// allow sending the name as a string in $data to create a category
 		if (!is_array($data))
 		{
@@ -171,7 +180,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			$basename = (isset($data['module_basename'])) ? $data['module_basename'] : '';
 			$module = $this->get_module_info($class, $basename);
 
-			$result = '';
 			foreach ($module['modes'] as $mode => $module_info)
 			{
 				if (!isset($data['modes']) || in_array($mode, $data['modes']))
@@ -205,13 +213,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			throw new \phpbb\db\migration\exception('MODULE_EXISTS', $data['module_langname']);
 		}
 
-		if (!class_exists('acp_modules'))
-		{
-			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
-			$this->user->add_lang('acp/modules');
-		}
-		$acp_modules = new \acp_modules();
-
 		$module_data = array(
 			'module_enabled'	=> (isset($data['module_enabled'])) ? $data['module_enabled'] : 1,
 			'module_display'	=> (isset($data['module_display'])) ? $data['module_display'] : 1,
@@ -222,19 +223,14 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			'module_mode'		=> (isset($data['module_mode'])) ? $data['module_mode'] : '',
 			'module_auth'		=> (isset($data['module_auth'])) ? $data['module_auth'] : '',
 		);
-		$result = $acp_modules->update_module_data($module_data, true);
 
-		// update_module_data can either return a string or an empty array...
-		if (is_string($result))
+		try
 		{
-			// Error
-			throw new \phpbb\db\migration\exception('MODULE_ERROR', $result);
-		}
-		else
-		{
+			$this->module_manager->update_module_data($module_data);
+
 			// Success
 			$module_log_name = ((isset($this->user->lang[$data['module_langname']])) ? $this->user->lang[$data['module_langname']] : $data['module_langname']);
-			add_log('admin', 'LOG_MODULE_ADD', $module_log_name);
+			$phpbb_log->add('admin', (isset($user->data['user_id'])) ? $user->data['user_id'] : ANONYMOUS, $user->ip, 'LOG_MODULE_ADD', false, array($module_log_name));
 
 			// Move the module if requested above/below an existing one
 			if (isset($data['before']) && $data['before'])
@@ -283,6 +279,11 @@ class module implements \phpbb\db\migration\tool\tool_interface
 						AND module_id = {$module_data['module_id']}";
 				$this->db->sql_query($sql);
 			}
+		}
+		catch (module_exception $e)
+		{
+			// Error
+			throw new \phpbb\db\migration\exception('MODULE_ERROR', $e->getMessage());
 		}
 
 		// Clear the Modules Cache
@@ -365,21 +366,9 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				$module_ids[] = (int) $module;
 			}
 
-			if (!class_exists('acp_modules'))
-			{
-				include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
-				$this->user->add_lang('acp/modules');
-			}
-			$acp_modules = new \acp_modules();
-			$acp_modules->module_class = $class;
-
 			foreach ($module_ids as $module_id)
 			{
-				$result = $acp_modules->delete_module($module_id);
-				if (!empty($result))
-				{
-					return;
-				}
+				$this->module_manager->delete_module($module_id, $class);
 			}
 
 			$this->cache->destroy("_modules_$class");
@@ -427,13 +416,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*/
 	protected function get_module_info($class, $basename)
 	{
-		if (!class_exists('acp_modules'))
-		{
-			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
-			$this->user->add_lang('acp/modules');
-		}
-		$acp_modules = new \acp_modules();
-		$module = $acp_modules->get_module_infos($basename, $class, true);
+		$module = $this->module_manager->get_module_infos($class, $basename, true);
 
 		if (empty($module))
 		{

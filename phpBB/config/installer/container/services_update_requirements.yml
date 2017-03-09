@@ -1,0 +1,41 @@
+services:
+    installer.requirements.check_filesystem_update:
+        class: phpbb\install\module\requirements\task\check_filesystem
+        arguments:
+            - '@filesystem'
+            - '@installer.helper.iohandler'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - false
+        tags:
+            - { name: update_requirements, order: 10 }
+
+    installer.requirements.update_requirements:
+        class: phpbb\install\module\requirements\task\check_update
+        arguments:
+            - '@installer.helper.container_factory'
+            - '@filesystem'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.update_helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: update_requirements, order: 30 }
+
+    installer.module.update_requirements_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: update_requirements, class_name_aware: true }
+
+    installer.module.requirements_update:
+        class: phpbb\install\module\requirements\update_module
+        parent: installer.module_base
+        arguments:
+            - '@installer.module.update_requirements_collection'
+            - true
+            - false
+        tags:
+            - { name: installer_update_module, order: 10 }

@@ -4,7 +4,7 @@
 !/phpBB/cache/.htaccess
 !/phpBB/cache/index.html
 /phpBB/composer.phar
-/phpBB/config*.php
+/phpBB/config*.php*
 /phpBB/ext/*
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
@@ -16,9 +16,11 @@
 /phpBB/store/*
 /phpBB/styles/*
 !/phpBB/styles/prosilver
-!/phpBB/styles/subsilver2
+!/phpBB/styles/all
 /phpBB/vendor
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*
 /tests/vendor
+/vagrant/phpbb-install-config.yml
+.vagrant

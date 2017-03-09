@@ -66,4 +66,45 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertContains($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 	}
+
+	public function test_quote_post()
+	{
+		$text = 'Test post';
+
+		$this->login();
+		$topic = $this->create_topic(2, 'Test Topic 1', 'Test topic');
+		$post  = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
+
+		$expected = '(\\[quote=admin post_id=' . $post['post_id'] . ' time=\\d+ user_id=2\\]' . $text . '\\[/quote\\])';
+
+		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quotepost&p=' . $post['post_id'] . '&sid=' . $this->sid);
+
+		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+	}
+
+	public function test_quote_pm()
+	{
+		$text     = 'This is a test private message sent by the testing framework.';
+		$expected = "(\\[quote=admin time=\\d+ user_id=2\\]\n" . $text . "\n\\[/quote\\])";
+
+		$this->login();
+		$message_id = $this->create_private_message('Test', $text, array(2));
+
+		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quote&p=' . $message_id . '&sid=' . $this->sid);
+
+		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+	}
+
+	public function test_quote_forward()
+	{
+		$text     = 'This is a test private message sent by the testing framework.';
+		$expected = "[quote=admin]\n" . $text . "\n[/quote]";
+
+		$this->login();
+		$message_id = $this->create_private_message('Test', $text, array(2));
+
+		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=forward&f=0&p=' . $message_id . '&sid=' . $this->sid);
+
+		$this->assertContains($expected, $crawler->filter('textarea#message')->text());
+	}
 }

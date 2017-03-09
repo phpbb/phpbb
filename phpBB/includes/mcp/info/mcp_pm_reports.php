@@ -18,7 +18,6 @@ class mcp_pm_reports_info
 		return array(
 			'filename'	=> 'mcp_pm_reports',
 			'title'		=> 'MCP_PM_REPORTS',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'pm_reports'		=> array('title' => 'MCP_PM_REPORTS_OPEN', 'auth' => 'acl_m_pm_report', 'cat' => array('MCP_REPORTS')),
 				'pm_reports_closed'	=> array('title' => 'MCP_PM_REPORTS_CLOSED', 'auth' => 'acl_m_pm_report', 'cat' => array('MCP_REPORTS')),

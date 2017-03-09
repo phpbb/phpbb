@@ -13,7 +13,7 @@
 
 namespace
 {
-	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+	require_once dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
 	class phpbb_di_container_test extends \phpbb_test_case
 	{
@@ -30,7 +30,8 @@ namespace
 		{
 			$this->phpbb_root_path = dirname(__FILE__) . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
-			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->config_php, $this->phpbb_root_path . 'fixtures/', 'php');
+			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
+			$this->builder->with_config($this->config_php);
 
 			$this->filename = $this->phpbb_root_path . '../tmp/container.php';
 			if (is_file($this->filename))
@@ -45,6 +46,7 @@ namespace
 		{
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
+			$this->assertFalse($container->hasParameter('container_exception'));
 
 			// Checks the core services
 			$this->assertTrue($container->hasParameter('core'));
@@ -53,10 +55,13 @@ namespace
 			$this->assertTrue($container->isFrozen());
 
 			// Checks inject_config
-			$this->assertTrue($container->hasParameter('dbal.dbhost'));
+			$this->assertTrue($container->hasParameter('core.table_prefix'));
 
 			// Checks use_extensions
 			$this->assertTrue($container->hasParameter('enabled'));
+			$this->assertTrue($container->hasParameter('enabled_2'));
+			$this->assertTrue($container->hasParameter('enabled_3'));
+			$this->assertTrue($container->hasParameter('enabled_4'));
 			$this->assertFalse($container->hasParameter('disabled'));
 			$this->assertFalse($container->hasParameter('available'));
 
@@ -69,14 +74,12 @@ namespace
 			// Checks the construction of a dumped container
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('phpbb_cache_container', $container);
-			$this->assertFalse($container->isFrozen());
-			$container->getParameterBag(); // needed, otherwise the container is not marked as frozen
 			$this->assertTrue($container->isFrozen());
 		}
 
-		public function test_dump_container()
+		public function test_without_cache()
 		{
-			$this->builder->set_dump_container(false);
+			$this->builder->without_cache();
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
@@ -90,9 +93,9 @@ namespace
 			$this->assertTrue($container->isFrozen());
 		}
 
-		public function test_use_extensions()
+		public function test_without_extensions()
 		{
-			$this->builder->set_use_extensions(false);
+			$this->builder->without_extensions();
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
@@ -105,9 +108,9 @@ namespace
 			$this->assertFalse($container->hasParameter('available'));
 		}
 
-		public function test_compile_container()
+		public function test_without_compiled_container()
 		{
-			$this->builder->set_compile_container(false);
+			$this->builder->without_compiled_container();
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
@@ -115,19 +118,9 @@ namespace
 			$this->assertFalse($container->isFrozen());
 		}
 
-		public function test_inject_config()
+		public function test_with_config_path()
 		{
-			$this->builder->set_inject_config(false);
-			$container = $this->builder->get_container();
-			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
-
-			// Checks inject_config
-			$this->assertFalse($container->hasParameter('dbal.dbhost'));
-		}
-
-		public function test_set_config_path()
-		{
-			$this->builder->set_config_path($this->phpbb_root_path . 'fixtures/other_config/');
+			$this->builder->with_config_path($this->phpbb_root_path . 'fixtures/other_config/');
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
@@ -135,70 +128,32 @@ namespace
 			$this->assertFalse($container->hasParameter('core'));
 		}
 
-		public function test_set_custom_parameters()
+		public function test_with_custom_parameters()
 		{
-			$this->builder->set_custom_parameters(array('my_parameter' => true));
+			$this->builder->with_custom_parameters(array('my_parameter' => true));
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			$this->assertTrue($container->hasParameter('my_parameter'));
-			$this->assertFalse($container->hasParameter('core.root_path'));
 		}
 	}
 }
 
-namespace phpbb\db\driver
+namespace phpbb\extension
 {
-	class container_mock extends \phpbb\db\driver\driver
+	class manager_mock extends \phpbb\extension\manager
 	{
-		public function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
+		public function __construct()
 		{
 		}
 
-		public function sql_query($query = '', $cache_ttl = 0)
-		{
-		}
-
-		public function sql_fetchrow($query_id = false)
-		{
-		}
-
-		public function sql_freeresult($query_id = false)
-		{
-		}
-
-		function sql_server_info($raw = false, $use_cache = true)
-		{
-		}
-
-		function sql_affectedrows()
-		{
-		}
-
-		function sql_rowseek($rownum, &$query_id)
-		{
-		}
-
-		function sql_nextid()
-		{
-		}
-
-		function sql_escape($msg)
-		{
-		}
-
-		function sql_like_expression($expression)
-		{
-		}
-
-		function sql_not_like_expression($expression)
-		{
-		}
-
-		function sql_fetchrowset($query_id = false)
+		public function all_enabled($phpbb_relative = true)
 		{
 			return array(
-				array('ext_name' => 'vendor/enabled'),
+				'vendor/enabled' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled/',
+				'vendor/enabled-2' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled-2/',
+				'vendor/enabled-3' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled-3/',
+				'vendor/enabled_4' => dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/',
 			);
 		}
 	}

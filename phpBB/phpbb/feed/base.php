@@ -1,27 +1,27 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* Base class with some generic functions and settings.
-*/
-abstract class base
+ * Base class with some generic functions and settings.
+ */
+abstract class base implements feed_interface
 {
 	/**
-	* Feed helper object
-	* @var \phpbb\feed\helper
-	*/
+	 * Feed helper object
+	 * @var \phpbb\feed\helper
+	 */
 	protected $helper;
 
 	/** @var \phpbb\config\config */
@@ -49,47 +49,47 @@ abstract class base
 	protected $phpEx;
 
 	/**
-	* SQL Query to be executed to get feed items
-	*/
-	var $sql = array();
+	 * SQL Query to be executed to get feed items
+	 */
+	protected $sql = array();
 
 	/**
-	* Keys specified for retrieval of title, content, etc.
-	*/
-	var $keys = array();
+	 * Keys specified for retrieval of title, content, etc.
+	 */
+	protected $keys = array();
 
 	/**
-	* Number of items to fetch. Usually overwritten by $config['feed_something']
-	*/
-	var $num_items = 15;
+	 * Number of items to fetch. Usually overwritten by $config['feed_something']
+	 */
+	protected $num_items = 15;
 
 	/**
-	* Separator for title elements to separate items (for example forum / topic)
-	*/
-	var $separator = "\xE2\x80\xA2"; // &bull;
+	 * Separator for title elements to separate items (for example forum / topic)
+	 */
+	protected $separator = "\xE2\x80\xA2"; // &bull;
 
 	/**
-	* Separator for the statistics row (Posted by, post date, replies, etc.)
-	*/
-	var $separator_stats = "\xE2\x80\x94"; // &mdash;
+	 * Separator for the statistics row (Posted by, post date, replies, etc.)
+	 */
+	protected $separator_stats = "\xE2\x80\x94"; // &mdash;
 
 	/** @var mixed Query result handle */
 	protected $result;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\feed\helper					$helper		Feed helper
-	* @param \phpbb\config\config				$config		Config object
-	* @param \phpbb\db\driver\driver_interface	$db			Database connection
-	* @param \phpbb\cache\driver\driver_interface	$cache	Cache object
-	* @param \phpbb\user						$user		User object
-	* @param \phpbb\auth\auth					$auth		Auth object
-	* @param \phpbb\content_visibility			$content_visibility		Content visibility object
-	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher		Event dispatcher object
-	* @param string								$phpEx		php file extension
-	*/
-	function __construct(
+	 * Constructor
+	 *
+	 * @param \phpbb\feed\helper					$helper		Feed helper
+	 * @param \phpbb\config\config				$config		Config object
+	 * @param \phpbb\db\driver\driver_interface	$db			Database connection
+	 * @param \phpbb\cache\driver\driver_interface	$cache	Cache object
+	 * @param \phpbb\user						$user		User object
+	 * @param \phpbb\auth\auth					$auth		Auth object
+	 * @param \phpbb\content_visibility			$content_visibility		Auth object
+	 * @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher		Event dispatcher object
+	 * @param string								$phpEx		php file extension
+	 */
+	public function __construct(
 		\phpbb\feed\helper $helper,
 		\phpbb\config\config $config,
 		\phpbb\db\driver\driver_interface $db,
@@ -127,23 +127,23 @@ abstract class base
 	}
 
 	/**
-	* Set keys.
-	*/
-	function set_keys()
+	 * {@inheritdoc}
+	 */
+	public function set_keys()
 	{
 	}
 
 	/**
-	* Open feed
-	*/
-	function open()
+	 * {@inheritdoc}
+	 */
+	public function open()
 	{
 	}
 
 	/**
-	* Close feed
-	*/
-	function close()
+	 * {@inheritdoc}
+	 */
+	public function close()
 	{
 		if (!empty($this->result))
 		{
@@ -152,28 +152,62 @@ abstract class base
 	}
 
 	/**
-	* Set key
-	*
-	* @param string $key Key
-	* @param mixed $value Value
-	*/
-	function set($key, $value)
+	 * {@inheritdoc}
+	 */
+	public function set($key, $value)
 	{
 		$this->keys[$key] = $value;
 	}
 
 	/**
-	* Get key
-	*
-	* @param string $key Key
-	* @return mixed
-	*/
-	function get($key)
+	 * {@inheritdoc}
+	 */
+	public function get($key)
 	{
 		return (isset($this->keys[$key])) ? $this->keys[$key] : null;
 	}
 
-	function get_readable_forums()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_item()
+	{
+		if (!isset($this->result))
+		{
+			if (!$this->get_sql())
+			{
+				return false;
+			}
+
+			$sql_ary = $this->sql;
+
+			/**
+			 * Event to modify the feed item sql
+			 *
+			 * @event core.feed_base_modify_item_sql
+			 * @var	array	sql_ary		The SQL array to get the feed item data
+			 *
+			 * @since 3.1.10-RC1
+			 */
+			$vars = array('sql_ary');
+			extract($this->phpbb_dispatcher->trigger_event('core.feed_base_modify_item_sql', compact($vars)));
+			$this->sql = $sql_ary;
+			unset($sql_ary);
+
+			// Query database
+			$sql = $this->db->sql_build_query('SELECT', $this->sql);
+			$this->result = $this->db->sql_query_limit($sql, $this->num_items);
+		}
+
+		return $this->db->sql_fetchrow($this->result);
+	}
+
+	/**
+	 * Returns the ids of the forums readable by the current user.
+	 *
+	 * @return int[]
+	 */
+	protected function get_readable_forums()
 	{
 		static $forum_ids;
 
@@ -185,7 +219,12 @@ abstract class base
 		return $forum_ids;
 	}
 
-	function get_moderator_approve_forums()
+	/**
+	 * Returns the ids of the forum for which the current user can approve the post in the moderation queue.
+	 *
+	 * @return int[]
+	 */
+	protected function get_moderator_approve_forums()
 	{
 		static $forum_ids;
 
@@ -197,7 +236,13 @@ abstract class base
 		return $forum_ids;
 	}
 
-	function is_moderator_approve_forum($forum_id)
+	/**
+	 * Returns true if the current user can approve the post of the given forum
+	 *
+	 * @param int $forum_id Forum id to check
+	 * @return bool
+	 */
+	protected function is_moderator_approve_forum($forum_id)
 	{
 		static $forum_ids;
 
@@ -209,7 +254,12 @@ abstract class base
 		return (isset($forum_ids[$forum_id])) ? true : false;
 	}
 
-	function get_excluded_forums()
+	/**
+	 * Returns the ids of the forum excluded from the feeds
+	 *
+	 * @return int[]
+	 */
+	protected function get_excluded_forums()
 	{
 		static $forum_ids;
 
@@ -236,51 +286,35 @@ abstract class base
 		return $forum_ids;
 	}
 
-	function is_excluded_forum($forum_id)
+	/**
+	 * Returns true if the given id is in the excluded forums list.
+	 *
+	 * @param int $forum_id Id to check
+	 * @return bool
+	 */
+	protected function is_excluded_forum($forum_id)
 	{
 		$forum_ids = $this->get_excluded_forums();
 
 		return isset($forum_ids[$forum_id]) ? true : false;
 	}
 
-	function get_passworded_forums()
+	/**
+	 * Returns all password protected forum ids the current user is currently NOT authenticated for.
+	 *
+	 * @return array     Array of forum ids
+	 */
+	protected function get_passworded_forums()
 	{
 		return $this->user->get_passworded_forums();
 	}
 
-	function get_item()
-	{
-		if (!isset($this->result))
-		{
-			if (!$this->get_sql())
-			{
-				return false;
-			}
-
-			$sql_ary = $this->sql;
-
-			/**
-			* Event to modify the feed item sql
-			*
-			* @event core.feed_base_modify_item_sql
-			* @var	array	sql_ary		The SQL array to get the feed item data
-			*
-			* @since 3.1.10-RC1
-			*/
-			$vars = array('sql_ary');
-			extract($this->phpbb_dispatcher->trigger_event('core.feed_base_modify_item_sql', compact($vars)));
-			$this->sql = $sql_ary;
-			unset($sql_ary);
-
-			// Query database
-			$sql = $this->db->sql_build_query('SELECT', $this->sql);
-			$this->result = $this->db->sql_query_limit($sql, $this->num_items);
-		}
-
-		return $this->db->sql_fetchrow($this->result);
-	}
-
-	function user_viewprofile($row)
+	/**
+	 * Returns the link to the user profile.
+	 *
+	 * @return string
+	 */
+	protected function user_viewprofile($row)
 	{
 		$author_id = (int) $row[$this->get('author_id')];
 
@@ -293,4 +327,11 @@ abstract class base
 
 		return '<a href="' . $this->helper->append_sid('memberlist.' . $this->phpEx, 'mode=viewprofile&amp;u=' . $author_id) . '">' . $row[$this->get('creator')] . '</a>';
 	}
+
+	/**
+	 * Returns the SQL query used to retrieve the posts of the feed.
+	 *
+	 * @return string SQL SELECT query
+	 */
+	protected abstract function get_sql();
 }

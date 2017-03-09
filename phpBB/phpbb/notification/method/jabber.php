@@ -20,6 +20,29 @@ namespace phpbb\notification\method;
 
 class jabber extends \phpbb\notification\method\messenger_base
 {
+	/** @var \phpbb\user */
+	protected $user;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/**
+	 * Notification Method jabber Constructor
+	 *
+	 * @param \phpbb\user_loader $user_loader
+	 * @param \phpbb\user $user
+	 * @param \phpbb\config\config $config
+	 * @param string $phpbb_root_path
+	 * @param string $php_ext
+	 */
+	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	{
+		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
+
+		$this->user = $user;
+		$this->config = $config;
+	}
+
 	/**
 	* Get notification method name
 	*
@@ -61,6 +84,6 @@ class jabber extends \phpbb\notification\method\messenger_base
 			return;
 		}
 
-		return $this->notify_using_messenger(NOTIFY_IM, 'short/');
+		$this->notify_using_messenger(NOTIFY_IM, 'short/');
 	}
 }

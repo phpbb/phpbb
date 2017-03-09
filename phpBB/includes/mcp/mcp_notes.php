@@ -35,10 +35,10 @@ class mcp_notes
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx;
+		global $user, $template, $request;
+		global $phpbb_root_path, $phpEx;
 
-		$action = request_var('action', array('' => ''));
+		$action = $request->variable('action', array('' => ''));
 
 		if (is_array($action))
 		{
@@ -74,15 +74,17 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $phpEx, $phpbb_root_path, $config;
+		global $config, $phpbb_log, $request;
 		global $template, $db, $user, $auth, $phpbb_container;
 
-		$user_id = request_var('u', 0);
-		$username = request_var('username', '', true);
-		$start = request_var('start', 0);
-		$st	= request_var('st', 0);
-		$sk	= request_var('sk', 'b');
-		$sd	= request_var('sd', 'd');
+		$user_id = $request->variable('u', 0);
+		$username = $request->variable('username', '', true);
+		$start = $request->variable('start', 0);
+		$st	= $request->variable('st', 0);
+		$sk	= $request->variable('sk', 'b');
+		$sd	= $request->variable('sd', 'd');
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		add_form_key('mcp_notes');
@@ -114,8 +116,8 @@ class mcp_notes
 
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
-		$marked		= request_var('marknote', array(0));
-		$usernote	= utf8_normalize_nfc(request_var('usernote', '', true));
+		$marked		= $request->variable('marknote', array(0));
+		$usernote	= $request->variable('usernote', '', true);
 
 		// Handle any actions
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -142,7 +144,7 @@ class mcp_notes
 							$where_sql";
 					$db->sql_query($sql);
 
-					add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
+					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CLEAR_USER', false, array($userrow['username']));
 
 					$msg = ($deletemark) ? 'MARKED_NOTES_DELETED' : 'ALL_NOTES_DELETED';
 				}
@@ -160,10 +162,17 @@ class mcp_notes
 		{
 			if (check_form_key('mcp_notes'))
 			{
-				add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
-				add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($userrow['username']));
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+					'forum_id' => 0,
+					'topic_id' => 0,
+					$userrow['username']
+				));
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+					'reportee_id' => $user_id,
+					$usernote
+				));
 
-				add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
 				$msg = $user->lang['USER_FEEDBACK_ADDED'];
 			}
 			else
@@ -192,7 +201,7 @@ class mcp_notes
 		$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$log_data = array();

@@ -501,7 +501,6 @@ class fulltext_postgres extends \phpbb\search\base
 		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
-		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(', ', $author_ary) . ')';
 
 		if (sizeof($author_ary) && $author_name)
 		{
@@ -526,7 +525,6 @@ class fulltext_postgres extends \phpbb\search\base
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match_where;
 
-		$tmp_sql_match = array();
 		$sql_match = str_replace(',', " || ' ' ||", $sql_match);
 		$tmp_sql_match = "to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', " . $sql_match . ") @@ to_tsquery ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', '" . $this->db->sql_escape($this->tsearch_query) . "')";
 
@@ -838,7 +836,7 @@ class fulltext_postgres extends \phpbb\search\base
 					GROUP BY t.topic_id, $sort_by_sql[$sort_key]";
 			}
 
-			$result = $this->db->sql_query($sql_count);
+			$this->db->sql_query($sql_count);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 
 			if (!$result_count)
@@ -916,7 +914,7 @@ class fulltext_postgres extends \phpbb\search\base
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**

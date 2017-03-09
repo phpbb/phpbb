@@ -16,7 +16,6 @@
 						<!-- BEGIN notification_methods -->
 							<th class="mark">{notification_methods.NAME}</th>
 						<!-- END notification_methods -->
-						<th class="mark">{L_NOTIFICATIONS}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,7 +33,6 @@
 							<!-- BEGIN notification_methods -->
 								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 							<!-- END notification_methods -->
-							<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_notification"<!-- IF notification_types.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
 						</tr>
 					<!-- ENDIF -->
 				<!-- END notification_types -->
@@ -42,7 +40,7 @@
 			</table>
 		<!-- ELSE -->
 			<!-- IF .notification_list -->
-				<div class="action-bar top">
+				<div class="action-bar bar-top">
 					<div class="pagination">
 						<!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}" class="mark">{L_NOTIFICATIONS_MARK_ALL_READ}</a> &bull; <!-- ENDIF -->
 						{L_NOTIFICATIONS} [<strong>{TOTAL_COUNT}</strong>]
@@ -68,12 +66,12 @@
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF --><!-- IF notification_list.STYLING --> {notification_list.STYLING}<!-- ENDIF -->">
 							<dl>
 								<dt>
-									<div class="list-inner">										
+									<div class="list-inner">
 										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
 										<div class="notifications">
 											<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
 											<p class="notifications_title">{notification_list.FORMATTED_TITLE}<!-- IF notification_list.REFERENCE --> {notification_list.REFERENCE}<!-- ENDIF --></p>
-											<!-- IF notification_list.URL --></a><!-- ENDIF -->				
+											<!-- IF notification_list.URL --></a><!-- ENDIF -->
 											<!-- IF notification_list.FORUM --><p class="notifications_forum">{notification_list.FORUM}</p><!-- ENDIF -->
 											<!-- IF notification_list.REASON --><p class="notifications_reason">{notification_list.REASON}</p><!-- ENDIF -->
 											<p class="notifications_time">{notification_list.TIME}</p>
@@ -88,7 +86,7 @@
 				</ul>
 			</div>
 
-			<div class="action-bar bottom">
+			<div class="action-bar bar-bottom">
 				<div class="pagination">
 					{L_NOTIFICATIONS} [<strong>{TOTAL_COUNT}</strong>]
 					<!-- IF .pagination -->

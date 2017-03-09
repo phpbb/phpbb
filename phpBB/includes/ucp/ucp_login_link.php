@@ -57,6 +57,7 @@ class ucp_login_link
 		}
 
 		// Use the auth_provider requested even if different from configured
+		/* @var $provider_collection \phpbb\auth\provider_collection */
 		$provider_collection = $phpbb_container->get('auth.provider_collection');
 		$auth_provider = $provider_collection->get_provider($request->variable('auth_provider', ''));
 
@@ -98,7 +99,7 @@ class ucp_login_link
 					else
 					{
 						// Finish login
-						$result = $user->session_create($login_result['user_row']['user_id'], false, false, true);
+						$user->session_create($login_result['user_row']['user_id'], false, false, true);
 
 						// Perform a redirect as the account has been linked
 						$this->perform_redirect();
@@ -181,7 +182,7 @@ class ucp_login_link
 	*/
 	protected function process_login_result($result)
 	{
-		global $config, $request, $template, $user, $phpbb_container;
+		global $config, $template, $user, $phpbb_container;
 
 		$login_error = null;
 

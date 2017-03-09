@@ -21,17 +21,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
-	/** @var \phpbb\user_loader */
-	protected $user_loader;
-
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\cache\driver\driver_interface */
-	protected $cache;
-
-	/** @var \phpbb\template\template */
-	protected $template;
+	/** @var \phpbb\language\language */
+	protected $language;
 
 	/** @var \phpbb\user */
 	protected $user;
@@ -39,20 +33,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
 	/** @var string */
 	protected $phpbb_root_path;
 
 	/** @var string */
 	protected $php_ext;
-
-	/** @var string */
-	protected $notification_types_table;
-
-	/** @var string */
-	protected $notifications_table;
 
 	/** @var string */
 	protected $user_notifications_table;
@@ -63,7 +48,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @var bool|array False if the service should use its default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = false;
+	static public $notification_option = false;
 
 	/**
 	* The notification_type_id, set upon creation of the class
@@ -74,7 +59,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	protected $notification_type_id;
 
 	/**
-	* Indentification data
+	* Identification data
 	* notification_type_id	- ID of the item type (auto generated, from notification types table)
 	* item_id				- ID of the item (e.g. post_id, msg_id)
 	* item_parent_id		- Parent item id (ex: for topic => forum_id, for post => topic_id, etc)
@@ -89,35 +74,26 @@ abstract class base implements \phpbb\notification\type\type_interface
 	private $data = array();
 
 	/**
-	* Notification Type Base Constructor
-	*
-	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\db\driver\driver_interface $db
-	* @param \phpbb\cache\driver\driver_interface $cache
-	* @param \phpbb\user $user
-	* @param \phpbb\auth\auth $auth
-	* @param \phpbb\config\config $config
-	* @param string $phpbb_root_path
-	* @param string $php_ext
-	* @param string $notification_types_table
-	* @param string $notifications_table
-	* @param string $user_notifications_table
-	* @return \phpbb\notification\type\base
-	*/
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache, $user, \phpbb\auth\auth $auth, \phpbb\config\config $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	 * Notification Type Base Constructor
+	 *
+	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\language\language          $language
+	 * @param \phpbb\user                       $user
+	 * @param \phpbb\auth\auth                  $auth
+	 * @param string                            $phpbb_root_path
+	 * @param string                            $php_ext
+	 * @param string                            $user_notifications_table
+	 */
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
 	{
-		$this->user_loader = $user_loader;
 		$this->db = $db;
-		$this->cache = $cache;
+		$this->language = $language;
 		$this->user = $user;
 		$this->auth = $auth;
-		$this->config = $config;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
-		$this->notification_types_table = $notification_types_table;
-		$this->notifications_table = $notifications_table;
 		$this->user_notifications_table = $user_notifications_table;
 	}
 
@@ -207,12 +183,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $type_data Data unique to this notification type
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($type_data, $pre_create_data = array())
 	{
@@ -225,9 +196,15 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'notification_time'		=> time(),
 			'notification_read'		=> false,
 
-			'notification_data'					=> array(),
+			'notification_data'		=> array(),
 		), $this->data);
+	}
 
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_insert_array()
+	{
 		$data = $this->data;
 
 		$data['notification_data'] = serialize($data['notification_data']);
@@ -244,7 +221,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function create_update_array($type_data)
 	{
-		$data = $this->create_insert_array($type_data);
+		$this->create_insert_array($type_data);
+		$data = $this->get_insert_array();
 
 		// Unset data unique to each row
 		unset(
@@ -330,6 +308,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* URL to unsubscribe to this notification (fall back)
 	*
 	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
+	* @return false
 	*/
 	public function get_unsubscribe_url($method = false)
 	{
@@ -397,8 +376,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Load the special items (fall back)
-	*/
+	 * Load the special items (fall back)
+	 *
+	 * @param array $data
+	 * @param array $notifications
+	 */
 	public function load_special($data, $notifications)
 	{
 		return;
@@ -415,10 +397,12 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Pre create insert array function (fall back)
-	*
-	* @return array
-	*/
+	 * Pre create insert array function (fall back)
+	 *
+	 * @param array $type_data
+	 * @param array $notify_users
+	 * @return array
+	 */
 	public function pre_create_insert_array($type_data, $notify_users)
 	{
 		return array();
@@ -429,13 +413,13 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 
 	/**
-	* Find the users who want to receive notifications (helper)
-	*
-	* @param array $user_ids User IDs to check if they want to receive notifications
-	* 		(Bool False to check all users besides anonymous and bots (USER_IGNORE))
-	*
-	* @return array
-	*/
+	 * Find the users who want to receive notifications (helper)
+	 *
+	 * @param array|bool $user_ids User IDs to check if they want to receive notifications
+	 *                             (Bool False to check all users besides anonymous and bots (USER_IGNORE))
+	 * @param array      $options
+	 * @return array
+	 */
 	protected function check_user_notification_options($user_ids = false, $options = array())
 	{
 		$options = array_merge(array(
@@ -465,7 +449,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 			return array();
 		}
 
-		$rowset = $resulting_user_ids = array();
+		$rowset = $output = array();
 
 		$sql = 'SELECT user_id, method, notify
 			FROM ' . $this->user_notifications_table . '
@@ -476,9 +460,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$resulting_user_ids[] = $row['user_id'];
-
-			if (!$row['notify'] || (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']])))
+			if (isset($options['ignore_users'][$row['user_id']]) && in_array($row['method'], $options['ignore_users'][$row['user_id']]))
 			{
 				continue;
 			}
@@ -487,22 +469,47 @@ abstract class base implements \phpbb\notification\type\type_interface
 			{
 				$rowset[$row['user_id']] = array();
 			}
+			$rowset[$row['user_id']][$row['method']] = $row['notify'];
 
-			$rowset[$row['user_id']][] = $row['method'];
+			if (!isset($output[$row['user_id']]))
+			{
+				$output[$row['user_id']] = array();
+			}
+			if ($row['notify'])
+			{
+				$output[$row['user_id']][] = $row['method'];
+			}
 		}
 
 		$this->db->sql_freeresult($result);
 
+		$default_methods = $this->notification_manager->get_default_methods();
+
 		foreach ($user_ids as $user_id)
 		{
-			if (!in_array($user_id, $resulting_user_ids) && !isset($options['ignore_users'][$user_id]))
+			if (isset($options['ignore_users'][$user_id]))
 			{
-				// No rows at all for this user, default to ''
-				$rowset[$user_id] = array('');
+				continue;
+			}
+			if (!array_key_exists($user_id, $rowset))
+			{
+				// No rows at all for this user, use the default methods
+				$output[$user_id] = $default_methods;
+			}
+			else
+			{
+				foreach ($default_methods as $default_method)
+				{
+					if (!array_key_exists($default_method, $rowset[$user_id]))
+					{
+						// No user preference for this type recorded, but it should be enabled by default.
+						$output[$user_id][] = $default_method;
+					}
+				}
 			}
 		}
 
-		return $rowset;
+		return $output;
 	}
 
 	/**
@@ -516,22 +523,23 @@ abstract class base implements \phpbb\notification\type\type_interface
 	{
 		$this->notification_read = (bool) !$unread;
 
-		$where = array(
-			'notification_type_id = ' . (int) $this->notification_type_id,
-			'item_id = ' . (int) $this->item_id,
-			'user_id = ' . (int) $this->user_id,
-		);
-		$where = implode(' AND ', $where);
-
 		if ($return)
 		{
+			$where = array(
+				'notification_type_id = ' . (int) $this->notification_type_id,
+				'item_id = ' . (int) $this->item_id,
+				'user_id = ' . (int) $this->user_id,
+			);
+
+			$where = implode(' AND ', $where);
 			return $where;
 		}
+		else
+		{
+			$this->notification_manager->mark_notifications($this->get_type(), (int) $this->item_id, (int) $this->user_id, false, $this->notification_read);
+		}
 
-		$sql = 'UPDATE ' . $this->notifications_table . '
-			SET notification_read = ' . (int) $this->notification_read . '
-			WHERE ' . $where;
-		$this->db->sql_query($sql);
+		return null;
 	}
 
 	/**

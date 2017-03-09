@@ -57,9 +57,9 @@
 
 		<!-- BEGIN messagerow -->
 			<li class="row<!-- IF messagerow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF messagerow.PM_CLASS --> {messagerow.PM_CLASS}<!-- ENDIF -->">
-				<dl class="icon {messagerow.FOLDER_IMG_STYLE}">
+				<dl class="row-item {messagerow.FOLDER_IMG_STYLE}">
 					<dt<!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --> style="background-image: url({messagerow.PM_ICON_URL}); background-repeat: no-repeat;"<!-- ENDIF -->>
-						<!-- IF messagerow.S_PM_UNREAD and not messagerow.S_PM_DELETED --><a href="{messagerow.U_VIEW_PM}" class="icon-link"></a><!-- ENDIF -->
+						<!-- IF messagerow.S_PM_UNREAD and not messagerow.S_PM_DELETED --><a href="{messagerow.U_VIEW_PM}" class="row-item-link"></a><!-- ENDIF -->
 						<div class="list-inner">
 
 						<!-- IF messagerow.S_PM_DELETED -->
@@ -71,8 +71,11 @@
 						<!-- IF messagerow.S_AUTHOR_DELETED -->
 							<br /><em class="small">{L_PM_FROM_REMOVED_AUTHOR}</em>
 						<!-- ENDIF -->
-
-						<!-- IF messagerow.S_PM_REPORTED --><a href="{messagerow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --> {messagerow.ATTACH_ICON_IMG}<br />
+						<!-- IF messagerow.S_PM_REPORTED -->
+							<a href="{messagerow.U_MCP_REPORT}">
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{PM_REPORTED}</span>
+							</a>
+						<!-- ENDIF --> <!-- IF messagerow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF --><br />
 						<!-- IF S_SHOW_RECIPIENTS -->{L_MESSAGE_TO} {messagerow.RECIPIENTS}<!-- ELSE -->{L_MESSAGE_BY_AUTHOR} {messagerow.MESSAGE_AUTHOR_FULL} &raquo; {messagerow.SENT_TIME}<!-- ENDIF -->
 
 						</div>
@@ -101,15 +104,18 @@
 			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
 			<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>
 		</fieldset>
-	
+
 		<hr />
-	
+
 		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
+			<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+
 			<div class="pagination">
 				{TOTAL_MESSAGES}
-				<!-- IF .pagination --> 
+				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
-				<!-- ELSE --> 
+				<!-- ELSE -->
 					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
 			</div>
@@ -118,16 +124,6 @@
 
 		</div>
 	</div>
-
-	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
-	<fieldset class="display-options">
-		<label>{L_DISPLAY}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
-		<label>{S_SELECT_SORT_DIR}</label>
-		<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
-	</fieldset>
-	<!-- ENDIF -->
 
 	<!-- INCLUDE ucp_pm_message_footer.html -->
 <!-- ENDIF -->

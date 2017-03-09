@@ -24,14 +24,14 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth, $cache;
+	global $phpEx, $phpbb_root_path, $config, $request;
+	global $template, $db, $user, $auth;
 	global $phpbb_dispatcher;
 
 	$user->add_lang('posting');
 
-	$post_id = request_var('p', 0);
-	$start	= request_var('start', 0);
+	$post_id = $request->variable('p', 0);
+	$start	= $request->variable('start', 0);
 
 	// Get post data
 	$post_info = phpbb_get_post_data(array($post_id), false, true);
@@ -52,7 +52,7 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($auth->acl_get('m_info', $post_info['forum_id']))
 			{
-				$ip = request_var('ip', '');
+				$ip = $request->variable('ip', '');
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$template->assign_vars(array(
@@ -73,12 +73,12 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($action == 'chgposter')
 			{
-				$username = request_var('username', '', true);
+				$username = $request->variable('username', '', true);
 				$sql_where = "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			}
 			else
 			{
-				$new_user_id = request_var('u', 0);
+				$new_user_id = $request->variable('u', 0);
 				$sql_where = 'user_id = ' . $new_user_id;
 			}
 
@@ -128,7 +128,6 @@ function mcp_post_details($id, $mode, $action)
 	$users_ary = $usernames_ary = array();
 	$attachments = $extensions = array();
 	$post_id = $post_info['post_id'];
-	$topic_tracking_info = array();
 
 	// Get topic tracking info
 	if ($config['load_db_lastread'])
@@ -150,8 +149,6 @@ function mcp_post_details($id, $mode, $action)
 
 	if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 	{
-		$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
-
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id = ' . $post_id . '
@@ -260,7 +257,7 @@ function mcp_post_details($id, $mode, $action)
 		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
-		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
 
 		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
@@ -355,7 +352,7 @@ function mcp_post_details($id, $mode, $action)
 	// Get IP
 	if ($auth->acl_get('m_info', $post_info['forum_id']))
 	{
-		$rdns_ip_num = request_var('rdns', '');
+		$rdns_ip_num = $request->variable('rdns', '');
 
 		if ($rdns_ip_num != 'all')
 		{
@@ -461,7 +458,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
+	global $auth, $db, $config, $phpbb_root_path, $phpEx, $user, $phpbb_log, $phpbb_dispatcher;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -572,5 +569,12 @@ function change_poster(&$post_info, $userdata)
 	$post_info = $post_info[$post_id];
 
 	// Now add log entry
-	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
+	$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MCP_CHANGE_POSTER', false, array(
+		'forum_id' => $post_info['forum_id'],
+		'topic_id' => $post_info['topic_id'],
+		'post_id'  => $post_info['post_id'],
+		$post_info['topic_title'],
+		$from_username,
+		$to_username
+	));
 }

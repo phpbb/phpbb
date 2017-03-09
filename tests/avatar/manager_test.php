@@ -35,6 +35,8 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->method('get')
 			->will($this->returnArgument(0));
 
+		$filesystem = new \phpbb\filesystem\filesystem();
+
 		// Prepare dependencies for avatar manager and driver
 		$this->config = new \phpbb\config\config(array());
 		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
@@ -42,7 +44,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -55,11 +57,12 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			new \phpbb\mimetype\content_guesser,
 		);
 		$guesser = new \phpbb\mimetype\guesser($guessers);
+		$imagesize = new \FastImageSize\FastImageSize();
 
 		$dispatcher = new phpbb_mock_event_dispatcher();
 
 		// $this->avatar_foobar will be needed later on
-		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
@@ -73,15 +76,17 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->will($this->returnValue('barfoo'));
 		$avatar_drivers = array($this->avatar_foobar, $this->avatar_barfoo);
 
+		$files_factory = new \phpbb\files\factory($phpbb_container);
+
 		foreach ($this->avatar_drivers() as $driver)
 		{
 			if ($driver !== 'upload')
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $path_helper, $guesser, $dispatcher, $cache));
+				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache));
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
@@ -96,7 +101,9 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		// Set up avatar manager
 		$this->manager = new \phpbb\avatar\manager($this->config, $avatar_drivers, $phpbb_container);
 		$this->db = $this->new_dbal();
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 	}
 
 	protected function avatar_drivers()
@@ -279,7 +286,12 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 	public function test_localize_errors()
 	{
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		global $phpbb_root_path, $phpEx;
+
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime')
+		);
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),

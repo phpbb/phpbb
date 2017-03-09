@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class set_atomic extends command
 {
@@ -65,6 +66,8 @@ class set_atomic extends command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$key = $input->getArgument('key');
 		$old_value = $input->getArgument('old');
 		$new_value = $input->getArgument('new');
@@ -72,12 +75,12 @@ class set_atomic extends command
 
 		if ($this->config->set_atomic($key, $old_value, $new_value, $use_cache))
 		{
-			$output->writeln('<info>' . $this->user->lang('CLI_CONFIG_SET_SUCCESS', $key) . '</info>');
+			$io->success($this->user->lang('CLI_CONFIG_SET_SUCCESS', $key));
 			return 0;
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CLI_CONFIG_SET_FAILURE', $key) . '</error>');
+			$io->error($this->user->lang('CLI_CONFIG_SET_FAILURE', $key));
 			return 1;
 		}
 	}

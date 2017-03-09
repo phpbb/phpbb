@@ -18,7 +18,6 @@ class acp_board_info
 		return array(
 			'filename'	=> 'acp_board',
 			'title'		=> 'ACP_BOARD_MANAGEMENT',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'settings'		=> array('title' => 'ACP_BOARD_SETTINGS', 'auth' => 'acl_a_board', 'cat' => array('ACP_BOARD_CONFIGURATION')),
 				'features'		=> array('title' => 'ACP_BOARD_FEATURES', 'auth' => 'acl_a_board', 'cat' => array('ACP_BOARD_CONFIGURATION')),

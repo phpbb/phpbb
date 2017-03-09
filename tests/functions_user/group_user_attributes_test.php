@@ -11,9 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_functions_user_group_user_attributes_test extends phpbb_database_test_case
 {
@@ -139,7 +137,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 		$auth = $this->getMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_clear_prefetch');
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())

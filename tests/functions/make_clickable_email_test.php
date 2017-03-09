@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-
 class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 {
 	protected function setUp()

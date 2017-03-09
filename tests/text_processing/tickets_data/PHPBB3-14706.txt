@@ -1,0 +1,1 @@
+[list][list=a][*]a[*]b[*]c[*]d[*]e[/list][*]outer[/list]

@@ -1,0 +1,10 @@
+top-level content
+{% for outer_inner in outer %}
+	outer {{ outer_inner.VARIABLE }}
+	{% for inner in outer_inner.inner %}
+		inner {{ inner.VARIABLE }}
+		{% if inner.S_FIRST_ROW %}
+			first row
+		{% endif %}
+	{% endfor %}
+{% endfor %}

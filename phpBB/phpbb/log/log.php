@@ -27,7 +27,7 @@ class log implements \phpbb\log\log_interface
 
 	/**
 	* An array with the disabled log types. Logs of such types will not be
-	* added when add_log() is called.
+	* added when add() is called.
 	* @var array
 	*/
 	protected $disabled_types;
@@ -223,7 +223,7 @@ class log implements \phpbb\log\log_interface
 			return false;
 		}
 
-		if ($log_time == false)
+		if ($log_time === false)
 		{
 			$log_time = time();
 		}
@@ -249,10 +249,13 @@ class log implements \phpbb\log\log_interface
 				unset($additional_data['forum_id']);
 				$topic_id = isset($additional_data['topic_id']) ? (int) $additional_data['topic_id'] : 0;
 				unset($additional_data['topic_id']);
+				$post_id = isset($additional_data['post_id']) ? (int) $additional_data['post_id'] : 0;
+				unset($additional_data['post_id']);
 				$sql_ary += array(
 					'log_type'		=> LOG_MOD,
 					'forum_id'		=> $forum_id,
 					'topic_id'		=> $topic_id,
+					'post_id'		=> $post_id,
 					'log_data'		=> (!empty($additional_data)) ? serialize($additional_data) : '',
 				);
 			break;
@@ -643,6 +646,7 @@ class log implements \phpbb\log\log_interface
 				'time'				=> (int) $row['log_time'],
 				'forum_id'			=> (int) $row['forum_id'],
 				'topic_id'			=> (int) $row['topic_id'],
+				'post_id'			=> (int) $row['post_id'],
 
 				'viewforum'			=> ($row['forum_id'] && $this->auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $row['forum_id']) : false,
 				'action'			=> (isset($this->user->lang[$row['log_operation']])) ? $row['log_operation'] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
@@ -743,6 +747,7 @@ class log implements \phpbb\log\log_interface
 			foreach ($log as $key => $row)
 			{
 				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
+				$log[$key]['viewpost'] = (isset($topic_auth['f_read'][$row['topic_id']]) && $row['post_id']) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id'] . '&amp;p=' . $row['post_id']) : false;
 				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $this->user->session_id) : false;
 			}
 		}

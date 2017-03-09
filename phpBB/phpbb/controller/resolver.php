@@ -23,12 +23,6 @@ use Symfony\Component\HttpFoundation\Request;
 class resolver implements ControllerResolverInterface
 {
 	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
 	* ContainerInterface object
 	* @var ContainerInterface
 	*/
@@ -55,14 +49,12 @@ class resolver implements ControllerResolverInterface
 	/**
 	* Construct method
 	*
-	* @param \phpbb\user $user User Object
 	* @param ContainerInterface $container ContainerInterface object
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param \phpbb\template\template $template
 	*/
-	public function __construct(\phpbb\user $user, ContainerInterface $container, $phpbb_root_path, \phpbb\template\template $template = null)
+	public function __construct(ContainerInterface $container, $phpbb_root_path, \phpbb\template\template $template = null)
 	{
-		$this->user = $user;
 		$this->container = $container;
 		$this->template = $template;
 		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
@@ -82,20 +74,20 @@ class resolver implements ControllerResolverInterface
 
 		if (!$controller)
 		{
-			throw new \phpbb\controller\exception($this->user->lang['CONTROLLER_NOT_SPECIFIED']);
+			throw new \phpbb\controller\exception('CONTROLLER_NOT_SPECIFIED');
 		}
 
 		// Require a method name along with the service name
 		if (stripos($controller, ':') === false)
 		{
-			throw new \phpbb\controller\exception($this->user->lang['CONTROLLER_METHOD_NOT_SPECIFIED']);
+			throw new \phpbb\controller\exception('CONTROLLER_METHOD_NOT_SPECIFIED');
 		}
 
 		list($service, $method) = explode(':', $controller);
 
 		if (!$this->container->has($service))
 		{
-			throw new \phpbb\controller\exception($this->user->lang('CONTROLLER_SERVICE_UNDEFINED', $service));
+			throw new \phpbb\controller\exception('CONTROLLER_SERVICE_UNDEFINED', array($service));
 		}
 
 		$controller_object = $this->container->get($service);
@@ -134,9 +126,21 @@ class resolver implements ControllerResolverInterface
 	*/
 	public function getArguments(Request $request, $controller)
 	{
-		// At this point, $controller contains the object and method name
-		list($object, $method) = $controller;
-		$mirror = new \ReflectionMethod($object, $method);
+		// At this point, $controller should be a callable
+		if (is_array($controller))
+		{
+			list($object, $method) = $controller;
+			$mirror = new \ReflectionMethod($object, $method);
+		}
+		else if (is_object($controller) && !$controller instanceof \Closure)
+		{
+			$mirror = new \ReflectionObject($controller);
+			$mirror = $mirror->getMethod('__invoke');
+		}
+		else
+		{
+			$mirror = new \ReflectionFunction($controller);
+		}
 
 		$arguments = array();
 		$parameters = $mirror->getParameters();
@@ -166,7 +170,7 @@ class resolver implements ControllerResolverInterface
 			}
 			else
 			{
-				throw new \phpbb\controller\exception($this->user->lang('CONTROLLER_ARGUMENT_VALUE_MISSING', $param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
+				throw new \phpbb\controller\exception('CONTROLLER_ARGUMENT_VALUE_MISSING', array($param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
 			}
 		}
 

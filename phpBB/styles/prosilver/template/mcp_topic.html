@@ -11,7 +11,7 @@
 	<!-- DEFINE $SHOW_PANEL = 'display-panel' -->
 <!-- ENDIF -->
 
-<div id="minitabs" class="sub-panels" data-show-panel="{$SHOW_PANEL}" role="tablist">
+<div id="minitabs" class="minitabs sub-panels" data-show-panel="{$SHOW_PANEL}" role="tablist">
 	<ul>
 		<li id="display-panel-tab" class="tab<!-- IF not S_MERGE_VIEW --> activetab<!-- ENDIF -->">
 			<a href="#minitabs" data-subpanel="display-panel" role="tab" aria-controls="display-panel">{L_DISPLAY_OPTIONS}</a>
@@ -87,12 +87,12 @@
 <div class="panel">
 	<div class="inner">
 
-	<h3 id="review">
+	<h3 id="review" class="review">
 		<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
 		{L_TOPIC_REVIEW}{L_COLON} <!-- EVENT mcp_topic_topic_title_before -->{TOPIC_TITLE}<!-- EVENT mcp_topic_topic_title_after -->
 	</h3>
 
-	<div id="topicreview">
+	<div id="topicreview" class="topicreview">
 		<!-- BEGIN postrow -->
 		<div class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 			<div class="inner">
@@ -100,8 +100,8 @@
 			<div class="postbody" id="pr{postrow.POST_ID}">
 				<ul class="post-buttons">
 					<li>
-						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button icon-button info-icon">
-							<span>{L_POST_DETAILS}</span>
+						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button button-icon-only">
+							<i class="icon fa-info fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_DETAILS}</span>
 						</a>
 					</li>
 					<li>
@@ -114,12 +114,16 @@
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
 
 				<!-- EVENT mcp_topic_postrow_post_details_before -->
-				<p class="author"><a href="#pr{postrow.POST_ID}">{postrow.MINI_POST_IMG}</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></p>
+				<p class="author">
+					<a href="#pr{postrow.POST_ID}" title="{postrow.MINI_POST}">
+						<i class="icon fa-file fa-fw icon-lightgray icon-tiny" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span>
+					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF -->
+				</p>
 				<!-- EVENT mcp_topic_postrow_post_details_after -->
 
 				<!-- IF postrow.S_POST_UNAPPROVED -->
 				<p class="post-notice unapproved">
-					<a href="{postrow.U_MCP_APPROVE}"><strong>{L_POST_UNAPPROVED}</strong></a>
+					<a href="{postrow.U_MCP_APPROVE}"><i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><strong>{L_POST_UNAPPROVED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 
@@ -131,7 +135,7 @@
 
 				<!-- IF postrow.S_POST_REPORTED -->
 				<p class="post-notice reported">
-					<a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+					<a href="{postrow.U_MCP_REPORT}"><i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><strong>{L_POST_REPORTED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 
@@ -155,7 +159,7 @@
 
 	<hr />
 
-	<div class="action-bar bottom">
+	<div class="action-bar bar-bottom">
 		<div class="pagination">
 			{TOTAL_POSTS}
 			<!-- IF .pagination -->

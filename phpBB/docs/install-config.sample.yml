@@ -1,0 +1,38 @@
+installer:
+    admin:
+        name: admin
+        password: adminadmin
+        email: admin@example.org
+
+    board:
+        lang: en
+        name: My Board
+        description: My amazing new phpBB board
+
+    database:
+        dbms: sqlite3
+        dbhost: /tmp/phpbb.sqlite3
+        dbport: ~
+        dbuser: ~
+        dbpasswd: ~
+        dbname: ~
+        table_prefix: phpbb_
+
+    email:
+        enabled: false
+        smtp_delivery : ~
+        smtp_host: ~
+        smtp_port: ~
+        smtp_auth: ~
+        smtp_user: ~
+        smtp_pass: ~
+
+    server:
+        cookie_secure: false
+        server_protocol: http://
+        force_server_vars: false
+        server_name: localhost
+        server_port: 80
+        script_path: /
+
+    extensions: ['phpbb/viglink']

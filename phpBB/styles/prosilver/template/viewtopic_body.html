@@ -26,20 +26,20 @@
 	</div>
 <!-- ENDIF -->
 
-<div class="action-bar top">
-
-	<div class="buttons">
-		<!-- EVENT viewtopic_buttons_top_before -->
+<div class="action-bar bar-top">
+	<!-- EVENT viewtopic_buttons_top_before -->
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
-		<a href="{U_POST_REPLY_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
-			<!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF -->
+		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
+			<!-- IF S_IS_LOCKED -->
+				<span>{L_BUTTON_TOPIC_LOCKED}</span> <i class="icon fa-lock fa-fw" aria-hidden="true"></i>
+			<!-- ELSE -->
+				<span>{L_BUTTON_POST_REPLY}</span> <i class="icon fa-reply fa-fw" aria-hidden="true"></i>
+			<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
 
-		<!-- EVENT viewtopic_buttons_top_after -->
-	</div>
-
+	<!-- EVENT viewtopic_buttons_top_after -->
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 	<!-- EVENT viewtopic_dropdown_top_custom -->
 
@@ -48,8 +48,12 @@
 			<form method="get" id="topic-search" action="{S_SEARCHBOX_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
-				<button class="button icon-button search-icon" type="submit" title="{L_SEARCH}">{L_SEARCH}</button>
-				<a href="{U_SEARCH}" class="button icon-button search-adv-icon" title="{L_SEARCH_ADV}">{L_SEARCH_ADV}</a>
+				<button class="button button-search" type="submit" title="{L_SEARCH}">
+					<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
+				</button>
+				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+					<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
+				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
 			</form>
@@ -174,8 +178,10 @@
 			<dd class="profile-contact">
 				<strong>{L_CONTACT}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
-					<a href="#" class="dropdown-trigger"><span class="imageset icon_contact" title="{postrow.CONTACT_USER}">{postrow.CONTACT_USER}</span></a>
-					<div class="dropdown hidden">
+					<a href="#" class="dropdown-trigger" title="{postrow.CONTACT_USER}">
+						<i class="icon fa-commenting-o fa-fw icon-lg" aria-hidden="true"></i><span class="sr-only">{postrow.CONTACT_USER}</span>
+					</a>
+					<div class="dropdown">
 						<div class="pointer"><div class="pointer-inner"></div></div>
 						<div class="dropdown-contents contact-icons">
 							<!-- BEGIN contact -->
@@ -217,7 +223,7 @@
 			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 			<!-- EVENT viewtopic_body_post_subject_before -->
-			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
+			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="{postrow.POST_ICON_IMG_ALT}" title="{postrow.POST_ICON_IMG_ALT}" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
 
 		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
 		<!-- EVENT viewtopic_body_post_buttons_list_before -->
@@ -227,32 +233,44 @@
 					<!-- EVENT viewtopic_body_post_buttons_before -->
 					<!-- IF postrow.U_EDIT -->
 						<li>
-							<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button icon-button edit-icon"><span>{L_BUTTON_EDIT}</span></a>
+							<a href="{postrow.U_EDIT}" title="{L_EDIT_POST}" class="button button-icon-only">
+								<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_BUTTON_EDIT}</span>
+							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_DELETE -->
 						<li>
-							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button icon-button delete-icon"><span>{L_DELETE_POST}</span></a>
+							<a href="{postrow.U_DELETE}" title="{L_DELETE_POST}" class="button button-icon-only">
+								<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_DELETE_POST}</span>
+							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_REPORT -->
 						<li>
-							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button icon-button report-icon"><span>{L_REPORT_POST}</span></a>
+							<a href="{postrow.U_REPORT}" title="{L_REPORT_POST}" class="button button-icon-only">
+								<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_REPORT_POST}</span>
+							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_WARN -->
 						<li>
-							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button icon-button warn-icon"><span>{L_WARN_USER}</span></a>
+							<a href="{postrow.U_WARN}" title="{L_WARN_USER}" class="button button-icon-only">
+								<i class="icon fa-exclamation-triangle fa-fw" aria-hidden="true"></i><span class="sr-only">{L_WARN_USER}</span>
+							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_INFO -->
 						<li>
-							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button icon-button info-icon"><span>{L_INFORMATION}</span></a>
+							<a href="{postrow.U_INFO}" title="{L_INFORMATION}" class="button button-icon-only">
+								<i class="icon fa-info fa-fw" aria-hidden="true"></i><span class="sr-only">{L_INFORMATION}</span>
+							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- IF postrow.U_QUOTE -->
 						<li>
-							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button icon-button quote-icon"><span>{L_QUOTE}</span></a>
+							<a href="{postrow.U_QUOTE}" title="{L_REPLY_WITH_QUOTE}" class="button button-icon-only">
+								<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUOTE}</span>
+							</a>
 						</li>
 					<!-- ENDIF -->
 					<!-- EVENT viewtopic_body_post_buttons_after -->
@@ -262,12 +280,22 @@
 		<!-- EVENT viewtopic_body_post_buttons_list_after -->
 
 			<!-- EVENT viewtopic_body_postrow_post_details_before -->
-			<p class="author"><!-- IF S_IS_BOT -->{postrow.MINI_POST_IMG}<!-- ELSE --><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><!-- ENDIF --><span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE} </p>
+			<p class="author">
+				<!-- IF S_IS_BOT -->
+					<span><i class="icon fa-file fa-fw <!-- IF postrow.S_UNREAD_POST -->icon-red<!-- ELSE -->icon-lightgray<!-- ENDIF --> icon-md" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span></span>
+				<!-- ELSE -->
+					<a class="unread" href="{postrow.U_MINI_POST}" title="{postrow.MINI_POST}">
+						<i class="icon fa-file fa-fw <!-- IF postrow.S_UNREAD_POST -->icon-red<!-- ELSE -->icon-lightgray<!-- ENDIF --> icon-md" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span>
+					</a>
+				<!-- ENDIF -->
+				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span>{postrow.POST_DATE}
+			</p>
 			<!-- EVENT viewtopic_body_postrow_post_details_after -->
 
 			<!-- IF postrow.S_POST_UNAPPROVED -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice unapproved">
+					<span><i class="icon fa-question icon-red fa-fw" aria-hidden="true"></i></span>
 					<strong>{L_POST_UNAPPROVED_ACTION}</strong>
 					<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 					<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
@@ -291,7 +319,7 @@
 
 			<!-- IF postrow.S_POST_REPORTED -->
 			<p class="post-notice reported">
-				<a href="{postrow.U_MCP_REPORT}"><strong>{L_POST_REPORTED}</strong></a>
+				<a href="{postrow.U_MCP_REPORT}"><i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><strong>{L_POST_REPORTED}</strong></a>
 			</p>
 			<!-- ENDIF -->
 
@@ -332,7 +360,14 @@
 		</div>
 
 		<!-- EVENT viewtopic_body_postrow_back2top_before -->
-		<div class="back2top"><!-- EVENT viewtopic_body_postrow_back2top_prepend --><a href="#top" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a><!-- EVENT viewtopic_body_postrow_back2top_append --></div>
+		<div class="back2top">
+			<!-- EVENT viewtopic_body_postrow_back2top_prepend -->
+			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
+				<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i>
+				<span class="sr-only">{L_BACK_TO_TOP}</span>
+			</a>
+			<!-- EVENT viewtopic_body_postrow_back2top_append -->
+		</div>
 		<!-- EVENT viewtopic_body_postrow_back2top_after -->
 
 		</div>
@@ -346,39 +381,36 @@
 	<!-- INCLUDE quickreply_editor.html -->
 <!-- ENDIF -->
 
-<!-- IF S_NUM_POSTS > 1 or .pagination -->
-	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
-	<fieldset class="display-options" style="margin-top: 0; ">
-		<!-- IF not S_IS_BOT -->
-		<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> <label>{S_SELECT_SORT_DIR}</label>
-		<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		<!-- ENDIF -->
-	</fieldset>
-	</form>
-	<hr />
-<!-- ENDIF -->
-
 <!-- EVENT viewtopic_body_topic_actions_before -->
-<div class="action-bar bottom">
-	<div class="buttons">
-		<!-- EVENT viewtopic_buttons_bottom_before -->
+	<div class="action-bar bar-bottom">
+	<!-- EVENT viewtopic_buttons_bottom_before -->
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
-		<a href="{U_POST_REPLY_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->reply-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
-			<!-- IF S_IS_LOCKED -->{L_BUTTON_TOPIC_LOCKED}<!-- ELSE -->{L_BUTTON_POST_REPLY}<!-- ENDIF -->
+		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
+			<!-- IF S_IS_LOCKED -->
+				<span>{L_BUTTON_TOPIC_LOCKED}</span> <i class="icon fa-lock fa-fw" aria-hidden="true"></i>
+			<!-- ELSE -->
+				<span>{L_BUTTON_POST_REPLY}</span> <i class="icon fa-reply fa-fw" aria-hidden="true"></i>
+			<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
-
-		<!-- EVENT viewtopic_buttons_bottom_after -->
-	</div>
+	<!-- EVENT viewtopic_buttons_bottom_after -->
 
 	<!-- INCLUDE viewtopic_topic_tools.html -->
 
+	<!-- IF (S_NUM_POSTS > 1 or .pagination) and not S_IS_BOT  -->
+		<form method="post" action="{S_TOPIC_ACTION}">
+		<!-- INCLUDE display_options.html -->
+		</form>
+	<!-- ENDIF -->
+
 	<!-- IF .quickmod -->
-		<div class="dropdown-container dropdown-container-{S_CONTENT_FLOW_BEGIN} dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
-			<span title="{L_QUICK_MOD}" class="dropdown-trigger button icon-button modtools-icon dropdown-select">{L_QUICK_MOD}</span>
-			<div class="dropdown hidden">
+	<div class="quickmod dropdown-container dropdown-container-left dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
+		<span title="{L_QUICK_MOD}" class="button button-secondary dropdown-trigger dropdown-select">
+			<i class="icon fa-gavel fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUICK_MOD}</span>
+			<span class="caret"><i class="icon fa-sort-down fa-fw" aria-hidden="true"></i></span>
+		</span>
+		<div class="dropdown">
 				<div class="pointer"><div class="pointer-inner"></div></div>
 				<ul class="dropdown-contents">
 				<!-- BEGIN quickmod -->
@@ -389,7 +421,7 @@
 			</div>
 		</div>
 	<!-- ENDIF -->
-	
+
 	<!-- EVENT viewtopic_dropdown_bottom_custom -->
 
 	<!-- IF .pagination or TOTAL_POSTS -->
@@ -402,7 +434,6 @@
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
-	<div class="clear"></div>
 </div>
 
 <!-- EVENT viewtopic_body_footer_before -->

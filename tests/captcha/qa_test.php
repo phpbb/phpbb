@@ -11,8 +11,6 @@
  *
  */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_captcha_qa_test extends \phpbb_database_test_case
 {
 	protected $request;
@@ -27,14 +25,16 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 
 	public function setUp()
 	{
-		global $db;
+		global $db, $request, $phpbb_container;
 
 		$db = $this->new_dbal();
 
 		parent::setUp();
 
-		$this->request = new \phpbb_mock_request();
-		request_var(false, false, false, false, $this->request);
+		$request = new \phpbb_mock_request();
+		$phpbb_container = new \phpbb_mock_container_builder();
+		$factory = new \phpbb\db\tools\factory();
+		$phpbb_container->set('dbal.tools', $factory->get($db));
 		$this->qa = new \phpbb\captcha\plugins\qa('phpbb_captcha_questions', 'phpbb_captcha_answers', 'phpbb_qa_confirm');
 	}
 
@@ -87,7 +87,8 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 	 */
 	public function test_acp_get_question_input($value, $expected)
 	{
-		$this->request->overwrite('answers', $value);
+		global $request;
+		$request->overwrite('answers', $value);
 
 		$this->assertEquals($expected, $this->qa->acp_get_question_input());
 	}

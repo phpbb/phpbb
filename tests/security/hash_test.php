@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compatibility.php';
-
 class phpbb_security_hash_test extends phpbb_test_case
 {
 	public function setUp()

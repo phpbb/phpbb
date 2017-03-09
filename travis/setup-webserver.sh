@@ -57,20 +57,12 @@ else
 fi
 
 # nginx
-echo "
-	server {
-		listen	80;
-		root	$PHPBB_ROOT_PATH/;
-		index	index.php index.html;
-
-		location ~ \.php {
-			include							fastcgi_params;
-			fastcgi_split_path_info			^(.+\.php)(/.*)$;
-			fastcgi_param PATH_INFO			\$fastcgi_path_info;
-			fastcgi_param SCRIPT_FILENAME	\$document_root\$fastcgi_script_name;
-			fastcgi_pass					unix:$APP_SOCK;
-		}
-	}
-" | sudo tee $NGINX_CONF > /dev/null
+cat $DIR/../phpBB/docs/nginx.sample.conf \
+| sed "s/root \/path\/to\/phpbb/root $(echo $PHPBB_ROOT_PATH | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')/g" \
+| sed -e '1,/The actual board domain/d' \
+| sed -e '/If running php as fastcgi/,$d' \
+| sed -e "s/fastcgi_pass php;/fastcgi_pass unix:$(echo $APP_SOCK | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g');/g" \
+| sed -e 's/#listen 80/listen 80/' \
+| sudo tee $NGINX_CONF
 
 sudo service nginx start

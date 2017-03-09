@@ -301,6 +301,7 @@ function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = 
 		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
+	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 	while ($row = $db->sql_fetchrow($result))
@@ -366,12 +367,12 @@ function phpbb_get_pm_data($pm_ids)
 * $mode reports and reports_closed: the $where parameters uses aliases p for posts table and r for report table
 * $mode unapproved_posts: the $where parameters uses aliases p for posts table and t for topic table
 */
-function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
+function phpbb_mcp_sorting($mode, &$sort_days_val, &$sort_key_val, &$sort_dir_val, &$sort_by_sql_ary, &$sort_order_sql, &$total_val, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
-	global $db, $user, $auth, $template, $phpbb_dispatcher;
+	global $db, $user, $auth, $template, $request, $phpbb_dispatcher;
 
-	$sort_days = request_var('st', 0);
-	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
+	$sort_days_val = $request->variable('st', 0);
+	$min_time = ($sort_days_val) ? time() - ($sort_days_val * 86400) : 0;
 
 	switch ($mode)
 	{
@@ -511,8 +512,8 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			break;
 	}
 
-	$sort_key = request_var('sk', $default_key);
-	$sort_dir = request_var('sd', $default_dir);
+	$sort_key_val = $request->variable('sk', $default_key);
+	$sort_dir_val = $request->variable('sd', $default_dir);
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
 	switch ($type)
@@ -521,41 +522,46 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'tt' => $user->lang['TOPIC_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 
-			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => array('t.topic_last_post_time', 't.topic_last_post_id'), 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 't.topic_title', 'v' => 't.topic_views');
+			$sort_by_sql_ary = array('a' => 't.topic_first_poster_name', 't' => array('t.topic_last_post_time', 't.topic_last_post_id'), 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_posts_approved + t.topic_posts_unapproved + t.topic_posts_softdeleted' : 't.topic_posts_approved'), 's' => 't.topic_title', 'v' => 't.topic_views');
 			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
 			break;
 
 		case 'posts':
 			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql = array('a' => 'u.username_clean', 't' => array('p.post_time', 'p.post_id'), 's' => 'p.post_subject');
+			$sort_by_sql_ary = array('a' => 'u.username_clean', 't' => array('p.post_time', 'p.post_id'), 's' => 'p.post_subject');
 			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
 			break;
 
 		case 'reports':
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => array('p.post_time', 'p.post_id'), 't' => 'r.report_time', 's' => 'p.post_subject');
+			$sort_by_sql_ary = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => array('p.post_time', 'p.post_id'), 't' => 'r.report_time', 's' => 'p.post_subject');
 			break;
 
 		case 'pm_reports':
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.message_time', 't' => 'r.report_time', 's' => 'p.message_subject');
+			$sort_by_sql_ary = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.message_time', 't' => 'r.report_time', 's' => 'p.message_subject');
 			break;
 
 		case 'logs':
 			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
 
-			$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+			$sort_by_sql_ary = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
 			break;
 	}
 
 	// Default total to -1 to allow editing by the event
-	$total = -1;
+	$total_val = -1;
 
+	$sort_by_sql = $sort_by_sql_ary;
+	$sort_days = $sort_days_val;
+	$sort_dir = $sort_dir_val;
+	$sort_key = $sort_key_val;
+	$total = $total_val;
 	/**
 	* This event allows you to control the SQL query used to get the total number
 	* of reports the user can access.
@@ -602,25 +608,35 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 		'where_sql',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.mcp_sorting_query_before', compact($vars)));
+	$sort_by_sql_ary = $sort_by_sql;
+	$sort_days_val = $sort_days;
+	$sort_key_val = $sort_key;
+	$sort_dir_val = $sort_dir;
+	$total_val = $total;
+	unset($sort_by_sql);
+	unset($sort_days);
+	unset($sort_key);
+	unset($sort_dir);
+	unset($total);
 
-	if (!isset($sort_by_sql[$sort_key]))
+	if (!isset($sort_by_sql_ary[$sort_key_val]))
 	{
-		$sort_key = $default_key;
+		$sort_key_val = $default_key;
 	}
 
-	$direction = ($sort_dir == 'd') ? 'DESC' : 'ASC';
+	$direction = ($sort_dir_val == 'd') ? 'DESC' : 'ASC';
 
-	if (is_array($sort_by_sql[$sort_key]))
+	if (is_array($sort_by_sql_ary[$sort_key_val]))
 	{
-		$sort_order_sql = implode(' ' . $direction . ', ', $sort_by_sql[$sort_key]) . ' ' . $direction;
+		$sort_order_sql = implode(' ' . $direction . ', ', $sort_by_sql_ary[$sort_key_val]) . ' ' . $direction;
 	}
 	else
 	{
-		$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . $direction;
+		$sort_order_sql = $sort_by_sql_ary[$sort_key_val] . ' ' . $direction;
 	}
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $sort_url = '';
-	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $sort_url);
+	gen_sort_selects($limit_days, $sort_by_text, $sort_days_val, $sort_key_val, $sort_dir_val, $s_limit_days, $s_sort_key, $s_sort_dir, $sort_url);
 
 	$template->assign_vars(array(
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
@@ -628,15 +644,15 @@ function phpbb_mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 	);
 
-	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts', 'deleted_topics', 'deleted_posts')) || $where_sql != 'WHERE')
+	if (($sort_days_val && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts', 'deleted_topics', 'deleted_posts')) || $where_sql != 'WHERE')
 	{
 		$result = $db->sql_query($sql);
-		$total = (int) $db->sql_fetchfield('total');
+		$total_val = (int) $db->sql_fetchfield('total');
 		$db->sql_freeresult($result);
 	}
-	else if ($total < -1)
+	else if ($total_val < -1)
 	{
-		$total = -1;
+		$total_val = -1;
 	}
 }
 

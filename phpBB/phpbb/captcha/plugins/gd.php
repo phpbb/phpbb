@@ -53,38 +53,31 @@ class gd extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $user, $template, $phpbb_log, $request;
+		global $config;
 
 		$user->add_lang('acp/board');
-
-		$config_vars = array(
-			'enable_confirm'		=> 'REG_ENABLE',
-			'enable_post_confirm'	=> 'POST_ENABLE',
-			'confirm_refresh'		=> 'CONFIRM_REFRESH',
-			'captcha_gd'			=> 'CAPTCHA_GD',
-		);
 
 		$module->tpl_name = 'captcha_gd_acp';
 		$module->page_title = 'ACP_VC_SETTINGS';
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
-		$submit = request_var('submit', '');
+		$submit = $request->variable('submit', '');
 
 		if ($submit && check_form_key($form_key))
 		{
 			$captcha_vars = array_keys($this->captcha_vars);
 			foreach ($captcha_vars as $captcha_var)
 			{
-				$value = request_var($captcha_var, 0);
+				$value = $request->variable($captcha_var, 0);
 				if ($value >= 0)
 				{
-					set_config($captcha_var, $value);
+					$config->set($captcha_var, $value);
 				}
 			}
 
-			add_log('admin', 'LOG_CONFIG_VISUAL');
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)
@@ -95,7 +88,7 @@ class gd extends captcha_abstract
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
+				$var = (isset($_REQUEST[$captcha_var])) ? $request->variable($captcha_var, 0) : $config[$captcha_var];
 				$template->assign_var($template_var, $var);
 			}
 
@@ -109,7 +102,7 @@ class gd extends captcha_abstract
 
 	function execute_demo()
 	{
-		global $config;
+		global $config, $request;
 
 		$config_old = $config;
 
@@ -121,7 +114,7 @@ class gd extends captcha_abstract
 
 		foreach ($this->captcha_vars as $captcha_var => $template_var)
 		{
-			$config->set($captcha_var, request_var($captcha_var, (int) $config[$captcha_var]));
+			$config->set($captcha_var, $request->variable($captcha_var, (int) $config[$captcha_var]));
 		}
 		parent::execute_demo();
 		$config = $config_old;

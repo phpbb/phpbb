@@ -1,0 +1,121 @@
+services:
+    phpbb.feed.controller:
+        class: phpbb\feed\controller\feed
+        arguments:
+            - '@template.twig.environment'
+            - '@symfony_request'
+            - '@controller.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@service_container'
+            - '@feed.helper'
+            - '@user'
+            - '@auth'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.helper:
+        class: phpbb\feed\helper
+        arguments:
+            - '@config'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    feed.forum:
+        class: phpbb\feed\forum
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.forums:
+        class: phpbb\feed\forums
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.news:
+        class: phpbb\feed\news
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.overall:
+        class: phpbb\feed\overall
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.topic:
+        class: phpbb\feed\topic
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.topics:
+        class: phpbb\feed\topics
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'
+
+    feed.topics_active:
+        class: phpbb\feed\topics_active
+        shared: false
+        arguments:
+            - '@feed.helper'
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@content.visibility'
+            - '@dispatcher'
+            - '%core.php_ext%'

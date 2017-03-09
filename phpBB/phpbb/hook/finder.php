@@ -18,8 +18,19 @@ namespace phpbb\hook;
 */
 class finder
 {
-	protected $phpbb_root_path;
+	/**
+	 * @var \phpbb\cache\driver\driver_interface
+	 */
 	protected $cache;
+
+	/**
+	 * @var string
+	 */
+	protected $phpbb_root_path;
+
+	/**
+	 * @var string
+	 */
 	protected $php_ext;
 
 	/**

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_posts">
+		<column>post_id</column>
+		<column>enable_bbcode</column>
+		<column>enable_smilies</column>
+		<column>enable_magic_url</column>
+		<column>post_text</column>
+		<column>bbcode_uid</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>abcd1234</value>
+		</row>
+	</table>
+</dataset>

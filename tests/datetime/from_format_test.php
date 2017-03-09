@@ -37,7 +37,11 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 	*/
 	public function test_from_format($timezone, $format, $expected)
 	{
-		$user = new \phpbb\user('\phpbb\datetime');
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->timezone = new DateTimeZone($timezone);
 		$user->lang['datetime'] = array(
 			'TODAY'		=> 'Today',
@@ -107,7 +111,11 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 	 */
 	public function test_relative_format_date($timestamp, $forcedate, $expected)
 	{
-		$user = new \phpbb\user('\phpbb\datetime');
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->timezone = new DateTimeZone('UTC');
 		$user->lang['datetime'] = array(
 			'TODAY'		=> 'Today',

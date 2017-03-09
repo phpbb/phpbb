@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class exception_listener extends phpbb_test_case
 {
 	public function phpbb_exception_data()
@@ -79,10 +77,12 @@ class exception_listener extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$user = new \phpbb\user('\phpbb\datetime');
-		$user->add_lang('common');
+		global $phpbb_root_path, $phpEx;
 
-		$exception_listener = new \phpbb\event\kernel_exception_subscriber($template, $user);
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+
+		$exception_listener = new \phpbb\event\kernel_exception_subscriber($template, $lang);
 
 		$event = new \Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent($this->getMock('Symfony\Component\HttpKernel\HttpKernelInterface'), $request, \Symfony\Component\HttpKernel\HttpKernelInterface::MASTER_REQUEST, $exception);
 		$exception_listener->on_kernel_exception($event);

@@ -329,14 +329,9 @@
 	<br class="responsive-hide" /><br class="responsive-hide" />
 
 	<!-- include tooltip file -->
-	<script type="text/javascript" src="style/tooltip.js"></script>
-	<script type="text/javascript">
-	// <![CDATA[
-		window.onload = function(){enable_tooltips_select('set-permissions', '{LA_ROLE_DESCRIPTION}', 'role')};
-	// ]]>
-	</script>
+	<!-- INCLUDEJS tooltip.js -->
 
-	<form id="set-permissions" method="post" action="{U_ACTION}">
+	<form id="set-permissions" method="post" action="{U_ACTION}" data-role-description="{L_ROLE_DESCRIPTION}">
 
 	{S_HIDDEN_FIELDS}
 

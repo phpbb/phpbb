@@ -42,6 +42,12 @@ class tidy_plupload extends \phpbb\cron\task\base
 	*/
 	protected $config;
 
+	/** @var \phpbb\log\log_interface */
+	protected $log;
+
+	/** @var \phpbb\user */
+	protected $user;
+
 	/**
 	* Directory where plupload stores temporary files.
 	* @var string
@@ -53,11 +59,15 @@ class tidy_plupload extends \phpbb\cron\task\base
 	*
 	* @param string $phpbb_root_path The root path
 	* @param \phpbb\config\config $config The config
+	* @param \phpbb\log\log_interface $log Log
+	* @param \phpbb\user $user User object
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\log\log_interface $log, \phpbb\user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
+		$this->log = $log;
+		$this->user = $user;
 
 		$this->plupload_upload_path = $this->phpbb_root_path . $this->config['upload_path'] . '/plupload';
 	}
@@ -88,13 +98,11 @@ class tidy_plupload extends \phpbb\cron\task\base
 		}
 		catch (\UnexpectedValueException $e)
 		{
-			add_log(
-				'critical',
-				'LOG_PLUPLOAD_TIDY_FAILED',
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_PLUPLOAD_TIDY_FAILED', false, array(
 				$this->plupload_upload_path,
 				$e->getMessage(),
 				$e->getTraceAsString()
-			);
+			));
 		}
 
 		$this->config->set('plupload_last_gc', time(), true);

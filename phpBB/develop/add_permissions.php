@@ -64,6 +64,7 @@ $f_permissions = array(
 	'f_vote'	=> array(1, 0),
 	'f_votechg'	=> array(1, 0),
 	'f_announce'=> array(1, 0),
+	'f_announce_global'	=> array(1, 0),
 	'f_sticky'	=> array(1, 0),
 	'f_attach'	=> array(1, 0),
 	'f_download'=> array(1, 0),
@@ -378,8 +379,6 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 						$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
 						break;
 
-					case 'mssql':
-					case 'sqlite':
 					case 'sqlite3':
 						$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 						break;
@@ -388,7 +387,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 						foreach ($sql_subary as $sql)
 						{
 							$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($sql)";
-							$result = $db->sql_query($sql);
+							$db->sql_query($sql);
 							$sql = '';
 						}
 				}
@@ -396,7 +395,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 				if ($sql != '')
 				{
 					$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) $sql";
-					$result = $db->sql_query($sql);
+					$db->sql_query($sql);
 				}
 				break;
 
@@ -404,7 +403,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 			case 'delete':
 				foreach ($sql_subary as $sql)
 				{
-					$result = $db->sql_query($sql);
+					$db->sql_query($sql);
 					$sql = '';
 				}
 				break;

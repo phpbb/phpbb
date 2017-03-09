@@ -1,0 +1,1 @@
+http://www.phpbb.com/community/search.php?keywords=bogus&terms=all&author=&fid[]=46&sc=1&sf=all&sr=posts&sk=t&sd=d&st=0&ch=300&t=0&submit=Search

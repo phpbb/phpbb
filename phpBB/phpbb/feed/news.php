@@ -1,27 +1,31 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* News feed
-*
-* This will give you {$this->num_items} first posts
-* of all topics in the selected news forums.
-*/
-class news extends \phpbb\feed\topic_base
+ * News feed
+ *
+ * This will give you {$this->num_items} first posts
+ * of all topics in the selected news forums.
+ */
+class news extends topic_base
 {
-	function get_news_forums()
+	/**
+	 * Returns the ids of the 'news forums'
+	 * @return int[]
+	 */
+	private function get_news_forums()
 	{
 		static $forum_ids;
 
@@ -48,7 +52,10 @@ class news extends \phpbb\feed\topic_base
 		return $forum_ids;
 	}
 
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		// Determine forum ids
 		$in_fid_ary = array_intersect($this->get_news_forums(), $this->get_readable_forums());
@@ -82,6 +89,8 @@ class news extends \phpbb\feed\topic_base
 		{
 			return false;
 		}
+
+		parent::fetch_attachments($post_ids);
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,

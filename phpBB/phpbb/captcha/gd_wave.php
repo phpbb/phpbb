@@ -23,8 +23,6 @@ class gd_wave
 
 	function execute($code, $seed)
 	{
-		global $starttime;
-
 		// seed the random generator
 		mt_srand($seed);
 
@@ -77,7 +75,6 @@ class gd_wave
 		// TODO
 		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
 		imagefill($img, 0, 0, $background);
-		$black = imagecolorallocate($img, 0, 0, 0);
 
 		$random = array();
 		$fontcolors = array();
@@ -155,7 +152,7 @@ class gd_wave
 		// rather than recalculating from absolute coordinates
 		// What we cache into the $img_buffer contains the raised text coordinates.
 		$img_pos_prev	= $img_buffer[0][0] = array($box['upper_left']['x'], $box['upper_left']['y']);
-		$cur_height		= $prev_height = $this->wave_height(0, 0, $subdivision_factor);
+		$prev_height = $this->wave_height(0, 0, $subdivision_factor);
 		$full_x			= $plane_x * $subdivision_factor;
 		$full_y			= $plane_y * $subdivision_factor;
 

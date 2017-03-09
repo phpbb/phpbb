@@ -33,8 +33,7 @@ class phpbb_version_helper_fetch_test extends phpbb_test_case
 			new \phpbb\config\config(array(
 				'version'	=> '3.1.0',
 			)),
-			new \phpbb\file_downloader(),
-			new \phpbb\user('\phpbb\datetime')
+			new \phpbb\file_downloader()
 		);
 	}
 

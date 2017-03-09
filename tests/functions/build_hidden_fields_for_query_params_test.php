@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_build_hidden_fields_for_query_params_test extends phpbb_test_case
 {
 	public function build_hidden_fields_for_query_params_test_data()

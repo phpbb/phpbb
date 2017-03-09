@@ -13,6 +13,8 @@
 
 namespace phpbb\db;
 
+use phpbb\db\output_handler\migrator_output_handler_interface;
+use phpbb\db\output_handler\null_migrator_output_handler;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -32,7 +34,7 @@ class migrator
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools */
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
 
 	/** @var \phpbb\db\migration\helper */
@@ -92,7 +94,7 @@ class migrator
 	/**
 	* Constructor of the database migrator
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
+	public function __construct(ContainerInterface $container, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $migrations_table, $phpbb_root_path, $php_ext, $table_prefix, $tools, \phpbb\db\migration\helper $helper)
 	{
 		$this->container = $container;
 		$this->config = $config;
@@ -122,7 +124,7 @@ class migrator
 	/**
 	 * Set the output handler.
 	 *
-	 * @param migrator_output_handler $handler The output handler
+	 * @param migrator_output_handler_interface $handler The output handler
 	 */
 	public function set_output_handler(migrator_output_handler_interface $handler)
 	{
@@ -182,7 +184,47 @@ class migrator
 	*/
 	public function set_migrations($class_names)
 	{
+		foreach ($class_names as $key => $class)
+		{
+			if (!self::is_migration($class))
+			{
+				unset($class_names[$key]);
+			}
+		}
+
 		$this->migrations = $class_names;
+	}
+
+	/**
+	 * Get the list of available migration class names
+	 *
+	 * @return array Array of all migrations available to be run
+	 */
+	public function get_migrations()
+	{
+		return $this->migrations;
+	}
+
+	/**
+	 * Get the list of available and not installed migration class names
+	 *
+	 * @return array
+	 */
+	public function get_installable_migrations()
+	{
+		$unfinished_migrations = array();
+
+		foreach ($this->migrations as $name)
+		{
+			if (!isset($this->migration_state[$name]) ||
+				!$this->migration_state[$name]['migration_schema_done'] ||
+				!$this->migration_state[$name]['migration_data_done'])
+			{
+				$unfinished_migrations[] = $name;
+			}
+		}
+
+		return $unfinished_migrations;
 	}
 
 	/**
@@ -497,18 +539,59 @@ class migrator
 
 		if ($state['migration_data_done'])
 		{
+			$verbosity = empty($state['migration_data_state']) ?
+				migrator_output_handler_interface::VERBOSITY_VERBOSE : migrator_output_handler_interface::VERBOSITY_DEBUG;
+			$this->output_handler->write(array('MIGRATION_REVERT_DATA_RUNNING', $name), $verbosity);
+
+			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
+				$state['migration_data_state']['_total_time'] : 0.0;
+			$elapsed_time = microtime(true);
+
 			$steps = array_merge($this->helper->reverse_update_data($migration->update_data()), $migration->revert_data());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
+			$elapsed_time = microtime(true) - $elapsed_time;
+			$total_time += $elapsed_time;
+
+			if (is_array($result))
+			{
+				$result['_total_time'] = $total_time;
+			}
 
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_data_done'] = ($result === true) ? false : true;
 
 			$this->set_migration_state($name, $state);
+
+			if (!$state['migration_data_done'])
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_DATA_DONE', $name, $total_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
+			}
+			else
+			{
+				$this->output_handler->write(array('MIGRATION_REVERT_DATA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
+			}
 		}
 		else if ($state['migration_schema_done'])
 		{
+			$verbosity = empty($state['migration_data_state']) ?
+				migrator_output_handler_interface::VERBOSITY_VERBOSE : migrator_output_handler_interface::VERBOSITY_DEBUG;
+			$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_RUNNING', $name), $verbosity);
+
+			$total_time = (is_array($state['migration_data_state']) && isset($state['migration_data_state']['_total_time'])) ?
+				$state['migration_data_state']['_total_time'] : 0.0;
+			$elapsed_time = microtime(true);
+
 			$steps = $this->helper->get_schema_steps($migration->revert_schema());
 			$result = $this->process_data_step($steps, $state['migration_data_state']);
+
+			$elapsed_time = microtime(true) - $elapsed_time;
+			$total_time += $elapsed_time;
+
+			if (is_array($result))
+			{
+				$result['_total_time'] = $total_time;
+			}
 
 			$state['migration_data_state'] = ($result === true) ? '' : $result;
 			$state['migration_schema_done'] = ($result === true) ? false : true;
@@ -521,10 +604,14 @@ class migrator
 
 				$this->last_run_migration = false;
 				unset($this->migration_state[$name]);
+
+				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $total_time), migrator_output_handler_interface::VERBOSITY_NORMAL);
 			}
 			else
 			{
 				$this->set_migration_state($name, $state);
+
+				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
 			}
 		}
 
@@ -920,5 +1007,28 @@ class migrator
 				'PRIMARY_KEY'	=> 'migration_name',
 			));
 		}
+	}
+
+	/**
+	 * Check if a class is a migration.
+	 *
+	 * @param string $migration A migration class name
+	 * @return bool Return true if class is a migration, false otherwise
+	 */
+	static public function is_migration($migration)
+	{
+		if (class_exists($migration))
+		{
+			// Migration classes should extend the abstract class
+			// phpbb\db\migration\migration (which implements the
+			// migration_interface) and be instantiable.
+			$reflector = new \ReflectionClass($migration);
+			if ($reflector->implementsInterface('\phpbb\db\migration\migration_interface') && $reflector->isInstantiable())
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

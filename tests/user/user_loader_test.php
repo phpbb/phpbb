@@ -11,8 +11,6 @@
 *
 */
 
-include_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
-
 class phpbb_user_loader_test extends phpbb_database_test_case
 {
 	protected $db;

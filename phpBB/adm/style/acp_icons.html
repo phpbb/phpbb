@@ -89,6 +89,9 @@
 	<!-- ENDIF -->
 		<td>{L_WIDTH}</td>
 		<td>{L_HEIGHT}</td>
+	<!-- IF not S_SMILIES -->
+		<td>{L_ALT_TEXT}</td>
+	<!-- ENDIF -->
 		<td>{L_DISPLAY_ON_POSTING}</td>
 	<!-- IF ID or S_ADD -->
 		<td>{L_ORDER}</td>
@@ -102,7 +105,7 @@
 	<!-- BEGIN items -->
 		<tr>
 
-		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="" title="" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
+		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="{items.TEXT_ALT}" title="{items.TEXT_ALT}" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
 		<td style="vertical-align: top;">[{items.IMG}]</td>
 		<!-- IF S_SMILIES -->
 			<td><input class="text post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" maxlength="50" /></td>
@@ -110,6 +113,9 @@
 		<!-- ENDIF -->
 		<td><input class="text post" type="number" min="0" max="999" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="text post" type="number" min="0" max="999" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
+		<!-- IF not S_SMILIES -->
+			<td><input class="text post" type="text" name="alt[{items.IMG}]" value="{items.ALT}" size="10" maxlength="50" /></td>
+		<!-- ENDIF -->
 		<td>
 			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.A_IMG}', this.checked, '{items.S_ROW_COUNT}');"/>
 			<!-- IF items.S_ID -->

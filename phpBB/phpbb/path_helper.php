@@ -21,7 +21,7 @@ class path_helper
 	/** @var \phpbb\symfony_request */
 	protected $symfony_request;
 
-	/** @var \phpbb\filesystem */
+	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
 	/** @var \phpbb\request\request_interface */
@@ -43,13 +43,13 @@ class path_helper
 	* Constructor
 	*
 	* @param \phpbb\symfony_request $symfony_request
-	* @param \phpbb\filesystem $filesystem
+	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param \phpbb\request\request_interface $request
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP file extension
 	* @param mixed $adm_relative_path Relative path admin path to adm/ root
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
 		$this->filesystem = $filesystem;
@@ -100,11 +100,18 @@ class path_helper
 	*/
 	public function update_web_root_path($path)
 	{
+		$web_root_path = $this->get_web_root_path();
+
+		// Removes the web root path if it is already present
+		if (strpos($path, $web_root_path) === 0)
+		{
+			$path = $this->phpbb_root_path . substr($path, strlen($web_root_path));
+		}
+
 		if (strpos($path, $this->phpbb_root_path) === 0)
 		{
 			$path = substr($path, strlen($this->phpbb_root_path));
 
-			$web_root_path = $this->get_web_root_path();
 			if (substr($web_root_path, -8) === 'app.php/' && substr($path, 0, 7) === 'app.php')
 			{
 				$path = substr($path, 8);

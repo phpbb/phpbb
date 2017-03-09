@@ -1,29 +1,32 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* 'All Forums' feed
-*
-* This will give you a list of all postable forums where feeds are enabled
-* including forum description, topic stats and post stats
-*/
-class forums extends \phpbb\feed\base
+ * 'All Forums' feed
+ *
+ * This will give you a list of all postable forums where feeds are enabled
+ * including forum description, topic stats and post stats
+ */
+class forums extends base
 {
-	var $num_items	= 0;
+	protected $num_items	= 0;
 
-	function set_keys()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_keys()
 	{
 		$this->set('title',		'forum_name');
 		$this->set('text',		'forum_desc');
@@ -33,7 +36,10 @@ class forums extends \phpbb\feed\base
 		$this->set('options',	'forum_desc_options');
 	}
 
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_sql()
 	{
 		$in_fid_ary = array_diff($this->get_readable_forums(), $this->get_excluded_forums());
 		if (empty($in_fid_ary))
@@ -55,7 +61,10 @@ class forums extends \phpbb\feed\base
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		$item_row['link'] = $this->helper->append_sid('viewforum.' . $this->phpEx, 'f=' . $row['forum_id']);
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>spoiler=</value>
+			<value></value>
+			<value>1</value>
+			<value>[spoiler={INTTEXT}]{TEXT}[/spoiler]</value>
+			<value><![CDATA[<div class="spoiler"><div class="title">{INTTEXT}</div><div class="content">{TEXT}</div></div>]]></value>
+			<value><![CDATA[!\[spoiler\=([\p{L}\p{N}\-+,_. ]+)\](.*?)\[/spoiler\]!iues]]></value>
+			<value><![CDATA['[spoiler=${1}:$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${2}')).'[/spoiler:$uid]']]></value>
+			<value><![CDATA[!\[spoiler\=([\p{L}\p{N}\-+,_. ]+):$uid\](.*?)\[/spoiler:$uid\]!su]]></value><value><![CDATA[<div class="spoiler"><div class="title">${1}</div><div class="content">${2}</div></div>]]></value>
+		</row>
+	</table>
+</dataset>

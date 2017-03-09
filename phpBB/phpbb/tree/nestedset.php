@@ -391,7 +391,6 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 			throw new \OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
-		$diff = sizeof($move_items) * 2;
 		$sql_exclude_moved_items = $this->db->sql_in_set($this->column_item_id, $move_items, true);
 
 		$this->db->sql_transaction('begin');
@@ -490,7 +489,6 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 			throw new \OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 		}
 
-		$diff = sizeof($move_items) * 2;
 		$sql_exclude_moved_items = $this->db->sql_in_set($this->column_item_id, $move_items, true);
 
 		$this->db->sql_transaction('begin');
