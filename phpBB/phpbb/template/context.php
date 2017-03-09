@@ -278,7 +278,7 @@ class context
 	* Retrieve key variable pairs from the specified block
 	*
 	* @param string $blockname Name of block to retrieve $vararray from
-	* @param array $vararray An array of variable names
+	* @param array $vararray An array of variable names, empty array retrieves all vars
 	* @return array of hashes with variable name as key and retrieved value or null as value
 	*/
 	public function retrieve_block_vars($blockname, array $vararray)
@@ -313,9 +313,25 @@ class context
 		}
 
 		$result = array();
-		foreach ($vararray as $varname)
+		if ($vararray === array())
 		{
-			$result[$varname] = isset($block[$varname]) ? $block[$varname] : null;
+			// The calculated vars that depend on the block position are excluded from the complete block returned results
+			$excluded_vars = array('S_FIRST_ROW', 'S_LAST_ROW', 'S_BLOCK_NAME', 'S_NUM_ROWS', 'S_ROW_COUNT', 'S_ROW_NUM');
+
+			foreach ($block as $varname => $varvalue)
+			{
+				if ($varname === strtoupper($varname) && !is_array($varvalue) && !in_array($varname, $excluded_vars))
+				{
+					$result[$varname] = $varvalue;
+				}
+			}
+		}
+		else
+		{
+			foreach ($vararray as $varname)
+			{
+				$result[$varname] = isset($block[$varname]) ? $block[$varname] : null;
+			}
 		}
 		return $result;
 	}

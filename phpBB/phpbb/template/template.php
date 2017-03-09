@@ -162,7 +162,7 @@ interface template
 	/**
 	* Retrieve variable values from an specified block
 	* @param string $blockname Name of block to retrieve $vararray from
-	* @param array $vararray An array with variable names
+	* @param array $vararray An array with variable names, empty array gets all vars
 	* @return array A hash of variable name => value pairs (value is null if not set)
 	*/
 	public function retrieve_block_vars($blockname, array $vararray);
