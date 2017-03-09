@@ -26,7 +26,7 @@ body {
 h1 {
 	/* Forum name */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 2em;
+	font-size: 20px;
 	font-weight: bold;
 	margin-top: 15px;
 	margin-right: 200px;
@@ -35,19 +35,19 @@ h1 {
 h2 {
 	/* Forum header titles */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 2em;
+	font-size: 20px;
 	font-weight: normal;
 	margin: 0.8em 0 0.2em;
 }
 
 h2.solo {
-	margin-bottom: 1em;
+	margin-bottom: 20px;
 }
 
 h3 {
 	/* Sub-headers (also used as post headers, but defined later) */
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 1.05em;
+	font-size: 12px;
 	font-weight: bold;
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
@@ -59,13 +59,13 @@ h3 {
 h4 {
 	/* Forum and topic list titles */
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.3em;
+	font-size: 13px;
 }
 
 p {
-	font-size: 1.1em;
-	line-height: 1.3em;
-	margin-bottom: 1.5em;
+	font-size: 11px;
+	line-height: 14px;
+	margin-bottom: 16px;
 }
 
 img {
@@ -263,8 +263,8 @@ ul.linklist {
 }
 
 ul.linklist > li {
-	font-size: 1.1em;
-	line-height: 2.2em;
+	font-size: 11px;
+	line-height: 24px;
 	float: left;
 	width: auto;
 	margin-right: 7px;
@@ -543,7 +543,7 @@ a.header-avatar span:after {
 }
 
 .dropdown li {
-	font-size: 1em !important;
+	font-size: 11px !important;
 	line-height: normal !important;
 	text-align: left;
 	white-space: nowrap;
@@ -665,9 +665,9 @@ table.table1 {
 }
 
 table.table1 thead th {
-	font-size: 1em;
+	font-size: 10px;
 	font-weight: normal;
-	line-height: 1.3em;
+	line-height: 13px;
 	text-transform: uppercase;
 	padding: 0 0 4px 3px;
 }
@@ -681,7 +681,7 @@ table.table1 tbody tr {
 }
 
 table.table1 td {
-	font-size: 1.1em;
+	font-size: 11px;
 }
 
 table.table1 tbody td {
@@ -740,12 +740,12 @@ table.table1 .info div {
 }
 
 table.table1 .autocol {
-	line-height: 2em;
+	line-height: 22px;
 	white-space: nowrap;
 }
 
 table.table1 thead .autocol {
-	padding-left: 1em;
+	padding-left: 10px;
 }
 
 table.table1 span.rank-img {
@@ -813,8 +813,8 @@ table.info tbody th {
 }
 
 dl.details {
-	/* font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; */
-	font-size: 1.1em;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 11px;
 }
 
 dl.details dt {
@@ -851,7 +851,13 @@ fieldset.fields1 ul.recipients {
 
 fieldset.fields1 dd.recipients {
 	clear: left;
-	margin-left: 1em;
+	margin-left: 11px;
+}
+
+fieldset.fields1 ul.recipients input.button2 {
+	font-size: 12px;
+	margin-right: 0;
+	padding: 0;
 }
 
 fieldset.fields1 dl.pmlist > dt {
@@ -870,7 +876,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .forabg + .action-bar {
-	margin-top: 2em;
+	margin-top: 12px;
 }
 
 .action-bar .button {
@@ -1008,7 +1014,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .phpbb_alert div.alert_text > select,
 .phpbb_alert div.alert_text > textarea,
 .phpbb_alert div.alert_text > input {
-	font-size: 1.1em;
+	font-size: 11px;
 }
 
 .darkenwrapper {
@@ -1090,7 +1096,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .small {
-	font-size: 0.9em !important;
+	font-size: 90% !important;
 }
 
 .titlespace {
@@ -1102,12 +1108,12 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .error {
-	font-size: 1em;
+	font-size: 10px;
 	font-weight: bold;
 }
 
 div.rules {
-	font-size: 1.1em;
+	font-size: 11px;
 	border-radius: 7px;
 	margin: 10px 0;
 	padding: 5px 10px;
@@ -1121,7 +1127,7 @@ div.rules ol {
 p.post-notice {
 	position: relative;
 	min-height: 14px;
-	margin-bottom: 1em;
+	margin-bottom: 11px;
 	padding: 5px;
 }
 
@@ -1161,12 +1167,14 @@ ul.linklist:after,
 	content: "";
 }
 
+/* stylelint-disable declaration-property-unit-whitelist */
 .emoji {
 	width: 1em;
 	min-width: 18px;
 	height: 1em;
 	min-height: 18px;
 }
+/* stylelint-enable declaration-property-unit-whitelist */
 
 .smilies {
 	vertical-align: text-bottom;
@@ -1183,7 +1191,7 @@ ul.linklist:after,
 }
 
 .member-search strong {
-	font-size: 0.95em;
+	font-size: 11px;
 }
 
 .dropdown-extended {
@@ -1199,7 +1207,6 @@ ul.linklist:after,
 }
 
 .dropdown-extended .dropdown-extended-item {
-	font-size: 0.95em;
 	border-top: 1px solid;
 	position: relative;
 	float: none;
@@ -1231,7 +1238,7 @@ ul.linklist:after,
 .dropdown-extended .header {
 	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight: bold;
-	line-height: 3em;
+	line-height: 33px;
 	text-align: left;
 	text-transform: uppercase;
 	border-bottom: 1px solid;
@@ -1258,7 +1265,7 @@ ul.linklist:after,
 }
 
 .dropdown-extended .footer {
-	font-size: 1.1em;
+	font-size: 12px;
 	text-align: center;
 }
 
@@ -1290,7 +1297,6 @@ ul.linklist:after,
 }
 
 .notification-item p {
-	font-size: 1em;
 	margin-bottom: 4px;
 }
 
@@ -1303,7 +1309,7 @@ ul.linklist:after,
 }
 
 .notification-time {
-	font-size: 0.9em;
+	font-size: 10px;
 	text-align: right;
 	margin: 0;
 }
@@ -1319,7 +1325,7 @@ ul.linklist:after,
 
 .notifications-title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 1.2em !important;
+	font-size: 13px !important;
 }
 
 .notifications-title strong {
@@ -1327,7 +1333,7 @@ ul.linklist:after,
 }
 
 .notifications-time {
-	font-size: 0.9em !important;
+	font-size: 10px !important;
 }
 
 .notification-text {
