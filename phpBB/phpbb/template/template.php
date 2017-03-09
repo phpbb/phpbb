@@ -160,7 +160,7 @@ interface template
 	*
 	* @param mixed	$block_selector Selector of block to retrieve $vararray from,
 	*								see alter_block_array for full description and syntax
-	* @param array	$vararray An array with variable names
+	* @param array	$vararray An array with variable names, empty array gets all vars
 	* @return array of hashes with variable name as key and retrieved value or null as value, false on error
 	*/
 	public function retrieve_block_vars($block_selector, array $vararray);

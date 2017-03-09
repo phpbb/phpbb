@@ -211,7 +211,7 @@ class context
 	*
 	* @param mixed	$block_selector Selector of block to retrieve $vararray from,
 	*								see alter_block_array for full description and syntax
-	* @param array	$vararray An array with variable names
+	* @param array	$vararray An array with variable names, empty array gets all block vars
 	* @return array of hashes with variable name as key and retrieved value or null as value, false on error
 	*/
 	public function retrieve_block_vars($block_selector, array $vararray)
@@ -495,7 +495,7 @@ class context
 	* Retrieve key variable pairs from a block
 	*
 	* @param	array	$block			a reference to the block where we have to retrieve the key variable pairs
-	* @param	array	$vararray		an array of variablle names to be retrieved
+	* @param	array	$vararray		an array of variablle names to be retrieved, empty array gets all block vars
 	* @param	mixed	$key			search key used in last block, ignored
 	* @param	string	$name			name of the block where we are retrieving
 	* @param	int		$index			index were we have to retrieve the vars
@@ -503,17 +503,32 @@ class context
 	*/
 	protected function retrieve_block_array(&$block, array $vararray, $key, $name, $index)
 	{
-		if (!isset($block[$name]))
+		if (!isset($block[$name][$index]))
 		{
 			return false;
 		}
 
 		$result = array();
-		foreach ($vararray as $varname)
+		if ($vararray === array())
 		{
-			$result[$varname] = isset($block[$name][$index][$varname]) ? $block[$name][$index][$varname] : null;
-		}
+			// The calculated vars that depend on the block position are excluded from the complete block returned results
+			$excluded_vars = array('S_FIRST_ROW', 'S_LAST_ROW', 'S_BLOCK_NAME', 'S_NUM_ROWS', 'S_ROW_COUNT', 'S_ROW_NUM');
 
+			foreach ($block[$name][$index] as $varname => $varvalue)
+			{
+				if ($varname === strtoupper($varname) && !is_array($varvalue) && !in_array($varname, $excluded_vars))
+				{
+					$result[$varname] = $varvalue;
+				}
+			}
+		}
+		else
+		{
+			foreach ($vararray as $varname)
+			{
+				$result[$varname] = isset($block[$name][$index][$varname]) ? $block[$name][$index][$varname] : null;
+			}
+		}
 		return $result;
 	}
 
