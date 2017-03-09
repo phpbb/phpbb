@@ -176,7 +176,8 @@ dl.row-item dt a {
 	display: inline;
 }
 
-dl a.row-item-link {						/* topic row icon links */
+/* topic row icon links */
+dl a.row-item-link {
 	position: absolute;
 	top: 50%;
 	left: 0;
@@ -208,7 +209,7 @@ dd.views {
 /* List in forum description */
 dl.row-item dt ol,
 dl.row-item dt ul {
-	margin-left: 1em;
+	margin-left: 10px;
 	list-style-position: inside;
 }
 
@@ -227,11 +228,11 @@ dd.info {
 }
 
 dd.redirect {
-	line-height: 2.5em;
+	line-height: 26px;
 }
 
 dd.time {
-	line-height: 200%;
+	line-height: 22px;
 }
 
 dd.lastpost > span,
@@ -245,12 +246,12 @@ dd.moderation > span {
 
 dd.extra,
 dd.mark {
-	line-height: 200%;
+	line-height: 24px;
 }
 
 dd.option {
-	font-size: 1.1em;
-	line-height: 200%;
+	font-size: 11px;
+	line-height: 22px;
 	text-align: center;
 	width: 125px;
 }
@@ -266,7 +267,7 @@ dd.option {
 }
 
 .postbody .ignore {
-	font-size: 1.1em;
+	font-size: 11px;
 }
 
 .postbody h3.first {
@@ -315,7 +316,7 @@ dd.option {
 /* Topic review panel
 ---------------------------------------- */
 .panel .review {
-	margin-top: 2em;
+	margin-top: 20px;
 }
 
 .topicreview {
@@ -389,10 +390,10 @@ dd.option {
 
 dl.faq {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.1em;
-	line-height: 1.4em;
-	margin-top: 1em;
-	margin-bottom: 2em;
+	font-size: 11px;
+	line-height: 15px;
+	margin-top: 11px;
+	margin-bottom: 22px;
 }
 
 dl.faq dt {
@@ -400,8 +401,8 @@ dl.faq dt {
 }
 
 .content dl.faq {
-	font-size: 1.2em;
-	margin-bottom: 0.5em;
+	font-size: 12px;
+	margin-bottom: 6px;
 }
 
 .content li {
@@ -457,19 +458,19 @@ dd .signature {
 
 .signature ul,
 .signature ol {
-	margin: 0.8em 0 0.9em 3em;
+	margin: 10px 0 10px 33px;
 }
 
 /* Post noticies */
 .notice {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1em;
-	line-height: 130%;
+	font-size: 10px;
+	line-height: 13px;
 	border-top: 1px dashed transparent;
 	clear: left;
 	width: auto;
-	margin-top: 1.5em;
-	padding-top: 0.2em;
+	margin-top: 15px;
+	padding-top: 2px;
 }
 
 /* Jump to post link for now */
@@ -484,21 +485,21 @@ ul.searchresults {
 
 /* Quote block */
 blockquote {
-	font-size: 0.95em;
+	font-size: 10px;
 	border: 1px solid transparent;
 	overflow: hidden;
-	margin: 1em 1px 1em 25px;
+	margin: 10px 1px 10px 25px;
 	padding: 5px;
 }
 
 blockquote blockquote {
 	/* Nested quotes */
-	font-size: 1em;
-	margin: 1em 1px 1em 15px;
+	font-size: 10px;
+	margin: 10px 1px 10px 15px;
 }
 
 blockquote cite {
-	font-size: 0.9em;
+	font-size: 9px;
 	font-weight: bold;
 
 	/* Username/source of quoter */
@@ -507,7 +508,7 @@ blockquote cite {
 }
 
 blockquote cite cite {
-	font-size: 1em;
+	font-size: 10px;
 }
 
 blockquote cite:before,
@@ -527,14 +528,14 @@ blockquote cite > div {
 
 /* Code block */
 .codebox {
-	font-size: 1em;
+	font-size: 13px;
 	word-wrap: normal;
 	border: 1px solid transparent;
-	margin: 1em 0 1.2em;
+	margin: 13px 0 16px;
 }
 
 .codebox p {
-	font-size: 0.8em !important;
+	font-size: 10px !important;
 	font-weight: bold;
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
@@ -548,8 +549,8 @@ blockquote .codebox {
 }
 
 .codebox code {
-	font: 0.9em Monaco, "Andale Mono", "Courier New", Courier, monospace;
-	line-height: 1.3em;
+	font: 12px Monaco, "Andale Mono", "Courier New", Courier, monospace;
+	line-height: 15px;
 	display: block;
 	overflow: auto;
 	height: auto;
@@ -589,13 +590,13 @@ blockquote .codebox {
 
 .attachbox p {
 	font-weight: normal;
-	line-height: 110%;
+	line-height: 12px;
 	clear: left;
 }
 
 .attachbox p.stats {
 	font-weight: normal;
-	line-height: 110%;
+	line-height: 12px;
 	clear: left;
 }
 
@@ -666,7 +667,7 @@ fieldset.polls {
 }
 
 fieldset.polls dl {
-	line-height: 120%;
+	line-height: 13px;
 	border-top: 1px solid transparent;
 	margin-top: 5px;
 	padding: 5px 0 0;
@@ -677,7 +678,7 @@ fieldset.polls dl.voted {
 }
 
 fieldset.polls dt {
-	font-size: 1.1em;
+	font-size: 11px;
 	text-align: left;
 	border-right: none;
 	display: block;
@@ -688,7 +689,7 @@ fieldset.polls dt {
 }
 
 fieldset.polls dd {
-	font-size: 1.1em;
+	font-size: 11px;
 	border-left: none;
 	float: left;
 	width: 10%;
@@ -723,7 +724,7 @@ fieldset.polls dd div {
 }
 
 .vote-submitted {
-	font-size: 1.2em;
+	font-size: 12px;
 	font-weight: bold;
 	text-align: center;
 }
