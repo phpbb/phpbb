@@ -222,7 +222,7 @@ dd.redirect,
 dd.moderation,
 dd.time,
 dd.info {
-	font-size: 1.1em;
+	font-size: 11px;
 	width: 250px;
 }
 
@@ -271,20 +271,20 @@ dd.option {
 
 .postbody h3.first {
 	/* The first post on the page uses this */
-	font-size: 1.7em;
+	font-size: 17px;
 }
 
 .postbody h3 {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.5em;
-	line-height: 125%;
+	font-size: 15px;
+	line-height: 19px;
 	text-transform: none;
 	border: none;
 
 	/* Postbody requires a different h3 format - so change it here */
 	float: left;
 	margin-top: 0 !important;
-	margin-bottom: 0.3em !important;
+	margin-bottom: 4px !important;
 	padding: 2px 0 0;
 }
 
@@ -299,7 +299,7 @@ dd.option {
 }
 
 .postbody .content {
-	font-size: 1.3em;
+	font-size: 13px;
 	overflow-x: auto;
 }
 
@@ -355,11 +355,11 @@ dd.option {
 ---------------------------------------- */
 .content {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1em;
-	line-height: 1.4em;
+	font-size: 10px;
+	line-height: 14px;
 	clear: both;
 	overflow: hidden;
-	min-height: 3em;
+	min-height: 30px;
 	padding-bottom: 1px;
 }
 
@@ -429,14 +429,14 @@ p.author {
 
 /* Post signature */
 .signature {
-	font-size: 1.1em;
-	line-height: 140%;
+	font-size: 11px;
+	line-height: 16px;
 	border-top: 1px solid transparent;
 	clear: left;
 	overflow: hidden;
 	width: 100%;
-	margin-top: 1.5em;
-	padding-top: 0.2em;
+	margin-top: 16px;
+	padding-top: 2px;
 }
 
 .signature.standalone {
@@ -742,7 +742,8 @@ fieldset.polls dd div {
 
 .postprofile dd,
 .postprofile dt {
-	line-height: 1.2em;
+	font-size: 10px;
+	line-height: 12px;
 	margin-left: 8px;
 }
 
