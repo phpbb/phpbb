@@ -1,8 +1,11 @@
 /* -------------------------------------------------------------- /*
 	$Forms
 /* -------------------------------------------------------------- */
+
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-blacklist */
 
 /* General form styles
 ---------------------------------------- */
@@ -44,7 +47,7 @@ select optgroup option {
 }
 
 textarea {
-	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	line-height: 1.4em;
 	width: 60%;
@@ -263,7 +266,7 @@ fieldset.submit-buttons input {
 }
 
 .message-box textarea {
-	font-family: 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.2em;
 	outline: 3px dashed transparent;
 	outline-offset: -4px;
@@ -322,31 +325,82 @@ textarea.inputbox {
 	width: auto !important;
 }
 
-input[type='number'] {
+input[type="number"] {
 	-moz-padding-end: inherit;
 }
 
-input[type='search'] {
+input[type="search"] {
 	-webkit-box-sizing: content-box;
 	-webkit-appearance: textfield;
 }
 
-input[type='search']::-webkit-search-decoration,
-input[type='search']::-webkit-search-results-button,
-input[type='search']::-webkit-search-results-decoration {
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
 	display: none;
 }
 
-input[type='search']::-webkit-search-cancel-button {
+input[type="search"]::-webkit-search-cancel-button {
 	cursor: pointer;
 }
 
-input[type='button'],
-input[type='submit'],
-input[type='reset'],
-input[type='checkbox'],
-input[type='radio'] {
+/* Form button styles
+---------------------------------------- */
+input.button1,
+input.button2 {
+	font-size: 1em;
+}
+
+a.button1,
+input.button1,
+input.button3,
+a.button2,
+input.button2 {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	line-height: 1.5;
+	background: transparent none repeat-x top left;
+	width: auto !important;
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+a.button1,
+input.button1 {
+	font-weight: bold;
+	border: 1px solid transparent;
+}
+
+input.button3 {
+	font-variant: small-caps;
+	line-height: 5px;
+	background-image: none;
+	height: 12px;
+	margin: 0;
+	padding: 0;
+}
+
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"] {
 	cursor: pointer;
+}
+
+/* Alternative button */
+a.button2,
+input.button2,
+input.button3 {
+	border: 1px solid transparent;
+}
+
+/* <a> button in the style of the form buttons */
+a.button1,
+a.button2 {
+	vertical-align: text-bottom;
+	text-decoration: none;
+	padding: 0 3px;
+/* Hover states */
 }
 
 input.disabled {
@@ -360,8 +414,8 @@ input.disabled {
 
 .search-box .inputbox {
 	background-image: none;
-	border-radius: 4px 0 0 4px;
 	border-right-width: 0;
+	border-radius: 4px 0 0 4px;
 	float: left;
 	box-sizing: border-box;
 	height: 24px;
@@ -388,8 +442,8 @@ input.disabled {
 
 input.search {
 	background-image: none;
-	background-position: left 1px;
 	background-repeat: no-repeat;
+	background-position: left 1px;
 	padding-left: 17px;
 }
 
@@ -408,4 +462,8 @@ input.search {
 .tiny {
 	width: 10%;
 }
-/* stylelint-enable */
+
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
+/* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-blacklist */

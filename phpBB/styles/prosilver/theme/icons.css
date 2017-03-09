@@ -11,13 +11,13 @@
  */
 .icon,
 .button .icon {
-	-moz-osx-font-smoothing: grayscale;
 	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	font-family: FontAwesome;
 	font-size: 14px;
+	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
-	font-weight: normal;
 	line-height: 1;
 	display: inline-block;
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */

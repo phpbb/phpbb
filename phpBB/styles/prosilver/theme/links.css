@@ -2,6 +2,7 @@
 	$Links
 /* -------------------------------------------------------------- */
 
+/* stylelint-disable declaration-property-unit-whitelist */
 
 /* Links adjustment to correctly display an order of rtl/ltr mixed content */
 a {
@@ -38,13 +39,13 @@ th a:hover {
 
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
-	background-position: center center;
 	background-repeat: no-repeat;
+	background-position: center center;
 	border-radius: 3px 0 0 3px;
 	position: absolute;
+	z-index: 2;
 	top: 50%;
 	right: 0;
-	z-index: 2;
 	display: none;
 	box-sizing: border-box;
 	margin-top: -20px;
@@ -66,7 +67,7 @@ th a:hover {
 
 /* Links for forum/topic lists */
 a.forumtitle {
-	font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
+	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
 	text-decoration: none;
@@ -77,7 +78,7 @@ a.forumtitle:hover {
 }
 
 a.topictitle {
-	font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
+	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
 	font-size: 1.2em;
 	font-weight: bold;
 	text-decoration: none;
@@ -208,4 +209,5 @@ a.feed-icon-forum {
 a.anchor {
 	display: block;
 }
-/* stylelint-enable */
+
+/* stylelint-enable declaration-property-unit-whitelist */
