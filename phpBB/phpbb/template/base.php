@@ -170,14 +170,6 @@ abstract class base implements template
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
-	public function find_key_index($blockname, $key)
-	{
-		return $this->context->find_key_index($blockname, $key);
-	}
-
-	/**
 	* Calls hook if any is defined.
 	*
 	* @param string $handle Template handle being displayed.
