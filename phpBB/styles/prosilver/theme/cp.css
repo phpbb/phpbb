@@ -1,11 +1,13 @@
-/* Control Panel Styles
----------------------------------------- */
-
+/* -------------------------------------------------------------- /*
+	$Contorl Panel
+/* -------------------------------------------------------------- */
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
 
 /* Main CP box
-----------------------------------------*/
+---------------------------------------- */
 .cp-menu {
-	float:left;
+	float: left;
 	width: 19%;
 	margin-top: 1em;
 	margin-bottom: 5px;
@@ -25,21 +27,22 @@
 }
 
 .panel-container .panel ol {
-	margin-left: 2em;
 	font-size: 1.1em;
+	margin-left: 2em;
 }
 
 .panel-container .panel li.row {
-	border-bottom: 1px solid transparent;
 	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
 }
 
 ul.cplist {
-	margin-bottom: 5px;
 	border-top: 1px solid transparent;
+	margin-bottom: 5px;
 }
 
-.panel-container .panel li.header dd, .panel-container .panel li.header dt {
+.panel-container .panel li.header dd,
+.panel-container .panel li.header dt {
 	margin-bottom: 2px;
 }
 
@@ -61,16 +64,17 @@ ul.cplist {
 
 .cp-main .pm-message {
 	border: 1px solid transparent;
-	margin: 10px 0;
-	width: auto;
 	float: none;
+	width: auto;
+	margin: 10px 0;
 }
 
 .pm-message h2 {
 	padding-bottom: 5px;
 }
 
-.cp-main .postbody h3, .cp-main .box2 h3 {
+.cp-main .postbody h3,
+.cp-main .box2 h3 {
 	margin-top: 0;
 }
 
@@ -93,41 +97,45 @@ ul.cplist {
 
 .tabs-container h2 {
 	float: left;
-	margin-bottom: 0px;
+	margin-bottom: 0;
 }
 
 /* CP tabs shared
-----------------------------------------*/
-.tabs, .minitabs {
+---------------------------------------- */
+.tabs,
+.minitabs {
 	line-height: normal;
 }
 
-.tabs > ul, .minitabs > ul {
-	list-style: none;
+.tabs > ul,
+.minitabs > ul {
+	position: relative;
 	margin: 0;
 	padding: 0;
-	position: relative;
+	list-style: none;
 }
 
-.tabs .tab, .minitabs .tab {
-	display: block;
-	float: left;
+.tabs .tab,
+.minitabs .tab {
 	font-size: 1em;
 	font-weight: bold;
 	line-height: 1.4em;
+	display: block;
+	float: left;
 }
 
-.tabs .tab > a, .minitabs .tab > a {
-	display: block;
-	padding: 5px 9px;
-	position: relative;
+.tabs .tab > a,
+.minitabs .tab > a {
 	text-decoration: none;
 	white-space: nowrap;
+	position: relative;
+	display: block;
+	padding: 5px 9px;
 	cursor: pointer;
 }
 
 /* CP tabbed menu
-----------------------------------------*/
+---------------------------------------- */
 .tabs {
 	margin: 20px 0 0 7px;
 }
@@ -144,11 +152,11 @@ ul.cplist {
 }
 
 /* Mini tabbed menu used in MCP
-----------------------------------------*/
+---------------------------------------- */
 .minitabs {
 	float: right;
-	margin: 15px 7px 0 0;
 	max-width: 50%;
+	margin: 15px 7px 0 0;
 }
 
 .minitabs .tab {
@@ -165,45 +173,47 @@ ul.cplist {
 }
 
 /* Responsive tabs
-----------------------------------------*/
+---------------------------------------- */
 .responsive-tab {
 	position: relative;
 }
 
 .responsive-tab > a.responsive-tab-link {
-	display: block;
 	font-size: 1.6em;
-	position: relative;
-	width: 16px;
 	line-height: 0.9em;
 	text-decoration: none;
+	position: relative;
+	display: block;
+	width: 16px;
 }
 
 .responsive-tab .responsive-tab-link:before {
-	content: '';
-	position: absolute;
-	left: 10px;
-	top: 7px;
-	height: .125em;
-	width: 14px;
-	border-bottom: 0.125em solid transparent;
 	border-top: 0.375em double transparent;
+	border-bottom: 0.125em solid transparent;
+	position: absolute;
+	top: 7px;
+	left: 10px;
+	width: 14px;
+	height: 0.125em;
+	content: '';
 }
 
-.tabs .dropdown, .minitabs .dropdown {
-	top: 20px;
-	margin-right: -2px;
+.tabs .dropdown,
+.minitabs .dropdown {
 	font-size: 1.1em;
 	font-weight: normal;
+	top: 20px;
+	margin-right: -2px;
 }
 
 .minitabs .dropdown {
 	margin-right: -4px;
 }
 
-.tabs .dropdown-up .dropdown, .minitabs .dropdown-up .dropdown {
-	bottom: 20px;
+.tabs .dropdown-up .dropdown,
+.minitabs .dropdown-up .dropdown {
 	top: auto;
+	bottom: 20px;
 }
 
 .tabs .dropdown li {
@@ -215,7 +225,8 @@ ul.cplist {
 }
 
 /* UCP navigation menu
-----------------------------------------*/
+---------------------------------------- */
+
 /* Container for sub-navigation list */
 .navigation {
 	width: 100%;
@@ -228,18 +239,18 @@ ul.cplist {
 
 /* Default list state */
 .navigation li {
-	display: inline;
 	font-weight: bold;
+	display: inline;
 	margin: 1px 0;
 	padding: 0;
 }
 
 /* Link styles for the sub-section links */
 .navigation a {
-	display: block;
-	padding: 5px;
-	margin: 1px 0;
 	text-decoration: none;
+	display: block;
+	margin: 1px 0;
+	padding: 5px;
 }
 
 .navigation a:hover {
@@ -247,20 +258,20 @@ ul.cplist {
 }
 
 /* Preferences pane layout
-----------------------------------------*/
+---------------------------------------- */
 .cp-main h2 {
 	border-bottom: none;
-	padding: 0;
 	margin-left: 10px;
+	padding: 0;
 }
 
 /* Friends list */
 .cp-mini {
-	margin: 10px 15px 10px 5px;
-	max-height: 200px;
-	overflow-y: auto;
-	padding: 5px 10px;
 	border-radius: 7px;
+	overflow-y: auto;
+	max-height: 200px;
+	margin: 10px 15px 10px 5px;
+	padding: 5px 10px;
 }
 
 dl.mini dt {
@@ -280,7 +291,8 @@ dl.mini dd {
 }
 
 /* PM Styles
-----------------------------------------*/
+---------------------------------------- */
+
 /* Defined rules list for PM options */
 ol.def-rules {
 	padding-left: 0;
@@ -300,60 +312,68 @@ ol.def-rules li {
 	padding: 0 3px;
 }
 
-.pmlist li.pm_message_reported_colour, .pm_message_reported_colour {
-	border-left-color: transparent;
+.pmlist li.pm_message_reported_colour,
+.pm_message_reported_colour {
 	border-right-color: transparent;
+	border-left-color: transparent;
 }
 
-.pmlist li.pm_marked_colour, .pm_marked_colour,
-.pmlist li.pm_replied_colour, .pm_replied_colour,
-.pmlist li.pm_friend_colour, .pm_friend_colour,
-.pmlist li.pm_foe_colour, .pm_foe_colour {
-	padding: 0;
+.pmlist li.pm_marked_colour,
+.pm_marked_colour,
+.pmlist li.pm_replied_colour,
+.pm_replied_colour,
+.pmlist li.pm_friend_colour,
+.pm_friend_colour,
+.pmlist li.pm_foe_colour,
+.pm_foe_colour {
 	border: solid 3px transparent;
 	border-width: 0 3px;
+	padding: 0;
 }
 
 .pm-legend {
-	border-left-width: 10px;
-	border-left-style: solid;
 	border-right-width: 0;
+	border-left-style: solid;
+	border-left-width: 10px;
 	margin-bottom: 3px;
 	padding-left: 3px;
 }
 
 /* Avatar gallery */
 .gallery label {
+	text-align: center;
+	border: 1px solid transparent;
 	position: relative;
 	float: left;
+	width: auto;
 	margin: 10px;
 	padding: 5px;
-	width: auto;
-	border: 1px solid transparent;
-	text-align: center;
 }
 
 /* Responsive *CP navigation
-----------------------------------------*/
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px)
-{
-	.nojs .tabs a span, .nojs .minitabs a span {
-		max-width: 40px;
-		overflow: hidden;
+---------------------------------------- */
+
+@media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
+	.nojs .tabs a span,
+	.nojs .minitabs a span {
+		letter-spacing: -0.5px;
 		text-overflow: ellipsis;
-		letter-spacing: -.5px;
+		overflow: hidden;
+		max-width: 40px;
 	}
 
-	.cp-menu, .navigation, .cp-main {
+	.cp-menu,
+	.navigation,
+	.cp-main {
 		float: none;
 		width: auto;
 		margin: 0;
 	}
 
 	.navigation {
-		padding: 0;
-		margin: 0 auto;
 		max-width: 320px;
+		margin: 0 auto;
+		padding: 0;
 	}
 
 	.navigation a {
@@ -370,3 +390,4 @@ ol.def-rules li {
 		border-bottom-right-radius: 5px;
 	}
 }
+/* stylelint-enable */

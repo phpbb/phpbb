@@ -1219,7 +1219,7 @@ class parse_message extends bbcode_firstpass
 		* @var bool		return					Do we return after the event is triggered if $warn_msg is not empty
 		* @var array	warn_msg				Array of the warning messages
 		* @since 3.1.2-RC1
-		* @change 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
+		* @changed 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
 		*/
 		$message = $this->message;
 		$warn_msg = $this->warn_msg;

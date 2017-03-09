@@ -280,7 +280,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	bool	delete					Whether the user is deleting the PM
 		* @var	int		reply_to_all			Value of reply_to_all request variable.
 		* @since 3.1.0-RC5
-		* @change 3.2.0-a1 Removed undefined variables
+		* @changed 3.2.0-a1 Removed undefined variables
 		*/
 		$vars = array(
 			'sql',
@@ -345,7 +345,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			* @var	bool	delete				If deleting message
 			* @var	int		reply_to_all		Value of reply_to_all request variable.
 			* @since 3.1.0-RC5
-			* @change 3.2.0-a1 Removed undefined variables
+			* @changed 3.2.0-a1 Removed undefined variables
 			*/
 			$vars = array(
 				'sql',
