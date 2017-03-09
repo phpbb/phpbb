@@ -1243,6 +1243,7 @@ ul.linklist:after,
 	text-transform: uppercase;
 	border-bottom: 1px solid;
 	border-radius: 5px 5px 0 0;
+	/* needs moved to colurs.css */
 	text-shadow: 1px 1px 1px #ffffff;
 	padding: 0 10px;
 }
