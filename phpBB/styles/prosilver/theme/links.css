@@ -98,7 +98,7 @@ a.lastsubject:hover {
 }
 
 .row-item a:hover {
-	text-decoration: none
+	text-decoration: none;
 }
 
 .row-item .topictitle:hover,
