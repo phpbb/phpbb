@@ -85,3 +85,20 @@
     line-height: .9;
     height: 12px;
 }
+
+
+blockquote cite:before, .uncited:before {
+	-webkit-font-smoothing: antialiased;
+	-mos-osx-font-smoothing: grayscale;
+	font-family: FontAwesome;
+	font-size: 14px;
+	font-weight: normal;
+	font-style: normal;
+	font-variant: normal;
+	line-height: 1;
+	text-rendering: auto;
+	display: inline-block;
+	padding-right: 5px;
+	content: '\f10d'; /* Font Awesome quote-left */
+}
+

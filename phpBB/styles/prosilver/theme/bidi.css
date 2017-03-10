@@ -502,15 +502,13 @@ li.breadcrumbs span:first-child > a {
 
 .rtl blockquote cite {
 	/* Username/source of quoter */
-	margin-right: 0;
 	margin-left: 0;
 }
 
 .rtl blockquote cite:before, .uncited:before {
-	/* Font Awesome quote-right */
-	content: '\f10e';
 	padding-right: 0;
 	padding-left: 5px;
+	content: '\f10e'; /* Font Awesome quote-right */
 }
 
 .rtl blockquote .codebox {
