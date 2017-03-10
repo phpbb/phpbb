@@ -48,6 +48,14 @@ $sort_dir	= $request->variable('sd', $default_sort_dir);
 
 $update		= $request->variable('update', false);
 
+//extract forum image
+	$sql = 'SELECT forum_image
+			FROM ' . FORUMS_TABLE . "
+			WHERE forum_id = $forum_id";
+		$result = $db->sql_query($sql);
+		$phpbb_forum_image = $db->sql_fetchfield('forum_image');
+		$db->sql_freeresult($result);
+
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
@@ -688,6 +696,11 @@ if (!empty($_EXTRA_URL))
 // If we've got a hightlight set pass it on to pagination.
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
 
+//extract variables for making meta tags
+	$phpbb_topic_title = $topic_data['topic_title'];
+
+	$phpbb_topic_author = $topic_data['topic_first_poster_name'];
+
 /**
 * Event to modify data before template variables are being assigned
 *
@@ -1285,6 +1298,11 @@ while ($row = $db->sql_fetchrow($result))
 		'friend'			=> $row['friend'],
 		'foe'				=> $row['foe'],
 	);
+
+$phpbb_topic_description = $row['post_text'];
+$phpbb_domain = $request->server("HTTP_HOST");
+$meta_data = phpbb_make_meta_tags ($phpbb_topic_author, $phpbb_forum_image, $phpbb_topic_title, $phpbb_topic_description, $phpbb_domain);
+$template->assign_vars(array("META"=>$meta_data));
 
 	/**
 	* Modify the post rowset containing data to be displayed with posts
