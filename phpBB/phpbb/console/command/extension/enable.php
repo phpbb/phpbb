@@ -43,7 +43,7 @@ class enable extends command
 			$io->error($this->user->lang('CLI_EXTENSION_ALREADY_ENABLED', $name));
 			return 1;
 		}
-		
+
 		$this->manager->enable($name);
 		$this->manager->load_extensions();
 
