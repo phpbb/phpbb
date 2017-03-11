@@ -102,3 +102,9 @@ blockquote cite:before, .uncited:before {
 	content: '\f10d'; /* Font Awesome quote-left */
 }
 
+.rtl blockquote cite:before, .rtl .uncited:before {
+	padding-right: 0;
+	padding-left: 5px;
+	content: '\f10e'; /* Font Awesome quote-right */
+}
+

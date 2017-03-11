@@ -505,12 +505,6 @@ li.breadcrumbs span:first-child > a {
 	margin-left: 0;
 }
 
-.rtl blockquote cite:before, .uncited:before {
-	padding-right: 0;
-	padding-left: 5px;
-	content: '\f10e'; /* Font Awesome quote-right */
-}
-
 .rtl blockquote .codebox {
 	margin-right: 0;
 }
