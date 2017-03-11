@@ -26,7 +26,7 @@ if (!defined('IN_PHPBB'))
 class acp_board
 {
 	var $u_action;
-	var $new_config = array();
+	var $new_config;
 
 	function main($id, $mode)
 	{
@@ -482,7 +482,7 @@ class acp_board
 			$user->add_lang($display_vars['lang']);
 		}
 
-		$this->new_config = $config;
+		$this->new_config = clone $config;
 		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
