@@ -37,6 +37,13 @@ class disable extends command
 		$io = new SymfonyStyle($input, $output);
 
 		$name = $input->getArgument('extension-name');
+
+		if (!$this->manager->is_enabled($name))
+		{
+			$io->error($this->user->lang('CLI_EXTENSION_ALREADY_DISABLED', $name));
+			return 1;
+		}
+		
 		$this->manager->disable($name);
 		$this->manager->load_extensions();
 
