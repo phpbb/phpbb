@@ -40,7 +40,7 @@ class enable extends command
 
 		if ($this->manager->is_enabled($name))
 		{
-			$io->error($this->user->lang('CLI_EXTENSION_ALREADY_ENABLED', $name));
+			$io->error($this->user->lang('CLI_EXTENSION_ENABLE_ENABLED', $name));
 			return 1;
 		}
 
