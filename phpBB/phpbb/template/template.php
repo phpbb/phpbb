@@ -237,23 +237,6 @@ interface template
 	public function alter_block_array($block_selector, array $vararray, $key = false, $mode = 'insert');
 
 	/**
-	* Find the index for a specified key in the innermost specified block
-	*
-	* @param	string	$blockname	the blockname, for example 'loop'
-	* @param	mixed	$key		Key to search for
-	*
-	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
-	*
-	* int: Position [the position to search for]
-	*
-	* If key is false the position is set to 0
-	* If key is true the position is set to the last entry
-	*
-	* @return mixed false if not found, index position otherwise; be sure to test with ===
-	*/
-	public function find_key_index($blockname, $key);
-
-	/**
 	* Get path to template for handle (required for BBCode parser)
 	*
 	* @param string $handle Handle to retrieve the source file
