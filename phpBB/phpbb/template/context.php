@@ -87,6 +87,17 @@ class context
 	}
 
 	/**
+	* Retreive a single scalar value from a single key.
+	*
+	* @param string $varname Variable name
+	* @return mixed Variable value, or null if not set
+	*/
+	public function retrieve_var($varname)
+	{
+		return isset($this->rootref[$varname]) ? $this->rootref[$varname] : null;
+	}
+
+	/**
 	* Returns a reference to template data array.
 	*
 	* This function is public so that template renderer may invoke it.
@@ -172,369 +183,458 @@ class context
 	/**
 	* Assign key variable pairs from an array to a specified block
 	*
-	* @param string $blockname Name of block to assign $vararray to
+	* @param mixed	$block_selector Selector of block to assign $vararray to,
+	*								see alter_block_array for full description and syntax
 	* @param array $vararray A hash of variable name => value pairs
-	* @return true
+	* @return false on error, true on success
 	*/
-	public function assign_block_vars($blockname, array $vararray)
+	public function assign_block_vars($block_selector, array $vararray)
 	{
-		$this->num_rows_is_set = false;
-		if (strpos($blockname, '.') !== false)
-		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$str = &$this->tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
-			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
-			}
-
-			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
-			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blocks[$blockcount];
-
-			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
-			// This is much more clever than going through the complete template data on display (phew)
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($str[$blocks[$blockcount]][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Now we add the block that we're actually assigning to.
-			// We're adding a new iteration to this block with the given
-			// variable assignments.
-			$str[$blocks[$blockcount]][] = $vararray;
-		}
-		else
-		{
-			// Top-level block.
-			$s_row_count = (isset($this->tpldata[$blockname])) ? sizeof($this->tpldata[$blockname]) : 0;
-			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blockname;
-
-			// We always assign S_LAST_ROW and remove the entry before
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($this->tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Add a new iteration to this block with the variable assignments we were given.
-			$this->tpldata[$blockname][] = $vararray;
-		}
-
-		return true;
+		return $this->alter_block_array($block_selector, array($vararray), null, 'multiinsert');
 	}
 
 	/**
 	* Assign key variable pairs from an array to a whole specified block loop
 	*
-	* @param string $blockname Name of block to assign $block_vars_array to
-	* @param array $block_vars_array An array of hashes of variable name => value pairs
-	* @return true
+	* @param mixed	$block_selector Selector of block to assign block vars array to,
+	*								see alter_block_array for full description and syntax
+	* @param array	$block_vars_array An array of hashes of variable name => value pairs
+	* @return true on success, false otherwise
 	*/
-	public function assign_block_vars_array($blockname, array $block_vars_array)
+	public function assign_block_vars_array($block_selector, array $block_vars_array)
 	{
-		foreach ($block_vars_array as $vararray)
-		{
-			$this->assign_block_vars($blockname, $vararray);
-		}
-
-		return true;
+		return $this->alter_block_array($block_selector, $block_vars_array, null, 'multiinsert');
 	}
 
 	/**
-	* Find the index for a specified key in the innermost specified block
+	* Retrieve variable values from an specified block
 	*
-	* @param	string	$blockname	the blockname, for example 'loop'
-	* @param	mixed	$key		Key to search for
-	*
-	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
-	*
-	* int: Position [the position to search for]
-	*
-	* If key is false the position is set to 0
-	* If key is true the position is set to the last entry
-	*
-	* @return mixed false if not found, index position otherwise; be sure to test with ===
+	* @param mixed	$block_selector Selector of block to retrieve $vararray from,
+	*								see alter_block_array for full description and syntax
+	* @param array	$vararray An array with variable names, empty array gets all block vars
+	* @return array of hashes with variable name as key and retrieved value or null as value, false on error
 	*/
-	public function find_key_index($blockname, $key)
+	public function retrieve_block_vars($block_selector, array $vararray)
 	{
-		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
-		$blocks = explode('.', $blockname);
-		$blockcount = sizeof($blocks) - 1;
-
-		$block = $this->tpldata;
-		for ($i = 0; $i < $blockcount; $i++)
-		{
-			if (($pos = strpos($blocks[$i], '[')) !== false)
-			{
-				$name = substr($blocks[$i], 0, $pos);
-
-				if (strpos($blocks[$i], '[]') === $pos)
-				{
-					$index = sizeof($block[$name]) - 1;
-				}
-				else
-				{
-					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-				}
-			}
-			else
-			{
-				$name = $blocks[$i];
-				$index = sizeof($block[$name]) - 1;
-			}
-			if (!isset($block[$name]))
-			{
-				return false;
-			}
-			$block = $block[$name];
-			if (!isset($block[$index]))
-			{
-				return false;
-			}
-			$block = $block[$index];
-		}
-
-		if (!isset($block[$blocks[$i]]))
-		{
-			return false;
-		}
-		$block = $block[$blocks[$i]]; // Traverse the last block
-
-		// Change key to zero (change first position) if false and to last position if true
-		if ($key === false || $key === true)
-		{
-			return ($key === false) ? 0 : sizeof($block) - 1;
-		}
-
-		// Get correct position if array given
-		if (is_array($key))
-		{
-			// Search array to get correct position
-			list($search_key, $search_value) = @each($key);
-			foreach ($block as $i => $val_ary)
-			{
-				if ($val_ary[$search_key] === $search_value)
-				{
-					return $i;
-				}
-			}
-		}
-
-		return (is_int($key) && ((0 <= $key) && ($key < sizeof($block)))) ? $key : false;
-	}
-
-	/**
-	* Change already assigned key variable pair (one-dimensional - single loop entry)
-	*
-	* An example of how to use this function:
-	* {@example alter_block_array.php}
-	*
-	* @param	string	$blockname	the blockname, for example 'loop'
-	* @param	array	$vararray	the var array to insert/add or merge
-	* @param	mixed	$key		Key to search for
-	*
-	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
-	*
-	* int: Position [the position to change or insert at directly given]
-	*
-	* If key is false the position is set to 0
-	* If key is true the position is set to the last entry
-	*
-	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
-	*
-	*	If insert, the vararray is inserted at the given position (position counting from zero).
-	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new \value).
-	*
-	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
-	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
-	*
-	* @return bool false on error, true on success
-	*/
-	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
-	{
-		$this->num_rows_is_set = false;
-
-		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
-		$blocks = explode('.', $blockname);
-		$blockcount = sizeof($blocks) - 1;
-
-		$block = &$this->tpldata;
-		for ($i = 0; $i < $blockcount; $i++)
-		{
-			if (($pos = strpos($blocks[$i], '[')) !== false)
-			{
-				$name = substr($blocks[$i], 0, $pos);
-
-				if (strpos($blocks[$i], '[]') === $pos)
-				{
-					$index = sizeof($block[$name]) - 1;
-				}
-				else
-				{
-					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-				}
-			}
-			else
-			{
-				$name = $blocks[$i];
-				$index = sizeof($block[$name]) - 1;
-			}
-			$block = &$block[$name];
-			$block = &$block[$index];
-		}
-		$name = $blocks[$i];
-
-		// If last block does not exist and we are inserting, and not searching for key, we create it empty; otherwise, nothing to do
-		if (!isset($block[$name]))
-		{
-			if ($mode != 'insert' || is_array($key))
-			{
-				return false;
-			}
-			$block[$name] = array();
-		}
-
-		$block = &$block[$name]; // Now we can traverse the last block
-
-		// Change key to zero (change first position) if false and to last position if true
-		if ($key === false || $key === true)
-		{
-			$key = ($key === false) ? 0 : sizeof($block);
-		}
-
-		// Get correct position if array given
-		if (is_array($key))
-		{
-			// Search array to get correct position
-			list($search_key, $search_value) = @each($key);
-
-			$key = null;
-			foreach ($block as $i => $val_ary)
-			{
-				if ($val_ary[$search_key] === $search_value)
-				{
-					$key = $i;
-					break;
-				}
-			}
-
-			// key/value pair not found
-			if ($key === null)
-			{
-				return false;
-			}
-		}
-
-		// Insert Block
-		if ($mode == 'insert')
-		{
-			// Make sure we are not exceeding the last iteration
-			if ($key >= sizeof($block))
-			{
-				$key = sizeof($block);
-				unset($block[($key - 1)]['S_LAST_ROW']);
-				$vararray['S_LAST_ROW'] = true;
-			}
-			if ($key <= 0)
-			{
-				$key = 0;
-				unset($block[0]['S_FIRST_ROW']);
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $name;
-
-			// Re-position template blocks
-			for ($i = sizeof($block); $i > $key; $i--)
-			{
-				$block[$i] = $block[$i-1];
-
-				$block[$i]['S_ROW_COUNT'] = $block[$i]['S_ROW_NUM'] = $i;
-			}
-
-			// Insert vararray at given position
-			$block[$key] = $vararray;
-			$block[$key]['S_ROW_COUNT'] = $block[$key]['S_ROW_NUM'] = $key;
-
-			return true;
-		}
-
-		// Which block to change?
-		if ($mode == 'change')
-		{
-			// If key is out of bounds, do not change anything
-			if ($key > sizeof($block) || $key < 0)
-			{
-				return false;
-			}
-
-			if ($key == sizeof($block))
-			{
-				$key--;
-			}
-
-			$block[$key] = array_merge($block[$key], $vararray);
-
-			return true;
-		}
-
-		return false;
+		return $this->alter_block_array($block_selector, $vararray, null, 'retrieve');
 	}
 
 	/**
 	* Reset/empty complete block
 	*
-	* @param string $blockname Name of block to destroy
-	* @return true
+	* @param mixed	$block_selector Selector of block to destroy,
+	*								see alter_block_array for full description and syntax
+	* @return bool	true if successful, false if block is not found
 	*/
-	public function destroy_block_vars($blockname)
+	public function destroy_block_vars($block_selector)
 	{
-		$this->num_rows_is_set = false;
-		if (strpos($blockname, '.') !== false)
-		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
+		return $this->alter_block_array($block_selector, array(), null, 'delete');
+	}
 
-			$str = &$this->tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
+	/**
+	* Find the index for a specified key in the innermost specified block
+	*
+	* @param mixed	$block_selector Selector of block to find,
+	*								see alter_block_array for full description and syntax
+	* @param mixed	$key Key to search for, provided for backward compatibility, only considered if last level block selector value === null
+	* @return mixed false if not found, index position otherwise; be sure to test with ===
+	*/
+	public function find_key_index($block_selector, $key = null)
+	{
+		return $this->alter_block_array($block_selector, array(), $key, 'find');
+	}
+
+	/**
+	* Core function to select a block in which we are going to act
+	*
+	* @param	mixed	$block_selector Selector of block to retrieve $vararray from, with two possible formats
+	*			string		blockname of the block to act on; can be
+	*							* simple ('loop')
+	*							* multilevel ('loop.inner')
+	*							* indexed ('loop[1].inner', or 'loop.inner[0]', or even 'loop[1].inner[2]')
+	*							*		also allows 'loop[]' to refer to the last element of a loop
+	*							*		if index is ommited, last element is also taken
+	*			array		complete block selector, with one hash per (ordered) nesting block level
+	*							* array key is the (string) name of the block
+	*							* array value is the index within that block, as follows
+	*								- false refers to the first element of the block (index 0)
+	*								- true refers to the end of the block
+	*									last element, index == count(block)-1 for most operations
+	*									or after it for last level of insertion, index == count(block)
+	*								- int refers to the exact position of index to take; valid values 0..count(block)-1
+	*								- array('KEY' => value) search block for index where block[index]['KEY'] === value
+	*								- null is equivalent to true except for last level deletion, where it is used to delete whole block (all indexes)
+	*				EXAMPLES of block_selector:
+	*						'loop' == array('loop' => null)
+	*						'loop.inner' == array('loop' => null, 'inner' => null)
+	*						'loop[1].inner[]' == array('loop' => 1, 'inner' => true)
+	*						not possible as string == array(array('loop' => array('VARNAME' => varvalue), 'inner' => true)
+	*
+	* @param	array	$vararray	the var array to operate with
+	* @param	mixed	$key		Provided for backward compatibility, only considered if last level block selector value === null, same semantics
+	* @param	string	$mode		Mode to execute (valid modes are 'find', 'retrieve', 'insert', 'multiinsert', 'change' and 'delete')
+	*			'find'			the vararray is ignored (but must be an array), and the integer index of the last level block is returned; use find_key_index instead.
+	*			'retrieve'		the vararray is a list of variable names to retrieve from the selected block; use retrieve_block_vars instead.
+	*			'insert'		the vararray is inserted at the given position (position counting from zero).
+	*			'multiinsert'	the vararray is an array of vararrays, inserted at the given position (position counting from zero); use assign_block_vars_array instead.
+	*			'change'		the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).
+	*			'delete'		the vararray is ignored (but must be an array), and the block at the given position is removed; use destroy_block_vars instead.
+	*
+	*		EXAMPLES of alter_block_array
+	*			alter_block_array('loop', array('NAME'=>'first')) // Insert the vararray in the loop block, at the beginning (if it exists, if not, creates the 'loop' block)
+	*			alter_block_array('loop.inner', array('INSIDE'=>11), true, 'insert')
+	*			alter_block_array('loop', array('NAME'=>'zero')) // Inserted BEFORE the existing block in loop
+	*			alter_block_array('loop', array('NAME'=>'second'), true) // Insert at the end
+	*			alter_block_array('loop.inner', array('INSIDE'=>21)) // Create new block inside last one
+	*			alter_block_array(array('loop' => array('NAME'=>'first'), 'inner' => null), array('S_INSIDE'=>12), null, 'insert')
+	*			alter_block_array(array('loop' => array('NAME'=>'zero'), 'inner' => 0), array('S_INSIDE'=>01), null, 'insert')
+	*			alter_block_array(array('loop' => array('NAME'=>'first'), 'inner' => null), array(), array('INSIDE'=>11), 'delete') // Deletes single block entry
+	*			alter_block_array(array('loop' => array('NAME'=>'first'), 'inner' => null), array(), null, 'delete') // Deletes the whole block
+	*			alter_block_array('loop[1]', array('NAME'=>'newfirst', 'WAS'=>'second'), null, 'change') // Changes the block, changing one var and adding another
+	*
+	* @return mixed		bool false on error, true on success, int for mode='find', array of hashes for mode='retrieve'
+	*/
+	public function alter_block_array($block_selector, array $vararray, $key = false, $mode = 'insert')
+	{
+		// Convert block selector to array format and validate
+		if (is_string($block_selector))
+		{
+			$block_selector = $this->block_selector_array($block_selector);
+		}
+		if (!is_array($block_selector))
+		{
+			return false;
+		}
+
+		// If last block selector key is null, then we take into considertion the param, otherwise ignored
+		if (!is_null($key) && is_null(end($block_selector)))
+		{
+			$block_selector[key($block_selector)] = $key;
+		}
+
+		$block = &$this->tpldata;
+
+		reset($block_selector);
+		while (list($name, $search_key) = each($block_selector))
+		{
+			// Find the index in the block for the given key
+			if (($index = $this->find_block_index(@$block[$name], $search_key)) === false)
 			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
+				return false;
 			}
 
-			unset($str[$blocks[$blockcount]]);
+			// Last iteration, we do not traverse last level, and keep $name and $search_key at its latest values
+			if (!key($block_selector))
+			{
+				break;
+			}
+
+			// Traverse this block level
+			if (!isset($block[$name]))
+			{
+				return false;
+			}
+			$block = &$block[$name];
+			$block = &$block[$index];
 		}
-		else
+
+		// Now we perform the specific action with the selected block; we use call_user_func_array to be able to pass block by ref
+		return call_user_func_array(array($this, $mode . '_block_array'), array(&$block, $vararray, $search_key, $name, $index));
+	}
+
+	/**
+	* Insert an array of template vars into a block
+	*
+	* @param	array	$block			a reference to the block where we have to insert
+	* @param	array	$vararray		the var array to insert
+	* @param	mixed	$key			search key used in last block, true or null to insert past the end of the block
+	* @param	string	$name			name of the block where we are inserting
+	* @param	int		$index			index where we have to insert
+	* @return bool false on error, true on success
+	*/
+	protected function insert_block_array(&$block, array $vararray, $key, $name, $index)
+	{
+		return $this->multiinsert_block_array($block, array($vararray), $key, $name, $index);
+	}
+
+	/**
+	* Multi-insert an array of arrays of template vars into a block, single call for performance
+	*
+	* @param	array	$block			a reference to the block where we have to insert
+	* @param	array	$vararrays		the array of var arrays to insert
+	* @param	mixed	$key			search key used in last block, true or null to insert past the end of the block
+	* @param	string	$name			name of the block where we are inserting
+	* @param	int		$index			index where we have to insert
+	* @return bool false on error, true on success
+	*/
+	protected function multiinsert_block_array(&$block, array $vararrays, $key, $name, $index)
+	{
+		if (($numarrays = count($vararrays)) == 0)
 		{
-			// Top-level block.
-			unset($this->tpldata[$blockname]);
+			return false; // Nothing to insert
+		}
+
+		$this->num_rows_is_set = false;
+
+		if (!isset($block[$name]))
+		{
+			$block[$name] = array();
+		}
+		$block = &$block[$name];
+
+		// If inserting at the end, we need to reposition
+		if ($key === null || $key === true)
+		{
+			$index++;
+		}
+
+		// Fix S_FIRST_ROW and S_LAST_ROW
+		if ($index == count($block))
+		{
+			unset($block[($index - 1)]['S_LAST_ROW']);
+			$vararrays[($numarrays - 1)]['S_LAST_ROW'] = true;
+		}
+		if ($index == 0)
+		{
+			unset($block[0]['S_FIRST_ROW']);
+			$vararrays[0]['S_FIRST_ROW'] = true;
+		}
+
+		// Re-position template blocks to make room for the new one
+		for ($i = count($block) + $numarrays - 1; $i > $index + $numarrays - 1; $i--)
+		{
+			$block[$i] = $block[$i - $numarrays];
+			$block[$i]['S_ROW_COUNT'] = $block[$i]['S_ROW_NUM'] = $i;
+		}
+
+		// Insert vararrays at given position
+		foreach ($vararrays as $vararray)
+		{
+			// Assign S_BLOCK_NAME and S_ROW_COUNT and S_ROW_NUM
+			$vararray['S_BLOCK_NAME'] = $name;
+			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $index;
+
+			// Insert vararray at given position and move the position
+			$block[$index] = $vararray;
+			$index++;
 		}
 
 		return true;
+	}
+
+	/**
+	* Change an array of template vars into a block, the block must exist, but the template vars will be merged
+	*
+	* @param	array	$block			a reference to the block where we have to change
+	* @param	array	$vararray		the var array to change
+	* @param	mixed	$key			search key used in last block, ignored
+	* @param	string	$name			name of the block where we are changing
+	* @param	int		$index			index where we have to change
+	* @return bool false on error, true on success
+	*/
+	protected function change_block_array(&$block, array $vararray, $key, $name, $index)
+	{
+		if (!isset($block[$name]))
+		{
+			return false;
+		}
+
+		$this->num_rows_is_set = false;
+
+		$block[$name][$index] = array_merge($block[$name][$index], $vararray);
+
+		return true;
+	}
+
+	/**
+	* Delete a block of template vars, the block must exist
+	*
+	* @param	array	$block			a reference to the block where we have to delete
+	* @param	array	$vararray		the var array is ignored, but must be an array
+	* @param	mixed	$key			search key used in last block, used to identify full-block deletion
+	* @param	string	$name			name of the block where we are deleting
+	* @param	mixed	$index			index we have to delete
+	* @return bool false on error, true on success
+	*/
+	protected function delete_block_array(&$block, array $vararray, $key, $name, $index)
+	{
+		if (!isset($block[$name]))
+		{
+			return false;
+		}
+
+		$this->num_rows_is_set = false;
+
+		// Delete the whole block if so specified, or when deleting the only element in block
+		if (is_null($key) || count($block[$name]) === 1)
+		{
+			unset($block[$name]);
+			return true;
+		}
+
+		$block = &$block[$name];
+
+		// Re-position template blocks to fill the gap
+		for ($i = $index; $i < count($block)-1; $i++)
+		{
+			$block[$i] = $block[$i+1];
+			$block[$i]['S_ROW_COUNT'] = $block[$i]['S_ROW_NUM'] = $i;
+		}
+
+		// Remove the last element now duplicate
+		unset($block[$i]);
+
+		// Set first and last elements again, in case they were removed
+		$block[0]['S_FIRST_ROW'] = true;
+		$block[count($block)-1]['S_LAST_ROW'] = true;
+
+		return true;
+	}
+
+	/**
+	* Retrieve key variable pairs from a block
+	*
+	* @param	array	$block			a reference to the block where we have to retrieve the key variable pairs
+	* @param	array	$vararray		an array of variablle names to be retrieved, empty array gets all block vars
+	* @param	mixed	$key			search key used in last block, ignored
+	* @param	string	$name			name of the block where we are retrieving
+	* @param	int		$index			index were we have to retrieve the vars
+	* @return bool false on error, an array of hashes with variable name as key and retrieved value or null as value
+	*/
+	protected function retrieve_block_array(&$block, array $vararray, $key, $name, $index)
+	{
+		if (!isset($block[$name][$index]))
+		{
+			return false;
+		}
+
+		$result = array();
+		if ($vararray === array())
+		{
+			// The calculated vars that depend on the block position are excluded from the complete block returned results
+			$excluded_vars = array('S_FIRST_ROW', 'S_LAST_ROW', 'S_BLOCK_NAME', 'S_NUM_ROWS', 'S_ROW_COUNT', 'S_ROW_NUM');
+
+			foreach ($block[$name][$index] as $varname => $varvalue)
+			{
+				if ($varname === strtoupper($varname) && !is_array($varvalue) && !in_array($varname, $excluded_vars))
+				{
+					$result[$varname] = $varvalue;
+				}
+			}
+		}
+		else
+		{
+			foreach ($vararray as $varname)
+			{
+				$result[$varname] = isset($block[$name][$index][$varname]) ? $block[$name][$index][$varname] : null;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	* Find the index for a specified key in the given block
+	*
+	* @param	array	$block			a reference to the block where we have to get the index
+	* @param	array	$vararray		ignored, but must be an array
+	* @param	mixed	$key			search key used in last block, ignored
+	* @param	string	$name			name of the block where we are finding
+	* @param	int		$index			index
+	* @return 	int 					index position within the block
+	*/
+	protected function find_block_array(&$block, array $vararray, $key, $name, $index)
+	{
+		if (!isset($block[$name]))
+		{
+			return false;
+		}
+
+		return $index;
+	}
+
+	/**
+	* Converts a string block selector to the equivalent array block selector
+	*
+	* @param	string	$block_selector		The string format of the block selector
+	* @return	array						The same block selector, in the equivalent array format
+	*/
+	protected function block_selector_array($block_selector)
+	{
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $block_selector);
+		$blockcount = count($blocks);
+		$block_selector = array();
+
+		for ($i = 0; $i < $blockcount; $i++)
+		{
+			if (($pos = strpos($blocks[$i], '[')) !== false)
+			{
+				$name = substr($blocks[$i], 0, $pos);
+
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = true;
+				}
+				else
+				{
+					$index = (int) substr($blocks[$i], $pos + 1, -1);
+				}
+			}
+			else
+			{
+				$name = $blocks[$i];
+				$index = null;
+			}
+			$block_selector[$name] = $index;
+		}
+		return $block_selector;
+	}
+
+	/**
+	* Finds a specific key within a block of variables.
+	*
+	* @param	array	$block		The block of variables where the key is searched for
+	* @param	mixed	$key		The search key to find in the block
+	*			bool					true for last element, false for first element
+	*			int						the actual index number of the element
+	*			array					VARNAME => varvalue to search for in the block
+	*			null					last element
+	* @return	mixed				false if not found or out of bounds, index position otherwise; be sure to test with ===
+	*								note that in case the $block is empty (non-existent), the function returns 0
+	*									except in case the $key is an array, that the function returns false
+	*/
+	protected function find_block_index($block, $key)
+	{
+		$index = false;
+
+		// Change key to zero if false and to last position if true or null
+		if ($key === false || $key === true || $key === null)
+		{
+			$index = ($key === false) ? 0 : count($block) - 1;
+		}
+
+		// Get correct position if array given
+		if (is_array($key) && is_array($block))
+		{
+			// Search array to get correct position
+			list($search_key, $search_value) = each($key);
+
+			foreach ($block as $i => $val_ary)
+			{
+				if (isset($val_ary[$search_key]) && ($val_ary[$search_key] === $search_value))
+				{
+					$index = $i;
+					break;
+				}
+			}
+		}
+
+		if (is_int($key) && ($key == (int) min(max($key, 0), count($block) - 1)))
+		{
+			$index = $key;
+		}
+
+		// Now return the index
+		return $index;
 	}
 }
