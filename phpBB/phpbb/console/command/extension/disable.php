@@ -40,7 +40,7 @@ class disable extends command
 
 		if (!$this->manager->is_enabled($name))
 		{
-			$io->error($this->user->lang('CLI_EXTENSION_DISABLE_DISABLED', $name));
+			$io->error($this->user->lang('CLI_EXTENSION_DISABLED', $name));
 			return 1;
 		}
 
