@@ -35,7 +35,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	 */
 	protected $io_handler;
 
-    /**
+   /**
 	 * Constructor
 	 *
 	 * @param \phpbb\install\helper\database						$database_helper	Installer's database helper

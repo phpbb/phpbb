@@ -29,7 +29,7 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 	 * @var \phpbb\install\helper\iohandler\iohandler_interface
 	 */
 	protected $io_handler;
-	
+
 	/**
 	 * @var \phpbb\language\language_file_helper
 	 */
