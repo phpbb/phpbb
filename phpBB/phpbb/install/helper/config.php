@@ -242,7 +242,6 @@ class config
 			$progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
 			$navigation_data = (is_array($unserialized_data['navigation_data'])) ? $unserialized_data['navigation_data'] : array();
 		}
-
 		$this->installer_config = array_merge($this->installer_config, $installer_config);
 		$this->progress_data = array_merge($this->progress_data, $progress_data);
 		$this->navigation_data = array_merge($this->navigation_data, $navigation_data);

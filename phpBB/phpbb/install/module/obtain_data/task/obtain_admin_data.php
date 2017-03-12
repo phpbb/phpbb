@@ -30,6 +30,10 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 	 */
 	protected $io_handler;
 
+    public function get_navigation_stage_path(){
+        return array('install', 0, 'obtain_admin_data');
+    }
+
 	/**
 	 * Constructor
 	 *

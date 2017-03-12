@@ -316,13 +316,17 @@ class helper
 							'S_SELECTED' => (isset($sub_entry['selected']) && $sub_entry['selected'] === true),
 							'S_COMPLETE' => (isset($sub_entry['completed']) && $sub_entry['completed'] === true),
 							'STAGE_NAME' => $name,
+                            'IS_LINK' => (isset($sub_entry['is_link']) && $sub_entry['is_link'] === true),
+                            'LINK' => isset($sub_entry['link']) ? $sub_entry['link'] : '',
+                            'CLASS' => isset($sub_entry['class']) ? $sub_entry['class'] : '',
+                            'TASK_INDEX' => isset($sub_entry['task_index']) ? $sub_entry['task_index'] : '',
 						));
 					}
 					else
 					{
 						$this->template->assign_block_vars('l_block1', array(
 							'L_TITLE' => $this->language->lang($sub_entry['label']),
-							'S_SELECTED' => (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->get('_route')),
+							'S_SELECTED' => (isset($sub_entry['route']) && ($sub_entry['route'] === $this->request->get('_route'))),
 							'U_TITLE' => $this->route($sub_entry['route']),
 						));
 					}

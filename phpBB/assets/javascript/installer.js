@@ -20,6 +20,23 @@
 
 	// Intercept form submits
 	interceptFormSubmit($('#install_install'));
+    $('.my_send').click( function (e) {
+    	e.preventDefault();
+    	if($(this).parent().hasClass('completed')){
+            var xhReq = createXhrObject();
+            xhReq.open('POST', $(this).attr('href'), true);
+            xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            xhReq.send('task_index=' + $(this).attr('task_index'));
+
+            // Clear content
+            setupAjaxLayout();
+            $('#loading_indicator').css('display', 'block');
+
+            startPolling(xhReq);
+		}
+		return false;
+    });
 
 	/**
 	 * Creates an XHR object
@@ -170,6 +187,12 @@
 			}
 
 			$stageListItem.attr('id', 'activemenu');
+            // var next = $stageListItem.parent().children();
+            // for (var j = next.length; j >= 0; j--){
+            	// if($(next[j]).is($stageListItem))
+            	// 	break;
+             //    $(next[j]).children().removeClass('completed');
+			// }
 		}
 	}
 

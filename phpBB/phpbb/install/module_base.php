@@ -110,10 +110,35 @@ abstract class module_base implements module_interface
 
 		if ($task_index < $iterator->count())
 		{
-			$iterator->seek($task_index);
+		    $get_tast_index = (int)$this->iohandler->get_input('task_index', 0);
+		    if($get_tast_index > 0 && $get_tast_index < $iterator->count()){
+                $get_tast_index--;
+                $iterator->seek($get_tast_index);
+                //$this->install_config->set_finished_task($get_tast_index);
+                $this->iohandler->set_active_stage_menu($iterator->current()->get_navigation_stage_path());
+                $this->iohandler->send_response();
+            }
+            else{
+
+                for($i = 0; $i < $task_index; $i++){
+                    $iterator->seek($i);
+                        $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
+                        $this->iohandler->send_response();
+
+                }
+                $iterator->seek($task_index);
+                $this->iohandler->set_active_stage_menu($iterator->current()->get_navigation_stage_path());
+                $this->iohandler->send_response();
+            }
 		}
 		else
 		{
+            for($i = 0; $i < $iterator->count(); $i++){
+                $iterator->seek($i);
+                    $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
+                    $this->iohandler->send_response();
+
+            }
 			$this->install_config->set_finished_task(0);
 			return;
 		}
@@ -146,8 +171,12 @@ abstract class module_base implements module_interface
 					$this->iohandler->send_response();
 				}
 
+                $this->iohandler->set_active_stage_menu($task->get_navigation_stage_path());
+                $this->iohandler->send_response();
 				$task->run();
 
+                $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
+                $this->iohandler->send_response();
 				if ($this->allow_progress_bar)
 				{
 					// Only increment progress by one, as if a task has more than one steps

@@ -26,7 +26,9 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 	 * @var \phpbb\install\helper\iohandler\iohandler_interface
 	 */
 	protected $io_handler;
-
+    public function get_navigation_stage_path(){
+        return array('install', 0, 'obtain_email_data');
+    }
 	/**
 	 * Constructor
 	 *
@@ -84,7 +86,7 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 			$email_form = array(
 				'email_enable' => array(
 					'label'			=> 'ENABLE_EMAIL',
-					'description'	=> 'ENABLE_EMAIL_EXPLAIN',
+					'description'	=> 'COOKIE_SECURE_EXPLAIN',
 					'type'			=> 'radio',
 					'options'		=> array(
 						array(
