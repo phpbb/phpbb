@@ -58,5 +58,4 @@ interface task_interface
 	 * @return string
 	 */
 	public function get_task_lang_name();
-
 }

@@ -35,10 +35,6 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	 */
 	protected $io_handler;
 
-    public function get_navigation_stage_path(){
-        return array('install', 0, 'obtain_database_data');
-    }
-
     /**
 	 * Constructor
 	 *
@@ -271,4 +267,10 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	{
 		return '';
 	}
+
+	// Returns the task name for navigation bar
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_database_data');
+    }
 }

@@ -41,7 +41,7 @@ class install_navigation implements navigation_interface
 		{
 			return array();
 		}
-
+		// creation of data array for navigation bar
 		return array(
 			'install'	=> array(
 				'label'	=> 'INSTALL',

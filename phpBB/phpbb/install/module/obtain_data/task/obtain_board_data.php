@@ -29,9 +29,7 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 	 * @var \phpbb\install\helper\iohandler\iohandler_interface
 	 */
 	protected $io_handler;
-    public function get_navigation_stage_path(){
-        return array('install', 0, 'obtain_board_data');
-    }
+	
 	/**
 	 * @var \phpbb\language\language_file_helper
 	 */
@@ -184,4 +182,10 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 	{
 		return '';
 	}
+
+	// Returns the task name for navigation bar
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_board_data');
+    }
 }

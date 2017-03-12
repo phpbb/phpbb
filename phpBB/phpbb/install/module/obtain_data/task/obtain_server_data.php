@@ -30,10 +30,6 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 	 */
 	protected $io_handler;
 
-    public function get_navigation_stage_path(){
-        return array('install', 0, 'obtain_server_data');
-    }
-
 	/**
 	 * Constructor
 	 *
@@ -203,4 +199,10 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 	{
 		return '';
 	}
+
+	// Returns the task name for navigation bar
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_server_data');
+    }
 }

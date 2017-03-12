@@ -133,7 +133,6 @@ class install
 				$installer->run();
 			});
 
-
 			// Try to bypass any server output buffers
 			$response->headers->set('X-Accel-Buffering', 'no');
 

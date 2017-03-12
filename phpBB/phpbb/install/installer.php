@@ -226,8 +226,7 @@ class installer
 
 				$module_index++;
 
-
-				// Заглушка
+				// Blocks installation completion for testing purposes
 				if($module_index > 1)
 				    return;
 				$iterator->next();

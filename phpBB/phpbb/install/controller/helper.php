@@ -311,6 +311,7 @@ class helper
 				{
 					if (isset($sub_entry['stage']) && $sub_entry['stage'] === true)
 					{
+						// sending parameters for navigation link
 						$this->template->assign_block_vars('l_block2', array(
 							'L_TITLE' => $this->language->lang($sub_entry['label']),
 							'S_SELECTED' => (isset($sub_entry['selected']) && $sub_entry['selected'] === true),
@@ -326,7 +327,7 @@ class helper
 					{
 						$this->template->assign_block_vars('l_block1', array(
 							'L_TITLE' => $this->language->lang($sub_entry['label']),
-							'S_SELECTED' => (isset($sub_entry['route']) && ($sub_entry['route'] === $this->request->get('_route'))),
+							'S_SELECTED' => (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->get('_route')),
 							'U_TITLE' => $this->route($sub_entry['route']),
 						));
 					}

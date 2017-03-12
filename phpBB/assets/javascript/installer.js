@@ -20,8 +20,11 @@
 
 	// Intercept form submits
 	interceptFormSubmit($('#install_install'));
+
+	// Interception of click on the navigation link
     $('.my_send').click( function (e) {
     	e.preventDefault();
+    	// check if the previous fields are filled
     	if($(this).parent().hasClass('completed')){
             var xhReq = createXhrObject();
             xhReq.open('POST', $(this).attr('href'), true);
@@ -187,12 +190,6 @@
 			}
 
 			$stageListItem.attr('id', 'activemenu');
-            // var next = $stageListItem.parent().children();
-            // for (var j = next.length; j >= 0; j--){
-            	// if($(next[j]).is($stageListItem))
-            	// 	break;
-             //    $(next[j]).children().removeClass('completed');
-			// }
 		}
 	}
 

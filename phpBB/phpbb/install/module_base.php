@@ -110,29 +110,32 @@ abstract class module_base implements module_interface
 
 		if ($task_index < $iterator->count())
 		{
-		    $get_tast_index = (int)$this->iohandler->get_input('task_index', 0);
-		    if($get_tast_index > 0 && $get_tast_index < $iterator->count()){
-                $get_tast_index--;
-                $iterator->seek($get_tast_index);
-                //$this->install_config->set_finished_task($get_tast_index);
+		    // Receiving task index
+		    $get_task_index = (int)$this->iohandler->get_input('task_index', 0);
+		    // Validation check
+		    if($get_task_index > 0 && $get_task_index < $iterator->count()){
+                $get_task_index--;
+                $iterator->seek($get_task_index);
+                // Setting the menu point as active
                 $this->iohandler->set_active_stage_menu($iterator->current()->get_navigation_stage_path());
                 $this->iohandler->send_response();
             }
             else{
-
+                // Displaying completed as checked
                 for($i = 0; $i < $task_index; $i++){
                     $iterator->seek($i);
                         $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
                         $this->iohandler->send_response();
-
                 }
                 $iterator->seek($task_index);
+                // Setting the menu point as active
                 $this->iohandler->set_active_stage_menu($iterator->current()->get_navigation_stage_path());
                 $this->iohandler->send_response();
             }
 		}
 		else
 		{
+            // Checking all steps as completed
             for($i = 0; $i < $iterator->count(); $i++){
                 $iterator->seek($i);
                     $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
@@ -171,11 +174,12 @@ abstract class module_base implements module_interface
 					$this->iohandler->send_response();
 				}
 
+                // Setting current module in navigation bar as active
                 $this->iohandler->set_active_stage_menu($task->get_navigation_stage_path());
                 $this->iohandler->send_response();
 				$task->run();
 
-                $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
+                $this->iohandler->set_finished_stage_menu($task->get_navigation_stage_path());
                 $this->iohandler->send_response();
 				if ($this->allow_progress_bar)
 				{
