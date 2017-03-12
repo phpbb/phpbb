@@ -26,7 +26,7 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 	 * @var \phpbb\install\helper\iohandler\iohandler_interface
 	 */
 	protected $io_handler;
-	
+
 	/**
 	 * Constructor
 	 *
