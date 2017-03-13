@@ -160,7 +160,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	*/
 	public function ensure_lock($key, $new_value)
 	{
-		if(isset($this->config[$key]) && $this->config[$key] == $new_value)
+		if (isset($this->config[$key]) && $this->config[$key] == $new_value)
 		{
 			return true;
 		}
