@@ -505,6 +505,10 @@ li.breadcrumbs span:first-child > a {
 	margin-left: 0;
 }
 
+.rtl blockquote cite:before, .rtl .uncited:before {
+	padding-left: 5px;
+}
+
 .rtl blockquote .codebox {
 	margin-right: 0;
 }

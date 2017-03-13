@@ -474,6 +474,10 @@ blockquote cite cite {
 	font-size: 1em;
 }
 
+blockquote cite:before, .uncited:before {
+	padding-right: 5px;
+}
+
 blockquote cite > div {
 	float: right;
 	font-weight: normal;
