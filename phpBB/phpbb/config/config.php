@@ -163,7 +163,9 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 		if(isset($this->config[$key]) && $this->config[$key] == $new_value)
 		{
 			return true;
-		} else {
+		}
+		else
+		{
 			throw new \phpbb\exception\http_exception(500, 'Failure while aqcuiring locks.');
 		}
 	}
