@@ -116,7 +116,9 @@ class db
 			{
 				return true;
 			}
-		} else {
+		}
+		else
+		{
 
 			return $this->locked;
 		}
