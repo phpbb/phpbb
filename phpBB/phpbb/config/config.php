@@ -164,10 +164,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 		{
 			return true;
 		}
-		else
-		{
-			throw new \phpbb\exception\http_exception(500, 'Failure while aqcuiring locks.');
-		}
+		throw new \phpbb\exception\http_exception(500, 'Failure while aqcuiring locks.');
 	}
 
 	/**

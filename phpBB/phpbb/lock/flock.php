@@ -105,10 +105,7 @@ class flock
 			{
 				return (bool) $this->lock_fp;
 			}
-			else
-			{
-				throw new \phpbb\exception\http_exception(500, 'Failure while aqcuiring locks.');
-			}
+			throw new \phpbb\exception\http_exception(500, 'Failure while aqcuiring locks.');
 		}
 
 		return (bool) $this->lock_fp;
