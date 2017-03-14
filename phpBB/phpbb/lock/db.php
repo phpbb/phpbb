@@ -117,11 +117,7 @@ class db
 				return true;
 			}
 		}
-		else
-		{
-
-			return $this->locked;
-		}
+		return $this->locked;
 	}
 
 	/**
