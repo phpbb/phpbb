@@ -194,37 +194,6 @@ function selectCode(a) {
 	}
 }
 
-/**
-* Play quicktime file by determining it's width/height
-* from the displayed rectangle area
-*/
-function play_qt_file(obj) {
-	'use strict';
-
-	var rectangle = obj.GetRectangle();
-	var width, height;
-
-	if (rectangle) {
-		rectangle = rectangle.split(',');
-		var x1 = parseInt(rectangle[0], 10);
-		var x2 = parseInt(rectangle[2], 10);
-		var y1 = parseInt(rectangle[1], 10);
-		var y2 = parseInt(rectangle[3], 10);
-
-		width = (x1 < 0) ? (x1 * -1) + x2 : x2 - x1;
-		height = (y1 < 0) ? (y1 * -1) + y2 : y2 - y1;
-	} else {
-		width = 200;
-		height = 0;
-	}
-
-	obj.width = width;
-	obj.height = height + 16;
-
-	obj.SetControllerVisible(true);
-	obj.Play();
-}
-
 var inAutocomplete = false;
 var lastKeyEntered = '';
 
