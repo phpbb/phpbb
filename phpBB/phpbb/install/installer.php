@@ -225,7 +225,6 @@ class installer
 				}
 
 				$module_index++;
-
 				// Blocks installation completion for testing purposes
 				if($module_index > 1)
 				    return;
