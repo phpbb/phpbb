@@ -1467,6 +1467,17 @@ class smtp_class
 
 		if (socket_set_blocking($this->socket, 1))
 		{
+			global $config;
+
+			$options = array();
+			$verify_peer = (bool) $config['ssl_verify_peer'];
+			$verify_peer_name = (bool) $config['ssl_verify_peer_name'];
+			$allow_self_signed = (bool) $config['ssl_allow_self_signed'];
+
+			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
+			$options['ssl'] = array('verify_peer' => $verify_peer, 'verify_peer_name' => $verify_peer_name, 'allow_self_signed' => $allow_self_signed);
+			stream_context_set_option($this->socket, $options);
+
 			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);
 		}

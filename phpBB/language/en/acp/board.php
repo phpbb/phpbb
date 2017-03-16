@@ -574,6 +574,14 @@ $lang = array_merge($lang, array(
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
+
+	'SSL_ALLOW_SELF_SIGNED'			=> 'Allow self-signed certificates',
+	'SSL_ALLOW_SELF_SIGNED_EXPLAIN'	=> 'Allow self-signed certificates for SSL / TLS connections.',
+	'SSL_VERIFY_PEER'				=> 'Verify peer',
+	'SSL_VERIFY_PEER_EXPLAIN'		=> 'Require verification of SSL certificate used.',
+	'SSL_VERIFY_PEER_NAME'			=> 'Verify peer name',
+	'SSL_VERIFY_PEER_NAME_EXPLAIN'	=> 'Require verification of peer name for SSL / TLS connections.',
+
 	'USE_SMTP'						=> 'Use SMTP server for email',
 	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
 ));
