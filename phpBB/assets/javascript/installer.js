@@ -25,12 +25,12 @@
     $('.my_send').click( function (e) {
     	e.preventDefault();
     	// check if the previous fields are filled
-    	if($(this).parent().hasClass('completed')){
+    	if($(this).parent().hasClass('filled')){
             var xhReq = createXhrObject();
             xhReq.open('POST', $(this).attr('href'), true);
             xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            xhReq.send('task_index=' + $(this).attr('task_index'));
+            xhReq.send('task_index=' + $(this).data('task_index'));
 
             // Clear content
             setupAjaxLayout();
@@ -177,6 +177,7 @@
 				}
 
 				$stage.addClass('completed');
+                $stage.addClass('filled');
 			}
 		}
 
@@ -190,6 +191,7 @@
 			}
 
 			$stageListItem.attr('id', 'activemenu');
+            $stage.addClass('filled');
 		}
 	}
 

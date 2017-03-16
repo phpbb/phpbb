@@ -84,18 +84,18 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 			$email_form = array(
 				'email_enable' => array(
 					'label'			=> 'ENABLE_EMAIL',
-					'description'	=> 'ENABLE_EMAIL_EXPLAIN',
+					'description'	=> 'COOKIE_SECURE_EXPLAIN',
 					'type'			=> 'radio',
 					'options'		=> array(
 						array(
 							'value'		=> 1,
 							'label'		=> 'ENABLE',
-							'selected'	=> true,
+							'selected'	=> $this->install_config->get('email_enable'),
 						),
 						array(
 							'value'		=> 0,
 							'label'		=> 'DISABLE',
-							'selected'	=> false,
+							'selected'	=> !$this->install_config->get('email_enable'),
 						),
 					),
 				),
@@ -107,12 +107,12 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 						array(
 							'value'		=> 0,
 							'label'		=> 'NO',
-							'selected'	=> true,
+							'selected'	=> !$this->install_config->get('smtp_delivery'),
 						),
 						array(
 							'value'		=> 1,
 							'label'		=> 'YES',
-							'selected'	=> false,
+							'selected'	=> $this->install_config->get('smtp_delivery'),
 						),
 					),
 				),
@@ -120,28 +120,33 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 					'label'			=> 'SMTP_SERVER',
 					'type'			=> 'text',
 					'default'		=> $smtp_host,
+                    'load'		=> $this->install_config->get('smtp_host')
 				),
 				'smtp_port' => array(
 					'label'			=> 'SMTP_PORT',
 					'type'			=> 'text',
 					'default'		=> $smtp_port,
+                    'load'		=> $this->install_config->get('smtp_port')
 				),
 				'smtp_auth' => array(
 					'label'			=> 'SMTP_AUTH_METHOD',
 					'description'	=> 'SMTP_AUTH_METHOD_EXPLAIN',
 					'type'			=> 'select',
 					'options'		=> $auth_options,
+                    'load'		=> $this->install_config->get('smtp_auth')
 				),
 				'smtp_user' => array(
 					'label'			=> 'SMTP_USERNAME',
 					'description'	=> 'SMTP_USERNAME_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $smtp_user,
+                    'load'		=> $this->install_config->get('smtp_user')
 				),
 				'smtp_pass' => array(
 					'label'			=> 'SMTP_PASSWORD',
 					'description'	=> 'SMTP_PASSWORD_EXPLAIN',
 					'type'			=> 'password',
+                    'load'		=> $this->install_config->get('smtp_pass')
 				),
 				'submit_email' => array(
 					'label'	=> 'SUBMIT',

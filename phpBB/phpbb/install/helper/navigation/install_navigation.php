@@ -59,7 +59,7 @@ class install_navigation implements navigation_interface
 						'order'	=> 1,
 					),
 					'obtain_admin_data'	=> array(
-						'label'	=> 'Administrator configuration',
+						'label'	=> 'ADMIN_CONFIG',
 						'stage'	=> true,
                         'is_link'	=> true,
                         'link'	=> '/install/app.php/install',
@@ -68,7 +68,7 @@ class install_navigation implements navigation_interface
 						'order'	=> 2,
 					),
                     'obtain_database_data'	=> array(
-                        'label'	=> 'Database configuration',
+                        'label'	=> 'DB_CONFIG',
                         'stage'	=> true,
                         'is_link'	=> true,
                         'link'	=> '/install/app.php/install',
@@ -77,7 +77,7 @@ class install_navigation implements navigation_interface
                         'order'	=> 3,
                     ),
                     'obtain_server_data'	=> array(
-                        'label'	=> 'Server configuration',
+                        'label'	=> 'SERVER_CONFIG',
                         'stage'	=> true,
                         'is_link'	=> true,
                         'link'	=> '/install/app.php/install',
@@ -86,7 +86,7 @@ class install_navigation implements navigation_interface
                         'order'	=> 4,
                     ),
                     'obtain_email_data'	=> array(
-                        'label'	=> 'E-mail configuration',
+                        'label'	=> 'EMAIL_CONFIG',
                         'stage'	=> true,
                         'is_link'	=> true,
                         'link'	=> '/install/app.php/install',
@@ -95,7 +95,7 @@ class install_navigation implements navigation_interface
                         'order'	=> 5,
                     ),
                     'obtain_board_data'	=> array(
-                        'label'	=> 'Bulletin board configuration',
+                        'label'	=> 'BOARD_CONFIG',
                         'stage'	=> true,
                         'is_link'	=> true,
                         'link'	=> '/install/app.php/install',

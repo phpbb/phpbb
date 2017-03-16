@@ -54,6 +54,6 @@ abstract class task_base implements task_interface
 	// Returns the task name for navigation bar
     public function get_navigation_stage_path()
     {
-        return array('install', 0, 'instal');
+        return array('install', 0, 'install');
     }
 }

@@ -17,13 +17,13 @@
 			<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span class="explain">{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 			<dd>
 				<!-- IF options.TYPE == 'text' -->
-				<input type="text" name="{options.KEY}" value="{options.DEFAULT}" />
+				<input type="text" name="{options.KEY}" value="<!-- IF options.LOAD -->{options.LOAD}<!-- ELSE -->{options.DEFAULT}<!-- ENDIF -->" />
 				<!-- ENDIF -->
 				<!-- IF options.TYPE == 'email' -->
-				<input type="email" name="{options.KEY}" value="{options.DEFAULT}" />
+				<input type="email" name="{options.KEY}" value="<!-- IF options.LOAD -->{options.LOAD}<!-- ELSE -->{options.DEFAULT}<!-- ENDIF -->" />
 				<!-- ENDIF -->
 				<!-- IF options.TYPE == 'password' -->
-				<input type="password" name="{options.KEY}" />
+				<input type="password" name="{options.KEY}" value="<!-- IF options.LOAD -->{options.LOAD}<!-- ENDIF -->" />
 				<!-- ENDIF -->
 				<!-- IF options.TYPE == 'select' -->
 				<select name="{options.KEY}">
