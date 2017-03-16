@@ -132,13 +132,6 @@ abstract class module_base implements module_interface
 		}
 		else
 		{
-            // Checking all steps as completed
-            for($i = 0; $i < $iterator->count(); $i++){
-                $iterator->seek($i);
-                    $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
-                    $this->iohandler->send_response();
-
-            }
 			$this->install_config->set_finished_task(0);
 			return;
 		}
