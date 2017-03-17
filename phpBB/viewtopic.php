@@ -49,12 +49,25 @@ $sort_dir	= $request->variable('sd', $default_sort_dir);
 $update		= $request->variable('update', false);
 
 //extract forum image
-	$sql = 'SELECT forum_image
+$sql = 'SELECT forum_image
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
-		$result = $db->sql_query($sql);
-		$phpbb_forum_image = $db->sql_fetchfield('forum_image');
-		$db->sql_freeresult($result);
+$result = $db->sql_query($sql);
+$phpbb_forum_image_name = $db->sql_fetchfield('forum_image');
+$phpbb_domain = $request->server("HTTP_HOST");
+
+//is forum image empty or present
+if (empty($phpbb_forum_image_name))
+{
+	$phpbb_forum_image_location = "styles/prosilver/theme/images/site_logo.gif";
+	$phpbb_forum_image = $phpbb_domain."/".$phpbb_forum_image_location;
+}
+else
+{
+	$phpbb_forum_image = $phpbb_domain."/".$phpbb_forum_image_name;
+}
+
+$db->sql_freeresult($result);
 
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
@@ -697,6 +710,7 @@ if (!empty($_EXTRA_URL))
 $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
 
 //extract variables for making meta tags
+
 	$phpbb_topic_title = $topic_data['topic_title'];
 
 	$phpbb_topic_author = $topic_data['topic_first_poster_name'];
@@ -736,7 +750,7 @@ $pagination->generate_template_pagination($base_url, 'pagination', 'start', $tot
 
 // Send vars to template
 $template->assign_vars(array(
-	'FORUM_ID' 		=> $forum_id,
+    'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME' 	=> $topic_data['forum_name'],
 	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield'], $topic_data['forum_desc_options']),
 	'TOPIC_ID' 		=> $topic_id,
@@ -1300,9 +1314,7 @@ while ($row = $db->sql_fetchrow($result))
 	);
 
 $phpbb_topic_description = $row['post_text'];
-$phpbb_domain = $request->server("HTTP_HOST");
-$meta_data = phpbb_make_meta_tags ($phpbb_topic_author, $phpbb_forum_image, $phpbb_topic_title, $phpbb_topic_description, $phpbb_domain);
-$template->assign_vars(array("META"=>$meta_data));
+
 
 	/**
 	* Modify the post rowset containing data to be displayed with posts
@@ -2300,6 +2312,14 @@ $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang
 */
 $vars = array('page_title', 'topic_data', 'forum_id', 'start', 'post_list');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_page_title', compact($vars)));
+
+$template->assign_vars(array(
+	"PHPBB_TOPIC_TITLE"=>$phpbb_topic_title,
+	"PHPBB_TOPIC_DESCRIPTION"=>$phpbb_topic_description,
+	"PHPBB_TOPIC_AUTHOR"=>$phpbb_topic_author,
+	"PHPBB_DOMAIN"=>$phpbb_domain,
+	"PHPBB_FORUM_IMAGE"=>$phpbb_forum_image
+	));
 
 // Output the page
 page_header($page_title, true, $forum_id);
