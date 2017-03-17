@@ -1046,7 +1046,18 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	}
 	$collector = new \phpbb\error_collector;
 	$collector->install();
-	$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20);
+
+	$options = array();
+	$verify_peer = (bool) $config['ssl_verify_peer'];
+	$verify_peer_name = (bool) $config['ssl_verify_peer_name'];
+	$allow_self_signed = (bool) $config['ssl_allow_self_signed'];
+	$remote_socket = $config['smtp_host'] . ':' . $config['smtp_port'];
+
+	// Set ssl context options, see http://php.net/manual/en/context.ssl.php
+	$options['ssl'] = array('verify_peer' => $verify_peer, 'verify_peer_name' => $verify_peer_name, 'allow_self_signed' => $allow_self_signed);
+	$socket_context = stream_context_create($options);
+
+	$smtp->socket = stream_socket_client($remote_socket, $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $socket_context);
 	$collector->uninstall();
 	$error_contents = $collector->format_errors();
 
@@ -1467,17 +1478,6 @@ class smtp_class
 
 		if (socket_set_blocking($this->socket, 1))
 		{
-			global $config;
-
-			$options = array();
-			$verify_peer = (bool) $config['ssl_verify_peer'];
-			$verify_peer_name = (bool) $config['ssl_verify_peer_name'];
-			$allow_self_signed = (bool) $config['ssl_allow_self_signed'];
-
-			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
-			$options['ssl'] = array('verify_peer' => $verify_peer, 'verify_peer_name' => $verify_peer_name, 'allow_self_signed' => $allow_self_signed);
-			stream_context_set_option($this->socket, $options);
-
 			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);
 		}
