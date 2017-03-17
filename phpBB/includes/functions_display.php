@@ -1,5 +1,4 @@
 <?php
-
 /**
 *
 * This file is part of the phpBB Forum Software package.
@@ -1716,38 +1715,3 @@ function phpbb_sort_last_active($first, $second)
 		return $lesser_than * (int) ($id_cache[$first]['last_visit'] - $id_cache[$second]['last_visit']);
 	}
 }
-
-
-function phpbb_make_meta_tags ($phpbb_topic_author, $phpbb_forum_image, $phpbb_topic_title, $phpbb_topic_description, $phpbb_domain) {
-
-return $meta =  "
-
-<!--meta tags for search engine bots-->
-<meta name='title' content ='$phpbb_topic_title'>
-<meta name='description' content='$phpbb_topic_description'>
-<meta name='author' content='$phpbb_topic_author'>
-
-<!--meta tags for facebook-->
-
-<meta property='og:url' content='$phpbb_domain'/>
-<meta property='og:type' content='article' />
-<meta property='og:title' content='$phpbb_topic_title' />
-<meta property='og:description' content='$phpbb_topic_description'/>
-<meta property='og:image' content='$phpbb_domain/$phpbb_forum_image' />
-
-<!--meta tags for twitter-->
-<meta name='twitter:card' content='summary_large_image'>
-<meta name='twitter:site' content='@$phpbb_domain'>
-<meta name='twitter:creator' content='$phpbb_topic_author'>
-<meta name='twitter:title' content='$phpbb_topic_title'>
-<meta name='twitter:description' content='$phpbb_topic_description'>
-<meta name='twitter:image' content='$phpbb_domain/$phpbb_forum_image'>
-
-";
-
-
-
-
-}
-
-
