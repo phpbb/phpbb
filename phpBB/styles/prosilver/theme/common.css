@@ -1318,7 +1318,7 @@ ul.linklist:after,
 	margin: 0 7px 0 0;
 }
 
-.linklist.compact .rightside > a > span span {
+.linklist.compact .rightside > a > span {
 	display: none;
 }
 
