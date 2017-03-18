@@ -352,22 +352,6 @@ input[type="radio"] {
 	cursor: pointer;
 }
 
-/* Alternative button */
-a.button2,
-input.button2,
-input.button3 {
-	border: 1px solid transparent;
-}
-
-/* <a> button in the style of the form buttons */
-a.button1,
-a.button2 {
-	vertical-align: text-bottom;
-	text-decoration: none;
-	padding: 0 3px;
-/* Hover states */
-}
-
 input.disabled {
 	font-weight: normal;
 }

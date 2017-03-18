@@ -661,17 +661,16 @@ dd.profile-warnings {
 .button-form:hover,
 .button-form-bold:hover {
 	border-color: #d31141;
-	color: #d31141;
 	text-shadow: none;
+	color: #d31141;
 }
 
 .button-form:focus,
 .button-form-bold:focus {
 	border-color: #0a8ed0;
-	color: #0a8ed0;
 	text-shadow: none;
+	color: #0a8ed0;
 }
-
 
 .button-secondary:focus,
 .button-secondary:hover,
