@@ -83,3 +83,66 @@
 .affix {
 	position: fixed;
 }
+
+/* Hide visually and from screen readers */
+.u-hidden {
+	display: none !important;
+}
+
+/* Responsive visibility utilities */
+
+.u-hidden-xs-up {
+	display: none !important;
+}
+
+@media (max-width: (575px)) {
+	.u-hidden-xs-down {
+		display: none !important;
+	}
+}
+
+@media (min-width: 576px) {
+	.u-hidden-sm-up {
+		display: none !important;
+	}
+}
+
+@media (max-width: (767px)) {
+	.u-hidden-sm-down {
+		display: none !important;
+	}
+}
+
+@media (min-width: 768px) {
+	.u-hidden-md-up {
+		display: none !important;
+	}
+}
+
+@media (max-width: (991px)) {
+	.u-hidden-md-down {
+		display: none !important;
+	}
+}
+
+@media (min-width: 992px) {
+	.u-hidden-lg-up {
+		display: none !important;
+	}
+}
+
+@media (max-width: (1199px)) {
+	.u-hidden-lg-down {
+		display: none !important;
+	}
+}
+
+@media (min-width: 1200px) {
+	.u-hidden-xl-up {
+		display: none !important;
+	}
+}
+
+.u-hidden-xl-down {
+	display: none !important;
+}

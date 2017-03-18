@@ -1054,15 +1054,6 @@ ul.cplist {
 	color: #333333;
 }
 
-/* responsive tabs */
-.responsive-tab .responsive-tab-link:before {
-	border-color: #536482;
-}
-
-.responsive-tab .responsive-tab-link:hover:before {
-	border-color: #d31141;
-}
-
 /* ucp navigation menu */
 
 /* link styles for the sub-section links */
@@ -1093,16 +1084,6 @@ ul.cplist {
 
 .navigation .active-subsection a:hover {
 	color: #d31141;
-}
-
-/* This ID needs factored out */
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
-	/* stylelint-disable selector-no-id */
-	#navigation a,
-	.rtl #navigation a {
-		background: #b2c2cf;
-	}
-	/* stylelint-enable */
 }
 
 /* stylelint-disable selector-max-compound-selectors */
