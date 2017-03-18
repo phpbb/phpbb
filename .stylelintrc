@@ -12,7 +12,11 @@
 		"at-rule-no-vendor-prefix": true,
 		"at-rule-semicolon-newline-after": "always",
 
-		"block-closing-brace-newline-after": "always",
+		"block-closing-brace-newline-after": [
+			"always", {
+				"ignoreAtRules": ["if", "else"]
+			}
+		],
 		"block-closing-brace-newline-before": "always-multi-line",
 		"block-closing-brace-space-after": "always-single-line",
 		"block-closing-brace-space-before": "always-single-line",
@@ -59,11 +63,11 @@
 		"declaration-empty-line-before": "never",
 
 		"declaration-property-unit-blacklist": {
-			"line-height": ["rem", "em", "%"]
+			"line-height": ["rem", "px", "em", "%"]
 		},
 		"declaration-property-unit-whitelist": {
-			"height": ["px", "%"],
-			"width": ["px", "%"],
+			"height": ["px", "%", "vh"],
+			"width": ["px", "%", "vw"],
 			"font-size": ["px", "rem", "%"],
 			"margin-left": ["px", "rem", "%"],
 			"margin-right": ["px", "rem", "%"],
@@ -72,7 +76,9 @@
 			"padding-left": ["px", "rem"],
 			"padding-right": ["px", "rem"],
 			"padding-top": ["px", "rem"],
-			"padding-bottom": ["px", "rem"]
+			"padding-bottom": ["px", "rem"],
+			"letter-spacing": ["em"],
+			"word-spacing": ["em"]
 		},
 
 		"font-family-name-quotes": "always-where-recommended",
@@ -178,7 +184,6 @@
 		"order/declaration-block-order": [
 			"custom-properties",
 			"dollar-variables",
-			"at-rules",
 			"declarations",
 			{
 				"type": "at-rule",
@@ -187,8 +192,6 @@
 			"rules"
 		],
 		"order/declaration-block-properties-specified-order": [
-			"-moz-osx-font-smoothing",
-			"-webkit-font-smoothing",
 			"font",
 			"font-family",
 			"font-size",

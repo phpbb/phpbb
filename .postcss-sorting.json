@@ -2,7 +2,6 @@
 	"order": [
 		"custom-properties",
 		"dollar-variables",
-		"at-rules",
 		"declarations",
 		{
 			"type": "at-rule",
