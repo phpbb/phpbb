@@ -40,6 +40,16 @@
 
 /* Posting page styles
 ---------------------------------------- */
+.button-form,
+.button-form-bold {
+	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
+	border-radius: 0;
+}
+
+.button-form-bold {
+	font-weight: 700;
+}
+
 .button-search,
 .button-search-end {
 	border-radius: 0;

@@ -650,6 +650,29 @@ dd.profile-warnings {
 	color: #8f8f8f;
 }
 
+.button-form,
+.button-form-bold {
+	border-color: #666666;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: #333333;
+}
+
+.button-form:hover,
+.button-form-bold:hover {
+	border-color: #d31141;
+	color: #d31141;
+	text-shadow: none;
+}
+
+.button-form:focus,
+.button-form-bold:focus {
+	border-color: #0a8ed0;
+	color: #0a8ed0;
+	text-shadow: none;
+}
+
+
 .button-secondary:focus,
 .button-secondary:hover,
 .button:focus .icon,
@@ -1238,63 +1261,6 @@ fieldset.quick-login input.inputbox {
 	color: transparent;
 }
 
-
-/* form button styles */
-
-a.button1,
-input.button1,
-input.button3,
-a.button2,
-input.button2 {
-	background-color: #efefef; /* old browsers */ /* ff3.6+ */
-	background-image: linear-gradient(to bottom, #d2d2d2 0%, #efefef 100%); /* w3c */
-	color: #000000;
-	filter: progid:dximagetransform.microsoft.gradient(startcolorstr='#d2d2d2', endcolorstr='#efefef', gradienttype=0); /* ie6-9 */
-}
-
-a.button1,
-input.button1 {
-	border-color: #666666;
-}
-
-input.button3 {
-	background-image: none;
-}
-
-/* alternative button */
-a.button2,
-input.button2,
-input.button3 {
-	border-color: #666666;
-}
-
-/* <a> button in the style of the form buttons */
-a.button1,
-a.button2 {
-	color: #000000;
-}
-
-/* hover states */
-a.button1:hover,
-input.button1:hover,
-a.button2:hover,
-input.button2:hover,
-input.button3:hover {
-	background-color: #d2d2d2; /* old browsers */ /* ff3.6+ */
-	background-image: linear-gradient(to bottom, #efefef 0%, #d2d2d2 100%); /* w3c */
-	border-color: #d31141;
-	color: #d31141;
-	filter: progid:dximagetransform.microsoft.gradient(startcolorstr='#efefef', endcolorstr='#d2d2d2', gradienttype=0); /* ie6-9 */
-}
-
-/* focus states */
-input.button1:focus,
-input.button2:focus,
-input.button3:focus {
-	border-color: #11a3ea;
-	color: #0f4987;
-}
-
 input.disabled {
 	color: #666666;
 }
@@ -1387,4 +1353,3 @@ li.notification-disapproved strong {
 	color: #ffffff;
 }
 /* stylelint-enable */
-
