@@ -344,41 +344,6 @@ input[type="search"]::-webkit-search-cancel-button {
 	cursor: pointer;
 }
 
-/* Form button styles
----------------------------------------- */
-input.button1,
-input.button2 {
-	font-size: 1em;
-}
-
-a.button1,
-input.button1,
-input.button3,
-a.button2,
-input.button2 {
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	background: transparent none repeat-x top left;
-	width: auto !important;
-	padding-top: 1px;
-	padding-bottom: 1px;
-}
-
-a.button1,
-input.button1 {
-	font-weight: bold;
-	border: 1px solid transparent;
-}
-
-input.button3 {
-	font-variant: small-caps;
-	line-height: 5px;
-	background-image: none;
-	height: 12px;
-	margin: 0;
-	padding: 0;
-}
-
 input[type="button"],
 input[type="submit"],
 input[type="reset"],
