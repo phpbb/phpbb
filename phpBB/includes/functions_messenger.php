@@ -1048,9 +1048,9 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	$collector->install();
 
 	$options = array();
-	$verify_peer = (bool) $config['ssl_verify_peer'];
-	$verify_peer_name = (bool) $config['ssl_verify_peer_name'];
-	$allow_self_signed = (bool) $config['ssl_allow_self_signed'];
+	$verify_peer = (bool) $config['smtp_verify_peer'];
+	$verify_peer_name = (bool) $config['smtp_verify_peer_name'];
+	$allow_self_signed = (bool) $config['smtp_allow_self_signed'];
 	$remote_socket = $config['smtp_host'] . ':' . $config['smtp_port'];
 
 	// Set ssl context options, see http://php.net/manual/en/context.ssl.php

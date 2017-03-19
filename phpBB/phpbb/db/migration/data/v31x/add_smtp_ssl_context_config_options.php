@@ -24,9 +24,9 @@ class add_smtp_ssl_context_config_options extends \phpbb\db\migration\migration
 	{
 		return array(
 			// See http://php.net/manual/en/context.ssl.php
-			array('config.add', array('ssl_verify_peer', 1)),
-			array('config.add', array('ssl_verify_peer_name', 1)),
-			array('config.add', array('ssl_allow_self_signed', 0)),
+			array('config.add', array('smtp_verify_peer', 1)),
+			array('config.add', array('smtp_verify_peer_name', 1)),
+			array('config.add', array('smtp_allow_self_signed', 0)),
 		);
 	}
 }
