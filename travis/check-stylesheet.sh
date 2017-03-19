@@ -32,7 +32,7 @@ then
 	npm install -g > /dev/null
 	npm install > /dev/null
 	set -x
-	stylelint --config ../.stylelintrc "phpBB/styles/prosilver/theme/*.css"
+	stylelint "phpBB/styles/prosilver/theme/*.css"
 	# Disable admin stylelint for now
-	# stylelint --config ../.stylelintrc "phpBB/adm/style/*.css"
+	# stylelint "phpBB/adm/style/*.css"
 fi
