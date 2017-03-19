@@ -287,7 +287,10 @@ class upload extends \phpbb\avatar\driver\driver
 			{
 				$this->filesystem->remove($filename);
 			}
-			catch(\phpbb\filesystem\exception\filesystem_exception $e) {}
+			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			{
+				// Do nothing
+			}
 		}
 
 		return true;
