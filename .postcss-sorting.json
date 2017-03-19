@@ -13,8 +13,6 @@
 		{
 			"emptyLineBefore": false,
 			"properties": [
-				"-moz-osx-font-smoothing",
-				"-webkit-font-smoothing",
 				"font",
 				"font-family",
 				"font-size",
@@ -28,6 +26,7 @@
 				"font-emphasize-position",
 				"font-emphasize-style",
 				"font-smooth",
+				"font-smoothing",
 				"line-height",
 				"text-align",
 				"text-align-last",
@@ -45,6 +44,7 @@
 				"writing-mode",
 				"text-outline",
 				"text-transform",
+				"text-size-adjust",
 				"text-wrap",
 				"text-overflow",
 				"text-overflow-ellipsis",
@@ -111,7 +111,8 @@
 				"outline-width",
 				"outline-style",
 				"outline-color",
-				"outline-offset"
+				"outline-offset",
+				"tap-highlight-color"
 			]
 		},
 		{
@@ -150,6 +151,7 @@
 				"overflow",
 				"overflow-x",
 				"overflow-y",
+				"overflow-scrolling",
 				"clip",
 				"zoom",
 				"flex",
@@ -211,6 +213,7 @@
 				"counter-increment",
 				"resize",
 				"cursor",
+				"touch-callout",
 				"user-select",
 				"nav-index",
 				"nav-up",
