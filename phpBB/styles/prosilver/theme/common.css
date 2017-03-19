@@ -1055,12 +1055,14 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	animation: rotator 1s linear infinite;
 }
 
+/* stylelint-disable no-unknown-animations */
 .spinner-path {
-	stroke-dasharray: 187;
-	stroke-dashoffset: 0;
 	transform-origin: center;
 	animation: dash 1s ease-in-out infinite, colors 4s ease-in-out infinite;
+	stroke-dasharray: 187;
+	stroke-dashoffset: 0;
 }
+/* stylelint-enable no-unknown-animations */
 
 @keyframes rotator {
 	0% {
@@ -1078,13 +1080,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	}
 
 	50% {
-		stroke-dashoffset: 46.75;
 		transform: rotate(135deg);
+		stroke-dashoffset: 46.75;
 	}
 
 	100% {
-		stroke-dashoffset: 187;
 		transform: rotate(450deg);
+		stroke-dashoffset: 187;
 	}
 }
 

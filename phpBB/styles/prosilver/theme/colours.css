@@ -1094,19 +1094,12 @@ ul.cplist {
 	color: #d31141;
 }
 
-/* This ID needs factored out */
 @media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
-	/* stylelint-disable selector-no-id */
-	#navigation a,
-	.rtl #navigation a {
+	.navigation a,
+	.rtl .navigation a {
 		background: #b2c2cf;
 	}
-	/* stylelint-enable */
 }
-
-/* stylelint-disable selector-max-compound-selectors */
-/* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable no-indistinguishable-colors */
 
 /* preferences pane layout */
 .panel-container h2 {

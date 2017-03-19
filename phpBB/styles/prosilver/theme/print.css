@@ -4,6 +4,7 @@
 
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-blacklist */
 
 /* Lots still TODO here! */
 
@@ -222,4 +223,6 @@ ul {
 	height: 1em;
 	min-height: 18px;
 }
+/* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-blacklist */

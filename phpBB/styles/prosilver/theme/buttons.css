@@ -17,11 +17,11 @@
 	display: inline-block;
 	padding: 2px 8px;
 	cursor: pointer;
+	touch-action: manipulation;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
-	touch-action: manipulation;
 }
 
 .button:focus,
