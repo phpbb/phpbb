@@ -454,6 +454,9 @@ class acp_board
 						'smtp_auth_method'		=> array('lang' => 'SMTP_AUTH_METHOD',		'validate' => 'string',	'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true),
 						'smtp_username'			=> array('lang' => 'SMTP_USERNAME',			'validate' => 'string',	'type' => 'text:25:255', 'explain' => true),
 						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'validate' => 'string',	'type' => 'password:25:255', 'explain' => true),
+						'smtp_verify_peer'		=> array('lang' => 'SMTP_VERIFY_PEER',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'smtp_verify_peer_name'	=> array('lang' => 'SMTP_VERIFY_PEER_NAME',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'smtp_allow_self_signed'=> array('lang' => 'SMTP_ALLOW_SELF_SIGNED','validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
