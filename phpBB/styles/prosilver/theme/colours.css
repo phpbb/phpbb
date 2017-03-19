@@ -1275,9 +1275,26 @@ input.disabled {
 	background-color: #000000;
 }
 
-.loading_indicator {
-	background-color: #000000;
-	background-image: url('./images/loading.gif');
+@keyframes colors {
+	0% {
+		stroke: #4285f4;
+	}
+
+	25% {
+		stroke: #de3e35;
+	}
+
+	50% {
+		stroke: #f7c223;
+	}
+
+	75% {
+		stroke: #1b9a59;
+	}
+
+	100% {
+		stroke: #4285f4;
+	}
 }
 
 .dropdown-extended ul li {
