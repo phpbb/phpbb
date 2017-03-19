@@ -23,7 +23,7 @@ class phpbb_installer_config_test extends phpbb_test_case
 	public function setUp()
 	{
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
-		$filesystem = $this->getMock('\phpbb\filesystem\filesystem');
+		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');
 		$php_ini = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
 			->getMock();
 		$php_ini->method('getInt')

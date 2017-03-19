@@ -39,7 +39,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 			$phpEx
 		);
 
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'),

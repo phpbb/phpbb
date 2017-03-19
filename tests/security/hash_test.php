@@ -18,7 +18,7 @@ class phpbb_security_hash_test extends phpbb_test_case
 		global $phpbb_container;
 
 		$config = new \phpbb\config\config(array());
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),

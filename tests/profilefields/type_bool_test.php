@@ -27,7 +27,7 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
@@ -35,7 +35,7 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
-		$lang = $this->getMock('\phpbb\profilefields\lang_helper', array(), array(null, null));
+		$lang = $this->createMock('\phpbb\profilefields\lang_helper', array(), array(null, null));
 
 		$lang->expects($this->any())
 			->method('get_options_lang');
@@ -48,8 +48,8 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 			->method('get')
 			->will($this->returnCallback(array($this, 'get')));
 
-		$request = $this->getMock('\phpbb\request\request');
-		$template = $this->getMock('\phpbb\template\template');
+		$request = $this->createMock('\phpbb\request\request');
+		$template = $this->createMock('\phpbb\template\template');
 
 		$this->cp = new \phpbb\profilefields\type\type_bool(
 			$lang,

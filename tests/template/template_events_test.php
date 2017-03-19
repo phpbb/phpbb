@@ -145,7 +145,7 @@ Zeta test event in all',
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem\filesystem(),
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);
