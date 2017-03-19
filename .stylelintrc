@@ -131,11 +131,6 @@
 		"property-case": "lower",
 		"property-no-unknown": true,
 
-		"rule-empty-line-before": ["always", {
-			"ignore": ["after-comment"],
-			"except": ["first-nested"]
-		}],
-
 		"selector-attribute-brackets-space-inside": "never",
 		"selector-attribute-operator-space-after": "never",
 		"selector-attribute-operator-space-before": "never",
