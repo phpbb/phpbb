@@ -28,7 +28,7 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
@@ -59,7 +59,7 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 

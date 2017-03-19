@@ -299,7 +299,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Create auth mock
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())

@@ -382,10 +382,16 @@ class phpbb_test_case_helpers
 		}
 
 		// Mock the DAL, make it return data from the fixture
+		$db_driver = $this->test_case->getMockBuilder('phpbb\\db\\driver\\driver')
+			->disableOriginalConstructor()
+			->disableOriginalClone()
+			->disableArgumentCloning()
+			->disallowMockingUnknownTypes()
+			->getMock();
 		$mb = $this->test_case->getMockBuilder('phpbb\\textformatter\\data_access');
 		$mb->setMethods(array('get_bbcodes', 'get_censored_words', 'get_smilies', 'get_styles'));
 		$mb->setConstructorArgs(array(
-			$this->test_case->getMock('phpbb\\db\\driver\\driver'),
+			$db_driver,
 			'phpbb_bbcodes',
 			'phpbb_smilies',
 			'phpbb_styles',
