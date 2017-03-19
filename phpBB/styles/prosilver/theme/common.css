@@ -97,7 +97,15 @@ b, strong {
 	font-weight: bold;
 }
 
+.text-strong {
+	font-weight: bold;
+}
+
 i, em {
+	font-style: italic;
+}
+
+.text-italics {
 	font-style: italic;
 }
 
