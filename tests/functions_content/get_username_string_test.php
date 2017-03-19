@@ -18,7 +18,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 		parent::setUp();
 
 		global $auth, $phpbb_dispatcher, $user;
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'), $this->anything())

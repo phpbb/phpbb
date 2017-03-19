@@ -47,7 +47,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$db = $this->db;
 		$this->resync = new \phpbb\attachment\resync($this->db);
-		$this->filesystem = $this->getMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
+		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
 		$this->filesystem->expects($this->any())
 			->method('remove')
 			->willReturn(false);
@@ -103,7 +103,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	 */
 	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
 	{
-		$this->filesystem = $this->getMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
+		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
 		if ($throw_exception)
 		{
 			$this->filesystem->expects($this->any())

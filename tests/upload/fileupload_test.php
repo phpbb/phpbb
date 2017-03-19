@@ -50,7 +50,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();

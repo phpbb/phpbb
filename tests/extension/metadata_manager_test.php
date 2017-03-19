@@ -59,7 +59,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				new phpbb_mock_request()
 			),
 			$filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			$this->phpEx
 		);

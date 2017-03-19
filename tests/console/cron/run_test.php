@@ -40,7 +40,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
 		$this->lock = new \phpbb\lock\db('cron_lock', $this->config, $this->db);
 
-		$this->user = $this->getMock('\phpbb\user', array(), array(
+		$this->user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));

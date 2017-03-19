@@ -29,7 +29,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 				new phpbb_mock_request()
 			),
 			new \phpbb\filesystem\filesystem(),
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php'
 		);
@@ -180,7 +180,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_update_web_root_path($input, $getPathInfo, $getRequestUri, $getScriptName, $correction)
 	{
-		$symfony_request = $this->getMock('\phpbb\symfony_request', array(), array(
+		$symfony_request = $this->createMock('\phpbb\symfony_request', array(), array(
 			new phpbb_mock_request(),
 		));
 		$symfony_request->expects($this->any())
@@ -196,7 +196,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
 			new \phpbb\filesystem\filesystem(),
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php'
 		);
