@@ -59,21 +59,6 @@ class acp_extensions
 		$safe_time_limit = (ini_get('max_execution_time') / 2);
 		$start_time = time();
 
-		/**
-		* Event to run a specific action on extension
-		*
-		* @event core.acp_extensions_run_action
-		* @var	string	action			Action to run
-		* @var	string	u_action		Url we are at
-		* @var	string	ext_name		Extension name from request
-		* @var	int		safe_time_limit	Safe limit of execution time
-		* @var	int		start_time		Start time
-		* @since 3.1.11-RC1
-		*/
-		$u_action = $this->u_action;
-		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time');
-		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action', compact($vars)));
-
 		// Cancel action
 		if ($request->is_set_post('cancel'))
 		{
@@ -85,6 +70,28 @@ class acp_extensions
 		{
 			trigger_error('FORM_INVALID', E_USER_WARNING);
 		}
+
+		/**
+		* Event to run a specific action on extension
+		*
+		* @event core.acp_extensions_run_action_before
+		* @var	string	action			Action to run; if the event completes execution of the action, should be set to 'none'
+		* @var	string	u_action		Url we are at
+		* @var	string	ext_name		Extension name from request
+		* @var	int		safe_time_limit	Safe limit of execution time
+		* @var	int		start_time		Start time
+		* @var	string	tpl_name		Template file to load
+		* @since 3.1.11-RC1
+		* @changed 3.2.1-RC1			Renamed to core.acp_extensions_run_action_before, added tpl_name, added action 'none'
+		*/
+		$u_action = $this->u_action;
+		$tpl_name = '';
+		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
+		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_before', compact($vars)));
+
+		// In case they have been updated by the event
+		$this->u_action = $u_action;
+		$this->tpl_name = $tpl_name;
 
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
@@ -105,6 +112,10 @@ class acp_extensions
 		// What are we doing?
 		switch ($action)
 		{
+			case 'none':
+				// Intentionally empty, used by extensions that execute additional actions in the prior event
+				break;
+
 			case 'set_config_version_check_force_unstable':
 				$force_unstable = $this->request->variable('force_unstable', false);
 
@@ -347,6 +358,27 @@ class acp_extensions
 				$this->tpl_name = 'acp_ext_details';
 			break;
 		}
+
+		/**
+		* Event to run after a specific action on extension has completed
+		*
+		* @event core.acp_extensions_run_action_after
+		* @var	string	action			Action that has run
+		* @var	string	u_action		Url we are at
+		* @var	string	ext_name		Extension name from request
+		* @var	int		safe_time_limit	Safe limit of execution time
+		* @var	int		start_time		Start time
+		* @var	string	tpl_name		Template file to load
+		* @since 3.1.11-RC1
+		*/
+		$u_action = $this->u_action;
+		$tpl_name = $this->tpl_name;
+		$vars = array('action', 'u_action', 'ext_name', 'safe_time_limit', 'start_time', 'tpl_name');
+		extract($this->phpbb_dispatcher->trigger_event('core.acp_extensions_run_action_after', compact($vars)));
+
+		// In case they have been updated by the event
+		$this->u_action = $u_action;
+		$this->tpl_name = $tpl_name;
 	}
 
 	/**
