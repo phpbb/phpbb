@@ -278,7 +278,7 @@ class metadata_manager
 	{
 		if (substr_count($this->ext_name, '/') !== 1 || $this->ext_name != $this->get_metadata('name'))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('EXTENSION_DIR_INVALID'));
+			throw new \phpbb\extension\exception('EXTENSION_DIR_INVALID');
 		}
 
 		return true;
@@ -295,7 +295,7 @@ class metadata_manager
 	{
 		if (!isset($this->metadata['extra']['soft-require']['phpbb/phpbb']))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'soft-require'));
+			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', 'soft-require');
 		}
 
 		return true;
@@ -311,7 +311,7 @@ class metadata_manager
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'require php'));
+			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', 'require php');
 		}
 
 		return true;
