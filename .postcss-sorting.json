@@ -214,6 +214,7 @@
 				"resize",
 				"cursor",
 				"touch-callout",
+				"touch-action",
 				"user-select",
 				"nav-index",
 				"nav-up",
