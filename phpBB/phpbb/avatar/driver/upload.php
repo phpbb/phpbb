@@ -281,9 +281,13 @@ class upload extends \phpbb\avatar\driver\driver
 		);
 		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
 
-		if (!sizeof($error) && file_exists($filename))
+		if (!sizeof($error) && $this->filesystem->exists($filename))
 		{
-			@unlink($filename);
+			try
+			{
+				$this->filesystem->remove($filename);
+			}
+			catch(\phpbb\filesystem\exception\filesystem_exception $e) {}
 		}
 
 		return true;
@@ -304,6 +308,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	protected function can_upload()
 	{
-		return (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && $this->filesystem->is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
+		return ($this->filesystem->exists($this->phpbb_root_path . $this->config['avatar_path']) && $this->filesystem->is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
 	}
 }
