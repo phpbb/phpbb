@@ -286,14 +286,15 @@ class upload extends \phpbb\avatar\driver\driver
 			try
 			{
 				$this->filesystem->remove($filename);
+				return true;
 			}
 			catch (\phpbb\filesystem\exception\filesystem_exception $e)
 			{
-				// Do nothing
+				// Fail is covered by return statement below
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
