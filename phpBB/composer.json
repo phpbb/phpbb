@@ -29,7 +29,7 @@
 		"bantu/ini-get-wrapper": "1.0.*",
 		"composer/composer": "^1.0",
 		"google/recaptcha": "~1.1",
-		"guzzlehttp/guzzle": "~6.2",
+		"guzzlehttp/guzzle": "6.2.x-dev",
 		"lusitanian/oauth": "^0.8.1",
 		"marc1706/fast-image-size": "^1.1",
 		"paragonie/random_compat": "^1.4",
