@@ -62,12 +62,17 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$dispatcher = new phpbb_mock_event_dispatcher();
 
 		// $this->avatar_foobar will be needed later on
-		$this->avatar_foobar = $this->createMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));
+		$this->avatar_foobar = $this->getMockBuilder('\phpbb\avatar\driver\foobar')
+			->setMethods(array('get_name'))
+			->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
+			->getMock();
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
 		// barfoo driver can't be mocked with constructor arguments
-		$this->avatar_barfoo = $this->createMock('\phpbb\avatar\driver\barfoo', array('get_name', 'get_config_name'));
+		$this->avatar_barfoo = $this->getMockBuilder('\phpbb\avatar\driver\barfoo')
+			->setMethods(array('get_name', 'get_config_name'))
+			->getMock();
 		$this->avatar_barfoo->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.barfoo'));
@@ -82,11 +87,17 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		{
 			if ($driver !== 'upload')
 			{
-				$cur_avatar = $this->createMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));
+				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
+					->setMethods(array('get_name'))
+					->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
+					->getMock();
 			}
 			else
 			{
-				$cur_avatar = $this->createMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache));
+				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
+				->setMethods(array('get_name'))
+				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache))
+				->getMock();
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
@@ -288,10 +299,10 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime')
-		);
+		$user = $this->getMockBuilder('\phpbb\user')
+			->setMethods(array())
+			->setConstructorArgs(array(new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)), '\phpbb\datetime'))
+			->getMock();
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),

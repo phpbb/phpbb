@@ -27,10 +27,12 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$user = $this->createMock('\phpbb\user', array(), array(
+		$user = $this->getMockBuilder('\phpbb\user')
+			->setMethods(array('lang'))
+			->setConstructorArgs(array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+			'\phpbb\datetime'))
+			->getMock();
 		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
@@ -38,7 +40,10 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 		$request = $this->createMock('\phpbb\request\request');
 		$template = $this->createMock('\phpbb\template\template');
 
-		$lang = $this->createMock('\phpbb\profilefields\lang_helper', array(), array(null, null));
+		$lang = $this->getMockBuilder('\phpbb\profilefields\lang_helper')
+			->setMethods(array('get_options_lang', 'is_set', 'get'))
+			->setConstructorArgs(array(null, null))
+			->getMock();
 
 		$lang->expects($this->any())
 			 ->method('get_options_lang');
