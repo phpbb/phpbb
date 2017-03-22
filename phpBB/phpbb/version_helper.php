@@ -184,7 +184,7 @@ class version_helper
 		$self = $this;
 		$current_version = $this->current_version;
 
-		// Filter out any versions less than to the current version
+		// Filter out any versions less than the current version
 		$versions = array_filter($versions, function($data) use ($self, $current_version) {
 			return $self->compare($data['current'], $current_version, '>=');
 		});
@@ -218,7 +218,7 @@ class version_helper
 		$self = $this;
 		$current_version = $this->current_version;
 
-		// Filter out any versions less than to the current version
+		// Filter out any versions less than the current version
 		$versions = array_filter($versions, function($data) use ($self, $current_version) {
 			return $self->compare($data['current'], $current_version, '>=');
 		});
@@ -248,7 +248,7 @@ class version_helper
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string
+	* @return array
 	* @throws \RuntimeException
 	*/
 	public function get_suggested_updates($force_update = false, $force_cache = false)
@@ -269,7 +269,7 @@ class version_helper
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string Version info
+	* @return array Version info
 	* @throws \RuntimeException
 	*/
 	public function get_versions_matching_stability($force_update = false, $force_cache = false)
@@ -289,7 +289,7 @@ class version_helper
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string Version info, includes stable and unstable data
+	* @return array Version info, includes stable and unstable data
 	* @throws \RuntimeException
 	*/
 	public function get_versions($force_update = false, $force_cache = false)
