@@ -146,6 +146,13 @@ else
 	}
 }
 
+// Is a forum specific topic count required?
+if ($forum_data['forum_topics_per_page'])
+{
+	$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
+}
+
+/* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 // Dump out the page header and load viewforum template
@@ -207,12 +214,6 @@ if ($mark_read == 'topics')
 	}
 
 	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
-}
-
-// Is a forum specific topic count required?
-if ($forum_data['forum_topics_per_page'])
-{
-	$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
 }
 
 // Do the forum Prune thang - cron type job ...
