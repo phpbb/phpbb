@@ -295,7 +295,7 @@ class metadata_manager
 	{
 		if (!isset($this->metadata['extra']['soft-require']['phpbb/phpbb']))
 		{
-			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', 'soft-require');
+			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('soft-require'));
 		}
 
 		return true;
@@ -311,7 +311,7 @@ class metadata_manager
 	{
 		if (!isset($this->metadata['require']['php']))
 		{
-			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', 'require php');
+			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('require php'));
 		}
 
 		return true;
