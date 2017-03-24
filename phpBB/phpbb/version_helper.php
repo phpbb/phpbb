@@ -274,12 +274,20 @@ class version_helper
 		$branches = array_filter(array_keys($versions), function($branch) use ($self, $current_branch) {
 			return $self->compare($branch, $current_branch, '>=');
 		});
-		$versions = array_intersect_key($versions, array_flip($branches));
+		$versions = !empty($branches) ? array_intersect_key($versions, array_flip($branches)) : $versions;
+		if (!empty($branches))
+		{
+			$versions = array_intersect_key($versions, array_flip($branches));
+		}
+		else
+		{
+			// If branches are empty, it means the current phpBB branch is newer than any branch the
+			// extension was validated against. Reverse sort the versions array so we get the newest
+			// validated release available.
+			krsort($versions);
+		}
 
-		// CDB reverse sorts extension versions, so we need to resort them
-		ksort($versions);
-
-		// Get the lowest version from the previous list.
+		// Get the first available version from the previous list.
 		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
 			if ($value === null && $self->compare($data['current'], $current_version, '>='))
 			{
