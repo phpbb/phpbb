@@ -492,7 +492,6 @@ li.breadcrumbs span:first-child > a {
 /* Quote block */
 .rtl blockquote {
 	margin: 0.5em 25px 0 1px;
-	background-position: 99% 8px;
 }
 
 .rtl blockquote blockquote {
