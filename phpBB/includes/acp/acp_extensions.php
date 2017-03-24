@@ -162,7 +162,8 @@ class acp_extensions
 				}
 				catch (\phpbb\extension\exception $e)
 				{
-					trigger_error($e . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$extension = $phpbb_extension_manager->get_extension($ext_name);
@@ -192,7 +193,8 @@ class acp_extensions
 				}
 				catch (\phpbb\extension\exception $e)
 				{
-					trigger_error($e . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$extension = $phpbb_extension_manager->get_extension($ext_name);
