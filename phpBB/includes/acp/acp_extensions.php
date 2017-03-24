@@ -323,10 +323,7 @@ class acp_extensions
 						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
 					));
 
-					foreach ($updates_available as $branch => $version_data)
-					{
-						$template->assign_block_vars('updates_available', $version_data);
-					}
+					$template->assign_block_vars('updates_available', $updates_available);
 				}
 				catch (\RuntimeException $e)
 				{
@@ -565,7 +562,7 @@ class acp_extensions
 	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string
+	* @return array
 	* @throws RuntimeException
 	*/
 	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
@@ -584,7 +581,7 @@ class acp_extensions
 		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename'], isset($version_check['ssl']) ? $version_check['ssl'] : false);
 		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
 
-		return $updates = $version_helper->get_suggested_updates($force_update, $force_cache);
+		return $version_helper->get_ext_update_on_branch($force_update, $force_cache);
 	}
 
 	/**
