@@ -216,9 +216,9 @@ ul {
 
 /* stylelint-disable declaration-property-unit-whitelist */
 .emoji {
-	min-height: 18px;
 	min-width: 18px;
-	height: 1em;
 	width: 1em;
+	min-height: 18px;
+	height: 1em;
 }
 /* stylelint-enable declaration-property-unit-whitelist */
