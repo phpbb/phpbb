@@ -7,6 +7,7 @@
 	the docs/CREDITS.txt file.
 	------------------------------------------------------------------------
 */
+
 /* stylelint-disable selector-no-id */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
@@ -1840,10 +1841,10 @@ input.button2:focus {
 }
 
 .spinner-path {
-	stroke-dasharray: 187;
-	stroke-dashoffset: 0;
 	transform-origin: center;
 	animation: dash 1s ease-in-out infinite, colors 4s ease-in-out infinite;
+	stroke-dasharray: 187;
+	stroke-dashoffset: 0;
 }
 
 @keyframes rotator {
@@ -1862,13 +1863,13 @@ input.button2:focus {
 	}
 
 	50% {
-		stroke-dashoffset: 46.75;
 		transform: rotate(135deg);
+		stroke-dashoffset: 46.75;
 	}
 
 	100% {
-		stroke-dashoffset: 187;
 		transform: rotate(450deg);
+		stroke-dashoffset: 187;
 	}
 }
 
@@ -2945,12 +2946,16 @@ fieldset.permissions .permissions-switch {
 	word-break: break-all;
 }
 
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-enable selector-max-compound-selectors */
+
 .emoji {
-	min-height: 18px;
+	width: 1em;
 	min-width: 18px;
 	height: 1em;
-	width: 1em;
+	min-height: 18px;
 }
+
+/* stylelint-enable selector-no-id */
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
+/* stylelint-enable declaration-property-unit-blacklist */
 /* stylelint-enable declaration-property-unit-whitelist */
