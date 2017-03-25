@@ -163,10 +163,10 @@ dl.row-item dd {
 .topic-img {
 	background-size: 100%;
 	position: relative;
+	z-index: 10;
 	top: 32px;
 	bottom: 0;
 	left: 0;
-	z-index: 10;
 	display: block;
 	float: left;
 	width: 16px;
@@ -798,8 +798,8 @@ dd.profile-contact {
 
 .online {
 	background-image: none;
-	background-position: 100% 0;
 	background-repeat: no-repeat;
+	background-position: 100% 0;
 }
 
 /* Poster profile used by search */
