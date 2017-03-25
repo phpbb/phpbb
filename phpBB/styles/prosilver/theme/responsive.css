@@ -3,6 +3,8 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-blacklist */
 
 @media (max-width: 320px) {
 	select,
@@ -30,15 +32,15 @@
 	}
 
 	.action-bar .search-box .inputbox ::-moz-placeholder {
-		content: 'Search...';
+		content: "Search...";
 	}
 
 	.action-bar .search-box .inputbox :-ms-input-placeholder {
-		content: 'Search...';
+		content: "Search...";
 	}
 
 	.action-bar .search-box .inputbox ::-webkit-input-placeholder {
-		content: 'Search...';
+		content: "Search...";
 	}
 }
 
@@ -299,8 +301,8 @@
 	}
 
 	ul.topiclist li.row dt a.subforum {
-		text-overflow: ellipsis;
 		vertical-align: bottom;
+		text-overflow: ellipsis;
 		overflow: hidden;
 		max-width: 100px;
 	}
@@ -360,7 +362,7 @@
 
 	table.responsive td > dfn:after {
 		padding-right: 5px;
-		content: ':';
+		content: ":";
 	}
 
 	table.responsive span.rank-img {
@@ -368,7 +370,7 @@
 		padding-right: 5px;
 	}
 
-	table.responsive.memberlist td:first-child input[type='checkbox'] {
+	table.responsive.memberlist td:first-child input[type="checkbox"] {
 		float: right;
 	}
 
@@ -455,7 +457,7 @@
 		margin-left: 20px;
 	}
 
-	fieldset.quick-login label[for='autologin'] {
+	fieldset.quick-login label[for="autologin"] {
 		text-align: right;
 		display: inline-block;
 		min-width: 50%;
@@ -647,4 +649,7 @@
 	}
 }
 
-/* stylelint-enable */
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
+/* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-blacklist */

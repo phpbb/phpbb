@@ -2,8 +2,10 @@
 	$Buttons
 /* -------------------------------------------------------------- */
 
+/* stylelint-disable declaration-property-unit-whitelist */
+
 .button {
-	font-family: 'Open Sans', 'Droid Sans', Verdana, Arial, Helvetica;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
 	font-size: 13px;
 	font-weight: normal;
 	line-height: 1.4;
@@ -15,11 +17,11 @@
 	display: inline-block;
 	padding: 2px 8px;
 	cursor: pointer;
+	touch-action: manipulation;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	-webkit-user-select: none;
 	user-select: none;
-	touch-action: manipulation;
 }
 
 .button:focus,
@@ -42,7 +44,7 @@
 ---------------------------------------- */
 .button-form,
 .button-form-bold {
-	font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	border-radius: 0;
 }
 
@@ -59,8 +61,8 @@
 }
 
 .button-search-end {
-	border-radius: 0 4px 4px 0;
 	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
 }
 
 .search-header .button-search,
@@ -173,8 +175,8 @@ button::-moz-focus-inner {
 ------------------------------------------------- */
 .small-icon {
 	background-image: none;
-	background-position: 0 50%;
 	background-repeat: no-repeat;
+	background-position: 0 50%;
 }
 
 .dropdown .small-icon {
@@ -191,7 +193,7 @@ button::-moz-focus-inner {
 ul.linklist.bulletin > li.small-icon:before {
 	display: none;
 }
-/* stylelint-enable */
+/* stylelint-enable selector-no-qualifying-type */
 
 .dropdown .small-icon > a {
 	display: block;
@@ -205,3 +207,5 @@ ul.linklist.bulletin > li.small-icon:before {
 	padding-right: 19px;
 	padding-left: 0;
 }
+
+/* stylelint-enable declaration-property-unit-whitelist */

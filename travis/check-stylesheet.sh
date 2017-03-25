@@ -15,7 +15,6 @@ NOTESTS=$1
 
 if [ "$NOTESTS" == '1' ]
 then
-	cd phpBB
 	# Define a node version.
 	TRAVIS_NODE_VERSION="4"
 
@@ -33,7 +32,7 @@ then
 	npm install -g > /dev/null
 	npm install > /dev/null
 	set -x
-	stylelint --config ../.stylelintrc "styles/prosilver/theme/*.css"
+	stylelint "phpBB/styles/prosilver/theme/*.css"
 	# Disable admin stylelint for now
-	# stylelint --config ../.stylelintrc "adm/style/*.css"
+	# stylelint "phpBB/adm/style/*.css"
 fi

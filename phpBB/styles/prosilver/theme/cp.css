@@ -1,8 +1,11 @@
 /* -------------------------------------------------------------- /*
 	$Contorl Panel
 /* -------------------------------------------------------------- */
+
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-blacklist */
 
 /* Main CP box
 ---------------------------------------- */
@@ -126,8 +129,8 @@ ul.cplist {
 
 .tabs .tab > a,
 .minitabs .tab > a {
-	text-decoration: none;
 	white-space: nowrap;
+	text-decoration: none;
 	position: relative;
 	display: block;
 	padding: 5px 9px;
@@ -195,7 +198,7 @@ ul.cplist {
 	left: 10px;
 	width: 14px;
 	height: 0.125em;
-	content: '';
+	content: "";
 }
 
 .tabs .dropdown,
@@ -333,8 +336,8 @@ ol.def-rules li {
 
 .pm-legend {
 	border-right-width: 0;
-	border-left-style: solid;
 	border-left-width: 10px;
+	border-left-style: solid;
 	margin-bottom: 3px;
 	padding-left: 3px;
 }
@@ -386,8 +389,12 @@ ol.def-rules li {
 	}
 
 	.navigation li:last-child a {
-		border-bottom-left-radius: 5px;
 		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
 	}
 }
-/* stylelint-enable */
+
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
+/* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-blacklist */

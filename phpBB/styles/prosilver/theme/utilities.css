@@ -32,7 +32,7 @@
 .row:before,
 .row:after {
 	display: table;
-	content: ' ';
+	content: " ";
 }
 
 .clearfix:after,
@@ -72,8 +72,8 @@
 	font: 0/0 a;
 	background-color: transparent;
 	border: 0;
-	color: transparent;
 	text-shadow: none;
+	color: transparent;
 }
 
 .hidden {

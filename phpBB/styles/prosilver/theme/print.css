@@ -1,7 +1,10 @@
 /* -------------------------------------------------------------- /*
 	$Print
 /* -------------------------------------------------------------- */
+
 /* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-blacklist */
 
 /* Lots still TODO here! */
 
@@ -71,7 +74,7 @@ h3,
 h1 a,
 h2 a,
 h3 a {
-	font-family: 'Trebuchet MS', georgia, Verdana, sans-serif;
+	font-family: "Trebuchet MS", georgia, Verdana, sans-serif;
 	font-weight: bold;
 	text-decoration: none;
 	background: none;
@@ -93,7 +96,7 @@ h3 {
 }
 
 .content {
-	font-family: 'Lucida Grande', 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
 	font-size: 11pt;
 	line-height: 14pt;
 	overflow: hidden;
@@ -117,7 +120,7 @@ html > body .postbody a:link:after,
 html > body .postbody a:visited:after {
 	font-size: 90%;
 	text-decoration: none;
-	content: ' (' attr(href) ') ';
+	content: " (" attr(href) ") ";
 }
 
 hr {
@@ -152,7 +155,7 @@ html > body .postquote .quote-by a:visited:after,
 html > body .postbody h1 a:link:after,
 html > body .postbody h2 a:link:after {
 	text-decoration: none;
-	content: '';
+	content: "";
 }
 
 /* Poster profile */
@@ -214,11 +217,12 @@ ul {
 	display: none;
 }
 
-/* stylelint-disable declaration-property-unit-whitelist */
 .emoji {
-	min-height: 18px;
+	width: 1em;
 	min-width: 18px;
 	height: 1em;
-	width: 1em;
+	min-height: 18px;
 }
+/* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-blacklist */
