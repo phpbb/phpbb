@@ -192,7 +192,7 @@
 									<div>
 								<!-- ENDIF -->
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
-										<span class="contact-icon {postrow.contact.ID}-icon">{postrow.contact.NAME}</span>
+										<svg class="contact-icon {{ postrow.contact.ID }}-icon" aria-label="{{ postrow.contact.NAME }}"><use xlink:href="#{{ postrow.contact.ID }}"></use></svg>
 									</a>
 								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
 									</div>

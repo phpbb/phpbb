@@ -726,9 +726,7 @@ dd.profile-warnings {
 	box-shadow: 0 0 10px #0075b0;
 }
 
-
 .site_logo { background-image: url("./images/site_logo.gif"); }
-.contact-icon { background-image: url("./images/icons_contact.png"); }
 
 /* profile icons */
 .pm-icon { background-position: 0 0; }
