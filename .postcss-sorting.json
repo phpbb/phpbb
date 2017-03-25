@@ -2,12 +2,16 @@
 	"order": [
 		"custom-properties",
 		"dollar-variables",
+		{
+			"type": "at-rule",
+			"name": "include"
+		},
 		"declarations",
+		"rules",
 		{
 			"type": "at-rule",
 			"name": "media"
-		},
-		"rules"
+		}
 	],
 	"properties-order": [
 		{
@@ -70,12 +74,7 @@
 				"background-origin",
 				"background-size",
 				"interpolation-mode",
-				"filter"
-			]
-		},
-		{
-			"emptyLineBefore": false,
-			"properties": [
+				"filter",
 				"border",
 				"border-width",
 				"border-style",
