@@ -28,7 +28,7 @@ dd label input {
 	height: 20px\9;
 }
 
-/* IE8 often can"t handle max-width in %, so we use px instead */
+/* IE8 often can not handle max-width in %, so we use px instead */
 .postprofile .avatar img {
 	max-width: 150px\9;
 }
