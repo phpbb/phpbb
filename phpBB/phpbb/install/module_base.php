@@ -102,6 +102,14 @@ abstract class module_base implements module_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function select_task_index()
+	{
+		return 0;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function run()
 	{
 		// Recover install progress
@@ -111,24 +119,18 @@ abstract class module_base implements module_interface
 
 		if ($task_index < $iterator->count())
 		{
-		    // Receiving task index
-		    $get_tast_index = (int)$this->iohandler->get_input('task_index', 0);
-		    // Validation check
-		    if($get_tast_index > 0 && $get_tast_index < $iterator->count()){
-                $get_tast_index--;
-                $iterator->seek($get_tast_index);
-                $this->install_config->set_finished_task($get_tast_index);
-            }
-            else{
-
-                for($i = 0; $i < $task_index; $i++){
-                    $iterator->seek($i);
-                    $this->iohandler->set_finished_stage_menu($iterator->current()->get_navigation_stage_path());
-                    $this->iohandler->send_response();
-
-                }
-                $iterator->seek($task_index);
-            }
+			// Receiving task index
+			$get_tast_index = (int)$this->select_task_index();
+			// Validation check
+			if($get_tast_index)
+			{
+				$get_tast_index--;
+				$iterator->seek($get_tast_index);
+				$this->install_config->set_finished_task($get_tast_index);
+			}
+			else{
+				$iterator->seek($task_index);
+			}
 		}
 		else
 		{
@@ -164,13 +166,13 @@ abstract class module_base implements module_interface
 					$this->iohandler->send_response();
 				}
 
-                // Setting current module in navigation bar as active
-                $this->iohandler->set_active_stage_menu($task->get_navigation_stage_path());
-                $this->iohandler->send_response();
+				// Setting current module in navigation bar as active
+				$this->iohandler->set_active_stage_menu($task->get_navigation_stage_path());
+				$this->iohandler->send_response();
 				$task->run();
 
-                $this->iohandler->set_finished_stage_menu($task->get_navigation_stage_path());
-                $this->iohandler->send_response();
+				$this->iohandler->set_finished_stage_menu($task->get_navigation_stage_path());
+				$this->iohandler->send_response();
 				if ($this->allow_progress_bar)
 				{
 					// Only increment progress by one, as if a task has more than one steps

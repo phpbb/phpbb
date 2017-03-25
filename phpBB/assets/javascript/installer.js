@@ -22,24 +22,24 @@
 	interceptFormSubmit($('#install_install'));
 
 	// Interception of click on the navigation link
-    $('.my_send').click( function (e) {
-    	e.preventDefault();
-    	// check if the previous fields are filled
-    	if($(this).parent().hasClass('filled')){
-            var xhReq = createXhrObject();
-            xhReq.open('POST', $(this).attr('href'), true);
-            xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-            xhReq.send('task_index=' + $(this).data('task_index'));
+	$('.my_send').click( function (e) {
+		e.preventDefault();
+		// check if the previous fields are filled
+		if($(this).parent().hasClass('filled')){
+			var xhReq = createXhrObject();
+			xhReq.open('POST', $(this).attr('href'), true);
+			xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			xhReq.send('task_index=' + $(this).data('task_index'));
 
-            // Clear content
-            setupAjaxLayout();
-            $('#loading_indicator').css('display', 'block');
+			// Clear content
+			setupAjaxLayout();
+			$('#loading_indicator').css('display', 'block');
 
-            startPolling(xhReq);
+			startPolling(xhReq);
 		}
 		return false;
-    });
+	});
 
 	/**
 	 * Creates an XHR object
@@ -177,7 +177,7 @@
 				}
 
 				$stage.addClass('completed');
-                $stage.addClass('filled');
+				$stage.addClass('filled');
 			}
 		}
 
@@ -186,12 +186,21 @@
 			$stage = $('#' + navID);
 			$stageListItem = $stage.parent();
 
+			var list = $stageListItem.parent().children();
+			for (var i = 0; i < list.length; i++){
+				if(list[i] == $stageListItem.get(0))
+					break;
+				$(list[i]).children().addClass('completed');
+				$(list[i]).children().addClass('filled');
+			}
+			$stage.addClass('filled');
+
 			if ($active.length && !$active.is($stageListItem)) {
 				$active.removeAttr('id');
 			}
 
 			$stageListItem.attr('id', 'activemenu');
-            $stage.addClass('filled');
+
 		}
 	}
 
