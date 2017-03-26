@@ -5,6 +5,11 @@
 /* Global module setup
 ---------------------------------------- */
 
+/* Globaly fix svg colors */
+svg {
+	fill: currentColor;
+}
+
 /* Renamed version of .fa class for agnostic useage of icon fonts.
  * Just change the name of the font after the 14/1 to the name of
  * the font you wish to use.
