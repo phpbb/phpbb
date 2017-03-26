@@ -177,10 +177,12 @@
 		<!-- EVENT viewtopic_body_contact_fields_before -->
 		<!-- IF not S_IS_BOT and .postrow.contact -->
 			<dd class="profile-contact">
-				<strong>{L_CONTACT}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
 					<a href="#" class="dropdown-trigger" title="{postrow.CONTACT_USER}">
-						<i class="icon fa-commenting-o fa-fw icon-lg" aria-hidden="true"></i><span class="sr-only">{postrow.CONTACT_USER}</span>
+						<strong>{L_CONTACT}{L_COLON}</strong>
+						<svg class="icon icon-svg icon-lg" aria-label="{postrow.CONTACT_USER}">
+							<use xlink:href="#contact-menu"></use>
+						</svg>
 					</a>
 					<div class="dropdown">
 						<div class="pointer"><div class="pointer-inner"></div></div>
@@ -192,7 +194,9 @@
 									<div>
 								<!-- ENDIF -->
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
-										<svg class="contact-icon {{ postrow.contact.ID }}-icon" aria-label="{{ postrow.contact.NAME }}"><use xlink:href="#{{ postrow.contact.ID }}"></use></svg>
+										<svg class="icon-svg {{ postrow.contact.ID }}-icon" aria-label="{{ postrow.contact.NAME }}">
+											<use xlink:href="#{{ postrow.contact.ID }}"></use>
+										</svg>
 									</a>
 								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
 									</div>
