@@ -32,6 +32,13 @@ blockquote cite:before,
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
+.icon-svg {
+	vertical-align: middle;
+	width: 24px;
+	height: 24px;
+}
+
+
 .icon:before {
 	padding-right: 2px;
 }
@@ -44,18 +51,26 @@ blockquote cite:before,
 
 .icon.icon-xl {
 	font-size: 20px;
+	width: 20px;
+	height: 20px;
 }
 
 .icon.icon-lg {
 	font-size: 16px;
+	width: 16px;
+	height: 16px;
 }
 
 .icon.icon-md {
 	font-size: 10px;
+	width: 10px;
+	height: 10px;
 }
 
 .icon.icon-sm {
 	font-size: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 /* icon modifiers */
