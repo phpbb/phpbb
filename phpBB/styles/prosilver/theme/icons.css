@@ -83,18 +83,11 @@ blockquote cite:before,
 }
 
 /* Poster contact icons
-   ___------------------------------------- */
+   ---------------------------------------- */
 .contact-icons.dropdown-contents {
 	font-size: 0;
 	min-width: 0;
 	padding: 0;
-}
-
-.contact-icon {
-	vertical-align: middle;
-	display: block;
-	width: 16px;
-	height: 16px;
 }
 
 .contact-icons a {
