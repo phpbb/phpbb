@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8541642eb4b706f15c466e0dd547a7fa",
-    "content-hash": "68fd1a0bc57151f27948642c75b08114",
+    "hash": "c53f2fa544168309d695bb1855c98c24",
+    "content-hash": "4bc93e90a4852f936c13986c3823831b",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1880,16 +1880,16 @@
         },
         {
             "name": "laravel/homestead",
-            "version": "v3.1.0",
+            "version": "v4.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/homestead.git",
-                "reference": "7924ab4e27bbeb17dadcc2fc6a40659275bbfb0a"
+                "reference": "a1bcbde2462d8ac1fa608cd6f00b46623aabd705"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/homestead/zipball/7924ab4e27bbeb17dadcc2fc6a40659275bbfb0a",
-                "reference": "7924ab4e27bbeb17dadcc2fc6a40659275bbfb0a",
+                "url": "https://api.github.com/repos/laravel/homestead/zipball/a1bcbde2462d8ac1fa608cd6f00b46623aabd705",
+                "reference": "a1bcbde2462d8ac1fa608cd6f00b46623aabd705",
                 "shasum": ""
             },
             "require": {
@@ -1922,7 +1922,7 @@
                 }
             ],
             "description": "A virtual machine for web artisans.",
-            "time": "2016-11-29 16:43:51"
+            "time": "2017-02-07 19:06:26"
         },
         {
             "name": "phing/phing",
