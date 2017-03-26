@@ -346,16 +346,16 @@
         },
         {
             "name": "marc1706/fast-image-size",
-            "version": "v1.1.2",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marc1706/fast-image-size.git",
-                "reference": "8bb644f8f767c5763acd61140045a78d10e1eb06"
+                "reference": "5f7e8377746524e2b8a49a631c1fc9afeb9d8bee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marc1706/fast-image-size/zipball/8bb644f8f767c5763acd61140045a78d10e1eb06",
-                "reference": "8bb644f8f767c5763acd61140045a78d10e1eb06",
+                "url": "https://api.github.com/repos/marc1706/fast-image-size/zipball/5f7e8377746524e2b8a49a631c1fc9afeb9d8bee",
+                "reference": "5f7e8377746524e2b8a49a631c1fc9afeb9d8bee",
                 "shasum": ""
             },
             "require": {
@@ -393,7 +393,7 @@
                 "php",
                 "size"
             ],
-            "time": "2016-10-30 19:00:39"
+            "time": "2017-03-26 12:48:28"
         },
         {
             "name": "ocramius/proxy-manager",
