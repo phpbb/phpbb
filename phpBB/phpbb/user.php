@@ -354,7 +354,7 @@ class user extends \phpbb\session
 			{
 				$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			}
-			trigger_error($message);
+			trigger_error(html_entity_decode($message));
 		}
 
 		// Is board disabled and user not an admin or moderator?
@@ -366,7 +366,7 @@ class user extends \phpbb\session
 			}
 
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
-			trigger_error($message);
+			trigger_error(html_entity_decode($message));
 		}
 
 		// Is load exceeded?
