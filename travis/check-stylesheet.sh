@@ -34,5 +34,5 @@ then
 	set -x
 	stylelint "phpBB/styles/prosilver/theme/*.css"
 	# Disable admin stylelint for now
-	# stylelint "phpBB/adm/style/*.css"
+	stylelint "phpBB/adm/style/*.css"
 fi
