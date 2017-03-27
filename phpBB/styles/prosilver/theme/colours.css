@@ -1,6 +1,7 @@
 /* -------------------------------------------------------------- /*
 	$Colours
 /* -------------------------------------------------------------- *
+
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
 
@@ -33,8 +34,6 @@ hr {
 	border-color: #ffffff;
 	border-top-color: #dedede;
 }
-
-
 
 /*	colours and backgrounds for links.css */
 a {
@@ -93,12 +92,14 @@ th a:hover {
 .headerbar,
 .forumbg {
 	background-color: #13a4ec;
+	background-image: -webkit-linear-gradient(top, #80d5ff 0%, #0077b3 2px, #13a4ec 92px, #13a4ec 100%);
 	background-image: linear-gradient(to bottom, #80d5ff 0%, #0077b3 2px, #13a4ec 92px, #13a4ec 100%);
 	background-repeat: repeat-x;
 }
 
 .forabg {
 	background-color: #0077b3;
+	background-image: -webkit-linear-gradient(top, #80d5ff 0%, #13a4ec 2px, #0077b3 92px, #0077b3 100%);
 	background-image: linear-gradient(to bottom, #80d5ff 0%, #13a4ec 2px, #0077b3 92px, #0077b3 100%);
 	background-repeat: repeat-x;
 }
@@ -311,6 +312,7 @@ p.post-notice {
 /*	colours and backgrounds for content.css */
 ul.forums {
 	background-color: #edf4f7;
+	background-image: -webkit-linear-gradient(top, #b8d3e0 0%, #edf4f7 100%);
 	background-image: linear-gradient(to bottom, #b8d3e0 0%, #edf4f7 100%);
 }
 
@@ -584,15 +586,16 @@ dd.profile-warnings {
 /*	colours and backgrounds for buttons.css */
 .button {
 	background-color: #e0e0e0;
+	background-image: -webkit-linear-gradient(top, #ffffff 0%, #e0e0e0 100%);
 	background-image: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
 	border-color: #bdbdbd;
-	-webkit-box-shadow: 0 0 0 1px #ffffff inset;
 	box-shadow: 0 0 0 1px #ffffff inset;
 	color: #d41142;
 }
 
 .button:hover,
 .button:focus {
+	background-image: -webkit-linear-gradient(top, #e0e0e0 0%, #ffffff 100%);
 	background-image: linear-gradient(to bottom, #e0e0e0 0%, #ffffff 100%);
 	border-color: #0077b3;
 	text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, -1px -1px 0 rgba(189, 40, 77, 0.2);
@@ -607,7 +610,6 @@ dd.profile-warnings {
 .button-form,
 .button-form-bold {
 	border-color: #757575;
-	-webkit-box-shadow: none;
 	box-shadow: none;
 	color: #212121;
 }
@@ -815,6 +817,7 @@ ul.cplist {
 .tabs .activetab > a,
 .tabs .activetab > a:hover {
 	background-color: #c9dee8;
+	background-image: -webkit-linear-gradient(top, #e6f7ff 0%, #c9dee8 100%);
 	background-image: linear-gradient(to bottom, #e6f7ff 0%, #c9dee8 100%);
 	border-color: #c9dee8;
 	box-shadow: 0 1px 1px #e6f7ff inset;
@@ -837,12 +840,14 @@ ul.cplist {
 /* link styles for the sub-section links */
 .navigation a {
 	background: #c0d3dd;
+	background-image: -webkit-linear-gradient(left, #aab9c0 50%, #c0d3dd 100%);
 	background-image: linear-gradient(to right, #aab9c0 50%, #c0d3dd 100%);
 	color: #212121;
 }
 
 .rtl .navigation a {
 	background: #afc5cf;
+	background-image: -webkit-linear-gradient(left, #c0d3dd 50%, #aab9c0 100%);
 	background-image: linear-gradient(to right, #c0d3dd 50%, #aab9c0 100%);
 }
 
@@ -1065,6 +1070,7 @@ input.disabled {
 
 .dropdown-extended .header {
 	background-color: #e6f7ff;
+	background-image: -webkit-linear-gradient(top, #e6f7ff 0%, #c9dee8 100%);
 	background-image: linear-gradient(to bottom, #e6f7ff 0%, #c9dee8 100%);
 }
 
