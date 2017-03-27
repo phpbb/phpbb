@@ -39,6 +39,9 @@ $input = new ArgvInput();
 // Enable superglobals for cli support
 $phpbb_installer_container->get('request')->enable_super_globals();
 
+// Load compatibility globals to access deprecated globals
+require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
+
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_installer_container->get('filesystem');
 
