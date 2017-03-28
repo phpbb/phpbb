@@ -39,42 +39,19 @@
 
 	<!-- INCLUDE posting_buttons.html -->
 
-	<div id="smiley-box" class="smiley-box">
-		<!-- EVENT posting_editor_smilies_before -->
-		<!-- IF S_SMILIES_ALLOWED and .smiley -->
-			<strong>{L_SMILIES}</strong><br />
-			<!-- BEGIN smiley -->
-				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
-			<!-- END smiley -->
-		<!-- ENDIF -->
-		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
-			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 750, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
-		<!-- ENDIF -->
-		<!-- EVENT posting_editor_smilies_after -->
-		<!-- IF BBCODE_STATUS -->
-		<div class="bbcode-status">
-			<!-- IF .smiley --><hr /><!-- ENDIF -->
-			{BBCODE_STATUS}<br />
-			<!-- IF S_BBCODE_ALLOWED -->
-				{IMG_STATUS}<br />
-				{FLASH_STATUS}<br />
-				{URL_STATUS}<br />
-			<!-- ENDIF -->
-			{SMILIES_STATUS}
-		</div>
-		<!-- ENDIF -->
-		<!-- EVENT posting_editor_bbcode_status_after -->
-		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
-			<!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->
-			<!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
-			<!-- IF S_DISPLAY_REVIEW --><strong><a href="#review">{L_TOPIC_REVIEW}</a></strong><!-- ENDIF -->
-		<!-- ENDIF -->
-	</div>
-
 	<!-- EVENT posting_editor_message_before -->
 
 	<div id="message-box" class="message-box">
-		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+		<div>
+			<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="1" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" readonly="readonly" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+		
+		<div class="dropdown-container smiley-container" data-skip-responsive="true">
+				<a href="{U_VIEW_ALL_NOTIFICATIONS}" id="notification_list_button" class="dropdown-trigger">
+					<img src="./images/smilies/icon_e_biggrin.gif" width="16" height="16" alt="" title="Add an emticon.">
+				</a>
+				<!-- INCLUDE smiley_dropdown.html -->
+			</div>
+		</div>
 	</div>
 
 	<!-- EVENT posting_editor_message_after -->

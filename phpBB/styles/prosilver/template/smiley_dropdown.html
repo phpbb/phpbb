@@ -1,0 +1,41 @@
+<div id="smiley-dropdown" class="dropdown dropdown-extended" >
+    <div class="pointer"><div class="pointer-inner"></div></div>
+    <div class="smiley-content">
+        <div id="smiley-box" class="smiley-box">
+            <ul>
+            <!-- EVENT posting_editor_smilies_before -->
+            <!-- IF S_SMILIES_ALLOWED and .smiley -->
+
+            <!-- BEGIN smiley -->
+                <li class="smiley-list">
+            <a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+            </li>
+                    <!-- END smiley -->
+            <!-- ENDIF -->
+            <!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
+            <br /><li><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 750, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a></li>
+            <!-- ENDIF -->
+            <!-- EVENT posting_editor_smilies_after -->
+            <!-- IF BBCODE_STATUS -->
+            <div class="bbcode-status">
+                <!-- IF .smiley --><hr /><!-- ENDIF -->
+                {BBCODE_STATUS}<br />
+                <!-- IF S_BBCODE_ALLOWED -->
+                {IMG_STATUS}<br />
+                {FLASH_STATUS}<br />
+                {URL_STATUS}<br />
+                <!-- ENDIF -->
+                {SMILIES_STATUS}
+            </div>
+            <!-- ENDIF -->
+            <!-- EVENT posting_editor_bbcode_status_after -->
+            <!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
+            <!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->
+            <!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
+            <!-- IF S_DISPLAY_REVIEW --><strong><a href="#review">{L_TOPIC_REVIEW}</a></strong><!-- ENDIF -->
+            <!-- ENDIF -->
+                </ul>
+        </div>
+    </div>
+</div>
+
