@@ -294,6 +294,28 @@
 			</tbody>
 			</table>
 
+			<div class="pagination">
+				<ul>
+				<!-- BEGIN pagination -->
+					<!-- IF pagination.S_IS_PREV -->
+						<li class="previous"><a href="{pagination.PAGE_URL}" rel="prev" role="button">{L_PREVIOUS}</a></li>
+					<!-- ELSEIF pagination.S_IS_CURRENT -->
+						<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
+						<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination.S_IS_NEXT -->
+						<li class="next"><a href="{pagination.PAGE_URL}" rel="next" role="button">{L_NEXT}</a></li>
+					<!-- ELSE -->
+						<li><a href="{pagination.PAGE_URL}" role="button">{pagination.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination -->
+				</ul>
+			</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="inner">
 			<table class="table1">
 			<thead>
 			<tr>
@@ -315,7 +337,27 @@
 			</tbody>
 			</table>
 
-			<p><a href="{U_LOOKUP_ALL}#ip">{L_LOOKUP_ALL}</a></p>
+			<div class="buttons">
+				<p><a href="{U_LOOKUP_ALL}#ip">{L_LOOKUP_ALL}</a></p>
+			</div>
+
+			<div class="pagination">
+				<ul>
+				<!-- BEGIN pagination_ips -->
+					<!-- IF pagination_ips.S_IS_PREV -->
+						<li class="previous"><a href="{pagination_ips.PAGE_URL}" rel="prev" role="button">{L_PREVIOUS}</a></li>
+					<!-- ELSEIF pagination_ips.S_IS_CURRENT -->
+						<li class="active"><span>{pagination_ips.PAGE_NUMBER}</span></li>
+					<!-- ELSEIF pagination_ips.S_IS_ELLIPSIS -->
+						<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
+					<!-- ELSEIF pagination_ips.S_IS_NEXT -->
+						<li class="next"><a href="{pagination_ips.PAGE_URL}" rel="next" role="button">{L_NEXT}</a></li>
+					<!-- ELSE -->
+						<li><a href="{pagination_ips.PAGE_URL}" role="button">{pagination_ips.PAGE_NUMBER}</a></li>
+					<!-- ENDIF -->
+				<!-- END pagination_ips -->
+				</ul>
+			</div>
 
 			</div>
 		</div>
