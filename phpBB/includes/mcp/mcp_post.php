@@ -28,9 +28,6 @@ function mcp_post_details($id, $mode, $action)
 	global $template, $db, $user, $auth, $cache, $phpbb_container;
 	global $phpbb_dispatcher;
 
-	/** @var \phpbb\pagination $pagination */
-	$pagination = $phpbb_container->get('pagination');
-
 	$user->add_lang('posting');
 
 	$post_id = request_var('p', 0);
@@ -358,6 +355,9 @@ function mcp_post_details($id, $mode, $action)
 	// Get IP
 	if ($auth->acl_get('m_info', $post_info['forum_id']))
 	{
+		/** @var \phpbb\pagination $pagination */
+		$pagination = $phpbb_container->get('pagination');
+
 		$rdns_ip_num = $request->variable('rdns', '');
 		$start_users = $request->variable('start_users', 0);
 
@@ -383,10 +383,10 @@ function mcp_post_details($id, $mode, $action)
 			ORDER BY postings DESC, poster_id ASC";
 		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start_users);
 
-		$users = 0;
+		$page_users = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$users++;
+			$page_users++;
 
 			// Fill the user select list with users who have posted under this IP
 			if ($row['poster_id'] != $post_info['poster_id'])
@@ -396,7 +396,7 @@ function mcp_post_details($id, $mode, $action)
 		}
 		$db->sql_freeresult($result);
 
-		if ($users == $config['posts_per_page'] || $start_users)
+		if ($page_users == $config['posts_per_page'] || $start_users)
 		{
 			if ($num_users === false)
 			{
@@ -462,10 +462,10 @@ function mcp_post_details($id, $mode, $action)
 			ORDER BY postings DESC, poster_ip ASC";
 		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start_ips);
 
-		$ips = 0;
+		$page_ips = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$ips++;
+			$page_ips++;
 			$hostname = (($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') && $row['poster_ip']) ? @gethostbyaddr($row['poster_ip']) : '';
 
 			$template->assign_block_vars('iprow', array(
@@ -480,7 +480,7 @@ function mcp_post_details($id, $mode, $action)
 		}
 		$db->sql_freeresult($result);
 
-		if ($ips == $config['posts_per_page'] || $start_ips)
+		if ($page_ips == $config['posts_per_page'] || $start_ips)
 		{
 			if ($num_ips === false)
 			{
@@ -517,23 +517,14 @@ function mcp_post_details($id, $mode, $action)
 /**
  * Get the number of posters for a given ip
  *
- * @param \phpbb\db\driver\driver_interface $db
- * @param string $poster_ip
- * @return int
+ * @param \phpbb\db\driver\driver_interface $db DBAL interface
+ * @param string $poster_ip IP
+ * @return int Number of posters
  */
 function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $poster_ip)
 {
-	if ($db->get_sql_layer() == 'sqlite' || $db->get_sql_layer() == 'sqlite3')
-	{
-		$sql = 'SELECT COUNT(poster_id) as num_users
-								FROM (SELECT DISTINCT poster_id';
-	}
-	else
-	{
-		$sql = 'SELECT COUNT(DISTINCT poster_id) as num_users';
-	}
-
-	$sql .= ' FROM ' . POSTS_TABLE . "
+	$sql = 'SELECT COUNT(DISTINCT poster_id) as num_users
+		FROM ' . POSTS_TABLE . "
 		WHERE poster_ip = '" . $db->sql_escape($poster_ip) . "'";
 	$result = $db->sql_query($sql);
 	$num_users = (int) $db->sql_fetchfield('num_users');
@@ -546,22 +537,13 @@ function phpbb_get_num_posters_for_ip(\phpbb\db\driver\driver_interface $db, $po
  * Get the number of ips for a given poster
  *
  * @param \phpbb\db\driver\driver_interface $db
- * @param int $poster_id
- * @return int
+ * @param int $poster_id Poster user ID
+ * @return int Number of IPs for given poster
  */
 function phpbb_get_num_ips_for_poster(\phpbb\db\driver\driver_interface $db, $poster_id)
 {
-	if ($db->get_sql_layer() == 'sqlite' || $db->get_sql_layer() == 'sqlite3')
-	{
-		$sql = 'SELECT COUNT(poster_ip) as num_ips
-								FROM (SELECT DISTINCT poster_ip';
-	}
-	else
-	{
-		$sql = 'SELECT COUNT(DISTINCT poster_ip) as num_ips';
-	}
-
-	$sql .= ' FROM ' . POSTS_TABLE . '
+	$sql = 'SELECT COUNT(DISTINCT poster_ip) as num_ips
+		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . (int) $poster_id;
 	$result = $db->sql_query($sql);
 	$num_ips = (int) $db->sql_fetchfield('num_ips');
