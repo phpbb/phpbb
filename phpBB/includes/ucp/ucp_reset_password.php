@@ -30,7 +30,7 @@ class ucp_reset_password
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $template, $phpbb_container, $phpbb_log;
+		global $db, $user, $template, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 		if (!$config['allow_password_reset'])
 		{
@@ -49,15 +49,40 @@ class ucp_reset_password
 
 		add_form_key('ucp_reset_password');
 
-		if ($mode === 'setpassword' || ($mode === 'sendpassword' && $submit))
+		if ($submit)
 		{
-			$where = 'WHERE ' . (($mode === 'setpassword') ? 'user_id = ' . (int) $user_id :
-				"user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
-					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'");
+			$sql_array = array(
+				'SELECT'	=> 'user_id, username, user_permissions, user_actkey, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason',
+				'FROM'		=> array(USERS_TABLE => 'u'),
+			);
 
-			$sql = 'SELECT user_id, username, user_permissions, user_actkey, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
-						FROM ' . USERS_TABLE . '
-						' . $where;
+			if ($mode === 'setpassword')
+			{
+				$sql_array['WHERE'] = 'user_id = ' . (int) $user_id;
+			}
+			else
+			{
+				$sql_array['WHERE'] = "user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
+					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+			}
+
+			/**
+			 * Change SQL query for fetching user data
+			 *
+			 * @event core.ucp_reset_password_modify_select_sql
+			 * @var	string	email		User's email from the form
+			 * @var	string	username	User's username from the form
+			 * @var	array	sql_array	Fully assembled SQL query with keys SELECT, FROM, WHERE
+			 * @since 3.3.0-a1
+			 */
+			$vars = array(
+				'email',
+				'username',
+				'sql_array',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.ucp_reset_password_modify_select_sql', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -67,13 +92,13 @@ class ucp_reset_password
 				$message = ($mode === 'setpassword') ? 'NO_USER' : 'NO_EMAIL_USER';
 				trigger_error($message);
 			}
-			else if ($user_row['user_type'] === USER_FOUNDER)
+			else if ($user_row['user_type'] === USER_IGNORE)
 			{
 				trigger_error('NO_USER');
 			}
-			else if ($user_row['user_type'] == USER_INACTIVE)
+			else if ($user_row['user_type'] === USER_INACTIVE)
 			{
-				if ($user_row['user_inactive_reason'] == INACTIVE_MANUAL)
+				if ($user_row['user_inactive_reason'] === INACTIVE_MANUAL)
 				{
 					trigger_error('ACCOUNT_DEACTIVATED');
 				}
@@ -93,6 +118,7 @@ class ucp_reset_password
 
 			if (!$auth2->acl_get('u_chgpasswd'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_PASSWORD_REMINDER');
 			}
 
@@ -135,7 +161,7 @@ class ucp_reset_password
 				$message = $user->lang['PASSWORD_RESET_LINK_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
-			else if ($mode === 'setpassword' && $submit)
+			else if ($mode === 'setpassword')
 			{
 				if (strcmp($key, $user_row['user_actkey']) !== 0)
 				{
