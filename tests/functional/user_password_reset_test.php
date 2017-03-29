@@ -36,20 +36,11 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'email'		=> 'nobody@example.com',
 		));
 		$crawler = self::submit($form);
-		$this->assertContainsLang('PASSWORD_UPDATED', $crawler->text());
+		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
 
 		// Check if columns in database were updated for password reset
 		$this->get_user_data();
 		$this->assertNotNull($this->user_data['user_actkey']);
-		$this->assertNotNull($this->user_data['user_newpasswd']);
-
-		// Make sure we know the password
-		$db = $this->get_db();
-		$this->passwords_manager = $this->get_passwords_manager();
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_newpasswd = '" . $db->sql_escape($this->passwords_manager->hash('reset-password-test-user')) . "'
-			WHERE user_id = " . $user_id;
-		$db->sql_query($sql);
 	}
 
 	public function test_login_after_reset()
@@ -61,9 +52,9 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	{
 		return array(
 			array('WRONG_ACTIVATION', false, 'FOOBAR'),
-			array('ALREADY_ACTIVATED', 2, 'FOOBAR'),
-			array('PASSWORD_ACTIVATED', false, false),
-			array('ALREADY_ACTIVATED', false, false),
+			array('WRONG_ACTIVATION', 2, 'FOOBAR'),
+			array('PASSWORD_RESET', false, false),
+			array('NO_ACTIVATION_KEY', false, false),
 		);
 	}
 
@@ -77,7 +68,13 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$user_id = (!$user_id) ? $this->user_data['user_id'] : $user_id;
 		$act_key = (!$act_key) ? $this->user_data['user_actkey'] : $act_key;
 
-		$crawler = self::request('GET', "ucp.php?mode=activate&u=$user_id&k=$act_key&sid={$this->sid}");
+		$crawler = self::request('GET', "ucp.php?mode=setpassword&u=$user_id&k=$act_key&sid={$this->sid}");
+		$form = $crawler->selectButton('submit')->form(array(
+			'new_password'			=> 'reset-password-test-user',
+			'new_password_confirm'	=> 'reset-password-test-user',
+		));
+		$crawler = self::submit($form);
+
 		$this->assertContainsLang($expected, $crawler->text());
 	}
 
@@ -159,7 +156,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	protected function get_user_data()
 	{
 		$db = $this->get_db();
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
+		$sql = 'SELECT user_id, username, user_type, user_email, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
 			WHERE username = 'reset-password-test-user'";
 		$result = $db->sql_query($sql);

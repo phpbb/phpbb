@@ -204,9 +204,7 @@ class ucp_profile
 
 							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
 
-							// Because we want the profile to be reactivated we set user_newpasswd to empty (else the reactivation will fail)
 							$sql_ary['user_actkey'] = $user_actkey;
-							$sql_ary['user_newpasswd'] = '';
 						}
 
 						/**

@@ -21,7 +21,7 @@ class phpbb_functional_forgot_password_test extends phpbb_functional_test_case
 		global $config;
 		$this->add_lang('ucp');
 		$crawler = self::request('GET', 'ucp.php?mode=sendpassword');
-		$this->assertEquals($this->lang('SEND_PASSWORD'), $crawler->filter('h2')->text());
+		$this->assertEquals($this->lang('UCP_RESET_PASSWORD'), $crawler->filter('h2')->text());
 	}
 
 	public function test_forgot_password_disabled()
