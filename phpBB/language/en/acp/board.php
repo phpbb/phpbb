@@ -345,11 +345,14 @@ $lang = array_merge($lang, array(
 
 // Cookie Settings
 $lang = array_merge($lang, array(
-	'ACP_COOKIE_SETTINGS_EXPLAIN'		=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
+	'ACP_COOKIE_SETTINGS_EXPLAIN'		=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in. If you have problems with users staying logging in to your board, visit the <b><a href="https://www.phpbb.com/support/docs/en/3.1/kb/article/fixing-incorrect-cookie-settings/">phpBB.com Knowledge Base - Fixing incorrect cookie settings</a></b>.',
 
 	'COOKIE_DOMAIN'				=> 'Cookie domain',
+	'COOKIE_DOMAIN_EXPLAIN'		=> 'In most cases the cookie domain is optional. Leave it blank if you are unsure.<br /><br /> In the case where you have a board integrated with other software or have multiple domains, then to determine the cookie domain you need to do the following. If you have something like <i>example.com</i> and <i>forums.example.com</i>, or perhaps <i>forums.example.com</i> and <i>blog.example.com</i>. Remove the subdomains until you find the common domain, <i>example.com</i>. Now add a dot in front of the common domain and you would enter .example.com (note the dot at the beginning).', 
 	'COOKIE_NAME'				=> 'Cookie name',
+	'COOKIE_NAME_EXPLAIN'		=> 'This can be anything what you want, make it original. Whenever the cookie settings are changed the name of the cookie should be changed.',
 	'COOKIE_PATH'				=> 'Cookie path',
+	'COOKIE_PATH_EXPLAIN'		=> 'Note that this is always a slash, it does not matter what your board URL is.',
 	'COOKIE_SECURE'				=> 'Cookie secure',
 	'COOKIE_SECURE_EXPLAIN'		=> 'If your server is running via SSL set this to enabled else leave as disabled. Having this enabled and not running via SSL will result in server errors during redirects.',
 	'ONLINE_LENGTH'				=> 'View online time span',
