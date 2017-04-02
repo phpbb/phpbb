@@ -122,13 +122,14 @@ abstract class module_base implements module_interface
 			// Receiving task index
 			$get_task_index = (int)$this->select_task_index();
 			// Validation check
-			if($get_task_index)
+			if ($get_task_index)
 			{
 				$get_task_index--;
 				$iterator->seek($get_task_index);
 				$this->install_config->set_finished_task($get_task_index);
 			}
-			else{
+			else
+			{
 				$iterator->seek($task_index);
 			}
 		}

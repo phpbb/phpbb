@@ -136,7 +136,9 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 			$lang_options[] = array(
 				'value'		=> $lang['iso'],
 				'label'		=> $lang['local_name'],
-				'selected'	=> ((($default_lang === $lang['iso']) && !$this->install_config->get('board_name')) || ($this->install_config->get('board_name') == $lang['iso']) ),
+				'selected'	=> ((($default_lang === $lang['iso']) 
+								 && !$this->install_config->get('board_name')) 
+								|| ($this->install_config->get('board_name') == $lang['iso'])),
 			);
 		}
 
@@ -185,7 +187,9 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 		return '';
 	}
 
-	// Returns the task name for navigation bar
+	/**
+	 * {@inheritdoc}
+	 */
     public function get_navigation_stage_path()
     {
         return array('install', 0, 'obtain_board_data');

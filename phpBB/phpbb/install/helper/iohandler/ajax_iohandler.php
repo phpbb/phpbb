@@ -186,7 +186,7 @@ class ajax_iohandler extends iohandler_base
 			$tpl_ary['TITLE'] = $this->language->lang($input_options['label']);
 			$tpl_ary['KEY'] = $input_name;
 			$tpl_ary['S_EXPLAIN'] = false;
-            $tpl_ary['LOAD'] = isset($input_options['load']) ? $input_options['load'] : false;
+			$tpl_ary['LOAD'] = isset($input_options['load']) ? $input_options['load'] : false;
 
 			if (isset($input_options['default']))
 			{

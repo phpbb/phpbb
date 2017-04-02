@@ -120,33 +120,33 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 					'label'			=> 'SMTP_SERVER',
 					'type'			=> 'text',
 					'default'		=> $smtp_host,
-                    'load'		=> $this->install_config->get('smtp_host')
+					'load'		=> $this->install_config->get('smtp_host')
 				),
 				'smtp_port' => array(
 					'label'			=> 'SMTP_PORT',
 					'type'			=> 'text',
 					'default'		=> $smtp_port,
-                    'load'		=> $this->install_config->get('smtp_port')
+					'load'		=> $this->install_config->get('smtp_port')
 				),
 				'smtp_auth' => array(
 					'label'			=> 'SMTP_AUTH_METHOD',
 					'description'	=> 'SMTP_AUTH_METHOD_EXPLAIN',
 					'type'			=> 'select',
 					'options'		=> $auth_options,
-                    'load'		=> $this->install_config->get('smtp_auth')
+					'load'		=> $this->install_config->get('smtp_auth')
 				),
 				'smtp_user' => array(
 					'label'			=> 'SMTP_USERNAME',
 					'description'	=> 'SMTP_USERNAME_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $smtp_user,
-                    'load'		=> $this->install_config->get('smtp_user')
+					'load'		=> $this->install_config->get('smtp_user')
 				),
 				'smtp_pass' => array(
 					'label'			=> 'SMTP_PASSWORD',
 					'description'	=> 'SMTP_PASSWORD_EXPLAIN',
 					'type'			=> 'password',
-                    'load'		=> $this->install_config->get('smtp_pass')
+					'load'		=> $this->install_config->get('smtp_pass')
 				),
 				'submit_email' => array(
 					'label'	=> 'SUBMIT',
@@ -176,7 +176,9 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 		return '';
 	}
 
-	// Returns the task name for navigation bar
+	/**
+	 * {@inheritdoc}
+	 */
     public function get_navigation_stage_path()
     {
         return array('install', 0, 'obtain_email_data');

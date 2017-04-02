@@ -13,7 +13,6 @@
 
 namespace phpbb\install;
 
-use GuzzleHttp\Message\Request;
 use phpbb\cache\driver\driver_interface;
 use phpbb\di\ordered_service_collection;
 use phpbb\install\exception\cannot_build_container_exception;
@@ -27,7 +26,6 @@ use phpbb\install\helper\iohandler\ajax_iohandler;
 use phpbb\install\helper\iohandler\cli_iohandler;
 use phpbb\install\helper\iohandler\iohandler_interface;
 use phpbb\path_helper;
-use phpbb\request\request_interface;
 
 class installer
 {

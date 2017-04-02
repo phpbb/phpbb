@@ -22,10 +22,10 @@
 	interceptFormSubmit($('#install_install'));
 
 	// Interception of click on the navigation link
-	$('.my_send').click( function (e) {
+	$('.set_task_index').click( function (e) {
 		e.preventDefault();
 		// check if the previous fields are filled
-		if($(this).parent().hasClass('filled')){
+		if($(this).parent().hasClass('filled')) {
 			var xhReq = createXhrObject();
 			xhReq.open('POST', $(this).attr('href'), true);
 			xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -187,9 +187,10 @@
 			$stageListItem = $stage.parent();
 
 			var list = $stageListItem.parent().children();
-			for (var i = 0; i < list.length; i++){
-				if(list[i] == $stageListItem.get(0))
+			for (var i = 0; i < list.length; i++) {
+				if(list[i] == $stageListItem.get(0)) {
 					break;
+				}
 				$(list[i]).children().addClass('completed');
 				$(list[i]).children().addClass('filled');
 			}
@@ -200,7 +201,6 @@
 			}
 
 			$stageListItem.attr('id', 'activemenu');
-
 		}
 	}
 

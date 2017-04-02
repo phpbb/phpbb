@@ -274,7 +274,9 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 		return '';
 	}
 
-	// Returns the task name for navigation bar
+	/**
+	 * {@inheritdoc}
+	 */
     public function get_navigation_stage_path()
     {
         return array('install', 0, 'obtain_database_data');

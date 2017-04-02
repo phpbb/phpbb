@@ -317,10 +317,10 @@ class helper
 							'S_SELECTED' => (isset($sub_entry['selected']) && $sub_entry['selected'] === true),
 							'S_COMPLETE' => (isset($sub_entry['completed']) && $sub_entry['completed'] === true),
 							'STAGE_NAME' => $name,
-                            'IS_LINK' => (isset($sub_entry['is_link']) && $sub_entry['is_link'] === true),
-                            'LINK' => isset($sub_entry['link']) ? $sub_entry['link'] : '',
-                            'CLASS' => isset($sub_entry['class']) ? $sub_entry['class'] : '',
-                            'TASK_INDEX' => isset($sub_entry['task_index']) ? $sub_entry['task_index'] : '',
+							'IS_LINK' => (isset($sub_entry['is_link']) && $sub_entry['is_link'] === true),
+ 							'LINK' => isset($sub_entry['link']) ? $this->route($sub_entry['link']) : '',
+							'CLASS' => isset($sub_entry['class']) ? $sub_entry['class'] : '',
+							'TASK_INDEX' => isset($sub_entry['task_index']) ? $sub_entry['task_index'] : '',
 						));
 					}
 					else
