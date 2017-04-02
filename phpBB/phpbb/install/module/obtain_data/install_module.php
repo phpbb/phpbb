@@ -36,6 +36,6 @@ class install_module extends \phpbb\install\module_base
 	 */
 	public function select_task_index()
 	{
-		return $get_tast_index = (int)$this->iohandler->get_input('task_index', 0);
+		return $get_tast_index = (int) $this->iohandler->get_input('task_index', 0);
 	}
 }
