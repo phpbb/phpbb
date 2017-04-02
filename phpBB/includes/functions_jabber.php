@@ -266,7 +266,7 @@ class jabber
 
 		$socket_context = stream_context_create($options);
 
-		if ($this->connection = stream_socket_client($remote_socket, $errorno, $errorstr, $this->timeout, STREAM_CLIENT_CONNECT, $socket_context))
+		if ($this->connection = @stream_socket_client($remote_socket, $errorno, $errorstr, $this->timeout, STREAM_CLIENT_CONNECT, $socket_context))
 		{
 			socket_set_blocking($this->connection, 0);
 			socket_set_timeout($this->connection, 60);
