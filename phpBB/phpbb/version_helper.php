@@ -274,7 +274,6 @@ class version_helper
 		$branches = array_filter(array_keys($versions), function($branch) use ($self, $current_branch) {
 			return $self->compare($branch, $current_branch, '>=');
 		});
-		$versions = !empty($branches) ? array_intersect_key($versions, array_flip($branches)) : $versions;
 		if (!empty($branches))
 		{
 			$versions = array_intersect_key($versions, array_flip($branches));
