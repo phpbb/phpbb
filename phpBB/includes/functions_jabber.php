@@ -50,7 +50,7 @@ class jabber
 	var $log_array;
 
 	var $features = array();
-	
+
 	/**
 	* Constructor
 	*
