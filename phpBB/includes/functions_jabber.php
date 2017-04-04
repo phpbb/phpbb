@@ -102,7 +102,7 @@ class jabber
 	*/
 	static public function can_use_tls()
 	{
-		if (!@extension_loaded('openssl') || !function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('socket_set_blocking') || !function_exists('stream_get_wrappers'))
+		if (!@extension_loaded('openssl') || !function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('stream_set_blocking') || !function_exists('stream_get_wrappers'))
 		{
 			return false;
 		}
@@ -268,8 +268,8 @@ class jabber
 
 		if ($this->connection = @stream_socket_client($remote_socket, $errorno, $errorstr, $this->timeout, STREAM_CLIENT_CONNECT, $socket_context))
 		{
-			socket_set_blocking($this->connection, 0);
-			socket_set_timeout($this->connection, 60);
+			stream_set_blocking($this->connection, 0);
+			stream_set_timeout($this->connection, 60);
 
 			return true;
 		}
@@ -586,7 +586,7 @@ class jabber
 			case 'proceed':
 				// continue switching to TLS
 				$meta = stream_get_meta_data($this->connection);
-				socket_set_blocking($this->connection, 1);
+				stream_set_blocking($this->connection, 1);
 
 				if (!stream_socket_enable_crypto($this->connection, true, STREAM_CRYPTO_METHOD_TLS_CLIENT))
 				{
@@ -594,7 +594,7 @@ class jabber
 					return false;
 				}
 
-				socket_set_blocking($this->connection, $meta['blocked']);
+				stream_set_blocking($this->connection, $meta['blocked']);
 				$this->session['tls'] = true;
 
 				// new stream
