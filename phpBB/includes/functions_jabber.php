@@ -50,10 +50,20 @@ class jabber
 	var $log_array;
 
 	var $features = array();
-
+	
 	/**
+	* Constructor
+	*
+	* @param string $server Jabber server
+	* @param int $port Jabber server port
+	* @param string $username Jabber username or JID
+	* @param string $password Jabber password
+	* @param boold $use_ssl Use ssl
+	* @param bool $verify_peer Verify SSL certificate
+	* @param bool $verify_peer_name Verify Jabber peer name
+	* @param bool $allow_self_signed Allow self signed certificates
 	*/
-	function jabber($server, $port, $username, $password, $use_ssl = false, $verify_peer = true, $verify_peer_name = true, $allow_self_signed = false)
+	function __construct($server, $port, $username, $password, $use_ssl = false, $verify_peer = true, $verify_peer_name = true, $allow_self_signed = false)
 	{
 		$this->connect_server		= ($server) ? $server : 'localhost';
 		$this->port					= ($port) ? $port : 5222;
@@ -86,6 +96,14 @@ class jabber
 
 		$this->enable_logging		= true;
 		$this->log_array			= array();
+	}
+
+	/**
+	* Old style constructor (for compatibility, possibly it isn't nessesary)
+	*/
+	function jabber($server, $port, $username, $password, $use_ssl = false, $verify_peer = true, $verify_peer_name = true, $allow_self_signed = false)
+	{
+		$this->__construct($server, $port, $username, $password, $use_ssl, $verify_peer, $verify_peer_name, $allow_self_signed);
 	}
 
 	/**
