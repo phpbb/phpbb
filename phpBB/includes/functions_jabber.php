@@ -239,7 +239,7 @@ class jabber
 	* @access public
 	* @return bool
 	*/
-	function open_socket($server, $port, $use_ssl = false, $verify_peer = true, $verify_peer_name = true, $allow_self_signed = false)
+	function open_socket($server, $port, $use_ssl, $verify_peer, $verify_peer_name, $allow_self_signed)
 	{
 		if (@function_exists('dns_get_record'))
 		{
