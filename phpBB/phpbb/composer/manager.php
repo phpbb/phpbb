@@ -291,6 +291,18 @@ class manager implements manager_interface
 		return $this->installer->check_requirements();
 	}
 
+	/**
+	 * Normalize a packages/version array. Every entry can have 3 different forms:
+	 *  - $package => $version
+	 *  - $indice => $package:$version
+	 *  - $indice => $package
+	 * They are converted to he form:
+	 *  - $package => $version ($version is set to '*' for the third form)
+	 *
+	 * @param array $packages
+	 *
+	 * @return array
+	 */
 	protected function normalize_version(array $packages)
 	{
 		$normalized_packages = [];

@@ -599,10 +599,13 @@ class installer
 
 		foreach ($this->repositories as $repository)
 		{
-			$repositories[] = [
-				'type'	=> 'composer',
-				'url'	=> $repository,
-			];
+			if (preg_match('#^' . get_preg_expression('url') . '$#iu', $repository))
+			{
+				$repositories[] = [
+					'type' => 'composer',
+					'url' => $repository,
+				];
+			}
 		}
 
 		return $repositories;

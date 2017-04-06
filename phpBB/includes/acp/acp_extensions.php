@@ -416,6 +416,12 @@ class acp_extensions
 		$this->tpl_name = $tpl_name;
 	}
 
+	/**
+	 * Handles the catalog mode of the extensions list
+	 *
+	 * @param string $id
+	 * @param string $mode
+	 */
 	public function catalog_mode($id, $mode)
 	{
 		global $phpbb_container;
