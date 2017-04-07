@@ -41,7 +41,13 @@ class acp_extensions
 	private $phpbb_dispatcher;
 	private $ext_manager;
 
+<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
 	function main()
+=======
+	private $u_catalog_action;
+
+	function main($id, $mode)
+>>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		// Start the page
 		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
@@ -132,6 +138,8 @@ class acp_extensions
 			}
 		}
 
+		$this->u_catalog_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=catalog");
+
 		// What are we doing?
 		switch ($action)
 		{
@@ -165,10 +173,13 @@ class acp_extensions
 					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				}
 
+<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
 				$this->list_enabled_exts();
 				$this->list_disabled_exts();
 				$this->list_available_exts();
 
+=======
+>>>>>>> [ticket/11150] Do not generate actions links in templates
 				/** @var \phpbb\composer\manager $composer_manager */
 				$composer_manager = $phpbb_container->get('ext.composer.manager');
 
@@ -176,15 +187,20 @@ class acp_extensions
 				$managed_packages = [];
 				if ($composer_manager->check_requirements())
 				{
-					$managed_packages = array_keys($composer_manager->get_managed_packages());
+					$managed_packages = $composer_manager->get_managed_packages();
 				}
+				$this->request->disable_super_globals();
+
+				$this->list_enabled_exts($phpbb_extension_manager, $managed_packages);
+				$this->list_disabled_exts($phpbb_extension_manager, $managed_packages);
+				$this->list_available_exts($phpbb_extension_manager, $managed_packages);
 
 				$this->template->assign_vars(array(
 					'U_VERSIONCHECK_FORCE' 	=> $this->u_action . '&amp;action=list&amp;versioncheck_force=1',
 					'FORCE_UNSTABLE'		=> $this->config['extension_force_unstable'],
 					'U_ACTION' 				=> $this->u_action,
 					'MANAGED_EXTENSIONS'	=> $managed_packages,
-					'U_CATALOG_ACTION' 		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=catalog"),
+					'U_CATALOG_ACTION' 		=> $this->u_catalog_action,
 				));
 				$this->request->disable_super_globals();
 
@@ -753,11 +769,21 @@ class acp_extensions
 	}
 
 	/**
+<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
 	* Lists all the enabled extensions and dumps to the template
 	*
 	* @return null
 	*/
 	public function list_enabled_exts()
+=======
+	 * Lists all the enabled extensions and dumps to the template
+	 *
+	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
+	 * @param array                     $managed_packages            List of managed packages
+	 * @return null
+	 */
+	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
+>>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		$enabled_extension_meta_data = array();
 
@@ -821,15 +847,37 @@ class acp_extensions
 			$this->output_actions('enabled', array(
 				'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
 			));
+
+			if (isset($managed_packages[$block_vars['META_NAME']]))
+			{
+				$this->output_actions('disabled', [
+					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
+					'REMOVE' => [
+						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
+						'color' => '#BC2A4D;',
+					]
+				]);
+			}
 		}
 	}
 
 	/**
+<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
 	* Lists all the disabled extensions and dumps to the template
 	*
 	* @return null
 	*/
 	public function list_disabled_exts()
+=======
+	 * Lists all the disabled extensions and dumps to the template
+	 *
+	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
+	 * @param array                     $managed_packages            List of managed packages
+	 *
+	 * @return null
+	 */
+	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
+>>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		$disabled_extension_meta_data = array();
 
@@ -891,15 +939,36 @@ class acp_extensions
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
 				'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
 			));
+
+			if (isset($managed_packages[$block_vars['META_NAME']]))
+			{
+				$this->output_actions('disabled', [
+					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
+					'REMOVE' => [
+						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
+						'color' => '#BC2A4D;',
+					]
+				]);
+			}
 		}
 	}
 
 	/**
 	* Lists all the available extensions and dumps to the template
+<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
 	*
 	* @return null
 	*/
 	public function list_available_exts()
+=======
+	 *
+	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
+	 * @param array                     $managed_packages            List of managed packages
+	 *
+	* @return null
+	*/
+	public function list_available_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
+>>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		$uninstalled = array_diff_key($this->ext_manager->all_available(), $this->ext_manager->all_configured());
 
@@ -969,13 +1038,26 @@ class acp_extensions
 	*/
 	private function output_actions($block, $actions)
 	{
-		foreach ($actions as $lang => $url)
+		foreach ($actions as $lang => $options)
 		{
-			$this->template->assign_block_vars($block . '.actions', array(
+			$url = $options;
+			if (is_array($options))
+			{
+				$url = $options['url'];
+			}
+
+			$vars = array(
 				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
 				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
-			));
+			);
+
+			if (isset($options['color']))
+			{
+				$vars['COLOR'] = $options['color'];
+			}
+
+			$this->template->assign_block_vars($block . '.actions', $vars);
 		}
 	}
 

@@ -59,7 +59,7 @@
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
+					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF --><!-- IF enabled.actions.COLOR -->  style="color: {enabled.actions.COLOR};"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
 					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>
@@ -86,15 +86,9 @@
 			</td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
+					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF --><!-- IF disabled.actions.COLOR -->  style="color: {disabled.actions.COLOR};"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
 					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
-
-				<!-- IF disabled.META_NAME in MANAGED_EXTENSIONS -->
-					<!-- IF disabled.actions is defined -->&nbsp;|&nbsp;<!-- ENDIF -->
-					<a href="{U_CATALOG_ACTION}&amp;action=update&amp;extension={disabled.META_NAME}">{L_UPDATE}</a>
-					&nbsp;|&nbsp;<a href="{U_CATALOG_ACTION}&amp;action=remove&amp;extension={disabled.META_NAME}" style="color: #BC2A4D;">{L_REMOVE}</a>
-				<!-- ENDIF -->
 			</td>
 		</tr>
 		<!-- END disabled -->

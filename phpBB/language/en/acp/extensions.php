@@ -59,7 +59,6 @@ $lang = array_merge($lang, array(
 	'EXTENSION_NOT_AVAILABLE'	=> 'The selected extension is not available for this board, please verify your phpBB and PHP versions are allowed (see the details page).',
 	'EXTENSION_DIR_INVALID'		=> 'The selected extension has an invalid directory structure and cannot be enabled.',
 	'EXTENSION_NOT_ENABLEABLE'	=> 'The selected extension cannot be enabled, please verify the extension’s requirements.',
-	'EXTENSION_NOT_INSTALLED'	=> 'The extension %s is not available. Please check that you have installed it correctly.',
 
 	'DETAILS'				=> 'Details',
 
@@ -69,6 +68,8 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DELETE_DATA'	=> 'Delete data',
 	'EXTENSION_DISABLE'		=> 'Disable',
 	'EXTENSION_ENABLE'		=> 'Enable',
+	'EXTENSION_UPDATE'		=> 'Update',
+	'EXTENSION_REMOVE'		=> 'Remove',
 
 	'EXTENSION_DELETE_DATA_EXPLAIN'	=> 'Deleting an extension’s data removes all of its data and settings. The extension files are retained so it can be enabled again.',
 	'EXTENSION_DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files, data and settings but removes any functionality added by the extension.',
