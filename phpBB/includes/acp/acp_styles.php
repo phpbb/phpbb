@@ -30,7 +30,6 @@ class acp_styles
 	protected $styles_path_absolute = 'styles';
 	protected $default_style = 0;
 	protected $styles_list_cols = 0;
-	protected $reserved_style_names = array('adm', 'admin', 'all');
 
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -191,54 +190,14 @@ class acp_styles
 	*/
 	protected function action_install()
 	{
+		global $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
+
 		// Get list of styles to install
 		$dirs = $this->request_vars('dir', '', true);
 
-		// Get list of styles that can be installed
-		$styles = $this->find_available(false);
-
-		// Install each style
-		$messages = array();
-		$installed_names = array();
-		$installed_dirs = array();
-		foreach ($dirs as $dir)
-		{
-			if (in_array($dir, $this->reserved_style_names))
-			{
-				$messages[] = $this->user->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
-				continue;
-			}
-
-			$found = false;
-			foreach ($styles as &$style)
-			{
-				// Check if:
-				// 1. Directory matches directory we are looking for
-				// 2. Style is not installed yet
-				// 3. Style with same name or directory hasn't been installed already within this function
-				if ($style['style_path'] == $dir && empty($style['_installed']) && !in_array($style['style_path'], $installed_dirs) && !in_array($style['style_name'], $installed_names))
-				{
-					// Install style
-					$style['style_active'] = 1;
-					$style['style_id'] = $this->install_style($style);
-					$style['_installed'] = true;
-					$found = true;
-					$installed_names[] = $style['style_name'];
-					$installed_dirs[] = $style['style_path'];
-					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
-				}
-			}
-			if (!$found)
-			{
-				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
-			}
-		}
-
-		// Invalidate the text formatter's cache for the new styles to take effect
-		if (!empty($installed_names))
-		{
-			$this->text_formatter_cache->invalidate();
-		}
+		$messages = $style_manager->install($dirs, $messages);
 
 		// Show message
 		if (!count($messages))
@@ -420,7 +379,9 @@ class acp_styles
 	*/
 	protected function action_details()
 	{
-		global $user, $phpbb_log;
+		global $user, $phpbb_log, $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
 
 		$id = $this->request->variable('id', 0);
 		if (!$id)
@@ -429,7 +390,7 @@ class acp_styles
 		}
 
 		// Get all styles
-		$styles = $this->get_styles();
+		$styles = $style_manager->get_styles();
 		usort($styles, array($this, 'sort_styles'));
 
 		// Find current style
@@ -449,7 +410,7 @@ class acp_styles
 		}
 
 		// Read style configuration file
-		$style_cfg = $this->read_style_cfg($style['style_path']);
+		$style_cfg = $this->container->get('style.manager')->read_style_cfg($style['style_path']);
 
 		// Find all available parent styles
 		$list = $this->find_possible_parents($styles, $id);
@@ -549,7 +510,7 @@ class acp_styles
 				if (isset($update['style_parent_id']))
 				{
 					// Update styles tree
-					$styles = $this->get_styles();
+					$styles = $style_manager->get_styles();
 					if ($this->update_styles_tree($styles, $style))
 					{
 						// Something was changed in styles tree, purge all cache
@@ -612,8 +573,12 @@ class acp_styles
 	*/
 	protected function show_installed()
 	{
+		global $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
+
 		// Get all installed styles
-		$styles = $this->get_styles();
+		$styles = $style_manager->get_styles();
 
 		if (!count($styles))
 		{
@@ -677,8 +642,12 @@ class acp_styles
 	*/
 	protected function show_available()
 	{
+		global $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
+
 		// Get list of styles
-		$styles = $this->find_available(true);
+		$styles = $style_manager->find_available(true);
 
 		// Show styles
 		if (empty($styles))
@@ -736,94 +705,6 @@ class acp_styles
 				)
 			);
 		}
-	}
-
-	/**
-	* Find styles available for installation
-	*
-	* @param bool $all if true, function will return all installable styles. if false, function will return only styles that can be installed
-	* @return array List of styles
-	*/
-	protected function find_available($all)
-	{
-		// Get list of installed styles
-		$installed = $this->get_styles();
-
-		$installed_dirs = array();
-		$installed_names = array();
-		foreach ($installed as $style)
-		{
-			$installed_dirs[] = $style['style_path'];
-			$installed_names[$style['style_name']] = array(
-				'path'		=> $style['style_path'],
-				'id'		=> $style['style_id'],
-				'parent'	=> $style['style_parent_id'],
-				'tree'		=> (strlen($style['style_parent_tree']) ? $style['style_parent_tree'] . '/' : '') . $style['style_path'],
-			);
-		}
-
-		// Get list of directories
-		$dirs = $this->find_style_dirs();
-
-		// Find styles that can be installed
-		$styles = array();
-		foreach ($dirs as $dir)
-		{
-			if (in_array($dir, $installed_dirs))
-			{
-				// Style is already installed
-				continue;
-			}
-			$cfg = $this->read_style_cfg($dir);
-			if ($cfg === false)
-			{
-				// Invalid style.cfg
-				continue;
-			}
-
-			// Style should be available for installation
-			$parent = $cfg['parent'];
-			$style = array(
-				'style_id'			=> 0,
-				'style_name'		=> $cfg['name'],
-				'style_copyright'	=> $cfg['copyright'],
-				'style_active'		=> 0,
-				'style_path'		=> $dir,
-				'bbcode_bitfield'	=> $cfg['template_bitfield'],
-				'style_parent_id'	=> 0,
-				'style_parent_tree'	=> '',
-				// Extra values for styles list
-				// All extra variable start with _ so they won't be confused with data that can be added to styles table
-				'_inherit_name'			=> $parent,
-				'_available'			=> true,
-				'_note'					=> '',
-			);
-
-			// Check style inheritance
-			if ($parent != '')
-			{
-				if (isset($installed_names[$parent]))
-				{
-					// Parent style is installed
-					$row = $installed_names[$parent];
-					$style['style_parent_id'] = $row['id'];
-					$style['style_parent_tree'] = $row['tree'];
-				}
-				else
-				{
-					// Parent style is not installed yet
-					$style['_available'] = false;
-					$style['_note'] = sprintf($this->user->lang['REQUIRES_STYLE'], htmlspecialchars($parent));
-				}
-			}
-
-			if ($all || $style['_available'])
-			{
-				$styles[] = $style;
-			}
-		}
-
-		return $styles;
 	}
 
 	/**
@@ -1068,37 +949,6 @@ class acp_styles
 	}
 
 	/**
-	* Find all directories that have styles
-	*
-	* @return array Directory names
-	*/
-	protected function find_style_dirs()
-	{
-		$styles = array();
-
-		$dp = @opendir($this->styles_path);
-		if ($dp)
-		{
-			while (($file = readdir($dp)) !== false)
-			{
-				$dir = $this->styles_path . $file;
-				if ($file[0] == '.' || !is_dir($dir))
-				{
-					continue;
-				}
-
-				if (file_exists("{$dir}/style.cfg"))
-				{
-					$styles[] = $file;
-				}
-			}
-			closedir($dp);
-		}
-
-		return $styles;
-	}
-
-	/**
 	* Sort styles
 	*/
 	public function sort_styles($style1, $style2)
@@ -1112,92 +962,6 @@ class acp_styles
 			return ($style1['_available']) ? -1 : 1;
 		}
 		return strcasecmp(isset($style1['style_name']) ? $style1['style_name'] : $style1['name'], isset($style2['style_name']) ? $style2['style_name'] : $style2['name']);
-	}
-
-	/**
-	* Read style configuration file
-	*
-	* @param string $dir style directory
-	* @return array|bool Style data, false on error
-	*/
-	protected function read_style_cfg($dir)
-	{
-		static $required = array('name', 'phpbb_version', 'copyright');
-		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
-
-		// Check if it is a valid file
-		foreach ($required as $key)
-		{
-			if (!isset($cfg[$key]))
-			{
-				return false;
-			}
-		}
-
-		// Check data
-		if (!isset($cfg['parent']) || !is_string($cfg['parent']) || $cfg['parent'] == $cfg['name'])
-		{
-			$cfg['parent'] = '';
-		}
-		if (!isset($cfg['template_bitfield']))
-		{
-			$cfg['template_bitfield'] = $this->default_bitfield();
-		}
-
-		return $cfg;
-	}
-
-	/**
-	* Install style
-	*
-	* @param array $style style data
-	* @return int Style id
-	*/
-	protected function install_style($style)
-	{
-		global $user, $phpbb_log;
-
-		// Generate row
-		$sql_ary = array();
-		foreach ($style as $key => $value)
-		{
-			if ($key != 'style_id' && substr($key, 0, 1) != '_')
-			{
-				$sql_ary[$key] = $value;
-			}
-		}
-
-		// Add to database
-		$this->db->sql_transaction('begin');
-
-		$sql = 'INSERT INTO ' . STYLES_TABLE . '
-			' . $this->db->sql_build_array('INSERT', $sql_ary);
-		$this->db->sql_query($sql);
-
-		$id = $this->db->sql_nextid();
-
-		$this->db->sql_transaction('commit');
-
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($sql_ary['style_name']));
-
-		return $id;
-	}
-
-	/**
-	* Lists all styles
-	*
-	* @return array Rows with styles data
-	*/
-	protected function get_styles()
-	{
-		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE;
-		$result = $this->db->sql_query($sql);
-
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		return $rows;
 	}
 
 	/**
@@ -1337,36 +1101,6 @@ class acp_styles
 		}
 
 		return $items;
-	}
-
-	/**
-	* Generates default bitfield
-	*
-	* This bitfield decides which bbcodes are defined in a template.
-	*
-	* @return string Bitfield
-	*/
-	protected function default_bitfield()
-	{
-		static $value;
-		if (isset($value))
-		{
-			return $value;
-		}
-
-		// Hardcoded template bitfield to add for new templates
-		$bitfield = new bitfield();
-		$bitfield->set(0);
-		$bitfield->set(1);
-		$bitfield->set(2);
-		$bitfield->set(3);
-		$bitfield->set(4);
-		$bitfield->set(8);
-		$bitfield->set(9);
-		$bitfield->set(11);
-		$bitfield->set(12);
-		$value = $bitfield->get_base64();
-		return $value;
 	}
 
 }

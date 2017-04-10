@@ -33,6 +33,9 @@ imports:
     - { resource: parameters.yml }
 
 services:
+    bitfield.factory:
+        class: phpbb\bitfield\factory
+
     cache:
         class: phpbb\cache\service
         arguments:
@@ -155,6 +158,18 @@ services:
             - '@user'
             - '@php_ini'
             - '@mimetype.guesser'
+
+    style.manager:
+        class: phpbb\style\manager
+        arguments:
+            - '@service_container'
+            - '@dbal.conn'
+            - '@config'
+            - '@filesystem'
+            - '%tables.styles%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@user'
 
     upload_imagesize:
         class: FastImageSize\FastImageSize

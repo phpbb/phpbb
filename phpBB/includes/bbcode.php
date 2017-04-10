@@ -78,7 +78,7 @@ class bbcode
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());
 
-		$bitfield = new bitfield($this->bbcode_bitfield);
+		$bitfield = $phpbb_container->get('bitfield.factory')->get($this->bbcode_bitfield);
 		$bbcodes_set = $bitfield->get_all_set();
 
 		$undid_bbcode_specialchars = false;
@@ -144,7 +144,7 @@ class bbcode
 
 		if (empty($this->template_filename))
 		{
-			$this->template_bitfield = new bitfield($user->style['bbcode_bitfield']);
+			$this->template_bitfield = $phpbb_container->get('bitfield.factory')->get($user->style['bbcode_bitfield']);
 
 			$template = new \phpbb\template\twig\twig(
 				$phpbb_container->get('path_helper'),
@@ -173,7 +173,7 @@ class bbcode
 
 		$bbcode_ids = $rowset = $sql = array();
 
-		$bitfield = new bitfield($this->bbcode_bitfield);
+		$bitfield = $phpbb_container->get('bitfield.factory')->get($this->bbcode_bitfield);
 		$bbcodes_set = $bitfield->get_all_set();
 
 		foreach ($bbcodes_set as $bbcode_id)
