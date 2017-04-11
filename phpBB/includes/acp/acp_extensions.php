@@ -331,10 +331,7 @@ class acp_extensions
 							'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
 						));
 
-						foreach ($updates_available as $branch => $version_data)
-						{
-							$template->assign_block_vars('updates_available', $version_data);
-						}
+						$template->assign_block_vars('updates_available', $updates_available);
 					}
 					catch (exception_interface $e)
 					{

@@ -546,4 +546,301 @@ class phpbb_version_helper_test extends phpbb_test_case
 
 		$this->assertSame($expected, $version_helper->get_update_on_branch());
 	}
+
+	public function get_ext_update_on_branch_data()
+	{
+		return array(
+			// Single branch, check version for current branch
+			array(
+				'3.1.0',
+				'1.0.0',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+				),
+				array(
+					'current'		=> '1.0.1',
+				),
+			),
+			array(
+				'3.1.0',
+				'1.0.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+				),
+				array(),
+			),
+			array(
+				'3.2.0',
+				'1.0.0',
+				array(
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.2.0',
+				'1.1.1',
+				array(
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+			// Single branch, check for newest version when branches don't match up
+			array(
+				'3.1.0',
+				'1.0.0',
+				array(
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.1.0',
+				'1.1.1',
+				array(
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+			array(
+				'3.2.0',
+				'1.0.0',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+				),
+				array(
+					'current'		=> '1.0.1',
+				),
+			),
+			array(
+				'3.2.0',
+				'1.0.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+				),
+				array(),
+			),
+			array(
+				'3.3.0',
+				'1.0.0',
+				array(
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.3.0',
+				'1.1.1',
+				array(
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+			// Multiple branches, check version for current branch
+			array(
+				'3.1.0',
+				'1.0.0',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.0.1',
+				),
+			),
+			array(
+				'3.1.0',
+				'1.0.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+			array(
+				'3.1.0',
+				'1.1.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+			array(
+				'3.2.0',
+				'1.0.0',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.2.0',
+				'1.0.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.2.0',
+				'1.1.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+			// Multiple branches, check for newest version when branches don't match up
+			array(
+				'3.3.0',
+				'1.0.0',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.3.0',
+				'1.0.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.3.0',
+				'1.1.0',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(
+					'current'		=> '1.1.1',
+				),
+			),
+			array(
+				'3.3.0',
+				'1.1.1',
+				array(
+					'3.1'	=> array(
+						'current'		=> '1.0.1',
+					),
+					'3.2'	=> array(
+						'current'		=> '1.1.1',
+					),
+				),
+				array(),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider get_ext_update_on_branch_data
+	 */
+	public function test_get_ext_update_on_branch($phpbb_version, $ext_version, $versions, $expected)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+
+		$version_helper = $this
+			->getMockBuilder('\phpbb\version_helper')
+			->setMethods(array(
+				'get_versions_matching_stability',
+			))
+			->setConstructorArgs(array(
+				$this->cache,
+				new \phpbb\config\config(array(
+					'version'	=> $phpbb_version,
+				)),
+				new \phpbb\file_downloader(),
+				new \phpbb\user($lang, '\phpbb\datetime'),
+			))
+			->getMock()
+		;
+
+		$version_helper->expects($this->any())
+			->method('get_versions_matching_stability')
+			->will($this->returnValue($versions));
+
+		$version_helper->set_current_version($ext_version);
+
+		$this->assertSame($expected, $version_helper->get_ext_update_on_branch());
+	}
 }
