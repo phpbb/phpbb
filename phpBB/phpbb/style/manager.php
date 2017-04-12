@@ -21,18 +21,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 */
 class manager
 {
+	protected $cache;
+
 	/** @var ContainerInterface */
 	protected $container;
 
 	protected $db;
 	protected $config;
-	protected $cache;
-	protected $php_ext;
-	protected $extensions;
-	protected $extension_table;
+	protected $filesystem;
+	protected $styles_table;
+	protected $users_table;
 	protected $phpbb_root_path;
-	protected $cache_name;
-	protected $user;
 
 	/** @var \phpbb\textformatter\cache_interface */
 	protected $text_formatter_cache;
@@ -42,76 +41,77 @@ class manager
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $style_table, $phpbb_root_path, $php_ext = 'php', \phpbb\user $user)
+	public function __construct(\phpbb\cache\service $cache = null, \phpbb\config\config $config, ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\filesystem\filesystem_interface $filesystem, $styles_table, $users_table, $phpbb_root_path)
 	{
+		$this->cache = $cache;
 		$this->config = $config;
 		$this->container = $container;
 		$this->db = $db;
-		$this->style_table = $style_table;
 		$this->filesystem = $filesystem;
+		$this->styles_table = $styles_table;
+		$this->users_table = $users_table;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
-		$this->user = $user;
 
 		$this->text_formatter_cache = $container->get('text_formatter.cache');
 		$this->default_style = $config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
 	}
 
-	public function install($dirs, &$messages)
+
+	public function install($dir)
 	{
-		// Get list of styles that can be installed
-		$styles = $this->find_available(false);
-
-		// Install each style
-		$messages = array();
-		$installed_names = array();
-		$installed_dirs = array();
-		foreach ($dirs as $dir)
+		if (in_array($dir, $this->reserved_style_names))
 		{
-			if (in_array($dir, $this->reserved_style_names))
-			{
-				$messages[] = $this->user->lang('STYLE_NAME_RESERVED', htmlspecialchars($dir));
-				continue;
-			}
+			throw new exception('STYLE_NAME_RESERVED');
+		}
 
-			$found = false;
-			foreach ($styles as &$style)
+		if ($this->get_style_data('style_path', $dir))
+		{
+			throw new exception('STYLE_ENABLED');
+		}
+
+		$cfg = $this->read_style_cfg($dir);
+
+		if (!$cfg)
+		{
+			throw new exception('STYLE_FOLDER_INVALID');
+		}
+
+		// Style should be available for installation
+		$sql_ary = array(
+			'style_name'		=> $cfg['name'],
+			'style_copyright'	=> $cfg['copyright'],
+			'style_active'		=> 1,
+			'style_path'		=> $dir,
+			'bbcode_bitfield'	=> $cfg['template_bitfield'],
+			'style_parent_id'	=> 0,
+			'style_parent_tree'	=> '',
+		);
+
+		if($cfg['parent'])
+		{
+			$parent_data = $this->get_style_name('style_name', $cfg['parent']);
+			if($parent_data)
 			{
-				// Check if:
-				// 1. Directory matches directory we are looking for
-				// 2. Style is not installed yet
-				// 3. Style with same name or directory hasn't been installed already within this function
-				if ($style['style_path'] == $dir && empty($style['_installed']) && !in_array($style['style_path'], $installed_dirs) && !in_array($style['style_name'], $installed_names))
-				{
-					// Install style
-					$style['style_active'] = 1;
-					$style['style_id'] = $this->install_style($style);
-					$style['_installed'] = true;
-					$found = true;
-					$installed_names[] = $style['style_name'];
-					$installed_dirs[] = $style['style_path'];
-					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
-				}
-			}
-			if (!$found)
-			{
-				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
+				$sql_ary['style_parent_id'] = $parent_data['style_id'];
+				$sql_ary['style_parent_tree'] = $parent_data['tree'];
 			}
 		}
 
-		// Invalidate the text formatter's cache for the new styles to take effect
-		if (!empty($installed_names))
+		$sql = 'INSERT INTO ' . $this->styles_table . '
+			' . $this->db->sql_build_array('INSERT', $sql_ary);
+
+		if(!$this->db->sql_query($sql))
 		{
-			$this->text_formatter_cache->invalidate();
+			throw new exception('STYLE_NOT_INSTALLED');
 		}
 
-		return $messages;
+		$this->text_formatter_cache->invalidate();
 	}
 
 	public function uninstall($dir)
 	{
-		$style_data = $this->get_style_data($dir);
+		$style_data = $this->get_style_data('style_path', $dir);
 
 		if(!$style_data)
 		{
@@ -123,7 +123,7 @@ class manager
 
 		// Check if style has child styles
 		$sql = 'SELECT style_id
-			FROM ' . STYLES_TABLE . '
+			FROM ' . $this->styles_table . '
 			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
 		$result = $this->db->sql_query($sql);
 
@@ -141,7 +141,7 @@ class manager
 		}
 
 		// Change default style for users
-		$sql = 'UPDATE ' . USERS_TABLE . '
+		$sql = 'UPDATE ' . $this->users_table . '
 			SET user_style = 0
 			WHERE user_style = ' . $id;
 
@@ -151,13 +151,56 @@ class manager
 		}
 
 		// Uninstall style
-		$sql = 'DELETE FROM ' . STYLES_TABLE . '
+		$sql = 'DELETE FROM ' . $this->styles_table . '
 			WHERE style_id = ' . $id;
 
 		if(!$this->db->sql_query($sql))
 		{
-			throw new exception('STYLE_UNINSTALL_UNABLE_DELETE'); // TODO: lang string
+			throw new exception('STYLE_NOT_UNINSTALLED'); // TODO: lang string
 		}
+	}
+
+
+	// TODO: check if ids exist, check if already active, create exception
+	public function activate($ids)
+	{
+		// Activate styles
+		$sql = 'UPDATE ' . $this->styles_table . '
+			SET style_active = 1
+			WHERE style_id IN (' . implode(', ', $ids) . ')';
+		$this->db->sql_query($sql);
+
+		// Purge cache
+		$this->cache->destroy('sql', $this->styles_table);
+	}
+
+
+	// TODO: check if ids exist, check if already inactive, create exception
+	public function deactivate($ids)
+	{
+		// Check for default style
+		foreach ($ids as $id)
+		{
+			if ($id == $this->default_style)
+			{
+				trigger_error($this->user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+		}
+
+		// Reset default style for users who use selected styles
+		$sql = 'UPDATE ' . $this->users_table . '
+			SET user_style = 0
+			WHERE user_style IN (' . implode(', ', $ids) . ')';
+		$this->db->sql_query($sql);
+
+		// Deactivate styles
+		$sql = 'UPDATE ' . $this->styles_table . '
+			SET style_active = 0
+			WHERE style_id IN (' . implode(', ', $ids) . ')';
+		$this->db->sql_query($sql);
+
+		// Purge cache
+		$this->cache->destroy('sql', $this->styles_table);
 	}
 
 	/**
@@ -211,30 +254,6 @@ class manager
 		}
 	}
 
-	protected function get_style_data($dir)
-	{
-		$sql = "SELECT *
-			FROM " . STYLES_TABLE . "
-			WHERE style_path = '" . $this->db->sql_escape($dir) . "'";
-		$result = $this->db->sql_query($sql);
-
-		$data = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		return $data;
-	}
-
-	public function activate()
-	{
-
-	}
-
-	public function deactivate()
-	{
-
-	}
-
-
 	/**
 	* Find styles available for installation
 	*
@@ -244,7 +263,7 @@ class manager
 	public function find_available($all)
 	{
 		// Get list of installed styles
-		$installed = $this->get_styles();
+		$installed = $this->get_installed_styles();
 
 		$installed_dirs = array();
 		$installed_names = array();
@@ -324,24 +343,6 @@ class manager
 	}
 
 	/**
-	* Lists all styles
-	*
-	* @return array Rows with styles data
-	*/
-	public function get_styles()
-	{
-		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE;
-		$result = $this->db->sql_query($sql);
-
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		return $rows;
-	}
-
-
-	/**
 	* Find all directories that have styles
 	*
 	* @return array Directory names
@@ -370,6 +371,38 @@ class manager
 		}
 
 		return $styles;
+	}
+
+	/**
+	* Lists all styles
+	*
+	* @return array Rows with styles data
+	*/
+	public function get_installed_styles()
+	{
+		$sql = 'SELECT *
+			FROM ' . $this->styles_table;
+		$result = $this->db->sql_query($sql);
+
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rows;
+	}
+
+	protected function get_style_data($field, $value)
+	{
+		// TODO: Review this, possible security issue
+		// if not, maybe field doesnt need to be escaped
+		$sql = "SELECT *
+			FROM " . $this->styles_table . "
+			WHERE " . $this->db->sql_escape($field) . " = '" . $this->db->sql_escape($value) . "'";
+		$result = $this->db->sql_query($sql);
+
+		$data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $data;
 	}
 
 	/**
@@ -414,12 +447,6 @@ class manager
 	*/
 	protected function default_bitfield()
 	{
-		static $value;
-		if (isset($value))
-		{
-			return $value;
-		}
-
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new \phpbb\bitfield();
 		$bitfield->set(0);
@@ -434,41 +461,4 @@ class manager
 		$value = $bitfield->get_base64();
 		return $value;
 	}
-
-	/**
-	* Install style
-	*
-	* @param array $style style data
-	* @return int Style id
-	*/
-	protected function install_style($style)
-	{
-		global $user, $phpbb_log;
-
-		// Generate row
-		$sql_ary = array();
-		foreach ($style as $key => $value)
-		{
-			if ($key != 'style_id' && substr($key, 0, 1) != '_')
-			{
-				$sql_ary[$key] = $value;
-			}
-		}
-
-		// Add to database
-		$this->db->sql_transaction('begin');
-
-		$sql = 'INSERT INTO ' . STYLES_TABLE . '
-			' . $this->db->sql_build_array('INSERT', $sql_ary);
-		$this->db->sql_query($sql);
-
-		$id = $this->db->sql_nextid();
-
-		$this->db->sql_transaction('commit');
-
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($sql_ary['style_name']));
-
-		return $id;
-	}
-
 }

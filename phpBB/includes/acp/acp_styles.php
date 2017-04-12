@@ -190,14 +190,26 @@ class acp_styles
 	*/
 	protected function action_install()
 	{
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_log, $user;
 
 		$style_manager = $phpbb_container->get('style.manager');
 
 		// Get list of styles to install
 		$dirs = $this->request_vars('dir', '', true);
 
-		$messages = $style_manager->install($dirs, $messages);
+		$messages = array();
+
+		foreach($dirs as $dir)
+		{
+			try {
+				$style_manager->install($dir);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($dir)); // TODO: Style name
+				$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($dir)); // TODO: Style name instead of dir
+			} catch (exception $e) {
+				$msg = $this->user->lang($e->getMessage());
+				$messages[] = sprintf($msg, htmlspecialchars($style['style_name'])); // TODO: Style name instead of dir
+			}
+		}
 
 		// Show message
 		if (!count($messages))
@@ -286,12 +298,12 @@ class acp_styles
 			{
 				$style_manager->uninstall($style['style_path']);
 				$uninstalled[] = $style['style_name'];
-				$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], $style['style_name']);
+				$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], htmlspecialchars($style['style_name']));
 			}
-			catch(exception_interface $e)
+			catch(exception $e)
 			{
 				$msg = $this->user->lang($e->getMessage());
-				$messages[] = sprintf($msg, $style['style_name']);
+				$messages[] = sprintf($msg, htmlspecialchars($style['style_name']));
 			}
 
 			// Attempt to delete files
@@ -300,12 +312,12 @@ class acp_styles
 				try
 				{
 					$style_manager->delete_style_files($style['style_path']);
-					$messages[] = sprintf($this->user->lang['DELETE_STYLE_FILES_SUCCESS'], $style['style_name']);
+					$messages[] = sprintf($this->user->lang['DELETE_STYLE_FILES_SUCCESS'], htmlspecialchars($style['style_name']));
 				}
-				catch (exception_interface $e)
+				catch (exception $e)
 				{
 					$msg = $this->user->lang($e->getMessage());
-					$messages[] = sprintf($msg, $style['style_name']);
+					$messages[] = sprintf($msg, htmlspecialchars($style['style_name']));
 				}
 			}
 		}
@@ -334,17 +346,21 @@ class acp_styles
 	*/
 	protected function action_activate()
 	{
+		global $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
+
 		// Get list of styles to activate
 		$ids = $this->request_vars('id', 0, true);
 
-		// Activate styles
-		$sql = 'UPDATE ' . STYLES_TABLE . '
-			SET style_active = 1
-			WHERE style_id IN (' . implode(', ', $ids) . ')';
-		$this->db->sql_query($sql);
-
-		// Purge cache
-		$this->cache->destroy('sql', STYLES_TABLE);
+		try
+		{
+			$style_manager->activate($ids);
+		}
+		catch (exception $e)
+		{
+			// TODO
+		}
 
 		// Show styles list
 		$this->frontend();
@@ -355,32 +371,21 @@ class acp_styles
 	*/
 	protected function action_deactivate()
 	{
+		global $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
+
 		// Get list of styles to deactivate
 		$ids = $this->request_vars('id', 0, true);
 
-		// Check for default style
-		foreach ($ids as $id)
+		try
 		{
-			if ($id == $this->default_style)
-			{
-				trigger_error($this->user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
+			$style_manager->deactivate($ids);
 		}
-
-		// Reset default style for users who use selected styles
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_style = 0
-			WHERE user_style IN (' . implode(', ', $ids) . ')';
-		$this->db->sql_query($sql);
-
-		// Deactivate styles
-		$sql = 'UPDATE ' . STYLES_TABLE . '
-			SET style_active = 0
-			WHERE style_id IN (' . implode(', ', $ids) . ')';
-		$this->db->sql_query($sql);
-
-		// Purge cache
-		$this->cache->destroy('sql', STYLES_TABLE);
+		catch (exception $e)
+		{
+			// TODO
+		}
 
 		// Show styles list
 		$this->frontend();
@@ -402,7 +407,7 @@ class acp_styles
 		}
 
 		// Get all styles
-		$styles = $style_manager->get_styles();
+		$styles = $style_manager->get_installed_styles();
 		usort($styles, array($this, 'sort_styles'));
 
 		// Find current style
@@ -422,7 +427,7 @@ class acp_styles
 		}
 
 		// Read style configuration file
-		$style_cfg = $this->container->get('style.manager')->read_style_cfg($style['style_path']);
+		$style_cfg = $phpbb_container->get('style.manager')->read_style_cfg($style['style_path']);
 
 		// Find all available parent styles
 		$list = $this->find_possible_parents($styles, $id);
@@ -522,7 +527,7 @@ class acp_styles
 				if (isset($update['style_parent_id']))
 				{
 					// Update styles tree
-					$styles = $style_manager->get_styles();
+					$styles = $style_manager->get_installed_styles();
 					if ($this->update_styles_tree($styles, $style))
 					{
 						// Something was changed in styles tree, purge all cache
@@ -590,7 +595,7 @@ class acp_styles
 		$style_manager = $phpbb_container->get('style.manager');
 
 		// Get all installed styles
-		$styles = $style_manager->get_styles();
+		$styles = $style_manager->get_installed_styles();
 
 		if (!count($styles))
 		{

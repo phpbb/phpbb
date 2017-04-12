@@ -159,14 +159,14 @@ services:
     style.manager:
         class: phpbb\style\manager
         arguments:
+            - '@cache'
+            - '@config'
             - '@service_container'
             - '@dbal.conn'
-            - '@config'
             - '@filesystem'
             - '%tables.styles%'
+            - '%tables.users%'
             - '%core.root_path%'
-            - '%core.php_ext%'
-            - '@user'
 
     upload_imagesize:
         class: FastImageSize\FastImageSize
