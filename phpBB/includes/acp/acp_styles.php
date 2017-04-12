@@ -246,7 +246,9 @@ class acp_styles
 	*/
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
-		global $user, $phpbb_log;
+		global $user, $phpbb_log, $phpbb_container;
+
+		$style_manager = $phpbb_container->get('style.manager');
 
 		$default = $this->default_style;
 		$uninstalled = array();
@@ -281,20 +283,32 @@ class acp_styles
 		$uninstalled = array();
 		foreach ($rows as $style)
 		{
-			$result = $this->uninstall_style($style, $delete_files);
-
-			if (is_string($result))
+			// Uninstall style
+			try
 			{
-				$messages[] = $result;
-				continue;
+				$style_manager->uninstall($style['style_path']);
+				$uninstalled[] = $style['style_name'];
+				$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], $style['style_name']);
 			}
-			$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], $style['style_name']);
-			$uninstalled[] = $style['style_name'];
+			catch(exception_interface $e)
+			{
+				$msg = $this->user->lang($e->getMessage());
+				$messages[] = sprintf($msg, $style['style_name']);
+			}
 
 			// Attempt to delete files
-			if ($delete_files)
+			if($delete_files)
 			{
-				$messages[] = sprintf($this->user->lang[$this->delete_style_files($style['style_path']) ? 'DELETE_STYLE_FILES_SUCCESS' : 'DELETE_STYLE_FILES_FAILED'], $style['style_name']);
+				try
+				{
+					$style_manager->delete_style_files($style['style_path']);
+					$messages[] = sprintf($this->user->lang['DELETE_STYLE_FILES_SUCCESS'], $style['style_name']);
+				}
+				catch (exception_interface $e)
+				{
+					$msg = $this->user->lang($e->getMessage());
+					$messages[] = sprintf($msg, $style['style_name']);
+				}
 			}
 		}
 
@@ -984,92 +998,6 @@ class acp_styles
 		$this->db->sql_freeresult($result);
 
 		return $style_count;
-	}
-
-	/**
-	* Uninstall style
-	*
-	* @param array $style Style data
-	* @return bool|string True on success, error message on error
-	*/
-	protected function uninstall_style($style)
-	{
-		$id = $style['style_id'];
-		$path = $style['style_path'];
-
-		// Check if style has child styles
-		$sql = 'SELECT style_id
-			FROM ' . STYLES_TABLE . '
-			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
-		$result = $this->db->sql_query($sql);
-
-		$conflict = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
-
-		if ($conflict !== false)
-		{
-			return sprintf($this->user->lang['STYLE_UNINSTALL_DEPENDENT'], $style['style_name']);
-		}
-
-		// Change default style for users
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_style = 0
-			WHERE user_style = ' . $id;
-		$this->db->sql_query($sql);
-
-		// Uninstall style
-		$sql = 'DELETE FROM ' . STYLES_TABLE . '
-			WHERE style_id = ' . $id;
-		$this->db->sql_query($sql);
-		return true;
-	}
-
-	/**
-	* Delete all files in style directory
-	*
-	* @param string $path Style directory
-	* @param string $dir Directory to remove inside style's directory
-	* @return bool True on success, false on error
-	*/
-	protected function delete_style_files($path, $dir = '')
-	{
-		$dirname = $this->styles_path . $path . $dir;
-		$result = true;
-
-		$dp = @opendir($dirname);
-
-		if ($dp)
-		{
-			while (($file = readdir($dp)) !== false)
-			{
-				if ($file == '.' || $file == '..')
-				{
-					continue;
-				}
-				$filename = $dirname . '/' . $file;
-				if (is_dir($filename))
-				{
-					if (!$this->delete_style_files($path, $dir . '/' . $file))
-					{
-						$result = false;
-					}
-				}
-				else
-				{
-					if (!@unlink($filename))
-					{
-						$result = false;
-					}
-				}
-			}
-			closedir($dp);
-		}
-		if (!@rmdir($dirname))
-		{
-			return false;
-		}
-
-		return $result;
 	}
 
 	/**

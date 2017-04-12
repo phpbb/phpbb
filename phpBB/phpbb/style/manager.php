@@ -109,9 +109,119 @@ class manager
 		return $messages;
 	}
 
-	public function uninstall()
+	public function uninstall($dir)
 	{
+		$style_data = $this->get_style_data($dir);
 
+		if(!$style_data)
+		{
+			throw new exception('STYLE_NOT_FOUND'); // TODO: lang string
+		}
+
+		$id = $style_data['style_id'];
+		$path = $style_data['style_path'];
+
+		// Check if style has child styles
+		$sql = 'SELECT style_id
+			FROM ' . STYLES_TABLE . '
+			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
+		$result = $this->db->sql_query($sql);
+
+		if(!$result)
+		{
+			throw new exception('STYLE_UNINSTALL_UNABLE_CHECK_CHILD');
+		}
+
+		$conflict = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($conflict !== false)
+		{
+			throw new exception('STYLE_UNINSTALL_DEPENDENT');
+		}
+
+		// Change default style for users
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_style = 0
+			WHERE user_style = ' . $id;
+
+		if(!$this->db->sql_query($sql))
+		{
+			throw new exception('STYLE_UNINSTALL_UNABLE_UPDATE_USERS'); // TODO: lang string
+		}
+
+		// Uninstall style
+		$sql = 'DELETE FROM ' . STYLES_TABLE . '
+			WHERE style_id = ' . $id;
+
+		if(!$this->db->sql_query($sql))
+		{
+			throw new exception('STYLE_UNINSTALL_UNABLE_DELETE'); // TODO: lang string
+		}
+	}
+
+	/**
+	* Delete all files in style directory
+	*
+	* @param string $path Style directory
+	* @param string $dir Directory to remove inside style's directory
+	* @return bool True on success, false on error
+	*/
+	public function delete_style_files($path, $dir = '')
+	{
+		$dirname = $this->styles_path . $path . $dir;
+		$result = true;
+
+		$dp = @opendir($dirname);
+
+		if ($dp)
+		{
+			while (($file = readdir($dp)) !== false)
+			{
+				if ($file == '.' || $file == '..')
+				{
+					continue;
+				}
+				$filename = $dirname . '/' . $file;
+				if (is_dir($filename))
+				{
+					if (!$this->delete_style_files($path, $dir . '/' . $file))
+					{
+						$result = false;
+					}
+				}
+				else
+				{
+					if (!@unlink($filename))
+					{
+						$result = false;
+					}
+				}
+			}
+			closedir($dp);
+		}
+		if (!@rmdir($dirname))
+		{
+			$result = false;
+		}
+
+		if(!$result)
+		{
+			throw new exception('DELETE_STYLE_FILES_FAILED');
+		}
+	}
+
+	protected function get_style_data($dir)
+	{
+		$sql = "SELECT *
+			FROM " . STYLES_TABLE . "
+			WHERE style_path = '" . $this->db->sql_escape($dir) . "'";
+		$result = $this->db->sql_query($sql);
+
+		$data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $data;
 	}
 
 	public function activate()
