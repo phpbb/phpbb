@@ -251,7 +251,6 @@ class acp_styles
 		$style_manager = $phpbb_container->get('style.manager');
 
 		$default = $this->default_style;
-		$uninstalled = array();
 		$messages = array();
 
 		// Check styles list
@@ -265,7 +264,6 @@ class acp_styles
 			{
 				trigger_error($this->user->lang['UNINSTALL_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			$uninstalled[$id] = false;
 		}
 
 		// Order by reversed style_id, so parent styles would be removed after child styles
