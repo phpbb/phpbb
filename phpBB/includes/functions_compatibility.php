@@ -601,3 +601,46 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	return $file;
 }
+
+/**
+ * Bitfield class
+ *
+ * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+ */
+class bitfield extends \phpbb\bitfield
+{
+	public function __construct($bitfield = '')
+	{
+		parent::construct($bitfield);
+	}
+}
+
+/**
+ * Get option bitfield from custom data
+ *
+ * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+ *
+ * @param int	$bit		The bit/value to get
+ * @param int	$data		Current bitfield to check
+ * @return bool	Returns true if value of constant is set in bitfield, else false
+ */
+function phpbb_optionget($bit, $data)
+{
+	return \phpbb\bitfield::optionget($bit, $data);
+}
+
+/**
+ * Set option bitfield
+ *
+ * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+ *
+ * @param int	$bit		The bit/value to set/unset
+ * @param bool	$set		True if option should be set, false if option should be unset.
+ * @param int	$data		Current bitfield to change
+ *
+ * @return int	The new bitfield
+ */
+function phpbb_optionset($bit, $set, $data)
+{
+	return \phpbb\bitfield::optionset($bit, $set, $data);
+}

@@ -43,7 +43,6 @@ if (!class_exists('bbcode'))
 */
 class bbcode_firstpass extends bbcode
 {
-
 	var $message = '';
 	var $warn_msg = array();
 	var $parsed_items = array();
@@ -53,8 +52,6 @@ class bbcode_firstpass extends bbcode
 	*/
 	function parse_bbcode()
 	{
-		global $phpbb_container;
-
 		if (!$this->bbcodes)
 		{
 			$this->bbcode_init();
@@ -63,7 +60,7 @@ class bbcode_firstpass extends bbcode
 		global $user;
 
 		$this->bbcode_bitfield = '';
-		$bitfield = $phpbb_container->get('bitfield.factory')->get();
+		$bitfield = new \phpbb\bitfield();
 
 		foreach ($this->bbcodes as $bbcode_name => $bbcode_data)
 		{

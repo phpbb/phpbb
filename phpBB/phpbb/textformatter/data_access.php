@@ -26,8 +26,6 @@ class data_access
 	*/
 	protected $bbcodes_table;
 
-	protected $bitfield_factory;
-
 	/**
 	* @var \phpbb\db\driver\driver_interface
 	*/
@@ -63,9 +61,8 @@ class data_access
 	* @param string $words_table   Name of the words table
 	* @param string $styles_path   Path to the styles dir
 	*/
-	public function __construct(\phpbb\bitfield\factory $bitfield_factory, \phpbb\db\driver\driver_interface $db, $bbcodes_table, $smilies_table, $styles_table, $words_table, $styles_path)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $bbcodes_table, $smilies_table, $styles_table, $words_table, $styles_path)
 	{
-		$this->bitfield_factory = $bitfield_factory;
 		$this->db = $db;
 
 		$this->bbcodes_table = $bbcodes_table;
@@ -154,7 +151,7 @@ class data_access
 			$bbcodes = array();
 
 			// Collect the name of the BBCodes whose bit is set in the style's bbcode_bitfield
-			$template_bitfield = $this->bitfield_factory->get($style['bbcode_bitfield']);
+			$template_bitfield = new \phpbb\bitfield($style['bbcode_bitfield']);
 			foreach ($bbcode_ids as $bbcode_name => $bit)
 			{
 				if ($template_bitfield->get($bit))

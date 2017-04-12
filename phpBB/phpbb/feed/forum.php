@@ -66,7 +66,7 @@ class forum extends post_base
 		}
 
 		// Make sure forum is not excluded from feed
-		if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $this->forum_data['forum_options']))
+		if (\phpbb\bitfield::optionget(FORUM_OPTION_FEED_EXCLUDE, $this->forum_data['forum_options']))
 		{
 			throw new no_feed_exception();
 		}

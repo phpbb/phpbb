@@ -10,7 +10,6 @@ services:
     text_formatter.data_access:
         class: phpbb\textformatter\data_access
         arguments:
-            - '@bitfield.factory'
             - '@dbal.conn'
             - '%tables.bbcodes%'
             - '%tables.smilies%'

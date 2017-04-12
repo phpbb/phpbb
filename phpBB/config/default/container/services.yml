@@ -33,9 +33,6 @@ imports:
     - { resource: parameters.yml }
 
 services:
-    bitfield.factory:
-        class: phpbb\bitfield\factory
-
     cache:
         class: phpbb\cache\service
         arguments:

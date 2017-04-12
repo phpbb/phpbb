@@ -311,7 +311,7 @@ class manager
 		}
 
 		// Hardcoded template bitfield to add for new templates
-		$bitfield = $this->container->get('bitfield.factory')->get();
+		$bitfield = new \phpbb\bitfield();
 		$bitfield->set(0);
 		$bitfield->set(1);
 		$bitfield->set(2);
