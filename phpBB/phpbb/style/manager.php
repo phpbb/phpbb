@@ -67,7 +67,7 @@ class manager
 
 		if ($this->get_style_data('style_path', $dir))
 		{
-			throw new exception('STYLE_ENABLED');
+			throw new exception('STYLE_ALREADY_INSTALLED');
 		}
 
 		$cfg = $this->read_style_cfg($dir);
@@ -75,6 +75,11 @@ class manager
 		if (!$cfg)
 		{
 			throw new exception('STYLE_FOLDER_INVALID');
+		}
+
+		if ($this->get_style_data('style_name', $cfg['name']))
+		{
+			throw new exception('STYLE_ALREADY_INSTALLED');
 		}
 
 		// Style should be available for installation

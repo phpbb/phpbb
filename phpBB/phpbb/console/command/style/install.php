@@ -43,17 +43,19 @@ class install extends command
 		{
 			$available_styles = $this->manager->find_available(false);
 			$style_path = '';
+			$found = false;
 
 			foreach($available_styles as $style)
 			{
 				if($style['style_name'] == $name)
 				{
 					$style_path = $style['style_path'];
+					$found = true;
 					break;
 				}
 			}
 
-			if(empty($style_path))
+			if(!$found)
 			{
 				throw new exception(''); // Empty exception, because the error is generic
 			}
