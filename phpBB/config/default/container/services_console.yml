@@ -212,6 +212,15 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.style.show:
+        class: phpbb\console\command\style\show
+        arguments:
+            - '@user'
+            - '@style.manager'
+            - '@log'
+        tags:
+            - { name: console.command }
+
     console.command.style.uninstall:
         class: phpbb\console\command\style\uninstall
         arguments:

@@ -141,6 +141,7 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_STYLE_DEACTIVATE'	=> 'Deactivate style.',
 	'CLI_DESCRIPTION_STYLE_INSTALL'		=> 'Install style.',
 	'CLI_DESCRIPTION_STYLE_UNINSTALL'	=> 'Uninstall style.',
+	'CLI_DESCRIPTION_LIST_STYLES'		=> 'Lists all styles in the database and on the filesystem.',
 	'CLI_STYLE_NAME'					=> 'Name of the style.',
 	'CLI_STYLE_ACTIVATE_FAILURE'		=> 'Could not activate style %s',
 	'CLI_STYLE_ACTIVATE_SUCCESS'		=> 'Successfully activated style %s',
@@ -150,6 +151,9 @@ $lang = array_merge($lang, array(
 	'CLI_STYLE_INSTALL_SUCCESS'			=> 'Successfully install style %s',
 	'CLI_STYLE_UNINSTALL_FAILURE'		=> 'Could not uninstall style %s',
 	'CLI_STYLE_UNINSTALL_SUCCESS'		=> 'Successfully uninstall style %s',
+	'CLI_STYLES_ACTIVATED'				=> 'Activated',
+	'CLI_STYLES_AVAILABLE'				=> 'Available',
+	'CLI_STYLES_DEACTIVATED'			=> 'Deactivated',
 
 	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
 	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.
