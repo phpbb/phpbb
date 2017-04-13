@@ -359,7 +359,7 @@ class acp_styles
 		}
 		catch (exception $e)
 		{
-			// TODO
+			trigger_error($e->getMessage() . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Show styles list
@@ -384,7 +384,7 @@ class acp_styles
 		}
 		catch (exception $e)
 		{
-			// TODO
+			trigger_error($e->getMessage() . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Show styles list

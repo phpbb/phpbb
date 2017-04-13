@@ -183,7 +183,7 @@ class manager
 		{
 			if ($id == $this->default_style)
 			{
-				trigger_error($this->user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+				throw new exception($this->user->lang['DEACTIVATE_DEFAULT']);
 			}
 		}
 
@@ -390,7 +390,7 @@ class manager
 		return $rows;
 	}
 
-	protected function get_style_data($field, $value)
+	public function get_style_data($field, $value)
 	{
 		// TODO: Review this, possible security issue
 		// if not, maybe field doesnt need to be escaped
