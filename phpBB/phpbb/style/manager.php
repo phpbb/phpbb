@@ -218,43 +218,10 @@ class manager
 	public function delete_style_files($path, $dir = '')
 	{
 		$dirname = $this->styles_path . $path . $dir;
-		$result = true;
 
-		$dp = @opendir($dirname);
-
-		if ($dp)
-		{
-			while (($file = readdir($dp)) !== false)
-			{
-				if ($file == '.' || $file == '..')
-				{
-					continue;
-				}
-				$filename = $dirname . '/' . $file;
-				if (is_dir($filename))
-				{
-					if (!$this->delete_style_files($path, $dir . '/' . $file))
-					{
-						$result = false;
-					}
-				}
-				else
-				{
-					if (!@unlink($filename))
-					{
-						$result = false;
-					}
-				}
-			}
-			closedir($dp);
-		}
-		if (!@rmdir($dirname))
-		{
-			$result = false;
-		}
-
-		if (!$result)
-		{
+		try {
+			$this->filesystem->remove($dirname);
+		} catch (\phpbb\filesystem\exception\filesystem_exception $e) {
 			throw new exception('DELETE_STYLE_FILES_FAILED');
 		}
 	}
