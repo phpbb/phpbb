@@ -45,9 +45,9 @@ class install extends command
 			$style_path = '';
 			$found = false;
 
-			foreach($available_styles as $style)
+			foreach ($available_styles as $style)
 			{
-				if($style['style_name'] == $name)
+				if ($style['style_name'] == $name)
 				{
 					$style_path = $style['style_path'];
 					$found = true;
@@ -55,7 +55,7 @@ class install extends command
 				}
 			}
 
-			if(!$found)
+			if (!$found)
 			{
 				throw new exception(''); // Empty exception, because the error is generic
 			}

@@ -43,7 +43,6 @@ class uninstall extends command
 		try
 		{
 			$data = $this->manager->get_style_data('style_name', $name);
-			var_dump($data);
 			$this->manager->uninstall($data['style_path']);
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), array($name));
 			$io->success($this->user->lang('CLI_STYLE_UNINSTALL_SUCCESS', $name));

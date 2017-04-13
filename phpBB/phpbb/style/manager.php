@@ -93,10 +93,10 @@ class manager
 			'style_parent_tree'	=> '',
 		);
 
-		if($cfg['parent'])
+		if ($cfg['parent'])
 		{
 			$parent_data = $this->get_style_name('style_name', $cfg['parent']);
-			if($parent_data)
+			if ($parent_data)
 			{
 				$sql_ary['style_parent_id'] = $parent_data['style_id'];
 				$sql_ary['style_parent_tree'] = $parent_data['tree'];
@@ -106,7 +106,7 @@ class manager
 		$sql = 'INSERT INTO ' . $this->styles_table . '
 			' . $this->db->sql_build_array('INSERT', $sql_ary);
 
-		if(!$this->db->sql_query($sql))
+		if (!$this->db->sql_query($sql))
 		{
 			throw new exception('STYLE_NOT_INSTALLED');
 		}
@@ -118,7 +118,7 @@ class manager
 	{
 		$style_data = $this->get_style_data('style_path', $dir);
 
-		if(!$style_data)
+		if (!$style_data)
 		{
 			throw new exception('STYLE_NOT_FOUND'); // TODO: lang string
 		}
@@ -132,7 +132,7 @@ class manager
 			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
 		$result = $this->db->sql_query($sql);
 
-		if(!$result)
+		if (!$result)
 		{
 			throw new exception('STYLE_UNINSTALL_UNABLE_CHECK_CHILD');
 		}
@@ -150,7 +150,7 @@ class manager
 			SET user_style = 0
 			WHERE user_style = ' . $id;
 
-		if(!$this->db->sql_query($sql))
+		if (!$this->db->sql_query($sql))
 		{
 			throw new exception('STYLE_UNINSTALL_UNABLE_UPDATE_USERS'); // TODO: lang string
 		}
@@ -159,7 +159,7 @@ class manager
 		$sql = 'DELETE FROM ' . $this->styles_table . '
 			WHERE style_id = ' . $id;
 
-		if(!$this->db->sql_query($sql))
+		if (!$this->db->sql_query($sql))
 		{
 			throw new exception('STYLE_NOT_UNINSTALLED'); // TODO: lang string
 		}
@@ -253,7 +253,7 @@ class manager
 			$result = false;
 		}
 
-		if(!$result)
+		if (!$result)
 		{
 			throw new exception('DELETE_STYLE_FILES_FAILED');
 		}

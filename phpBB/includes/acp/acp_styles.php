@@ -199,7 +199,7 @@ class acp_styles
 
 		$messages = array();
 
-		foreach($dirs as $dir)
+		foreach ($dirs as $dir)
 		{
 			try {
 				$style_manager->install($dir);
@@ -300,14 +300,14 @@ class acp_styles
 				$uninstalled[] = $style['style_name'];
 				$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], htmlspecialchars($style['style_name']));
 			}
-			catch(exception $e)
+			catch (exception $e)
 			{
 				$msg = $this->user->lang($e->getMessage());
 				$messages[] = sprintf($msg, htmlspecialchars($style['style_name']));
 			}
 
 			// Attempt to delete files
-			if($delete_files)
+			if ($delete_files)
 			{
 				try
 				{
