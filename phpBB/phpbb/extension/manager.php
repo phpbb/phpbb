@@ -95,6 +95,15 @@ class manager
 
 		foreach ($extensions as $extension)
 		{
+			if ($extension['ext_active'] && !$this->is_available($extension['ext_name']))
+			{
+				$extension['ext_active'] = false;
+				$extension['ext_state'] = serialize(true);
+				$sql = 'UPDATE ' . $this->extension_table . '
+					SET ' . $this->db->sql_build_array('UPDATE', $extension) . "
+					WHERE ext_name = '" . $this->db->sql_escape($extension['ext_name']) . "'";
+				$this->db->sql_query($sql);
+			}
 			$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
 			$this->extensions[$extension['ext_name']] = $extension;
 		}
@@ -103,7 +112,8 @@ class manager
 
 		if ($this->cache)
 		{
-			$this->cache->put($this->cache_name, $this->extensions);
+			$this->cache->purge();
+			$this->cache->put($this->cache_name, $this->extensions, 600);
 		}
 	}
 
@@ -255,10 +265,10 @@ class manager
 	* @param string $name The extension's name
 	* @return bool False if disabling is finished, true otherwise
 	*/
-	public function disable_step($name)
+	public function disable_step($name, $reenable = false)
 	{
-		// ignore extensions that are already disabled
-		if (!isset($this->extensions[$name]) || !$this->extensions[$name]['ext_active'])
+		// ignore extensions that are already disabled unless we are reenabling
+		if (!isset($this->extensions[$name]) || (!$this->extensions[$name]['ext_active'] && !$reenable))
 		{
 			return false;
 		}
@@ -431,25 +441,11 @@ class manager
 			if ($file_info->isFile() && $file_info->getFilename() == 'composer.json')
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
-				$composer_file = $iterator->getPath() . '/composer.json';
-
-				// Ignore the extension if there is no composer.json.
-				if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
-				{
-					continue;
-				}
-
-				$ext_info = json_decode($ext_info, true);
 				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
-
-				// Ignore the extension if directory depth is not correct or if the directory structure
-				// does not match the name value specified in composer.json.
-				if (substr_count($ext_name, '/') !== 1 || !isset($ext_info['name']) || $ext_name != $ext_info['name'])
+				if ($this->is_available($ext_name))
 				{
-					continue;
+					$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 				}
-
-				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}
 		}
 		ksort($available);
@@ -527,7 +523,29 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		return file_exists($this->get_extension_path($name, true));
+		// Not available if the folder does not exist
+		if (!file_exists($this->get_extension_path($name, true)))
+		{
+			return false;
+		}
+
+		$composer_file = $this->get_extension_path($name, true) . 'composer.json';
+
+		// Not available if there is no composer.json.
+		if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
+		{
+			return false;
+		}
+		$ext_info = json_decode($ext_info, true);
+
+		// Not available if malformed name or if the directory structure
+		// does not match the name value specified in composer.json.
+		if (substr_count($name, '/') !== 1 || !isset($ext_info['name']) || $name != $ext_info['name'])
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -606,6 +624,19 @@ class manager
 	public function is_purged($name)
 	{
 		return $this->is_available($name) && !$this->is_configured($name);
+	}
+
+	/**
+	* Check to see if a given extension is incomplete
+	*
+	* An extension is incomplete if disabled and the enable or disable processes have not completed
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is purged
+	*/
+	public function is_incomplete($name)
+	{
+		return $this->is_disabled($name) && unserialize($this->extensions[$name]['ext_state']);
 	}
 
 	/**
