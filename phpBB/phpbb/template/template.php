@@ -160,10 +160,11 @@ interface template
 	* If key is false the position is set to 0
 	* If key is true the position is set to the last entry
 	*
-	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
+	* @param	string	$mode		Mode to execute (valid modes are 'insert', 'change' and 'delete')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero).
 	*	If change, the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).
+	*	If delete, the vararray is ignored, and the block at the given position (counting from zero) is removed.
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
