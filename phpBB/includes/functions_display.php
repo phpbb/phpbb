@@ -1165,12 +1165,13 @@ function display_reasons($reason_id = 0)
 */
 function display_user_activity(&$userdata_ary)
 {
-	global $auth, $template, $db, $user;
+	global $auth, $template, $db, $user, $config;
 	global $phpbb_root_path, $phpEx;
 	global $phpbb_container, $phpbb_dispatcher;
 
-	// Do not display user activity for users having more than 5000 posts...
-	if ($userdata_ary['user_posts'] > 5000)
+	// Do not display user activity for users having too many posts...
+	$limit = $config['load_user_activity_limit'];
+	if ($userdata_ary['user_posts'] > $limit && $limit != 0)
 	{
 		return;
 	}
