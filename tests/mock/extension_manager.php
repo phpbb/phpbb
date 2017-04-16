@@ -20,5 +20,7 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 		$this->extensions = $extensions;
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->container = $container;
+		$this->config = new \phpbb\config\config(array());
+		$this->user = new \phpbb\user('\phpbb\datetime');
 	}
 }
