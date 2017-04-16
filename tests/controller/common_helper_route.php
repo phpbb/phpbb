@@ -114,6 +114,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
