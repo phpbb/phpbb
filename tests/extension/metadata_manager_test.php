@@ -364,9 +364,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		return new phpbb_mock_metadata_manager(
 			$ext_name,
-			$this->config,
-			$this->extension_manager,
-			$this->phpbb_root_path
+			$this->extension_manager->get_extension_path($ext_name, true)
 		);
 	}
 }
