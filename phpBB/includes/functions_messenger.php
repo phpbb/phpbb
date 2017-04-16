@@ -672,8 +672,8 @@ class messenger
 			new \phpbb\template\twig\loader(
 				$phpbb_container->get('filesystem')
 			),
-			array(),
-			$phpbb_dispatcher
+			$phpbb_dispatcher,
+			array()
 		);
 		$template_environment->setLexer($phpbb_container->get('template.twig.lexer'));
 

@@ -70,6 +70,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -77,8 +78,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				'autoescape'	=> false,
 			)
 		);
-
-		$container = new phpbb_mock_container_builder();
 
 		$this->migrator = new \phpbb\db\migrator(
 			$container,
