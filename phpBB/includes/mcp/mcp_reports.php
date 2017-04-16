@@ -77,9 +77,9 @@ class mcp_reports
 					'SELECT'	=> 'r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, r.reported_post_uid, r.reported_post_bitfield, r.reported_post_enable_magic_url, r.reported_post_enable_smilies, r.reported_post_enable_bbcode, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour',
 
 					'FROM'		=> array(
-						REPORTS_TABLE			=> 'r',
+						REPORTS_TABLE		=> 'r',
 						REPORTS_REASONS_TABLE	=> 'rr',
-						USERS_TABLE				=> 'u',
+						USERS_TABLE		=> 'u',
 					),
 
 					'WHERE'		=> (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
@@ -250,45 +250,45 @@ class mcp_reports
 					'S_REPORT_CLOSED'		=> $report['report_closed'],
 					'S_USER_NOTES'			=> true,
 
-					'U_EDIT'					=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
-					'U_MCP_APPROVE'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_REPORT'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_EDIT'			=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'U_MCP_REPORTER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
-					'U_MCP_USER_NOTES'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 					'U_MCP_WARN_REPORTER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
-					'U_MCP_WARN_USER'			=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-					'U_VIEW_FORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $post_info['forum_id']),
-					'U_VIEW_POST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
+					'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $post_info['forum_id']),
+					'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
+					'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
-					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
-					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-					'REPORT_DATE'				=> $user->format_date($report['report_time']),
-					'REPORT_ID'					=> $report_id,
+					'RETURN_REPORTS'		=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
+					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
+					'REPORT_DATE'			=> $user->format_date($report['report_time']),
+					'REPORT_ID'			=> $report_id,
 					'REPORT_REASON_TITLE'		=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
-					'REPORT_TEXT'				=> $report['report_text'],
+					'REPORT_TEXT'			=> $report['report_text'],
 
 					'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
-					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
+					'POST_AUTHOR_COLOUR'		=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 					'POST_AUTHOR'			=> get_username_string('username', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 					'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 
-					'REPORTER_FULL'				=> get_username_string('full', $report['user_id'], $report['username'], $report['user_colour']),
-					'REPORTER_COLOUR'			=> get_username_string('colour', $report['user_id'], $report['username'], $report['user_colour']),
-					'REPORTER_NAME'				=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
+					'REPORTER_FULL'			=> get_username_string('full', $report['user_id'], $report['username'], $report['user_colour']),
+					'REPORTER_COLOUR'		=> get_username_string('colour', $report['user_id'], $report['username'], $report['user_colour']),
+					'REPORTER_NAME'			=> get_username_string('username', $report['user_id'], $report['username'], $report['user_colour']),
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
 					'POST_PREVIEW'			=> $message,
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
-					'POST_DATE'				=> $user->format_date($post_info['post_time']),
-					'POST_IP'				=> $post_info['poster_ip'],
+					'POST_DATE'			=> $user->format_date($post_info['post_time']),
+					'POST_IP'			=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
-					'POST_ID'				=> $post_info['post_id'],
+					'POST_ID'			=> $post_info['post_id'],
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',
 				));
@@ -461,28 +461,28 @@ class mcp_reports
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$template->assign_block_vars('postrow', array(
-							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
-							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
-							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
+							'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
+							'U_VIEWPOST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
+							'U_VIEW_DETAILS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
 
 							'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
-							'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+							'POST_AUTHOR_COLOUR'		=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 							'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 							'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
 							'REPORTER_FULL'			=> get_username_string('full', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 							'REPORTER_COLOUR'		=> get_username_string('colour', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
-							'REPORTER'				=> get_username_string('username', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
+							'REPORTER'			=> get_username_string('username', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 							'U_REPORTER'			=> get_username_string('profile', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 
 							'FORUM_NAME'	=> $forum_data[$row['forum_id']]['forum_name'],
-							'POST_ID'		=> $row['post_id'],
+							'POST_ID'	=> $row['post_id'],
 							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
-							'POST_TIME'		=> $user->format_date($row['post_time']),
-							'REPORT_ID'		=> $row['report_id'],
+							'POST_TIME'	=> $user->format_date($row['post_time']),
+							'REPORT_ID'	=> $row['report_id'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
 							'TOPIC_TITLE'	=> $row['topic_title'],
-							'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+							'ATTACH_ICON_IMG'=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 						));
 					}
 					$db->sql_freeresult($result);
@@ -494,16 +494,16 @@ class mcp_reports
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
-					'L_TITLE'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN'] : $user->lang['MCP_REPORTS_CLOSED'],
+					'L_EXPLAIN'			=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
+					'L_TITLE'			=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN'] : $user->lang['MCP_REPORTS_CLOSED'],
 					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
 
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_FORUM_OPTIONS'		=> $forum_options,
-					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
+					'S_CLOSED'			=> ($mode == 'reports_closed') ? true : false,
 
-					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> $total,
+					'TOPIC_ID'			=> $topic_id,
+					'TOTAL'				=> $total,
 					'TOTAL_REPORTS'			=> $user->lang('LIST_REPORTS', (int) $total),
 					)
 				);
@@ -576,9 +576,9 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	$topic_ids = array();
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'i'					=> $module,
+		'i'				=> $module,
 		'mode'				=> $mode,
-		'report_id_list'	=> $report_id_list,
+		'report_id_list'		=> $report_id_list,
 		'action'			=> $action,
 		'redirect'			=> $redirect)
 	);
@@ -725,16 +725,16 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 				if ($pm)
 				{
 					$phpbb_notifications->add_notifications('notification.type.report_pm_closed', array_merge($post_info[$post_id], array(
-						'reporter'			=> $reporter['user_id'],
-						'closer_id'			=> $user->data['user_id'],
+						'reporter'		=> $reporter['user_id'],
+						'closer_id'		=> $user->data['user_id'],
 						'from_user_id'		=> $post_info[$post_id]['author_id'],
 					)));
 				}
 				else
 				{
 					$phpbb_notifications->add_notifications('notification.type.report_post_closed', array_merge($post_info[$post_id], array(
-						'reporter'			=> $reporter['user_id'],
-						'closer_id'			=> $user->data['user_id'],
+						'reporter'		=> $reporter['user_id'],
+						'closer_id'		=> $user->data['user_id'],
 					)));
 				}
 			}
