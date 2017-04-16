@@ -236,6 +236,12 @@ class user extends \phpbb\session
 			FROM ' . STYLES_TABLE . " s
 			WHERE s.style_id = $style_id";
 		$result = $db->sql_query($sql, 3600);
+		if (!$result) {
+			$sql = 'SELECT *
+				FROM ' . STYLES_TABLE . " s
+				LIMIT 1";
+			$result = $db->sql_query($sql, 3600);
+		}
 		$this->style = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
