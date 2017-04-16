@@ -15,12 +15,15 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 {
 	public function __construct($phpbb_root_path, $extensions = array(), $container = null)
 	{
+		global $phpEx;
+
+		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = 'php';
 		$this->extensions = $extensions;
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->container = $container;
 		$this->config = new \phpbb\config\config(array());
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$this->user = new \phpbb\user($lang,'\phpbb\datetime');
 	}
 }
