@@ -41,7 +41,7 @@ phpbb.loadingIndicator = function() {
 			if ($loadingIndicator.is(':visible')) {
 				phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
 			}
-		}, 15000);
+		}, 25000);
 	}
 
 	return $loadingIndicator;
