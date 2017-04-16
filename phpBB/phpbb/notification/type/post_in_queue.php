@@ -43,7 +43,7 @@ class post_in_queue extends \phpbb\notification\type\post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'id'	=> 'notification.type.needs_approval',
 		'lang'	=> 'NOTIFICATION_TYPE_IN_MODERATION_QUEUE',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',

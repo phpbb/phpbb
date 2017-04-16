@@ -114,7 +114,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		$event->setResponse($response);
 	}
 
-	public static function getSubscribedEvents()
+	static public function getSubscribedEvents()
 	{
 		return array(
 			KernelEvents::EXCEPTION		=> 'on_kernel_exception',

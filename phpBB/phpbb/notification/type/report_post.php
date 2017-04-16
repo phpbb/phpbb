@@ -66,7 +66,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id' and 'lang')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'id'	=> 'notification.type.report',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
