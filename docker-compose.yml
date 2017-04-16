@@ -1,0 +1,47 @@
+application:
+    build: docker/phpbb
+    ports:
+        - 8888:80
+    links:
+        - oracle:db
+        #- redis
+        - agent
+    volumes:
+        - ./phpBB/:/var/www/html
+    volumes_from:
+        - data
+
+mysql:
+    image: mysql:5.6.24
+    env_file:
+        - docker.env
+    volumes_from:
+        - data
+
+#pgsql:
+#    image: postgres:9.4
+#    env_file:
+#        - docker.env
+#    volumes_from:
+#        - data
+
+oracle:
+    image: wnameless/oracle-xe-11g
+    ports:
+        - "49160:22"
+        - "49161:1521"
+        - "49162:8080"
+
+agent:
+    image: blackfire/blackfire
+    env_file:
+        - docker.env
+
+data:
+    image: busybox
+    command: true
+    volumes:
+        - /db/pgsql
+        - /var/lib/mysql
+        - /root/.composer
+        - /root/.ssh
