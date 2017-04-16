@@ -152,7 +152,12 @@ class manager
 	*/
 	public function create_extension_metadata_manager($name)
 	{
-		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $this->phpbb_root_path);
+		if (!isset($this->extensions[$name]['metadata']))
+		{
+			$metadata = new \phpbb\extension\metadata_manager($name, $this->get_extension_path($name, true));
+			$this->extensions[$name]['metadata'] = $metadata;
+		}
+		return $this->extensions[$name]['metadata'];
 	}
 
 	/**
@@ -168,7 +173,7 @@ class manager
 	public function enable_step($name)
 	{
 		// ignore extensions that are already enabled
-		if (isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'])
+		if ($this->is_enabled($name))
 		{
 			return false;
 		}
@@ -258,7 +263,7 @@ class manager
 	public function disable_step($name)
 	{
 		// ignore extensions that are already disabled
-		if (!isset($this->extensions[$name]) || !$this->extensions[$name]['ext_active'])
+		if ($this->is_disabled($name))
 		{
 			return false;
 		}
@@ -336,8 +341,8 @@ class manager
 	*/
 	public function purge_step($name)
 	{
-		// ignore extensions that do not exist
-		if (!isset($this->extensions[$name]))
+		// ignore extensions that are not configured
+		if (!$this->is_configured($name))
 		{
 			return false;
 		}
@@ -431,25 +436,11 @@ class manager
 			if ($file_info->isFile() && $file_info->getFilename() == 'composer.json')
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
-				$composer_file = $iterator->getPath() . '/composer.json';
-
-				// Ignore the extension if there is no composer.json.
-				if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
-				{
-					continue;
-				}
-
-				$ext_info = json_decode($ext_info, true);
 				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
-
-				// Ignore the extension if directory depth is not correct or if the directory structure
-				// does not match the name value specified in composer.json.
-				if (substr_count($ext_name, '/') !== 1 || !isset($ext_info['name']) || $ext_name != $ext_info['name'])
+				if ($this->is_available($ext_name))
 				{
-					continue;
+					$available[$ext_name] = $this->get_extension_path($ext_name, true);
 				}
-
-				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}
 		}
 		ksort($available);
@@ -472,8 +463,12 @@ class manager
 		$configured = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
-			$configured[$name] = $data;
+			if ($this->is_configured($name))
+			{
+				unset($data['metadata']);
+				$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
+				$configured[$name] = $data;
+			}
 		}
 		return $configured;
 	}
@@ -490,7 +485,7 @@ class manager
 		$enabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			if ($data['ext_active'])
+			if ($this->is_enabled($name))
 			{
 				$enabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
@@ -511,7 +506,7 @@ class manager
 		$disabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			if (!$data['ext_active'])
+			if ($this->is_disabled($name))
 			{
 				$disabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
@@ -527,7 +522,15 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		return file_exists($this->get_extension_path($name, true));
+		$md_manager = $this->create_extension_metadata_manager($name);
+		try
+		{
+			return $md_manager->get_metadata('all') && $md_manager->validate_enable();
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -538,7 +541,7 @@ class manager
 	*/
 	public function is_enabled($name)
 	{
-		return isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'];
+		return isset($this->extensions[$name]['ext_active']) && $this->extensions[$name]['ext_active'];
 	}
 
 	/**
@@ -549,7 +552,7 @@ class manager
 	*/
 	public function is_disabled($name)
 	{
-		return isset($this->extensions[$name]) && !$this->extensions[$name]['ext_active'];
+		return isset($this->extensions[$name]['ext_active']) && !$this->extensions[$name]['ext_active'];
 	}
 
 	/**
@@ -563,7 +566,7 @@ class manager
 	*/
 	public function is_configured($name)
 	{
-		return isset($this->extensions[$name]);
+		return isset($this->extensions[$name]['ext_active']);
 	}
 
 	/**
