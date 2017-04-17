@@ -142,23 +142,8 @@ class metadata_manager
 		switch ($name)
 		{
 			case 'all':
-				$this->validate('display');
-
-				if (!$this->validate_dir())
-				{
-					throw new \phpbb\extension\exception('EXTENSION_DIR_INVALID');
-				}
-
-				if (!$this->validate_require_phpbb())
-				{
-					throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('soft-require'));
-				}
-
-				if (!$this->validate_require_php())
-				{
-					throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('require php'));
-				}
-			break;
+				$this->validate_enable();
+			// no break
 
 			case 'display':
 				foreach ($fields as $field => $data)
