@@ -1659,14 +1659,14 @@ function phpbb_generate_string_list($items, $user)
 }
 
 /**
- * Bitfield class
- *
- * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
- */
- class bitfield extends \phpbb\bitfield
- {
- 	public function __construct($bitfield = '')
- 	{
- 		parent::construct($bitfield);
- 	}
- }
+* Bitfield class
+*
+* @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+*/
+class bitfield extends \phpbb\bitfield
+{
+	public function __construct($bitfield = '')
+	{
+		parent::construct($bitfield);
+	}
+}

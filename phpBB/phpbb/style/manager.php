@@ -17,7 +17,7 @@ use phpbb\style\exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
-* The extension manager provides means to activate/deactivate extensions.
+* The style manager provide means to manage styles
 */
 class manager
 {
@@ -123,7 +123,7 @@ class manager
 			throw new exception('STYLE_NOT_FOUND'); // TODO: lang string
 		}
 
-		$id = $style_data['style_id'];
+		$id = (int) $style_data['style_id'];
 		$path = $style_data['style_path'];
 
 		// Check if style has child styles
@@ -364,11 +364,16 @@ class manager
 
 	public function get_style_data($field, $value)
 	{
-		// TODO: Review this, possible security issue
-		// if not, maybe field doesnt need to be escaped
+		$fields = array('style_id', 'style_name', 'style_path');
+
+		if (!in_array($field, $fields))
+		{
+			return null;
+		}
+
 		$sql = "SELECT *
 			FROM " . $this->styles_table . "
-			WHERE " . $this->db->sql_escape($field) . " = '" . $this->db->sql_escape($value) . "'";
+			WHERE $field = '" . $this->db->sql_escape($value) . "'";
 		$result = $this->db->sql_query($sql);
 
 		$data = $this->db->sql_fetchrow($result);
@@ -385,7 +390,7 @@ class manager
 	*/
 	public function read_style_cfg($dir)
 	{
-		static $required = array('name', 'phpbb_version', 'copyright');
+		$required = array('name', 'phpbb_version', 'copyright');
 		$cfg = parse_cfg_file($this->styles_path . $dir . '/style.cfg');
 
 		// Check if it is a valid file

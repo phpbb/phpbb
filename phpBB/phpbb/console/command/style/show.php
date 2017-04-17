@@ -32,12 +32,12 @@ class show extends command
 
 		$installed = $this->manager->get_installed_styles();
 
-		$enabled = array_filter($installed, create_function('$v', 'return $v[\'style_active\'];'));
+		$enabled = array_filter($installed, function($v) {return $v['style_active'];});
 		$enabled = array_column($enabled, 'style_name');
 		$io->section($this->user->lang('CLI_STYLES_ACTIVATED'));
 		$io->listing($enabled);
 
-		$disabled = array_filter($installed, create_function('$v', 'return !$v[\'style_active\'];'));
+		$disabled = array_filter($installed, function($v) {return !$v['style_active'];});
 		$disabled = array_column($disabled, 'style_name');
 		$io->section($this->user->lang('CLI_STYLES_DEACTIVATED'));
 		$io->listing($disabled);
