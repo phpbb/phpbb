@@ -1333,13 +1333,15 @@ p.quick {
 	text-align: left;
 }
 
-fieldset.quick-left, p.quick-left {
-	margin: 15px 0 5px 0;
-	padding: 0 0px 0;
+fieldset.quick-left,
+p.quick-left {
+	margin: 15px 0 5px;
 	float: left;
+	padding: 0 0 0;
 }
 
-.rtl fieldset.quick-left, .rtl p.quick-left {
+.rtl fieldset.quick-left,
+.rtl p.quick-left {
 	float: right;
 }
 
@@ -2972,8 +2974,8 @@ fieldset.permissions .permissions-switch {
 
 .console-output {
 	background-color: #2a2a2a;
-	color: #f1f1f1;
 	font-family: monospace;
-	overflow-x:scroll;
-	line-height: 1.5em;
+	color: #f1f1f1;
+	line-height: 1.5rem;
+	overflow-x: scroll;
 }
