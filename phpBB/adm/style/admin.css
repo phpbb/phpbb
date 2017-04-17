@@ -1335,9 +1335,9 @@ p.quick {
 
 fieldset.quick-left,
 p.quick-left {
-	margin: 15px 0 5px;
 	float: left;
-	padding: 0 0 0;
+	margin: 15px 0 5px;
+	padding: 0;
 }
 
 .rtl fieldset.quick-left,
@@ -2973,9 +2973,8 @@ fieldset.permissions .permissions-switch {
 /* stylelint-enable declaration-property-unit-whitelist */
 
 .console-output {
-	background-color: #2a2a2a;
 	font-family: monospace;
+	background-color: #2a2a2a;
 	color: #f1f1f1;
-	line-height: 1.5rem;
 	overflow-x: scroll;
 }

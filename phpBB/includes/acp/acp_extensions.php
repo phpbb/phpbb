@@ -49,7 +49,6 @@ class acp_extensions
 		// Start the page
 		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher;
 
-
 		$this->db       = $db;
 		$this->config = $config;
 		$this->template = $template;
