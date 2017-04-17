@@ -99,13 +99,11 @@ class metadata_manager
 	*/
 	public function get_metadata($element = 'all')
 	{
-		$this->set_metadata_file();
-
-		// Fetch the metadata
-		$this->fetch_metadata();
-
-		// Clean the metadata
-		$this->clean_metadata_array();
+		// Fetch and clean the metadata if not done yet
+		if ($this->metadata_file === '')
+		{
+			$this->fetch_metadata_from_file();
+		}
 
 		switch ($element)
 		{
@@ -128,11 +126,11 @@ class metadata_manager
 	}
 
 	/**
-	* Sets the filepath of the metadata file
+	* Sets the path of the metadata file, gets its contents and cleans loaded file
 	*
 	* @throws \phpbb\extension\exception
 	*/
-	private function set_metadata_file()
+	private function fetch_metadata_from_file()
 	{
 		$ext_filepath = $this->extension_manager->get_extension_path($this->ext_name);
 		$metadata_filepath = $this->phpbb_root_path . $ext_filepath . 'composer.json';
@@ -143,37 +141,19 @@ class metadata_manager
 		{
 			throw new \phpbb\extension\exception($this->user->lang('FILE_NOT_FOUND', $this->metadata_file));
 		}
-	}
 
-	/**
-	* Gets the contents of the composer.json file
-	*
-	* @return bool True if success, throws an exception on failure
-	* @throws \phpbb\extension\exception
-	*/
-	private function fetch_metadata()
-	{
-		if (!file_exists($this->metadata_file))
+		if (!($file_contents = file_get_contents($this->metadata_file)))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('FILE_NOT_FOUND', $this->metadata_file));
+			throw new \phpbb\extension\exception($this->user->lang('FILE_CONTENT_ERR', $this->metadata_file));
 		}
-		else
+
+		if (($metadata = json_decode($file_contents, true)) === null)
 		{
-			if (!($file_contents = file_get_contents($this->metadata_file)))
-			{
-				throw new \phpbb\extension\exception($this->user->lang('FILE_CONTENT_ERR', $this->metadata_file));
-			}
-
-			if (($metadata = json_decode($file_contents, true)) === null)
-			{
-				throw new \phpbb\extension\exception($this->user->lang('FILE_JSON_DECODE_ERR', $this->metadata_file));
-			}
-
-			array_walk_recursive($metadata, array($this, 'sanitize_json'));
-			$this->metadata = $metadata;
-
-			return true;
+			throw new \phpbb\extension\exception($this->user->lang('FILE_JSON_DECODE_ERR', $this->metadata_file));
 		}
+
+		array_walk_recursive($metadata, array($this, 'sanitize_json'));
+		$this->metadata = $metadata;
 	}
 
 	/**
@@ -185,16 +165,6 @@ class metadata_manager
 	public function sanitize_json(&$value, $key)
 	{
 		$value = htmlspecialchars($value);
-	}
-
-	/**
-	* This array handles the cleaning of the array
-	*
-	* @return array Contains the cleaned metadata array
-	*/
-	private function clean_metadata_array()
-	{
-		return $this->metadata;
 	}
 
 	/**
