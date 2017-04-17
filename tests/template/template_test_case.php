@@ -23,15 +23,24 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
 
-	static protected $language_reflection_lang;
+	protected $language_reflection_lang;
 
-	static public function setUpBeforeClass()
+	public function setUp()
 	{
-		parent::setUpBeforeClass();
+		parent::setUp();
 
 		$reflection = new ReflectionClass('\phpbb\language\language');
-		self::$language_reflection_lang = $reflection->getProperty('lang');
-		self::$language_reflection_lang->setAccessible(true);
+		$this->language_reflection_lang = $reflection->getProperty('lang');
+		$this->language_reflection_lang->setAccessible(true);
+
+		// Test the engine can be used
+		$this->setup_engine();
+
+		$this->template->clear_cache();
+
+		global $phpbb_filesystem;
+
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	protected function display($handle)
@@ -118,18 +127,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
-	protected function setUp()
-	{
-		// Test the engine can be used
-		$this->setup_engine();
-
-		$this->template->clear_cache();
-
-		global $phpbb_filesystem;
-
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
-	}
-
 	protected function tearDown()
 	{
 		if ($this->template)
@@ -161,8 +158,8 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		{
 			foreach ($lang_vars as $name => $value)
 			{
-				self::$language_reflection_lang->setValue($this->lang, array_merge(
-					self::$language_reflection_lang->getValue($this->lang),
+				$this->language_reflection_lang->setValue($this->lang, array_merge(
+					$this->language_reflection_lang->getValue($this->lang),
 					array($name => $value)
 				));
 			}
