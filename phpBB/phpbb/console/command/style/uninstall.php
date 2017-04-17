@@ -45,11 +45,12 @@ class uninstall extends command
 			$data = $this->manager->get_style_data('style_name', $name);
 			$this->manager->uninstall($data['style_path']);
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), array($name));
-			$io->success($this->user->lang('CLI_STYLE_UNINSTALL_SUCCESS', $name));
+			$io->success($this->user->lang('STYLE_UNINSTALLED', $name));
 		}
-		catch (\phpbb\exception\runtime_exception $e)
+		catch (\phpbb\style\exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_UNINSTALL_FAILURE', $name));
+			$msg = $this->user->lang($e->getMessage());
+			$io->error($this->user->lang($msg, $name));
 			return 1;
 		}
 

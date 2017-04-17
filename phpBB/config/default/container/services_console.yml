@@ -190,6 +190,7 @@ services:
         arguments:
             - '@user'
             - '@style.manager'
+            - '@language'
             - '@log'
         tags:
             - { name: console.command }
@@ -199,6 +200,7 @@ services:
         arguments:
             - '@user'
             - '@style.manager'
+            - '@language'
             - '@log'
         tags:
             - { name: console.command }
@@ -208,6 +210,7 @@ services:
         arguments:
             - '@user'
             - '@style.manager'
+            - '@language'
             - '@log'
         tags:
             - { name: console.command }
@@ -217,6 +220,7 @@ services:
         arguments:
             - '@user'
             - '@style.manager'
+            - '@language'
             - '@log'
         tags:
             - { name: console.command }
@@ -226,6 +230,7 @@ services:
         arguments:
             - '@user'
             - '@style.manager'
+            - '@language'
             - '@log'
         tags:
             - { name: console.command }

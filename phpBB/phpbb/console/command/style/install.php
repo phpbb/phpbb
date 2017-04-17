@@ -62,11 +62,12 @@ class install extends command
 
 			$this->manager->install($style_path);
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ADD', time(), array($name));
-			$io->success($this->user->lang('CLI_STYLE_INSTALL_SUCCESS', $name));
+			$io->success($this->user->lang('STYLE_INSTALLED', $name));
 		}
-		catch (\phpbb\exception\runtime_exception $e)
+		catch (\phpbb\style\exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_INSTALL_FAILURE', $name));
+			$msg = $this->user->lang($e->getMessage());
+			$io->error($this->user->lang($msg, $name));
 			return 1;
 		}
 
