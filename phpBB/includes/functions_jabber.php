@@ -99,14 +99,6 @@ class jabber
 	}
 
 	/**
-	* Old style constructor (for compatibility, possibly it isn't nessesary)
-	*/
-	function jabber($server, $port, $username, $password, $use_ssl = false, $verify_peer = true, $verify_peer_name = true, $allow_self_signed = false)
-	{
-		$this->__construct($server, $port, $username, $password, $use_ssl, $verify_peer, $verify_peer_name, $allow_self_signed);
-	}
-
-	/**
 	* Able to use the SSL functionality?
 	*/
 	static public function can_use_ssl()
