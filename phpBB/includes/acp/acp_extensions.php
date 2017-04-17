@@ -25,13 +25,13 @@ if (!defined('IN_PHPBB'))
 class acp_extensions
 {
 	var $u_action;
-	var $tpl_name;
-	var $page_title;
 
 	private $db;
 
 	/** @var  phpbb\config\config */
 	private $config;
+
+	/** @var \phpbb\template\twig\twig */
 	private $template;
 	private $user;
 	private $log;
@@ -39,18 +39,15 @@ class acp_extensions
 	/** @var \phpbb\request\request */
 	private $request;
 	private $phpbb_dispatcher;
-	private $ext_manager;
 
-<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
-	function main()
-=======
+	/** @var \phpbb\extension\manager */
+	private $ext_manager;
 	private $u_catalog_action;
 
 	function main($id, $mode)
->>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher;
 
 
 		$this->db       = $db;
@@ -77,7 +74,7 @@ class acp_extensions
 
 	public function main_mode($id, $mode)
 	{
-		global $phpbb_extension_manager, $phpbb_root_path, $phpbb_container, $phpbb_admin_path, $phpEx;
+		global $phpbb_extension_manager, $phpbb_container, $phpbb_admin_path, $phpEx;
 
 		$this->page_title = 'ACP_EXTENSIONS';
 
@@ -173,13 +170,6 @@ class acp_extensions
 					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				}
 
-<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
-				$this->list_enabled_exts();
-				$this->list_disabled_exts();
-				$this->list_available_exts();
-
-=======
->>>>>>> [ticket/11150] Do not generate actions links in templates
 				/** @var \phpbb\composer\manager $composer_manager */
 				$composer_manager = $phpbb_container->get('ext.composer.manager');
 
@@ -769,21 +759,14 @@ class acp_extensions
 	}
 
 	/**
-<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
-	* Lists all the enabled extensions and dumps to the template
-	*
-	* @return null
-	*/
-	public function list_enabled_exts()
-=======
 	 * Lists all the enabled extensions and dumps to the template
 	 *
 	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
 	 * @param array                     $managed_packages            List of managed packages
+	 *
 	 * @return null
 	 */
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
->>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		$enabled_extension_meta_data = array();
 
@@ -862,13 +845,6 @@ class acp_extensions
 	}
 
 	/**
-<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
-	* Lists all the disabled extensions and dumps to the template
-	*
-	* @return null
-	*/
-	public function list_disabled_exts()
-=======
 	 * Lists all the disabled extensions and dumps to the template
 	 *
 	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
@@ -877,7 +853,6 @@ class acp_extensions
 	 * @return null
 	 */
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
->>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		$disabled_extension_meta_data = array();
 
@@ -954,21 +929,14 @@ class acp_extensions
 	}
 
 	/**
-	* Lists all the available extensions and dumps to the template
-<<<<<<< 6c9f0a1c6fa9cfe406242bbf5f3204221003a00a
-	*
-	* @return null
-	*/
-	public function list_available_exts()
-=======
+	 * Lists all the available extensions and dumps to the template
 	 *
 	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
 	 * @param array                     $managed_packages            List of managed packages
 	 *
-	* @return null
-	*/
+	 * @return null
+	 */
 	public function list_available_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
->>>>>>> [ticket/11150] Do not generate actions links in templates
 	{
 		$uninstalled = array_diff_key($this->ext_manager->all_available(), $this->ext_manager->all_configured());
 
