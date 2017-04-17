@@ -5178,7 +5178,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 
-		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
+		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg']) && $user->data['user_unread_privmsg'] > 0) ? $user->data['user_unread_privmsg'] : 0,
 		'CURRENT_USER_AVATAR'			=> phpbb_get_user_avatar($user->data),
 		'CURRENT_USERNAME_SIMPLE'		=> get_username_string('no_profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
@@ -5189,8 +5189,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_NOTIFICATION_SETTINGS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications&amp;mode=notification_options'),
 		'S_NOTIFICATIONS_DISPLAY'		=> $config['load_notifications'],
 
-		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
-		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
+		'S_USER_NEW_PRIVMSG'			=> ($user->data['user_new_privmsg'] > 0) ? $user->data['user_new_privmsg'] : 0,
+		'S_USER_UNREAD_PRIVMSG'			=> ($user->data['user_unread_privmsg'] > 0) ? $user->data['user_unread_privmsg'] : 0,
 		'S_USER_NEW'					=> $user->data['user_new'],
 
 		'SID'				=> $SID,
