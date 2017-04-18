@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 */
 class core extends Extension
 {
-	const TWIG_OPTIONS_POSITION = 6;
+	const TWIG_OPTIONS_POSITION = 7;
 
 	/**
 	 * Config path
