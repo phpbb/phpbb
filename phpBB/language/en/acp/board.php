@@ -287,7 +287,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_TOPICS_ACTIVE'			=> 'Enable active topics feed',
 	'ACP_FEED_TOPICS_ACTIVE_EXPLAIN'	=> 'Enables the “Active Topics” feed, which displays the last active topics including the last post.',
 	'ACP_FEED_NEWS'						=> 'News feed',
-	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>CTRL</samp> and clicking.',
+	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>Ctrl</samp> and clicking.',
 
 	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable forums feed',
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'Enables the “All forums” feed, which displays a list of forums.',
@@ -297,7 +297,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
 	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(e.g. posted by, date and time, replies, views)',
 	'ACP_FEED_EXCLUDE_ID'				=> 'Exclude these forums',
-	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br />Select/Deselect multiple forums by holding <samp>CTRL</samp> and clicking.',
+	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br />Select/Deselect multiple forums by holding <samp>Ctrl</samp> and clicking.',
 ));
 
 // Visual Confirmation Settings
