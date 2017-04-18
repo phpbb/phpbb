@@ -356,6 +356,8 @@ class acp_styles
 		try
 		{
 			$style_manager->activate($ids);
+			// TODO: show names instead of ids, and add one entry per style
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ACTIVATE', false, array($ids));
 		}
 		catch (exception $e)
 		{
@@ -381,6 +383,8 @@ class acp_styles
 		try
 		{
 			$style_manager->deactivate($ids);
+			// TODO: Show names instead of ids, and add one entry per style
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DEACTIVATE', false, array($ids));
 		}
 		catch (exception $e)
 		{

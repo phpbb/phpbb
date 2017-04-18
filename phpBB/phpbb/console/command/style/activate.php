@@ -43,7 +43,7 @@ class activate extends command
 		{
 			$data = $this->manager->get_style_data('style_name', $name);
 			$this->manager->activate(array($data['style_id']));
-			// Log?
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ACTIVATE', time(), array($name));
 			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $name));
 		}
 		catch (\phpbb\style\exception $e)

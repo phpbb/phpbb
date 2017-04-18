@@ -29,7 +29,7 @@ abstract class command extends \phpbb\console\command\command
 		$this->log = $log;
 		$this->language = $language;
 
-		$this->language->add_lang(array('acp/styles'));
+		$this->language->add_lang(array('acp/common', 'acp/styles'));
 
 		parent::__construct($user);
 	}
