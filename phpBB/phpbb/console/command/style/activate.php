@@ -46,7 +46,7 @@ class activate extends command
 			// Log?
 			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $name));
 		}
-		catch (\phpbb\exception\runtime_exception $e)
+		catch (\phpbb\style\exception $e)
 		{
 			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $name));
 			return 1;

@@ -1657,16 +1657,3 @@ function phpbb_generate_string_list($items, $user)
 
 	return $user->lang($lang_key, $list, $last_item);
 }
-
-/**
-* Bitfield class
-*
-* @deprecated 3.3.0-a1 (To be removed: 4.0.0)
-*/
-class bitfield extends \phpbb\bitfield
-{
-	public function __construct($bitfield = '')
-	{
-		parent::construct($bitfield);
-	}
-}

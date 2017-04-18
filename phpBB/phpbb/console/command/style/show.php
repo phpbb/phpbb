@@ -30,18 +30,26 @@ class show extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
+		// Get installed styles
 		$installed = $this->manager->get_installed_styles();
 
-		$enabled = array_filter($installed, function($v) {return $v['style_active'];});
+		// Get styles that are enabled from the installed styles
+		$enabled = array_filter($installed, function($v) {
+			return $v['style_active'];
+		});
 		$enabled = array_column($enabled, 'style_name');
 		$io->section($this->user->lang('CLI_STYLES_ACTIVATED'));
 		$io->listing($enabled);
 
-		$disabled = array_filter($installed, function($v) {return !$v['style_active'];});
+		// Get styles that are disabled from the installed styles
+		$disabled = array_filter($installed, function($v) {
+			return !$v['style_active'];
+		});
 		$disabled = array_column($disabled, 'style_name');
 		$io->section($this->user->lang('CLI_STYLES_DEACTIVATED'));
 		$io->listing($disabled);
 
+		// Get available styles
 		$available = $this->manager->find_available(false);
 		$available = array_column($available, 'style_name');
 		$io->section($this->user->lang('CLI_STYLES_AVAILABLE'));

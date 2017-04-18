@@ -57,32 +57,36 @@ class manager
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
 	}
 
-
 	public function install($dir)
 	{
+		// Check if the style name is reserved
 		if (in_array($dir, $this->reserved_style_names))
 		{
 			throw new exception('STYLE_NAME_RESERVED');
 		}
 
+		// Check if the style folder is already in the database
 		if ($this->get_style_data('style_path', $dir))
 		{
 			throw new exception('STYLE_ALREADY_INSTALLED');
 		}
 
+		// Read configuration file
 		$cfg = $this->read_style_cfg($dir);
 
+		// Check if is the style has a valid configuration
 		if (!$cfg)
 		{
 			throw new exception('STYLE_FOLDER_INVALID');
 		}
 
+		// Check if the style name is already in the database
 		if ($this->get_style_data('style_name', $cfg['name']))
 		{
 			throw new exception('STYLE_ALREADY_INSTALLED');
 		}
 
-		// Style should be available for installation
+		// Data to make the database query
 		$sql_ary = array(
 			'style_name'		=> $cfg['name'],
 			'style_copyright'	=> $cfg['copyright'],
@@ -111,6 +115,10 @@ class manager
 			throw new exception('STYLE_NOT_INSTALLED');
 		}
 
+		// This should be moved to acp_styles and cli/install to execute it
+		// after all styles are installed, not after each one is installed.
+		// Nicofuma: Not for later, this should be moved to a listener (do not
+		// do it now, we will do that later in another PR)
 		$this->text_formatter_cache->invalidate();
 	}
 
@@ -118,9 +126,10 @@ class manager
 	{
 		$style_data = $this->get_style_data('style_path', $dir);
 
+		// Check if there is a style with path $dir
 		if (!$style_data)
 		{
-			throw new exception('STYLE_NOT_FOUND'); // TODO: lang string
+			throw new exception('STYLE_NOT_FOUND');
 		}
 
 		$id = (int) $style_data['style_id'];
@@ -152,7 +161,7 @@ class manager
 
 		if (!$this->db->sql_query($sql))
 		{
-			throw new exception('STYLE_UNINSTALL_UNABLE_UPDATE_USERS'); // TODO: lang string
+			throw new exception('STYLE_UNINSTALL_UNABLE_UPDATE_USERS');
 		}
 
 		// Uninstall style
@@ -161,7 +170,7 @@ class manager
 
 		if (!$this->db->sql_query($sql))
 		{
-			throw new exception('STYLE_NOT_UNINSTALLED'); // TODO: lang string
+			throw new exception('STYLE_NOT_UNINSTALLED');
 		}
 	}
 
@@ -172,7 +181,7 @@ class manager
 		// Activate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 1
-			WHERE style_id IN (' . implode(', ', $ids) . ')';
+			WHERE style_id ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Purge cache
@@ -195,13 +204,13 @@ class manager
 		// Reset default style for users who use selected styles
 		$sql = 'UPDATE ' . $this->users_table . '
 			SET user_style = 0
-			WHERE user_style IN (' . implode(', ', $ids) . ')';
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Deactivate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 0
-			WHERE style_id IN (' . implode(', ', $ids) . ')';
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Purge cache
