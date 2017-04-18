@@ -1,0 +1,3 @@
+phpbb_cron_run:
+    path: /{cron_type}
+    defaults: { _controller: cron.controller:handle }

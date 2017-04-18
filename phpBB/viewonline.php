@@ -484,6 +484,11 @@ $start = $pagination->validate_start($start, $config['topics_per_page'], $counte
 $base_url = append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir");
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
 
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=> $user->lang('WHO_IS_ONLINE'),
+	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
+));
+
 // Send data to template
 $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> $user->lang('REG_USERS_ONLINE', (int) $logged_visible_online, $user->lang('HIDDEN_USERS_ONLINE', (int) $logged_hidden_online)),

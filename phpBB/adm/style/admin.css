@@ -1665,19 +1665,77 @@ input.button1:focus, input.button2:focus {
 	}
 }
 
-#loading_indicator {
-	background: #000000 url("../images/loading.gif") center center no-repeat;
-	border-radius: 5px;
-	display: none;
-	opacity: 0.8;
-	margin-top: -50px;
-	margin-left: -50px;
-	height: 50px;
-	width: 50px;
+.loading_indicator {
 	position: fixed;
-	left: 50%;
 	top: 50%;
+	left: 50%;
 	z-index: 51;
+	display: none;
+}
+
+.loader {
+	width: 48px;
+	height: 48px;
+	padding: 12px;
+}
+
+.spinner {
+	animation: rotator 1s linear infinite;
+}
+
+.spinner-path {
+	stroke-dasharray: 187;
+	stroke-dashoffset: 0;
+	transform-origin: center;
+	animation: dash 1s ease-in-out infinite, colors 4s ease-in-out infinite;
+}
+
+@keyframes rotator {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(270deg);
+	}
+}
+
+@keyframes dash {
+	0% {
+		stroke-dashoffset: 187;
+	}
+
+	50% {
+		stroke-dashoffset: 46.75;
+		transform: rotate(135deg);
+	}
+
+	100% {
+		stroke-dashoffset: 187;
+		transform: rotate(450deg);
+	}
+}
+
+@keyframes colors {
+	0% {
+		stroke: #4285f4;
+	}
+
+	25% {
+		stroke: #de3e35;
+	}
+
+	50% {
+		stroke: #f7c223;
+	}
+
+	75% {
+		stroke: #1b9a59;
+	}
+
+	100% {
+		stroke: #4285f4;
+	}
 }
 
 /* Pagination
