@@ -275,7 +275,7 @@ fieldset.submit-buttons input {
 	max-width: 100%;
 	height: 270px;
 	resize: vertical;
-	transition: all 0.5s ease;
+	transition: all 0.5s ease, height 1ms linear;
 }
 
 /* Emoticons panel */
