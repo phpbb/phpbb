@@ -379,6 +379,7 @@ function mcp_post_details($id, $mode, $action)
 		$sql = 'SELECT poster_id, COUNT(poster_id) as postings
 			FROM ' . POSTS_TABLE . "
 			WHERE poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
+				AND poster_id <> " . (int) $post_info['poster_id'] . "
 			GROUP BY poster_id
 			ORDER BY postings DESC, poster_id ASC";
 		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start_users);
@@ -387,12 +388,7 @@ function mcp_post_details($id, $mode, $action)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$page_users++;
-
-			// Fill the user select list with users who have posted under this IP
-			if ($row['poster_id'] != $post_info['poster_id'])
-			{
-				$users_ary[$row['poster_id']] = $row;
-			}
+			$users_ary[$row['poster_id']] = $row;
 		}
 		$db->sql_freeresult($result);
 

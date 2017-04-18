@@ -295,21 +295,7 @@
 			</table>
 
 			<div class="pagination">
-				<ul>
-				<!-- BEGIN pagination -->
-					<!-- IF pagination.S_IS_PREV -->
-						<li class="previous"><a href="{pagination.PAGE_URL}" rel="prev" role="button">{L_PREVIOUS}</a></li>
-					<!-- ELSEIF pagination.S_IS_CURRENT -->
-						<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
-					<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
-						<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
-					<!-- ELSEIF pagination.S_IS_NEXT -->
-						<li class="next"><a href="{pagination.PAGE_URL}" rel="next" role="button">{L_NEXT}</a></li>
-					<!-- ELSE -->
-						<li><a href="{pagination.PAGE_URL}" role="button">{pagination.PAGE_NUMBER}</a></li>
-					<!-- ENDIF -->
-				<!-- END pagination -->
-				</ul>
+				<!-- INCLUDE pagination.html -->
 			</div>
 			</div>
 		</div>
