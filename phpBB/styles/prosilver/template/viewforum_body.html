@@ -220,13 +220,15 @@
 <!-- END topicrow -->
 
 <!-- IF S_SELECT_SORT_DAYS and not S_DISPLAY_ACTIVE -->
-	<form method="post" action="{S_FORUM_ACTION}">
+	<form method="get" action="{S_FORUM_ACTION}">
 		<fieldset class="display-options">
 	<!-- IF not S_IS_BOT -->
 			<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR}</label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
+			<input type="hidden" name="f" value="{FORUM_ID}" />
+			<input type="hidden" name="start" value="{S_START}" />
+			<input type="submit" value="{L_GO}" class="button2" />
 	<!-- ENDIF -->
 		</fieldset>
 	</form>
