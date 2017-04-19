@@ -108,6 +108,8 @@ $lang = array_merge($lang, array(
 	'ACP_GROUPS_PERMISSIONS'		=> 'Group permissions',
 	'ACP_GROUPS_POSITION'			=> 'Manage group positions',
 
+	'ACP_HELP_PHPBB'			=> 'Help support phpBB',
+
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
@@ -167,7 +169,6 @@ $lang = array_merge($lang, array(
 	'ACP_SEARCH_SETTINGS'		=> 'Search settings',
 
 	'ACP_SECURITY_SETTINGS'		=> 'Security settings',
-	'ACP_SEND_STATISTICS'		=> 'Send statistical information',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server settings',
 	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
@@ -225,12 +226,26 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+	'CANNOT_CHANGE_FILE_GROUP'	=> 'Unable to change file group',
+	'CANNOT_CHANGE_FILE_PERMISSIONS'	=> 'Unable to change file permissions',
+	'CANNOT_COPY_FILES'		=> 'Unable to copy files',
+	'CANNOT_CREATE_SYMLINK'	=> 'Unable to create a symlink',
+	'CANNOT_DELETE_FILES'	=> 'Unable to delete files from the system',
+	'CANNOT_DUMP_FILE'		=> 'Unable to dump file',
+	'CANNOT_MIRROR_DIRECTORY'	=> 'Unable to mirror directory',
+	'CANNOT_RENAME_FILE'	=> 'Unable to rename a file from the system',
+	'CANNOT_TOUCH_FILES'	=> 'Unable to determine if the file exists',
+
+	'CONTAINER_EXCEPTION' => 'phpBB encountered an error building the container due to an installed extension. For this reason, all extensions have been temporarily disabled. Please try purging your forum cache. All extensions will automatically be re-enabled once the container error is resolved. If this error continues, please visit <a href="https://www.phpbb.com/support">phpBB.com</a> for support.',
+	'EXCEPTION' => 'Exception',
+
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',
 	'CRON_NO_TASK'			=> 'No cron tasks need to be run right now.',
 	'CRON_NO_TASKS'			=> 'No cron tasks could be found.',
+	'CURRENT_VERSION'		=> 'Current version',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered path “%s” does not exist.',
@@ -256,6 +271,7 @@ $lang = array_merge($lang, array(
 	'IP'					=> 'User IP',
 	'IP_HOSTNAME'			=> 'IP addresses or hostnames',
 
+	'LATEST_VERSION'		=> 'Latest version',
 	'LOAD_NOTIFICATIONS'			=> 'Display Notifications',
 	'LOAD_NOTIFICATIONS_EXPLAIN'	=> 'Display the notifications list on every page (typically in the header).',
 	'LOGGED_IN_AS'			=> 'You are logged in as:',
@@ -288,7 +304,9 @@ $lang = array_merge($lang, array(
 	'PERMISSIONS_TRANSFERRED_EXPLAIN'	=> 'You currently have the permissions from %1$s. You are able to browse the board with this user’s permissions, but not access the administration control panel since admin permissions were not transferred. You can <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
+	'RELEASE_ANNOUNCEMENT'		=> 'Announcement',
 	'REMIND'							=> 'Remind',
+	'REPARSE_LOCK_ERROR'				=> 'Reparsing is already in progress by another process.',
 	'RESYNC'							=> 'Resynchronise',
 
 	'RUNNING_TASK'			=> 'Running task: %s.',
@@ -309,6 +327,10 @@ $lang = array_merge($lang, array(
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
+
+	'UPDATE_NEEDED'			=> 'The board is not up to date.',
+	'UPDATE_NOT_NEEDED'		=> 'The board is up to date.',
+	'UPDATES_AVAILABLE'		=> 'Updates available:',
 
 	'WARNING'				=> 'Warning',
 ));
@@ -420,6 +442,11 @@ $lang = array_merge($lang, array(
 	'VALUE'						=> 'Value',
 	'VERSIONCHECK_FAIL'			=> 'Failed to obtain latest version information.',
 	'VERSIONCHECK_FORCE_UPDATE'	=> 'Re-Check version',
+	'VERSION_CHECK'				=> 'Version check',
+	'VERSION_CHECK_EXPLAIN'		=> 'Checks to see if your phpBB installation is up to date.',
+	'VERSION_NOT_UP_TO_DATE_ACP'	=> 'Your phpBB installation is not up to date.<br />Below is a link to the release announcement, which contains more information as well as instructions on updating.',
+	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your phpBB installation is not up to date.',
+	'VERSION_UP_TO_DATE_ACP'	=> 'Your phpBB installation is up to date. There are no updates available at this time.',
 	'VIEW_ADMIN_LOG'			=> 'View administrator log',
 	'VIEW_INACTIVE_USERS'		=> 'View inactive users',
 
@@ -452,16 +479,18 @@ $lang = array_merge($lang, array(
 	'USER_IS_INACTIVE'		=> 'User is inactive',
 ));
 
-// Send statistics page
+// Help support phpBB page
 $lang = array_merge($lang, array(
 	'EXPLAIN_SEND_STATISTICS'	=> 'Please send information about your server and board configurations to phpBB for statistical analysis. All information that could identify you or your website has been removed - the data is entirely <strong>anonymous</strong>. We base decisions about future phpBB versions on this information. The statistics are made available publically. We also share this data with the PHP project, the programming language phpBB is made with.',
 	'EXPLAIN_SHOW_STATISTICS'	=> 'Using the button below you can preview all variables that will be transmitted.',
 	'DONT_SEND_STATISTICS'		=> 'Return to the ACP if you do not wish to send statistical information to phpBB.',
 	'GO_ACP_MAIN'				=> 'Go to the ACP start page',
 	'HIDE_STATISTICS'			=> 'Hide details',
-	'SEND_STATISTICS'			=> 'Send statistical information',
+	'SEND_STATISTICS'			=> 'Send statistics',
+	'SEND_STATISTICS_LONG'		=> 'Send statistical information',
 	'SHOW_STATISTICS'			=> 'Show details',
 	'THANKS_SEND_STATISTICS'	=> 'Thank you for submitting your information.',
+	'FAIL_SEND_STATISTICS'		=> 'phpBB was unable to send statistics',
 ));
 
 // Log Entries
@@ -794,4 +823,5 @@ $lang = array_merge($lang, array(
 	'LOG_EXT_ENABLE'	=> '<strong>Extension enabled</strong><br />» %s',
 	'LOG_EXT_DISABLE'	=> '<strong>Extension disabled</strong><br />» %s',
 	'LOG_EXT_PURGE'		=> '<strong>Extension’s data deleted</strong><br />» %s',
+	'LOG_EXT_UPDATE'	=> '<strong>Extension updated</strong><br />» %s',
 ));

@@ -7,19 +7,17 @@
 	<h1>{L_EXTENSIONS_ADMIN}</h1>
 
 	<!-- IF S_VERSIONCHECK -->
-	<div class="<!-- IF S_UP_TO_DATE -->successbox<!-- ELSE -->errorbox<!-- ENDIF -->">
-		<p>{UP_TO_DATE_MSG} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
-	</div>
-	<!-- ELSE IF S_VERSIONCHECK_STATUS == 0 -->
-	<div class="errorbox notice">
-		<p>{L_VERSIONCHECK_FAIL}</p>
-		<p>{VERSIONCHECK_FAIL_REASON}</p>
-		<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
-	</div>
-	<!-- ELSE IF S_VERSIONCHECK_STATUS == 1 -->
-	<div class="errorbox notice">
-		<p>{VERSIONCHECK_FAIL_REASON}</p>
-	</div>
+		<!-- IF S_VERSIONCHECK_FAIL -->
+		<div class="errorbox notice">
+			<p>{L_VERSIONCHECK_FAIL}</p>
+			<p>{VERSIONCHECK_FAIL_REASON}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+		</div>
+		<!-- ELSE -->
+		<div class="<!-- IF S_UP_TO_DATE -->successbox<!-- ELSE -->errorbox<!-- ENDIF -->">
+			<p>{UP_TO_DATE_MSG} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+		</div>
+		<!-- ENDIF -->
 	<!-- ENDIF -->
 
 	<fieldset>
@@ -136,4 +134,5 @@
 		<!-- END meta_authors -->
 	</fieldset>
 
+	<!-- EVENT acp_ext_details_end -->
 <!-- INCLUDE overall_footer.html -->

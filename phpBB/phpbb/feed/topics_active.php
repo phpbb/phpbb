@@ -1,30 +1,33 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* Active Topics feed
-*
-* This will give you the last {$this->num_items} topics
-* with replies made withing the last {$this->sort_days} days
-* including the last post.
-*/
-class topics_active extends \phpbb\feed\topic_base
+ * Active Topics feed
+ *
+ * This will give you the last {$this->num_items} topics
+ * with replies made withing the last {$this->sort_days} days
+ * including the last post.
+ */
+class topics_active extends topic_base
 {
-	var $sort_days = 7;
+	protected $sort_days = 7;
 
-	function set_keys()
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_keys()
 	{
 		parent::set_keys();
 
@@ -32,7 +35,10 @@ class topics_active extends \phpbb\feed\topic_base
 		$this->set('creator',	'topic_last_poster_name');
 	}
 
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		$forum_ids_read = $this->get_readable_forums();
 		if (empty($forum_ids_read))
@@ -71,6 +77,8 @@ class topics_active extends \phpbb\feed\topic_base
 			return false;
 		}
 
+		parent::fetch_attachments($post_ids);
+
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_views,
@@ -94,7 +102,12 @@ class topics_active extends \phpbb\feed\topic_base
 		return true;
 	}
 
-	function get_forum_ids()
+	/**
+	 * Returns the ids of the forums not excluded from the active list
+	 *
+	 * @return int[]
+	 */
+	private function get_forum_ids()
 	{
 		static $forum_ids;
 
@@ -122,7 +135,10 @@ class topics_active extends \phpbb\feed\topic_base
 		return $forum_ids;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		parent::adjust_item($item_row, $row);
 

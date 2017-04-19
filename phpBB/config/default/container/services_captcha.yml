@@ -1,0 +1,59 @@
+services:
+    captcha.factory:
+        class: phpbb\captcha\factory
+        arguments:
+            - '@service_container'
+            - '@captcha.plugins.service_collection'
+
+# ----- Captcha plugins -----
+# Service MUST NOT be shared for all the plugins to work.
+    captcha.plugins.service_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: captcha.plugins }
+
+    core.captcha.plugins.gd:
+        class: phpbb\captcha\plugins\gd
+        shared: false
+        calls:
+            - [set_name, [core.captcha.plugins.gd]]
+        tags:
+            - { name: captcha.plugins }
+
+    core.captcha.plugins.gd_wave:
+        class: phpbb\captcha\plugins\gd_wave
+        shared: false
+        calls:
+            - [set_name, [core.captcha.plugins.gd_wave]]
+        tags:
+            - { name: captcha.plugins }
+
+    core.captcha.plugins.nogd:
+        class: phpbb\captcha\plugins\nogd
+        shared: false
+        calls:
+            - [set_name, [core.captcha.plugins.nogd]]
+        tags:
+            - { name: captcha.plugins }
+
+    core.captcha.plugins.qa:
+        class: phpbb\captcha\plugins\qa
+        shared: false
+        arguments:
+            - '%tables.captcha_qa_questions%'
+            - '%tables.captcha_qa_answers%'
+            - '%tables.captcha_qa_confirm%'
+        calls:
+            - [set_name, [core.captcha.plugins.qa]]
+        tags:
+            - { name: captcha.plugins }
+
+    core.captcha.plugins.recaptcha:
+        class: phpbb\captcha\plugins\recaptcha
+        shared: false
+        calls:
+            - [set_name, [core.captcha.plugins.recaptcha]]
+        tags:
+            - { name: captcha.plugins }

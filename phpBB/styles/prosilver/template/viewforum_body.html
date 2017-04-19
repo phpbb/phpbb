@@ -35,18 +35,19 @@
 <!-- ENDIF -->
 
 <!-- IF S_DISPLAY_POST_INFO or .pagination or TOTAL_POSTS or TOTAL_TOPICS -->
-	<div class="action-bar top">
+	<div class="action-bar bar-top">
 
 	<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
-		<div class="buttons">
 			<!-- EVENT viewforum_buttons_top_before -->
 
-			<a href="{U_POST_NEW_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
-				<!-- IF S_IS_LOCKED -->{L_BUTTON_FORUM_LOCKED}<!-- ELSE -->{L_BUTTON_NEW_TOPIC}<!-- ENDIF -->
-			</a>
-
+		<a href="{U_POST_NEW_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
+			<!-- IF S_IS_LOCKED -->
+				<span>{L_BUTTON_FORUM_LOCKED}</span> <i class="icon fa-lock fa-fw" aria-hidden="true"></i>
+			<!-- ELSE -->
+				<span>{L_BUTTON_NEW_TOPIC}</span> <i class="icon fa-pencil fa-fw" aria-hidden="true"></i>
+			<!-- ENDIF -->
+		</a>
 			<!-- EVENT viewforum_buttons_top_after -->
-		</div>
 	<!-- ENDIF -->
 
 	<!-- IF S_DISPLAY_SEARCHBOX -->
@@ -54,8 +55,12 @@
 			<form method="get" id="forum-search" action="{S_SEARCHBOX_ACTION}">
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_FORUM}" />
-				<button class="button icon-button search-icon" type="submit" title="{L_SEARCH}">{L_SEARCH}</button>
-				<a href="{U_SEARCH}" class="button icon-button search-adv-icon" title="{L_SEARCH_ADV}">{L_SEARCH_ADV}</a>
+				<button class="button button-search" type="submit" title="{L_SEARCH}">
+					<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
+				</button>
+				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+					<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
+				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
 			</form>
@@ -136,7 +141,7 @@
 		<div class="inner">
 		<ul class="topiclist">
 			<li class="header">
-				<dl class="icon">
+				<dl class="row-item">
 					<dt<!-- IF S_DISPLAY_ACTIVE --> id="active_topics"<!-- ENDIF -->><div class="list-inner"><!-- IF S_DISPLAY_ACTIVE -->{L_ACTIVE_TOPICS}<!-- ELSEIF topicrow.S_TOPIC_TYPE_SWITCH and (topicrow.S_POST_ANNOUNCE or topicrow.S_POST_GLOBAL) -->{L_ANNOUNCEMENTS}<!-- ELSE -->{L_TOPICS}<!-- ENDIF --></div></dt>
 					<dd class="posts">{L_REPLIES}</dd>
 					<dd class="views">{L_VIEWS}</dd>
@@ -150,16 +155,35 @@
 		<!-- EVENT viewforum_body_topicrow_row_before -->
 		<li class="row<!-- IF topicrow.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF topicrow.S_POST_GLOBAL --> global-announce<!-- ENDIF --><!-- IF topicrow.S_POST_ANNOUNCE --> announce<!-- ENDIF --><!-- IF topicrow.S_POST_STICKY --> sticky<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ENDIF -->">
 			<!-- EVENT viewforum_body_topic_row_prepend -->
-			<dl class="icon {topicrow.TOPIC_IMG_STYLE}">
+			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG and S_TOPIC_ICONS --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-					<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{topicrow.U_NEWEST_POST}" class="icon-link"></a><!-- ENDIF -->
+					<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
 					<div class="list-inner">
 						<!-- EVENT topiclist_row_prepend -->
-						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
-						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
-						<!-- IF topicrow.S_TOPIC_DELETED --><a href="{topicrow.U_MCP_QUEUE}">{DELETED_IMG}</a> <!-- ENDIF -->
-						<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT -->
+							<a class="unread" href="{topicrow.U_NEWEST_POST}">
+								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
+							</a>
+						<!-- ENDIF -->
+						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
+							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
+								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+							</a>
+						<!-- ENDIF -->
+						<!-- IF topicrow.S_TOPIC_DELETED -->
+							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
+								<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_DELETED}</span>
+							</a>
+						<!-- ENDIF -->
+						<!-- IF topicrow.S_TOPIC_REPORTED -->
+							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
+							</a>
+						<!-- ENDIF -->
+						<br />
 						<!-- EVENT topiclist_row_topic_title_after -->
+
 						<!-- IF not S_IS_BOT -->
 						<div class="responsive-show" style="display: none;">
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
@@ -168,35 +192,43 @@
 						<!-- IF topicrow.REPLIES --><span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span><!-- ENDIF -->
 						<!-- ENDIF -->
 
+						<div class="topic-poster responsive-hide">
+							<!-- IF topicrow.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
+						</div>
+
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
+							<span><i class="icon fa-clone fa-fw" aria-hidden="true"></i></span>
 							<ul>
 							<!-- BEGIN pagination -->
 								<!-- IF topicrow.pagination.S_IS_PREV -->
 								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
 								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-								<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+								<!-- ELSE --><li><a class="button" href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
 								<!-- ENDIF -->
 							<!-- END pagination -->
 							</ul>
 						</div>
 						<!-- ENDIF -->
 
-						<div class="responsive-hide">
-							<!-- IF topicrow.S_HAS_POLL -->{POLL_IMG} <!-- ENDIF -->
-							<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->
-							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
-							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --> &raquo; {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
-						</div>
-
 						<!-- EVENT topiclist_row_append -->
 					</div>
 				</dt>
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
 				<dd class="views">{topicrow.VIEWS} <dfn>{L_VIEWS}</dfn></dd>
-				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-					<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{topicrow.LAST_POST_TIME}</span>
+				<dd class="lastpost">
+					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
+						<!-- IF not S_IS_BOT -->
+							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
+								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+							</a>
+						<!-- ENDIF -->
+						<br />{topicrow.LAST_POST_TIME}
+					</span>
 				</dd>
 			</dl>
 			<!-- EVENT viewforum_body_topic_row_append -->
@@ -219,32 +251,26 @@
 	<!-- ENDIF -->
 <!-- END topicrow -->
 
-<!-- IF S_SELECT_SORT_DAYS and not S_DISPLAY_ACTIVE -->
-	<form method="post" action="{S_FORUM_ACTION}">
-		<fieldset class="display-options">
-	<!-- IF not S_IS_BOT -->
-			<label>{L_DISPLAY_TOPICS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
-			<label>{S_SELECT_SORT_DIR}</label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
-	<!-- ENDIF -->
-		</fieldset>
-	</form>
-	<hr />
-<!-- ENDIF -->
-
 <!-- IF .topicrow and not S_DISPLAY_ACTIVE -->
-	<div class="action-bar bottom">
+	<div class="action-bar bar-bottom">
 		<!-- IF not S_IS_BOT and S_DISPLAY_POST_INFO -->
-			<div class="buttons">
-				<!-- EVENT viewforum_buttons_bottom_before -->
+			<!-- EVENT viewforum_buttons_bottom_before -->
 
-				<a href="{U_POST_NEW_TOPIC}" class="button icon-button <!-- IF S_IS_LOCKED -->locked-icon<!-- ELSE -->post-icon<!-- ENDIF -->" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
-					<!-- IF S_IS_LOCKED -->{L_BUTTON_FORUM_LOCKED}<!-- ELSE -->{L_BUTTON_NEW_TOPIC}<!-- ENDIF -->
-				</a>
+			<a href="{U_POST_NEW_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_FORUM_LOCKED}<!-- ELSE -->{L_POST_TOPIC}<!-- ENDIF -->">
+			<!-- IF S_IS_LOCKED -->
+				<span>{L_BUTTON_FORUM_LOCKED}</span> <i class="icon fa-lock fa-fw" aria-hidden="true"></i>
+			<!-- ELSE -->
+				<span>{L_BUTTON_NEW_TOPIC}</span> <i class="icon fa-pencil fa-fw" aria-hidden="true"></i>
+			<!-- ENDIF -->
+			</a>
 
-				<!-- EVENT viewforum_buttons_bottom_after -->
-			</div>
+			<!-- EVENT viewforum_buttons_bottom_after -->
+		<!-- ENDIF -->
+
+		<!-- IF S_SELECT_SORT_DAYS and not S_IS_BOT -->
+			<form method="post" action="{S_FORUM_ACTION}">
+			<!-- INCLUDE display_options.html -->
+			</form>
 		<!-- ENDIF -->
 
 		<div class="pagination">

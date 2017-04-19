@@ -1,0 +1,7 @@
+phpbb_help_bbcode_controller:
+    path: /bbcode
+    defaults: { _controller: phpbb.help.controller.bbcode:handle }
+
+phpbb_help_faq_controller:
+    path: /faq
+    defaults: { _controller: phpbb.help.controller.faq:handle }

@@ -20,7 +20,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-$mode = request_var('mode', '');
+$mode = $request->variable('mode', '');
 
 if ($mode === 'contactadmin')
 {
@@ -37,11 +37,11 @@ $user->setup(array('memberlist', 'groups'));
 $template->assign_var('S_IN_MEMBERLIST', true);
 
 // Grab data
-$action		= request_var('action', '');
-$user_id	= request_var('u', ANONYMOUS);
-$username	= request_var('un', '', true);
-$group_id	= request_var('g', 0);
-$topic_id	= request_var('t', 0);
+$action		= $request->variable('action', '');
+$user_id	= $request->variable('u', ANONYMOUS);
+$username	= $request->variable('un', '', true);
+$group_id	= $request->variable('g', 0);
+$topic_id	= $request->variable('t', 0);
 
 // Redirect when old mode is used
 if ($mode == 'leaders')
@@ -75,6 +75,7 @@ switch ($mode)
 		{
 			if ($user->data['user_id'] != ANONYMOUS)
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_VIEW_USERS');
 			}
 
@@ -83,12 +84,15 @@ switch ($mode)
 	break;
 }
 
-$start	= request_var('start', 0);
+/** @var \phpbb\group\helper $group_helper */
+$group_helper = $phpbb_container->get('group_helper');
+
+$start	= $request->variable('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
 $default_key = 'c';
-$sort_key = request_var('sk', $default_key);
-$sort_dir = request_var('sd', 'a');
+$sort_key = $request->variable('sk', $default_key);
+$sort_dir = $request->variable('sd', 'a');
 
 $user_types = array(USER_NORMAL, USER_FOUNDER);
 if ($auth->acl_get('a_user'))
@@ -142,7 +146,7 @@ switch ($mode)
 			}
 			else
 			{
-				$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$row['group_name'] = $group_helper->get_name($row['group_name']);
 				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
@@ -369,6 +373,7 @@ switch ($mode)
 
 		if (!$auth->acl_get('u_sendim'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 
@@ -419,7 +424,7 @@ switch ($mode)
 						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-						$message = utf8_normalize_nfc(request_var('message', '', true));
+						$message = $request->variable('message', '', true);
 
 						if (empty($message))
 						{
@@ -544,19 +549,13 @@ switch ($mode)
 		$group_data = $group_sort = array();
 		foreach ($profile_groups as $row)
 		{
-			if ($row['group_type'] == GROUP_SPECIAL)
-			{
-				// Lookup group name in language dictionary
-				if (isset($user->lang['G_' . $row['group_name']]))
-				{
-					$row['group_name'] = $user->lang['G_' . $row['group_name']];
-				}
-			}
-			else if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
+			if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
 			{
 				// Skip over hidden groups the user cannot see
 				continue;
 			}
+
+			$row['group_name'] = $group_helper->get_name($row['group_name']);
 
 			$group_sort[$row['group_id']] = utf8_clean_string($row['group_name']);
 			$group_data[$row['group_id']] = $row;
@@ -646,6 +645,7 @@ switch ($mode)
 		$profile_fields = array();
 		if ($config['load_cpf_viewprofile'])
 		{
+			/* @var $cp \phpbb\profilefields\manager */
 			$cp = $phpbb_container->get('profilefields.manager');
 			$profile_fields = $cp->grab_profile_fields_data($user_id);
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template_data($profile_fields[$user_id]) : array();
@@ -794,8 +794,8 @@ switch ($mode)
 			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		}
 
-		$user_id	= request_var('u', 0);
-		$topic_id	= request_var('t', 0);
+		$user_id	= $request->variable('u', 0);
+		$topic_id	= $request->variable('t', 0);
 
 		if ($user_id)
 		{
@@ -813,6 +813,8 @@ switch ($mode)
 		{
 			trigger_error('NO_EMAIL');
 		}
+
+		/** @var $form \phpbb\message\form */
 		$form = $phpbb_container->get('message.form.' . $form_name);
 
 		$form->bind($request);
@@ -868,6 +870,8 @@ switch ($mode)
 		// The basic memberlist
 		$page_title = $user->lang['MEMBERLIST'];
 		$template_html = 'memberlist_body.html';
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		// Sorting
@@ -916,9 +920,9 @@ switch ($mode)
 		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
 
 
-		$form			= request_var('form', '');
-		$field			= request_var('field', '');
-		$select_single 	= request_var('select_single', false);
+		$form			= $request->variable('form', '');
+		$field			= $request->variable('field', '');
+		$select_single 	= $request->variable('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
 		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
@@ -928,20 +932,20 @@ switch ($mode)
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
 		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '', true);
-			$email		= strtolower(request_var('email', ''));
-			$jabber		= request_var('jabber', '');
-			$search_group_id	= request_var('search_group_id', 0);
+			$username	= $request->variable('username', '', true);
+			$email		= strtolower($request->variable('email', ''));
+			$jabber		= $request->variable('jabber', '');
+			$search_group_id	= $request->variable('search_group_id', 0);
 
 			// when using these, make sure that we actually have values defined in $find_key_match
-			$joined_select	= request_var('joined_select', 'lt');
-			$active_select	= request_var('active_select', 'lt');
-			$count_select	= request_var('count_select', 'eq');
+			$joined_select	= $request->variable('joined_select', 'lt');
+			$active_select	= $request->variable('active_select', 'lt');
+			$count_select	= $request->variable('count_select', 'eq');
 
-			$joined			= explode('-', request_var('joined', ''));
-			$active			= explode('-', request_var('active', ''));
-			$count			= (request_var('count', '') !== '') ? request_var('count', 0) : '';
-			$ipdomain		= request_var('ip', '');
+			$joined			= explode('-', $request->variable('joined', ''));
+			$active			= explode('-', $request->variable('active', ''));
+			$count			= ($request->variable('count', '') !== '') ? $request->variable('count', 0) : '';
+			$ipdomain		= $request->variable('ip', '');
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
 
@@ -1075,7 +1079,7 @@ switch ($mode)
 			}
 		}
 
-		$first_char = request_var('first_char', '');
+		$first_char = $request->variable('first_char', '');
 
 		if ($first_char == 'other')
 		{
@@ -1174,7 +1178,7 @@ switch ($mode)
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
-				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
+				'GROUP_NAME'	=> $group_helper->get_name($group_row['group_name']),
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
 				'GROUP_RANK'	=> $user_rank_data['title'],
@@ -1247,7 +1251,7 @@ switch ($mode)
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
 
-		// We do not use request_var() here directly to save some calls (not all variables are set)
+		// We do not use $request->variable() here directly to save some calls (not all variables are set)
 		$check_params = array(
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
@@ -1264,7 +1268,7 @@ switch ($mode)
 			'count_select'	=> array('count_select', 'eq'),
 			'joined'		=> array('joined', ''),
 			'active'		=> array('active', ''),
-			'count'			=> (request_var('count', '') !== '') ? array('count', 0) : array('count', ''),
+			'count'			=> ($request->variable('count', '') !== '') ? array('count', 0) : array('count', ''),
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
@@ -1277,7 +1281,7 @@ switch ($mode)
 				continue;
 			}
 
-			$param = call_user_func_array('request_var', $call);
+			$param = call_user_func_array(array($request, 'variable'), $call);
 			// Encode strings, convert everything else to int in order to prevent empty parameters.
 			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : (int) $param);
 			$params[] = $param;
@@ -1330,7 +1334,7 @@ switch ($mode)
 		// Some search user specific data
 		if (($mode == '' || $mode == 'searchuser') && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$group_selected = request_var('search_group_id', 0);
+			$group_selected = $request->variable('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
 			$group_ids = array();
 
@@ -1374,7 +1378,7 @@ switch ($mode)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$group_ids[] = $row['group_id'];
-				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . $group_helper->get_name($row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 
@@ -1430,6 +1434,7 @@ switch ($mode)
 		// Load custom profile fields
 		if ($config['load_cpf_memberlist'])
 		{
+			/* @var $cp \phpbb\profilefields\manager */
 			$cp = $phpbb_container->get('profilefields.manager');
 
 			$cp_row = $cp->generate_profile_fields_template_headlines('field_show_on_ml');

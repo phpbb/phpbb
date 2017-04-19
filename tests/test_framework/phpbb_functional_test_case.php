@@ -12,13 +12,15 @@
 */
 use Symfony\Component\BrowserKit\CookieJar;
 
-require_once __DIR__ . '/../../phpBB/includes/functions_install.php';
+require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
+	/** @var \Goutte\Client */
 	static protected $client;
 	static protected $cookieJar;
 	static protected $root_url;
+	static protected $install_success = false;
 
 	protected $cache = null;
 	protected $db = null;
@@ -77,13 +79,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::setUp();
 
+		if (!self::$install_success)
+		{
+			$this->fail('Installing phpBB has failed.');
+		}
+
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
 		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
-		// Reset the curl handle because it is 0 at this point and not a valid
-		// resource
-		self::$client->getClient()->getCurlMulti()->reset(true);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -169,7 +173,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function get_content()
 	{
-		return self::$client->getResponse()->getContent();
+		return (string) self::$client->getResponse()->getContent();
 	}
 
 	// bootstrap, called after board is set up
@@ -205,6 +209,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
+			global $phpbb_container, $phpbb_root_path;
+
+			$phpbb_container = new phpbb_mock_container_builder();
+			$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+			$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
+
 			$this->cache = new \phpbb\cache\driver\file;
 		}
 
@@ -226,7 +236,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array());
 		$db = $this->get_db();
-		$db_tools = new \phpbb\db\tools($db);
+		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($db);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(
@@ -243,18 +254,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 		$container->set('migrator', $migrator);
 		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
-		$user = new \phpbb\user('\phpbb\datetime');
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem(),
-			$user,
+			new phpbb\filesystem\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,
-			$this->get_cache_driver()
+			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
 		);
 
 		return $extension_manager;
@@ -282,120 +291,114 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
-		self::$cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
-		// Set client manually so we can increase the cURL timeout
-		self::$client->setClient(new Guzzle\Http\Client('', array(
-			Guzzle\Http\Client::DISABLE_REDIRECTS	=> true,
-			'curl.options'	=> array(
-				CURLOPT_TIMEOUT	=> 120,
-			),
-		)));
+		$container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+		$container = $container_builder
+			->with_environment('installer')
+			->without_extensions()
+			->without_cache()
+			->with_custom_parameters([
+				'core.disable_super_globals' => false,
+				'installer.create_config_file.options' => [
+					'debug' => true,
+					'environment' => 'test',
+				],
+				'cache.driver.class' => 'phpbb\cache\driver\file'
+			])
+			->with_config(new \phpbb\config_php_file($phpbb_root_path, $phpEx))
+			->without_compiled_container()
+			->get_container();
 
-		// Reset the curl handle because it is 0 at this point and not a valid
-		// resource
-		self::$client->getClient()->getCurlMulti()->reset(true);
+		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
+		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
+		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
+		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
+		$container->compile();
+
+		$language = $container->get('language');
+		$language->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
+
+		$iohandler_factory = $container->get('installer.helper.iohandler_factory');
+		$iohandler_factory->set_environment('cli');
+		$iohandler = $iohandler_factory->get();
 
 		$parseURL = parse_url(self::$config['phpbb_functional_url']);
 
-		$crawler = self::request('GET', 'install/index.php?mode=install&language=en');
-		self::assertContains('Welcome to Installation', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form();
+		$output = new \Symfony\Component\Console\Output\NullOutput();
+		$style = new \Symfony\Component\Console\Style\SymfonyStyle(
+			new \Symfony\Component\Console\Input\ArrayInput(array()),
+			$output
+		);
+		$iohandler->set_style($style, $output);
 
-		// install/index.php?mode=install&sub=requirements
-		$crawler = self::submit($form);
-		self::assertContains('Installation compatibility', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form();
+		$installer = $container->get('installer.installer.install');
+		$installer->set_iohandler($iohandler);
 
-		// install/index.php?mode=install&sub=database
-		$crawler = self::submit($form);
-		self::assertContains('Database configuration', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form(array(
-			// Installer uses 3.0-style dbms name
-			'dbms'			=> str_replace('phpbb\db\driver\\', '',  self::$config['dbms']),
-			'dbhost'		=> self::$config['dbhost'],
-			'dbport'		=> self::$config['dbport'],
-			'dbname'		=> self::$config['dbname'],
-			'dbuser'		=> self::$config['dbuser'],
-			'dbpasswd'		=> self::$config['dbpasswd'],
-			'table_prefix'	=> self::$config['table_prefix'],
-		));
+		// Set data
+		$iohandler->set_input('admin_name', 'admin');
+		$iohandler->set_input('admin_pass1', 'adminadmin');
+		$iohandler->set_input('admin_pass2', 'adminadmin');
+		$iohandler->set_input('board_email', 'nobody@example.com');
+		$iohandler->set_input('submit_admin', 'submit');
 
-		// install/index.php?mode=install&sub=database
-		$crawler = self::submit($form);
-		self::assertContains('Successful connection', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form();
+		$iohandler->set_input('default_lang', 'en');
+		$iohandler->set_input('board_name', 'yourdomain.com');
+		$iohandler->set_input('board_description', 'A short text to describe your forum');
+		$iohandler->set_input('submit_board', 'submit');
 
-		// install/index.php?mode=install&sub=administrator
-		$crawler = self::submit($form);
-		self::assertContains('Administrator configuration', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form(array(
-			'default_lang'	=> 'en',
-			'admin_name'	=> 'admin',
-			'admin_pass1'	=> 'adminadmin',
-			'admin_pass2'	=> 'adminadmin',
-			'board_email'	=> 'nobody@example.com',
-		));
+		$iohandler->set_input('dbms', str_replace('phpbb\db\driver\\', '',  self::$config['dbms']));
+		$iohandler->set_input('dbhost', self::$config['dbhost']);
+		$iohandler->set_input('dbport', self::$config['dbport']);
+		$iohandler->set_input('dbuser', self::$config['dbuser']);
+		$iohandler->set_input('dbpasswd', self::$config['dbpasswd']);
+		$iohandler->set_input('dbname', self::$config['dbname']);
+		$iohandler->set_input('table_prefix', self::$config['table_prefix']);
+		$iohandler->set_input('submit_database', 'submit');
 
-		// install/index.php?mode=install&sub=administrator
-		$crawler = self::submit($form);
-		self::assertContains('Tests passed', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form();
+		$iohandler->set_input('email_enable', true);
+		$iohandler->set_input('smtp_delivery', '1');
+		$iohandler->set_input('smtp_host', 'nxdomain.phpbb.com');
+		$iohandler->set_input('smtp_auth', 'PLAIN');
+		$iohandler->set_input('smtp_user', 'nxuser');
+		$iohandler->set_input('smtp_pass', 'nxpass');
+		$iohandler->set_input('submit_email', 'submit');
 
-		// We have to skip install/index.php?mode=install&sub=config_file
-		// because that step will create a config.php file if phpBB has the
-		// permission to do so. We have to create the config file on our own
-		// in order to get the DEBUG constants defined.
-		$config_php_data = phpbb_create_config_file_data(self::$config, self::$config['dbms'], true, false, true);
-		$config_created = file_put_contents($config_file, $config_php_data) !== false;
-		if (!$config_created)
-		{
-			self::markTestSkipped("Could not write $config_file file.");
-		}
+		$iohandler->set_input('cookie_secure', '0');
+		$iohandler->set_input('server_protocol', '0');
+		$iohandler->set_input('force_server_vars', $parseURL['scheme'] . '://');
+		$iohandler->set_input('server_name', $parseURL['host']);
+		$iohandler->set_input('server_port', isset($parseURL['port']) ? (int) $parseURL['port'] : 80);
+		$iohandler->set_input('script_path', $parseURL['path']);
+		$iohandler->set_input('submit_server', 'submit');
 
-		// We also have to create a install lock that is normally created by
-		// the installer. The file will be removed by the final step of the
-		// installer.
-		$install_lock_file = $phpbb_root_path . 'cache/install_lock';
-		$lock_created = file_put_contents($install_lock_file, '') !== false;
-		if (!$lock_created)
-		{
-			self::markTestSkipped("Could not create $lock_created file.");
-		}
-		@chmod($install_lock_file, 0666);
-
-		// install/index.php?mode=install&sub=advanced
-		$form_data = $form->getValues();
-		unset($form_data['submit']);
-
-		$crawler = self::request('POST', 'install/index.php?mode=install&sub=advanced', $form_data);
-		self::assertContains('The settings on this page are only necessary to set if you know that you require something different from the default.', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form(array(
-			'email_enable'		=> true,
-			'smtp_delivery'		=> true,
-			'smtp_host'			=> 'nxdomain.phpbb.com',
-			'smtp_auth'			=> 'PLAIN',
-			'smtp_user'			=> 'nxuser',
-			'smtp_pass'			=> 'nxpass',
-			'cookie_secure'		=> false,
-			'force_server_vars'	=> false,
-			'server_protocol'	=> $parseURL['scheme'] . '://',
-			'server_name'		=> 'localhost',
-			'server_port'		=> isset($parseURL['port']) ? (int) $parseURL['port'] : 80,
-			'script_path'		=> $parseURL['path'],
-		));
-
-		// install/index.php?mode=install&sub=create_table
-		$crawler = self::submit($form);
-		self::assertContains('The database tables used by phpBB', $crawler->filter('#main')->text());
-		self::assertContains('have been created and populated with some initial data.', $crawler->filter('#main')->text());
-		$form = $crawler->selectButton('submit')->form();
-
-		// install/index.php?mode=install&sub=final
-		$crawler = self::submit($form);
-		self::assertContains('You have successfully installed', $crawler->text());
+		$installer->run();
 
 		copy($config_file, $config_file_test);
+
+		self::$install_success = true;
+
+		if (file_exists($phpbb_root_path . 'store/install_config.php'))
+		{
+			self::$install_success = false;
+			@unlink($phpbb_root_path . 'store/install_config.php');
+		}
+
+		if (file_exists($phpbb_root_path . 'cache/install_lock'))
+		{
+			@unlink($phpbb_root_path . 'cache/install_lock');
+		}
+
+		global $phpbb_container;
+		$phpbb_container->reset();
+
+		$blacklist = ['phpbb_class_loader_mock', 'phpbb_class_loader_ext', 'phpbb_class_loader'];
+
+		foreach (array_keys($GLOBALS) as $key)
+		{
+			if (is_object($GLOBALS[$key]) && !in_array($key, $blacklist, true))
+			{
+				unset($GLOBALS[$key]);
+			}
+		}
 	}
 
 	public function install_ext($extension)
@@ -490,7 +493,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			));
 			$db->sql_query($sql);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@mkdir($phpbb_root_path . 'styles/' . $style_path, 0777);
 				@mkdir($phpbb_root_path . 'styles/' . $style_path . '/template', 0777);
@@ -529,7 +532,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
 			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
 
-			if ($style_path != 'prosilver' && $style_path != 'subsilver2')
+			if ($style_path != 'prosilver')
 			{
 				@rmdir($phpbb_root_path . 'styles/' . $style_path . '/template');
 				@rmdir($phpbb_root_path . 'styles/' . $style_path);
@@ -571,7 +574,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_notifications = new phpbb_mock_notification_manager();
@@ -585,8 +588,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$passwords_manager = $this->get_passwords_manager();
 
@@ -612,13 +614,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
@@ -651,13 +656,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$auth = $this->getMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
-		$cache_driver = new \phpbb\cache\driver\null();
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
@@ -856,7 +864,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static public function assert_response_html($status_code = 200)
 	{
 		// Any output before the doc type means there was an error
-		$content = self::$client->getResponse()->getContent();
+		$content = self::get_content();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
 
@@ -877,7 +885,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static public function assert_response_xml($status_code = 200)
 	{
 		// Any output before the xml opening means there was an error
-		$content = self::$client->getResponse()->getContent();
+		$content = self::get_content();
 		self::assertNotContains('[phpBB Debug]', $content);
 		self::assertStringStartsWith('<?xml', trim($content), 'Output found before XML specification.');
 
@@ -948,8 +956,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
 	{
-		$this->assertSame(
-			'',
+		$this->assertNull(
 			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
 			$message ?: "Failed asserting that checkbox $name is unchecked."
 		);

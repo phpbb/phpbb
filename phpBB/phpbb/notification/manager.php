@@ -26,7 +26,7 @@ class manager
 	/** @var array */
 	protected $subscription_types;
 
-	/** @var array */
+	/** @var method\method_interface[] */
 	protected $notification_methods;
 
 	/** @var ContainerInterface */
@@ -34,9 +34,6 @@ class manager
 
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
-
-	/** @var \phpbb\config\config */
-	protected $config;
 
 	/** @var \phpbb\event\dispatcher_interface */
 	protected $phpbb_dispatcher;
@@ -47,20 +44,14 @@ class manager
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
 	/** @var \phpbb\user */
 	protected $user;
 
 	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $php_ext;
-
-	/** @var string */
 	protected $notification_types_table;
-
-	/** @var string */
-	protected $notifications_table;
 
 	/** @var string */
 	protected $user_notifications_table;
@@ -72,43 +63,37 @@ class manager
 	* @param array $notification_methods
 	* @param ContainerInterface $phpbb_container
 	* @param \phpbb\user_loader $user_loader
-	* @param \phpbb\config\config $config
 	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	* @param \phpbb\db\driver\driver_interface $db
 	* @param \phpbb\cache\service $cache
+	* @param \phpbb\language\language $language
 	* @param \phpbb\user $user
-	* @param string $phpbb_root_path
-	* @param string $php_ext
 	* @param string $notification_types_table
-	* @param string $notifications_table
 	* @param string $user_notifications_table
 	*
 	* @return \phpbb\notification\manager
 	*/
-	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $user, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\language\language $language, \phpbb\user $user, $notification_types_table, $user_notifications_table)
 	{
 		$this->notification_types = $notification_types;
 		$this->notification_methods = $notification_methods;
 		$this->phpbb_container = $phpbb_container;
 
 		$this->user_loader = $user_loader;
-		$this->config = $config;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->language = $language;
 		$this->user = $user;
 
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
-
 		$this->notification_types_table = $notification_types_table;
-		$this->notifications_table = $notifications_table;
 		$this->user_notifications_table = $user_notifications_table;
 	}
 
 	/**
-	* Load the user's notifications
+	* Load the user's notifications for a given method
 	*
+	* @param string $method_name
 	* @param array $options Optional options to control what notifications are loaded
 	*				notification_id		Notification id to load (or array of notification ids)
 	*				user_id				User id to load notifications for (Default: $user->data['user_id'])
@@ -123,27 +108,21 @@ class manager
 	*	'notifications'		array of notification type objects
 	*	'unread_count'		number of unread notifications the user has if count_unread is true in the options
 	*	'total_count'		number of notifications the user has if count_total is true in the options
+	* @throws \phpbb\notification\exception when the method doesn't refer to a class extending \phpbb\notification\method\method_interface
 	*/
-	public function load_notifications(array $options = array())
+	public function load_notifications($method_name, array $options = array())
 	{
-		// Merge default options
-		$options = array_merge(array(
-			'notification_id'	=> false,
-			'user_id'			=> $this->user->data['user_id'],
-			'order_by'			=> 'notification_time',
-			'order_dir'			=> 'DESC',
-			'limit'				=> 0,
-			'start'				=> 0,
-			'all_unread'		=> false,
-			'count_unread'		=> false,
-			'count_total'		=> false,
-		), $options);
+		$method = $this->get_method_class($method_name);
 
-		// If all_unread, count_unread must be true
-		$options['count_unread'] = ($options['all_unread']) ? true : $options['count_unread'];
-
-		// Anonymous users and bots never receive notifications
-		if ($options['user_id'] == $this->user->data['user_id'] && ($this->user->data['user_id'] == ANONYMOUS || $this->user->data['user_type'] == USER_IGNORE))
+		if (! $method instanceof \phpbb\notification\method\method_interface)
+		{
+			throw new \phpbb\notification\exception($this->language->lang('NOTIFICATION_METHOD_INVALID', $method_name));
+		}
+		else if ($method->is_available())
+		{
+			return $method->load_notifications($options);
+		}
+		else
 		{
 			return array(
 				'notifications'		=> array(),
@@ -151,172 +130,112 @@ class manager
 				'total_count'		=> 0,
 			);
 		}
-
-		$notifications = $user_ids = array();
-		$load_special = array();
-		$total_count = $unread_count = 0;
-
-		if ($options['count_unread'])
-		{
-			// Get the total number of unread notifications
-			$sql = 'SELECT COUNT(n.notification_id) AS unread_count
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND n.notification_read = 0
-					AND nt.notification_type_id = n.notification_type_id
-					AND nt.notification_type_enabled = 1';
-			$result = $this->db->sql_query($sql);
-			$unread_count = (int) $this->db->sql_fetchfield('unread_count');
-			$this->db->sql_freeresult($result);
-		}
-
-		if ($options['count_total'])
-		{
-			// Get the total number of notifications
-			$sql = 'SELECT COUNT(n.notification_id) AS total_count
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] . '
-					AND nt.notification_type_id = n.notification_type_id
-					AND nt.notification_type_enabled = 1';
-			$result = $this->db->sql_query($sql);
-			$total_count = (int) $this->db->sql_fetchfield('total_count');
-			$this->db->sql_freeresult($result);
-		}
-
-		if (!$options['count_total'] || $total_count)
-		{
-			$rowset = array();
-			$selected_unread_count = 0;
-
-			// Get the main notifications
-			$sql = 'SELECT n.*, nt.notification_type_name
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-				WHERE n.user_id = ' . (int) $options['user_id'] .
-					(($options['notification_id']) ? ' AND ' . $this->db->sql_in_set('n.notification_id', $options['notification_id']) : '') . '
-					AND nt.notification_type_id = n.notification_type_id
-					AND nt.notification_type_enabled = 1
-				ORDER BY n.' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
-			$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
-
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$rowset[$row['notification_id']] = $row;
-				$selected_unread_count += (int) !$row['notification_read'];
-			}
-			$this->db->sql_freeresult($result);
-
-			// Get all unread notifications
-			if ($selected_unread_count < $unread_count && $options['all_unread'] && !empty($rowset))
-			{
-				$sql = 'SELECT n.*, nt.notification_type_name
-				FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-					WHERE n.user_id = ' . (int) $options['user_id'] . '
-						AND n.notification_read = 0
-						AND ' . $this->db->sql_in_set('n.notification_id', array_keys($rowset), true) . '
-						AND nt.notification_type_id = n.notification_type_id
-						AND nt.notification_type_enabled = 1
-					ORDER BY n.' . $this->db->sql_escape($options['order_by']) . ' ' . $this->db->sql_escape($options['order_dir']);
-				$result = $this->db->sql_query_limit($sql, $options['limit'], $options['start']);
-
-				while ($row = $this->db->sql_fetchrow($result))
-				{
-					$rowset[$row['notification_id']] = $row;
-				}
-				$this->db->sql_freeresult($result);
-			}
-
-			foreach ($rowset as $row)
-			{
-				$notification = $this->get_item_type_class($row['notification_type_name'], $row);
-
-				// Array of user_ids to query all at once
-				$user_ids = array_merge($user_ids, $notification->users_to_query());
-
-				// Some notification types also require querying additional tables themselves
-				if (!isset($load_special[$row['notification_type_name']]))
-				{
-					$load_special[$row['notification_type_name']] = array();
-				}
-				$load_special[$row['notification_type_name']] = array_merge($load_special[$row['notification_type_name']], $notification->get_load_special());
-
-				$notifications[$row['notification_id']] = $notification;
-			}
-
-			$this->user_loader->load_users($user_ids);
-
-			// Allow each type to load its own special items
-			foreach ($load_special as $item_type => $data)
-			{
-				$item_class = $this->get_item_type_class($item_type);
-
-				$item_class->load_special($data, $notifications);
-			}
-		}
-
-		return array(
-			'notifications'		=> $notifications,
-			'unread_count'		=> $unread_count,
-			'total_count'		=> $total_count,
-		);
 	}
 
 	/**
-	* Mark notifications read
+	 * Mark notifications read or unread for all available methods
+	 *
+	 * @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
+	 * @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
+	 * @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	 * @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	 *
+	 * @deprecated since 3.2
+	 */
+	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	{
+		$this->mark_notifications($notification_type_name, $item_id, $user_id, $time);
+	}
+
+	/**
+	* Mark notifications read or unread for all available methods
 	*
 	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read($notification_type_name, $item_id, $user_id, $time = false)
+	public function mark_notifications($notification_type_name, $item_id, $user_id, $time = false, $mark_read = true)
 	{
-		$time = ($time !== false) ? $time : time();
+		if (is_array($notification_type_name))
+		{
+			$notification_type_id = $this->get_notification_type_ids($notification_type_name);
+		}
+		else if ($notification_type_name !== false)
+		{
+			$notification_type_id = $this->get_notification_type_id($notification_type_name);
+		}
+		else
+		{
+			$notification_type_id = false;
+		}
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time .
-				(($notification_type_name !== false) ? ' AND ' . $this->db->sql_in_set('notification_type_id', $this->get_notification_type_ids($notification_type_name)) : '') .
-				(($user_id !== false) ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
-				(($item_id !== false) ? ' AND ' . $this->db->sql_in_set('item_id', $item_id) : '');
-		$this->db->sql_query($sql);
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$method->mark_notifications($notification_type_id, $item_id, $user_id, $time, $mark_read);
+		}
 	}
 
 	/**
-	* Mark notifications read from a parent identifier
+	 * Mark notifications read or unread from a parent identifier for all available methods
+	 *
+	 * @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
+	 * @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
+	 * @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
+	 * @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	 *
+	 * @deprecated since 3.2
+	 */
+	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	{
+		$this->mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time);
+	}
+
+	/**
+	* Mark notifications read or unread from a parent identifier for all available methods
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false)
+	public function mark_notifications_by_parent($notification_type_name, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
-		$time = ($time !== false) ? $time : time();
+		if (is_array($notification_type_name))
+		{
+			$notification_type_id = $this->get_notification_type_ids($notification_type_name);
+		}
+		else
+		{
+			$notification_type_id = $this->get_notification_type_id($notification_type_name);
+		}
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time .
-				(($notification_type_name !== false) ? ' AND ' . $this->db->sql_in_set('notification_type_id', $this->get_notification_type_ids($notification_type_name)) : '') .
-				(($item_parent_id !== false) ? ' AND ' . $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : '') .
-				(($user_id !== false) ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '');
-		$this->db->sql_query($sql);
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$method->mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time, $mark_read);
+		}
 	}
 
 	/**
-	* Mark notifications read
+	* Mark notifications read or unread for a given method
 	*
+	* @param string $method_name
 	* @param int|array $notification_id Notification id or array of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
+	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_read_by_id($notification_id, $time = false)
+	public function mark_notifications_by_id($method_name, $notification_id, $time = false, $mark_read = true)
 	{
-		$time = ($time !== false) ? $time : time();
+		$method = $this->get_method_class($method_name);
 
-		$sql = 'UPDATE ' . $this->notifications_table . "
-			SET notification_read = 1
-			WHERE notification_time <= " . (int) $time . '
-				AND ' . $this->db->sql_in_set('notification_id', $notification_id);
-		$this->db->sql_query($sql);
+		if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
+		{
+			$method->mark_notifications_by_id($notification_id, $time, $mark_read);
+		}
 	}
 
 	/**
@@ -349,8 +268,6 @@ class manager
 
 			return $notified_users;
 		}
-
-		$item_id = $this->get_item_type_class($notification_type_name)->get_item_id($data);
 
 		// find out which users want to receive this type of notification
 		$notify_users = $this->get_item_type_class($notification_type_name)->find_users_for_notification($data, $options);
@@ -404,25 +321,23 @@ class manager
 		$item_id = $this->get_item_type_class($notification_type_name)->get_item_id($data);
 
 		$user_ids = array();
-		$notification_objects = $notification_methods = array();
+		$notification_methods = array();
 
 		// Never send notifications to the anonymous user!
 		unset($notify_users[ANONYMOUS]);
 
 		// Make sure not to send new notifications to users who've already been notified about this item
 		// This may happen when an item was added, but now new users are able to see the item
-		$sql = 'SELECT n.user_id
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $notification_type_id . '
-				AND n.item_id = ' . (int) $item_id . '
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
+		// We remove each user which was already notified by at least one method.
+		/** @var method\method_interface $method */
+		foreach ($this->get_subscription_methods_instances() as $method)
 		{
-			unset($notify_users[$row['user_id']]);
+			$notified_users = $method->get_notified_users($notification_type_id, array('item_id' => $item_id));
+			foreach ($notified_users as $user => $notifications)
+			{
+				unset($notify_users[$user]);
+			}
 		}
-		$this->db->sql_freeresult($result);
 
 		if (!sizeof($notify_users))
 		{
@@ -434,8 +349,6 @@ class manager
 		$pre_create_data = $notification->pre_create_insert_array($data, $notify_users);
 		unset($notification);
 
-		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->notifications_table);
-
 		// Go through each user so we can insert a row in the DB and then notify them by their desired means
 		foreach ($notify_users as $user => $methods)
 		{
@@ -443,8 +356,8 @@ class manager
 
 			$notification->user_id = (int) $user;
 
-			// Insert notification row using buffer.
-			$insert_buffer->insert($notification->create_insert_array($data, $pre_create_data));
+			// Generate the insert_array
+			$notification->create_insert_array($data, $pre_create_data);
 
 			// Users are needed to send notifications
 			$user_ids = array_merge($user_ids, $notification->users_to_query());
@@ -452,19 +365,14 @@ class manager
 			foreach ($methods as $method)
 			{
 				// setup the notification methods and add the notification to the queue
-				if ($method) // blank means we just insert it as a notification, but do not notify them by any other means
+				if (!isset($notification_methods[$method]))
 				{
-					if (!isset($notification_methods[$method]))
-					{
-						$notification_methods[$method] = $this->get_method_class($method);
-					}
-
-					$notification_methods[$method]->add_to_queue($notification);
+					$notification_methods[$method] = $this->get_method_class($method);
 				}
+
+				$notification_methods[$method]->add_to_queue($notification);
 			}
 		}
-
-		$insert_buffer->flush();
 
 		// We need to load all of the users to send notifications
 		$this->user_loader->load_users($user_ids);
@@ -477,12 +385,13 @@ class manager
 	}
 
 	/**
-	* Update a notification
+	* Update notification
 	*
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types)
 	* @param array $data Data specific for this type that will be updated
+	* @param array $options
 	*/
-	public function update_notifications($notification_type_name, $data)
+	public function update_notifications($notification_type_name, array $data, array $options = array())
 	{
 		if (is_array($notification_type_name))
 		{
@@ -494,27 +403,28 @@ class manager
 			return;
 		}
 
-		$notification = $this->get_item_type_class($notification_type_name);
+		$this->update_notification($this->get_item_type_class($notification_type_name), $data, $options);
+	}
 
-		// Allow the notifications class to over-ride the update_notifications functionality
-		if (method_exists($notification, 'update_notifications'))
+	/**
+	* Update a notification
+	*
+	* @param \phpbb\notification\type\type_interface $notification The notification
+	* @param array $data Data specific for this type that will be updated
+	* @param array $options
+	*/
+	public function update_notification(\phpbb\notification\type\type_interface $notification, array $data, array $options = array())
+	{
+		if (empty($options))
 		{
-			// Return False to over-ride the rest of the update
-			if ($notification->update_notifications($data) === false)
-			{
-				return;
-			}
+			$options['item_id'] = $notification->get_item_id($data);
 		}
 
-		$notification_type_id = $this->get_notification_type_id($notification_type_name);
-		$item_id = $notification->get_item_id($data);
-		$update_array = $notification->create_update_array($data);
-
-		$sql = 'UPDATE ' . $this->notifications_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $update_array) . '
-			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND item_id = ' . (int) $item_id;
-		$this->db->sql_query($sql);
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$method->update_notification($notification, $data, $options);
+		}
 	}
 
 	/**
@@ -523,14 +433,15 @@ class manager
 	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
 	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	* @param mixed $user_id User id (Default: false; not checked)
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false)
+	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
 	{
 		if (is_array($notification_type_name))
 		{
 			foreach ($notification_type_name as $type)
 			{
-				$this->delete_notifications($type, $item_id, $parent_id);
+				$this->delete_notifications($type, $item_id, $parent_id, $user_id);
 			}
 
 			return;
@@ -538,11 +449,11 @@ class manager
 
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
-		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_type_id = ' . (int) $notification_type_id . '
-				AND ' . $this->db->sql_in_set('item_id', $item_id) .
-				(($parent_id !== false) ? ' AND ' . $this->db->sql_in_set('item_parent_id', $parent_id) : '');
-		$this->db->sql_query($sql);
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$method->delete_notifications($notification_type_id, $item_id, $parent_id, $user_id);
+		}
 	}
 
 	/**
@@ -558,6 +469,7 @@ class manager
 
 			foreach ($this->notification_types as $type_name => $data)
 			{
+				/** @var type\base $type */
 				$type = $this->get_item_type_class($type_name);
 
 				if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
@@ -593,16 +505,55 @@ class manager
 	{
 		$subscription_methods = array();
 
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method_name => $method)
+		{
+			$subscription_methods[$method_name] = array(
+				'id'		=> $method->get_type(),
+				'lang'		=> str_replace('.', '_', strtoupper($method->get_type())),
+			);
+		}
+
+		return $subscription_methods;
+	}
+
+	/**
+	* Get all of the subscription methods
+	*
+	* @return array Array of method's instances
+	*/
+	private function get_subscription_methods_instances()
+	{
+		$subscription_methods = array();
+
 		foreach ($this->notification_methods as $method_name => $data)
 		{
 			$method = $this->get_method_class($method_name);
 
-			if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
+			if ($method instanceof \phpbb\notification\method\method_interface)
 			{
-				$subscription_methods[$method_name] = array(
-					'id'		=> $method->get_type(),
-					'lang'		=> str_replace('.', '_', strtoupper($method->get_type())),
-				);
+				$subscription_methods[$method_name] = $method;
+			}
+		}
+
+		return $subscription_methods;
+	}
+
+	/**
+	* Get all of the available subscription methods
+	*
+	* @return array Array of method's instances
+	*/
+	private function get_available_subscription_methods()
+	{
+		$subscription_methods = array();
+
+		/** @var method\method_interface $method */
+		foreach ($this->get_subscription_methods_instances() as $method_name => $method)
+		{
+			if ($method->is_available())
+			{
+				$subscription_methods[$method_name] = $method;
 			}
 		}
 
@@ -646,9 +597,10 @@ class manager
 	*/
 	public function get_global_subscriptions($user_id = false)
 	{
-		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
+		$user_id = $user_id ?: $this->user->data['user_id'];
 
 		$subscriptions = array();
+		$default_methods = $this->get_default_methods();
 
 		$user_notifications = $this->get_user_notifications($user_id);
 
@@ -656,28 +608,31 @@ class manager
 		{
 			foreach ($types as $id => $type)
 			{
-
-				if (empty($user_notifications[$id]))
-				{
-					// No rows at all, default to ''
-					$subscriptions[$id] = array('');
-				}
-				else
+				$type_subscriptions = $default_methods;
+				if (!empty($user_notifications[$id]))
 				{
 					foreach ($user_notifications[$id] as $user_notification)
 					{
+						$key = array_search($user_notification['method'], $type_subscriptions, true);
 						if (!$user_notification['notify'])
 						{
+							if ($key !== false)
+							{
+								unset($type_subscriptions[$key]);
+							}
+
 							continue;
 						}
-
-						if (!isset($subscriptions[$id]))
+						else if ($key === false)
 						{
-							$subscriptions[$id] = array();
+							$type_subscriptions[] = $user_notification['method'];
 						}
-
-						$subscriptions[$id][] = $user_notification['method'];
 					}
+				}
+
+				if (!empty($type_subscriptions))
+				{
+					$subscriptions[$id] = $type_subscriptions;
 				}
 			}
 		}
@@ -690,15 +645,20 @@ class manager
 	*
 	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
-	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
+	* @param string $method The method of the notification e.g. 'board', 'email', or 'jabber'
+	*                       (if null a subscription will be added for all the defaults methods)
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function add_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
+	public function add_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
 	{
-		if ($method !== '')
+		if ($method === null)
 		{
-			// Make sure to subscribe them to the base subscription
-			$this->add_subscription($item_type, $item_id, '', $user_id);
+			foreach ($this->get_default_methods() as $method_name)
+			{
+				$this->add_subscription($item_type, $item_id, $method_name, $user_id);
+			}
+
+			return;
 		}
 
 		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
@@ -742,32 +702,22 @@ class manager
 	*
 	* @param string $item_type Type identifier of the subscription
 	* @param int $item_id The id of the item
-	* @param string $method The method of the notification e.g. '', 'email', or 'jabber'
+	* @param string $method The method of the notification e.g. 'board', 'email', or 'jabber'
 	* @param bool|int $user_id The user_id to add the subscription for (bool false for current user)
 	*/
-	public function delete_subscription($item_type, $item_id = 0, $method = '', $user_id = false)
+	public function delete_subscription($item_type, $item_id = 0, $method = null, $user_id = false)
 	{
-		$user_id = ($user_id === false) ? $this->user->data['user_id'] : $user_id;
-
-		// If no method, make sure that no other notification methods for this item are selected before deleting
-		if ($method === '')
+		if ($method === null)
 		{
-			$sql = 'SELECT COUNT(*) as num_notifications
-				FROM ' . $this->user_notifications_table . "
-				WHERE item_type = '" . $this->db->sql_escape($item_type) . "'
-					AND item_id = " . (int) $item_id . '
-					AND user_id = ' .(int) $user_id . "
-					AND method <> ''
-					AND notify = 1";
-			$this->db->sql_query($sql);
-			$num_notifications = $this->db->sql_fetchfield('num_notifications');
-			$this->db->sql_freeresult();
-
-			if ($num_notifications)
+			foreach ($this->get_default_methods() as $method_name)
 			{
-				return;
+				$this->delete_subscription($item_type, $item_id, $method_name, $user_id);
 			}
+
+			return;
 		}
+
+		$user_id = $user_id ?: $this->user->data['user_id'];
 
 		$sql = 'UPDATE ' . $this->user_notifications_table . "
 			SET notify = 0
@@ -828,15 +778,12 @@ class manager
 		{
 			$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
-			$sql = 'DELETE FROM ' . $this->notifications_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id;
-			$this->db->sql_query($sql);
+			/** @var method\method_interface $method */
+			foreach ($this->get_available_subscription_methods() as $method)
+			{
+				$method->purge_notifications($notification_type_id);
+			}
 
-			$sql = 'DELETE FROM ' . $this->notification_types_table . '
-				WHERE notification_type_id = ' . (int) $notification_type_id;
-			$this->db->sql_query($sql);
-
-			$this->cache->destroy('notification_type_ids');
 		}
 		catch (\phpbb\notification\exception $e)
 		{
@@ -869,17 +816,40 @@ class manager
 	*/
 	public function prune_notifications($timestamp, $only_read = true)
 	{
-		$sql = 'DELETE FROM ' . $this->notifications_table . '
-			WHERE notification_time < ' . (int) $timestamp .
-				(($only_read) ? ' AND notification_read = 1' : '');
-		$this->db->sql_query($sql);
-
-		$this->config->set('read_notification_last_gc', time(), false);
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$method->prune_notifications($timestamp, $only_read);
+		}
 	}
 
 	/**
-	* Helper to get the notifications item type class and set it up
-	*/
+	 * Helper to get the list of methods enabled by default
+	 *
+	 * @return method\method_interface[]
+	 */
+	public function get_default_methods()
+	{
+		$default_methods = array();
+
+		foreach ($this->notification_methods as $method)
+		{
+			if ($method->is_enabled_by_default() && $method->is_available())
+			{
+				$default_methods[] = $method->get_type();
+			}
+		}
+
+		return $default_methods;
+	}
+
+	/**
+	 * Helper to get the notifications item type class and set it up
+	 *
+	 * @param string $notification_type_name
+	 * @param array  $data
+	 * @return type\type_interface
+	 */
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
 		$item = $this->load_object($notification_type_name);
@@ -890,16 +860,22 @@ class manager
 	}
 
 	/**
-	* Helper to get the notifications method class and set it up
-	*/
+	 * Helper to get the notifications method class and set it up
+	 *
+	 * @param string $method_name
+	 * @return method\method_interface
+	 */
 	public function get_method_class($method_name)
 	{
 		return $this->load_object($method_name);
 	}
 
 	/**
-	* Helper to load objects (notification types/methods)
-	*/
+	 * Helper to load objects (notification types/methods)
+	 *
+	 * @param string $object_name
+	 * @return method\method_interface|type\type_interface
+	 */
 	protected function load_object($object_name)
 	{
 		$object = $this->phpbb_container->get($object_name);
@@ -946,7 +922,8 @@ class manager
 			if (!isset($this->notification_types[$notification_type_name]) && !isset($this->notification_types['notification.type.' . $notification_type_name]))
 			{
 				$this->db->sql_transaction('rollback');
-				throw new \phpbb\notification\exception($this->user->lang('NOTIFICATION_TYPE_NOT_EXIST', $notification_type_name));
+
+				throw new \phpbb\notification\exception('NOTIFICATION_TYPE_NOT_EXIST', array($notification_type_name));
 			}
 
 			$sql = 'INSERT INTO ' . $this->notification_types_table . ' ' . $this->db->sql_build_array('INSERT', array(
@@ -986,5 +963,27 @@ class manager
 		}
 
 		return $notification_type_ids;
+	}
+
+	/**
+	* Find the users which are already notified
+	*
+	* @param bool|string|array $notification_type_name Type identifier or array of item types (only acceptable if the $data is identical for the specified types). False to retrieve all item types
+	* @param array $options
+	* @return array The list of the notified users
+	*/
+	public function get_notified_users($notification_type_name, array $options)
+	{
+		$notification_type_id = $this->get_notification_type_id($notification_type_name);
+
+		$notified_users = array();
+
+		/** @var method\method_interface $method */
+		foreach ($this->get_available_subscription_methods() as $method)
+		{
+			$notified_users = $notified_users + $method->get_notified_users($notification_type_id, $options);
+		}
+
+		return $notified_users;
 	}
 }

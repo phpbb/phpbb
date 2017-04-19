@@ -25,25 +25,29 @@ $auth->acl($user->data);
 $user->setup('memberlist');
 
 // Get and set some variables
-$mode		= request_var('mode', '');
-$session_id	= request_var('s', '');
-$start		= request_var('start', 0);
-$sort_key	= request_var('sk', 'b');
-$sort_dir	= request_var('sd', 'd');
-$show_guests	= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
+$mode		= $request->variable('mode', '');
+$session_id	= $request->variable('s', '');
+$start		= $request->variable('start', 0);
+$sort_key	= $request->variable('sk', 'b');
+$sort_dir	= $request->variable('sd', 'd');
+$show_guests	= ($config['load_online_guests']) ? $request->variable('sg', 0) : 0;
 
 // Can this user view profiles/memberlist?
 if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_VIEW_USERS');
 	}
 
 	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
 }
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
+
+/* @var $viewonline_helper \phpbb\viewonline_helper */
 $viewonline_helper = $phpbb_container->get('viewonline_helper');
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
@@ -123,7 +127,6 @@ if (!$show_guests)
 {
 	switch ($db->get_sql_layer())
 	{
-		case 'sqlite':
 		case 'sqlite3':
 			$sql = 'SELECT COUNT(session_ip) as num_guests
 				FROM (
@@ -177,6 +180,12 @@ $result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
 
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
+
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
+/** @var \phpbb\group\helper $group_helper */
+$group_helper = $phpbb_container->get('group_helper');
 
 while ($row = $db->sql_fetchrow($result))
 {
@@ -302,11 +311,6 @@ while ($row = $db->sql_fetchrow($result))
 			$location_url = append_sid("{$phpbb_root_path}search.$phpEx");
 		break;
 
-		case 'faq':
-			$location = $user->lang['VIEWING_FAQ'];
-			$location_url = append_sid("{$phpbb_root_path}faq.$phpEx");
-		break;
-
 		case 'viewonline':
 			$location = $user->lang['VIEWING_ONLINE'];
 			$location_url = append_sid("{$phpbb_root_path}viewonline.$phpEx");
@@ -372,6 +376,13 @@ while ($row = $db->sql_fetchrow($result))
 		default:
 			$location = $user->lang['INDEX'];
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+
+			if ($row['session_page'] === 'app.' . $phpEx . '/help/faq' ||
+				$row['session_page'] === 'app.' . $phpEx . '/help/bbcode')
+			{
+				$location = $user->lang['VIEWING_FAQ'];
+				$location_url = $controller_helper->route('phpbb_help_faq_controller');
+			}
 		break;
 	}
 
@@ -461,7 +472,7 @@ while ($row = $db->sql_fetchrow($result))
 	}
 	else
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_helper->get_name($row['group_name']) . '</a>';
 	}
 }
 $db->sql_freeresult($result);

@@ -35,13 +35,13 @@ class mcp_reports
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache;
+		global $auth, $db, $user, $template, $request;
 		global $config, $phpbb_root_path, $phpEx, $action, $phpbb_container, $phpbb_dispatcher;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
-		$forum_id = request_var('f', 0);
-		$start = request_var('start', 0);
+		$forum_id = $request->variable('f', 0);
+		$start = $request->variable('start', 0);
 
 		$this->page_title = 'MCP_REPORTS';
 
@@ -51,7 +51,7 @@ class mcp_reports
 			case 'delete':
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-				$report_id_list = request_var('report_id_list', array(0));
+				$report_id_list = $request->variable('report_id_list', array(0));
 
 				if (!sizeof($report_id_list))
 				{
@@ -69,10 +69,11 @@ class mcp_reports
 
 				$user->add_lang(array('posting', 'viewforum', 'viewtopic'));
 
-				$post_id = request_var('p', 0);
+				$post_id = $request->variable('p', 0);
 
 				// closed reports are accessed by report id
-				$report_id = request_var('r', 0);
+				$report_id = $request->variable('r', 0);
+
 				$sql_ary = array(
 					'SELECT'	=> 'r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, r.reported_post_text, r.reported_post_uid, r.reported_post_bitfield, r.reported_post_enable_magic_url, r.reported_post_enable_smilies, r.reported_post_enable_bbcode, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour',
 
@@ -138,9 +139,10 @@ class mcp_reports
 					trigger_error('NO_REPORT');
 				}
 
+				/* @var $phpbb_notifications \phpbb\notification\manager */
 				$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-				$phpbb_notifications->mark_notifications_read('notification.type.report_post', $post_id, $user->data['user_id']);
+				$phpbb_notifications->mark_notifications('report_post', $post_id, $user->data['user_id']);
 
 				if (!$report_id && $report['report_closed'])
 				{
@@ -180,7 +182,7 @@ class mcp_reports
 					));
 				}
 
-				$topic_tracking_info = $extensions = $attachments = array();
+				$attachments = array();
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
 				{
@@ -287,7 +289,7 @@ class mcp_reports
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',
@@ -299,7 +301,7 @@ class mcp_reports
 
 			case 'reports':
 			case 'reports_closed':
-				$topic_id = request_var('t', 0);
+				$topic_id = $request->variable('t', 0);
 
 				$forum_info = array();
 				$forum_list_reports = get_forum_list('m_report', false, true);
@@ -349,8 +351,6 @@ class mcp_reports
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$global_id = $forum_list[0];
-
 					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
@@ -367,13 +367,13 @@ class mcp_reports
 						trigger_error('NOT_MODERATOR');
 					}
 
-					$forum_info = $forum_info[$forum_id];
 					$forum_list = array($forum_id);
 				}
 
+				/* @var $pagination \phpbb\pagination */
+				$pagination = $phpbb_container->get('pagination');
 				$forum_list[] = 0;
 				$forum_data = array();
-				$pagination = $phpbb_container->get('pagination');
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
@@ -388,7 +388,6 @@ class mcp_reports
 				$sort_by_sql = $sort_order_sql = array();
 				phpbb_mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
-				$forum_topics = ($total == -1) ? $forum_info['forum_topics_approved'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND r.report_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 				if ($mode == 'reports')
@@ -457,7 +456,6 @@ class mcp_reports
 						ORDER BY ' . $sort_order_sql;
 					$result = $db->sql_query($sql);
 
-					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$template->assign_block_vars('postrow', array(
@@ -519,7 +517,7 @@ class mcp_reports
 */
 function close_report($report_id_list, $mode, $action, $pm = false)
 {
-	global $db, $template, $user, $config, $auth;
+	global $db, $user, $auth, $phpbb_log, $request;
 	global $phpEx, $phpbb_root_path, $phpbb_container;
 
 	$pm_where = ($pm) ? ' AND r.post_id = 0 ' : ' AND r.pm_id = 0 ';
@@ -544,6 +542,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		if (!$auth->acl_getf_global('m_report'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 	}
@@ -551,25 +550,26 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 	}
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
-		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=reports');
+		$redirect = $request->variable('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
 	else if ($action == 'delete' && strpos($user->data['session_page'], 'mode=pm_report_details') !== false)
 	{
-		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=pm_reports');
+		$redirect = $request->variable('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=pm_reports');
 	}
-	else if ($action == 'close' && !request_var('r', 0))
+	else if ($action == 'close' && !$request->variable('r', 0))
 	{
-		$redirect = request_var('redirect', build_url(array('mode', 'p', 'quickmod')) . '&amp;mode=' . $module);
+		$redirect = $request->variable('redirect', build_url(array('mode', 'p', 'quickmod')) . '&amp;mode=' . $module);
 	}
 	else
 	{
-		$redirect = request_var('redirect', build_url(array('quickmod')));
+		$redirect = $request->variable('redirect', build_url(array('quickmod')));
 	}
 	$success_msg = '';
 	$forum_ids = array();
@@ -694,18 +694,28 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		}
 		unset($close_report_posts, $close_report_topics);
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
 
 		foreach ($reports as $report)
 		{
 			if ($pm)
 			{
-				add_log('mod', 0, 0, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['pm_id']]['message_subject']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_PM_REPORT_' .  strtoupper($action) . 'D', false, array(
+					'forum_id' => 0,
+					'topic_id' => 0,
+					$post_info[$report['pm_id']]['message_subject']
+				));
 				$phpbb_notifications->delete_notifications('notification.type.report_pm', $report['pm_id']);
 			}
 			else
 			{
-				add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_REPORT_' .  strtoupper($action) . 'D', false, array(
+					'forum_id' => $post_info[$report['post_id']]['forum_id'],
+					'topic_id' => $post_info[$report['post_id']]['topic_id'],
+					'post_id'  => $report['post_id'],
+					$post_info[$report['post_id']]['post_subject']
+				));
 				$phpbb_notifications->delete_notifications('notification.type.report_post', $report['post_id']);
 			}
 		}
@@ -758,7 +768,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		confirm_box(false, $user->lang[strtoupper($action) . "_{$pm_prefix}REPORT" . ((sizeof($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = $request->variable('redirect', "index.$phpEx");
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)

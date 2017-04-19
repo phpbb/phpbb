@@ -18,22 +18,8 @@ class includejs extends \phpbb\template\twig\node\includeasset
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_definition_name()
+	public function get_setters_name()
 	{
-		return 'SCRIPTS';
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	protected function append_asset(\Twig_Compiler $compiler)
-	{
-		$config = $this->environment->get_phpbb_config();
-
-		$compiler
-			->raw("<script type=\"text/javascript\" src=\"' . ")
-			->raw("\$asset_file")
-			->raw(". '\"></script>\n")
-		;
+		return 'script';
 	}
 }

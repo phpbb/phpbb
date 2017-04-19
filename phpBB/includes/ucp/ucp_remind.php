@@ -29,24 +29,44 @@ class ucp_remind
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template, $phpbb_container;
+		global $config, $phpbb_root_path, $phpEx, $request;
+		global $db, $user, $template, $phpbb_container, $phpbb_dispatcher;
 
 		if (!$config['allow_password_reset'])
 		{
 			trigger_error($user->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
 		}
 
-		$username	= request_var('username', '', true);
-		$email		= strtolower(request_var('email', ''));
+		$username	= $request->variable('username', '', true);
+		$email		= strtolower($request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		if ($submit)
 		{
-			$sql = 'SELECT user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
-				FROM ' . USERS_TABLE . "
-				WHERE user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
-					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+			$sql_array = array(
+				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason',
+				'FROM'		=> array(USERS_TABLE => 'u'),
+				'WHERE'		=> "user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
+									AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'"
+			);
+
+			/**
+			* Change SQL query for fetching user data
+			*
+			* @event core.ucp_remind_modify_select_sql
+			* @var	string	email		User's email from the form
+			* @var	string	username	User's username from the form
+			* @var	array	sql_array	Fully assembled SQL query with keys SELECT, FROM, WHERE
+			* @since 3.1.11-RC1
+			*/
+			$vars = array(
+				'email',
+				'username',
+				'sql_array',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -79,6 +99,7 @@ class ucp_remind
 
 			if (!$auth2->acl_get('u_chgpasswd'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_PASSWORD_REMINDER');
 			}
 
@@ -92,6 +113,7 @@ class ucp_remind
 			$user_actkey = gen_rand_string(mt_rand(6, 10));
 
 			// Instantiate passwords manager
+			/* @var $manager \phpbb\passwords\manager */
 			$passwords_manager = $phpbb_container->get('passwords.manager');
 
 			$sql = 'UPDATE ' . USERS_TABLE . "

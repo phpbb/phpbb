@@ -21,6 +21,11 @@ namespace phpbb\notification\type;
 class quote extends \phpbb\notification\type\post
 {
 	/**
+	* @var \phpbb\textformatter\utils_interface
+	*/
+	protected $utils;
+
+	/**
 	* Get notification type name
 	*
 	* @return string
@@ -29,13 +34,6 @@ class quote extends \phpbb\notification\type\post
 	{
 		return 'notification.type.quote';
 	}
-
-	/**
-	* regular expression to match to find usernames
-	*
-	* @var string
-	*/
-	protected static $regular_expression_match = '#\[quote=&quot;(.+?)&quot;#';
 
 	/**
 	* Language key used to output the text
@@ -50,7 +48,7 @@ class quote extends \phpbb\notification\type\post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_QUOTE',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
@@ -77,17 +75,16 @@ class quote extends \phpbb\notification\type\post
 			'ignore_users'		=> array(),
 		), $options);
 
-		$usernames = false;
-		preg_match_all(static::$regular_expression_match, $post['post_text'], $usernames);
+		$usernames = $this->utils->get_outermost_quote_authors($post['post_text']);
 
-		if (empty($usernames[1]))
+		if (empty($usernames))
 		{
 			return array();
 		}
 
-		$usernames[1] = array_unique($usernames[1]);
+		$usernames = array_unique($usernames);
 
-		$usernames = array_map('utf8_clean_string', $usernames[1]);
+		$usernames = array_map('utf8_clean_string', $usernames);
 
 		$users = array();
 
@@ -109,32 +106,23 @@ class quote extends \phpbb\notification\type\post
 	* Update a notification
 	*
 	* @param array $post Data specific for this type that will be updated
+	* @return true
 	*/
 	public function update_notifications($post)
 	{
-		$old_notifications = array();
-		$sql = 'SELECT n.user_id
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_id = ' . static::get_item_id($post) . '
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$old_notifications[] = $row['user_id'];
-		}
-		$this->db->sql_freeresult($result);
+		$old_notifications = $this->notification_manager->get_notified_users($this->get_type(), array(
+			'item_id'	=> static::get_item_id($post),
+		));
 
 		// Find the new users to notify
 		$notifications = $this->find_users_for_notification($post);
 
 		// Find the notifications we must delete
-		$remove_notifications = array_diff($old_notifications, array_keys($notifications));
+		$remove_notifications = array_diff(array_keys($old_notifications), array_keys($notifications));
 
 		// Find the notifications we must add
 		$add_notifications = array();
-		foreach (array_diff(array_keys($notifications), $old_notifications) as $user_id)
+		foreach (array_diff(array_keys($notifications), array_keys($old_notifications)) as $user_id)
 		{
 			$add_notifications[$user_id] = $notifications[$user_id];
 		}
@@ -145,11 +133,7 @@ class quote extends \phpbb\notification\type\post
 		// Remove the necessary notifications
 		if (!empty($remove_notifications))
 		{
-			$sql = 'DELETE FROM ' . $this->notifications_table . '
-				WHERE notification_type_id = ' . (int) $this->notification_type_id . '
-					AND item_id = ' . static::get_item_id($post) . '
-					AND ' . $this->db->sql_in_set('user_id', $remove_notifications);
-			$this->db->sql_query($sql);
+			$this->notification_manager->delete_notifications($this->get_type(), static::get_item_id($post), false, $remove_notifications);
 		}
 
 		// return true to continue with the update code in the notifications service (this will update the rest of the notifications)
@@ -186,5 +170,15 @@ class quote extends \phpbb\notification\type\post
 		return array_merge(parent::get_email_template_variables(), array(
 			'AUTHOR_NAME'		=> htmlspecialchars_decode($user_data['username']),
 		));
+	}
+
+	/**
+	* Set the utils service used to retrieve quote authors
+	*
+	* @param \phpbb\textformatter\utils_interface $utils
+	*/
+	public function set_utils(\phpbb\textformatter\utils_interface $utils)
+	{
+		$this->utils = $utils;
 	}
 }

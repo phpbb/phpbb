@@ -13,13 +13,21 @@
 
 namespace phpbb\template\twig;
 
+use phpbb\template\assets_bag;
+
 class environment extends \Twig_Environment
 {
 	/** @var \phpbb\config\config */
 	protected $phpbb_config;
 
+	/** @var \phpbb\filesystem\filesystem */
+	protected $filesystem;
+
 	/** @var \phpbb\path_helper */
 	protected $phpbb_path_helper;
+
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
+	protected $container;
 
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
@@ -33,26 +41,41 @@ class environment extends \Twig_Environment
 	/** @var array **/
 	protected $namespace_look_up_order = array('__main__');
 
+	/** @var assets_bag */
+	protected $assets_bag;
+
 	/**
 	* Constructor
 	*
 	* @param \phpbb\config\config $phpbb_config The phpBB configuration
+	* @param \phpbb\filesystem\filesystem $filesystem
 	* @param \phpbb\path_helper $path_helper phpBB path helper
+	* @param string $cache_path The path to the cache directory
 	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
 	* @param \Twig_LoaderInterface $loader Twig loader interface
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct($phpbb_config, \phpbb\path_helper $path_helper, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
+		$this->filesystem = $filesystem;
 		$this->phpbb_path_helper = $path_helper;
 		$this->extension_manager = $extension_manager;
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 
-		return parent::__construct($loader, $options);
+		$this->assets_bag = new assets_bag();
+
+		$options = array_merge(array(
+			'cache'			=> (defined('IN_INSTALL')) ? false : $cache_path,
+			'debug'			=> false,
+			'auto_reload'	=> (bool) $this->phpbb_config['load_tplcompile'],
+			'autoescape'	=> false,
+		), $options);
+
+		parent::__construct($loader, $options);
 	}
 
 	/**
@@ -78,13 +101,23 @@ class environment extends \Twig_Environment
 	}
 
 	/**
-	* Get the phpBB root path
-	*
-	* @return string
-	*/
+	 * Get the phpBB root path
+	 *
+	 * @return string
+	 */
 	public function get_phpbb_root_path()
 	{
 		return $this->phpbb_root_path;
+	}
+
+	/**
+	* Get the filesystem object
+	*
+	* @return \phpbb\filesystem\filesystem
+	*/
+	public function get_filesystem()
+	{
+		return $this->filesystem;
 	}
 
 	/**
@@ -108,6 +141,16 @@ class environment extends \Twig_Environment
 	}
 
 	/**
+	 * Gets the assets bag
+	 *
+	 * @return assets_bag
+	 */
+	public function get_assets_bag()
+	{
+		return $this->assets_bag;
+	}
+
+	/**
 	* Get the namespace look up order
 	*
 	* @return array
@@ -128,6 +171,55 @@ class environment extends \Twig_Environment
 		$this->namespace_look_up_order = $namespace;
 
 		return $this;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function render($name, array $context = [])
+	{
+		return $this->display_with_assets($name, $context);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function display($name, array $context = [])
+	{
+		echo $this->display_with_assets($name, $context);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	private function display_with_assets($name, array $context = [])
+	{
+		$placeholder_salt = unique_id();
+
+		if (array_key_exists('definition', $context))
+		{
+			$context['definition']->set('SCRIPTS', '__SCRIPTS_' . $placeholder_salt . '__');
+			$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
+		}
+
+		$output = parent::render($name, $context);
+
+		return $this->inject_assets($output, $placeholder_salt);
+	}
+
+	/**
+	 * Injects the assets (from INCLUDECSS/JS) in the output.
+	 *
+	 * @param string $output
+	 *
+	 * @return string
+	 */
+	private function inject_assets($output, $placeholder_salt)
+	{
+		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
+		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
+
+		return $output;
 	}
 
 	/**

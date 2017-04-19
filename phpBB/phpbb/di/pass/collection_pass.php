@@ -34,10 +34,30 @@ class collection_pass implements CompilerPassInterface
 		foreach ($container->findTaggedServiceIds('service_collection') as $id => $data)
 		{
 			$definition = $container->getDefinition($id);
+			$is_ordered_collection = (substr($definition->getClass(), -strlen('ordered_service_collection')) === 'ordered_service_collection');
+			$is_class_name_aware = (isset($data[0]['class_name_aware']) && $data[0]['class_name_aware']);
 
 			foreach ($container->findTaggedServiceIds($data[0]['tag']) as $service_id => $service_data)
 			{
-				$definition->addMethodCall('add', array($service_id));
+				if ($is_ordered_collection)
+				{
+					$arguments = array($service_id, $service_data[0]['order']);
+				}
+				else
+				{
+					$arguments = array($service_id);
+				}
+
+				if ($is_class_name_aware)
+				{
+					$service_definition = $container->getDefinition($service_id);
+					$definition->addMethodCall('add_service_class', array(
+						$service_id,
+						$service_definition->getClass()
+					));
+				}
+
+				$definition->addMethodCall('add', $arguments);
 			}
 		}
 	}

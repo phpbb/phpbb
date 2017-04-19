@@ -1782,7 +1782,7 @@ li.pagination ul {
 
 /* Action Highlighting
 ---------------------------------------- */
-.successbox, .errorbox {
+.successbox, .errorbox, .warningbox {
 	padding: 8px;
 	margin: 10px 0;
 	color: #FFFFFF;
@@ -1804,6 +1804,10 @@ li.pagination ul {
 
 .errorbox {
 	background-color: #BC2A4D;
+}
+
+.warningbox {
+	background-color: #fca600;
 }
 
 .successbox h3, .errorbox h3 {
@@ -1832,8 +1836,31 @@ li.pagination ul {
 	font-weight: bold;
 }
 
+#log-container {
+	display: none;
+	max-height: 300px;
+	padding: 8px;
+	margin: 10px 0;
+	clear: both;
+	overflow-y: auto;
+	background-color: #FFFFFF;
+}
+
+#log-container.show_log_container {
+	display: block;
+	border: 1px solid #DBD7D1;
+}
+
+.log {
+	font-size: 0.8em;
+}
+
 .notice {
 	background-color: #62A5CC;
+}
+
+.download-box {
+	margin: 10px 0 10px 0;
 }
 
 /* Special cases for the error page */
@@ -1864,6 +1891,7 @@ li.pagination ul {
 	color: #000;
 	text-align: center;
 	border: 1px solid #AAA;
+	opacity: .95;
 }
 
 .tooltip span.top {
@@ -2441,6 +2469,39 @@ fieldset.permissions .padding {
 	display: none !important;
 }
 
+.roles-options > .dropdown {
+	left: auto;
+	top: 3.2em;
+	width: 250px;
+}
+
+.roles-options {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	width: 250px;
+}
+
+.roles-options > span {
+	border: 1px solid #DEDEDE;
+	border-radius: 3px;
+	padding: 4px;
+	width: 250px;
+	display: none;
+	background: url('../images/arrow_down.gif') no-repeat 245px .7em;
+}
+
+.roles-options li {
+	list-style: none;
+}
+
+.roles-highlight {
+	background-color: #1e90ff;
+	color: #fff;
+}
+
 
 /* Classes for additional tasks
 ---------------------------------------- */
@@ -2488,4 +2549,145 @@ fieldset.permissions .padding {
 	content: '';
 	clear: both;
 	display: block;
+}
+
+#progress-bar {
+	position: relative;
+	width: 90%;
+	text-align: center;
+	height: 25px;
+	margin: 20px auto;
+	border: 1px solid #cecece;
+}
+
+#progress-bar #progress-bar-text {
+	position: absolute;
+	top: 0;
+	width: 100%;
+	color: #000;
+}
+
+#progress-bar #progress-bar-filler {
+	display: block;
+	position: relative;
+	top: 0;
+	left: 0;
+	background-color: #3c84ad;
+	width: 0;
+	height: 25px;
+	overflow: hidden;
+	color: #fff;
+}
+
+#progress-bar p {
+	line-height: 25px;
+	font-weight: bold;
+}
+
+.send-stats-row {
+	margin: 15px 0;
+}
+
+.send-stats-row:before {
+	display: table;
+	content: " ";
+}
+
+.send-stats-tile {
+	position: relative;
+	padding: 14px;
+	margin-bottom: 20px;
+	background-color: #eff0f2;
+	border-radius: 6px;
+	box-shadow: rgba(0,0,0,0.3) 1px 1px 5px;
+}
+
+.send-stats-tile h2 {
+	margin-top: 0;
+	text-align: center;
+    padding-bottom: 1em;
+}
+
+.send-stats-tile i {
+	padding-right: 0.3em;
+}
+
+.icon {
+	font-family: FontAwesome;
+	font-style: normal;
+}
+
+.send-stats-data-row {
+	background: #f9f9f9;
+	border-radius: 6px;
+	border: #DEDEDE 1px solid;
+	padding: 10px;
+	border-top-width: 0;
+	border-top-right-radius: 0;
+	border-top-left-radius: 0;
+}
+
+.send-stats-data-hidden .configlist {
+	display: none;
+}
+
+.send-stats-data-only-row {
+	border-radius: 6px !important;
+	border-bottom-width: 1px !important;
+}
+
+.send-stats-data-hidden {
+	padding: 0;
+	border: none;
+}
+
+.send-stats-row > .send-stats-data-row:first-child {
+	background-color: #d9edf7;
+	border-bottom-width: 0;
+	border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	border-top-width: 1px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.send-stats-settings dt, .send-stats-settings dd {
+	min-width: 25px;
+}
+
+.send-stats-settings dd {
+	line-height: 1.5em;
+}
+
+.send-stats-settings input {
+	display: none;
+}
+
+.send-stats-settings input[type=checkbox] + label:before {
+	content: "\f096";
+	font-family: FontAwesome;
+	font-size: 1.5em;
+}
+
+.send-stats-settings input[type=checkbox]:checked + label:before {
+	content: "\f14a";
+	color: #3c763d;
+}
+
+.send-stats-data-row a:hover span {
+	text-decoration: underline;
+}
+
+.send-stats-data-row a {
+	text-decoration: none;
+	cursor: default;
+}
+
+.send-stats-data-row i {
+	padding-left: 6px;
+}
+
+.configlist {
+	word-wrap: break-word;
+	word-break: break-all;
 }

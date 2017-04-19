@@ -37,14 +37,14 @@ interface type_interface
 	*
 	* @param array $type_data The type specific data
 	*/
-	public static function get_item_id($type_data);
+	static public function get_item_id($type_data);
 
 	/**
 	* Get the id of the parent
 	*
 	* @param array $type_data The type specific data
 	*/
-	public static function get_item_parent_id($type_data);
+	static public function get_item_parent_id($type_data);
 
 	/**
 	* Is this type available to the current user (defines whether or not it will be shown in the UCP Edit notification options)
@@ -177,14 +177,18 @@ interface type_interface
 
 	/**
 	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
 	*
 	* @param array $type_data The type specific data
 	* @param array $pre_create_data Data from pre_create_insert_array()
+	*/
+	public function create_insert_array($type_data, $pre_create_data);
+
+	/**
+	* Function for getting the data for insertion in an SQL query
 	*
 	* @return array Array of data ready to be inserted into the database
 	*/
-	public function create_insert_array($type_data, $pre_create_data);
+	public function get_insert_array();
 
 	/**
 	* Function for preparing the data for update in an SQL query
@@ -202,7 +206,7 @@ interface type_interface
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
 	* @return string
 	*/
-	public function mark_read($return);
+	public function mark_read($return = false);
 
 	/**
 	* Mark this item unread
@@ -210,5 +214,5 @@ interface type_interface
 	* @param bool $return True to return a string containing the SQL code to update this item, False to execute it (Default: False)
 	* @return string
 	*/
-	public function mark_unread($return);
+	public function mark_unread($return = false);
 }

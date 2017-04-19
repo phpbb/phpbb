@@ -48,14 +48,14 @@ class finder
 	/**
 	* Creates a new finder instance with its dependencies
 	*
-	* @param \phpbb\filesystem $filesystem Filesystem instance
+	* @param \phpbb\filesystem\filesystem_interface $filesystem Filesystem instance
 	* @param string $phpbb_root_path Path to the phpbb root directory
-	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
+	* @param \phpbb\cache\service $cache A cache instance or null
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(\phpbb\filesystem $filesystem, $phpbb_root_path = '', \phpbb\cache\driver\driver_interface $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path = '', \phpbb\cache\service $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;

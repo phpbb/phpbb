@@ -26,27 +26,28 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
-		$filesystem = new \phpbb\filesystem();
-		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
-		$finder = new \phpbb\finder(
-			$filesystem,
-			dirname(__FILE__) . '/',
-			new phpbb_mock_cache()
-		);
-		$finder->set_extensions(array_keys($manager->all_enabled()));
-
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
-		$provider = new \phpbb\controller\provider();
-		$provider->find_routing_files($finder);
-		$provider->find(dirname(__FILE__) . '/');
+
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
+
+
+		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
+			new \phpbb\routing\file_locator($filesystem, dirname(__FILE__) . '/')
+		);
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $manager);
+		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, dirname(__FILE__) . '/', 'php');
 
 		$request = new phpbb_mock_request();
 		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
@@ -57,7 +58,8 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			$request
 		);
 
-		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $provider, $manager, $symfony_request, $request, $filesystem, '', 'php', dirname(__FILE__) . '/');
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $router, $symfony_request, $request, $filesystem, '', 'php');
+		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $symfony_request, $request, $this->routing_helper);
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper, $phpbb_dispatcher);
 	}
 
@@ -215,6 +217,12 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				10,
 				10,
 				0,
+				'PAGE_OF-1-1',
+			),
+			array(
+				'10',
+				'10',
+				'0',
 				'PAGE_OF-1-1',
 			),
 		);

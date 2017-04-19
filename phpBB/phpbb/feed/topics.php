@@ -1,27 +1,30 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* New Topics feed
-*
-* This will give you the last {$this->num_items} created topics
-* including the first post.
-*/
-class topics extends \phpbb\feed\topic_base
+ * New Topics feed
+ *
+ * This will give you the last {$this->num_items} created topics
+ * including the first post.
+ */
+class topics extends topic_base
 {
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		$forum_ids_read = $this->get_readable_forums();
 		if (empty($forum_ids_read))
@@ -55,6 +58,8 @@ class topics extends \phpbb\feed\topic_base
 			return false;
 		}
 
+		parent::fetch_attachments($post_ids);
+
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_views, t.topic_time, t.topic_last_post_time,
@@ -77,7 +82,10 @@ class topics extends \phpbb\feed\topic_base
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		parent::adjust_item($item_row, $row);
 

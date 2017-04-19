@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/common_helper_route.php';
 
 class phpbb_controller_helper_route_adm_subdir_test extends phpbb_controller_common_helper_route

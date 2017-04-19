@@ -12,52 +12,48 @@
 */
 namespace phpbb\console\command\db;
 
+use phpbb\db\output_handler\log_wrapper_migrator_output_handler;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class migrate extends \phpbb\console\command\command
+class migrate extends \phpbb\console\command\db\migration_command
 {
-	/** @var \phpbb\db\migrator */
-	protected $migrator;
-
-	/** @var \phpbb\extension\manager */
-	protected $extension_manager;
-
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/** @var \phpbb\cache\service */
-	protected $cache;
-
 	/** @var \phpbb\log\log */
 	protected $log;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, $phpbb_root_path)
+	/** @var  \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	public function __construct(\phpbb\user $user, \phpbb\language\language $language, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
 	{
-		$this->migrator = $migrator;
-		$this->extension_manager = $extension_manager;
-		$this->config = $config;
-		$this->cache = $cache;
+		$this->language = $language;
 		$this->log = $log;
+		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
-		parent::__construct($user);
-		$this->user->add_lang(array('common', 'install', 'migrator'));
+		parent::__construct($user, $migrator, $extension_manager, $config, $cache);
+		$this->language->add_lang(array('common', 'install', 'migrator'));
 	}
 
 	protected function configure()
 	{
 		$this
 			->setName('db:migrate')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_DB_MIGRATE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_DB_MIGRATE'))
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$this->migrator->set_output_handler(new \phpbb\db\log_wrapper_migrator_output_handler($this->user, new console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log'));
+		$io = new SymfonyStyle($input, $output);
+
+		$this->migrator->set_output_handler(new log_wrapper_migrator_output_handler($this->language, new console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log', $this->filesystem));
 
 		$this->migrator->create_migrations_table();
 
@@ -73,7 +69,7 @@ class migrate extends \phpbb\console\command\command
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				$output->writeln('<error>' . $e->getLocalisedMessage($this->user) . '</error>');
+				$io->error($e->getLocalisedMessage($this->user));
 				$this->finalise_update();
 				return 1;
 			}
@@ -85,23 +81,6 @@ class migrate extends \phpbb\console\command\command
 		}
 
 		$this->finalise_update();
-		$output->writeln($this->user->lang['DATABASE_UPDATE_COMPLETE']);
-	}
-
-	protected function load_migrations()
-	{
-		$migrations = $this->extension_manager
-			->get_finder()
-			->core_path('phpbb/db/migration/data/')
-			->extension_directory('/migrations')
-			->get_classes();
-
-		$this->migrator->set_migrations($migrations);
-	}
-
-	protected function finalise_update()
-	{
-		$this->cache->purge();
-		$this->config->increment('assets_version', 1);
+		$io->success($this->language->lang('INLINE_UPDATE_SUCCESSFUL'));
 	}
 }

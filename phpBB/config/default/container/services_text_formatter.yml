@@ -1,0 +1,73 @@
+parameters:
+    text_formatter.cache.dir: '%core.cache_dir%'
+    text_formatter.cache.parser.key: _text_formatter_parser
+    text_formatter.cache.renderer.key: _text_formatter_renderer
+
+services:
+    text_formatter.cache:
+        alias: text_formatter.s9e.factory
+
+    text_formatter.data_access:
+        class: phpbb\textformatter\data_access
+        arguments:
+            - '@dbal.conn'
+            - '%tables.bbcodes%'
+            - '%tables.smilies%'
+            - '%tables.styles%'
+            - '%tables.words%'
+            - '%core.root_path%styles/'
+
+    text_formatter.parser:
+        alias: text_formatter.s9e.parser
+
+    text_formatter.renderer:
+        alias: text_formatter.s9e.renderer
+
+    text_formatter.utils:
+        alias: text_formatter.s9e.utils
+
+    text_formatter.s9e.factory:
+        class: phpbb\textformatter\s9e\factory
+        arguments:
+            - '@text_formatter.data_access'
+            - '@cache.driver'
+            - '@dispatcher'
+            - '@config'
+            - '@text_formatter.s9e.link_helper'
+            - '%text_formatter.cache.dir%'
+            - '%text_formatter.cache.parser.key%'
+            - '%text_formatter.cache.renderer.key%'
+
+    text_formatter.s9e.link_helper:
+        class: phpbb\textformatter\s9e\link_helper
+
+    text_formatter.s9e.parser:
+        class: phpbb\textformatter\s9e\parser
+        arguments:
+            - '@cache.driver'
+            - '%text_formatter.cache.parser.key%'
+            - '@text_formatter.s9e.factory'
+            - '@dispatcher'
+
+    text_formatter.s9e.quote_helper:
+        class: phpbb\textformatter\s9e\quote_helper
+        arguments:
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    text_formatter.s9e.renderer:
+        class: phpbb\textformatter\s9e\renderer
+        arguments:
+            - '@cache.driver'
+            - '%text_formatter.cache.dir%'
+            - '%text_formatter.cache.renderer.key%'
+            - '@text_formatter.s9e.factory'
+            - '@dispatcher'
+        calls:
+            - [configure_quote_helper, ['@text_formatter.s9e.quote_helper']]
+            - [configure_smilies_path, ['@config', '@path_helper']]
+            - [configure_user, ['@user', '@config', '@auth']]
+
+    text_formatter.s9e.utils:
+        class: phpbb\textformatter\s9e\utils

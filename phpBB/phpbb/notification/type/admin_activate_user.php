@@ -36,10 +36,26 @@ class admin_activate_user extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_ADMIN_ACTIVATE_USER',
 		'group'	=> 'NOTIFICATION_GROUP_ADMINISTRATION',
 	);
+
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
 
 	/**
 	* {@inheritdoc}
@@ -52,7 +68,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_id($user)
+	static public function get_item_id($user)
 	{
 		return (int) $user['user_id'];
 	}
@@ -60,7 +76,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public static function get_item_parent_id($post)
+	static public function get_item_parent_id($post)
 	{
 		return 0;
 	}
@@ -114,7 +130,7 @@ class admin_activate_user extends \phpbb\notification\type\base
 	{
 		$username = $this->user_loader->get_username($this->item_id, 'no_profile');
 
-		return $this->user->lang($this->language_key, $username);
+		return $this->language->lang($this->language_key, $username);
 	}
 
 	/**
@@ -164,6 +180,6 @@ class admin_activate_user extends \phpbb\notification\type\base
 		$this->set_data('user_actkey', $user['user_actkey']);
 		$this->notification_time = $user['user_regdate'];
 
-		return parent::create_insert_array($user, $pre_create_data);
+		parent::create_insert_array($user, $pre_create_data);
 	}
 }

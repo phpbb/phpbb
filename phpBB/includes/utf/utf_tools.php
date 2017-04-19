@@ -22,6 +22,13 @@ if (!defined('IN_PHPBB'))
 setlocale(LC_CTYPE, 'C');
 
 /**
+* Setup the UTF-8 portability layer
+*/
+Patchwork\Utf8\Bootup::initUtf8Encode();
+Patchwork\Utf8\Bootup::initMbstring();
+Patchwork\Utf8\Bootup::initIntl();
+
+/**
 * UTF-8 tools
 *
 * Whenever possible, these functions will try to use PHP's built-in functions or
@@ -29,544 +36,85 @@ setlocale(LC_CTYPE, 'C');
 *
 */
 
-if (!extension_loaded('xml'))
+/**
+* UTF-8 aware alternative to strrpos
+* @ignore
+*/
+function utf8_strrpos($str,	$needle, $offset = null)
 {
-	/**
-	* Implementation of PHP's native utf8_encode for people without XML support
-	* This function exploits some nice things that ISO-8859-1 and UTF-8 have in common
-	*
-	* @param string $str ISO-8859-1 encoded data
-	* @return string UTF-8 encoded data
-	*/
-	function utf8_encode($str)
+	// Emulate behaviour of strrpos rather than raising warning
+	if (empty($str))
 	{
-		$out = '';
-		for ($i = 0, $len = strlen($str); $i < $len; $i++)
-		{
-			$letter = $str[$i];
-			$num = ord($letter);
-			if ($num < 0x80)
-			{
-				$out .= $letter;
-			}
-			else if ($num < 0xC0)
-			{
-				$out .= "\xC2" . $letter;
-			}
-			else
-			{
-				$out .= "\xC3" . chr($num - 64);
-			}
-		}
-		return $out;
+		return false;
 	}
 
-	/**
-	* Implementation of PHP's native utf8_decode for people without XML support
-	*
-	* @param string $str UTF-8 encoded data
-	* @return string ISO-8859-1 encoded data
-	*/
-	function utf8_decode($str)
+	if (is_null($offset))
 	{
-		$pos = 0;
-		$len = strlen($str);
-		$ret = '';
-
-		while ($pos < $len)
-		{
-			$ord = ord($str[$pos]) & 0xF0;
-			if ($ord === 0xC0 || $ord === 0xD0)
-			{
-				$charval = ((ord($str[$pos]) & 0x1F) << 6) | (ord($str[$pos + 1]) & 0x3F);
-				$pos += 2;
-				$ret .= (($charval < 256) ? chr($charval) : '?');
-			}
-			else if ($ord === 0xE0)
-			{
-				$ret .= '?';
-				$pos += 3;
-			}
-			else if ($ord === 0xF0)
-			{
-				$ret .= '?';
-				$pos += 4;
-			}
-			else
-			{
-				$ret .= $str[$pos];
-				++$pos;
-			}
-		}
-		return $ret;
+		return mb_strrpos($str, $needle);
+	}
+	else
+	{
+		return mb_strrpos($str, $needle, $offset);
 	}
 }
 
-// mbstring is old and has it's functions around for older versions of PHP.
-// if mbstring is not loaded, we go into native mode.
-if (extension_loaded('mbstring'))
+/**
+* UTF-8 aware alternative to strpos
+* @ignore
+*/
+function utf8_strpos($str, $needle, $offset = null)
 {
-	mb_internal_encoding('UTF-8');
-
-	/**
-	* UTF-8 aware alternative to strrpos
-	* Find position of last occurrence of a char in a string
-	*/
-	/**
-	* UTF-8 aware alternative to strrpos
-	* @ignore
-	*/
-	function utf8_strrpos($str,	$needle, $offset = null)
+	if (is_null($offset))
 	{
-		// Emulate behaviour of strrpos rather than raising warning
-		if (empty($str))
-		{
-			return false;
-		}
-
-		if (is_null($offset))
-		{
-			return mb_strrpos($str, $needle);
-		}
-		else
-		{
-			return mb_strrpos($str, $needle, $offset);
-		}
+		return mb_strpos($str, $needle);
 	}
-
-	/**
-	* UTF-8 aware alternative to strpos
-	* @ignore
-	*/
-	function utf8_strpos($str, $needle, $offset = null)
+	else
 	{
-		if (is_null($offset))
-		{
-			return mb_strpos($str, $needle);
-		}
-		else
-		{
-			return mb_strpos($str, $needle, $offset);
-		}
-	}
-
-	/**
-	* UTF-8 aware alternative to strtolower
-	* @ignore
-	*/
-	function utf8_strtolower($str)
-	{
-		return mb_strtolower($str);
-	}
-
-	/**
-	* UTF-8 aware alternative to strtoupper
-	* @ignore
-	*/
-	function utf8_strtoupper($str)
-	{
-		return mb_strtoupper($str);
-	}
-
-	/**
-	* UTF-8 aware alternative to substr
-	* @ignore
-	*/
-	function utf8_substr($str, $offset, $length = null)
-	{
-		if (is_null($length))
-		{
-			return mb_substr($str, $offset);
-		}
-		else
-		{
-			return mb_substr($str, $offset, $length);
-		}
-	}
-
-	/**
-	* Return the length (in characters) of a UTF-8 string
-	* @ignore
-	*/
-	function utf8_strlen($text)
-	{
-		return mb_strlen($text, 'utf-8');
+		return mb_strpos($str, $needle, $offset);
 	}
 }
-else
+
+/**
+* UTF-8 aware alternative to strtolower
+* @ignore
+*/
+function utf8_strtolower($str)
 {
-	/**
-	* UTF-8 aware alternative to strrpos
-	* Find position of last occurrence of a char in a string
-	*
-	* @author Harry Fuecks
-	* @param string $str haystack
-	* @param string $needle needle
-	* @param integer $offset (optional) offset (from left)
-	* @return mixed integer position or FALSE on failure
-	*/
-	function utf8_strrpos($str,	$needle, $offset = null)
+	return mb_strtolower($str);
+}
+
+/**
+* UTF-8 aware alternative to strtoupper
+* @ignore
+*/
+function utf8_strtoupper($str)
+{
+	return mb_strtoupper($str);
+}
+
+/**
+* UTF-8 aware alternative to substr
+* @ignore
+*/
+function utf8_substr($str, $offset, $length = null)
+{
+	if (is_null($length))
 	{
-		if (is_null($offset))
-		{
-			$ar	= explode($needle, $str);
-
-			if (sizeof($ar) > 1)
-			{
-				// Pop off the end of the string where the last	match was made
-				array_pop($ar);
-				$str = join($needle, $ar);
-
-				return utf8_strlen($str);
-			}
-			return false;
-		}
-		else
-		{
-			if (!is_int($offset))
-			{
-				trigger_error('utf8_strrpos	expects	parameter 3	to be long', E_USER_ERROR);
-				return false;
-			}
-
-			$str = utf8_substr($str, $offset);
-
-			if (false !== ($pos = utf8_strrpos($str, $needle)))
-			{
-				return $pos	+ $offset;
-			}
-
-			return false;
-		}
+		return mb_substr($str, $offset);
 	}
-
-	/**
-	* UTF-8 aware alternative to strpos
-	* Find position of first occurrence of a string
-	*
-	* @author Harry Fuecks
-	* @param string $str haystack
-	* @param string $needle needle
-	* @param integer $offset offset in characters (from left)
-	* @return mixed integer position or FALSE on failure
-	*/
-	function utf8_strpos($str, $needle, $offset = null)
+	else
 	{
-		if (is_null($offset))
-		{
-			$ar = explode($needle, $str);
-			if (sizeof($ar) > 1)
-			{
-				return utf8_strlen($ar[0]);
-			}
-			return false;
-		}
-		else
-		{
-			if (!is_int($offset))
-			{
-				trigger_error('utf8_strpos:  Offset must  be an integer', E_USER_ERROR);
-				return false;
-			}
-
-			$str = utf8_substr($str, $offset);
-
-			if (false !== ($pos = utf8_strpos($str, $needle)))
-			{
-				return $pos + $offset;
-			}
-
-			return false;
-		}
+		return mb_substr($str, $offset, $length);
 	}
+}
 
-	/**
-	* UTF-8 aware alternative to strtolower
-	* Make a string lowercase
-	* Note: The concept of a characters "case" only exists is some alphabets
-	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
-	* not exist in the Chinese alphabet, for example. See Unicode Standard
-	* Annex #21: Case Mappings
-	*
-	* @param string
-	* @return string string in lowercase
-	*/
-	function utf8_strtolower($string)
-	{
-		static $utf8_upper_to_lower = array(
-			"\xC3\x80" => "\xC3\xA0", "\xC3\x81" => "\xC3\xA1",
-			"\xC3\x82" => "\xC3\xA2", "\xC3\x83" => "\xC3\xA3", "\xC3\x84" => "\xC3\xA4", "\xC3\x85" => "\xC3\xA5",
-			"\xC3\x86" => "\xC3\xA6", "\xC3\x87" => "\xC3\xA7", "\xC3\x88" => "\xC3\xA8", "\xC3\x89" => "\xC3\xA9",
-			"\xC3\x8A" => "\xC3\xAA", "\xC3\x8B" => "\xC3\xAB", "\xC3\x8C" => "\xC3\xAC", "\xC3\x8D" => "\xC3\xAD",
-			"\xC3\x8E" => "\xC3\xAE", "\xC3\x8F" => "\xC3\xAF", "\xC3\x90" => "\xC3\xB0", "\xC3\x91" => "\xC3\xB1",
-			"\xC3\x92" => "\xC3\xB2", "\xC3\x93" => "\xC3\xB3", "\xC3\x94" => "\xC3\xB4", "\xC3\x95" => "\xC3\xB5",
-			"\xC3\x96" => "\xC3\xB6", "\xC3\x98" => "\xC3\xB8", "\xC3\x99" => "\xC3\xB9", "\xC3\x9A" => "\xC3\xBA",
-			"\xC3\x9B" => "\xC3\xBB", "\xC3\x9C" => "\xC3\xBC", "\xC3\x9D" => "\xC3\xBD", "\xC3\x9E" => "\xC3\xBE",
-			"\xC4\x80" => "\xC4\x81", "\xC4\x82" => "\xC4\x83", "\xC4\x84" => "\xC4\x85", "\xC4\x86" => "\xC4\x87",
-			"\xC4\x88" => "\xC4\x89", "\xC4\x8A" => "\xC4\x8B", "\xC4\x8C" => "\xC4\x8D", "\xC4\x8E" => "\xC4\x8F",
-			"\xC4\x90" => "\xC4\x91", "\xC4\x92" => "\xC4\x93", "\xC4\x96" => "\xC4\x97", "\xC4\x98" => "\xC4\x99",
-			"\xC4\x9A" => "\xC4\x9B", "\xC4\x9C" => "\xC4\x9D", "\xC4\x9E" => "\xC4\x9F", "\xC4\xA0" => "\xC4\xA1",
-			"\xC4\xA2" => "\xC4\xA3", "\xC4\xA4" => "\xC4\xA5", "\xC4\xA6" => "\xC4\xA7", "\xC4\xA8" => "\xC4\xA9",
-			"\xC4\xAA" => "\xC4\xAB", "\xC4\xAE" => "\xC4\xAF", "\xC4\xB4" => "\xC4\xB5", "\xC4\xB6" => "\xC4\xB7",
-			"\xC4\xB9" => "\xC4\xBA", "\xC4\xBB" => "\xC4\xBC", "\xC4\xBD" => "\xC4\xBE", "\xC5\x81" => "\xC5\x82",
-			"\xC5\x83" => "\xC5\x84", "\xC5\x85" => "\xC5\x86", "\xC5\x87" => "\xC5\x88", "\xC5\x8A" => "\xC5\x8B",
-			"\xC5\x8C" => "\xC5\x8D", "\xC5\x90" => "\xC5\x91", "\xC5\x94" => "\xC5\x95", "\xC5\x96" => "\xC5\x97",
-			"\xC5\x98" => "\xC5\x99", "\xC5\x9A" => "\xC5\x9B", "\xC5\x9C" => "\xC5\x9D", "\xC5\x9E" => "\xC5\x9F",
-			"\xC5\xA0" => "\xC5\xA1", "\xC5\xA2" => "\xC5\xA3", "\xC5\xA4" => "\xC5\xA5", "\xC5\xA6" => "\xC5\xA7",
-			"\xC5\xA8" => "\xC5\xA9", "\xC5\xAA" => "\xC5\xAB", "\xC5\xAC" => "\xC5\xAD", "\xC5\xAE" => "\xC5\xAF",
-			"\xC5\xB0" => "\xC5\xB1", "\xC5\xB2" => "\xC5\xB3", "\xC5\xB4" => "\xC5\xB5", "\xC5\xB6" => "\xC5\xB7",
-			"\xC5\xB8" => "\xC3\xBF", "\xC5\xB9" => "\xC5\xBA", "\xC5\xBB" => "\xC5\xBC", "\xC5\xBD" => "\xC5\xBE",
-			"\xC6\xA0" => "\xC6\xA1", "\xC6\xAF" => "\xC6\xB0", "\xC8\x98" => "\xC8\x99", "\xC8\x9A" => "\xC8\x9B",
-			"\xCE\x86" => "\xCE\xAC", "\xCE\x88" => "\xCE\xAD", "\xCE\x89" => "\xCE\xAE", "\xCE\x8A" => "\xCE\xAF",
-			"\xCE\x8C" => "\xCF\x8C", "\xCE\x8E" => "\xCF\x8D", "\xCE\x8F" => "\xCF\x8E", "\xCE\x91" => "\xCE\xB1",
-			"\xCE\x92" => "\xCE\xB2", "\xCE\x93" => "\xCE\xB3", "\xCE\x94" => "\xCE\xB4", "\xCE\x95" => "\xCE\xB5",
-			"\xCE\x96" => "\xCE\xB6", "\xCE\x97" => "\xCE\xB7", "\xCE\x98" => "\xCE\xB8", "\xCE\x99" => "\xCE\xB9",
-			"\xCE\x9A" => "\xCE\xBA", "\xCE\x9B" => "\xCE\xBB", "\xCE\x9C" => "\xCE\xBC", "\xCE\x9D" => "\xCE\xBD",
-			"\xCE\x9E" => "\xCE\xBE", "\xCE\x9F" => "\xCE\xBF", "\xCE\xA0" => "\xCF\x80", "\xCE\xA1" => "\xCF\x81",
-			"\xCE\xA3" => "\xCF\x83", "\xCE\xA4" => "\xCF\x84", "\xCE\xA5" => "\xCF\x85", "\xCE\xA6" => "\xCF\x86",
-			"\xCE\xA7" => "\xCF\x87", "\xCE\xA8" => "\xCF\x88", "\xCE\xA9" => "\xCF\x89", "\xCE\xAA" => "\xCF\x8A",
-			"\xCE\xAB" => "\xCF\x8B", "\xD0\x81" => "\xD1\x91", "\xD0\x82" => "\xD1\x92", "\xD0\x83" => "\xD1\x93",
-			"\xD0\x84" => "\xD1\x94", "\xD0\x85" => "\xD1\x95", "\xD0\x86" => "\xD1\x96", "\xD0\x87" => "\xD1\x97",
-			"\xD0\x88" => "\xD1\x98", "\xD0\x89" => "\xD1\x99", "\xD0\x8A" => "\xD1\x9A", "\xD0\x8B" => "\xD1\x9B",
-			"\xD0\x8C" => "\xD1\x9C", "\xD0\x8E" => "\xD1\x9E", "\xD0\x8F" => "\xD1\x9F", "\xD0\x90" => "\xD0\xB0",
-			"\xD0\x91" => "\xD0\xB1", "\xD0\x92" => "\xD0\xB2", "\xD0\x93" => "\xD0\xB3", "\xD0\x94" => "\xD0\xB4",
-			"\xD0\x95" => "\xD0\xB5", "\xD0\x96" => "\xD0\xB6", "\xD0\x97" => "\xD0\xB7", "\xD0\x98" => "\xD0\xB8",
-			"\xD0\x99" => "\xD0\xB9", "\xD0\x9A" => "\xD0\xBA", "\xD0\x9B" => "\xD0\xBB", "\xD0\x9C" => "\xD0\xBC",
-			"\xD0\x9D" => "\xD0\xBD", "\xD0\x9E" => "\xD0\xBE", "\xD0\x9F" => "\xD0\xBF", "\xD0\xA0" => "\xD1\x80",
-			"\xD0\xA1" => "\xD1\x81", "\xD0\xA2" => "\xD1\x82", "\xD0\xA3" => "\xD1\x83", "\xD0\xA4" => "\xD1\x84",
-			"\xD0\xA5" => "\xD1\x85", "\xD0\xA6" => "\xD1\x86", "\xD0\xA7" => "\xD1\x87", "\xD0\xA8" => "\xD1\x88",
-			"\xD0\xA9" => "\xD1\x89", "\xD0\xAA" => "\xD1\x8A", "\xD0\xAB" => "\xD1\x8B", "\xD0\xAC" => "\xD1\x8C",
-			"\xD0\xAD" => "\xD1\x8D", "\xD0\xAE" => "\xD1\x8E", "\xD0\xAF" => "\xD1\x8F", "\xD2\x90" => "\xD2\x91",
-			"\xE1\xB8\x82" => "\xE1\xB8\x83", "\xE1\xB8\x8A" => "\xE1\xB8\x8B", "\xE1\xB8\x9E" => "\xE1\xB8\x9F", "\xE1\xB9\x80" => "\xE1\xB9\x81",
-			"\xE1\xB9\x96" => "\xE1\xB9\x97", "\xE1\xB9\xA0" => "\xE1\xB9\xA1", "\xE1\xB9\xAA" => "\xE1\xB9\xAB", "\xE1\xBA\x80" => "\xE1\xBA\x81",
-			"\xE1\xBA\x82" => "\xE1\xBA\x83", "\xE1\xBA\x84" => "\xE1\xBA\x85", "\xE1\xBB\xB2" => "\xE1\xBB\xB3"
-		);
-
-		return strtr(strtolower($string), $utf8_upper_to_lower);
-	}
-
-	/**
-	* UTF-8 aware alternative to strtoupper
-	* Make a string uppercase
-	* Note: The concept of a characters "case" only exists is some alphabets
-	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
-	* not exist in the Chinese alphabet, for example. See Unicode Standard
-	* Annex #21: Case Mappings
-	*
-	* @param string
-	* @return string string in uppercase
-	*/
-	function utf8_strtoupper($string)
-	{
-		static $utf8_lower_to_upper = array(
-			"\xC3\xA0" => "\xC3\x80", "\xC3\xA1" => "\xC3\x81",
-			"\xC3\xA2" => "\xC3\x82", "\xC3\xA3" => "\xC3\x83", "\xC3\xA4" => "\xC3\x84", "\xC3\xA5" => "\xC3\x85",
-			"\xC3\xA6" => "\xC3\x86", "\xC3\xA7" => "\xC3\x87", "\xC3\xA8" => "\xC3\x88", "\xC3\xA9" => "\xC3\x89",
-			"\xC3\xAA" => "\xC3\x8A", "\xC3\xAB" => "\xC3\x8B", "\xC3\xAC" => "\xC3\x8C", "\xC3\xAD" => "\xC3\x8D",
-			"\xC3\xAE" => "\xC3\x8E", "\xC3\xAF" => "\xC3\x8F", "\xC3\xB0" => "\xC3\x90", "\xC3\xB1" => "\xC3\x91",
-			"\xC3\xB2" => "\xC3\x92", "\xC3\xB3" => "\xC3\x93", "\xC3\xB4" => "\xC3\x94", "\xC3\xB5" => "\xC3\x95",
-			"\xC3\xB6" => "\xC3\x96", "\xC3\xB8" => "\xC3\x98", "\xC3\xB9" => "\xC3\x99", "\xC3\xBA" => "\xC3\x9A",
-			"\xC3\xBB" => "\xC3\x9B", "\xC3\xBC" => "\xC3\x9C", "\xC3\xBD" => "\xC3\x9D", "\xC3\xBE" => "\xC3\x9E",
-			"\xC3\xBF" => "\xC5\xB8", "\xC4\x81" => "\xC4\x80", "\xC4\x83" => "\xC4\x82", "\xC4\x85" => "\xC4\x84",
-			"\xC4\x87" => "\xC4\x86", "\xC4\x89" => "\xC4\x88", "\xC4\x8B" => "\xC4\x8A", "\xC4\x8D" => "\xC4\x8C",
-			"\xC4\x8F" => "\xC4\x8E", "\xC4\x91" => "\xC4\x90", "\xC4\x93" => "\xC4\x92", "\xC4\x97" => "\xC4\x96",
-			"\xC4\x99" => "\xC4\x98", "\xC4\x9B" => "\xC4\x9A", "\xC4\x9D" => "\xC4\x9C", "\xC4\x9F" => "\xC4\x9E",
-			"\xC4\xA1" => "\xC4\xA0", "\xC4\xA3" => "\xC4\xA2", "\xC4\xA5" => "\xC4\xA4", "\xC4\xA7" => "\xC4\xA6",
-			"\xC4\xA9" => "\xC4\xA8", "\xC4\xAB" => "\xC4\xAA", "\xC4\xAF" => "\xC4\xAE", "\xC4\xB5" => "\xC4\xB4",
-			"\xC4\xB7" => "\xC4\xB6", "\xC4\xBA" => "\xC4\xB9", "\xC4\xBC" => "\xC4\xBB", "\xC4\xBE" => "\xC4\xBD",
-			"\xC5\x82" => "\xC5\x81", "\xC5\x84" => "\xC5\x83", "\xC5\x86" => "\xC5\x85", "\xC5\x88" => "\xC5\x87",
-			"\xC5\x8B" => "\xC5\x8A", "\xC5\x8D" => "\xC5\x8C", "\xC5\x91" => "\xC5\x90", "\xC5\x95" => "\xC5\x94",
-			"\xC5\x97" => "\xC5\x96", "\xC5\x99" => "\xC5\x98", "\xC5\x9B" => "\xC5\x9A", "\xC5\x9D" => "\xC5\x9C",
-			"\xC5\x9F" => "\xC5\x9E", "\xC5\xA1" => "\xC5\xA0", "\xC5\xA3" => "\xC5\xA2", "\xC5\xA5" => "\xC5\xA4",
-			"\xC5\xA7" => "\xC5\xA6", "\xC5\xA9" => "\xC5\xA8", "\xC5\xAB" => "\xC5\xAA", "\xC5\xAD" => "\xC5\xAC",
-			"\xC5\xAF" => "\xC5\xAE", "\xC5\xB1" => "\xC5\xB0", "\xC5\xB3" => "\xC5\xB2", "\xC5\xB5" => "\xC5\xB4",
-			"\xC5\xB7" => "\xC5\xB6", "\xC5\xBA" => "\xC5\xB9", "\xC5\xBC" => "\xC5\xBB", "\xC5\xBE" => "\xC5\xBD",
-			"\xC6\xA1" => "\xC6\xA0", "\xC6\xB0" => "\xC6\xAF", "\xC8\x99" => "\xC8\x98", "\xC8\x9B" => "\xC8\x9A",
-			"\xCE\xAC" => "\xCE\x86", "\xCE\xAD" => "\xCE\x88", "\xCE\xAE" => "\xCE\x89", "\xCE\xAF" => "\xCE\x8A",
-			"\xCE\xB1" => "\xCE\x91", "\xCE\xB2" => "\xCE\x92", "\xCE\xB3" => "\xCE\x93", "\xCE\xB4" => "\xCE\x94",
-			"\xCE\xB5" => "\xCE\x95", "\xCE\xB6" => "\xCE\x96", "\xCE\xB7" => "\xCE\x97", "\xCE\xB8" => "\xCE\x98",
-			"\xCE\xB9" => "\xCE\x99", "\xCE\xBA" => "\xCE\x9A", "\xCE\xBB" => "\xCE\x9B", "\xCE\xBC" => "\xCE\x9C",
-			"\xCE\xBD" => "\xCE\x9D", "\xCE\xBE" => "\xCE\x9E", "\xCE\xBF" => "\xCE\x9F", "\xCF\x80" => "\xCE\xA0",
-			"\xCF\x81" => "\xCE\xA1", "\xCF\x83" => "\xCE\xA3", "\xCF\x84" => "\xCE\xA4", "\xCF\x85" => "\xCE\xA5",
-			"\xCF\x86" => "\xCE\xA6", "\xCF\x87" => "\xCE\xA7", "\xCF\x88" => "\xCE\xA8", "\xCF\x89" => "\xCE\xA9",
-			"\xCF\x8A" => "\xCE\xAA", "\xCF\x8B" => "\xCE\xAB", "\xCF\x8C" => "\xCE\x8C", "\xCF\x8D" => "\xCE\x8E",
-			"\xCF\x8E" => "\xCE\x8F", "\xD0\xB0" => "\xD0\x90", "\xD0\xB1" => "\xD0\x91", "\xD0\xB2" => "\xD0\x92",
-			"\xD0\xB3" => "\xD0\x93", "\xD0\xB4" => "\xD0\x94", "\xD0\xB5" => "\xD0\x95", "\xD0\xB6" => "\xD0\x96",
-			"\xD0\xB7" => "\xD0\x97", "\xD0\xB8" => "\xD0\x98", "\xD0\xB9" => "\xD0\x99", "\xD0\xBA" => "\xD0\x9A",
-			"\xD0\xBB" => "\xD0\x9B", "\xD0\xBC" => "\xD0\x9C", "\xD0\xBD" => "\xD0\x9D", "\xD0\xBE" => "\xD0\x9E",
-			"\xD0\xBF" => "\xD0\x9F", "\xD1\x80" => "\xD0\xA0", "\xD1\x81" => "\xD0\xA1", "\xD1\x82" => "\xD0\xA2",
-			"\xD1\x83" => "\xD0\xA3", "\xD1\x84" => "\xD0\xA4", "\xD1\x85" => "\xD0\xA5", "\xD1\x86" => "\xD0\xA6",
-			"\xD1\x87" => "\xD0\xA7", "\xD1\x88" => "\xD0\xA8", "\xD1\x89" => "\xD0\xA9", "\xD1\x8A" => "\xD0\xAA",
-			"\xD1\x8B" => "\xD0\xAB", "\xD1\x8C" => "\xD0\xAC", "\xD1\x8D" => "\xD0\xAD", "\xD1\x8E" => "\xD0\xAE",
-			"\xD1\x8F" => "\xD0\xAF", "\xD1\x91" => "\xD0\x81", "\xD1\x92" => "\xD0\x82", "\xD1\x93" => "\xD0\x83",
-			"\xD1\x94" => "\xD0\x84", "\xD1\x95" => "\xD0\x85", "\xD1\x96" => "\xD0\x86", "\xD1\x97" => "\xD0\x87",
-			"\xD1\x98" => "\xD0\x88", "\xD1\x99" => "\xD0\x89", "\xD1\x9A" => "\xD0\x8A", "\xD1\x9B" => "\xD0\x8B",
-			"\xD1\x9C" => "\xD0\x8C", "\xD1\x9E" => "\xD0\x8E", "\xD1\x9F" => "\xD0\x8F", "\xD2\x91" => "\xD2\x90",
-			"\xE1\xB8\x83" => "\xE1\xB8\x82", "\xE1\xB8\x8B" => "\xE1\xB8\x8A", "\xE1\xB8\x9F" => "\xE1\xB8\x9E", "\xE1\xB9\x81" => "\xE1\xB9\x80",
-			"\xE1\xB9\x97" => "\xE1\xB9\x96", "\xE1\xB9\xA1" => "\xE1\xB9\xA0", "\xE1\xB9\xAB" => "\xE1\xB9\xAA", "\xE1\xBA\x81" => "\xE1\xBA\x80",
-			"\xE1\xBA\x83" => "\xE1\xBA\x82", "\xE1\xBA\x85" => "\xE1\xBA\x84", "\xE1\xBB\xB3" => "\xE1\xBB\xB2"
-		);
-
-		return strtr(strtoupper($string), $utf8_lower_to_upper);
-	}
-
-	/**
-	* UTF-8 aware alternative to substr
-	* Return part of a string given character offset (and optionally length)
-	*
-	* Note arguments: comparied to substr - if offset or length are
-	* not integers, this version will not complain but rather massages them
-	* into an integer.
-	*
-	* Note on returned values: substr documentation states false can be
-	* returned in some cases (e.g. offset > string length)
-	* mb_substr never returns false, it will return an empty string instead.
-	* This adopts the mb_substr approach
-	*
-	* Note on implementation: PCRE only supports repetitions of less than
-	* 65536, in order to accept up to MAXINT values for offset and length,
-	* we'll repeat a group of 65535 characters when needed.
-	*
-	* Note on implementation: calculating the number of characters in the
-	* string is a relatively expensive operation, so we only carry it out when
-	* necessary. It isn't necessary for +ve offsets and no specified length
-	*
-	* @author Chris Smith<chris@jalakai.co.uk>
-	* @param string $str
-	* @param integer $offset number of UTF-8 characters offset (from left)
-	* @param integer $length (optional) length in UTF-8 characters from offset
-	* @return mixed string or FALSE if failure
-	*/
-	function utf8_substr($str, $offset, $length = NULL)
-	{
-		// generates E_NOTICE
-		// for PHP4 objects, but not PHP5 objects
-		$str = (string) $str;
-		$offset = (int) $offset;
-		if (!is_null($length))
-		{
-			$length = (int) $length;
-		}
-
-		// handle trivial cases
-		if ($length === 0 || ($offset < 0 && $length < 0 && $length < $offset))
-		{
-			return '';
-		}
-
-		// normalise negative offsets (we could use a tail
-		// anchored pattern, but they are horribly slow!)
-		if ($offset < 0)
-		{
-			// see notes
-			$strlen = utf8_strlen($str);
-			$offset = $strlen + $offset;
-			if ($offset < 0)
-			{
-				$offset = 0;
-			}
-		}
-
-		$op = '';
-		$lp = '';
-
-		// establish a pattern for offset, a
-		// non-captured group equal in length to offset
-		if ($offset > 0)
-		{
-			$ox = (int) ($offset / 65535);
-			$oy = $offset % 65535;
-
-			if ($ox)
-			{
-				$op = '(?:.{65535}){' . $ox . '}';
-			}
-
-			$op = '^(?:' . $op . '.{' . $oy . '})';
-		}
-		else
-		{
-			// offset == 0; just anchor the pattern
-			$op = '^';
-		}
-
-		// establish a pattern for length
-		if (is_null($length))
-		{
-			// the rest of the string
-			$lp = '(.*)$';
-		}
-		else
-		{
-			if (!isset($strlen))
-			{
-				// see notes
-				$strlen = utf8_strlen($str);
-			}
-
-			// another trivial case
-			if ($offset > $strlen)
-			{
-				return '';
-			}
-
-			if ($length > 0)
-			{
-				// reduce any length that would
-				// go passed the end of the string
-				$length = min($strlen - $offset, $length);
-
-				$lx = (int) ($length / 65535);
-				$ly = $length % 65535;
-
-				// negative length requires a captured group
-				// of length characters
-				if ($lx)
-				{
-					$lp = '(?:.{65535}){' . $lx . '}';
-				}
-				$lp = '(' . $lp . '.{'. $ly . '})';
-			}
-			else if ($length < 0)
-			{
-				if ($length < ($offset - $strlen))
-				{
-					return '';
-				}
-
-				$lx = (int) ((-$length) / 65535);
-				$ly = (-$length) % 65535;
-
-				// negative length requires ... capture everything
-				// except a group of  -length characters
-				// anchored at the tail-end of the string
-				if ($lx)
-				{
-					$lp = '(?:.{65535}){' . $lx . '}';
-				}
-				$lp = '(.*)(?:' . $lp . '.{' . $ly . '})$';
-			}
-		}
-
-		if (!preg_match('#' . $op . $lp . '#us', $str, $match))
-		{
-			return '';
-		}
-
-		return $match[1];
-	}
-
-	/**
-	* Return the length (in characters) of a UTF-8 string
-	*
-	* @param	string	$text		UTF-8 string
-	* @return	integer				Length (in chars) of given string
-	*/
-	function utf8_strlen($text)
-	{
-		// Since utf8_decode is replacing multibyte characters to ? strlen works fine
-		return strlen(utf8_decode($text));
-	}
+/**
+* Return the length (in characters) of a UTF-8 string
+* @ignore
+*/
+function utf8_strlen($text)
+{
+	return mb_strlen($text, 'utf-8');
 }
 
 /**
@@ -867,7 +415,6 @@ function utf8_recode($string, $encoding)
 
 	// Trigger an error?! Fow now just give bad data :-(
 	trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
-	//return $string; // use utf_normalizer::cleanup() ?
 }
 
 /**
@@ -1606,19 +1153,12 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 		"\xF0\x9D\x9E\xBB"	=> "\xCF\x83",
 		"\xF0\x9D\x9F\x8A"	=> "\xCF\x9D",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// do the case fold
 	$text = utf8_case_fold($text, $option);
 
-	if (!class_exists('utf_normalizer'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-	}
-
 	// convert to NFKC
-	utf_normalizer::nfkc($text);
+	Normalizer::normalize($text, Normalizer::NFKC);
 
 	// FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
 	$text = strtr($text, $fc_nfkc_closure);
@@ -1703,7 +1243,6 @@ function utf8_case_fold_nfc($text, $option = 'full')
 		"\xE1\xBF\xB7"	=> "\xE1\xBF\xB6\xCD\x85",
 		"\xE1\xBF\xBC"	=> "\xCE\xA9\xCD\x85",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// perform a small trick, avoid further normalization on composed points that contain U+0345 in their decomposition
 	$text = strtr($text, $ypogegrammeni);
@@ -1714,106 +1253,56 @@ function utf8_case_fold_nfc($text, $option = 'full')
 	return $text;
 }
 
-if (extension_loaded('intl'))
+/**
+* wrapper around PHP's native normalizer from intl
+* previously a PECL extension, included in the core since PHP 5.3.0
+* http://php.net/manual/en/normalizer.normalize.php
+*
+* @param	mixed	$strings	a string or an array of strings to normalize
+* @return	mixed				the normalized content, preserving array keys if array given.
+*/
+function utf8_normalize_nfc($strings)
 {
-	/**
-	* wrapper around PHP's native normalizer from intl
-	* previously a PECL extension, included in the core since PHP 5.3.0
-	* http://php.net/manual/en/normalizer.normalize.php
-	*
-	* @param	mixed	$strings	a string or an array of strings to normalize
-	* @return	mixed				the normalized content, preserving array keys if array given.
-	*/
-	function utf8_normalize_nfc($strings)
+	if (empty($strings))
 	{
-		if (empty($strings))
+		return $strings;
+	}
+
+	if (!is_array($strings))
+	{
+		if (Normalizer::isNormalized($strings))
 		{
 			return $strings;
 		}
-
-		if (!is_array($strings))
+		return (string) Normalizer::normalize($strings);
+	}
+	else
+	{
+		foreach ($strings as $key => $string)
 		{
-			if (Normalizer::isNormalized($strings))
+			if (is_array($string))
 			{
-				return $strings;
-			}
-			return (string) Normalizer::normalize($strings);
-		}
-		else
-		{
-			foreach ($strings as $key => $string)
-			{
-				if (is_array($string))
+				foreach ($string as $_key => $_string)
 				{
-					foreach ($string as $_key => $_string)
-					{
-						if (Normalizer::isNormalized($strings[$key][$_key]))
-						{
-							continue;
-						}
-						$strings[$key][$_key] = (string) Normalizer::normalize($strings[$key][$_key]);
-					}
-				}
-				else
-				{
-					if (Normalizer::isNormalized($strings[$key]))
+					if (Normalizer::isNormalized($strings[$key][$_key]))
 					{
 						continue;
 					}
-					$strings[$key] = (string) Normalizer::normalize($strings[$key]);
+					$strings[$key][$_key] = (string) Normalizer::normalize($strings[$key][$_key]);
 				}
 			}
-		}
-
-		return $strings;
-	}
-}
-else
-{
-	/**
-	* A wrapper function for the normalizer which takes care of including the class if
-	* required and modifies the passed strings to be in NFC (Normalization Form Composition).
-	*
-	* @param	mixed	$strings	a string or an array of strings to normalize
-	* @return	mixed				the normalized content, preserving array keys if array given.
-	*/
-	function utf8_normalize_nfc($strings)
-	{
-		if (empty($strings))
-		{
-			return $strings;
-		}
-
-		if (!class_exists('utf_normalizer'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-		}
-
-		if (!is_array($strings))
-		{
-			utf_normalizer::nfc($strings);
-		}
-		else if (is_array($strings))
-		{
-			foreach ($strings as $key => $string)
+			else
 			{
-				if (is_array($string))
+				if (Normalizer::isNormalized($strings[$key]))
 				{
-					foreach ($string as $_key => $_string)
-					{
-						utf_normalizer::nfc($strings[$key][$_key]);
-					}
+					continue;
 				}
-				else
-				{
-					utf_normalizer::nfc($strings[$key]);
-				}
+				$strings[$key] = (string) Normalizer::normalize($strings[$key]);
 			}
 		}
-
-		return $strings;
 	}
+
+	return $strings;
 }
 
 /**
@@ -1958,51 +1447,4 @@ function utf8_basename($filename)
 	}
 
 	return $filename;
-}
-
-/**
-* UTF8-safe str_replace() function
-*
-* @param string $search The value to search for
-* @param string $replace The replacement string
-* @param string $subject The target string
-* @return string The resultant string
-*/
-function utf8_str_replace($search, $replace, $subject)
-{
-	if (!is_array($search))
-	{
-		$search = array($search);
-		if (is_array($replace))
-		{
-			$replace = (string) $replace;
-			trigger_error('Array to string conversion', E_USER_NOTICE);
-		}
-	}
-
-	$length = sizeof($search);
-
-	if (!is_array($replace))
-	{
-		$replace = array_fill(0, $length, $replace);
-	}
-	else
-	{
-		$replace = array_pad($replace, $length, '');
-	}
-
-	for ($i = 0; $i < $length; $i++)
-	{
-		$search_length = utf8_strlen($search[$i]);
-		$replace_length = utf8_strlen($replace[$i]);
-
-		$offset = 0;
-		while (($start = utf8_strpos($subject, $search[$i], $offset)) !== false)
-		{
-			$subject = utf8_substr($subject, 0, $start) . $replace[$i] . utf8_substr($subject, $start + $search_length);
-			$offset = $start + $replace_length;
-		}
-	}
-
-	return $subject;
 }

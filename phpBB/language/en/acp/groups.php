@@ -83,7 +83,7 @@ $lang = array_merge($lang, array(
 	'GROUP_MEMBERS'					=> 'Group members',
 	'GROUP_MEMBERS_EXPLAIN'			=> 'This is a complete listing of all the members of this usergroup. It includes separate sections for leaders, pending and existing members. From here you can manage all aspects of who has membership of this group and what their role is. To remove a leader but keep them in the group use Demote rather than delete. Similarly use Promote to make an existing member a leader.',
 	'GROUP_MESSAGE_LIMIT'			=> 'Group private message limit per folder',
-	'GROUP_MESSAGE_LIMIT_EXPLAIN'	=> 'This setting overrides the per-user folder message limit. A value of 0 means the user default limit will be used.',
+	'GROUP_MESSAGE_LIMIT_EXPLAIN'	=> 'This setting overrides the per-user folder message limit. The maximum for all groups of the user is used to determine the actual value.<br />Set this value to 0 to overwrite the setting for all users of this group with the board-wide setting.',
 	'GROUP_MODS_ADDED'				=> 'New group leaders added successfully.',
 	'GROUP_MODS_DEMOTED'			=> 'Group leaders demoted successfully.',
 	'GROUP_MODS_PROMOTED'			=> 'Group members promoted successfully.',
@@ -92,7 +92,7 @@ $lang = array_merge($lang, array(
 	'GROUP_OPEN'					=> 'Open',
 	'GROUP_PENDING'					=> 'Pending members',
 	'GROUP_MAX_RECIPIENTS'			=> 'Maximum number of allowed recipients per private message',
-	'GROUP_MAX_RECIPIENTS_EXPLAIN'	=> 'The maximum number of allowed recipients in a private message. If 0 is entered, the board-wide setting is used.',
+	'GROUP_MAX_RECIPIENTS_EXPLAIN'	=> 'The maximum number of allowed recipients in a private message.  The maximum for all groups of the user is used to determine the actual value.<br />Set this value to 0 to overwrite the setting for all users of this group with the board-wide setting.',
 	'GROUP_OPTIONS_SAVE'			=> 'Group wide options',
 	'GROUP_PROMOTE'					=> 'Promote to group leader',
 	'GROUP_RANK'					=> 'Group rank',
@@ -129,6 +129,8 @@ $lang = array_merge($lang, array(
 	'NO_USERS'					=> 'You haven’t entered any users.',
 	'NO_USERS_ADDED'			=> 'No users were added to the group.',
 	'NO_VALID_USERS'			=> 'You haven’t entered any users eligible for that action.',
+
+	'PENDING_MEMBERS'			=> 'Pending',
 
 	'SELECT_GROUP'				=> 'Select a group',
 	'SPECIAL_GROUPS'			=> 'Pre-defined groups',

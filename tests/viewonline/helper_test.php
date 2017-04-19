@@ -17,7 +17,7 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->viewonline_helper = new \phpbb\viewonline_helper(new \phpbb\filesystem());
+		$this->viewonline_helper = new \phpbb\viewonline_helper(new \phpbb\filesystem\filesystem());
 	}
 
 	public function session_pages_data()

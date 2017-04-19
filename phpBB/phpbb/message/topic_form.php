@@ -71,6 +71,14 @@ class topic_form extends form
 
 		if (!$this->auth->acl_get('f_read', $this->topic_row['forum_id']))
 		{
+			if ($this->user->data['user_id'] != ANONYMOUS)
+			{
+				send_status_line(403, 'Forbidden');
+			}
+			else
+			{
+				send_status_line(401, 'Unauthorized');
+			}
 			return 'SORRY_AUTH_READ';
 		}
 

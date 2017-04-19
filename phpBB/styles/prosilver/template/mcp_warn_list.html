@@ -10,12 +10,12 @@
 	<p>{L_WARNED_USERS_EXPLAIN}</p>
 
 	<!-- IF .user -->
-		<div class="action-bar top">
+		<div class="action-bar bar-top">
 			<div class="pagination">
 				{TOTAL_USERS}
-				<!-- IF .pagination --> 
+				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
-				<!-- ELSE --> 
+				<!-- ELSE -->
 					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
 			</div>
@@ -43,20 +43,14 @@
 		</tbody>
 		</table>
 
-		<fieldset class="display-options">
-			<label>{L_DISPLAY_POSTS}{L_COLON} {S_SELECT_SORT_DAYS}</label>
-			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
-			<input type="submit" name="sort" value="{L_GO}" class="button2" />
-		</fieldset>
-
-		<hr />
-
 		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
+
 			<div class="pagination">
 				{TOTAL_USERS}
-				<!-- IF .pagination --> 
+				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
-				<!-- ELSE --> 
+				<!-- ELSE -->
 					 &bull; {PAGE_NUMBER}
 				<!-- ENDIF -->
 			</div>

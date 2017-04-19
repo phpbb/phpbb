@@ -34,7 +34,7 @@ class release_3_0_9_rc1 extends \phpbb\db\migration\migration
 						// this column was removed from the database updater
 						// after 3.0.9-RC3 was released. It might still exist
 						// in 3.0.9-RCX installations and has to be dropped as
-						// soon as the db_tools class is capable of properly
+						// soon as the \phpbb\db\tools\tools class is capable of properly
 						// removing a primary key.
 						// 'attempt_id'			=> array('UINT', NULL, 'auto_increment'),
 						'attempt_ip'			=> array('VCHAR:40', ''),

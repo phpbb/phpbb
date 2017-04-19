@@ -62,7 +62,7 @@ class ucp_pm
 		$template->assign_var('S_PRIVMSGS', true);
 
 		// Folder directly specified?
-		$folder_specified = request_var('folder', '');
+		$folder_specified = $request->variable('folder', '');
 
 		if (!in_array($folder_specified, array('inbox', 'outbox', 'sentbox')))
 		{
@@ -75,7 +75,7 @@ class ucp_pm
 
 		if (!$folder_specified)
 		{
-			$mode = (!$mode) ? request_var('mode', 'view') : $mode;
+			$mode = (!$mode) ? $request->variable('mode', 'view') : $mode;
 		}
 		else
 		{
@@ -88,7 +88,7 @@ class ucp_pm
 		{
 			// Compose message
 			case 'compose':
-				$action = request_var('action', 'post');
+				$action = $request->variable('action', 'post');
 
 				$user_folders = get_folder($user->data['user_id']);
 
@@ -151,12 +151,12 @@ class ucp_pm
 				}
 				else
 				{
-					$folder_id = request_var('f', PRIVMSGS_NO_BOX);
-					$action = request_var('action', 'view_folder');
+					$folder_id = $request->variable('f', PRIVMSGS_NO_BOX);
+					$action = $request->variable('action', 'view_folder');
 				}
 
-				$msg_id = request_var('p', 0);
-				$view	= request_var('view', '');
+				$msg_id = $request->variable('p', 0);
+				$view	= $request->variable('view', '');
 
 				// View message if specified
 				if ($msg_id)
@@ -166,6 +166,7 @@ class ucp_pm
 
 				if (!$auth->acl_get('u_readpm'))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NO_AUTH_READ_MESSAGE');
 				}
 
@@ -178,8 +179,8 @@ class ucp_pm
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
 				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
-				$mark_option	= request_var('mark_option', '');
-				$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
+				$mark_option	= $request->variable('mark_option', '');
+				$dest_folder	= $request->variable('dest_folder', PRIVMSGS_NO_BOX);
 
 				// Is moving PM triggered through mark options?
 				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
@@ -192,8 +193,8 @@ class ucp_pm
 				// Move PM
 				if ($move_pm)
 				{
-					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? request_var('marked_msg_id', array(0)) : array();
-					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
+					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? $request->variable('marked_msg_id', array(0)) : array();
+					$cur_folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
 					{
@@ -201,7 +202,7 @@ class ucp_pm
 						if ($action == 'view_message')
 						{
 							$msg_id		= 0;
-							$folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
+							$folder_id	= $request->variable('cur_folder_id', PRIVMSGS_NO_BOX);
 							$action		= 'view_folder';
 						}
 					}
@@ -215,7 +216,7 @@ class ucp_pm
 
 				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
-				$release = request_var('release', 0);
+				$release = $request->variable('release', 0);
 
 				if ($user->data['user_new_privmsg'] && ($action == 'view_folder' || $action == 'view_message'))
 				{

@@ -2,125 +2,71 @@
 ---------------------------------------- */
 
 .button {
-	cursor: pointer;
 	display: inline-block;
-	height: 18px;
-	font-size: 1.2em;
+	padding: 2px 8px;
+	font-size: 13px;
+	font-weight: normal;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	line-height: 1.4;
+	text-align: center;
 	white-space: nowrap;
+	vertical-align: middle;
+	-ms-touch-action: manipulation;
+	    touch-action: manipulation;
+	cursor: pointer;
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	    -ms-user-select: none;
+	        user-select: none;
 	border: 1px solid transparent;
 	border-radius: 4px;
-	background: transparent none 0 0 repeat-x;
-	padding: 2px 8px;
-	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	position: relative;
-	text-decoration: none !important;
-	outline-style: none !important;
-	vertical-align: bottom;
 }
 
-.dropdown-select {
-	padding-right: 24px;
+.button:focus,
+.button:hover {
+ 	text-decoration: none;
+ 	outline: none;
 }
 
-.icon-button:before {
-	background: transparent 0 0 no-repeat;
-	content: '';
-	display: inline-block;
-	float: right;
-	height: 12px;
-	margin: 3px 0 0 2px;
-	width: 12px;
-}
-
-.dropdown-select.icon-button:before {
-	margin-right: 4px;
-}
-
-.dropdown-select:after {
-	background-position: -103px 10px;
+.caret {
 	border-left: 1px solid;
-	content: '';
-	position: absolute;
-	top: 0;
-	right: 0;
-	height: 22px;
-	width: 16px;
+	position: relative;
+	right: -6px;
 }
 
-.dropdown-visible .dropdown-select:after, .nojs .dropdown-container:hover .dropdown-select:after {
-	background-position: -103px -10px;
+.caret i {
+	vertical-align: top;
 }
 
-.buttons, .buttons .button {
+/* Posting page styles
+----------------------------------------*/
+.button-search,
+.button-search-end  {
 	float: left;
-}
-
-.buttons .button, .dropdown-select {
-	margin-right: 5px;
-}
-
-#jumpbox .dropdown-select {
+	border-radius: 0;
 	margin: 0;
+	padding: 2px 5px;
 }
 
-/* Big button images */
-.reply-icon:before, .pmreply-icon:before					{ background-position: -20px 0; }
-.reply-icon:hover:before, .pmreply-icon:hover:before		{ background-position: -20px -20px; }
-
-.post-icon:before, .newpm-icon:before, .reply-all:before	{ background-position: 0 0; }
-.post-icon:hover:before,
-.newpm-icon:hover:before,
-.reply-all:hover:before										{ background-position: 0 -20px; }
-
-.locked-icon:before											{ background-position: -60px 0; }
-.locked-icon:hover:before									{ background-position: -60px -20px; }
-
-.forwardpm-icon:before										{ background-position: -40px 0; }
-.forwardpm-icon:hover:before								{ background-position: -40px -20px; }
-
-.modtools-icon {
-	font-size: 0;
+.button-search-end {
+	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
 }
 
-.tools-icon:before, .modtools-icon:before, .search-icon:before, .search-adv-icon:before {
-	background-position: -80px 0;
-	height: 16px;
-	margin-top: 2px;
-	width: 16px;
+.search-header .button-search,
+.search-header .button-search-end {
+	border-top-width: 0;
+	border-bottom-width: 0;
+	padding: 3px 5px;
 }
 
-.dropdown-visible .tools-icon:before,
-.nojs .dropdown-container:hover .tools-icon:before			{ background-position: -80px -20px; }
-
-.search-icon:before											{ background-position: -245px 0; }
-.search-icon:hover:before									{ background-position: -245px -20px; }
-
-.search-adv-icon:before										{ background-position: -265px 0; }
-.search-adv-icon:hover:before								{ background-position: -265px -20px; }
-
-.modtools-icon:before										{ background-position: -225px 0; }
-.dropdown-visible .modtools-icon:before,
-.nojs .dropdown-container:hover .modtools-icon:before		{ background-position: -225px -20px; }
-
-/* Icon images
----------------------------------------- */
-.small-icon {
-	background-position: 0 50%;
-	background-repeat: no-repeat;
-	background-image: none;
+.search-header .button-search-end {
+	border-right-width: 0;
 }
 
-.small-icon > a {
-	display: inline-block;
-	padding: 0 0 0 18px;
-}
-
-ul.linklist.bulletin > li.small-icon:before {
-	display: none;
-}
-
-.dropdown .small-icon > a {
-	display: block;
+.button-icon-only {
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
 /* Poster contact icons
@@ -157,21 +103,6 @@ ul.linklist.bulletin > li.small-icon:before {
 	clear: left;
 }
 
-/* Profile icons */
-.pm-icon		{ background-position: 0 0; }
-.email-icon		{ background-position: -21px 0; }
-.jabber-icon	{ background-position: -80px 0; }
-.phpbb_icq-icon	{ background-position: -61px 0 ; }
-.phpbb_wlm-icon	{ background-position: -182px 0; }
-.phpbb_aol-icon	{ background-position: -244px 0; }
-.phpbb_website-icon		{ background-position: -40px 0; }
-.phpbb_youtube-icon		{ background-position: -98px 0; }
-.phpbb_facebook-icon	{ background-position: -119px 0; }
-.phpbb_googleplus-icon	{ background-position: -140px 0; }
-.phpbb_skype-icon		{ background-position: -161px 0; }
-.phpbb_twitter-icon		{ background-position: -203px 0; }
-.phpbb_yahoo-icon		{ background-position: -224px 0; }
-
 /* Post control buttons
 --------------------------------------------- */
 .post-buttons {
@@ -193,40 +124,18 @@ ul.linklist.bulletin > li.small-icon:before {
 	margin-right: 3px;
 }
 
-.post-buttons .icon-button {
-	padding: 0 5px;
+.post-buttons .button, .format-buttons .button {
+	padding-left: 3px;
+	padding-right: 3px;
 }
 
-.hastouch .post-buttons .icon-button {
-	padding: 2px 8px;
+.hastouch .post-buttons {
+	margin-right: 10px;
 }
 
-.post-buttons .icon-button span {
-	display: block;
-	height: 0;
-	overflow: hidden;
-	position: absolute;
-	width: 1px;
+.post-buttons .button span {
+	font-size: 0;
 }
-
-.post-buttons .icon-button:before {
-	margin-left: 0;
-}
-
-.quote-icon:before							{ background-position: -122px 0; }
-.quote-icon:hover:before					{ background-position: -122px -21px; }
-.edit-icon:before							{ background-position: -137px 0; }
-.edit-icon:hover:before						{ background-position: -137px -21px; }
-.warn-icon:before							{ background-position: -208px 0; }
-.warn-icon:hover:before						{ background-position: -208px -21px; }
-.delete-icon:before							{ background-position: -152px 0; }
-.delete-icon:hover:before					{ background-position: -152px -21px; }
-.report-icon:before							{ background-position: -165px 0; }
-.report-icon:hover:before					{ background-position: -165px -21px; }
-.info-icon:before							{ background-position: -175px 0; }
-.info-icon:hover:before						{ background-position: -175px -21px; }
-.button.responsive-menu-link:before			{ background-position: -191px 0; }
-.button.responsive-menu-link:hover:before	{ background-position: -191px -21px; }
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {
@@ -247,4 +156,38 @@ ul.linklist.bulletin > li.small-icon:before {
 button::-moz-focus-inner {
 	padding: 0;
 	border: 0
+}
+
+/* Deprecated as of version 3.2
+-------------------------------------------------*/
+.small-icon {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: none;
+}
+
+.dropdown .small-icon {
+	background-position: 5px 50%;
+	padding: 5px;
+}
+
+.small-icon > a {
+	padding: 0 0 0 18px;
+}
+
+ul.linklist.bulletin > li.small-icon:before {
+	display: none;
+}
+
+.dropdown .small-icon > a {
+	display: block;
+}
+
+.rtl .small-icon {
+	background-position: 100% 50%;
+}
+
+.rtl .small-icon > a {
+	padding-left: 0;
+	padding-right: 19px;
 }

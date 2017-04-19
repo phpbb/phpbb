@@ -18,13 +18,13 @@ namespace phpbb;
 */
 class viewonline_helper
 {
-	/** @var \phpbb\filesystem */
+	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
 	/**
-	* @param \phpbb\filesystem $filesystem
+	* @param \phpbb\filesystem\filesystem_interface $filesystem	phpBB's filesystem service
 	*/
-	public function __construct(\phpbb\filesystem $filesystem)
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem)
 	{
 		$this->filesystem = $filesystem;
 	}

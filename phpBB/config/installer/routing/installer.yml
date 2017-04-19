@@ -1,0 +1,67 @@
+phpbb_installer_index:
+    path: /
+    defaults:
+        _controller: phpbb.installer.controller.welcome:handle
+        mode: 'intro'
+
+phpbb_installer_license:
+    path: /license
+    defaults:
+        _controller: phpbb.installer.controller.welcome:handle
+        mode: 'license'
+
+phpbb_installer_support:
+    path: /support
+    defaults:
+        _controller: phpbb.installer.controller.welcome:handle
+        mode: 'support'
+
+phpbb_installer_install:
+    path: /install
+    defaults:
+        _controller: phpbb.installer.controller.install:handle
+
+phpbb_installer_update:
+    path: /update
+    defaults:
+        _controller: phpbb.installer.controller.update:handle
+
+phpbb_installer_update_file_download:
+    path: /download/updated
+    defaults:
+        _controller: phpbb.installer.controller.file_downloader:update_archive
+
+phpbb_installer_update_conflict_download:
+    path: /download/conflict
+    defaults:
+        _controller: phpbb.installer.controller.file_downloader:conflict_archive
+
+phpbb_convert_intro:
+    path: /convert/{start_new}
+    defaults:
+        _controller: phpbb.installer.controller.convert:intro
+        start_new: 0
+
+phpbb_convert_settings:
+    path: /convert/settings/{converter}
+    defaults:
+        _controller: phpbb.installer.controller.convert:settings
+    requirements:
+        converter: "[a-zA-Z0-9_]+"
+
+phpbb_convert_convert:
+    path: /convert/in_progress/{converter}
+    defaults:
+        _controller: phpbb.installer.controller.convert:convert
+    requirements:
+        converter: "[a-zA-Z0-9_]+"
+
+phpbb_convert_finish:
+    path: /convert/finished
+    defaults:
+        _controller: phpbb.installer.controller.convert:finish
+
+phpbb_installer_status:
+    path: /installer/status
+    defaults:
+        _controller: phpbb.installer.controller.status:status

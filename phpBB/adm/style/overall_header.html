@@ -7,6 +7,7 @@
 <!-- IF META -->{META}<!-- ENDIF -->
 <title>{PAGE_TITLE}</title>
 
+<link href="{T_FONT_AWESOME_LINK}" rel="stylesheet">
 <link href="style/admin.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
@@ -50,10 +51,10 @@ function marklist(id, name, state)
 	}
 
 	var rb = parent.getElementsByTagName('input');
-	
+
 	for (var r = 0; r < rb.length; r++)
 	{
-		if (rb[r].name.substr(0, name.length) == name)
+		if (rb[r].name.substr(0, name.length) == name && rb[r].disabled !== true)
 		{
 			rb[r].checked = state;
 		}
@@ -104,7 +105,7 @@ function popup(url, width, height, name)
 		<p><a href="{U_ADM_INDEX}">{L_ADMIN_INDEX}</a> &bull; <a href="{U_INDEX}">{L_FORUM_INDEX}</a></p>
 		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
 	</div>
-	
+
 	<div id="page-body">
 		<div id="tabs">
 			<ul>
@@ -121,7 +122,7 @@ function popup(url, width, height, name)
 						<!-- DEFINE $LI_USED = 0 -->
 						<!-- BEGIN l_block1 -->
 							<!-- IF l_block1.S_SELECTED -->
-	
+
 						<!-- BEGIN l_block2 -->
 							<!-- IF .l_block1.l_block2.l_block3 -->
 							<!-- IF $LI_USED --></ul></div><!-- ENDIF -->
@@ -130,13 +131,13 @@ function popup(url, width, height, name)
 								<ul>
 							<!-- DEFINE $LI_USED = 1 -->
 							<!-- ENDIF -->
-	
+
 							<!-- BEGIN l_block3 -->
 								<li<!-- IF l_block1.l_block2.l_block3.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.l_block2.l_block3.U_TITLE}"><span>{l_block1.l_block2.l_block3.L_TITLE}</span></a></li>
 								<!-- DEFINE $LI_USED = 1 -->
 							<!-- END l_block3 -->
 						<!-- END l_block2 -->
-						
+
 							<!-- ENDIF -->
 						<!-- END l_block1 -->
 						<!-- IF $LI_USED -->
@@ -144,6 +145,13 @@ function popup(url, width, height, name)
 							</div>
 						<!-- ENDIF -->
 					</div>
-	
+
 					<div id="main">
 						<div class="main">
+							{% if CONTAINER_EXCEPTION !== false %}
+							<div class="errorbox">
+								<p>{{ lang('CONTAINER_EXCEPTION') }}</p><br />
+								<p>{{ lang('EXCEPTION') }}{{ lang('COLON') }} {{ CONTAINER_EXCEPTION.getMessage() }}</p>
+								<pre>{{ CONTAINER_EXCEPTION.getTraceAsString() }}</pre>
+							</div>
+							{% endif %}

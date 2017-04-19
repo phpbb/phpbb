@@ -1,0 +1,80 @@
+<!-- IF .deleted -->
+<h2>{L_FILES_DELETED}</h2>
+<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('deleted', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+<p>{L_FILES_DELETED_EXPLAIN}</p>
+
+<fieldset id="deleted">
+	<legend><img src="{T_IMAGE_PATH}/icon_delete.gif" alt="{L_STATUS_DELETED}" /></legend>
+	<!-- BEGIN deleted -->
+	<dl>
+		<dt style="width: 100%;"><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<!-- ENDIF --><strong>{deleted.FILE_PART}</strong></dt>
+	</dl>
+	<!-- END deleted -->
+</fieldset>
+
+<!-- ENDIF -->
+
+<!-- IF .conflict -->
+<h2>{L_FILES_CONFLICT}</h2>
+<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('conflict', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+<p>{L_FILES_CONFLICT_EXPLAIN}</p>
+
+<fieldset id="conflict">
+	<legend><img src="{T_IMAGE_PATH}/file_conflict.gif" alt="{L_STATUS_CONFLICT}" /></legend>
+	<!-- BEGIN conflict -->
+	<dl>
+		<dt style="width: 100%;"><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<!-- ENDIF --><strong>{conflict.FILE_PART}</strong></dt>
+	</dl>
+	<!-- END conflict -->
+</fieldset>
+
+<!-- ENDIF -->
+
+<!-- IF .modified -->
+<h2>{L_FILES_MODIFIED}</h2>
+<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+<p>{L_FILES_MODIFIED_EXPLAIN}</p>
+
+<fieldset id="modified">
+	<legend><img src="{T_IMAGE_PATH}/file_modified.gif" alt="{L_STATUS_MODIFIED}" /></legend>
+	<!-- BEGIN modified -->
+	<dl>
+		<dt style="width: 100%;"><!-- IF modified.DIR_PART -->{modified.DIR_PART}<!-- ENDIF --><strong>{modified.FILE_PART}</strong></dt>
+	</dl>
+	<!-- END modified -->
+</fieldset>
+
+<!-- ENDIF -->
+
+<!-- IF .new -->
+<h2>{L_FILES_NEW}</h2>
+<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('new_files', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+<p>{L_FILES_NEW_EXPLAIN}</p>
+
+<fieldset id="new_files" style="display: none;">
+	<legend><img src="{T_IMAGE_PATH}/file_new.gif" alt="{L_STATUS_NEW}" /></legend>
+	<!-- BEGIN new -->
+	<dl>
+		<dt style="width: 100%;"><!-- IF new.DIR_PART -->{new.DIR_PART}<!-- ENDIF --><strong>{new.FILE_PART}</strong>
+		</dt>
+	</dl>
+	<!-- END new -->
+</fieldset>
+
+<!-- ENDIF -->
+
+<!-- IF .not_modified -->
+<h2>{L_FILES_NOT_MODIFIED}</h2>
+<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="phpbb.toggleDisplay('not_modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+<p>{L_FILES_NOT_MODIFIED_EXPLAIN}</p>
+
+<fieldset id="not_modified" style="display: none;">
+	<legend><img src="{T_IMAGE_PATH}/file_not_modified.gif" alt="{L_STATUS_NOT_MODIFIED}" /></legend>
+	<!-- BEGIN not_modified -->
+	<dl>
+		<dt style="width: 100%;"><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<!-- ENDIF --><strong>{not_modified.FILE_PART}</strong></dt>
+	</dl>
+	<!-- END not_modified -->
+</fieldset>
+
+<!-- ENDIF -->

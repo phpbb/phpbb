@@ -25,8 +25,8 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $cache, $user, $auth, $template, $request;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher;
+		global $config, $db, $cache, $user, $auth, $template, $request, $phpbb_log;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $phpbb_container, $phpbb_dispatcher, $phpbb_filesystem;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -53,7 +53,7 @@ class acp_main
 			return;
 		}
 
-		$action = request_var('action', '');
+		$action = $request->variable('action', '');
 
 		if ($action)
 		{
@@ -118,12 +118,13 @@ class acp_main
 					case 'online':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						set_config('record_online_users', 1, true);
-						set_config('record_online_date', time(), true);
-						add_log('admin', 'LOG_RESET_ONLINE');
+						$config->set('record_online_users', 1, false);
+						$config->set('record_online_date', time(), false);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_ONLINE');
 
 						if ($request->is_ajax())
 						{
@@ -134,6 +135,7 @@ class acp_main
 					case 'stats':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -141,35 +143,35 @@ class acp_main
 							FROM ' . POSTS_TABLE . '
 							WHERE post_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
-						set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_posts', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(topic_id) AS stat
 							FROM ' . TOPICS_TABLE . '
 							WHERE topic_visibility = ' . ITEM_APPROVED;
 						$result = $db->sql_query($sql);
-						set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_topics', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(user_id) AS stat
 							FROM ' . USERS_TABLE . '
 							WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
 						$result = $db->sql_query($sql);
-						set_config('num_users', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_users', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT COUNT(attach_id) as stat
 							FROM ' . ATTACHMENTS_TABLE . '
 							WHERE is_orphan = 0';
 						$result = $db->sql_query($sql);
-						set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
+						$config->set('num_files', (int) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						$sql = 'SELECT SUM(filesize) as stat
 							FROM ' . ATTACHMENTS_TABLE . '
 							WHERE is_orphan = 0';
 						$result = $db->sql_query($sql);
-						set_config('upload_dir_size', (float) $db->sql_fetchfield('stat'), true);
+						$config->set('upload_dir_size', (float) $db->sql_fetchfield('stat'), false);
 						$db->sql_freeresult($result);
 
 						if (!function_exists('update_last_username'))
@@ -178,7 +180,7 @@ class acp_main
 						}
 						update_last_username();
 
-						add_log('admin', 'LOG_RESYNC_STATS');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_STATS');
 
 						if ($request->is_ajax())
 						{
@@ -189,6 +191,7 @@ class acp_main
 					case 'user':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -215,7 +218,7 @@ class acp_main
 						// Still no maximum post id? Then we are finished
 						if (!$max_post_id)
 						{
-							add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
 							break;
 						}
 
@@ -245,7 +248,7 @@ class acp_main
 							$start += $step;
 						}
 
-						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POSTCOUNTS');
 
 						if ($request->is_ajax())
 						{
@@ -256,11 +259,12 @@ class acp_main
 					case 'date':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						set_config('board_startdate', time() - 1);
-						add_log('admin', 'LOG_RESET_DATE');
+						$config->set('board_startdate', time() - 1);
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_DATE');
 
 						if ($request->is_ajax())
 						{
@@ -271,7 +275,6 @@ class acp_main
 					case 'db_track':
 						switch ($db->get_sql_layer())
 						{
-							case 'sqlite':
 							case 'sqlite3':
 								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 							break;
@@ -340,7 +343,7 @@ class acp_main
 							}
 						}
 
-						add_log('admin', 'LOG_RESYNC_POST_MARKING');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESYNC_POST_MARKING');
 
 						if ($request->is_ajax())
 						{
@@ -352,11 +355,16 @@ class acp_main
 						$config->increment('assets_version', 1);
 						$cache->purge();
 
+						// Remove old renderers from the text_formatter service. Since this
+						// operation is performed after the cache is purged, there is not "current"
+						// renderer and in effect all renderers will be purged
+						$phpbb_container->get('text_formatter.cache')->tidy();
+
 						// Clear permissions
 						$auth->acl_clear_prefetch();
 						phpbb_cache_moderators($db, $cache, $auth);
 
-						add_log('admin', 'LOG_PURGE_CACHE');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_CACHE');
 
 						if ($request->is_ajax())
 						{
@@ -367,6 +375,7 @@ class acp_main
 					case 'purge_sessions':
 						if ((int) $user->data['user_type'] !== USER_FOUNDER)
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -376,7 +385,6 @@ class acp_main
 						{
 							switch ($db->get_sql_layer())
 							{
-								case 'sqlite':
 								case 'sqlite3':
 									$db->sql_query("DELETE FROM $table");
 								break;
@@ -407,7 +415,7 @@ class acp_main
 						$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
 						$db->sql_query($sql);
 
-						add_log('admin', 'LOG_PURGE_SESSIONS');
+						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_SESSIONS');
 
 						if ($request->is_ajax())
 						{
@@ -421,7 +429,7 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.3', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
@@ -431,6 +439,7 @@ class acp_main
 
 		if ($auth->acl_get('a_board'))
 		{
+			/* @var $version_helper \phpbb\version_helper */
 			$version_helper = $phpbb_container->get('version_helper');
 			try
 			{
@@ -441,9 +450,10 @@ class acp_main
 			}
 			catch (\RuntimeException $e)
 			{
+				$message = call_user_func_array(array($user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$template->assign_vars(array(
 					'S_VERSIONCHECK_FAIL'		=> true,
-					'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+					'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
 				));
 			}
 		}
@@ -658,7 +668,7 @@ class acp_main
 			}
 		}
 
-		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && phpbb_is_writable($phpbb_root_path . 'config.' . $phpEx))
+		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists($phpbb_root_path . 'config.' . $phpEx) && $phpbb_filesystem->is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
 			// World-Writable? (000x)
 			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms($phpbb_root_path . 'config.' . $phpEx) & 0x0002));
@@ -678,7 +688,7 @@ class acp_main
 		// Fill dbms version if not yet filled
 		if (empty($config['dbms_version']))
 		{
-			set_config('dbms_version', $db->sql_server_info(true));
+			$config->set('dbms_version', $db->sql_server_info(true));
 		}
 
 		$this->tpl_name = 'acp_main';

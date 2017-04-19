@@ -10,206 +10,224 @@ phpBB Development Team:
 	- further adjustements
 */
 
-var head_text, tooltip_mode;
+(function($) { // Avoid conflicts with other libraries
+
+'use strict';
+
+var tooltips = [];
 
 /**
-* Enable tooltip replacements for links
+ * Enable tooltip replacements for selects
+ * @param {string} id ID tag of select
+ * @param {string} headline Text that should appear on top of tooltip
+ * @param {string} [subId] Sub ID that should only be using tooltips (optional)
 */
-function enable_tooltips_link(id, headline, sub_id) {
-	var links, i, hold;
+phpbb.enableTooltipsSelect = function (id, headline, subId) {
+	var $links, hold;
 
-	head_text = headline;
+	hold = $('<span />', {
+		id:		'_tooltip_container',
+		css: {
+			position: 'absolute'
+		}
+	});
 
-	if (!document.getElementById || !document.getElementsByTagName) {
-		return;
-	}
+	$('body').append(hold);
 
-	hold = document.createElement('span');
-	hold.id = '_tooltip_container';
-	hold.setAttribute('id', '_tooltip_container');
-	hold.style.position = 'absolute';
-
-	document.getElementsByTagName('body')[0].appendChild(hold);
-
-	if (id === null) {
-		links = document.getElementsByTagName('a');
+	if (!id) {
+		$links = $('.roles-options li');
 	} else {
-		links = document.getElementById(id).getElementsByTagName('a');
+		$links = $('.roles-options li', '#' + id);
 	}
 
-	for (i = 0; i < links.length; i++) {
-		if (sub_id) {
-			if (links[i].id.substr(0, sub_id.length) === sub_id) {
-				prepare(links[i]);
+	$links.each(function () {
+		var $this = $(this);
+
+		if (subId) {
+			if ($this.parent().attr('id').substr(0, subId.length) === subId) {
+				phpbb.prepareTooltips($this, headline);
 			}
 		} else {
-			prepare(links[i]);
+			phpbb.prepareTooltips($this, headline);
 		}
-	}
-
-	tooltip_mode = 'link';
-}
+	});
+};
 
 /**
-* Enable tooltip replacements for selects
+ * Prepare elements to replace
+ *
+ * @param {jQuery} $element Element to prepare for tooltips
+ * @param {string} headText Text heading to display
 */
-function enable_tooltips_select(id, headline, sub_id) {
-	var links, i, hold;
+phpbb.prepareTooltips = function ($element, headText) {
+	var $tooltip, text, $desc, $title;
 
-	head_text = headline;
-
-	if (!document.getElementById || !document.getElementsByTagName) {
-		return;
-	}
-
-	hold = document.createElement('span');
-	hold.id = '_tooltip_container';
-	hold.setAttribute('id', '_tooltip_container');
-	hold.style.position = 'absolute';
-
-	document.getElementsByTagName('body')[0].appendChild(hold);
-
-	if (id === null) {
-		links = document.getElementsByTagName('option');
-	} else {
-		links = document.getElementById(id).getElementsByTagName('option');
-	}
-
-	for (i = 0; i < links.length; i++) {
-		if (sub_id) {
-			if (links[i].parentNode.id.substr(0, sub_id.length) === sub_id) {
-				prepare(links[i]);
-			}
-		} else {
-			prepare(links[i]);
-		}
-	}
-
-	tooltip_mode = 'select';
-}
-
-/**
-* Prepare elements to replace
-*/
-function prepare(element) {
-	var tooltip, text, desc, title;
-
-	text = element.getAttribute('title');
+	text = $element.attr('data-title');
 
 	if (text === null || text.length === 0) {
 		return;
 	}
 
-	element.removeAttribute('title');
-	tooltip = create_element('span', 'tooltip');
+	$title = $('<span />', {
+		class: 'top',
+		css: {
+			display:	'block'
+		}
+	})
+		.append(document.createTextNode(headText));
 
-	title = create_element('span', 'top');
-	title.appendChild(document.createTextNode(head_text));
-	tooltip.appendChild(title);
+	$desc = $('<span />', {
+		class: 'bottom',
+		html: text,
+		css: {
+			display: 'block'
+		}
+	});
 
-	desc = create_element('span', 'bottom');
-	desc.innerHTML = text;
-	tooltip.appendChild(desc);
+	$tooltip = $('<span />', {
+		class: 'tooltip',
+		css: {
+			display: 'block'
+		}
+	})
+		.append($title)
+		.append($desc);
 
-	set_opacity(tooltip);
-
-	element.tooltip = tooltip;
-	element.onmouseover = show_tooltip;
-	element.onmouseout = hide_tooltip;
-
-	if (tooltip_mode === 'link') {
-		element.onmousemove = locate;
-	}
-}
+	tooltips[$element.attr('data-id')] = $tooltip;
+	$element.on('mouseover', phpbb.showTooltip);
+	$element.on('mouseout', phpbb.hideTooltip);
+};
 
 /**
-* Show tooltip
+ * Show tooltip
+ *
+ * @param {object} $element Element passed by .on()
 */
-function show_tooltip(e) {
-	document.getElementById('_tooltip_container').appendChild(this.tooltip);
-	locate(this);
-}
+phpbb.showTooltip = function ($element) {
+	var $this = $($element.target);
+	$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
+	phpbb.positionTooltip($this);
+};
 
 /**
-* Hide tooltip
+ * Hide tooltip
 */
-function hide_tooltip(e) {
+phpbb.hideTooltip = function () {
 	var d = document.getElementById('_tooltip_container');
 	if (d.childNodes.length > 0) {
 		d.removeChild(d.firstChild);
 	}
-}
+};
 
 /**
-* Set opacity on tooltip element
+ * Correct positioning of tooltip container
+ *
+ * @param {jQuery} $element Tooltip element that should be positioned
 */
-function set_opacity(element) {
-	element.style.filter = 'alpha(opacity:95)';
-	element.style.KHTMLOpacity = '0.95';
-	element.style.MozOpacity = '0.95';
-	element.style.opacity = '0.95';
-}
+phpbb.positionTooltip = function ($element) {
+	var offset;
+
+	$element = $element.parent();
+	offset = $element.offset();
+
+	$('#_tooltip_container').css({
+		top: offset.top + 30,
+		left: offset.left - 205
+	});
+};
 
 /**
-* Create new element
-*/
-function create_element(tag, c) {
-	var x = document.createElement(tag);
-	x.className = c;
-	x.style.display = 'block';
-	return x;
-}
+ * Prepare roles drop down select
+ */
+phpbb.prepareRolesDropdown = function () {
+	var $options = $('.roles-options li');
 
-/**
-* Correct positioning of tooltip container
-*/
-function locate(e) {
-	var posx = 0;
-	var posy = 0;
+	// Display span and hide select
+	$('.roles-options > span').css('display', 'block');
+	$('.roles-options > select').hide();
+	$('.roles-options > input[type=hidden]').each(function () {
+		var $this = $(this);
 
-	e = e.parentNode;
-
-	if (e.offsetParent) {
-		for (posx = 0, posy = 0; e.offsetParent; e = e.offsetParent) {
-			posx += e.offsetLeft;
-			posy += e.offsetTop;
+		if ($this.attr('data-name') && !$this.attr('name')) {
+			$this.attr('name', $this.attr('data-name'));
 		}
-	} else {
-		posx = e.offsetLeft;
-		posy = e.offsetTop;
-	}
+	});
 
-	if (tooltip_mode === 'link') {
-		document.getElementById('_tooltip_container').style.top=(posy+20) + 'px';
-		document.getElementById('_tooltip_container').style.left=(posx-20) + 'px';
-	} else {
-		document.getElementById('_tooltip_container').style.top=(posy+30) + 'px';
-		document.getElementById('_tooltip_container').style.left=(posx-205) + 'px';
-	}
+	// Prepare highlighting of select options and settings update
+	$options.each(function () {
+		var $this = $(this);
+		var $rolesOptions = $this.closest('.roles-options');
+		var $span = $rolesOptions.children('span');
 
-/*
-	if (e == null)
-	{
-		e = window.event;
-	}
+		// Correctly show selected option
+		if (typeof $this.attr('data-selected') !== 'undefined') {
+			$rolesOptions
+				.children('span')
+				.text($this.text())
+				.attr('data-default', $this.text())
+				.attr('data-default-val', $this.attr('data-id'));
 
-	if (e.pageX || e.pageY)
-	{
-		posx = e.pageX;
-		posy = e.pageY;
-	}
-	else if (e.clientX || e.clientY)
-	{
-		if (document.documentElement.scrollTop)
-		{
-			posx = e.clientX+document.documentElement.scrollLeft;
-			posy = e.clientY+document.documentElement.scrollTop;
+			// Save default text of drop down if there is no default set yet
+			if (typeof $span.attr('data-default') === 'undefined') {
+				$span.attr('data-default', $span.text());
+			}
+
+			// Prepare resetting drop down on form reset
+			$this.closest('form').on('reset', function () {
+				$span.text($span.attr('data-default'));
+				$rolesOptions.children('input[type=hidden]')
+					.val($span.attr('data-default-val'));
+			});
 		}
-		else
-		{
-			posx = e.clientX+document.body.scrollLeft;
-			posy = e.clientY+document.body.scrollTop;
-		}
-	}
-*/
-}
+
+		$this.on('mouseover', function () {
+			var $this = $(this);
+			$options.removeClass('roles-highlight');
+			$this.addClass('roles-highlight');
+		}).on('click', function () {
+			var $this = $(this);
+			var $rolesOptions = $this.closest('.roles-options');
+
+			// Update settings
+			set_role_settings($this.attr('data-id'), $this.attr('data-target-id'));
+			init_colours($this.attr('data-target-id').replace('advanced', ''));
+
+			// Set selected setting
+			$rolesOptions.children('span')
+				.text($this.text());
+			$rolesOptions.children('input[type=hidden]')
+				.val($this.attr('data-id'));
+
+			// Trigger hiding of selection options
+			$('body').trigger('click');
+		});
+	});
+};
+
+// Run onload functions for RolesDropdown and tooltips
+$(function() {
+	// Enable tooltips
+	phpbb.enableTooltipsSelect('set-permissions', $('#set-permissions').attr('data-role-description'), 'role');
+
+	// Prepare dropdown
+	phpbb.prepareRolesDropdown();
+
+	// Reset role drop-down on modifying permissions in advanced tab
+	$('div.permissions-switch > a').on('click', function () {
+		$.each($('input[type=radio][name^="setting["]'), function () {
+			var $this = $(this);
+			$this.on('click', function () {
+				var $rolesOptions = $this.closest('fieldset.permissions').find('.roles-options'),
+					rolesSelect = $rolesOptions.find('select > option')[0];
+
+				// Set selected setting
+				$rolesOptions.children('span')
+					.text(rolesSelect.text);
+				$rolesOptions.children('input[type=hidden]')
+					.val(rolesSelect.value);
+			});
+		});
+	});
+});
+
+})(jQuery); // Avoid conflicts with other libraries

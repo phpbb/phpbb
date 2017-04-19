@@ -132,7 +132,7 @@ else
 
 $search->tidy();
 
-add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $search_name);
+$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($search_name));
 
 echo $user->lang['SEARCH_INDEX_CREATED'] . "\n";
 echo 'Peak Memory Usage: ' . get_formatted_filesize(memory_get_peak_usage()) . "\n";

@@ -14,7 +14,7 @@
 			<ul class="topiclist">
 				<li class="header">
 					<!-- EVENT forumlist_body_category_header_row_prepend -->
-					<dl class="icon">
+					<dl class="row-item">
 						<dt><div class="list-inner"><!-- IF forumrow.S_IS_CAT --><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><!-- ELSE -->{L_FORUM}<!-- ENDIF --></div></dt>
 						<dd class="topics">{L_TOPICS}</dd>
 						<dd class="posts">{L_POSTS}</dd>
@@ -31,12 +31,17 @@
 		<!-- EVENT forumlist_body_forum_row_before -->
 		<li class="row">
 			<!-- EVENT forumlist_body_forum_row_prepend -->
-			<dl class="icon {forumrow.FORUM_IMG_STYLE}">
+			<dl class="row-item {forumrow.FORUM_IMG_STYLE}">
 				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}">
-					<!-- IF forumrow.S_UNREAD_FORUM --><a href="{forumrow.U_VIEWFORUM}" class="icon-link"></a><!-- ENDIF -->
+					<!-- IF forumrow.S_UNREAD_FORUM --><a href="{forumrow.U_VIEWFORUM}" class="row-item-link"></a><!-- ENDIF -->
 					<div class="list-inner">
-						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED --><!-- <a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}"><img src="{T_THEME_PATH}/images/feed.gif" alt="{L_FEED} - {forumrow.FORUM_NAME}" /></a> --><!-- ENDIF -->
-
+						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED -->
+							<!--
+								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}">
+									<i class="icon fa-rss-square fa-fw icon-orange" aria-hidden="true"></i><span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
+								</a>
+							-->
+						<!-- ENDIF -->
 						<!-- IF forumrow.FORUM_IMAGE --><span class="forum-image">{forumrow.FORUM_IMAGE}</span><!-- ENDIF -->
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a>
 						<!-- IF forumrow.FORUM_DESC --><br />{forumrow.FORUM_DESC}<!-- ENDIF -->
@@ -47,7 +52,10 @@
 							<!-- EVENT forumlist_body_subforums_before -->
 							<br /><strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
 							<!-- BEGIN subforum -->
-								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF -->
+								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">
+									<i class="icon <!-- IF forumrow.subforum.IS_LINK -->fa-external-link<!-- ELSE -->fa-file-o<!-- ENDIF --> fa-fw <!-- IF forumrow.subforum.S_UNREAD --> icon-red<!-- ELSE --> icon-blue<!-- ENDIF --> icon-md" aria-hidden="true"></i>{forumrow.subforum.SUBFORUM_NAME}
+								</a>
+								<!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF -->
 							<!-- END subforum -->
 							<!-- EVENT forumlist_body_subforums_after -->
 						<!-- ENDIF -->
@@ -68,19 +76,34 @@
 				<!-- ELSEIF not forumrow.S_IS_LINK -->
 					<dd class="topics">{forumrow.TOPICS} <dfn>{L_TOPICS}</dfn></dd>
 					<dd class="posts">{forumrow.POSTS} <dfn>{L_POSTS}</dfn></dd>
-					<dd class="lastpost"><span>
-						<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
-							<a href="{forumrow.U_UNAPPROVED_TOPICS}">{UNAPPROVED_IMG}</a>
-						<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
-							<a href="{forumrow.U_UNAPPROVED_POSTS}">{UNAPPROVED_POST_IMG}</a>
-						<!-- ENDIF -->
-						<!-- IF forumrow.LAST_POST_TIME --><dfn>{L_LAST_POST}</dfn>
-						<!-- IF forumrow.S_DISPLAY_SUBJECT -->
-							<!-- EVENT forumlist_body_last_post_title_prepend -->
-							<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
-						<!-- ENDIF --> 
-						{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
-						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{forumrow.LAST_POST_TIME}<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF --></span>
+					<dd class="lastpost">
+						<span>
+							<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
+								<a href="{forumrow.U_UNAPPROVED_TOPICS}" title="{L_TOPICS_UNAPPROVED}">
+									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
+								</a>
+							<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
+								<a href="{forumrow.U_UNAPPROVED_POSTS}" title="{L_POSTS_UNAPPROVED_FORUM}">
+									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_POSTS_UNAPPROVED_FORUM}</span>
+								</a>
+							<!-- ENDIF -->
+							<!-- IF forumrow.LAST_POST_TIME -->
+								<dfn>{L_LAST_POST}</dfn>
+								<!-- IF forumrow.S_DISPLAY_SUBJECT -->
+									<!-- EVENT forumlist_body_last_post_title_prepend -->
+									<a href="{forumrow.U_LAST_POST}" title="{forumrow.LAST_POST_SUBJECT}" class="lastsubject">{forumrow.LAST_POST_SUBJECT_TRUNCATED}</a> <br />
+								<!-- ENDIF -->
+									{L_POST_BY_AUTHOR} {forumrow.LAST_POSTER_FULL}
+								<!-- IF not S_IS_BOT -->
+									<a href="{forumrow.U_LAST_POST}" title="{L_VIEW_LATEST_POST}">
+										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{L_VIEW_LATEST_POST}</span>
+									</a>
+								<!-- ENDIF -->
+								<br />{forumrow.LAST_POST_TIME}
+							<!-- ELSE -->
+								{L_NO_POSTS}<br />&nbsp;
+							<!-- ENDIF -->
+						</span>
 					</dd>
 				<!-- ELSE -->
 					<dd>&nbsp;</dd>

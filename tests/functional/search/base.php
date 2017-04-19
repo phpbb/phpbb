@@ -36,6 +36,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
+		$this->create_search_index('\phpbb\search\fulltext_native');
+
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid);
@@ -58,6 +60,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 				$this->delete_topic($post['topic_id']);
 				$this->markTestSkipped("Search backend is not supported/running");
 			}
+
 			$this->create_search_index();
 		}
 
@@ -72,7 +75,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->delete_topic($post['topic_id']);
 	}
 
-	protected function create_search_index()
+	protected function create_search_index($backend = null)
 	{
 		$this->add_lang('acp/search');
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
@@ -80,7 +83,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form_values = $form->getValues();
 		$form_values = array_merge($form_values,
 			array(
-				'search_type'	=> $this->search_backend,
+				'search_type'	=> ( ($backend === null) ? $this->search_backend : $backend ),
 				'action'		=> 'create',
 			)
 		);

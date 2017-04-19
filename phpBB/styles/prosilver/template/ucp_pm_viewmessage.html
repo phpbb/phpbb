@@ -8,8 +8,16 @@
 
 <!-- IF S_DISPLAY_HISTORY and (U_VIEW_PREVIOUS_HISTORY or U_VIEW_NEXT_HISTORY) -->
 	<fieldset class="display-options clearfix">
-		<!-- IF U_VIEW_PREVIOUS_HISTORY --><a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_VIEW_PREVIOUS_HISTORY}</a><!-- ENDIF -->
-		<!-- IF U_VIEW_NEXT_HISTORY --><a href="{U_VIEW_NEXT_HISTORY}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_VIEW_NEXT_HISTORY}</a><!-- ENDIF -->
+		<!-- IF U_VIEW_PREVIOUS_HISTORY -->
+			<a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
+				<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_PREVIOUS_HISTORY}</span>
+			</a>
+		<!-- ENDIF -->
+		<!-- IF U_VIEW_NEXT_HISTORY -->
+			<a href="{U_VIEW_NEXT_HISTORY}" class="right-box arrow-{S_CONTENT_FLOW_END}">
+				<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_HISTORY}</span>
+			</a>
+		<!-- ENDIF -->
 	</fieldset>
 <!-- ENDIF -->
 
@@ -47,8 +55,8 @@
 			<dd class="profile-contact">
 				<strong>{L_CONTACT}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
-					<a href="#" class="dropdown-trigger"><span class="imageset icon_contact" title="{CONTACT_USER}">{CONTACT_USER}</span></a>
-					<div class="dropdown hidden">
+					<a href="#" class="dropdown-trigger"  title="{CONTACT_USER}"><i class="icon fa-commenting-o fa-fw icon-lg" aria-hidden="true"></i><span class="sr-only">{CONTACT_USER}</span></a>
+					<div class="dropdown">
 						<div class="pointer"><div class="pointer-inner"></div></div>
 						<div class="dropdown-contents contact-icons">
 							<!-- BEGIN contact -->
@@ -82,22 +90,30 @@
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_before -->
 			<!-- IF U_EDIT -->
 				<li>
-					<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button icon-button edit-icon"><span>{L_POST_EDIT_PM}</span></a>
+					<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button button-icon-only">
+						<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_EDIT_PM}</span>
+					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_DELETE -->
 				<li>
-					<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button icon-button delete-icon"><span>{L_DELETE_MESSAGE}</span></a>
+					<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button button-icon-only">
+						<i class="icon fa-times fa-fw" aria-hidden="true"></i><span class="sr-only">{L_DELETE_MESSAGE}</span>
+					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_REPORT -->
 				<li>
-					<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button icon-button report-icon"><span>{L_REPORT_PM}</span></a>
+					<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button button-icon-only">
+						<i class="icon fa-exclamation fa-fw" aria-hidden="true"></i><span class="sr-only">{L_REPORT_PM}</span>
+					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- IF U_QUOTE -->
 				<li>
-					<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button icon-button quote-icon"><span>{L_POST_QUOTE_PM}</span></a>
+					<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button button-icon-only">
+						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_QUOTE_PM}</span>
+					</a>
 				</li>
 			<!-- ENDIF -->
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_after -->
@@ -141,17 +157,31 @@
 		<!-- ENDIF -->
 	</div>
 
-	<div class="back2top"><a href="#top" class="top" title="{L_BACK_TO_TOP}">{L_BACK_TO_TOP}</a></div>
+	<div class="back2top">
+		<a href="#top" class="top" title="{L_BACK_TO_TOP}">
+			<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i>
+			<span class="sr-only">{L_BACK_TO_TOP}</span>
+		</a>
+	</div>
 
 	</div>
 </div>
 
+<!-- EVENT ucp_pm_viewmessage_options_before -->
 <!-- IF S_VIEW_MESSAGE -->
 <fieldset class="display-options">
-	<!-- IF U_PREVIOUS_PM --><a href="{U_PREVIOUS_PM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">{L_VIEW_PREVIOUS_PM}</a><!-- ENDIF -->
-	<!-- IF U_NEXT_PM --><a href="{U_NEXT_PM}" class="right-box arrow-{S_CONTENT_FLOW_END}">{L_VIEW_NEXT_PM}</a><!-- ENDIF -->
 
 	<!-- IF S_MARK_OPTIONS --><label for="mark_option"><select name="mark_option" id="mark_option">{S_MARK_OPTIONS}</select></label>&nbsp;<input class="button2" type="submit" name="submit_mark" value="{L_GO}" /><!-- ENDIF -->
+	<!-- IF U_PREVIOUS_PM -->
+		<a href="{U_PREVIOUS_PM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_PREVIOUS_PM}</span>
+		</a>
+	<!-- ENDIF -->
+	<!-- IF U_NEXT_PM -->
+		<a href="{U_NEXT_PM}" class="right-box arrow-{S_CONTENT_FLOW_END}">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_END} fa-fw icon-black" aria-hidden="true"></i><span>{L_VIEW_NEXT_PM}</span>
+		</a>
+	<!-- ENDIF -->
 	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button2" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->
 	<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
 	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />

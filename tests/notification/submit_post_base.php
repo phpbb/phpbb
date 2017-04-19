@@ -11,10 +11,11 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
@@ -50,7 +51,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 	{
 		parent::setUp();
 
-		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $user, $request, $phpEx, $phpbb_root_path;
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader;
 
 		// Database
 		$this->db = $this->new_dbal();
@@ -69,12 +70,15 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			)));
 
 		// Config
-		$config = new \phpbb\config\config(array('num_topics' => 1,'num_posts' => 1,));
-		set_config(null, null, null, $config);
-		set_config_count(null, null, null, $config);
+		$config = new \phpbb\config\config(array(
+			'num_topics' => 1,
+			'num_posts' => 1,
+			'allow_board_notifications'	=> true,
+		));
 
+		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\null(),
+			$cache_driver,
 			$config,
 			$db,
 			$phpbb_root_path,
@@ -84,8 +88,14 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		// Event dispatcher
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
+		// Language
+		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+
 		// User
-		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$user = $this->getMock('\phpbb\user', array(), array(
+			$lang,
+			'\phpbb\datetime'
+		));
 		$user->ip = '';
 		$user->data = array(
 			'user_id'		=> 2,
@@ -98,34 +108,47 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
 		$request = $this->getMock('\phpbb\request\request');
 
-		// Container
-		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
-
 		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
+
+		// Container
+		$phpbb_container = new ContainerBuilder();
+		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
+		$loader->load('services_notification.yml');
+		$phpbb_container->set('user_loader', $user_loader);
+		$phpbb_container->set('user', $user);
+		$phpbb_container->set('language', $lang);
+		$phpbb_container->set('config', $config);
+		$phpbb_container->set('dbal.conn', $db);
+		$phpbb_container->set('auth', $auth);
+		$phpbb_container->set('cache.driver', $cache_driver);
+		$phpbb_container->set('cache', $cache);
+		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
+		$phpbb_container->set('dispatcher', $phpbb_dispatcher);
+		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+		$phpbb_container->setParameter('core.php_ext', $phpEx);
+		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
+		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
+		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
+		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		$phpbb_container->compile();
 
 		// Notification Types
 		$notification_types = array('quote', 'bookmark', 'post', 'post_in_queue', 'topic', 'topic_in_queue', 'approve_topic', 'approve_post');
 		$notification_types_array = array();
 		foreach ($notification_types as $type)
 		{
-			$class_name = '\phpbb\notification\type\\' . $type;
-			$class = new $class_name(
-				$user_loader, $db, $cache->get_driver(), $user, $auth, $config,
-				$phpbb_root_path, $phpEx,
-				NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
-
-			$phpbb_container->set('notification.type.' . $type, $class);
-
+			$class = $phpbb_container->get('notification.type.' . $type);
 			$notification_types_array['notification.type.' . $type] = $class;
 		}
 
+		// Methods Types
+		$notification_methods_array = array('notification.method.board' => $phpbb_container->get('notification.method.board'));
+
 		// Notification Manager
-		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, array(),
-			$phpbb_container, $user_loader, $config, $phpbb_dispatcher, $db, $cache, $user,
-			$phpbb_root_path, $phpEx,
-			NOTIFICATION_TYPES_TABLE, NOTIFICATIONS_TABLE, USER_NOTIFICATIONS_TABLE);
+		$phpbb_notifications = new \phpbb\notification\manager($notification_types_array, $notification_methods_array,
+			$phpbb_container, $user_loader, $phpbb_dispatcher, $db, $cache, $lang, $user,
+			NOTIFICATION_TYPES_TABLE, USER_NOTIFICATIONS_TABLE);
 		$phpbb_container->set('notification_manager', $phpbb_notifications);
 	}
 

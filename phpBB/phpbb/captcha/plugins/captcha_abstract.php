@@ -34,12 +34,12 @@ abstract class captcha_abstract
 
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $config, $request;
 
 		// read input
-		$this->confirm_id = request_var('confirm_id', '');
-		$this->confirm_code = request_var('confirm_code', '');
-		$refresh = request_var('refresh_vc', false) && $config['confirm_refresh'];
+		$this->confirm_id = $request->variable('confirm_id', '');
+		$this->confirm_code = $request->variable('confirm_code', '');
+		$refresh = $request->variable('refresh_vc', false) && $config['confirm_refresh'];
 
 		$this->type = (int) $type;
 
@@ -56,8 +56,6 @@ abstract class captcha_abstract
 
 	function execute_demo()
 	{
-		global $user;
-
 		$this->code = gen_rand_string_friendly(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 
@@ -117,7 +115,7 @@ abstract class captcha_abstract
 
 	function get_demo_template($id)
 	{
-		global $config, $user, $template, $phpbb_admin_path, $phpEx;
+		global $config, $template, $request, $phpbb_admin_path, $phpEx;
 
 		$variables = '';
 
@@ -125,7 +123,7 @@ abstract class captcha_abstract
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
-				$variables .= '&amp;' . rawurlencode($captcha_var) . '=' . request_var($captcha_var, (int) $config[$captcha_var]);
+				$variables .= '&amp;' . rawurlencode($captcha_var) . '=' . $request->variable($captcha_var, (int) $config[$captcha_var]);
 			}
 		}
 
@@ -153,7 +151,7 @@ abstract class captcha_abstract
 
 	function garbage_collect($type)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT DISTINCT c.session_id
 			FROM ' . CONFIRM_TABLE . ' c
@@ -193,9 +191,9 @@ abstract class captcha_abstract
 
 	function validate()
 	{
-		global $config, $db, $user;
+		global $user;
 
-		if (empty($user->lang))
+		if (!$user->is_setup())
 		{
 			$user->setup();
 		}
@@ -350,7 +348,9 @@ abstract class captcha_abstract
 
 	function is_solved()
 	{
-		if (request_var('confirm_code', false) && $this->solved === 0)
+		global $request;
+
+		if ($request->variable('confirm_code', false) && $this->solved === 0)
 		{
 			$this->validate();
 		}

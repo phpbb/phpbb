@@ -29,7 +29,7 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_dispatcher, $request;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
@@ -40,16 +40,16 @@ class ucp_prefs
 			case 'personal':
 				add_form_key('ucp_prefs_personal');
 				$data = array(
-					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
-					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
-					'lang'			=> basename(request_var('lang', $user->data['user_lang'])),
-					'user_style'		=> request_var('user_style', (int) $user->data['user_style']),
-					'tz'			=> request_var('tz', $user->data['user_timezone']),
+					'notifymethod'	=> $request->variable('notifymethod', $user->data['user_notify_type']),
+					'dateformat'	=> $request->variable('dateformat', $user->data['user_dateformat'], true),
+					'lang'			=> basename($request->variable('lang', $user->data['user_lang'])),
+					'user_style'		=> $request->variable('user_style', (int) $user->data['user_style']),
+					'tz'			=> $request->variable('tz', $user->data['user_timezone']),
 
-					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
-					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
-					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
-					'allowpm'		=> request_var('allowpm', (bool) $user->data['user_allow_pm']),
+					'viewemail'		=> $request->variable('viewemail', (bool) $user->data['user_allow_viewemail']),
+					'massemail'		=> $request->variable('massemail', (bool) $user->data['user_allow_massemail']),
+					'hideonline'	=> $request->variable('hideonline', (bool) !$user->data['user_allow_viewonline']),
+					'allowpm'		=> $request->variable('allowpm', (bool) $user->data['user_allow_pm']),
 				);
 
 				if ($data['notifymethod'] == NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
@@ -221,20 +221,20 @@ class ucp_prefs
 				add_form_key('ucp_prefs_view');
 
 				$data = array(
-					'topic_sk'		=> request_var('topic_sk', (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'),
-					'topic_sd'		=> request_var('topic_sd', (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'),
-					'topic_st'		=> request_var('topic_st', (!empty($user->data['user_topic_show_days'])) ? (int) $user->data['user_topic_show_days'] : 0),
+					'topic_sk'		=> $request->variable('topic_sk', (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'),
+					'topic_sd'		=> $request->variable('topic_sd', (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'),
+					'topic_st'		=> $request->variable('topic_st', (!empty($user->data['user_topic_show_days'])) ? (int) $user->data['user_topic_show_days'] : 0),
 
-					'post_sk'		=> request_var('post_sk', (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'),
-					'post_sd'		=> request_var('post_sd', (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'),
-					'post_st'		=> request_var('post_st', (!empty($user->data['user_post_show_days'])) ? (int) $user->data['user_post_show_days'] : 0),
+					'post_sk'		=> $request->variable('post_sk', (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'),
+					'post_sd'		=> $request->variable('post_sd', (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'),
+					'post_st'		=> $request->variable('post_st', (!empty($user->data['user_post_show_days'])) ? (int) $user->data['user_post_show_days'] : 0),
 
-					'images'		=> request_var('images', (bool) $user->optionget('viewimg')),
-					'flash'			=> request_var('flash', (bool) $user->optionget('viewflash')),
-					'smilies'		=> request_var('smilies', (bool) $user->optionget('viewsmilies')),
-					'sigs'			=> request_var('sigs', (bool) $user->optionget('viewsigs')),
-					'avatars'		=> request_var('avatars', (bool) $user->optionget('viewavatars')),
-					'wordcensor'	=> request_var('wordcensor', (bool) $user->optionget('viewcensors')),
+					'images'		=> $request->variable('images', (bool) $user->optionget('viewimg')),
+					'flash'			=> $request->variable('flash', (bool) $user->optionget('viewflash')),
+					'smilies'		=> $request->variable('smilies', (bool) $user->optionget('viewsmilies')),
+					'sigs'			=> $request->variable('sigs', (bool) $user->optionget('viewsigs')),
+					'avatars'		=> $request->variable('avatars', (bool) $user->optionget('viewavatars')),
+					'wordcensor'	=> $request->variable('wordcensor', (bool) $user->optionget('viewcensors')),
 				);
 
 				/**
@@ -436,10 +436,10 @@ class ucp_prefs
 			case 'post':
 
 				$data = array(
-					'bbcode'	=> request_var('bbcode', $user->optionget('bbcode')),
-					'smilies'	=> request_var('smilies', $user->optionget('smilies')),
-					'sig'		=> request_var('sig', $user->optionget('attachsig')),
-					'notify'	=> request_var('notify', (bool) $user->data['user_notify']),
+					'bbcode'	=> $request->variable('bbcode', $user->optionget('bbcode')),
+					'smilies'	=> $request->variable('smilies', $user->optionget('smilies')),
+					'sig'		=> $request->variable('sig', $user->optionget('attachsig')),
+					'notify'	=> $request->variable('notify', (bool) $user->data['user_notify']),
 				);
 				add_form_key('ucp_prefs_post');
 

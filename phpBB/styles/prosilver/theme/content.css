@@ -7,10 +7,6 @@ ul.topiclist {
 	margin: 0;
 }
 
-ul.forums {
-	background: transparent none repeat-x 0 0;
-}
-
 ul.topiclist li {
 	display: block;
 	list-style-type: none;
@@ -81,15 +77,6 @@ ul.topiclist dfn {
 	width: 990px;
 }
 
-ul.topiclist li.row dt a.subforum {
-	background-image: none;
-	background-position: 0 50%;
-	background-repeat: no-repeat;
-	position: relative;
-	white-space: nowrap;
-	padding: 0 0 0 12px;
-}
-
 .forum-image {
 	float: left;
 	padding-top: 5px;
@@ -133,36 +120,40 @@ li.header dd {
 	box-sizing: border-box;
 }
 
-li.header dl.icon dt, li.header dl.icon dd {
+li.header dl.row-item dt, li.header dl.row-item dd {
 	min-height: 0;
 }
 
-li.header dl.icon dt .list-inner {
+li.header dl.row-item dt .list-inner {
 	/* Tweak for headers alignment when folder icon used */
 	padding-left: 0;
 	padding-right: 50px;
 }
 
 /* Forum list column styles */
-dl.icon {
+dl.row-item {
 	background-position: 10px 50%;		/* Position of folder icon */
 	background-repeat: no-repeat;
 }
 
-dl.icon dt {
+dl.row-item dt {
 	background-repeat: no-repeat;
 	background-position: 5px 95%;		/* Position of topic icon */
 }
 
-dl.icon dt .list-inner {
+dl.row-item dt .list-inner {
 	padding-left: 45px;					/* Space for folder icon */
 }
 
-dl.icon dt, dl.icon dd {
+dl.row-item dt, dl.row-item dd {
 	min-height: 35px;
 }
 
-dl a.icon-link {						/* topic row icon links */
+dl.row-item dt a {
+	display: inline;
+}
+
+dl a.row-item-link {						/* topic row icon links */
 	display: block;
 	width: 30px;
 	height: 30px;
@@ -186,13 +177,13 @@ dd.posts, dd.topics, dd.views {
 }
 
 /* List in forum description */
-dl.icon dt ol,
-dl.icon dt ul {
+dl.row-item dt ol,
+dl.row-item dt ul {
 	list-style-position: inside;
 	margin-left: 1em;
 }
 
-dl.icon dt li {
+dl.row-item dt li {
 	display: list-item;
 	list-style-type: inherit;
 }
@@ -286,28 +277,28 @@ dd.option {
 
 /* Topic review panel
 ----------------------------------------*/
-#review {
+.panel .review {
 	margin-top: 2em;
 }
 
-#topicreview {
+.topicreview {
 	padding-right: 5px;
 	overflow: auto;
 	height: 300px;
 }
 
-#topicreview .postbody {
+.topicreview .postbody {
 	width: auto;
 	float: none;
 	margin: 0;
 	height: auto;
 }
 
-#topicreview .post {
+.topicreview .post {
 	height: auto;
 }
 
-#topicreview h2 {
+.topicreview h2 {
 	border-bottom-width: 0;
 }
 
@@ -317,7 +308,7 @@ dd.option {
 
 /* MCP Post details
 ----------------------------------------*/
-#post_details {
+.post_details {
 	/* This will only work in IE7+, plus the others */
 	overflow: auto;
 	max-height: 300px;
@@ -383,8 +374,7 @@ dl.faq dt {
 }
 
 .content ul, .content ol {
-	margin-bottom: 1em;
-	margin-left: 3em;
+	margin: 0.8em 0 0.9em 3em;
 }
 
 .posthilit {
@@ -430,8 +420,7 @@ dd .signature {
 }
 
 .signature ul, .signature ol {
-	margin-bottom: 1em;
-	margin-left: 3em;
+	margin: 0.8em 0 0.9em 3em;
 }
 
 /* Post noticies */
@@ -460,7 +449,7 @@ blockquote {
 	background: transparent none 6px 8px no-repeat;
 	border: 1px solid transparent;
 	font-size: 0.95em;
-	margin: 0.5em 1px 0 25px;
+	margin: 1em 1px 1em 25px;
 	overflow: hidden;
 	padding: 5px;
 }
@@ -468,7 +457,7 @@ blockquote {
 blockquote blockquote {
 	/* Nested quotes */
 	font-size: 1em;
-	margin: 0.5em 1px 0 15px;
+	margin: 1em 1px 1em 15px;
 }
 
 blockquote cite {
@@ -488,11 +477,22 @@ blockquote.uncited {
 	padding-top: 25px;
 }
 
+blockquote cite > div {
+	float: right;
+	font-weight: normal;
+}
+
+.postbody .content li blockquote {
+	overflow: inherit;
+	margin-left: 0;
+}
+
 /* Code block */
 .codebox {
 	padding: 3px;
 	border: 1px solid transparent;
 	font-size: 1em;
+	margin: 1em 0 1.2em 0;
 }
 
 .codebox p {
@@ -513,9 +513,8 @@ blockquote .codebox {
 	display: block;
 	height: auto;
 	max-height: 200px;
-	white-space: normal;
 	padding-top: 5px;
-	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
+	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, monospace;
 	line-height: 1.3em;
 	margin: 2px 0;
 }
@@ -830,7 +829,7 @@ table.fixed-width-table {
 
 /* Show scrollbars for items with overflow on iOS devices
 ----------------------------------------*/
-.postbody .content::-webkit-scrollbar, #topicreview::-webkit-scrollbar, #post_details::-webkit-scrollbar, .codebox code::-webkit-scrollbar, .attachbox dd::-webkit-scrollbar, .attach-image::-webkit-scrollbar, .dropdown-extended ul::-webkit-scrollbar {
+.postbody .content::-webkit-scrollbar, .topicreview::-webkit-scrollbar, .post_details::-webkit-scrollbar, .codebox code::-webkit-scrollbar, .attachbox dd::-webkit-scrollbar, .attach-image::-webkit-scrollbar, .dropdown-extended ul::-webkit-scrollbar {
 	width: 8px;
 	height: 8px;
 	-webkit-appearance: none;
@@ -838,7 +837,7 @@ table.fixed-width-table {
 	border-radius: 3px;
 }
 
-.postbody .content::-webkit-scrollbar-thumb, #topicreview::-webkit-scrollbar-thumb, #post_details::-webkit-scrollbar-thumb, .codebox code::-webkit-scrollbar-thumb, .attachbox dd::-webkit-scrollbar-thumb, .attach-image::-webkit-scrollbar-thumb, .dropdown-extended ul::-webkit-scrollbar-thumb {
+.postbody .content::-webkit-scrollbar-thumb, .topicreview::-webkit-scrollbar-thumb, .post_details::-webkit-scrollbar-thumb, .codebox code::-webkit-scrollbar-thumb, .attachbox dd::-webkit-scrollbar-thumb, .attach-image::-webkit-scrollbar-thumb, .dropdown-extended ul::-webkit-scrollbar-thumb {
 	background: rgba(0, 0, 0, .3);
 	border-radius: 3px;
 }

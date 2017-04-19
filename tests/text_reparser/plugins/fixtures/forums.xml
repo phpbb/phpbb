@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_forums">
+		<column>forum_id</column>
+		<column>forum_parents</column>
+		<column>forum_desc</column>
+		<column>forum_desc_uid</column>
+		<column>forum_desc_options</column>
+		<column>forum_rules</column>
+		<column>forum_rules_uid</column>
+		<column>forum_rules_options</column>
+		<row>
+			<value>1</value>
+			<value></value>
+			<value>This row should be [b]ignored[/b]</value>
+			<value>abcd1234</value>
+			<value>0</value>
+			<value>This row should be [b]ignored[/b]</value>
+			<value>abcd1234</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value></value>
+			<value>[b]Not bold[/b] :) http://example.org</value>
+			<value>abcd1234</value>
+			<value>0</value>
+			<value>[b]Not bold[/b] :) http://example.org</value>
+			<value>abcd1234</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value></value>
+			<value>[b:abcd1234]Bold[/b:abcd1234] :) http://example.org</value>
+			<value>abcd1234</value>
+			<value>1</value>
+			<value>[b:abcd1234]Bold[/b:abcd1234] :) http://example.org</value>
+			<value>abcd1234</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value></value>
+			<value><![CDATA[[b]Not bold[/b] <!-- s:) --><img src="{SMILIES_PATH}/icon_e_smile.gif" alt=":)" title="Smile" /><!-- s:) --> http://example.org]]></value>
+			<value>abcd1234</value>
+			<value>2</value>
+			<value><![CDATA[[b]Not bold[/b] <!-- s:) --><img src="{SMILIES_PATH}/icon_e_smile.gif" alt=":)" title="Smile" /><!-- s:) --> http://example.org]]></value>
+			<value>abcd1234</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value></value>
+			<value><![CDATA[[b]Not bold[/b] :) <!-- m --><a class="postlink" href="http://example.org">http://example.org</a><!-- m -->]]></value>
+			<value>abcd1234</value>
+			<value>4</value>
+			<value><![CDATA[[b]Not bold[/b] :) <!-- m --><a class="postlink" href="http://example.org">http://example.org</a><!-- m -->]]></value>
+			<value>abcd1234</value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>6</value>
+			<value></value>
+			<value><![CDATA[[flash=123,345:abcd1234]http&#58;//example&#46;org/flash&#46;swf[/flash:abcd1234]]]></value>
+			<value>abcd1234</value>
+			<value>1</value>
+			<value><![CDATA[[flash=123,345:abcd1234]http&#58;//example&#46;org/flash&#46;swf[/flash:abcd1234]]]></value>
+			<value>abcd1234</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>7</value>
+			<value></value>
+			<value><![CDATA[[flash=123,345]http://example.org/flash.swf[/flash]]]></value>
+			<value>abcd1234</value>
+			<value>0</value>
+			<value><![CDATA[[flash=123,345]http://example.org/flash.swf[/flash]]]></value>
+			<value>abcd1234</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>8</value>
+			<value></value>
+			<value><![CDATA[[img:abcd1234]http&#58;//example&#46;org/img&#46;png[/img:abcd1234]]]></value>
+			<value>abcd1234</value>
+			<value>1</value>
+			<value><![CDATA[[img:abcd1234]http&#58;//example&#46;org/img&#46;png[/img:abcd1234]]]></value>
+			<value>abcd1234</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>9</value>
+			<value></value>
+			<value><![CDATA[[img]http://example.org/img.png[/img]]]></value>
+			<value>abcd1234</value>
+			<value>0</value>
+			<value><![CDATA[[img]http://example.org/img.png[/img]]]></value>
+			<value>abcd1234</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>1000</value>
+			<value></value>
+			<value>This row should be [b]ignored[/b]</value>
+			<value>abcd1234</value>
+			<value>0</value>
+			<value>This row should be [b]ignored[/b]</value>
+			<value>abcd1234</value>
+			<value>0</value>
+		</row>
+	</table>
+</dataset>

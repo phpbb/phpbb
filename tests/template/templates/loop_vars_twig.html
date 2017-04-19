@@ -1,0 +1,13 @@
+{% for test_loop_inner in test_loop %}
+{% if test_loop_inner.S_FIRST_ROW %}first{% endif %}
+{{ test_loop_inner.S_ROW_NUM }} - a
+{{ test_loop_inner.VARIABLE }} - b
+{% if test_loop_inner.VARIABLE %}set{% endif %}
+{% if test_loop_inner.S_LAST_ROW %}
+last
+{% endif %}
+{% for inner_inner in test_loop_inner.inner %}
+{{ inner_inner.S_ROW_NUM }} - c
+{% if inner_inner.S_LAST_ROW and inner_inner.S_ROW_COUNT and inner_inner.S_NUM_ROWS %}last inner{% endif %}
+{% endfor %}
+{% endfor %}

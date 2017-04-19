@@ -30,8 +30,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 			new \phpbb\config\config(array(
 				'version'	=> '3.1.0',
 			)),
-			new \phpbb\file_downloader(),
-			new \phpbb\user('\phpbb\datetime')
+			new \phpbb\file_downloader()
 		);
 	}
 
@@ -199,6 +198,11 @@ class phpbb_version_helper_test extends phpbb_test_case
 	*/
 	public function test_get_suggested_updates($current_version, $versions, $expected)
 	{
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+
 		$version_helper = $this
 			->getMockBuilder('\phpbb\version_helper')
 			->setMethods(array(
@@ -210,7 +214,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'version'	=> $current_version,
 				)),
 				new \phpbb\file_downloader(),
-				new \phpbb\user('\phpbb\datetime'),
+				new \phpbb\user($lang, '\phpbb\datetime'),
 			))
 			->getMock()
 		;
@@ -310,6 +314,11 @@ class phpbb_version_helper_test extends phpbb_test_case
 	*/
 	public function test_get_latest_on_current_branch($current_version, $versions, $expected)
 	{
+		global $phpbb_root_path, $phpEx;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+
 		$version_helper = $this
 			->getMockBuilder('\phpbb\version_helper')
 			->setMethods(array(
@@ -321,7 +330,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'version'	=> $current_version,
 				)),
 				new \phpbb\file_downloader(),
-				new \phpbb\user('\phpbb\datetime'),
+				new \phpbb\user($lang, '\phpbb\datetime'),
 			))
 			->getMock()
 		;

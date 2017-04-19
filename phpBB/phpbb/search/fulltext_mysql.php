@@ -198,8 +198,8 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
-		set_config('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
-		set_config('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
+		$this->config->set('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
+		$this->config->set('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
 
 		return false;
 	}
@@ -921,7 +921,7 @@ class fulltext_mysql extends \phpbb\search\base
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
-		set_config('search_last_gc', time(), true);
+		$this->config->set('search_last_gc', time(), false);
 	}
 
 	/**
@@ -942,38 +942,45 @@ class fulltext_mysql extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		$alter = array();
+		$alter_list = array();
 
 		if (!isset($this->stats['post_subject']))
 		{
+			$alter_entry = array();
 			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
-				$alter[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+				$alter_entry[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
 			else
 			{
-				$alter[] = 'MODIFY post_subject text NOT NULL';
+				$alter_entry[] = 'MODIFY post_subject text NOT NULL';
 			}
-			$alter[] = 'ADD FULLTEXT (post_subject)';
+			$alter_entry[] = 'ADD FULLTEXT (post_subject)';
+			$alter_list[] = $alter_entry;
 		}
 
 		if (!isset($this->stats['post_content']))
 		{
+			$alter_entry = array();
 			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
-				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
+				$alter_entry[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			}
 			else
 			{
-				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
+				$alter_entry[] = 'MODIFY post_text mediumtext NOT NULL';
 			}
 
-			$alter[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
+			$alter_entry[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
+			$alter_list[] = $alter_entry;
 		}
 
-		if (sizeof($alter))
+		if (sizeof($alter_list))
 		{
-			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			foreach ($alter_list as $alter)
+			{
+				$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			}
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);

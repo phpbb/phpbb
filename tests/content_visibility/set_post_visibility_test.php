@@ -11,11 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_test_case
 {
@@ -124,7 +121,9 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$auth = $this->getMock('\phpbb\auth\auth');
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$config = new phpbb\config\config(array());
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
@@ -175,7 +174,9 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$auth = $this->getMock('\phpbb\auth\auth');
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$config = new phpbb\config\config(array());
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);

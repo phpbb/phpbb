@@ -15,6 +15,7 @@ namespace phpbb\console\command\extension;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class enable extends command
 {
@@ -33,6 +34,8 @@ class enable extends command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$name = $input->getArgument('extension-name');
 		$this->manager->enable($name);
 		$this->manager->load_extensions();
@@ -40,12 +43,12 @@ class enable extends command
 		if ($this->manager->is_enabled($name))
 		{
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($name));
-			$output->writeln('<info>' . $this->user->lang('CLI_EXTENSION_ENABLE_SUCCESS', $name) . '</info>');
+			$io->success($this->user->lang('CLI_EXTENSION_ENABLE_SUCCESS', $name));
 			return 0;
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name) . '</error>');
+			$io->error($this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name));
 			return 1;
 		}
 	}

@@ -1,27 +1,30 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* Board wide feed (aka overall feed)
-*
-* This will give you the newest {$this->num_items} posts
-* from the whole board.
-*/
-class overall extends \phpbb\feed\post_base
+ * Board wide feed (aka overall feed)
+ *
+ * This will give you the newest {$this->num_items} posts
+ * from the whole board.
+ */
+class overall extends post_base
 {
-	function get_sql()
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_sql()
 	{
 		$forum_ids = array_diff($this->get_readable_forums(), $this->get_excluded_forums(), $this->get_passworded_forums());
 		if (empty($forum_ids))
@@ -52,11 +55,13 @@ class overall extends \phpbb\feed\post_base
 			return false;
 		}
 
+		parent::fetch_attachments(array(), $topic_ids);
+
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
-							'u.username, u.user_id',
+				'p.post_id, p.topic_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
+				'u.username, u.user_id',
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
 				POSTS_TABLE		=> 'p',
@@ -77,7 +82,10 @@ class overall extends \phpbb\feed\post_base
 		return true;
 	}
 
-	function adjust_item(&$item_row, &$row)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function adjust_item(&$item_row, &$row)
 	{
 		parent::adjust_item($item_row, $row);
 

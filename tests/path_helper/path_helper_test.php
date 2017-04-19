@@ -21,14 +21,14 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$filesystem = new \phpbb\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem();
 		$this->set_phpbb_root_path($filesystem);
 
 		$this->path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->getMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php'
@@ -56,7 +56,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 	public function basic_update_web_root_path_data()
 	{
-		$filesystem = new \phpbb\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem();
 		$this->set_phpbb_root_path($filesystem);
 
 		return array(
@@ -90,7 +90,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 	public function update_web_root_path_data()
 	{
-		$this->set_phpbb_root_path(new \phpbb\filesystem());
+		$this->set_phpbb_root_path(new \phpbb\filesystem\filesystem());
 
 		return array(
 			array(
@@ -135,6 +135,43 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'/phpbb3-fork/phpBB/app.php',
 				'./../',
 			),
+
+			// No correction if the path is already prepend by the web root path
+			array(
+				'./../' . $this->phpbb_root_path . 'test.php',
+				'//',
+				null,
+				null,
+				'',
+			),
+			array(
+				'./../' . $this->phpbb_root_path . 'test.php',
+				'//',
+				'foo/bar.php',
+				'bar.php',
+				'',
+			),
+			array(
+				'./../../' . $this->phpbb_root_path . 'test.php',
+				'/foo/template',
+				'/phpbb3-fork/phpBB/app.php/foo/template',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
+			array(
+				'./../' . $this->phpbb_root_path . 'test.php',
+				'/foo/template',
+				'/phpbb3-fork/phpBB/foo/template',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
+			array(
+				'./../'.$this->phpbb_root_path . 'test.php',
+				'/',
+				'/phpbb3-fork/phpBB/app.php/',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
 		);
 	}
 
@@ -158,7 +195,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->getMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php'

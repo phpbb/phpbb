@@ -19,7 +19,7 @@ if (!headers_sent())
 function unicode_to_utf8($string)
 {
 	$utf8 = '';
-	$chars = array();
+
 	for ($i = 0; $i < strlen($string); $i++)
 	{
 		if (isset($string[$i + 5]) && substr($string, $i, 2) == '\\u' && ctype_xdigit(substr($string, $i + 2, 4)))
@@ -80,39 +80,4 @@ function utf8_to_unicode($text)
 function utf8_to_unicode_callback($m)
 {
 	return '\u' . str_pad(base_convert(utf8_ord($m[0]), 10, 16), 4, '0', STR_PAD_LEFT) . '';
-}
-
-/**
-* A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
-* to be in NFKC
-*
-* @param	mixed	$strings	a string or an array of strings to normalize
-* @return	mixed				the normalized content, preserving array keys if array given.
-*/
-function utf8_normalize_nfkc($strings)
-{
-	if (empty($strings))
-	{
-		return $strings;
-	}
-
-	if (!class_exists('utf_normalizer'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-	}
-
-	if (!is_array($strings))
-	{
-		utf_normalizer::nfkc($strings);
-	}
-	else if (is_array($strings))
-	{
-		foreach ($strings as $key => $string)
-		{
-			utf_normalizer::nfkc($strings[$key]);
-		}
-	}
-
-	return $strings;
 }

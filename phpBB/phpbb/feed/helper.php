@@ -1,21 +1,21 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\feed;
 
 /**
-* Class with some helpful functions used in feeds
-*/
+ * Class with some helpful functions used in feeds
+ */
 class helper
 {
 	/** @var \phpbb\config\config */
@@ -31,13 +31,13 @@ class helper
 	protected $phpEx;
 
 	/**
-	* Constructor
-	*
-	* @param	\phpbb\config\config	$config		Config object
-	* @param	\phpbb\user		$user		User object
-	* @param	string	$phpbb_root_path	Root path
-	* @param	string	$phpEx				PHP file extension
-	*/
+	 * Constructor
+	 *
+	 * @param	\phpbb\config\config	$config		Config object
+	 * @param	\phpbb\user		$user		User object
+	 * @param	string	$phpbb_root_path	Root path
+	 * @param	string	$phpEx				PHP file extension
+	 */
 	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
@@ -47,8 +47,8 @@ class helper
 	}
 
 	/**
-	* Run links through append_sid(), prepend generate_board_url() and remove session id
-	*/
+	 * Run links through append_sid(), prepend generate_board_url() and remove session id
+	 */
 	public function get_board_url()
 	{
 		static $board_url;
@@ -62,16 +62,16 @@ class helper
 	}
 
 	/**
-	* Run links through append_sid(), prepend generate_board_url() and remove session id
-	*/
+	 * Run links through append_sid(), prepend generate_board_url() and remove session id
+	 */
 	public function append_sid($url, $params)
 	{
 		return append_sid($this->get_board_url() . '/' . $url, $params, true, '');
 	}
 
 	/**
-	* Generate ISO 8601 date string (RFC 3339)
-	*/
+	 * Generate ISO 8601 date string (RFC 3339)
+	 */
 	public function format_date($time)
 	{
 		static $zone_offset;
@@ -87,16 +87,16 @@ class helper
 	}
 
 	/**
-	* Generate text content
-	*
-	* @param string $content is feed text content
-	* @param string $uid is bbcode_uid
-	* @param string $bitfield is bbcode bitfield
-	* @param int $options bbcode flag options
-	* @param int $forum_id is the forum id
-	* @param array $post_attachments is an array containing the attachments and their respective info
-	* @return string the html content to be printed for the feed
-	*/
+	 * Generate text content
+	 *
+	 * @param string $content is feed text content
+	 * @param string $uid is bbcode_uid
+	 * @param string $bitfield is bbcode bitfield
+	 * @param int $options bbcode flag options
+	 * @param int $forum_id is the forum id
+	 * @param array $post_attachments is an array containing the attachments and their respective info
+	 * @return string the html content to be printed for the feed
+	 */
 	public function generate_content($content, $uid, $bitfield, $options, $forum_id, $post_attachments)
 	{
 		if (empty($content))
@@ -122,16 +122,16 @@ class helper
 		// Firefox does not support CSS for feeds, though
 
 		// Remove font sizes
-	//	$content = preg_replace('#<span style="font-size: [0-9]+%; line-height: [0-9]+%;">([^>]+)</span>#iU', '\1', $content);
+		//	$content = preg_replace('#<span style="font-size: [0-9]+%; line-height: [0-9]+%;">([^>]+)</span>#iU', '\1', $content);
 
 		// Make text strong :P
-	//	$content = preg_replace('#<span style="font-weight: bold?">(.*?)</span>#iU', '<strong>\1</strong>', $content);
+		//	$content = preg_replace('#<span style="font-weight: bold?">(.*?)</span>#iU', '<strong>\1</strong>', $content);
 
 		// Italic
-	//	$content = preg_replace('#<span style="font-style: italic?">([^<]+)</span>#iU', '<em>\1</em>', $content);
+		//	$content = preg_replace('#<span style="font-style: italic?">([^<]+)</span>#iU', '<em>\1</em>', $content);
 
 		// Underline
-	//	$content = preg_replace('#<span style="text-decoration: underline?">([^<]+)</span>#iU', '<u>\1</u>', $content);
+		//	$content = preg_replace('#<span style="text-decoration: underline?">([^<]+)</span>#iU', '<u>\1</u>', $content);
 
 		// Remove embed Windows Media Streams
 		$content	= preg_replace( '#<\!--\[if \!IE\]>-->([^[]+)<\!--<!\[endif\]-->#si', '', $content);

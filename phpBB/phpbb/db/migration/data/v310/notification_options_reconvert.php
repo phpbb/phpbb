@@ -52,6 +52,7 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 	{
 		$limit = 250;
 		$converted_users = 0;
+		$start = $start ?: 0;
 
 		$sql = 'SELECT user_id, user_notify_type, user_notify_pm
 			FROM ' . $this->table_prefix . 'users

@@ -6,9 +6,11 @@ a {
 	direction: ltr;
 	unicode-bidi: embed;
 	text-decoration: none;
-}
+	/* we use links inline more often then not so to address several bugs with
+	IE and some other browsers we render all links as inlineblock by default */
+	display: inline-block;
 
-a:hover	{ text-decoration: underline; }
+}
 
 /* Coloured usernames */
 .username-coloured {
@@ -26,12 +28,6 @@ a:hover	{ text-decoration: underline; }
 	text-decoration: underline;
 }
 
-/* Navigation bar links */
-li.breadcrumbs span:first-child > a {
-	display: inline-block;
-	padding-left: 17px;
-}
-
 /* Notification mark read link */
 .dropdown-extended a.mark_read {
 	background-position: center center;
@@ -43,8 +39,6 @@ li.breadcrumbs span:first-child > a {
 	z-index: 2;
 	right: 0;
 	top: 50%;
-	width: 30px;
-	height: 40px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -55,8 +49,12 @@ li.breadcrumbs span:first-child > a {
 }
 
 .dropdown-extended a.mark_read:hover {
-	width: 40px;
+	width: 50px;
 }
+
+.jumpbox-cat-link,
+.jumpbox-forum-link { font-weight: bold; }
+
 
 /* Links for forum/topic lists */
 a.forumtitle {
@@ -75,6 +73,7 @@ a.topictitle {
 	font-size: 1.2em;
 	font-weight: bold;
 	text-decoration: none;
+	display: inline;
 }
 
 a.topictitle:hover {
@@ -126,72 +125,49 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
+.top {
+	font-size: 12px;
+	text-decoration: none;
+	margin-top: 10px;
+}
+
 /* Back to top of page */
 .back2top {
 	clear: both;
-	height: 11px;
-	text-align: right;
 }
 
-a.top {
-	background: none no-repeat top left;
-	text-decoration: none;
-	width: 11px;
-	height: 11px;
-	display: block;
+.back2top .top {
 	float: right;
-	overflow: hidden;
-	letter-spacing: 1000px;
-	text-indent: 11px;
-}
-
-a.top2 {
-	background: none no-repeat 0 50%;
-	text-decoration: none;
-	padding-left: 15px;
+	margin-right: -10px;
+	margin-top: 0;
 }
 
 /* Arrow links  */
-a.arrow-up		{ background: none no-repeat left center; }
-a.arrow-down		{ background: none no-repeat right center; }
-a.arrow-left		{ background: none no-repeat 3px 60%; }
-a.arrow-right		{ background: none no-repeat 95% 60%; }
 
-a.arrow-up {
+.arrow-up {
 	padding-left: 10px;
 	text-decoration: none;
 	border-bottom-width: 0;
 }
 
-a.arrow-up:hover {
-	background-position: left top;
+.arrow-up:hover {
+
 }
 
-a.arrow-down {
+.arrow-down {
 	padding-right: 10px;
 }
 
-a.arrow-down:hover {
-	background-position: right bottom;
+.arrow-down:hover {
+
+}
+
+.arrow-left:hover {
 	text-decoration: none;
 }
 
-a.arrow-left {
-	padding-left: 12px;
-}
-
-a.arrow-left:hover {
+.arrow-right:hover {
 	text-decoration: none;
-	background-position: 0 60%;
-}
-
-a.arrow-right {
-	padding-right: 12px;
-}
-
-a.arrow-right:hover {
-	text-decoration: none;
-	background-position: 100% 60%;
 }
 
 /* invisible skip link, used for accessibility  */

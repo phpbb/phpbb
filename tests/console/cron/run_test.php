@@ -16,7 +16,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\cron\run;
 
 require_once dirname(__FILE__) . '/tasks/simple.php';
-require_once dirname(__FILE__) . '/../../../phpBB/includes/functions.php';
 
 class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 {
@@ -39,10 +38,12 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
-		set_config(null, null, null, $this->config);
 		$this->lock = new \phpbb\lock\db('cron_lock', $this->config, $this->db);
 
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$this->user->method('lang')->will($this->returnArgument(0));
 
 		$this->task = new phpbb_cron_task_simple();
@@ -76,6 +77,10 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->lock->owns_lock());
 	}
 
+	/**
+	 * @expectedException \phpbb\exception\runtime_exception
+	 * @expectedExceptionMessage CRON_LOCK_ERROR
+	 */
 	public function test_error_lock()
 	{
 		$this->lock->acquire();
@@ -124,6 +129,10 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$this->assertSame(false, $this->lock->owns_lock());
 	}
 
+	/**
+	 * @expectedException \phpbb\exception\runtime_exception
+	 * @expectedExceptionMessage CRON_NO_SUCH_TASK
+	 */
 	public function test_arg_invalid()
 	{
 		$command_tester = $this->get_command_tester();

@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_functions_parse_cfg_file extends phpbb_test_case
 {
 	public function parse_cfg_file_data()

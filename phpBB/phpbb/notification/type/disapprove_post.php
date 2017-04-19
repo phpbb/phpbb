@@ -60,7 +60,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'id'	=> 'moderation_queue',
 		'lang'	=> 'NOTIFICATION_TYPE_MODERATION_QUEUE',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
@@ -73,7 +73,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	*/
 	public function get_title()
 	{
-		return $this->user->lang($this->language_key);
+		return $this->language->lang($this->language_key);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('topic_title'))
 		);
@@ -96,7 +96,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	*/
 	public function get_reason()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REASON',
 			$this->get_data('disapprove_reason')
 		);
@@ -125,21 +125,24 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->set_data('disapprove_reason', $post['disapprove_reason']);
 
-		$data = parent::create_insert_array($post);
+		parent::create_insert_array($post, $pre_create_data);
 
-		$this->notification_time = $data['notification_time'] = time();
+		$this->notification_time = time();
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_insert_array()
+	{
+		$data = parent::get_insert_array();
+		$data['notification_time'] = $this->notification_time;
 
 		return $data;
 	}
