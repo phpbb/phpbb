@@ -631,10 +631,6 @@ li.breadcrumbs span:first-child > a {
 	float: right;
 }
 
-.rtl .online {
-	background-position: 0 0;
-}
-
 .rtl dl.pmlist dd {
 	margin-right: 61% !important;
 	margin-left: 0 !important;
