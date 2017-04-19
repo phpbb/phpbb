@@ -219,6 +219,10 @@ a:hover .icon.icon-blue {
 	color: #196db5;
 }
 
+.icon.online {
+	color: #85de39;
+}
+
 .icon.icon-green,
 a:hover .icon.icon-green {
 	color: #1b9a1b;
