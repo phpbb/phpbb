@@ -326,7 +326,7 @@ textarea.inputbox {
 }
 
 input[type="number"] {
-	-moz-padding-end: inherit;
+	-moz-padding-end: 0;
 }
 
 input[type="search"] {
