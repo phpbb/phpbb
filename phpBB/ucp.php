@@ -273,6 +273,18 @@ switch ($mode)
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ACL_RESTORE_PERMISSIONS', false, array($username));
 
 		$message = $user->lang['PERMISSIONS_RESTORED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+
+		/**
+		* Event to run code after permissions are restored
+		*
+		* @event core.ucp_restore_permissions
+		* @var	string	username	User name
+		* @var	string	message		Success message
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('username', 'message');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_restore_permissions', compact($vars)));
+
 		trigger_error($message);
 
 	break;
