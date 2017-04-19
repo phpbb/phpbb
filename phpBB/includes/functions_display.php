@@ -757,7 +757,7 @@ function generate_forum_nav(&$forum_data_ary)
 	global $template, $auth, $config;
 	global $phpEx, $phpbb_root_path, $phpbb_dispatcher;
 
-	if (!$auth->acl_get('f_list', $forum_data_ary['forum_id']))
+	if (!$auth->acl_get('f_read', $forum_data_ary['forum_id']))
 	{
 		return;
 	}
@@ -777,7 +777,7 @@ function generate_forum_nav(&$forum_data_ary)
 			list($parent_name, $parent_type) = array_values($parent_data);
 
 			// Skip this parent if the user does not have the permission to view it
-			if (!$auth->acl_get('f_list', $parent_forum_id))
+			if (!$auth->acl_get('f_read', $parent_forum_id))
 			{
 				continue;
 			}
