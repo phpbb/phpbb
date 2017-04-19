@@ -98,7 +98,7 @@ class acp_extensions
 			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				trigger_error($message, E_USER_WARNING);
+				trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -145,14 +145,14 @@ class acp_extensions
 			break;
 
 			case 'enable_pre':
-				if (!$md_manager->validate_dir())
+				try
 				{
-					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					$md_manager->validate_enable();
 				}
-
-				if (!$md_manager->validate_enable())
+				catch (exception_interface $e)
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$extension = $phpbb_extension_manager->get_extension($ext_name);
@@ -176,14 +176,14 @@ class acp_extensions
 			break;
 
 			case 'enable':
-				if (!$md_manager->validate_dir())
+				try
 				{
-					trigger_error($user->lang['EXTENSION_DIR_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					$md_manager->validate_enable();
 				}
-
-				if (!$md_manager->validate_enable())
+				catch (exception_interface $e)
 				{
-					trigger_error($user->lang['EXTENSION_NOT_AVAILABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$extension = $phpbb_extension_manager->get_extension($ext_name);
