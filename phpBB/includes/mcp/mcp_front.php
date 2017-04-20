@@ -140,7 +140,7 @@ function mcp_front_view($id, $mode, $action)
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
-						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						'S_ATTACHMENT'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? true : false,
 					));
 				}
 				$db->sql_freeresult($result);
@@ -260,7 +260,7 @@ function mcp_front_view($id, $mode, $action)
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'REPORT_TIME'	=> $user->format_date($row['report_time']),
 						'POST_TIME'		=> $user->format_date($row['post_time']),
-						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						'S_ATTACHMENT'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? true : false,
 					));
 				}
 				$db->sql_freeresult($result);
@@ -345,7 +345,7 @@ function mcp_front_view($id, $mode, $action)
 					'REPORT_TIME'		=> $user->format_date($row['report_time']),
 					'PM_TIME'			=> $user->format_date($row['message_time']),
 					'RECIPIENTS'		=> implode(', ', $address_list[$row['msg_id']]),
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'S_ATTACHMENT'		=> ($auth->acl_get('u_download') && $row['message_attachment']) ? true : false,
 				));
 			}
 		}
