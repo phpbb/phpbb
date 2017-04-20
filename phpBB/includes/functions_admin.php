@@ -2620,6 +2620,11 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	{
 		$sql_and .= ' AND topic_status = ' . ITEM_MOVED . " AND topic_last_post_time < $prune_date";
 	}
+	
+	if ($prune_limit > 0)
+	{
+		$sql_and .= " LIMIT $prune_limit";
+	}
 
 	/**
 	* Use this event to modify the SQL that selects topics to be pruned
