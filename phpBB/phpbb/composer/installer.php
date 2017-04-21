@@ -701,7 +701,8 @@ class installer
 		{
 			$this->restore_cwd();
 
-			if ($super_globals) {
+			if ($super_globals)
+			{
 				$this->request->disable_super_globals();
 			}
 		}

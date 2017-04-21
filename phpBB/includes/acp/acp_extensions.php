@@ -820,7 +820,7 @@ class acp_extensions
 
 			if (isset($managed_packages[$block_vars['META_NAME']]))
 			{
-				$this->output_actions('disabled', [
+				$this->output_actions('enabled', [
 					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
 					'REMOVE' => [
 						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),

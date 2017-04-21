@@ -16,6 +16,7 @@ services:
         arguments:
             - '%core.root_path%'
             - '@filesystem'
+            - '@request'
             - '@config'
 
     ext.composer.manager:
