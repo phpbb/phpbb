@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 
 class acp_extensions
 {
-	var $u_action;
+	public $u_action;
 
 	private $db;
 

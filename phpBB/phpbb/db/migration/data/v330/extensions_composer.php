@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db\migration\data\v320;
+namespace phpbb\db\migration\data\v330;
 
 class extensions_composer extends \phpbb\db\migration\migration
 {

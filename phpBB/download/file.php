@@ -99,7 +99,7 @@ if (isset($_GET['avatar']))
 	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
-	if (is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+	if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
 	{
 		require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
 	}

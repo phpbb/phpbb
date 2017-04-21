@@ -71,7 +71,7 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
 
-if (is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
 {
 	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
 }

@@ -21,6 +21,8 @@ node_modules
 /phpBB/vendor
 /phpBB/vendor-ext/*
 !/phpBB/vendor-ext/.git-keep
+/phpBB/composer-ext.json
+/phpBB/composer-ext.lock
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*

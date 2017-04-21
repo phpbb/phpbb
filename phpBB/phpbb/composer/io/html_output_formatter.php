@@ -41,9 +41,6 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 		= [
 			1 => 'bold',
 			4 => 'underscore',
-			//5 => 'blink',
-			//7 => 'reverse',
-			//8 => 'conceal'
 		];
 
 	/**
