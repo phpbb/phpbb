@@ -172,13 +172,11 @@ class acp_extensions
 				/** @var \phpbb\composer\manager $composer_manager */
 				$composer_manager = $phpbb_container->get('ext.composer.manager');
 
-				$this->request->enable_super_globals();
 				$managed_packages = [];
 				if ($composer_manager->check_requirements())
 				{
 					$managed_packages = $composer_manager->get_managed_packages();
 				}
-				$this->request->disable_super_globals();
 
 				$this->list_enabled_exts($phpbb_extension_manager, $managed_packages);
 				$this->list_disabled_exts($phpbb_extension_manager, $managed_packages);
@@ -475,9 +473,7 @@ class acp_extensions
 
 				try
 				{
-					$this->request->enable_super_globals();
 					$composer_manager->install((array) $extension, $composer_io);
-					$this->request->disable_super_globals();
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
@@ -514,9 +510,7 @@ class acp_extensions
 
 				try
 				{
-					$this->request->enable_super_globals();
 					$composer_manager->remove((array) $extension, $composer_io);
-					$this->request->disable_super_globals();
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
@@ -553,9 +547,7 @@ class acp_extensions
 
 				try
 				{
-					$this->request->enable_super_globals();
 					$composer_manager->update((array) $extension, $composer_io);
-					$this->request->disable_super_globals();
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
@@ -592,9 +584,7 @@ class acp_extensions
 
 				try
 				{
-					$this->request->enable_super_globals();
 					$composer_manager->start_managing($extension, $composer_io);
-					$this->request->disable_super_globals();
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
@@ -684,10 +674,8 @@ class acp_extensions
 				$start = $this->request->variable('start', 0);
 				$base_url = $this->u_action;
 
-				$this->request->enable_super_globals();
 				$available_extensions = $manager->get_available_packages();
 				$managed_packages = $manager->get_managed_packages();
-				$this->request->disable_super_globals();
 
 				$extensions = array_slice($available_extensions, $start, 20);
 

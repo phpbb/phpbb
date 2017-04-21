@@ -27,6 +27,7 @@ use phpbb\composer\io\null_io;
 use phpbb\config\config;
 use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
+use phpbb\request\request;
 use Seld\JsonLint\ParsingException;
 
 /**
@@ -77,11 +78,17 @@ class installer
 	private $ext_json_file_backup;
 
 	/**
+	 * @var request phpBB request object
+	 */
+	private $request;
+
+	/**
 	 * @param string		$root_path	phpBB root path
 	 * @param filesystem	$filesystem	Filesystem object
+	 * @param request		$request	phpBB request object
 	 * @param config		$config		Config object
 	 */
-	public function __construct($root_path, filesystem $filesystem, config $config = null)
+	public function __construct($root_path, filesystem $filesystem, request $request, config $config = null)
 	{
 		if ($config)
 		{
@@ -99,6 +106,7 @@ class installer
 		}
 
 		$this->root_path = $root_path;
+		$this->request = $request;
 
 		putenv('COMPOSER_HOME=' . $filesystem->realpath($root_path) . '/store/composer');
 	}
@@ -115,19 +123,9 @@ class installer
 	 */
 	public function install(array $packages, $whitelist, IOInterface $io = null)
 	{
-		// The composer installers works with a path relative to the current directory
-		$this->move_to_root();
-
-		try
-		{
+		$this->wrap(function() use ($packages, $whitelist, $io) {
 			$this->do_install($packages, $whitelist, $io);
-			$this->restore_cwd();
-		}
-		catch (runtime_exception $e)
-		{
-			$this->restore_cwd();
-			throw $e;
-		}
+		});
 	}
 
 	/**
@@ -178,7 +176,6 @@ class installer
 		catch (\Exception $e)
 		{
 			$this->restore_ext_json_file();
-			$this->restore_cwd();
 
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
@@ -186,7 +183,6 @@ class installer
 		if ($result !== 0)
 		{
 			$this->restore_ext_json_file();
-			$this->restore_cwd();
 
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
@@ -203,21 +199,9 @@ class installer
 	 */
 	public function get_installed_packages($types)
 	{
-		// The composer installers works with a path relative to the current directory
-		$this->move_to_root();
-
-		try
-		{
-			$result = $this->do_get_installed_packages($types);
-			$this->restore_cwd();
-		}
-		catch (runtime_exception $e)
-		{
-			$this->restore_cwd();
-			throw $e;
-		}
-
-		return $result;
+		return $this->wrap(function() use ($types) {
+			return $this->do_get_installed_packages($types);
+		});
 	}
 
 	/**
@@ -275,21 +259,9 @@ class installer
 	 */
 	public function get_available_packages($type)
 	{
-		// The composer installers works with a path relative to the current directory
-		$this->move_to_root();
-
-		try
-		{
-			$result = $this->do_get_available_packages($type);
-			$this->restore_cwd();
-		}
-		catch (runtime_exception $e)
-		{
-			$this->restore_cwd();
-			throw $e;
-		}
-
-		return $result;
+		return $this->wrap(function() use ($type) {
+			return $this->do_get_available_packages($type);
+		});
 	}
 
 	/**
@@ -702,6 +674,36 @@ class installer
 		{
 			chdir($this->original_cwd);
 			$this->original_cwd = null;
+		}
+	}
+
+	/**
+	 * Wraps a callable in order to adjust the context needed by composer
+	 *
+	 * @param callable $callable
+	 *
+	 * @return mixed
+	 */
+	protected function wrap(callable $callable)
+	{
+		// The composer installers works with a path relative to the current directory
+		$this->move_to_root();
+
+		// The composer installers uses some super globals
+		$super_globals = $this->request->super_globals_disabled();
+		$this->request->enable_super_globals();
+
+		try
+		{
+			return $callable();
+		}
+		finally
+		{
+			$this->restore_cwd();
+
+			if ($super_globals) {
+				$this->request->disable_super_globals();
+			}
 		}
 	}
 }
