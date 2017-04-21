@@ -106,7 +106,7 @@ class acp_extensions
 			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				trigger_error($message, E_USER_WARNING);
+				trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -161,7 +161,7 @@ class acp_extensions
 				{
 					$md_manager->validate_enable();
 				}
-				catch (\phpbb\extension\exception $e)
+				catch (exception_interface $e)
 				{
 					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
@@ -192,7 +192,7 @@ class acp_extensions
 				{
 					$md_manager->validate_enable();
 				}
-				catch (\phpbb\extension\exception $e)
+				catch (exception_interface $e)
 				{
 					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
