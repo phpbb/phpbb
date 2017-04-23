@@ -522,10 +522,9 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		$md_manager = $this->create_extension_metadata_manager($name);
 		try
 		{
-			return $md_manager->get_metadata('all') && $md_manager->validate_enable();
+			return $this->create_extension_metadata_manager($name)->validate('all');
 		}
 		catch (\phpbb\extension\exception $e)
 		{

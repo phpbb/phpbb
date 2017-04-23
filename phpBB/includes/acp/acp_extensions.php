@@ -101,7 +101,7 @@ class acp_extensions
 
 			try
 			{
-				$md_manager->get_metadata('all');
+				$md_manager->validate();
 			}
 			catch (exception_interface $e)
 			{

@@ -53,7 +53,8 @@ class metadata_manager
 	* Processes and gets the metadata requested
 	*
 	* @param  string $element			All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
-	* @return array					Contains all of the requested metadata, throws an exception on failure
+	* @return mixed						Array containing all of the requested metadata or string for specific metadata elements, throws an exception on failure
+	* @throws \phpbb\extension\exception
 	*/
 	public function get_metadata($element = 'all')
 	{
@@ -124,8 +125,9 @@ class metadata_manager
 	* Validate fields
 	*
 	* @param string $name  ("all" for display and enable validation
-	* 						"display" for name, type, and authors
-	* 						"name", "type")
+	* 						"display" for name, type, license, version and authors
+	* 						"name", "type", "license", "version" according to format
+	*						"authors", "enable", "dir", "require_php", "require_phpbb" as proxy)
 	* @return Bool True if valid, throws an exception if invalid
 	* @throws \phpbb\extension\exception
 	*/
@@ -139,6 +141,12 @@ class metadata_manager
 			'version'	=> '#.+#',
 		);
 
+		// Fetch and clean the metadata if not done yet
+		if ($this->metadata === array())
+		{
+			$this->fetch_metadata_from_file();
+		}
+
 		switch ($name)
 		{
 			case 'all':
@@ -150,8 +158,18 @@ class metadata_manager
 				{
 					$this->validate($field);
 				}
+			// no break
 
+			case 'authors':
 				$this->validate_authors();
+			break;
+
+			// Proxy for other validation methods
+			case 'enable':
+			case 'dir':
+			case 'require_php':
+			case 'require_phpbb':
+				return $this->{'validate_' . $name}();
 			break;
 
 			default:
