@@ -61,11 +61,13 @@ class metadata_manager
 			'enable'		=> ['dir', 'require_php', 'require_phpbb'],
 			'display'		=> ['fields', 'authors'],
 			'fields'		=> ['name', 'type', 'license', 'version'],
+			'version-check'	=> ['version', 'version_check'],
 			// Methods
 			'authors'		=> null,
 			'dir'			=> null,
 			'require_php'	=> null,
 			'require_phpbb'	=> null,
+			'version_check'	=> null,
 			// Fields
 			'name'			=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
 			'type'			=> '#^phpbb-extension$#',
@@ -105,6 +107,11 @@ class metadata_manager
 
 			case 'display-name':
 				return (isset($this->metadata['extra']['display-name'])) ? $this->metadata['extra']['display-name'] : $this->get_metadata('name');
+			break;
+
+			case 'version-check':
+				$this->validate($element);
+				return array_merge(array('current_version' => $this->metadata['version']), $this->metadata['extra']['version-check']);
 			break;
 		}
 	}
@@ -283,6 +290,25 @@ class metadata_manager
 		if (!isset($this->metadata['require']['php']))
 		{
 			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('require php'));
+		}
+
+		return true;
+	}
+
+	/**
+	* Validates the version check information
+	*
+	* @return boolean True when passes validation, throws an exception if invalid
+	* @throws \phpbb\extension\exception
+	*/
+	protected function validate_version_check()
+	{
+		if (!isset($this->metadata['extra']['version-check']) ||
+			!isset($this->metadata['extra']['version-check']['host']) ||
+			!isset($this->metadata['extra']['version-check']['directory']) ||
+			!isset($this->metadata['extra']['version-check']['filename']))
+		{
+			throw new \phpbb\extension\exception('NO_VERSIONCHECK');
 		}
 
 		return true;

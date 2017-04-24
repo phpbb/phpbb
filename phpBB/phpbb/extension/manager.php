@@ -580,17 +580,17 @@ class manager
 	*/
 	public function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false, $stability = null)
 	{
-		$meta = $md_manager->get_metadata('all');
-
-		if (!isset($meta['extra']['version-check']))
+		try
+		{
+			$version_check = $md_manager->get_metadata('version-check');
+		}
+		catch (\phpbb\extension\exception $e)
 		{
 			throw new runtime_exception('NO_VERSIONCHECK');
 		}
 
-		$version_check = $meta['extra']['version-check'];
-
 		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new file_downloader());
-		$version_helper->set_current_version($meta['version']);
+		$version_helper->set_current_version($version_check['current_version']);
 		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename'], isset($version_check['ssl']) ? $version_check['ssl'] : false);
 		$version_helper->force_stability($stability);
 
