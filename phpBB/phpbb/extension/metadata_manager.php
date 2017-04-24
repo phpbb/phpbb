@@ -37,6 +37,12 @@ class metadata_manager
 	protected $metadata_file;
 
 	/**
+	* List of validations
+	* @var array
+	*/
+	protected $validations;
+
+	/**
 	* Creates the metadata manager
 	*
 	* @param string				$ext_name			Name (including vendor) of the extension
@@ -47,6 +53,25 @@ class metadata_manager
 		$this->ext_name = $ext_name;
 		$this->metadata = array();
 		$this->metadata_file = $ext_path . 'composer.json';
+
+		// Initialize validations
+		$this->validations = array(
+			// Combined
+			'all'			=> ['enable', 'display'],
+			'enable'		=> ['dir', 'require_php', 'require_phpbb'],
+			'display'		=> ['fields', 'authors'],
+			'fields'		=> ['name', 'type', 'license', 'version'],
+			// Methods
+			'authors'		=> null,
+			'dir'			=> null,
+			'require_php'	=> null,
+			'require_phpbb'	=> null,
+			// Fields
+			'name'			=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
+			'type'			=> '#^phpbb-extension$#',
+			'license'		=> '#.+#',
+			'version'		=> '#.+#',
+		);
 	}
 
 	/**
@@ -133,59 +158,41 @@ class metadata_manager
 	*/
 	public function validate($name = 'display')
 	{
-		// Basic fields
-		$fields = array(
-			'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-			'type'		=> '#^phpbb-extension$#',
-			'license'	=> '#.+#',
-			'version'	=> '#.+#',
-		);
-
 		// Fetch and clean the metadata if not done yet
 		if ($this->metadata === array())
 		{
 			$this->fetch_metadata_from_file();
 		}
 
-		switch ($name)
+		// If there is a validation set, validate
+		if (isset($this->validations[$name]))
 		{
-			case 'all':
-				$this->validate_enable();
-			// no break
-
-			case 'display':
-				foreach ($fields as $field => $data)
+			$validation = $this->validations[$name];
+			// Validate via a specific validation method
+			if ($validation === null)
+			{
+				$this->{'validate_' . $name}();
+			}
+			// Base fields that have to adhere to a format
+			else if (is_string($validation))
+			{
+				if (!isset($this->metadata[$name]))
 				{
-					$this->validate($field);
+					throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array($name));
 				}
-			// no break
-
-			case 'authors':
-				$this->validate_authors();
-			break;
-
-			// Proxy for other validation methods
-			case 'enable':
-			case 'dir':
-			case 'require_php':
-			case 'require_phpbb':
-				return $this->{'validate_' . $name}();
-			break;
-
-			default:
-				if (isset($fields[$name]))
+				if (!preg_match($validation, $this->metadata[$name]))
 				{
-					if (!isset($this->metadata[$name]))
-					{
-						throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array($name));
-					}
-
-					if (!preg_match($fields[$name], $this->metadata[$name]))
-					{
-						throw new \phpbb\extension\exception('META_FIELD_INVALID', array($name));
-					}
+					throw new \phpbb\extension\exception('META_FIELD_INVALID', array($name));
 				}
-			break;
+			}
+			// Composed validations
+			else if (is_array($validation))
+			{
+				foreach ($validation as $val)
+				{
+					$this->validate($val);
+				}
+			}
 		}
 
 		return true;
