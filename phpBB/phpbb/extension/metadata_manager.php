@@ -203,6 +203,7 @@ class metadata_manager
 	*
 	* @return boolean True when passes validation, throws exception if invalid
 	* @throws \phpbb\extension\exception
+	* @internal		Should not be used directly. As of phpBB 4.0, the method will become protected.
 	*/
 	public function validate_authors()
 	{
@@ -227,6 +228,7 @@ class metadata_manager
 	*
 	* @return bool True if validation succeeded, throws an exception if invalid
 	* @throws \phpbb\extension\exception
+	* @internal		Should not be used directly. As of phpBB 4.0, the method will become protected.
 	*/
 	public function validate_enable()
 	{
@@ -239,6 +241,7 @@ class metadata_manager
 	*
 	* @return boolean True when passes validation, throws an exception if invalid
 	* @throws \phpbb\extension\exception
+	* @internal		Should not be used directly. As of phpBB 4.0, the method will become protected.
 	*/
 	public function validate_dir()
 	{
@@ -256,6 +259,7 @@ class metadata_manager
 	*
 	* @return boolean True when passes validation, throws an exception if invalid
 	* @throws \phpbb\extension\exception
+	* @internal		Should not be used directly. As of phpBB 4.0, the method will become protected.
 	*/
 	public function validate_require_phpbb()
 	{
@@ -272,6 +276,7 @@ class metadata_manager
 	*
 	* @return boolean True when passes validation, throws an exception if invalid
 	* @throws \phpbb\extension\exception
+	* @internal		Should not be used directly. As of phpBB 4.0, the method will become protected.
 	*/
 	public function validate_require_php()
 	{
