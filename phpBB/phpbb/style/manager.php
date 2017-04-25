@@ -181,7 +181,7 @@ class manager
 		// Activate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 1
-			WHERE style_id ' . $this->db->sql_in_set('style_id', $ids);
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Purge cache
