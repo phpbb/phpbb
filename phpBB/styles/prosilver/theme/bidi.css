@@ -126,7 +126,7 @@
 	text-align: right;
 }
 
-.rtl .dropdown-extended .header .header_settings,
+.rtl .dropdown-extended .header .header-settings,
 .rtl .dropdown-container-right {
 	float: left;
 }
@@ -138,23 +138,23 @@
 
 /* Notifications
 ----------------------------------------- */
-.rtl .notification_list ul li img {
+.rtl .notification-avatar {
 	float: right;
 	margin-right: 0;
 	margin-left: 5px;
 }
 
-.rtl .notification_list div.notifications {
+.rtl .notification-menu .notifications {
 	margin-right: 50px;
 	margin-left: 0;
 }
 
-.rtl .notification_text {
+.rtl .notification-text {
 	margin-right: 58px;
 	margin-left: 0;
 }
 
-.rtl .notification_list p.notification-time {
+.rtl .notification-time {
 	text-align: left;
 }
 

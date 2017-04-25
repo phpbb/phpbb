@@ -1102,11 +1102,11 @@ input.disabled {
 	}
 }
 
-.dropdown-extended ul li {
+.dropdown-extended .dropdown-extended-item {
 	border-top-color: #b9b9b9;
 }
 
-.dropdown-extended ul li:hover {
+.dropdown-extended .dropdown-extended-item:hover {
 	background-color: #cfe1f6;
 	color: #000000;
 }
@@ -1164,12 +1164,12 @@ input.disabled {
 
 /* notifications */
 
-.notification_list p.notification-time {
+.notification-time {
 	color: #4c5d77;
 }
 
-li.notification-reported strong,
-li.notification-disapproved strong {
+.notification-reported strong,
+.notification-disapproved strong {
 	color: #d31141;
 }
 
