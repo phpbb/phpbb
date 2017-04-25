@@ -54,11 +54,6 @@ th a:hover {
 	color: #a8d8ff;
 }
 
-/* notification mark read link */
-.dropdown-extended a.mark_read {
-	background-color: #ffffff;
-}
-
 /* post body links */
 .postlink {
 	border-bottom-color: #368ad2;
@@ -1114,6 +1109,10 @@ input.disabled {
 .dropdown-extended ul li:hover {
 	background-color: #cfe1f6;
 	color: #000000;
+}
+
+.dropdown-extended a.mark_read {
+	background-color: #ffffff;
 }
 
 .dropdown-extended .header,
