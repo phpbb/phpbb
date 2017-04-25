@@ -40,22 +40,7 @@ class metadata_manager
 	* List of validations
 	* @var array
 	*/
-	protected $validations;
-
-	/**
-	* Creates the metadata manager
-	*
-	* @param string				$ext_name			Name (including vendor) of the extension
-	* @param string				$ext_path			Path to the extension directory including root path
-	*/
-	public function __construct($ext_name, $ext_path)
-	{
-		$this->ext_name = $ext_name;
-		$this->metadata = array();
-		$this->metadata_file = $ext_path . 'composer.json';
-
-		// Initialize validations
-		$this->validations = array(
+	static protected $validations = array(
 			// Combined
 			'all'			=> ['enable', 'display'],
 			'enable'		=> ['dir', 'require_php', 'require_phpbb'],
@@ -74,6 +59,18 @@ class metadata_manager
 			'license'		=> '#.+#',
 			'version'		=> '#.+#',
 		);
+
+	/**
+	* Creates the metadata manager
+	*
+	* @param string				$ext_name			Name (including vendor) of the extension
+	* @param string				$ext_path			Path to the extension directory including root path
+	*/
+	public function __construct($ext_name, $ext_path)
+	{
+		$this->ext_name = $ext_name;
+		$this->metadata = array();
+		$this->metadata_file = $ext_path . 'composer.json';
 	}
 
 	/**
@@ -172,9 +169,9 @@ class metadata_manager
 		}
 
 		// If there is a validation set, validate
-		if (isset($this->validations[$name]))
+		if (array_key_exists($name, self::$validations))
 		{
-			$validation = $this->validations[$name];
+			$validation = self::$validations[$name];
 			// Validate via a specific validation method
 			if ($validation === null)
 			{
