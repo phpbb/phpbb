@@ -711,6 +711,14 @@ forumlist_body_last_row_after
 * Since: 3.1.0-b2
 * Purpose: Add content after the very last row of the forum list.
 
+index_body_birthday_block_before
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.11-RC1
+* Purpose: Add new statistic blocks before the Birthday block
+
 index_body_block_birthday_append
 ===
 * Locations:
