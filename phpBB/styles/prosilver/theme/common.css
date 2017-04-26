@@ -1160,7 +1160,7 @@ form > p.post-notice strong {
 .inner:after,
 ul.linklist:after,
 .action-bar:after,
-.notification_text:after,
+.notification-text:after,
 .tabs-container:after,
 .tabs > ul:after,
 .minitabs > ul:after,
@@ -1200,14 +1200,14 @@ ul.linklist:after,
 	display: none;
 }
 
-.dropdown-extended ul {
+.dropdown-extended .dropdown-extended-list {
 	clear: both;
 	overflow-x: hidden;
 	overflow-y: auto;
 	max-height: 350px;
 }
 
-.dropdown-extended ul li {
+.dropdown-extended .dropdown-extended-item {
 	font-size: 0.95em;
 	border-top: 1px solid;
 	position: relative;
@@ -1218,11 +1218,11 @@ ul.linklist:after,
 	list-style-type: none;
 }
 
-.dropdown-extended ul li:first-child {
+.dropdown-extended .dropdown-extended-item:first-child {
 	border-top: none;
 }
 
-.dropdown-extended ul li.no_notifications {
+.dropdown-extended .dropdown-extended-item.no-notifications {
 	padding: 10px;
 }
 
@@ -1249,13 +1249,13 @@ ul.linklist:after,
 	padding: 0 10px;
 }
 
-.dropdown-extended .header .header_settings {
+.dropdown-extended .header .header-settings {
 	font-weight: normal;
 	text-transform: none;
 	float: right;
 }
 
-.dropdown-extended .header .header_settings a {
+.dropdown-extended .header .header-settings a {
 	display: inline-block;
 	padding: 0 5px;
 }
@@ -1271,8 +1271,8 @@ ul.linklist:after,
 	text-align: center;
 }
 
-.dropdown-extended ul li a,
-.dropdown-extended ul li.no-url {
+.dropdown-extended .notification-block,
+.dropdown-extended .dropdown-extended-item.no-url {
 	padding: 8px;
 }
 
@@ -1280,14 +1280,14 @@ ul.linklist:after,
 	padding: 5px 0;
 }
 
-.dropdown-extended ul li a,
-.notification_list dt > a,
+.dropdown-extended .dropdown-extended-item a,
+.notification-menu dt > a,
 .dropdown-extended .footer > a {
 	text-decoration: none;
 	display: block;
 }
 
-.notification_list ul li img {
+.notification-avatar {
 	float: left;
 	width: auto !important;
 	max-width: 50px;
@@ -1296,48 +1296,48 @@ ul.linklist:after,
 	margin-right: 5px;
 }
 
-.notification_list ul li p {
+.notification-item p {
 	font-size: 1em;
 	margin-bottom: 4px;
 }
 
-.notification_list p.notification-reference,
-.notification_list p.notification-location,
-.notification_list li a p.notification-reason {
+.notification-reference,
+.notification-location,
+.notification-reason {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
-.notification_list p.notification-time {
+.notification-time {
 	font-size: 0.9em;
 	text-align: right;
 	margin: 0;
 }
 
-.notification_list div.notifications {
+.notification-menu .notifications {
 	margin-left: 50px;
 	padding: 5px;
 }
 
-.notification_list div.notifications a {
+.notification-menu .notifications a {
 	display: block;
 }
 
-.notification_list p.notifications_title {
+.notifications-title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 1.2em !important;
 }
 
-.notification_list p.notifications_title strong {
+.notifications-title strong {
 	font-weight: bold;
 }
 
-.notification_list p.notifications_time {
+.notifications-time {
 	font-size: 0.9em !important;
 }
 
-.notification_text {
+.notification-text {
 	margin-left: 58px;
 }
 
