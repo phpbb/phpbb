@@ -281,6 +281,12 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.0-a1-dev');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_repositories', '[]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_packagist', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_json_file', 'composer-ext.json');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_vendor_dir', 'vendor-ext/');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_enable_on_install', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_purge_on_remove', '1');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);

@@ -1333,6 +1333,18 @@ p.quick {
 	text-align: left;
 }
 
+fieldset.quick-left,
+p.quick-left {
+	float: left;
+	margin: 15px 0 5px;
+	padding: 0;
+}
+
+.rtl fieldset.quick-left,
+.rtl p.quick-left {
+	float: right;
+}
+
 fieldset.quick legend {
 	display: none;
 }
@@ -2959,3 +2971,10 @@ fieldset.permissions .permissions-switch {
 /* stylelint-enable selector-no-qualifying-type */
 /* stylelint-enable declaration-property-unit-blacklist */
 /* stylelint-enable declaration-property-unit-whitelist */
+
+.console-output {
+	font-family: monospace;
+	background-color: #2a2a2a;
+	color: #f1f1f1;
+	overflow-x: scroll;
+}
