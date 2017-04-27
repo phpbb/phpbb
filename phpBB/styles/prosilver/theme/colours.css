@@ -416,12 +416,7 @@ dl.faq dt {
 /* quote block */
 blockquote {
 	background-color: #ebeadd;
-	background-image: url("./images/quote.gif");
 	border-color: #dbdbce;
-}
-
-.rtl blockquote {
-	background-image: url("./images/quote_rtl.gif");
 }
 
 blockquote blockquote {

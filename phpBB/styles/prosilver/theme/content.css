@@ -474,7 +474,6 @@ ul.searchresults {
 /* Quote block */
 blockquote {
 	font-size: 0.95em;
-	background: transparent none 6px 8px no-repeat;
 	border: 1px solid transparent;
 	overflow: hidden;
 	margin: 1em 1px 1em 25px;
@@ -494,15 +493,14 @@ blockquote cite {
 	/* Username/source of quoter */
 	font-style: normal;
 	display: block;
-	margin-left: 20px;
 }
 
 blockquote cite cite {
 	font-size: 1em;
 }
 
-blockquote.uncited {
-	padding-top: 25px;
+blockquote cite:before, .uncited:before {
+	padding-right: 5px;
 }
 
 blockquote cite > div {

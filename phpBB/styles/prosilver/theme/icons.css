@@ -10,7 +10,8 @@
  * the font you wish to use.
  */
 .icon,
-.button .icon {
+.button .icon,
+blockquote cite:before, .uncited:before {
 	font-family: FontAwesome;
 	font-size: 14px;
 	font-weight: normal;
@@ -91,3 +92,12 @@
 	height: 12px;
 	padding: 0;
 }
+
+blockquote cite:before, .uncited:before {
+	content: '\f10d'; /* Font Awesome quote-left */
+}
+
+.rtl blockquote cite:before, .rtl .uncited:before {
+	content: '\f10e'; /* Font Awesome quote-right */
+}
+
