@@ -501,7 +501,6 @@ li.breadcrumbs span:first-child > a {
 /* Quote block */
 .rtl blockquote {
 	margin: 0.5em 25px 0 1px;
-	background-position: 99% 8px;
 }
 
 .rtl blockquote blockquote {
@@ -511,8 +510,11 @@ li.breadcrumbs span:first-child > a {
 
 .rtl blockquote cite {
 	/* Username/source of quoter */
-	margin-right: 20px;
 	margin-left: 0;
+}
+
+.rtl blockquote cite:before, .rtl .uncited:before {
+	padding-left: 5px;
 }
 
 .rtl blockquote .codebox {
