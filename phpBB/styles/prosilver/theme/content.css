@@ -793,12 +793,6 @@ dd.profile-contact {
 	margin-right: -14px;
 }
 
-.online {
-	background-image: none;
-	background-repeat: no-repeat;
-	background-position: 100% 0;
-}
-
 /* Poster profile used by search */
 .search .postprofile {
 	width: 30%;

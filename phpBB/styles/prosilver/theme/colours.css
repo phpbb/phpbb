@@ -214,6 +214,10 @@ a:hover .icon.icon-blue {
 	color: #196db5;
 }
 
+.icon.online {
+	color: #85de39;
+}
+
 .icon.icon-green,
 a:hover .icon.icon-green {
 	color: #1b9a1b;
@@ -727,7 +731,6 @@ dd.profile-warnings {
 .contact-icon { background-image: url("./images/icons_contact.png"); }
 
 /* profile icons */
-.online { background-image: url("./en/icon_user_online.gif"); }
 .pm-icon { background-position: 0 0; }
 .email-icon { background-position: -21px 0; }
 .jabber-icon { background-position: -80px 0; }
