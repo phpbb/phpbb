@@ -278,24 +278,6 @@ class user extends \phpbb\session
 			$db->sql_freeresult($result);
 		}
 
-		// User has wrong style
-		if (!$this->style && $style_id == $this->data['user_style'])
-		{
-			$style_id = $this->data['user_style'] = $config['default_style'];
-
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_style = $style_id
-				WHERE user_id = {$this->data['user_id']}";
-			$db->sql_query($sql);
-
-			$sql = 'SELECT *
-				FROM ' . STYLES_TABLE . " s
-				WHERE s.style_id = $style_id";
-			$result = $db->sql_query($sql, 3600);
-			$this->style = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-		}
-
 		if (!$this->style)
 		{
 			trigger_error('NO_STYLE_DATA', E_USER_ERROR);
