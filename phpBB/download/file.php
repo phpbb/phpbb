@@ -272,7 +272,7 @@ else
 	* @var	string	mode				Download mode
 	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
 	* @since 3.1.6-RC1
-	* @change 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
+	* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
 	*/
 	$vars = array(
 		'attach_id',

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8d03337c5b9f6ae7cc1a26f84ba0270b",
-    "content-hash": "be4cb6437adc268d96f99bcbaad66d03",
+    "hash": "fa77bb5667bcac933b072b639a44aec0",
+    "content-hash": "da4fd9fbb589d2cffaa3f0168875475d",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -279,16 +279,16 @@
         },
         {
             "name": "lusitanian/oauth",
-            "version": "v0.8.9",
+            "version": "v0.8.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lusitanian/PHPoAuthLib.git",
-                "reference": "29bda6e176df6c292a9b1c43ae8a44d56a87c30b"
+                "reference": "09f4af38f17db6938253f4d1b171d537913ac1ed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/29bda6e176df6c292a9b1c43ae8a44d56a87c30b",
-                "reference": "29bda6e176df6c292a9b1c43ae8a44d56a87c30b",
+                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/09f4af38f17db6938253f4d1b171d537913ac1ed",
+                "reference": "09f4af38f17db6938253f4d1b171d537913ac1ed",
                 "shasum": ""
             },
             "require": {
@@ -342,20 +342,20 @@
                 "oauth",
                 "security"
             ],
-            "time": "2016-02-24 00:20:18"
+            "time": "2016-07-12  22:15:00"
         },
         {
             "name": "marc1706/fast-image-size",
-            "version": "v1.1.2",
+            "version": "v1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/marc1706/fast-image-size.git",
-                "reference": "8bb644f8f767c5763acd61140045a78d10e1eb06"
+                "reference": "5f7e8377746524e2b8a49a631c1fc9afeb9d8bee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/marc1706/fast-image-size/zipball/8bb644f8f767c5763acd61140045a78d10e1eb06",
-                "reference": "8bb644f8f767c5763acd61140045a78d10e1eb06",
+                "url": "https://api.github.com/repos/marc1706/fast-image-size/zipball/5f7e8377746524e2b8a49a631c1fc9afeb9d8bee",
+                "reference": "5f7e8377746524e2b8a49a631c1fc9afeb9d8bee",
                 "shasum": ""
             },
             "require": {
@@ -393,7 +393,7 @@
                 "php",
                 "size"
             ],
-            "time": "2016-10-30 19:00:39"
+            "time": "2017-03-26 12:48:28"
         },
         {
             "name": "ocramius/proxy-manager",
@@ -658,16 +658,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "0.8.4",
+            "version": "0.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "919fd772aae4dd889618da1cb18ae746f2a14bb6"
+                "reference": "e0f1d477d5c24dff11fa3aaa408d8ead07006fe3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/919fd772aae4dd889618da1cb18ae746f2a14bb6",
-                "reference": "919fd772aae4dd889618da1cb18ae746f2a14bb6",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/e0f1d477d5c24dff11fa3aaa408d8ead07006fe3",
+                "reference": "e0f1d477d5c24dff11fa3aaa408d8ead07006fe3",
                 "shasum": ""
             },
             "require": {
@@ -675,6 +675,11 @@
                 "ext-filter": "*",
                 "lib-pcre": ">=7.2",
                 "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "matthiasmullie/minify": "*",
+                "php": ">=5.3.3",
+                "s9e/regexp-builder": ">=1.3.0"
             },
             "suggest": {
                 "ext-curl": "Improves the performance of the MediaEmbed plugin and some JavaScript minifiers",
@@ -714,7 +719,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2016-11-22 20:10:24"
+            "time": "2017-01-22 17:12:21"
         },
         {
             "name": "symfony/config",

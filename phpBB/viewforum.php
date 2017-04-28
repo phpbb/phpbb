@@ -148,6 +148,12 @@ else
 	}
 }
 
+// Is a forum specific topic count required?
+if ($forum_data['forum_topics_per_page'])
+{
+	$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
+}
+
 /* @var $phpbb_content_visibility \phpbb\content_visibility */
 $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
@@ -210,12 +216,6 @@ if ($mark_read == 'topics')
 	}
 
 	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
-}
-
-// Is a forum specific topic count required?
-if ($forum_data['forum_topics_per_page'])
-{
-	$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
 }
 
 // Do the forum Prune thang - cron type job ...
@@ -435,9 +435,9 @@ $sql_array = array(
 *									Author, Post time, Replies, Subject, Views
 * @var	string	sort_dir			Either "a" for ascending or "d" for descending
 * @since 3.1.0-a1
-* @change 3.1.0-RC4 Added forum_data var
-* @change 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
-* @change 3.1.9-RC1 Fix types of properties
+* @changed 3.1.0-RC4 Added forum_data var
+* @changed 3.1.4-RC1 Added forum_id, topics_count, sort_days, sort_key and sort_dir vars
+* @changed 3.1.9-RC1 Fix types of properties
 */
 $vars = array(
 	'forum_data',

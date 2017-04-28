@@ -37,7 +37,7 @@
 			<ul class="dropdown-contents">
 				<!-- BEGIN jumpbox_forums -->
 				<!-- IF jumpbox_forums.FORUM_ID neq -1 -->
-				<li><a href="{jumpbox_forums.LINK}" class="<!-- IF jumpbox_forums.level -->jumpbox-sub-link<!-- ELSEIF jumpbox_forums.S_IS_CAT -->jumpbox-cat-link<!-- ELSE -->jumpbox-forum-link<!-- ENDIF -->"><!-- BEGIN level --><span class="spacer"></span><!-- END level --> <span><!-- IF jumpbox_forums.level --> &#8627; &nbsp;<!-- ENDIF --> {jumpbox_forums.FORUM_NAME}</span></a></li>
+				<li><a href="{jumpbox_forums.LINK}" class="<!-- IF jumpbox_forums.level -->jumpbox-sub-link<!-- ELSEIF jumpbox_forums.S_IS_CAT -->jumpbox-cat-link<!-- ELSE -->jumpbox-forum-link<!-- ENDIF -->"><!-- BEGIN level --><span class="spacer"></span><!-- END level --> <span><!-- IF jumpbox_forums.level --><!-- IF S_CONTENT_DIRECTION eq 'rtl' -->&#8626;<!-- ELSE -->&#8627;<!-- ENDIF --> &nbsp;<!-- ENDIF --> {jumpbox_forums.FORUM_NAME}</span></a></li>
 				<!-- ENDIF -->
 				<!-- END jumpbox_forums -->
 			</ul>
@@ -45,6 +45,6 @@
 	</div>
 
 	<!-- ELSE -->
-	</br></br>
+	<br /><br />
 	<!-- ENDIF -->
 </div>

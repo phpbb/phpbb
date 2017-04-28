@@ -36,18 +36,25 @@ phpbb.loadingIndicator = function() {
 
 	if (!$loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeIn(phpbb.alertTime);
-		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		// Wait 60 seconds and display an error if nothing has been returned by then.
 		phpbb.clearLoadingTimeout();
 		phpbbAlertTimer = setTimeout(function() {
-			var $alert = $('#phpbb_alert');
-
-			if ($loadingIndicator.is(':visible')) {
-				phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
-			}
-		}, 15000);
+			phpbb.showTimeoutMessage();
+		}, 60000);
 	}
 
 	return $loadingIndicator;
+};
+
+/**
+ * Show timeout message
+ */
+phpbb.showTimeoutMessage = function () {
+	var $alert = $('#phpbb_alert');
+
+	if ($loadingIndicator.is(':visible')) {
+		phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
+	}
 };
 
 /**

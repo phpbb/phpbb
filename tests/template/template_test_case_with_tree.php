@@ -48,6 +48,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

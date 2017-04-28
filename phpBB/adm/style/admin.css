@@ -1,4 +1,4 @@
-/*  phpBB 3.1 Admin Style Sheet
+/*  phpBB 3.2 Admin Style Sheet
 	------------------------------------------------------------------------
 	Original author:	subBlue ( http://www.subblue.com/ )
 	Copyright (c) phpBB Limited <https://www.phpbb.com>
@@ -2691,3 +2691,12 @@ fieldset.permissions .padding {
 	word-wrap: break-word;
 	word-break: break-all;
 }
+
+/* stylelint-disable declaration-property-unit-whitelist */
+.emoji {
+	min-height: 18px;
+	min-width: 18px;
+	height: 1em;
+	width: 1em;
+}
+/* stylelint-enable declaration-property-unit-whitelist */

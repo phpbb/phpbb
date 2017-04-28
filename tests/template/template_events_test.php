@@ -161,6 +161,7 @@ Zeta test event in all',
 			$cache_path,
 			$this->extension_manager,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

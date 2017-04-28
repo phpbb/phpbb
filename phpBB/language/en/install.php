@@ -224,6 +224,7 @@ $lang = array_merge($lang, array(
 	// Server data
 	//
 	// Form labels
+	'UPGRADE_INSTRUCTIONS'			=> 'A new feature release <strong>%1$s</strong> is available. Please read <a href="%2$s" title="%2$s"><strong>the release announcement</strong></a> to learn about what it has to offer, and how to upgrade.',
 	'SERVER_CONFIG'				=> 'Server configuration',
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
@@ -296,9 +297,10 @@ $lang = array_merge($lang, array(
 	'TASK_CREATE_TABLES'				=> 'Creating tables',
 
 	// Install data
-	'TASK_ADD_BOTS'			=> 'Registering bots',
-	'TASK_ADD_LANGUAGES'	=> 'Installing available languages',
-	'TASK_ADD_MODULES'		=> 'Installing modules',
+	'TASK_ADD_BOTS'				=> 'Registering bots',
+	'TASK_ADD_LANGUAGES'		=> 'Installing available languages',
+	'TASK_ADD_MODULES'			=> 'Installing modules',
+	'TASK_CREATE_SEARCH_INDEX'	=> 'Creating search index',
 
 	// Install finish tasks
 	'TASK_INSTALL_EXTENSIONS'	=> 'Installing packaged extensions',

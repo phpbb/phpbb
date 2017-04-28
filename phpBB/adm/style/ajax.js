@@ -280,10 +280,11 @@ function submitPermissions() {
 		$.ajax({
 			url: $form.action,
 			type: 'POST',
-			data: formData + '&' + $submitAllButton.name + '=' + encodeURIComponent($submitAllButton.value) +
+			data: formData + '&' + $submitButton.name + '=' + encodeURIComponent($submitButton.value) +
 				'&creation_time=' + $form.find('input[type=hidden][name=creation_time]')[0].value +
 				'&form_token=' + $form.find('input[type=hidden][name=form_token]')[0].value +
-				'&' + $form.children('input[type=hidden]').serialize(),
+				'&' + $form.children('input[type=hidden]').serialize() +
+				'&' + $form.find('input[type=checkbox][name^=inherit]').serialize(),
 			success: handlePermissionReturn,
 			error: handlePermissionReturn
 		});

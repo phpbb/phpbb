@@ -38,7 +38,12 @@ class acp_update
 		try
 		{
 			$recheck = $request->variable('versioncheck_force', false);
-			$updates_available = $version_helper->get_suggested_updates($recheck);
+			$updates_available = $version_helper->get_update_on_branch($recheck);
+			$upgrades_available = $version_helper->get_suggested_updates();
+			if (!empty($upgrades_available))
+			{
+				$upgrades_available = array_pop($upgrades_available);
+			}
 		}
 		catch (\RuntimeException $e)
 		{
@@ -47,10 +52,7 @@ class acp_update
 			$updates_available = array();
 		}
 
-		foreach ($updates_available as $branch => $version_data)
-		{
-			$template->assign_block_vars('updates_available', $version_data);
-		}
+		$template->assign_block_vars('updates_available', $updates_available);
 
 		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
 
@@ -62,6 +64,8 @@ class acp_update
 			'CURRENT_VERSION'		=> $config['version'],
 
 			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $update_link),
+			'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
+			'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
 		));
 
 		// Incomplete update?

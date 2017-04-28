@@ -686,7 +686,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_url_bbcode	Whether or not to parse the [url] BBCode
 	* @var string	mode				Mode to parse text as, e.g. post or sig
 	* @since 3.1.0-a1
-	* @changed 3.2.0-a1
+	* @changed 3.2.0-a1 Added mode
 	*/
 	$vars = array(
 		'text',
