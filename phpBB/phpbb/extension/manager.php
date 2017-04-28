@@ -228,7 +228,7 @@ class manager
 		{
 			$this->config->increment('assets_version', 1);
 
-			$this->update_template_paths($name, $this->container->get('template'));
+			$this->update_template_paths($name);
 		}
 
 		return !$active;
@@ -595,34 +595,35 @@ class manager
 	/**
 	* Make the template aware of ACP template events of a newly enabled extension
 	*
-	* @param string						$name		The extension's name
-	* @param \phpbb\template\base|null	$template	The template service
+	* @param string $name The extension's name
 	* @return null
 	*/
-	protected function update_template_paths($name, \phpbb\template\base $template = null)
+	protected function update_template_paths($name)
 	{
-		if ($template instanceof \phpbb\template\base)
+		if (!$this->container->has('template'))
 		{
-			$possible_paths = array(
-				$this->phpbb_root_path . 'ext/' . $name . '/adm/style',
-				$this->phpbb_root_path . 'ext/' . $name . '/styles',
+			return;
+		}
+
+		$possible_paths = array(
+			$this->phpbb_root_path . 'ext/' . $name . '/adm/style',
+			$this->phpbb_root_path . 'ext/' . $name . '/styles',
+		);
+
+		$paths = array_filter($possible_paths, 'is_dir');
+
+		if ($paths)
+		{
+			$names = array(
+				array(
+					'name' 		=> 'adm',
+					'ext_path' 	=> 'adm/style/',
+				),
 			);
 
-			$paths = array_filter($possible_paths, 'is_dir');
+			$paths[] = $this->phpbb_root_path . 'adm/style';
 
-			if ($paths)
-			{
-				$names = array(
-					array(
-						'name' 		=> 'adm',
-						'ext_path' 	=> 'adm/style/',
-					),
-				);
-
-				$paths[] = $this->phpbb_root_path . 'adm/style';
-
-				$template->set_custom_style($names, $paths);
-			}
+			$this->container->get('template')->set_custom_style($names, $paths);
 		}
 	}
 }
