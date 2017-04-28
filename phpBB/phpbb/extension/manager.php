@@ -227,8 +227,6 @@ class manager
 		if ($active)
 		{
 			$this->config->increment('assets_version', 1);
-
-			$this->update_template_paths($name);
 		}
 
 		return !$active;
@@ -590,40 +588,5 @@ class manager
 			$finder->set_extensions(array_keys($this->all_enabled()));
 		}
 		return $finder;
-	}
-
-	/**
-	* Make the template aware of ACP template events of a newly enabled extension
-	*
-	* @param string $name The extension's name
-	* @return null
-	*/
-	protected function update_template_paths($name)
-	{
-		if (!$this->container->has('template'))
-		{
-			return;
-		}
-
-		$possible_paths = array(
-			$this->phpbb_root_path . 'ext/' . $name . '/adm/style',
-			$this->phpbb_root_path . 'ext/' . $name . '/styles',
-		);
-
-		$paths = array_filter($possible_paths, 'is_dir');
-
-		if ($paths)
-		{
-			$names = array(
-				array(
-					'name' 		=> 'adm',
-					'ext_path' 	=> 'adm/style/',
-				),
-			);
-
-			$paths[] = $this->phpbb_root_path . 'adm/style';
-
-			$this->container->get('template')->set_custom_style($names, $paths);
-		}
 	}
 }
