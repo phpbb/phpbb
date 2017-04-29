@@ -97,7 +97,7 @@ fieldset.fields1 dd {
 	margin-left: 15em;
 }
 
-fieldset.fields1 div {
+fieldset.fields1 > div {
 	margin-bottom: 3px;
 }
 
@@ -262,7 +262,7 @@ fieldset.submit-buttons input {
 
 /* Main message box */
 .message-box {
-	width: 80%;
+	position: relative;
 }
 
 .message-box textarea {
@@ -276,16 +276,6 @@ fieldset.submit-buttons input {
 	height: 270px;
 	resize: vertical;
 	transition: all 0.5s ease, height 1ms linear;
-}
-
-/* Emoticons panel */
-.smiley-box {
-	float: right;
-	width: 18%;
-}
-
-.smiley-box img {
-	margin: 3px;
 }
 
 /* Input field styles

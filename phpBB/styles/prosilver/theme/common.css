@@ -603,6 +603,32 @@ a.header-avatar span:after {
 	display: none !important;
 }
 
+/* Smiley Dropdown
+---------------------------------------- */
+.smiley-container {
+	display: inline;
+	cursor: pointer;
+}
+
+.dropdown-extended .dropdown-contents.smiley-wrap {
+	width: 187px;
+}
+
+.smiley-list {
+	padding: 8px;
+}
+
+.dropdown-contents .smiley-list-item {
+	border: none;
+	display: inline-block;
+	float: right;
+	padding: 3px;
+}
+
+.smiley-list-item .smiley-add {
+	padding: 0;
+}
+
 /* Responsive breadcrumbs
 ---------------------------------------- */
 .breadcrumbs .crumb {

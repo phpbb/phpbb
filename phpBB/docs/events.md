@@ -1501,14 +1501,14 @@ posting_editor_options_prepend
 posting_editor_smilies_after
 ===
 * Locations:
-    + styles/prosilver/template/posting_editor.html
+    + styles/prosilver/template/smiley_dropdown.html
 * Since: 3.1.4-RC1
 * Purpose: Add content after smilies
 
 posting_editor_smilies_before
 ===
 * Locations:
-    + styles/prosilver/template/posting_editor.html
+    + styles/prosilver/template/smiley_dropdown.html
 * Since: 3.1.4-RC1
 * Purpose: Add content before the smilies
 
