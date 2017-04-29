@@ -112,7 +112,6 @@ class manager
 
 		if ($this->cache)
 		{
-			$this->cache->purge();
 			$this->cache->put($this->cache_name, $this->extensions, 600);
 		}
 	}
