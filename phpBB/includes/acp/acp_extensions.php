@@ -143,6 +143,7 @@ class acp_extensions
 					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 				}
 
+				$this->ext_manager->load_extensions();
 				$this->list_enabled_exts();
 				$this->list_disabled_exts();
 				$this->list_available_exts();
@@ -230,8 +231,48 @@ class acp_extensions
 				));
 			break;
 
+			case 'reenable_pre':
+				if (!$phpbb_extension_manager->is_incomplete($ext_name))
+				{
+					redirect($this->u_action);
+				}
+
+				$this->tpl_name = 'acp_ext_reenable';
+
+				$template->assign_vars(array(
+					'PRE'				=> true,
+					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_REENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
+					'U_REENABLE'		=> $this->u_action . '&amp;action=reenable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('reenable.' . $ext_name),
+				));
+			break;
+
+			case 'reenable':
+				if (!$phpbb_extension_manager->is_incomplete($ext_name))
+				{
+					redirect($this->u_action);
+				}
+
+				while ($phpbb_extension_manager->disable_step($ext_name, true))
+				{
+					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
+					if ((time() - $start_time) >= $safe_time_limit)
+					{
+						$template->assign_var('S_NEXT_STEP', true);
+
+						meta_refresh(0, $this->u_action . '&amp;action=reenable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('reenable.' . $ext_name));
+					}
+				}
+				$this->log->add('admin', $user->data['user_id'], $user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
+
+				$template->assign_var('S_NEXT_STEP_ENABLE', true);
+
+				$this->tpl_name = 'acp_ext_reenable';
+
+				meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
+			break;
+
 			case 'disable_pre':
-				if (!$this->ext_manager->is_enabled($ext_name))
+				if (!$this->ext_manager->is_enabled($ext_name) && !$this->ext_manager->is_incomplete($ext_name))
 				{
 					redirect($this->u_action);
 				}
@@ -246,12 +287,12 @@ class acp_extensions
 			break;
 
 			case 'disable':
-				if (!$this->ext_manager->is_enabled($ext_name))
+				if (!$this->ext_manager->is_enabled($ext_name) && !$this->ext_manager->is_incomplete($ext_name))
 				{
 					redirect($this->u_action);
 				}
 
-				while ($this->ext_manager->disable_step($ext_name))
+				while ($this->ext_manager->disable_step($ext_name, $this->ext_manager->is_incomplete($ext_name)))
 				{
 					// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 					if ((time() - $start_time) >= $safe_time_limit)
@@ -514,10 +555,20 @@ class acp_extensions
 
 			$this->template->assign_block_vars('disabled', $block_vars);
 
-			$this->output_actions('disabled', array(
-				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
-				'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
-			));
+			if ($phpbb_extension_manager->is_incomplete($name))
+			{
+				$this->output_actions('disabled', array(
+					'REENABLE'		=> $this->u_action . '&amp;action=reenable_pre&amp;ext_name=' . urlencode($name),
+					'DISABLE'		=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($name),
+				));
+			}
+			else
+			{
+				$this->output_actions('disabled', array(
+					'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+					'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($name),
+				));
+			}
 		}
 	}
 
