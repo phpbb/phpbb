@@ -267,6 +267,7 @@ class manager
 	* process the event.
 	*
 	* @param string $name The extension's name
+	* @param bool $reenable must be true for an auto-disabled extension to complete the disable process
 	* @return bool False if disabling is finished, true otherwise
 	*/
 	public function disable_step($name, $reenable = false)
