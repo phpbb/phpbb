@@ -214,7 +214,7 @@ class acp_extensions
 					}
 
 					// Update custom style for admin area
-					$template->set_custom_style(array(
+					$this->template->set_custom_style(array(
 						array(
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
