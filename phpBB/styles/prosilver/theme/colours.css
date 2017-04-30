@@ -73,6 +73,11 @@ th a:hover {
 	color: #164069;
 }
 
+.signature a,
+.signature a:hover {
+	background-color: transparent;
+}
+
 /* back to top of page */
 .top i {
 	color: #9e9e9e;
@@ -863,13 +868,6 @@ ul.cplist {
 
 .navigation .active-subsection a:hover {
 	color: #d41142;
-}
-
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
-	.navigation a,
-	.rtl .navigation a {
-		background: #aab9c0;
-	}
 }
 
 /* preferences pane layout */

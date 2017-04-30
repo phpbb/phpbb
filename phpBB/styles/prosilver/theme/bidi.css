@@ -538,13 +538,13 @@ li.breadcrumbs span:first-child > a {
 	margin: 0.5em 25px 0 1px;
 }
 
+/* Nested quotes */
 .rtl blockquote blockquote {
-	/* Nested quotes */
 	margin: 0.5em 15px 0 1px;
 }
 
+/* Username/source of quoter */
 .rtl blockquote cite {
-	/* Username/source of quoter */
 	margin-left: 0;
 }
 

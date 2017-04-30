@@ -103,4 +103,3 @@ blockquote cite:before,
 .rtl .uncited:before {
 	content: "\f10e"; /* Font Awesome quote-right */
 }
-
