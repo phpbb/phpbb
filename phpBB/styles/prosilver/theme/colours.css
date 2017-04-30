@@ -996,9 +996,9 @@ fieldset.fields2 dl:hover dt label {
 .inputbox:-moz-placeholder,
 .inputbox::-webkit-input-placeholder {
 	color: #212121;
-.inputbox:hover,
 }
 
+.inputbox:hover,
 .inputbox:focus {
 	border-color: #13a4ec;
 }
