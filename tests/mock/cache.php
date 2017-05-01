@@ -139,6 +139,7 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 	}
 	public function sql_load($query)
 	{
+		return false;
 	}
 
 	/**
