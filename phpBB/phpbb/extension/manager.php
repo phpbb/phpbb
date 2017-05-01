@@ -262,8 +262,8 @@ class manager
 	*/
 	public function disable_step($name)
 	{
-		// ignore extensions that are already disabled
-		if ($this->is_disabled($name))
+		// ignore extensions that are not enabled
+		if (!$this->is_enabled($name))
 		{
 			return false;
 		}
