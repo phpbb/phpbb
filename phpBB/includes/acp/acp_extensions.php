@@ -216,6 +216,15 @@ class acp_extensions
 							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
 						}
 					}
+
+					// Update custom style for admin area
+					$this->template->set_custom_style(array(
+						array(
+							'name' 		=> 'adm',
+							'ext_path' 	=> 'adm/style/',
+						),
+					), array($phpbb_root_path . 'adm/style'));
+
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
