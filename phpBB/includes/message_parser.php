@@ -1433,7 +1433,6 @@ class parse_message extends bbcode_firstpass
 			// For now setting the ttl to 10 minutes
 			switch ($db->get_sql_layer())
 			{
-				case 'mssql':
 				case 'mssql_odbc':
 				case 'mssqlnative':
 					$sql = 'SELECT *
