@@ -11,7 +11,8 @@
  */
 .icon,
 .button .icon,
-blockquote cite:before, .uncited:before {
+blockquote cite:before,
+.uncited:before {
 	font-family: FontAwesome;
 	font-size: 14px;
 	font-weight: normal;
@@ -93,11 +94,13 @@ blockquote cite:before, .uncited:before {
 	padding: 0;
 }
 
-blockquote cite:before, .uncited:before {
-	content: '\f10d'; /* Font Awesome quote-left */
+blockquote cite:before,
+.uncited:before {
+	content: "\f10d"; /* Font Awesome quote-left */
 }
 
-.rtl blockquote cite:before, .rtl .uncited:before {
-	content: '\f10e'; /* Font Awesome quote-right */
+.rtl blockquote cite:before,
+.rtl .uncited:before {
+	content: "\f10e"; /* Font Awesome quote-right */
 }
 
