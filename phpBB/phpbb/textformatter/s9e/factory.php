@@ -83,7 +83,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'i'     => '[I]{TEXT}[/I]',
 		'img'   => '[IMG src={IMAGEURL;useContent}]',
 		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext} #createChild=LI]{TEXT}[/LIST]',
-		'li'    => '[* $tagName=LI]{TEXT}[/*]',
+		'li'    => '[* $tagName=LI #createParagraphs=false]{TEXT}[/*]',
 		'quote' =>
 			"[QUOTE
 				author={TEXT1;optional}
@@ -214,8 +214,8 @@ class factory implements \phpbb\textformatter\cache_interface
 			$configurator->urlConfig->allowScheme(trim($scheme));
 		}
 
-		// Convert newlines to br elements by default
-		$configurator->rootRules->enableAutoLineBreaks();
+		// Create paragraphs wherever applicable
+		$configurator->rulesGenerator->add('ManageParagraphs');
 
 		// Don't automatically ignore text in places where text is not allowed
 		$configurator->rulesGenerator->remove('IgnoreTextIfDisallowed');
