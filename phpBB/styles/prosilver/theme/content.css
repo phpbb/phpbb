@@ -284,11 +284,13 @@ dd.option {
 	margin-right: 180px;
 }
 
+/* DEPRECATED */
 .postbody .content {
-	font-size: 1.3em;
+	font-size: 14px;
 	overflow-x: auto;
 }
 
+/* DEPRECATED */
 .postbody img.postimage {
 	box-sizing: border-box;
 	max-width: 100%;
@@ -371,9 +373,9 @@ dd.option {
 
 .content p {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.2em;
-	line-height: 1.4em;
-	margin-bottom: 1em;
+	font-size: 14px;
+	line-height: 1.75;
+	margin-bottom: 10px;
 }
 
 dl.faq {
@@ -468,10 +470,10 @@ ul.searchresults {
 	list-style: none;
 }
 
-/* BB Code styles
+/* BB Code styles DEPRECATED
 ---------------------------------------- */
 
-/* Quote block */
+/* Quote block DEPRECATED */
 blockquote {
 	font-size: 0.95em;
 	border: 1px solid transparent;
@@ -499,7 +501,8 @@ blockquote cite cite {
 	font-size: 1em;
 }
 
-blockquote cite:before, .uncited:before {
+blockquote cite:before,
+.uncited:before {
 	padding-right: 5px;
 }
 
@@ -513,7 +516,7 @@ blockquote cite > div {
 	margin-left: 0;
 }
 
-/* Code block */
+/* Code block DEPRECATED */
 .codebox {
 	font-size: 1em;
 	word-wrap: normal;
@@ -601,7 +604,7 @@ blockquote .codebox {
 	cursor: default;
 }
 
-/* Inline image thumbnails */
+/* Inline image thumbnails DEPRECATED */
 div.inline-attachment dl.thumbnail,
 div.inline-attachment dl.file {
 	display: block;
@@ -887,6 +890,163 @@ table.fixed-width-table {
 	font-style: italic;
 }
 /* stylelint-enable selector-no-id */
+
+/* post copy styles
+---------------------------------------- */
+.c-post-copy {
+	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.75;
+	clear: both;
+	overflow: hidden;
+	min-height: 30px;
+	padding-bottom: 1px;
+}
+
+.c-post-copy p {
+	font-size: 14px;
+	line-height: 1.75;
+	margin-bottom: 12px;
+}
+
+/* Text */
+.c-post-copy-bold {
+	font-weight: bold;
+}
+
+.c-post-copy-italic {
+	font-style: italic;
+}
+
+.c-post-copy-underline {
+	text-decoration: underline;
+}
+
+/* Links */
+.c-post-copy-link {
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	padding-bottom: 0;
+}
+
+.c-post-copy-link:hover {
+	text-decoration: none;
+}
+
+/* Lists */
+.c-post-copy-list {
+	margin: 8px 0 9px 30px;
+}
+
+.c-post-copy-list li {
+	list-style-type: inherit;
+}
+
+/* Quote block */
+.c-post-copy-quote {
+	font-size: 14px;
+	border: 1px solid transparent;
+	overflow: hidden;
+	margin: 10px 1px 10px 25px;
+	padding: 5px;
+}
+
+.c-post-copy-quote .c-post-copy-quote {
+	/* Nested quotes */
+	font-size: 10px;
+	margin: 10px 1px 10px 15px;
+}
+
+.c-post-copy-quote cite {
+	font-size: 12px;
+	font-weight: bold;
+
+	/* Username/source of quoter */
+	font-style: normal;
+	display: block;
+}
+
+.c-post-copy-quote cite cite {
+	font-size: 10px;
+}
+
+.c-post-copy-quote cite:before,
+.c-post-copy-quote .uncited:before {
+	padding-right: 5px;
+}
+
+.c-post-copy-quote cite > div {
+	font-weight: normal;
+	float: right;
+}
+
+.c-post-copy-quote li blockquote {
+	overflow: inherit;
+	margin-left: 0;
+}
+
+/* Code block */
+.c-post-copy-codebox {
+	font-size: 10px;
+	word-wrap: normal;
+	border: 1px solid transparent;
+	overflow-x: scroll;
+	margin: 10px 0 12px;
+	padding: 3px;
+}
+
+.c-post-copy-codebox p {
+	font-size: 8px !important;
+	font-weight: bold;
+	text-transform: uppercase;
+	border-bottom: 1px solid transparent;
+	display: block;
+	margin-bottom: 3px;
+}
+
+.c-post-copy-quote .codebox {
+	margin-left: 0;
+}
+
+.c-post-copy-codebox code {
+	font: 9px Monaco, "Andale Mono", "Courier New", Courier, monospace;
+	line-height: 1.3;
+	display: block;
+	overflow: auto;
+	height: auto;
+	max-height: 200px;
+	margin: 2px 0;
+	padding-top: 5px;
+}
+
+.c-post-copy-emoji {
+	vertical-align: text-bottom;
+	width: 1em;
+	min-width: 18px;
+	height: 1em;
+	min-height: 18px;
+}
+
+.c-post-copy-smiles {
+	vertical-align: text-bottom;
+}
+
+/* Image */
+.c-post-copy-img {
+	box-sizing: border-box;
+	max-width: 100%;
+}
+
+/* Inline image thumbnails */
+.c-post-copy-inline-attachment dl.thumbnail,
+.c-post-copy-inline-attachment dl.file {
+	display: block;
+	margin-bottom: 4px;
+}
+
+.c-post-copy-inline-attachment p {
+	font-size: 100%;
+}
 
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */

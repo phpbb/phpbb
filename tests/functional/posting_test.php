@@ -101,7 +101,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$form->setValues(array('message' => 'Edited post'));
 		$crawler = self::submit($form);
 
-		$this->assertContains('Edited post', $crawler->filter("#post_content{$post_id} .content")->text());
+		$this->assertContains('Edited post', $crawler->filter("#post_content{$post_id} .js-content")->text());
 	}
 
 	/**

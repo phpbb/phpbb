@@ -76,12 +76,12 @@
 <!-- EVENT viewtopic_body_poll_before -->
 
 <!-- IF S_HAS_POLL -->
-	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" class="topic_poll">
+<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" class="topic_poll">
 
 	<div class="panel">
 		<div class="inner">
 
-		<div class="content">
+		<div class="content js-content">
 			<h2 class="poll-title"><!-- EVENT viewtopic_body_poll_question_prepend -->{POLL_QUESTION}<!-- EVENT viewtopic_body_poll_question_append --></h2>
 			<p class="author">{L_POLL_LENGTH}<!-- IF S_CAN_VOTE and L_POLL_LENGTH --><br /><!-- ENDIF --><!-- IF S_CAN_VOTE --><span class="poll_max_votes">{L_MAX_VOTES}</span><!-- ENDIF --></p>
 
@@ -223,7 +223,7 @@
 			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 			<!-- EVENT viewtopic_body_post_subject_before -->
-			<h3 <!-- IF postrow.S_FIRST_ROW -->class="first"<!-- ENDIF -->><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="{postrow.POST_ICON_IMG_ALT}" title="{postrow.POST_ICON_IMG_ALT}" /> <!-- ENDIF --><a href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
+			<h3 class="post-title<!-- IF postrow.S_FIRST_ROW --> first<!-- ENDIF -->"><!-- IF postrow.POST_ICON_IMG --><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="{postrow.POST_ICON_IMG_ALT}" title="{postrow.POST_ICON_IMG_ALT}" /> <!-- ENDIF --><a class="post-title-link" href="#p{postrow.POST_ID}">{postrow.POST_SUBJECT}</a></h3>
 
 		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
 		<!-- EVENT viewtopic_body_post_buttons_list_before -->
@@ -323,7 +323,7 @@
 			</p>
 			<!-- ENDIF -->
 
-			<div class="content">{postrow.MESSAGE}</div>
+			<div class="content c-post-copy js-content">{postrow.MESSAGE}</div>
 
 			<!-- IF postrow.S_HAS_ATTACHMENTS -->
 				<dl class="attachbox">
