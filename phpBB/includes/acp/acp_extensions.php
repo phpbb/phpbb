@@ -106,7 +106,7 @@ class acp_extensions
 			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				trigger_error($message, E_USER_WARNING);
+				trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -162,7 +162,7 @@ class acp_extensions
 				{
 					$md_manager->validate_enable();
 				}
-				catch (\phpbb\extension\exception $e)
+				catch (exception_interface $e)
 				{
 					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
@@ -193,7 +193,7 @@ class acp_extensions
 				{
 					$md_manager->validate_enable();
 				}
-				catch (\phpbb\extension\exception $e)
+				catch (exception_interface $e)
 				{
 					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
@@ -217,6 +217,15 @@ class acp_extensions
 							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
 						}
 					}
+
+					// Update custom style for admin area
+					$this->template->set_custom_style(array(
+						array(
+							'name' 		=> 'adm',
+							'ext_path' 	=> 'adm/style/',
+						),
+					), array($phpbb_root_path . 'adm/style'));
+
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
