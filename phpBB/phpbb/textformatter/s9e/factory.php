@@ -106,13 +106,13 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @var array Default templates, taken from bbcode::bbcode_tpl()
 	*/
 	protected $default_templates = array(
-		'b'     => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
-		'i'     => '<span style="font-style: italic"><xsl:apply-templates/></span>',
-		'u'     => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
-		'img'   => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
-		'size'  => '<span style="font-size: {FONTSIZE}%; line-height: normal"><xsl:apply-templates/></span>',
-		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
-		'email' => '<a>
+		'b'     => '<strong class="c-post-copy-bold"><xsl:apply-templates/></strong>',
+		'i'     => '<em class="c-post-copy-italic"><xsl:apply-templates/></em>',
+		'u'     => '<span class="c-post-copy-underline"><xsl:apply-templates/></span>',
+		'img'   => '<img src="{IMAGEURL}" class="postimage c-post-copy-image" alt="{L_IMAGE}"/>',
+		'size'  => '<span class="c-post-copy-size" style="font-size: {FONTSIZE}%; line-height: normal"><xsl:apply-templates/></span>',
+		'color' => '<span class="c-post-copy-color" style="color: {COLOR}"><xsl:apply-templates/></span>',
+		'email' => '<a class="c-post-copy-email">
 			<xsl:attribute name="href">
 				<xsl:text>mailto:</xsl:text>
 				<xsl:value-of select="@email"/>
@@ -311,7 +311,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->Emoticons->set(
 				$row['code'],
-				'<img class="smilies" src="{$T_SMILIES_PATH}/' . $this->escape_html_attribute($row['smiley_url']) . '" width="' . $row['smiley_width'] . '" height="' . $row['smiley_height'] . '" alt="{.}" title="' . $this->escape_html_attribute($row['emotion']) . '"/>'
+				'<img class="smilies c-post-copy-smiles" src="{$T_SMILIES_PATH}/' . $this->escape_html_attribute($row['smiley_url']) . '" width="' . $row['smiley_width'] . '" height="' . $row['smiley_height'] . '" alt="{.}" title="' . $this->escape_html_attribute($row['emotion']) . '"/>'
 			);
 		}
 
@@ -350,7 +350,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->Emoji->omitImageSize();
 		$configurator->Emoji->useSVG();
 		$tag = $configurator->Emoji->getTag();
-		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
+		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies c-post-copy-emoji"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set
