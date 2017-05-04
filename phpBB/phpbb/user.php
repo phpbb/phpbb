@@ -588,6 +588,7 @@ class user extends \phpbb\session
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
+		global $phpbb_dispatcher;
 		static $utc;
 
 		if (!isset($utc))
@@ -595,10 +596,34 @@ class user extends \phpbb\session
 			$utc = new \DateTimeZone('UTC');
 		}
 
-		$time = new $this->datetime($this, '@' . (int) $gmepoch, $utc);
-		$time->setTimezone($this->timezone);
+		$format_date_override = false;
+		$function_arguments = func_get_args();
+		/**
+		* Execute code and/or override format_date()
+		*
+		* To override the format_date() function generated value
+		* set $format_date_override to new return value
+		*
+		* @event core.user_format_date_override
+		* @var DateTimeZone	utc Is DateTimeZone in UTC
+		* @var array function_arguments is array comprising a function's argument list
+		* @var string format_date_override Shall we return custom format (string) or not (false)
+		* @since 3.2.1-RC1
+		*/
+		$vars = array('utc', 'function_arguments', 'format_date_override');
+		extract($phpbb_dispatcher->trigger_event('core.user_format_date_override', compact($vars)));
 
-		return $time->format($format, $forcedate);
+		if (!$format_date_override)
+		{
+			$time = new $this->datetime($this, '@' . (int) $gmepoch, $utc);
+			$time->setTimezone($this->timezone);
+
+			return $time->format($format, $forcedate);
+		}
+		else
+		{
+			return $format_date_override;
+		}
 	}
 
 	/**
