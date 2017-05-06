@@ -44,10 +44,13 @@ class acp_extensions
 	private $ext_manager;
 	private $u_catalog_action;
 
+	/** @var string */
+	private $phpbb_root_path;
+
 	function main($id, $mode)
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher, $phpbb_root_path;
 
 		$this->db       = $db;
 		$this->config = $config;
@@ -57,6 +60,7 @@ class acp_extensions
 		$this->log = $phpbb_log;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->ext_manager = $phpbb_extension_manager;
+		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->user->add_lang(['install', 'acp/extensions', 'migrator']);
 
@@ -261,7 +265,7 @@ class acp_extensions
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
 						),
-					), array($phpbb_root_path . 'adm/style'));
+					), array($this->phpbb_root_path . 'adm/style'));
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
