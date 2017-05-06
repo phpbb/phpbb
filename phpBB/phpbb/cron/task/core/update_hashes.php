@@ -113,7 +113,7 @@ class update_hashes extends \phpbb\cron\task\base
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_password = "' . $this->db->sql_escape($new_hash) . '"
-					WHERE user_id = ' . (int)$row['user_id'];
+					WHERE user_id = ' . (int) $row['user_id'];
 				$this->db->sql_query($sql);
 			}
 
