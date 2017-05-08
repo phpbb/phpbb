@@ -1,36 +1,36 @@
-{% if nonexistent_loop|length %}
+{% if nonexistent_loop|default([])|length %}
 nonexistent
 {% endif %}
 
-{% if nonexistent_loop|length == 0 %}
+{% if nonexistent_loop|default([])|length == 0 %}
 nonexistent = 0
 {% endif %}
 
-{% if ! nonexistent_loop|length %}
+{% if ! nonexistent_loop|default([])|length %}
 ! nonexistent
 {% endif %}
 
-{% if empty_loop|length %}
+{% if empty_loop|default([])|length %}
 empty
 {% endif %}
 
-{% if empty_loop|length == 0 %}
+{% if empty_loop|default([])|length == 0 %}
 empty = 0
 {% endif %}
 
-{% if ! empty_loop|length %}
+{% if ! empty_loop|default([])|length %}
 ! empty
 {% endif %}
 
-{% if test_loop|length %}
+{% if test_loop|default([])|length %}
 loop
 {% endif %}
 
-{% if test_loop|length == 0 %}
+{% if test_loop|default([])|length == 0 %}
 loop = 0
 {% endif %}
 
-{% if ! test_loop|length %}
+{% if ! test_loop|default([])|length %}
 ! loop
 {% endif %}
 
