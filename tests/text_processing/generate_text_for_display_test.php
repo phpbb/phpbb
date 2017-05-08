@@ -100,7 +100,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 		$renderer->set_viewcensors(false);
 		$this->assertSame('apple', $renderer->render($original));
-		$this->assertSame('banana', generate_text_for_display($original, '', '', 0, truee));
+		$this->assertSame('banana', generate_text_for_display($original, '', '', 0, true));
 		$this->assertSame('apple', $renderer->render($original), 'The original setting was not restored');
 	}
 
