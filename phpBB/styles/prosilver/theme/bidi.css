@@ -548,7 +548,8 @@ li.breadcrumbs span:first-child > a {
 	margin-left: 0;
 }
 
-.rtl blockquote cite:before, .rtl .uncited:before {
+.rtl blockquote cite:before,
+.rtl .uncited:before {
 	padding-left: 5px;
 }
 
