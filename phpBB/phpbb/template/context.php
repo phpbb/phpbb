@@ -282,39 +282,26 @@ class context
 	{
 		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
 		$blocks = explode('.', $blockname);
-		$blockcount = sizeof($blocks) - 1;
+		$blockcount = count($blocks) - 1;
 
 		$block = $this->tpldata;
 		for ($i = 0; $i < $blockcount; $i++)
 		{
-			if (($pos = strpos($blocks[$i], '[')) !== false)
-			{
-				$name = substr($blocks[$i], 0, $pos);
+			$pos = strpos($blocks[$i], '[');
+			$name = ($pos !== false) ? substr($blocks[$i], 0, $pos) : $blocks[$i];
 
-				if (strpos($blocks[$i], '[]') === $pos)
-				{
-					$index = sizeof($block[$name]) - 1;
-				}
-				else
-				{
-					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-				}
-			}
-			else
-			{
-				$name = $blocks[$i];
-				$index = sizeof($block[$name]) - 1;
-			}
 			if (!isset($block[$name]))
 			{
 				return false;
 			}
-			$block = $block[$name];
-			if (!isset($block[$index]))
+
+			$index = (strpos($blocks[$i], '[]') === $pos) ? (count($block[$name]) - 1) : (min((int) substr($blocks[$i], $pos + 1, -1), count($block[$name]) - 1));
+
+			if (!isset($block[$name][$index]))
 			{
 				return false;
 			}
-			$block = $block[$index];
+			$block = $block[$name][$index];
 		}
 
 		if (!isset($block[$blocks[$i]]))
@@ -324,9 +311,9 @@ class context
 		$block = $block[$blocks[$i]]; // Traverse the last block
 
 		// Change key to zero (change first position) if false and to last position if true
-		if ($key === false || $key === true)
+		if (is_bool($key))
 		{
-			return ($key === false) ? 0 : sizeof($block) - 1;
+			return (!$key) ? 0 : count($block) - 1;
 		}
 
 		// Get correct position if array given
@@ -343,7 +330,7 @@ class context
 			}
 		}
 
-		return (is_int($key) && ((0 <= $key) && ($key < sizeof($block)))) ? $key : false;
+		return (is_int($key) && ((0 <= $key) && ($key < count($block)))) ? $key : false;
 	}
 
 	/**
