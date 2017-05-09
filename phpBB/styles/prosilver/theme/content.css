@@ -499,7 +499,8 @@ blockquote cite cite {
 	font-size: 1em;
 }
 
-blockquote cite:before, .uncited:before {
+blockquote cite:before,
+.uncited:before {
 	padding-right: 5px;
 }
 
