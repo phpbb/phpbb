@@ -351,7 +351,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/56bf6c1cc3e1b24691f10a09321516d4790cecbd",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0031313a708d4ff027b30dfae605398abaa031cc",
                 "reference": "56bf6c1cc3e1b24691f10a09321516d4790cecbd",
                 "shasum": ""
             },
@@ -975,16 +975,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "0.9.1",
+            "version": "0.9.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "e0f1d477d5c24dff11fa3aaa408d8ead07006fe3"
+                "reference": "077c510109f3011dec68a5bcbaeb93a1f9138128"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/e0f1d477d5c24dff11fa3aaa408d8ead07006fe3",
-                "reference": "e0f1d477d5c24dff11fa3aaa408d8ead07006fe3",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/077c510109f3011dec68a5bcbaeb93a1f9138128",
+                "reference": "077c510109f3011dec68a5bcbaeb93a1f9138128",
                 "shasum": ""
             },
             "require": {
@@ -1036,7 +1036,7 @@
                 "parser",
                 "shortcodes"
             ],
-            "time": "2017-01-22 17:12:21"
+            "time": "2017-05-10 19:37:30"
         },
         {
             "name": "seld/cli-prompt",
