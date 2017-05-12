@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "e67f713206a34c48ca33444531ff01b7",
-    "content-hash": "c113ff7bce4d2cc214f5aa047784286e",
+    "hash": "e7d5a2c0bc618dc7b410e9c8b4064513",
+    "content-hash": "adf42dc187587490e9301fa52dbe3530",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -2086,30 +2086,29 @@
         },
         {
             "name": "twig/twig",
-            "version": "1.x-dev",
+            "version": "v1.24.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "d884330572fd1c8e92f8ef59bbfb886a58920ce8"
+                "reference": "33093f6e310e6976baeac7b14f3a6ec02f2d79b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/d884330572fd1c8e92f8ef59bbfb886a58920ce8",
-                "reference": "d884330572fd1c8e92f8ef59bbfb886a58920ce8",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/33093f6e310e6976baeac7b14f3a6ec02f2d79b7",
+                "reference": "33093f6e310e6976baeac7b14f3a6ec02f2d79b7",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2.7"
             },
             "require-dev": {
-                "psr/container": "^1.0",
                 "symfony/debug": "~2.7",
-                "symfony/phpunit-bridge": "~3.3@dev"
+                "symfony/phpunit-bridge": "~2.7"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.34-dev"
+                    "dev-master": "1.24-dev"
                 }
             },
             "autoload": {
@@ -2144,7 +2143,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2017-05-11 21:48:03"
+            "time": "2016-09-01 17:50:53"
         },
         {
             "name": "zendframework/zend-code",
@@ -4010,8 +4009,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "guzzlehttp/guzzle": 20,
-        "twig/twig": 20
+        "guzzlehttp/guzzle": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
