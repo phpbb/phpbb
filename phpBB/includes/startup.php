@@ -80,30 +80,19 @@ function deregister_globals()
 	unset($input);
 }
 
-// Register globals and magic quotes have been dropped in PHP 5.4
-if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
+/**
+* Minimum Requirement: PHP 5.4.0
+*/
+if (version_compare(PHP_VERSION, '5.4') < 0)
 {
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.4.0 or higher before trying to install or update to phpBB 3.2');
 }
-else
-{
-	if (get_magic_quotes_runtime())
-	{
-		// Deactivate
-		@set_magic_quotes_runtime(0);
-	}
 
-	// Be paranoid with passed vars
-	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on' || !function_exists('ini_get'))
-	{
-		deregister_globals();
-	}
-
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
-}
+// Register globals and magic quotes have been dropped in PHP 5.4 so no need for extra checks
+/**
+* @ignore
+*/
+define('STRIP', false);
 
 // In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
 // because we show E_WARNING errors and do not set a default timezone.
