@@ -4,13 +4,13 @@ loop
 noloop
 {% endfor %}
 
-{% if _underscore_loop|default([])|length %}
+{% if _underscore_loop|length %}
 loop
 {% else %}
 noloop
 {% endif %}
 
-{% if _underscore_loop|default([])|length == 2 %}
+{% if _underscore_loop|length == 2 %}
 loop
 {% endif %}
 
