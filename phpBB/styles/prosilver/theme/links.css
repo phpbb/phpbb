@@ -2,8 +2,6 @@
 	$Links
 /* -------------------------------------------------------------- */
 
-/* stylelint-disable declaration-property-unit-whitelist */
-
 /* Links adjustment to correctly display an order of rtl/ltr mixed content */
 a {
 	text-decoration: none;
@@ -206,5 +204,3 @@ a.feed-icon-forum {
 a.anchor {
 	display: block;
 }
-
-/* stylelint-enable declaration-property-unit-whitelist */

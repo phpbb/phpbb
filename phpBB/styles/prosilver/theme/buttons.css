@@ -2,8 +2,6 @@
 	$Buttons
 /* -------------------------------------------------------------- */
 
-/* stylelint-disable declaration-property-unit-whitelist */
-
 .button {
 	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
 	font-size: 13px;
@@ -207,5 +205,3 @@ ul.linklist.bulletin > li.small-icon:before {
 	padding-right: 19px;
 	padding-left: 0;
 }
-
-/* stylelint-enable declaration-property-unit-whitelist */

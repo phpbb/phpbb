@@ -3,8 +3,6 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-disable declaration-property-unit-blacklist */
 
 html {
 	font-size: 100%;
@@ -623,15 +621,15 @@ a.header-avatar span:after {
 }
 
 .breadcrumbs.wrapped .crumb a {
-	letter-spacing: -0.3px;
+	letter-spacing: -0.019em;
 }
 
 .breadcrumbs.wrapped .crumb.wrapped-medium a {
-	letter-spacing: -0.4px;
+	letter-spacing: -0.025em;
 }
 
 .breadcrumbs.wrapped .crumb.wrapped-tiny a {
-	letter-spacing: -0.5px;
+	letter-spacing: -0.031em;
 }
 
 .breadcrumbs .crumb.wrapped-max a {
@@ -1243,6 +1241,7 @@ ul.linklist:after,
 	text-transform: uppercase;
 	border-bottom: 1px solid;
 	border-radius: 5px 5px 0 0;
+
 	/* needs moved to colurs.css */
 	text-shadow: 1px 1px 1px #ffffff;
 	padding: 0 10px;
@@ -1391,5 +1390,5 @@ ul.linklist:after,
 	border-top: none;
 }
 
-/* stylelint-enable declaration-property-unit-whitelist */
-/* stylelint-enable declaration-property-unit-blacklist */
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */

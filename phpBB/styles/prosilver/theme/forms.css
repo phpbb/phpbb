@@ -4,8 +4,6 @@
 
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-disable declaration-property-unit-blacklist */
 
 /* General form styles
 ---------------------------------------- */
@@ -411,5 +409,3 @@ input.search {
 
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-whitelist */
-/* stylelint-enable declaration-property-unit-blacklist */

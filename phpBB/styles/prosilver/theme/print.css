@@ -3,8 +3,6 @@
 /* -------------------------------------------------------------- */
 
 /* stylelint-disable selector-max-compound-selectors */
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-disable declaration-property-unit-blacklist */
 
 /* Lots still TODO here! */
 
@@ -220,12 +218,13 @@ ul {
 	display: none;
 }
 
+/* stylelint-disable declaration-property-unit-whitelist */
 .emoji {
 	width: 1em;
 	min-width: 18px;
 	height: 1em;
 	min-height: 18px;
 }
-/* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable declaration-property-unit-whitelist */
-/* stylelint-enable declaration-property-unit-blacklist */
+
+/* stylelint-enable selector-max-compound-selectors */

@@ -3,7 +3,6 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-whitelist */
 
 /**
 * common.css
@@ -991,4 +990,3 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-whitelist */
