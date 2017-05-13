@@ -73,10 +73,9 @@ class extension extends \Twig_Extension
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
 			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
 			new \Twig_SimpleFilter('addslashes', 'addslashes'),
-			// Override the Twig's length filter due to PHP 7.2+ incompatibility
-			new \Twig_SimpleFilter('length', array($this, 'twig_length_filter'), array('needs_environment' => true)),
 		);
 	}
+
 	/**
 	* Returns a list of global functions to add to the existing list.
 	*
@@ -182,37 +181,5 @@ class extension extends \Twig_Extension
 		// need to check for it
 
 		return call_user_func_array(array($this->language, 'lang'), $args);
-	}
-
-	/**
-	* Returns the length of a variable.
-	*
-	* @param Twig_Environment $env   A Twig_Environment instance
-	* @param mixed            $thing A variable - array or Countable
-	*
-	* @return int The length of the value
-	*/
-	function twig_length_filter(\Twig_Environment $env, $thing)
-	{
-		// The variable should be set and be an array or Countable
-		// add multibyte extensions if possible
-		$func_len = (function_exists('mb_get_info')) ? "mb_strlen" : "strlen";
-		if (null === $thing)
-		{
-			return 0;
-		}
-		if (is_scalar($thing))
-		{
-			return $func_len($thing, $env->getCharset());
-		}
-		if (is_object($thing) && method_exists($thing, '__toString') && !$thing instanceof \Countable)
-		{
-			return $func_len((string) $thing, $env->getCharset());
-		}
-		if ($thing instanceof \Countable || is_array($thing))
-		{
-			return count($thing);
-		}
-		return 1;
 	}
 }
