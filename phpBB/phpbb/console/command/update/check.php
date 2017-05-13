@@ -137,19 +137,18 @@ class check extends \phpbb\console\command\command
 			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name);
 			$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 
-			$metadata = $md_manager->get_metadata('all');
 			if ($input->getOption('verbose'))
 			{
 				$io->title($md_manager->get_metadata('display-name'));
 
-				$io->note($this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . ' ' . $metadata['version']);
+				$io->note($this->language->lang('CURRENT_VERSION') . $this->language->lang('COLON') . ' ' . $md_manager->get_metadata('version'));
 			}
 
 			if (!empty($updates_available))
 			{
 				if ($input->getOption('verbose'))
 				{
-					$io->caution($this->language->lang('NOT_UP_TO_DATE', $metadata['name']));
+					$io->caution($this->language->lang('NOT_UP_TO_DATE', $md_manager->get_metadata('name')));
 
 					$this->display_versions($io, $updates_available);
 				}
@@ -240,41 +239,35 @@ class check extends \phpbb\console\command\command
 			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name);
 			try
 			{
-				$metadata = $md_manager->get_metadata('all');
-				if (isset($metadata['extra']['version-check']))
+				$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
+				if (!empty($updates_available))
 				{
-					try {
-						$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
-						if (!empty($updates_available))
-						{
-							$versions = array_map(function($entry)
-							{
-								return $entry['current'];
-							}, $updates_available);
+					$versions = array_map(function($entry)
+					{
+						return $entry['current'];
+					}, $updates_available);
 
-							$row[] = sprintf("<comment>%s</comment>", $metadata['version']);
-							$row[] = implode(', ', $versions);
-						}
-						else
-						{
-							$row[] = sprintf("<info>%s</info>", $metadata['version']);
-							$row[] = '';
-						}
-					} catch (\RuntimeException $e) {
-						$row[] = $metadata['version'];
-						$row[] = '';
-					}
+					$row[] = sprintf("<comment>%s</comment>", $md_manager->get_metadata('version'));
+					$row[] = implode(', ', $versions);
 				}
 				else
 				{
-					$row[] = $metadata['version'];
+					$row[] = sprintf("<info>%s</info>", $md_manager->get_metadata('version'));
 					$row[] = '';
 				}
 			}
 			catch (exception_interface $e)
 			{
-				$exception_message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$row[] = '<error>' . $exception_message . '</error>';
+				if ($e->getMessage() === 'NO_VERSIONCHECK')
+				{
+					$row[] = $md_manager->get_metadata('version');
+					$row[] = '';
+				}
+				else
+				{
+					$exception_message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					$row[] = '<error>' . $exception_message . '</error>';
+				}
 			}
 			catch (\RuntimeException $e)
 			{
