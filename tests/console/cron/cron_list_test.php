@@ -74,7 +74,8 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 			$task->set_name('command' . $i);
 			$i++;
 		}
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_dispatcher, $phpbb_root_path, $pathEx);
 	}
 
 	public function get_command_tester()

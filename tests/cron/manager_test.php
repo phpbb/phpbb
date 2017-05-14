@@ -75,6 +75,7 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		return new \phpbb\cron\manager($tasks, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
 	}
 }

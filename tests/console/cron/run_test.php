@@ -26,6 +26,9 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	protected $cron_manager;
 	protected $command_name;
 	protected $task;
+	protected $phpbb_dispatcher;
+	protected $phpbb_root_path;
+	protected $phpEx;
 
 	public function getDataSet()
 	{
@@ -36,12 +39,15 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	{
 		global $db, $config, $phpbb_root_path, $phpEx;
 
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpEx = $phpEx;
+
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
 		$this->lock = new \phpbb\lock\db('cron_lock', $this->config, $this->db);
 
 		$this->user = $this->getMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($this->phpbb_root_path, $this->phpEx)),
 			'\phpbb\datetime'
 		));
 		$this->user->method('lang')->will($this->returnArgument(0));
@@ -50,7 +56,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$tasks = array(
 			$this->task,
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phbEx);
+		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $this->phpbb_dispatcher, $this->phpbb_root_path, $this->phpEx);
 
 		$this->assertSame('0', $config['cron_lock']);
 	}
@@ -94,9 +101,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function test_no_task()
 	{
-		$tasks = array(
-		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
+		$tasks = array();
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $this->phpbb_dispatcher, $this->phpbb_root_path, $this->phpEx);
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name));
 
@@ -107,9 +113,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 
 	public function test_no_task_verbose()
 	{
-		$tasks = array(
-		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
+		$tasks = array();
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $this->phpbb_dispatcher, $this->phpbb_root_path, $this->phpEx);
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 
