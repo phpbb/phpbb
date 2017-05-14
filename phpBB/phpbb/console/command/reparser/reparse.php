@@ -37,6 +37,9 @@ class reparse extends \phpbb\console\command\command
 	*/
 	protected $output;
 
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
 	/**
 	 * @var \phpbb\lock\db
 	 */
@@ -58,17 +61,19 @@ class reparse extends \phpbb\console\command\command
 	protected $resume_data;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\user $user
-	* @param \phpbb\lock\db $reparse_lock
-	* @param \phpbb\textreparser\manager $reparser_manager
-	* @param \phpbb\di\service_collection $reparsers
-	*/
-	public function __construct(\phpbb\user $user, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
+	 * Constructor
+	 *
+	 * @param \phpbb\user                  $user
+	 * @param \phpbb\event\dispatcher      $dispatcher
+	 * @param \phpbb\lock\db               $reparse_lock
+	 * @param \phpbb\textreparser\manager  $reparser_manager
+	 * @param \phpbb\di\service_collection $reparsers
+	 */
+	public function __construct(\phpbb\user $user, \phpbb\event\dispatcher $dispatcher, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
 	{
 		require_once __DIR__ . '/../../../../includes/functions_content.php';
 
+		$this->dispatcher = $dispatcher;
 		$this->reparse_lock = $reparse_lock;
 		$this->reparser_manager = $reparser_manager;
 		$this->reparsers = $reparsers;
@@ -187,6 +192,16 @@ class reparse extends \phpbb\console\command\command
 	*/
 	protected function reparse($name)
 	{
+		/**
+		 * Event to get the name of the reparser being run
+		 *
+		 * @event core.console_command_reparser_reparse
+		 * @var	string	name	text_reparser.post_text, text_reparser.pm_text, etc.
+		 * @since 3.2.0-RC3
+		 */
+		$vars = array('name');
+		extract($this->dispatcher->trigger_event('core.console_command_reparser_reparse', compact($vars)));
+
 		$reparser = $this->reparsers[$name];
 		$this->resume_data = $this->reparser_manager->get_resume_data($name);
 		if ($this->input->getOption('dry-run'))
