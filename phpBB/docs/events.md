@@ -1741,6 +1741,22 @@ posting_topic_title_before
 * Since: 3.1.6-RC1
 * Purpose: Allows to add some information on the left of the topic title in the posting form
 
+quickmod_tools_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.10-RC1
+* Purpose: Allows content to be listed at the top of the quickmod tools drop down list
+
+quickmod_tools_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+    + styles/subsilver2/template/viewtopic_body.html
+* Since: 3.1.10-RC1
+* Purpose: Allows content to be listed at the bottom of the quickmod tools drop down list
+
 quickreply_editor_panel_after
 ===
 * Locations:

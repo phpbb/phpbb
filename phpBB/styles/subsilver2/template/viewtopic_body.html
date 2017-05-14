@@ -438,9 +438,11 @@
 		<form method="post" action="{S_MOD_ACTION}">
 			<span class="gensmall">{L_QUICK_MOD}{L_COLON}</span>
 			<select name="action" id="quick-mod-select">
+				<!-- EVENT quickmod_tools_before -->
 				<!-- BEGIN quickmod -->
 				<option value="{quickmod.VALUE}">{quickmod.TITLE}</option>
 				<!-- END quickmod -->
+				<!-- EVENT quickmod_tools_after -->
 			</select>
 			<input class="btnlite" type="submit" value="{L_GO}" />
 		</form>
