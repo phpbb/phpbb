@@ -17,7 +17,7 @@
 			<value>mod=</value>
 			<value></value>
 			<value>1</value>
-			<value>[mod=&quot;{TEXT1}&quot;]{TEXT2}[/mod]</value>
+			<value><![CDATA[[mod=&quot;{TEXT1}&quot;]{TEXT2}[/mod]]]></value>
 			<value><![CDATA[<div id="modremark">
 	<div id="modremarkexclamation">!</div>
 	<div>
@@ -25,9 +25,9 @@
 		<div id="moderemarktext">{TEXT2}</div>
 	</div>
 </div>]]></value>
-			<value>!\[mod\=&quot;(.*?)&quot;\](.*?)\[/mod\]!ies</value>
-			<value>'[mod=&quot;'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${1}')).'&quot;:$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${2}')).'[/mod:$uid]'</value>
-			<value>!\[mod\=&quot;(.*?)&quot;:$uid\](.*?)\[/mod:$uid\]!s</value>
+			<value><![CDATA[[!\[mod\=&quot;(.*?)&quot;\](.*?)\[/mod\]!ies]]></value>
+			<value><![CDATA[['[mod=&quot;'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${1}')).'&quot;:$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${2}')).'[/mod:$uid]']]></value>
+			<value><![CDATA[[!\[mod\=&quot;(.*?)&quot;:$uid\](.*?)\[/mod:$uid\]!s]]></value>
 			<value><![CDATA[<div id="modremark">
 	<div id="modremarkexclamation">!</div>
 	<div>
