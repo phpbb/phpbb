@@ -142,7 +142,7 @@ class context
 	*/
 	protected function set_num_rows(&$loop_data)
 	{
-		$s_num_rows = sizeof($loop_data);
+		$s_num_rows = count($loop_data);
 		foreach ($loop_data as &$mod_block)
 		{
 			foreach ($mod_block as $sub_block_name => &$sub_block)
@@ -311,11 +311,11 @@ class context
 		{
 			$block_selector[key($block_selector)] = $key;
 		}
+		$last_block_name = key($block_selector);
 
 		$block = &$this->tpldata;
 
-		reset($block_selector);
-		while (list($name, $search_key) = each($block_selector))
+		foreach ($block_selector as $name => $search_key)
 		{
 			// Find the index in the block for the given key
 			if (($index = $this->find_block_index(@$block[$name], $search_key)) === false)
@@ -324,7 +324,7 @@ class context
 			}
 
 			// Last iteration, we do not traverse last level, and keep $name and $search_key at its latest values
-			if (!key($block_selector))
+			if ($name === $last_block_name)
 			{
 				break;
 			}
@@ -560,31 +560,18 @@ class context
 	*/
 	protected function block_selector_array($block_selector)
 	{
-		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		// For nested block, $blockcount > 1, for top-level block, $blockcount == 1
 		$blocks = explode('.', $block_selector);
 		$blockcount = count($blocks);
 		$block_selector = array();
 
 		for ($i = 0; $i < $blockcount; $i++)
 		{
-			if (($pos = strpos($blocks[$i], '[')) !== false)
-			{
-				$name = substr($blocks[$i], 0, $pos);
+			$pos = strpos($blocks[$i], '[');
 
-				if (strpos($blocks[$i], '[]') === $pos)
-				{
-					$index = true;
-				}
-				else
-				{
-					$index = (int) substr($blocks[$i], $pos + 1, -1);
-				}
-			}
-			else
-			{
-				$name = $blocks[$i];
-				$index = null;
-			}
+			$name = ($pos) ? substr($blocks[$i], 0, $pos) : $blocks[$i];
+			$index = ($pos) ? ((strpos($blocks[$i], '[]') === $pos) ? (true) : ((int) substr($blocks[$i], $pos + 1, -1))) : null;
+
 			$block_selector[$name] = $index;
 		}
 		return $block_selector;
@@ -617,7 +604,7 @@ class context
 		if (is_array($key) && is_array($block))
 		{
 			// Search array to get correct position
-			list($search_key, $search_value) = each($key);
+			list($search_key, $search_value) = [$key->key(), $key->current()];
 
 			foreach ($block as $i => $val_ary)
 			{
