@@ -15,6 +15,7 @@ namespace phpbb\di\extension;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -24,7 +25,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 */
 class core extends Extension
 {
-	const TWIG_OPTIONS_POSITION = 6;
+	const TWIG_OPTIONS_POSITION = 7;
 
 	/**
 	 * Config path
@@ -91,6 +92,18 @@ class core extends Extension
 			$definition = $container->getDefinition('template.twig.extensions.debug');
 			$definition->addTag('twig.extension');
 		}
+
+		$composer_output = OutputInterface::VERBOSITY_NORMAL;
+		if ($config['extensions']['composer_verbose'])
+		{
+			$composer_output = OutputInterface::VERBOSITY_VERBOSE;
+		}
+		if ($config['extensions']['composer_debug'])
+		{
+			$composer_output = OutputInterface::VERBOSITY_DEBUG;
+		}
+
+		$container->setParameter('extensions.composer.output', $composer_output);
 
 		// Set the debug options
 		foreach ($config['debug'] as $name => $value)

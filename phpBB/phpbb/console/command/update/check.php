@@ -134,7 +134,7 @@ class check extends \phpbb\console\command\command
 		try
 		{
 			$ext_manager = $this->phpbb_container->get('ext.manager');
-			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name, null);
+			$md_manager = $ext_manager->create_extension_metadata_manager($ext_name);
 			$updates_available = $ext_manager->version_check($md_manager, $recheck, false, $stability);
 
 			$metadata = $md_manager->get_metadata('all');

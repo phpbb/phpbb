@@ -18,13 +18,17 @@
 /* Define your base font-size here; most elements will inherit this. */
 
 html {
-	font-size: 1em; /* Assuming 16px... */
-	line-height: 1.5; /* 24px (This is now our magic number; all subsequent margin-bottoms and line-heights want to be a multiple of this number in order to maintain vertical rhythm.) */
+	font-size: 16px; /* Assuming 16px... */
+
+	/* 24px (This is now our magic number; all subsequent margin-bottoms and
+	line-heights want to be a multiple of this number in order to maintain
+	vertical rhythm.) */
+	line-height: 1.5;
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
-	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	background-color: #ffffff;
 	color: #333333;
 }
@@ -116,7 +120,7 @@ ul {
  * This prevents an unwanted focus outline from appearing around elements that
  * might still respond to pointer events.
  */
-[tabindex='-1']:focus {
+[tabindex="-1"]:focus {
 	outline: none !important;
 }
 

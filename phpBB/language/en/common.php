@@ -153,6 +153,7 @@ $lang = array_merge($lang, array(
 	'BYTES_SHORT'			=> 'B',
 
 	'CANCEL'				=> 'Cancel',
+	'CANNOT_RENAME_FILE'	=> 'Cannot rename %s',
 	'CHANGE'				=> 'Change',
 	'CHANGE_FONT_SIZE'		=> 'Change font size',
 	'CHANGING_PREFERENCES'	=> 'Changing board preferences',
@@ -181,6 +182,7 @@ $lang = array_merge($lang, array(
 	'COOKIE_CONSENT_INFO'	=> 'Learn more',
 	'COOKIE_CONSENT_MSG'	=> 'This website uses cookies to ensure you get the best experience on our website.',
 	'COOKIE_CONSENT_OK'		=> 'Got it!',
+	'COOKIE_CONSENT_HREF'	=> 'http://cookiesandyou.com',
 	'COOKIES_DELETED'		=> 'All board cookies successfully deleted.',
 	'CURRENT_TIME'			=> 'It is currently %s',
 

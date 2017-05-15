@@ -402,7 +402,7 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_dispatcher;
 
 	$post_id_list	= $request->variable('post_id_list', array(0));
 	$forum_id		= $request->variable('forum_id', 0);
@@ -569,6 +569,47 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			SET post_subject = '" . $db->sql_escape($subject) . "'
 			WHERE post_id = {$post_id_list[0]}";
 		$db->sql_query($sql);
+
+		// Grab data for first post in split topic
+		$sql_array = array(
+			'SELECT'  => 'p.post_id, p.forum_id, p.poster_id, p.post_text, f.enable_indexing',
+			'FROM' => array(
+				POSTS_TABLE => 'p',
+			),
+			'LEFT_JOIN' => array(
+				array(
+					'FROM' => array(FORUMS_TABLE => 'f'),
+					'ON' => 'p.forum_id = f.forum_id',
+				)
+			),
+			'WHERE' => "post_id = {$post_id_list[0]}",
+		);
+		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$result = $db->sql_query($sql);
+		$first_post_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Index first post as if it were edited
+		if ($first_post_data['enable_indexing'])
+		{
+			// Select the search method and do some additional checks to ensure it can actually be utilised
+			$search_type = $config['search_type'];
+
+			if (!class_exists($search_type))
+			{
+				trigger_error('NO_SUCH_SEARCH_MODULE');
+			}
+
+			$error = false;
+			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+
+			if ($error)
+			{
+				trigger_error($error);
+			}
+
+			$search->index('edit', $first_post_data['post_id'], $first_post_data['post_text'], $subject, $first_post_data['poster_id'], $first_post_data['forum_id']);
+		}
 
 		// Copy topic subscriptions to new topic
 		$sql = 'SELECT user_id, notify_status

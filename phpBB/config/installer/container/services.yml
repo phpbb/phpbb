@@ -84,6 +84,7 @@ services:
             - '%core.template.cache_path%'
             - null
             - '@template.twig.loader'
+            - null
             - []
         calls:
             - [setLexer, ['@template.twig.lexer']]

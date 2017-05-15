@@ -10,16 +10,20 @@
  * the font you wish to use.
  */
 .icon,
-.button .icon {
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;
+.button .icon,
+blockquote cite:before,
+.uncited:before {
 	font-family: FontAwesome;
 	font-size: 14px;
+	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
-	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
 	line-height: 1;
 	display: inline-block;
+	/* stylelint-disable order/declaration-block-properties-specified-order */
+	-moz-osx-font-smoothing: grayscale;
+	/* stylelint-enable order/declaration-block-properties-specified-order */
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
@@ -89,3 +93,14 @@
 	height: 12px;
 	padding: 0;
 }
+
+blockquote cite:before,
+.uncited:before {
+	content: "\f10d"; /* Font Awesome quote-left */
+}
+
+.rtl blockquote cite:before,
+.rtl .uncited:before {
+	content: "\f10e"; /* Font Awesome quote-right */
+}
+

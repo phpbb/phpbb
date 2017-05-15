@@ -32,6 +32,9 @@ class environment extends \Twig_Environment
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $phpbb_dispatcher;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -53,15 +56,17 @@ class environment extends \Twig_Environment
 	* @param string $cache_path The path to the cache directory
 	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
 	* @param \Twig_LoaderInterface $loader Twig loader interface
+	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, $options = array())
+	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig_LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
 		$this->filesystem = $filesystem;
 		$this->phpbb_path_helper = $path_helper;
 		$this->extension_manager = $extension_manager;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
@@ -202,7 +207,36 @@ class environment extends \Twig_Environment
 			$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
 		}
 
+		/**
+		* Allow changing the template output stream before rendering
+		*
+		* @event core.twig_environment_render_template_before
+		* @var	array	context		Array with template variables
+		* @var	string  name		The template name
+		* @since 3.2.1-RC1
+		*/
+		if ($this->phpbb_dispatcher)
+		{
+			$vars = array('context', 'name');
+			extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_render_template_before', compact($vars)));
+		}
+
 		$output = parent::render($name, $context);
+
+		/**
+		* Allow changing the template output stream after rendering
+		*
+		* @event core.twig_environment_render_template_after
+		* @var	array	context		Array with template variables
+		* @var	string  name		The template name
+		* @var	string	output		Rendered template output stream
+		* @since 3.2.1-RC1
+		*/
+		if ($this->phpbb_dispatcher)
+		{
+			$vars = array('context', 'name', 'output');
+			extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_render_template_after', compact($vars)));
+		}
 
 		return $this->inject_assets($output, $placeholder_salt);
 	}

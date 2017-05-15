@@ -4324,6 +4324,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4357,6 +4360,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
+		'PHPBB_VERSION'		=> PHPBB_VERSION,
+		'PHPBB_MAJOR'		=> $phpbb_major,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],

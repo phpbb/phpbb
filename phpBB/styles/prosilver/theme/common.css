@@ -3,6 +3,8 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-blacklist */
 
 html {
 	font-size: 100%;
@@ -23,7 +25,7 @@ body {
 
 h1 {
 	/* Forum name */
-	font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 2em;
 	font-weight: bold;
 	margin-top: 15px;
@@ -32,7 +34,7 @@ h1 {
 
 h2 {
 	/* Forum header titles */
-	font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 2em;
 	font-weight: normal;
 	margin: 0.8em 0 0.2em;
@@ -56,7 +58,7 @@ h3 {
 
 h4 {
 	/* Forum and topic list titles */
-	font-family: 'Trebuchet MS', Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.3em;
 }
 
@@ -103,8 +105,16 @@ strong {
 	font-weight: bold;
 }
 
+.text-strong {
+	font-weight: bold;
+}
+
 i,
 em {
+	font-style: italic;
+}
+
+.text-italics {
 	font-style: italic;
 }
 
@@ -230,8 +240,8 @@ a:hover {
 }
 
 .post {
-	background-position: 100% 0;
 	background-repeat: no-repeat;
+	background-position: 100% 0;
 	border-radius: 7px;
 	position: relative;
 	margin-bottom: 4px;
@@ -333,7 +343,7 @@ ul.linklist.bulletin > li:before {
 	line-height: inherit;
 	display: inline-block;
 	padding-right: 4px;
-	content: '\2022';
+	content: "\2022";
 }
 
 ul.linklist.bulletin > li:first-child:before,
@@ -373,7 +383,7 @@ a.header-avatar span:after {
 	display: inline-block;
 	padding-top: 2px;
 	padding-left: 6px;
-	content: '\f0dd';
+	content: "\f0dd";
 }
 
 /* Dropdown menu
@@ -398,9 +408,9 @@ a.header-avatar span:after {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	position: absolute;
+	z-index: 2;
 	top: 1.2em;
 	left: 0;
-	z-index: 2;
 	display: none;
 	margin-right: -500px;
 	padding: 9px 0 0;
@@ -457,10 +467,10 @@ a.header-avatar span:after {
 }
 
 .dropdown .pointer {
+	z-index: 3;
 	top: -1px;
 	right: auto;
 	left: 10px;
-	z-index: 3;
 }
 
 .dropdown-up .pointer {
@@ -604,7 +614,7 @@ a.header-avatar span:after {
 .breadcrumbs .crumb:before {
 	font-weight: bold;
 	padding: 0 0.5em;
-	content: '\2039';
+	content: "\2039";
 }
 
 .breadcrumbs .crumb:first-child:before {
@@ -612,9 +622,9 @@ a.header-avatar span:after {
 }
 
 .breadcrumbs .crumb a {
-	text-overflow: ellipsis;
 	vertical-align: bottom;
 	white-space: nowrap;
+	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
@@ -769,8 +779,8 @@ table.info tbody th {
 }
 
 .color_palette_placeholder table {
-	border-collapse: separate;
 	border-spacing: 1px;
+	border-collapse: separate;
 }
 
 /* Misc layout styles
@@ -809,7 +819,7 @@ table.info tbody th {
 }
 
 dl.details {
-	/* font-family: 'Lucida Grande', Verdana, Helvetica, Arial, sans-serif; */
+	/* font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; */
 	font-size: 1.1em;
 }
 
@@ -848,12 +858,6 @@ fieldset.fields1 ul.recipients {
 fieldset.fields1 dd.recipients {
 	clear: left;
 	margin-left: 1em;
-}
-
-fieldset.fields1 ul.recipients input.button2 {
-	font-size: 0.8em;
-	margin-right: 0;
-	padding: 0;
 }
 
 fieldset.fields1 dl.pmlist > dt {
@@ -922,7 +926,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.active span {
-	font-family: 'Open Sans', 'Droid Sans', Verdana, Arial, Helvetica;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
 	font-size: 13px;
 	font-weight: normal;
 	line-height: 1.4;
@@ -976,10 +980,10 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .phpbb_alert {
 	border: 1px solid transparent;
 	position: fixed;
+	z-index: 50;
 	top: 150px;
 	right: 0;
 	left: 0;
-	z-index: 50;
 	display: none;
 	width: 620px;
 	margin: 0 auto;
@@ -1026,27 +1030,66 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .darken {
 	opacity: 0.5;
 	position: fixed;
+	z-index: 45;
 	top: 0;
 	left: 0;
-	z-index: 45;
 	width: 100%;
 	height: 100%;
 }
 
 .loading_indicator {
-	background: center center no-repeat;
-	border-radius: 5px;
-	opacity: 0.8;
 	position: fixed;
+	z-index: 51;
 	top: 50%;
 	left: 50%;
-	z-index: 51;
 	display: none;
-	width: 50px;
-	height: 50px;
-	margin-top: -50px;
-	margin-left: -50px;
 }
+
+.loader {
+	width: 48px;
+	height: 48px;
+	padding: 12px;
+}
+
+.spinner {
+	animation: rotator 1s linear infinite;
+}
+
+/* stylelint-disable no-unknown-animations */
+.spinner-path {
+	transform-origin: center;
+	animation: dash 1s ease-in-out infinite, colors 4s ease-in-out infinite;
+	stroke-dasharray: 187;
+	stroke-dashoffset: 0;
+}
+/* stylelint-enable no-unknown-animations */
+
+@keyframes rotator {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(270deg);
+	}
+}
+
+@keyframes dash {
+	0% {
+		stroke-dashoffset: 187;
+	}
+
+	50% {
+		transform: rotate(135deg);
+		stroke-dashoffset: 46.75;
+	}
+
+	100% {
+		transform: rotate(450deg);
+		stroke-dashoffset: 187;
+	}
+}
+
 
 /* Miscellaneous styles
 ---------------------------------------- */
@@ -1117,14 +1160,14 @@ form > p.post-notice strong {
 .inner:after,
 ul.linklist:after,
 .action-bar:after,
-.notification_text:after,
+.notification-text:after,
 .tabs-container:after,
 .tabs > ul:after,
 .minitabs > ul:after,
 .postprofile .avatar-container:after {
 	display: block;
 	clear: both;
-	content: '';
+	content: "";
 }
 
 .emoji {
@@ -1157,14 +1200,14 @@ ul.linklist:after,
 	display: none;
 }
 
-.dropdown-extended ul {
+.dropdown-extended .dropdown-extended-list {
 	clear: both;
 	overflow-x: hidden;
 	overflow-y: auto;
 	max-height: 350px;
 }
 
-.dropdown-extended ul li {
+.dropdown-extended .dropdown-extended-item {
 	font-size: 0.95em;
 	border-top: 1px solid;
 	position: relative;
@@ -1175,11 +1218,11 @@ ul.linklist:after,
 	list-style-type: none;
 }
 
-.dropdown-extended ul li:first-child {
+.dropdown-extended .dropdown-extended-item:first-child {
 	border-top: none;
 }
 
-.dropdown-extended ul li.no_notifications {
+.dropdown-extended .dropdown-extended-item.no-notifications {
 	padding: 10px;
 }
 
@@ -1195,24 +1238,24 @@ ul.linklist:after,
 }
 
 .dropdown-extended .header {
-	font-family: Arial, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-family: Arial, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-weight: bold;
 	line-height: 3em;
 	text-align: left;
 	text-transform: uppercase;
-	border-radius: 5px 5px 0 0;
 	border-bottom: 1px solid;
+	border-radius: 5px 5px 0 0;
 	text-shadow: 1px 1px 1px #ffffff;
 	padding: 0 10px;
 }
 
-.dropdown-extended .header .header_settings {
+.dropdown-extended .header .header-settings {
 	font-weight: normal;
 	text-transform: none;
 	float: right;
 }
 
-.dropdown-extended .header .header_settings a {
+.dropdown-extended .header .header-settings a {
 	display: inline-block;
 	padding: 0 5px;
 }
@@ -1220,7 +1263,7 @@ ul.linklist:after,
 .dropdown-extended .header:after {
 	display: table;
 	clear: both;
-	content: '';
+	content: "";
 }
 
 .dropdown-extended .footer {
@@ -1228,8 +1271,8 @@ ul.linklist:after,
 	text-align: center;
 }
 
-.dropdown-extended ul li a,
-.dropdown-extended ul li.no-url {
+.dropdown-extended .notification-block,
+.dropdown-extended .dropdown-extended-item.no-url {
 	padding: 8px;
 }
 
@@ -1237,14 +1280,14 @@ ul.linklist:after,
 	padding: 5px 0;
 }
 
-.dropdown-extended ul li a,
-.notification_list dt > a,
+.dropdown-extended .dropdown-extended-item a,
+.notification-menu dt > a,
 .dropdown-extended .footer > a {
 	text-decoration: none;
 	display: block;
 }
 
-.notification_list ul li img {
+.notification-avatar {
 	float: left;
 	width: auto !important;
 	max-width: 50px;
@@ -1253,48 +1296,48 @@ ul.linklist:after,
 	margin-right: 5px;
 }
 
-.notification_list ul li p {
+.notification-item p {
 	font-size: 1em;
 	margin-bottom: 4px;
 }
 
-.notification_list p.notification-reference,
-.notification_list p.notification-location,
-.notification_list li a p.notification-reason {
-	text-overflow: ellipsis;
+.notification-reference,
+.notification-location,
+.notification-reason {
 	white-space: nowrap;
+	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
-.notification_list p.notification-time {
+.notification-time {
 	font-size: 0.9em;
 	text-align: right;
 	margin: 0;
 }
 
-.notification_list div.notifications {
+.notification-menu .notifications {
 	margin-left: 50px;
 	padding: 5px;
 }
 
-.notification_list div.notifications a {
+.notification-menu .notifications a {
 	display: block;
 }
 
-.notification_list p.notifications_title {
-	font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+.notifications-title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 1.2em !important;
 }
 
-.notification_list p.notifications_title strong {
+.notifications-title strong {
 	font-weight: bold;
 }
 
-.notification_list p.notifications_time {
+.notifications-time {
 	font-size: 0.9em !important;
 }
 
-.notification_text {
+.notification-text {
 	margin-left: 58px;
 }
 
@@ -1324,7 +1367,7 @@ ul.linklist:after,
 	margin: 0 7px 0 0;
 }
 
-.linklist.compact .rightside > a > span span {
+.linklist.compact .rightside > a > span {
 	display: none;
 }
 
@@ -1347,3 +1390,6 @@ ul.linklist:after,
 .dropdown .clone.hidden + li {
 	border-top: none;
 }
+
+/* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-blacklist */

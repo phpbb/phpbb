@@ -52,10 +52,7 @@ class acp_update
 			$updates_available = array();
 		}
 
-		foreach ($updates_available as $branch => $version_data)
-		{
-			$template->assign_block_vars('updates_available', $version_data);
-		}
+		$template->assign_block_vars('updates_available', $updates_available);
 
 		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
 

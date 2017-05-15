@@ -3,6 +3,7 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
+/* stylelint-disable declaration-property-unit-whitelist */
 
 /**
 * common.css
@@ -125,7 +126,7 @@
 	text-align: right;
 }
 
-.rtl .dropdown-extended .header .header_settings,
+.rtl .dropdown-extended .header .header-settings,
 .rtl .dropdown-container-right {
 	float: left;
 }
@@ -137,23 +138,23 @@
 
 /* Notifications
 ----------------------------------------- */
-.rtl .notification_list ul li img {
+.rtl .notification-avatar {
 	float: right;
 	margin-right: 0;
 	margin-left: 5px;
 }
 
-.rtl .notification_list div.notifications {
+.rtl .notification-menu .notifications {
 	margin-right: 50px;
 	margin-left: 0;
 }
 
-.rtl .notification_text {
+.rtl .notification-text {
 	margin-right: 58px;
 	margin-left: 0;
 }
 
-.rtl .notification_list p.notification-time {
+.rtl .notification-time {
 	text-align: left;
 }
 
@@ -411,8 +412,8 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl ul.topiclist dd {
-	border-right-style: solid;
 	border-right-width: 1px;
+	border-right-style: solid;
 	border-left: none;
 	float: right;
 }
@@ -534,7 +535,6 @@ li.breadcrumbs span:first-child > a {
 
 /* Quote block */
 .rtl blockquote {
-	background-position: 99% 8px;
 	margin: 0.5em 25px 0 1px;
 }
 
@@ -545,8 +545,12 @@ li.breadcrumbs span:first-child > a {
 
 .rtl blockquote cite {
 	/* Username/source of quoter */
-	margin-right: 20px;
 	margin-left: 0;
+}
+
+.rtl blockquote cite:before,
+.rtl .uncited:before {
+	padding-left: 5px;
 }
 
 .rtl blockquote .codebox {
@@ -601,8 +605,8 @@ li.breadcrumbs span:first-child > a {
 .rtl .pollbar4,
 .rtl .pollbar5 {
 	border-right: none;
-	border-left-style: solid;
 	border-left-width: 1px;
+	border-left-style: solid;
 }
 
 /* Poster profile block
@@ -615,8 +619,8 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .pm .postprofile {
-	border-right-style: solid;
 	border-right-width: 1px;
+	border-right-style: solid;
 	border-left: none;
 }
 
@@ -628,10 +632,6 @@ li.breadcrumbs span:first-child > a {
 
 .rtl .postprofile .avatar {
 	float: right;
-}
-
-.rtl .online {
-	background-position: 0 0;
 }
 
 .rtl dl.pmlist dd {
@@ -669,8 +669,8 @@ li.breadcrumbs span:first-child > a {
  ---------------------------------------- */
 .rtl .contact-icons a {
 	border-right: none;
-	border-left-style: dotted;
 	border-left-width: 1px;
+	border-left-style: dotted;
 	float: right;
 }
 
@@ -810,8 +810,8 @@ li.breadcrumbs span:first-child > a {
 
 /* PM marking colours */
 .rtl .pm-legend {
-	border-right-style: solid;
 	border-right-width: 10px;
+	border-right-style: solid;
 	border-left-width: 0;
 	padding-right: 3px;
 	padding-left: 0;
@@ -958,9 +958,9 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .search-box .inputbox {
-	border-radius: 0 4px 4px 0;
 	border-right-width: 1px;
 	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
 	float: right;
 	padding: 3px;
 }
@@ -971,9 +971,9 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .button-search-end {
-	border-radius: 4px 0 0 4px;
 	border-right-width: 0;
 	border-left-width: 1px;
+	border-radius: 4px 0 0 4px;
 }
 
 .rtl .search-header .button-search-end {
@@ -1137,4 +1137,7 @@ li.breadcrumbs span:first-child > a {
 		margin-right: 0;
 	}
 }
-/* stylelint-enable */
+
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
+/* stylelint-enable declaration-property-unit-whitelist */
