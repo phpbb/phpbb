@@ -27,7 +27,7 @@ class user_notifications_table_temp_index extends \phpbb\db\migration\migration
 		return array(
 			'add_index' => array(
 				$this->table_prefix . 'user_notifications' => array(
-					'itm_usr_mthd'	=> array('item_type', 'item_id', 'user_id', 'method'),
+					'itm_usr_mthd'	=> array('item_type', 'item_id', 'user_id'),
 				),
 			),
 		);
