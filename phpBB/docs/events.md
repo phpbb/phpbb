@@ -1820,6 +1820,13 @@ search_results_topic_before
 * Since: 3.1.0-b4
 * Purpose: Add data before search result topics
 
+search_results_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.11-RC1
+* Purpose: Add data after search results topic title
+
 simple_footer_after
 ===
 * Locations:
