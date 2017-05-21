@@ -967,6 +967,20 @@ mcp_topic_postrow_post_details_before
 * Since: 3.1.10-RC1
 * Purpose: Add content before post details in topic moderation
 
+mcp_topic_postrow_post_subject_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after post subject in topic moderation
+
+mcp_topic_postrow_post_subject_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before post subject in topic moderation
+
 mcp_topic_topic_title_after
 ===
 * Locations:
