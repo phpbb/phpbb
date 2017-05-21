@@ -153,6 +153,7 @@ $lang = array_merge($lang, array(
 	'BYTES_SHORT'			=> 'B',
 
 	'CANCEL'				=> 'Cancel',
+	'CANNOT_RENAME_FILE'	=> 'Cannot rename %s',
 	'CHANGE'				=> 'Change',
 	'CHANGE_FONT_SIZE'		=> 'Change font size',
 	'CHANGING_PREFERENCES'	=> 'Changing board preferences',

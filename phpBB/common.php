@@ -141,6 +141,11 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
 
+if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+{
+	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+}
+
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));

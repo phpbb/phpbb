@@ -7,7 +7,7 @@
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 
 	<fieldset class="quick">
-		<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.1" target="_blank">{L_BROWSE_EXTENSIONS_DATABASE}</a> &bull; <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
+		<span class="small"><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
 	</fieldset>
 
 	<form id="version_check_settings" method="post" action="{U_ACTION}" style="display:none">
@@ -59,7 +59,7 @@
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
+					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF --><!-- IF enabled.actions.COLOR -->  style="color: {enabled.actions.COLOR};"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
 					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>
@@ -86,7 +86,7 @@
 			</td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
+					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF --><!-- IF disabled.actions.COLOR -->  style="color: {disabled.actions.COLOR};"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
 					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>
