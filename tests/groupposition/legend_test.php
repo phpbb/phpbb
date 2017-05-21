@@ -11,7 +11,6 @@
 *
 */
 
-
 class phpbb_groupposition_legend_test extends phpbb_database_test_case
 {
 	public function getDataSet()
@@ -33,11 +32,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_get_group_value($group_id, $expected, $throws_exception)
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		if ($throws_exception)
@@ -51,11 +52,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 
 	public function test_get_group_count()
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -91,11 +94,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_add_group($group_id, $expected_added, $expected)
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -179,11 +184,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_delete_group($group_id, $skip_group, $expected_deleted, $expected)
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -234,11 +241,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_move_up($group_id, $excepted_moved, $expected)
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -289,11 +298,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_move_down($group_id, $excepted_moved, $expected)
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);
@@ -387,11 +398,13 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 	*/
 	public function test_move($group_id, $increment, $excepted_moved, $expected)
 	{
-		global $cache;
+		global $cache, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = array();
 
 		$test_class = new \phpbb\groupposition\legend($db, $user);

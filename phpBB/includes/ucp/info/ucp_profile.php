@@ -18,7 +18,6 @@ class ucp_profile_info
 		return array(
 			'filename'	=> 'ucp_profile',
 			'title'		=> 'UCP_PROFILE',
-			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'profile_info'	=> array('title' => 'UCP_PROFILE_PROFILE_INFO', 'auth' => 'acl_u_chgprofileinfo', 'cat' => array('UCP_PROFILE')),
 				'signature'		=> array('title' => 'UCP_PROFILE_SIGNATURE', 'auth' => 'acl_u_sig', 'cat' => array('UCP_PROFILE')),

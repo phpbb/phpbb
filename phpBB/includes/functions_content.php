@@ -460,41 +460,54 @@ function phpbb_clean_search_string($search_string)
 /**
 * Decode text whereby text is coming from the db and expected to be pre-parsed content
 * We are placing this outside of the message parser because we are often in need of it...
+*
+* NOTE: special chars are kept encoded
+*
+* @param string &$message Original message, passed by reference
+* @param string $bbcode_uid BBCode UID
+* @return null
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $config, $phpbb_dispatcher;
-
-	if ($bbcode_uid)
-	{
-		$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
-		$replace = array("\n", '', '', '', '');
-	}
-	else
-	{
-		$match = array('<br />');
-		$replace = array("\n");
-	}
+	global $phpbb_container, $phpbb_dispatcher;
 
 	/**
-	* Use this event to modify the message before it is decoded
-	*
-	* @event core.decode_message_before
-	* @var string	message_text	The message content
-	* @var string	bbcode_uid		The message BBCode UID
-	* @since 3.1.9-RC1
-	*/
+	 * Use this event to modify the message before it is decoded
+	 *
+	 * @event core.decode_message_before
+	 * @var string	message_text	The message content
+	 * @var string	bbcode_uid		The message BBCode UID
+	 * @since 3.1.9-RC1
+	 */
 	$message_text = $message;
 	$vars = array('message_text', 'bbcode_uid');
 	extract($phpbb_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
 	$message = $message_text;
 
-	$message = str_replace($match, $replace, $message);
+	if (preg_match('#^<[rt][ >]#', $message))
+	{
+		$message = htmlspecialchars($phpbb_container->get('text_formatter.utils')->unparse($message), ENT_COMPAT);
+	}
+	else
+	{
+		if ($bbcode_uid)
+		{
+			$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
+			$replace = array("\n", '', '', '', '');
+		}
+		else
+		{
+			$match = array('<br />');
+			$replace = array("\n");
+		}
 
-	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\1', '\2', '\1', '', '');
+		$message = str_replace($match, $replace, $message);
 
-	$message = preg_replace($match, $replace, $message);
+		$match = get_preg_expression('bbcode_htm');
+		$replace = array('\1', '\1', '\2', '\2', '\1', '', '');
+
+		$message = preg_replace($match, $replace, $message);
+	}
 
 	/**
 	* Use this event to modify the message after it is decoded
@@ -511,21 +524,30 @@ function decode_message(&$message, $bbcode_uid = '')
 }
 
 /**
-* Strips all bbcode from a text and returns the plain content
+* Strips all bbcode from a text in place
 */
 function strip_bbcode(&$text, $uid = '')
 {
-	if (!$uid)
+	global $phpbb_container;
+
+	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$uid = '[0-9a-z]{5,}';
+		$text = $phpbb_container->get('text_formatter.utils')->clean_formatting($text);
 	}
+	else
+	{
+		if (!$uid)
+		{
+			$uid = '[0-9a-z]{5,}';
+		}
 
-	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=(?:&quot;.*&quot;|[^\]]*))?(?::[a-z])?(\:$uid)\]#", ' ', $text);
+		$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=(?:&quot;.*&quot;|[^\]]*))?(?::[a-z])?(\:$uid)\]#", ' ', $text);
 
-	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\1', '\2', '\1', '', '');
+		$match = get_preg_expression('bbcode_htm');
+		$replace = array('\1', '\1', '\2', '\1', '', '');
 
-	$text = preg_replace($match, $replace, $text);
+		$text = preg_replace($match, $replace, $text);
+	}
 }
 
 /**
@@ -535,7 +557,7 @@ function strip_bbcode(&$text, $uid = '')
 function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {
 	static $bbcode;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $phpbb_container;
 
 	if ($text === '')
 	{
@@ -556,34 +578,56 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 	$vars = array('text', 'uid', 'bitfield', 'flags', 'censor_text');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_display_before', compact($vars)));
 
-	if ($censor_text)
+	if (preg_match('#^<[rt][ >]#', $text))
 	{
-		$text = censor_text($text);
-	}
+		$renderer = $phpbb_container->get('text_formatter.renderer');
 
-	// Parse bbcode if bbcode uid stored and bbcode enabled
-	if ($uid && ($flags & OPTION_FLAG_BBCODE))
+		// Temporarily switch off viewcensors if applicable
+		$old_censor = $renderer->get_viewcensors();
+		if ($old_censor !== $censor_text)
+		{
+			$renderer->set_viewcensors($censor_text);
+		}
+
+		$text = $renderer->render($text);
+
+		// Restore the previous value
+		if ($old_censor !== $censor_text)
+		{
+			$renderer->set_viewcensors($old_censor);
+		}
+	}
+	else
 	{
-		if (!class_exists('bbcode'))
+		if ($censor_text)
 		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			$text = censor_text($text);
 		}
 
-		if (empty($bbcode))
+		// Parse bbcode if bbcode uid stored and bbcode enabled
+		if ($uid && ($flags & OPTION_FLAG_BBCODE))
 		{
-			$bbcode = new bbcode($bitfield);
-		}
-		else
-		{
-			$bbcode->bbcode($bitfield);
+			if (!class_exists('bbcode'))
+			{
+				global $phpbb_root_path, $phpEx;
+				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			}
+
+			if (empty($bbcode))
+			{
+				$bbcode = new bbcode($bitfield);
+			}
+			else
+			{
+				$bbcode->bbcode($bitfield);
+			}
+
+			$bbcode->bbcode_second_pass($text, $uid);
 		}
 
-		$bbcode->bbcode_second_pass($text, $uid);
+		$text = bbcode_nl2br($text);
+		$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 	}
-
-	$text = bbcode_nl2br($text);
-	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
 	/**
 	* Use this event to modify the text after it is parsed
@@ -604,7 +648,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 /**
 * For parsing custom parsed text to be stored within the database.
 * This function additionally returns the uid and bitfield that needs to be stored.
-* Expects $text to be the value directly from request_var() and in it's non-parsed form
+* Expects $text to be the value directly from $request->variable() and in it's non-parsed form
 *
 * @param string $text The text to be replaced with the parsed one
 * @param string $uid The BBCode uid for this parse
@@ -613,10 +657,15 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * @param bool $allow_bbcode If BBCode is allowed (i.e. if BBCode is parsed)
 * @param bool $allow_urls If urls is allowed
 * @param bool $allow_smilies If smilies are allowed
+* @param bool $allow_img_bbcode
+* @param bool $allow_flash_bbcode
+* @param bool $allow_quote_bbcode
+* @param bool $allow_url_bbcode
+* @param string $mode Mode to parse text as, e.g. post or sig
 *
 * @return array	An array of string with the errors that occurred while parsing
 */
-function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
+function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
 {
 	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
@@ -631,7 +680,13 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_bbcode	Whether or not to parse BBCode
 	* @var bool		allow_urls		Whether or not to parse URLs
 	* @var bool		allow_smilies	Whether or not to parse Smilies
+	* @var bool		allow_img_bbcode	Whether or not to parse the [img] BBCode
+	* @var bool		allow_flash_bbcode	Whether or not to parse the [flash] BBCode
+	* @var bool		allow_quote_bbcode	Whether or not to parse the [quote] BBCode
+	* @var bool		allow_url_bbcode	Whether or not to parse the [url] BBCode
+	* @var string	mode				Mode to parse text as, e.g. post or sig
 	* @since 3.1.0-a1
+	* @changed 3.2.0-a1 Added mode
 	*/
 	$vars = array(
 		'text',
@@ -641,16 +696,16 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		'allow_bbcode',
 		'allow_urls',
 		'allow_smilies',
+		'allow_img_bbcode',
+		'allow_flash_bbcode',
+		'allow_quote_bbcode',
+		'allow_url_bbcode',
+		'mode',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_before', compact($vars)));
 
 	$uid = $bitfield = '';
 	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
-
-	if ($text === '')
-	{
-		return;
-	}
 
 	if (!class_exists('parse_message'))
 	{
@@ -658,7 +713,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	}
 
 	$message_parser = new parse_message($text);
-	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies);
+	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode, true, $mode);
 
 	$text = $message_parser->message;
 	$uid = $message_parser->bbcode_uid;
@@ -693,7 +748,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $phpbb_dispatcher;
 
 	/**
 	* Use this event to modify the text before it is decoded for editing
@@ -1009,10 +1064,10 @@ function smiley_text($text, $force_option = false)
 * @param mixed $forum_id The forum id the attachments are displayed in (false if in private message)
 * @param string &$message The post/private message
 * @param array &$attachments The attachments to parse for (inline) display. The attachments array will hold templated data after parsing.
-* @param array &$update_count The attachment counts to be updated - will be filled
+* @param array &$update_count_ary The attachment counts to be updated - will be filled
 * @param bool $preview If set to true the attachments are parsed for preview. Within preview mode the comments are fetched from the given $attachments array and not fetched from the database.
 */
-function parse_attachments($forum_id, &$message, &$attachments, &$update_count, $preview = false)
+function parse_attachments($forum_id, &$message, &$attachments, &$update_count_ary, $preview = false)
 {
 	if (!sizeof($attachments))
 	{
@@ -1099,7 +1154,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -1141,7 +1195,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		if (!$denied)
 		{
-			$l_downloaded_viewed = $download_link = '';
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
@@ -1202,7 +1255,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'U_INLINE_LINK'		=> $inline_link,
 					);
 
-					$update_count[] = $attachment['attach_id'];
+					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
 				// Images, but display Thumbnail
@@ -1215,39 +1268,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
 
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Windows Media Streams
-				case ATTACHMENT_CATEGORY_WM:
-
-					// Giving the filename directly because within the wm object all variables are in local context making it impossible
-					// to validate against a valid session (all params can differ)
-					// $download_link = $filename;
-
-					$block_array += array(
-						'U_FORUM'		=> generate_board_url(),
-						'ATTACH_ID'		=> $attachment['attach_id'],
-						'S_WM_FILE'		=> true,
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
-				break;
-
-				// Real Media Streams
-				case ATTACHMENT_CATEGORY_RM:
-				case ATTACHMENT_CATEGORY_QUICKTIME:
-
-					$block_array += array(
-						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
-						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
-						'U_FORUM'			=> generate_board_url(),
-						'ATTACH_ID'			=> $attachment['attach_id'],
-					);
-
-					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
+					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
 				// Macromedia Flash Files
@@ -1262,7 +1283,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					);
 
 					// Viewed/Heared File ... update the download count
-					$update_count[] = $attachment['attach_id'];
+					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
 				default:
@@ -1285,6 +1306,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			);
 		}
 
+		$update_count = $update_count_ary;
 		/**
 		* Use this event to modify the attachment template data.
 		*
@@ -1312,6 +1334,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			'update_count',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.parse_attachments_modify_template_data', compact($vars)));
+		$update_count_ary = $update_count;
+		unset($update_count);
 
 		$template->assign_block_vars('_file', $block_array);
 
@@ -1397,8 +1421,6 @@ function extension_allowed($forum_id, $extension, &$extensions)
 */
 function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = false, $append = '')
 {
-	$chars = array();
-
 	$strip_reply = false;
 	$stripped = false;
 	if ($allow_reply && strpos($string, 'Re: ') === 0)

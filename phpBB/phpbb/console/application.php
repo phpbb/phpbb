@@ -13,6 +13,7 @@
 
 namespace phpbb\console;
 
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Shell;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -26,18 +27,18 @@ class application extends \Symfony\Component\Console\Application
 	protected $in_shell = false;
 
 	/**
-	* @var \phpbb\user User object
+	* @var \phpbb\language\language User object
 	*/
-	protected $user;
+	protected $language;
 
 	/**
-	* @param string			$name		The name of the application
-	* @param string			$version	The version of the application
-	* @param \phpbb\user	$user		The user which runs the application (used for translation)
+	* @param string						$name		The name of the application
+	* @param string						$version	The version of the application
+	* @param \phpbb\language\language	$language	The user which runs the application (used for translation)
 	*/
-	public function __construct($name, $version, \phpbb\user $user)
+	public function __construct($name, $version, \phpbb\language\language $language)
 	{
-		$this->user = $user;
+		$this->language = $language;
 
 		parent::__construct($name, $version);
 	}
@@ -49,12 +50,7 @@ class application extends \Symfony\Component\Console\Application
 	{
 		$input_definition = parent::getDefaultInputDefinition();
 
-		$input_definition->addOption(new InputOption(
-			'safe-mode',
-			null,
-			InputOption::VALUE_NONE,
-			$this->user->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
-		));
+		$this->register_global_options($input_definition);
 
 		return $input_definition;
 	}
@@ -76,12 +72,20 @@ class application extends \Symfony\Component\Console\Application
 			return parent::getHelp();
 		}
 
-		$this->getDefinition()->addOption(new InputOption(
-			'--shell',
-			'-s',
-			InputOption::VALUE_NONE,
-			$this->user->lang('CLI_DESCRIPTION_OPTION_SHELL')
-		));
+		try
+		{
+			$definition = $this->getDefinition();
+			$definition->addOption(new InputOption(
+				'--shell',
+				'-s',
+				InputOption::VALUE_NONE,
+				$this->language->lang('CLI_DESCRIPTION_OPTION_SHELL')
+			));
+		}
+		catch (\LogicException $e)
+		{
+			// Do nothing
+		}
 
 		return parent::getHelp();
 	}
@@ -116,5 +120,34 @@ class application extends \Symfony\Component\Console\Application
 		}
 
 		return parent::doRun($input, $output);
+	}
+
+	/**
+	 * Register global options
+	 *
+	 * @param InputDefinition $definition An InputDefinition instance
+	 */
+	protected function register_global_options(InputDefinition $definition)
+	{
+		try
+		{
+			$definition->addOption(new InputOption(
+				'safe-mode',
+				null,
+				InputOption::VALUE_NONE,
+				$this->language->lang('CLI_DESCRIPTION_OPTION_SAFE_MODE')
+			));
+
+			$definition->addOption(new InputOption(
+				'env',
+				'e',
+				InputOption::VALUE_REQUIRED,
+				$this->language->lang('CLI_DESCRIPTION_OPTION_ENV')
+			));
+		}
+		catch (\LogicException $e)
+		{
+			// Do nothing
+		}
 	}
 }

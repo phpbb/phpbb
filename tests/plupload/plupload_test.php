@@ -24,7 +24,7 @@ class phpbb_plupload_test extends phpbb_test_case
 			array(
 				130,
 				150,
-				'resize: {width: 130, height: 150, quality: 100},'
+				'resize: {width: 130, height: 150, quality: 85},'
 			),
 		);
 	}
@@ -34,6 +34,10 @@ class phpbb_plupload_test extends phpbb_test_case
 	*/
 	public function test_generate_resize_string($config_width, $config_height, $expected)
 	{
+		global $phpbb_root_path, $phpEx;
+
+		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+
 		$config = new \phpbb\config\config(array(
 			'img_max_width'		=> $config_width,
 			'img_max_height'	=> $config_height,
@@ -43,8 +47,8 @@ class phpbb_plupload_test extends phpbb_test_case
 			'',
 			$config,
 			new phpbb_mock_request,
-			new \phpbb\user('\phpbb\datetime'),
-			new \phpbb\php\ini,
+			new \phpbb\user($lang, '\phpbb\datetime'),
+			new \bantu\IniGetWrapper\IniGetWrapper,
 			new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser))
 		);
 

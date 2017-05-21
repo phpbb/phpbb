@@ -103,7 +103,7 @@ class timezone extends \phpbb\db\migration\migration
 	*/
 	public function convert_phpbb30_timezone($timezone, $dst)
 	{
-		$offset = $timezone + $dst;
+		$offset = (float) $timezone + (int) $dst;
 
 		switch ($timezone)
 		{

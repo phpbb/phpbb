@@ -1,0 +1,110 @@
+services:
+# ----- Auth management -----
+    auth:
+        class: phpbb\auth\auth
+
+# ----- Auth providers -----
+    auth.provider_collection:
+        class: phpbb\auth\provider_collection
+        arguments:
+            - '@service_container'
+            - '@config'
+        tags:
+            - { name: service_collection, tag: auth.provider }
+
+    auth.provider.db:
+        class: phpbb\auth\provider\db
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@passwords.manager'
+            - '@request'
+            - '@user'
+            - '@service_container'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: auth.provider }
+
+    auth.provider.apache:
+        class: phpbb\auth\provider\apache
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@passwords.manager'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: auth.provider }
+
+    auth.provider.ldap:
+        class: phpbb\auth\provider\ldap
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@passwords.manager'
+            - '@user'
+        tags:
+            - { name: auth.provider }
+
+    auth.provider.oauth:
+        class: phpbb\auth\provider\oauth\oauth
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@passwords.manager'
+            - '@request'
+            - '@user'
+            - '%tables.auth_provider_oauth_token_storage%'
+            - '%tables.auth_provider_oauth_states%'
+            - '%tables.auth_provider_oauth_account_assoc%'
+            - '@auth.provider.oauth.service_collection'
+            - '%tables.users%'
+            - '@service_container'
+            - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: auth.provider }
+
+# ----- OAuth services providers -----
+    auth.provider.oauth.service_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: auth.provider.oauth.service }
+
+    auth.provider.oauth.service.bitly:
+        class: phpbb\auth\provider\oauth\service\bitly
+        arguments:
+            - '@config'
+            - '@request'
+        tags:
+            - { name: auth.provider.oauth.service }
+
+    auth.provider.oauth.service.facebook:
+        class: phpbb\auth\provider\oauth\service\facebook
+        arguments:
+            - '@config'
+            - '@request'
+        tags:
+            - { name: auth.provider.oauth.service }
+
+    auth.provider.oauth.service.google:
+        class: phpbb\auth\provider\oauth\service\google
+        arguments:
+            - '@config'
+            - '@request'
+        tags:
+            - { name: auth.provider.oauth.service }
+
+    auth.provider.oauth.service.twitter:
+        class: phpbb\auth\provider\oauth\service\twitter
+        arguments:
+            - '@config'
+            - '@request'
+        tags:
+            - { name: auth.provider.oauth.service }

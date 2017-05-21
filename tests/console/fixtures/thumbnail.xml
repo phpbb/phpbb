@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_attachments">
+		<column>attach_id</column>
+		<column>physical_filename</column>
+		<column>real_filename</column>
+		<column>thumbnail</column>
+		<column>extension</column>
+		<column>mimetype</column>
+		<column>attach_comment</column>
+
+		<row>
+			<value>1</value>
+			<value>test_png_1</value>
+			<value>real_test.png</value>
+			<value>0</value>
+			<value>png</value>
+			<value>image/png</value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>test_png_2</value>
+			<value>real_test.png</value>
+			<value>1</value>
+			<value>png</value>
+			<value>image/png</value>
+			<value></value>
+		</row>
+		<row>
+			<value>10</value>
+			<value>test_txt</value>
+			<value>real_test.txt</value>
+			<value>0</value>
+			<value>txt</value>
+			<value>text/plain</value>
+			<value></value>
+		</row>
+	</table>
+</dataset>

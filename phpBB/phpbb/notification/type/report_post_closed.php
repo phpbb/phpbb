@@ -71,7 +71,7 @@ class report_post_closed extends \phpbb\notification\type\post
 			return array();
 		}
 
-		return array($post['reporter'] => array(''));
+		return array($post['reporter'] => $this->notification_manager->get_default_methods());
 	}
 
 	/**
@@ -113,7 +113,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	{
 		$username = $this->user_loader->get_username($this->get_data('closer_id'), 'no_profile');
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			$username
 		);
@@ -126,7 +126,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('post_subject'))
 		);
@@ -151,21 +151,24 @@ class report_post_closed extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
 		$this->set_data('closer_id', $post['closer_id']);
 
-		$data = parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 
-		$this->notification_time = $data['notification_time'] = time();
+		$this->notification_time = time();
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_insert_array()
+	{
+		$data = parent::get_insert_array();
+		$data['notification_time'] = $this->notification_time;
 
 		return $data;
 	}

@@ -12,10 +12,11 @@ set -e
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
-root="$3"
+NOTESTS=$3
+root="$4"
 path="${root}phpBB/"
 
-if [ "$TRAVIS_PHP_VERSION" == "5.3.3" -a "$DB" == "mysqli" ]
+if [ "$NOTESTS" == '1' ]
 then
 	# Check the permissions of the files
 
@@ -27,7 +28,7 @@ then
 	files_skipped="-false"
 
 	# Files which have to be executable
-	executable_files="-path ${path}bin/*"
+	executable_files="-path ${path}bin/* -o -path ${path}install/phpbbcli.php"
 
 	incorrect_files=$( 								\
 		find ${path}								\

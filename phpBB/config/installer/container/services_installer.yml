@@ -1,0 +1,119 @@
+imports:
+    - { resource: services_file_updater.yml }
+    - { resource: services_install_console.yml }
+    - { resource: services_install_controller.yml }
+    - { resource: services_install_data.yml }
+    - { resource: services_install_database.yml }
+    - { resource: services_install_filesystem.yml }
+    - { resource: services_install_finish.yml }
+    - { resource: services_install_navigation.yml }
+    - { resource: services_install_obtain_data.yml }
+    - { resource: services_install_requirements.yml }
+    - { resource: services_update_database.yml }
+    - { resource: services_update_filesystem.yml }
+    - { resource: services_update_obtain_data.yml }
+    - { resource: services_update_requirements.yml }
+
+services:
+# -------- Installer helpers ------------------------
+    installer.helper.config:
+        class: phpbb\install\helper\config
+        arguments:
+            - '@filesystem'
+            - '@php_ini'
+            - '%core.root_path%'
+
+    installer.helper.database:
+        class: phpbb\install\helper\database
+        arguments:
+            - '@filesystem'
+            - '%core.root_path%'
+
+    installer.helper.iohandler_factory:
+        class: phpbb\install\helper\iohandler\factory
+        arguments:
+            - '@service_container'
+
+    installer.helper.iohandler_abstract:
+        abstract: true
+        calls:
+            - [set_language, ['@language']]
+
+    installer.helper.iohandler_ajax:
+        class: phpbb\install\helper\iohandler\ajax_iohandler
+        parent: installer.helper.iohandler_abstract
+        arguments:
+            - '@path_helper'
+            - '@request'
+            - '@template'
+            - '@router'
+            - '%core.root_path%'
+
+    installer.helper.iohandler_cli:
+        class: phpbb\install\helper\iohandler\cli_iohandler
+        parent: installer.helper.iohandler_abstract
+
+    installer.helper.iohandler:
+        class: phpbb\install\helper\iohandler\iohandler_interface
+        factory: ['@installer.helper.iohandler_factory', get]
+
+    installer.helper.container_factory:
+        class: phpbb\install\helper\container_factory
+        arguments:
+            - '@language'
+            - '@request'
+            - '@installer.helper.update_helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    installer.helper.install_helper:
+        class: phpbb\install\helper\install_helper
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    installer.helper.update_helper:
+        class: phpbb\install\helper\update_helper
+        arguments:
+            - '%core.root_path%'
+
+# -------- Installer --------------------------------
+    installer.module_base:
+        abstract: true
+        calls:
+            - [setup, ['@installer.helper.config', '@installer.helper.iohandler']]
+
+    installer.installer.abstract:
+        class: phpbb\install\installer
+        abstract: true
+        arguments:
+            - '@cache.driver'
+            - '@installer.helper.config'
+            - '@path_helper'
+            - '@installer.helper.container_factory'
+
+    installer.install.module_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: installer_install_module }
+
+    installer.update.module_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: installer_update_module }
+
+    installer.installer.install:
+        parent: installer.installer.abstract
+        calls:
+            - [set_modules, ['@installer.install.module_collection']]
+            - [set_purge_cache_before, [false]]
+
+    installer.installer.update:
+        parent: installer.installer.abstract
+        calls:
+            - [set_modules, ['@installer.update.module_collection']]
+            - [set_purge_cache_before, [true]]

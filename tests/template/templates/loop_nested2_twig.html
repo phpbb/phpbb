@@ -1,0 +1,6 @@
+{% for outer_inner in outer %}
+	o{{ outer_inner.S_ROW_COUNT }}
+	{% for middle in outer_inner.middle %}
+		m{{ middle.S_ROW_COUNT }}{{ outer_inner.S_ROW_COUNT }}
+	{% endfor %}
+{% endfor %}

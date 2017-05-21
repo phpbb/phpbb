@@ -13,7 +13,6 @@ class foo_info
 		return array(
 			'filename'	=> 'vendor2\foo\acp\fail_module',
 			'title'		=> 'Foobar',
-			'version'	=> '3.1.0-dev',
 			'modes'		=> array(
 				'config'		=> array('title' => 'Config',	'auth' => '', 'cat' => array('ACP_MODS')),
 			),

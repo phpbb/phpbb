@@ -32,7 +32,12 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 	protected function setUp()
 	{
-		$this->user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
+		global $phpbb_root_path, $phpEx;
+
+		$this->user = $this->getMock('\phpbb\user', array(), array(
+			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
+			'\phpbb\datetime'
+		));
 		$this->user->method('lang')->will($this->returnArgument(0));
 	}
 
@@ -45,19 +50,19 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 	public function test_only_ready()
 	{
 		$this->initiate_test(2, 0);
-		$this->assertContains('TASKS_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
+		$this->assertContains('TASKS_READY command1 command2', preg_replace('/[\s*=]+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_only_not_ready()
 	{
 		$this->initiate_test(0, 2);
-		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
+		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/[\s*=]+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_both_ready()
 	{
 		$this->initiate_test(2, 2);
-		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
+		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/[\s*=]+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function get_cron_manager(array $tasks)

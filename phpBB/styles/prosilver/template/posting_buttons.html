@@ -55,31 +55,56 @@
 <div id="colour_palette" style="display: none;">
 	<dl style="clear: left;">
 		<dt><label>{L_FONT_COLOR}{L_COLON}</label></dt>
-		<dd id="color_palette_placeholder" data-orientation="h" data-height="12" data-width="15" data-bbcode="true"></dd>
+		<dd id="color_palette_placeholder" class="color_palette_placeholder" data-orientation="h" data-height="12" data-width="15" data-bbcode="true"></dd>
 	</dl>
 </div>
 
 <!-- EVENT posting_editor_buttons_before -->
-<div id="format-buttons">
-	<input type="button" class="button2 bbcode-b" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}" />
-	<input type="button" class="button2 bbcode-i" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}" />
-	<input type="button" class="button2 bbcode-u" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" title="{L_BBCODE_U_HELP}" />
+<div id="format-buttons" class="format-buttons">
+	<button type="button" class="button button-icon-only bbcode-b" accesskey="b" name="addbbcode0" value=" B " onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}">
+		<i class="icon fa-bold fa-fw" aria-hidden="true"></i>
+	</button>
+	<button type="button" class="button button-icon-only bbcode-i" accesskey="i" name="addbbcode2" value=" i " onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}">
+		<i class="icon fa-italic fa-fw" aria-hidden="true"></i>
+	</button>
+	<button type="button" class="button button-icon-only bbcode-u" accesskey="u" name="addbbcode4" value=" u " onclick="bbstyle(4)" title="{L_BBCODE_U_HELP}">
+		<i class="icon fa-underline fa-fw" aria-hidden="true"></i>
+	</button>
 	<!-- IF S_BBCODE_QUOTE -->
-		<input type="button" class="button2 bbcode-quote" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" title="{L_BBCODE_Q_HELP}" />
+	<button type="button" class="button button-icon-only bbcode-quote" accesskey="q" name="addbbcode6" value="Quote" onclick="bbstyle(6)" title="{L_BBCODE_Q_HELP}">
+		<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i>
+	</button>
 	<!-- ENDIF -->
-	<input type="button" class="button2 bbcode-code" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" title="{L_BBCODE_C_HELP}" />
-	<input type="button" class="button2 bbcode-list" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" title="{L_BBCODE_L_HELP}" />
-	<input type="button" class="button2 bbcode-list-" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" title="{L_BBCODE_O_HELP}" />
-	<input type="button" class="button2 bbcode-asterisk" accesskey="y" name="addlistitem" value="[*]" style="width: 40px" onclick="bbstyle(-1)" title="{L_BBCODE_LISTITEM_HELP}" />
+	<button type="button" class="button button-icon-only bbcode-code" accesskey="c" name="addbbcode8" value="Code" onclick="bbstyle(8)" title="{L_BBCODE_C_HELP}">
+		<i class="icon fa-code fa-fw" aria-hidden="true"></i>
+	</button>
+	<button type="button" class="button button-icon-only bbcode-list" accesskey="l" name="addbbcode10" value="List" onclick="bbstyle(10)" title="{L_BBCODE_L_HELP}">
+		<i class="icon fa-list fa-fw" aria-hidden="true"></i>
+	</button>
+	<button type="button" class="button button-icon-only bbcode-list-" accesskey="o" name="addbbcode12" value="List=" onclick="bbstyle(12)" title="{L_BBCODE_O_HELP}">
+		<i class="icon fa-list-ol fa-fw" aria-hidden="true"></i>
+	</button>
+	<button type="button" class="button button-icon-only bbcode-asterisk" accesskey="y" name="addlistitem" value="[*]" onclick="bbstyle(-1)" title="{L_BBCODE_LISTITEM_HELP}">
+		<i class="icon fa-asterisk fa-fw" aria-hidden="true"></i>
+	</button>
 	<!-- IF S_BBCODE_IMG -->
-		<input type="button" class="button2 bbcode-img" accesskey="p" name="addbbcode14" value="Img" style="width: 40px" onclick="bbstyle(14)" title="{L_BBCODE_P_HELP}" />
+	<button type="button" class="button button-icon-only bbcode-img" accesskey="p" name="addbbcode14" value="Img" onclick="bbstyle(14)" title="{L_BBCODE_P_HELP}">
+		<i class="icon fa-image fa-fw" aria-hidden="true"></i>
+	</button>
 	<!-- ENDIF -->
 	<!-- IF S_LINKS_ALLOWED -->
-		<input type="button" class="button2 bbcode-url" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" title="{L_BBCODE_W_HELP}" />
+	<button type="button" class="button button-icon-only bbcode-url" accesskey="w" name="addbbcode16" value="URL" onclick="bbstyle(16)" title="{L_BBCODE_W_HELP}">
+		<i class="icon fa-link fa-fw" aria-hidden="true"></i>
+	</button>
 	<!-- ENDIF -->
 	<!-- IF S_BBCODE_FLASH -->
-		<input type="button" class="button2 bbcode-flash" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" title="{L_BBCODE_D_HELP}" />
+	<button type="button" class="button button-icon-only bbcode-flash" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" title="{L_BBCODE_D_HELP}">
+		<i class="icon fa-flash fa-fw" aria-hidden="true"></i>
+	</button>
 	<!-- ENDIF -->
+	<button type="button" class="button button-icon-only bbcode-color" name="bbpalette" id="bbpalette" value="{L_FONT_COLOR}" onclick="change_palette();" title="{L_BBCODE_S_HELP}">
+		<i class="icon fa-tint fa-fw" aria-hidden="true"></i>
+	</button>
 	<select name="addbbcode20" class="bbcode-size" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{L_BBCODE_F_HELP}">
 		<option value="50">{L_FONT_TINY}</option>
 		<option value="85">{L_FONT_SMALL}</option>
@@ -91,12 +116,13 @@
 			<!-- ENDIF -->
 		<!-- ENDIF -->
 	</select>
-	<input type="button" class="button2 bbcode-color" name="bbpalette" id="bbpalette" value="{L_FONT_COLOR}" onclick="change_palette();" title="{L_BBCODE_S_HELP}" />
 
 	<!-- EVENT posting_editor_buttons_custom_tags_before -->
 
 	<!-- BEGIN custom_tags -->
-		<input type="button" class="button2 bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}" />
+	<button type="button" class="button button-secondary bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}">
+		{custom_tags.BBCODE_TAG}
+	</button>
 	<!-- END custom_tags -->
 </div>
 <!-- EVENT posting_editor_buttons_after -->

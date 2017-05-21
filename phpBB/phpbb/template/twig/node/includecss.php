@@ -18,20 +18,8 @@ class includecss extends \phpbb\template\twig\node\includeasset
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_definition_name()
+	public function get_setters_name()
 	{
-		return 'STYLESHEETS';
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
-	public function append_asset(\Twig_Compiler $compiler)
-	{
-		$compiler
-			->raw("<link href=\"' . ")
-			->raw("\$asset_file . '\"")
-			->raw(' rel="stylesheet" type="text/css" media="screen" />')
-		;
+		return 'stylesheet';
 	}
 }

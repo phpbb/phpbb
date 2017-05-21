@@ -1,0 +1,22 @@
+services:
+    language.helper.language_file:
+        class: phpbb\language\language_file_helper
+        arguments:
+            - '%core.root_path%'
+
+    language:
+        class: phpbb\language\language
+        arguments:
+            - '@language.loader'
+
+    language.loader_abstract:
+        abstract: true
+        class: phpbb\language\language_file_loader
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    language.loader:
+        parent: language.loader_abstract
+        calls:
+            - [set_extension_manager, ['@ext.manager']]

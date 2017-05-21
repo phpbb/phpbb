@@ -196,9 +196,10 @@ if (sizeof($package->old_packages))
 		*/
 		$copy_relative_directories = array(
 			'config/'	=> array(
+				'recursive'	=> true,
 				'copied'	=> false,
 				'copy'		=> array(
-					'config/*.yml' => 'config',
+					'config/*' => 'config',
 				),
 			),
 		);
@@ -256,7 +257,15 @@ if (sizeof($package->old_packages))
 						}
 						$source_dir_files = $package->locations['old_versions'] . $package->get('simple_name') . '/' . $source_dir_files;
 						$destination_dir = $dest_filename_dir . '/install/update/new/' . $destination_dir;
-						$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+
+						if (isset($data['recursive']) && $data['recursive'])
+						{
+							$package->run_command('cp -Rp ' . $source_dir_files . ' ' . $destination_dir);
+						}
+						else
+						{
+							$package->run_command('cp ' . $source_dir_files . ' ' . $destination_dir);
+						}
 					}
 					$copy_relative_directories[$reference]['copied'] = true;
 				}
@@ -272,7 +281,7 @@ if (sizeof($package->old_packages))
 			'adm/style/admin.css'	=> 'adm/style',
 			'adm/style/admin.js'	=> 'adm/style',
 			'adm/style/ajax.js'		=> 'adm/style',
-			'adm/style/install_*'	=> 'adm/style',
+			'adm/style/installer_*'	=> 'adm/style',
 			'assets/javascript/*'	=> 'assets/javascript',
 		);
 
@@ -470,22 +479,14 @@ chdir($package->get('dest_dir') . '/install');
 // $package->run_command('rm -v database_update.php');
 $package->run_command('rm -v install_update.php');
 
-chdir($package->get('dest_dir'));
-$package->run_command('mv -v styles/subsilver2 ../subsilver2');
-$package->run_command('cp -p docs/COPYING ../subsilver2/license.txt');
-
 chdir($package->locations['package_dir']);
 foreach ($compress_programs as $extension => $compress_command)
 {
 	$package->begin_status('Packaging phpBB for ' . $extension);
 	$package->run_command('rm -v ./release_files/' . $package->get('release_filename') . ".{$extension}");
-	$package->run_command('rm -v ./release_files/subsilver2_' . $package->get('new_version_number') . ".{$extension}");
 
 	// Build Package
 	$package->run_command("$compress_command ./release_files/" . $package->get('release_filename') . '.' . $extension . ' ' . $package->get('package_name'));
-
-	// Build subSilver2 Package
-	$package->run_command("$compress_command ./release_files/subsilver2_" . $package->get('new_version_number') . '.' . $extension . ' subsilver2');
 }
 
 // Microsoft Web PI packaging

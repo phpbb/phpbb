@@ -43,7 +43,7 @@ class bookmark extends \phpbb\notification\type\post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_BOOKMARK',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
@@ -91,31 +91,27 @@ class bookmark extends \phpbb\notification\type\post
 		}
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
-		$update_notifications = array();
-		$sql = 'SELECT n.*
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_parent_id = ' . (int) static::get_item_parent_id($post) . '
-				AND n.notification_read = 0
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			// Do not create a new notification
-			unset($notify_users[$row['user_id']]);
+		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), array(
+			'item_parent_id'	=> static::get_item_parent_id($post),
+			'read'				=> 0,
+		));
 
-			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
+		foreach ($notified_users as $user => $notification_data)
+		{
+			unset($notify_users[$user]);
+
+			/** @var bookmark $notification */
+			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
 			$update_responders = $notification->add_responders($post);
 			if (!empty($update_responders))
 			{
-				$sql = 'UPDATE ' . $this->notifications_table . '
-					SET ' . $this->db->sql_build_array('UPDATE', $update_responders) . '
-					WHERE notification_id = ' . $row['notification_id'];
-				$this->db->sql_query($sql);
+				$this->notification_manager->update_notification($notification, $update_responders, array(
+					'item_parent_id'	=> self::get_item_parent_id($post),
+					'read'				=> 0,
+					'user_id'			=> $user,
+				));
 			}
 		}
-		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}

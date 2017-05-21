@@ -29,7 +29,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 		$quote_type_id = $this->notifications->get_notification_type_id('notification.type.quote');
 		$test_type_id = $this->notifications->get_notification_type_id('test');
 
-		$this->assertEquals(array(
+		self::assertEquals(array(
 				'test'	=> $test_type_id,
 				'notification.type.quote'	=> $quote_type_id,
 				'notification.type.post'	=> $post_type_id,
@@ -40,13 +40,13 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 				'notification.type.post',
 			)
 		));
-		$this->assertEquals($quote_type_id, $this->notifications->get_notification_type_id('notification.type.quote'));
+		self::assertEquals($quote_type_id, $this->notifications->get_notification_type_id('notification.type.quote'));
 
 		try
 		{
-			$this->assertEquals(false, $this->notifications->get_notification_type_id('fail'));
+			self::assertEquals(false, $this->notifications->get_notification_type_id('fail'));
 
-			$this->fail('Non-existent type should throw an exception');
+			self::fail('Non-existent type should throw an exception');
 		}
 		catch (Exception $e) {}
 	}
@@ -55,15 +55,15 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	{
 		$subscription_types = $this->notifications->get_subscription_types();
 
-		$this->assertArrayHasKey('NOTIFICATION_GROUP_MISCELLANEOUS', $subscription_types);
-		$this->assertArrayHasKey('NOTIFICATION_GROUP_POSTING', $subscription_types);
+		self::assertArrayHasKey('NOTIFICATION_GROUP_MISCELLANEOUS', $subscription_types);
+		self::assertArrayHasKey('NOTIFICATION_GROUP_POSTING', $subscription_types);
 
-		$this->assertArrayHasKey('notification.type.bookmark', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-		$this->assertArrayHasKey('notification.type.post', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-		$this->assertArrayHasKey('notification.type.quote', $subscription_types['NOTIFICATION_GROUP_POSTING']);
-		$this->assertArrayHasKey('notification.type.topic', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		self::assertArrayHasKey('notification.type.bookmark', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		self::assertArrayHasKey('notification.type.post', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		self::assertArrayHasKey('notification.type.quote', $subscription_types['NOTIFICATION_GROUP_POSTING']);
+		self::assertArrayHasKey('notification.type.topic', $subscription_types['NOTIFICATION_GROUP_POSTING']);
 
-		$this->assertArrayHasKey('notification.type.pm', $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
+		self::assertArrayHasKey('notification.type.pm', $subscription_types['NOTIFICATION_GROUP_MISCELLANEOUS']);
 
 		//get_subscription_types
 		//get_subscription_methods
@@ -72,33 +72,33 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 	public function test_subscriptions()
 	{
 		$expected_subscriptions = array(
-			'notification.type.post'		=> array(''),
-			'notification.type.topic'		=> array(''),
-			'notification.type.quote'		=> array(''),
-			'notification.type.bookmark'	=> array(''),
-			'test'		=> array(''),
-			'notification.type.pm'		=> array(''),
+			'notification.type.post'		=> array('notification.method.board'),
+			'notification.type.topic'		=> array('notification.method.board'),
+			'notification.type.quote'		=> array('notification.method.board'),
+			'notification.type.bookmark'	=> array('notification.method.board'),
+			'test'		=> array('notification.method.board'),
+			'notification.type.pm'		=> array('notification.method.board'),
 		);
 
 		$subscriptions = $this->notifications->get_global_subscriptions(2);
-
 		foreach ($expected_subscriptions as $item_type => $methods)
 		{
+			self::assertArrayHasKey($item_type, $subscriptions);
 			$this->assert_array_content_equals($methods, $subscriptions[$item_type]);
 		}
 
 		foreach ($subscriptions as $item_type => $methods)
 		{
-			$this->assert_array_content_equals($methods, $expected_subscriptions[$item_type]);	
+			$this->assert_array_content_equals($methods, $expected_subscriptions[$item_type]);
 		}
 
-		$this->notifications->delete_subscription('notification.type.post', 0, '', 2);
+		$this->notifications->delete_subscription('notification.type.post', 0, 'notification.method.board', 2);
 
-		$this->assertArrayNotHasKey('notification.type.post', $this->notifications->get_global_subscriptions(2));
+		self::assertArrayNotHasKey('notification.type.post', $this->notifications->get_global_subscriptions(2));
 
-		$this->notifications->add_subscription('notification.type.post', 0, '', 2);
+		$this->notifications->add_subscription('notification.type.post', 0, 'notification.method.board', 2);
 
-		$this->assertArrayHasKey('notification.type.post', $this->notifications->get_global_subscriptions(2));
+		self::assertArrayHasKey('notification.type.post', $this->notifications->get_global_subscriptions(2));
 	}
 
 	public function test_notifications()
@@ -124,11 +124,11 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'user_id'			=> 0,
 		)));
 
-		$this->assertEquals(array(
+		self::assertEquals(array(
 				'notifications'		=> array(),
 				'unread_count'		=> 0,
 				'total_count'		=> 0,
-		), $this->notifications->load_notifications(array(
+		), $this->notifications->load_notifications('notification.method.board', array(
 			'count_unread'	=> true,
 		)));
 

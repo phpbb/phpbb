@@ -55,7 +55,7 @@
 		<!-- BEGIN member -->
 		<!-- IF not member.GROUP_SPECIAL -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->		
+		<!-- ENDIF -->
 		<li class="row<!-- IF member.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
@@ -73,11 +73,11 @@
 		</ul>
 	<!-- ENDIF -->
 	</div>
-</div>	
+</div>
 
 <!-- IF .pending -->
 <div class="panel">
-	<div class="inner">	
+	<div class="inner">
 		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
@@ -91,7 +91,7 @@
 		<!-- BEGIN pending -->
 		<!-- IF not pending.GROUP_SPECIAL -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->			
+		<!-- ENDIF -->
 		<li class="row<!-- IF pending.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
@@ -125,7 +125,7 @@
 		<!-- BEGIN nonmember -->
 		<!-- IF nonmember.S_CAN_JOIN -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
-		<!-- ENDIF -->		
+		<!-- ENDIF -->
 		<li class="row<!-- IF nonmember.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
@@ -143,7 +143,7 @@
 		</div>
 	</div>
 <!-- ENDIF -->
-	
+
 
 	<!-- IF S_CHANGE_DEFAULT or $SHOW_BUTTONS eq 1 -->
 	<fieldset>
@@ -156,7 +156,7 @@
 
 		<!-- IF $SHOW_BUTTONS eq 1 -->
 		<div class="right-box">
-			<label for="action">{L_SELECT}{L_COLON}</label> 
+			<label for="action">{L_SELECT}{L_COLON}</label>
 			<select name="action" id="action">
 				<option value="join">{L_JOIN_SELECTED}</option>
 				<option value="resign">{L_RESIGN_SELECTED}</option>

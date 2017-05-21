@@ -49,7 +49,9 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 				$this->remove_dir($fileInfo->getPathname());
 			}
 			else if (strpos($filename, 'container_') === 0 ||
+				strpos($filename, 'autoload_') === 0 ||
 				strpos($filename, 'url_matcher') === 0 ||
+				strpos($filename, 'url_generator') === 0 ||
 				strpos($filename, 'sql_') === 0 ||
 				strpos($filename, 'data_') === 0)
 			{
@@ -95,14 +97,14 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	{
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+		$query_id = md5($query);
 
-		if (($rowset = $this->_read('sql_' . md5($query))) === false)
+		if (($result = $this->_read('sql_' . $query_id)) === false)
 		{
 			return false;
 		}
 
-		$query_id = sizeof($this->sql_rowset);
-		$this->sql_rowset[$query_id] = $rowset;
+		$this->sql_rowset[$query_id] = $result;
 		$this->sql_row_pointer[$query_id] = 0;
 
 		return $query_id;
@@ -181,13 +183,9 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function remove_file($filename, $check = false)
 	{
-		if (!function_exists('phpbb_is_writable'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions.' . $phpEx);
-		}
+		global $phpbb_filesystem;
 
-		if ($check && !phpbb_is_writable($this->cache_dir))
+		if ($check && !$phpbb_filesystem->is_writable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.
 			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);

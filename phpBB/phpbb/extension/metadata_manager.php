@@ -31,18 +31,6 @@ class metadata_manager
 	protected $extension_manager;
 
 	/**
-	* phpBB Template instance
-	* @var \phpbb\template\template
-	*/
-	protected $template;
-
-	/**
-	* phpBB User instance
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -72,16 +60,12 @@ class metadata_manager
 	* @param string				$ext_name			Name (including vendor) of the extension
 	* @param \phpbb\config\config		$config				phpBB Config instance
 	* @param \phpbb\extension\manager	$extension_manager	An instance of the phpBB extension manager
-	* @param \phpbb\template\template	$template			phpBB Template instance
-	* @param \phpbb\user 		$user 				User instance
 	* @param string				$phpbb_root_path	Path to the phpbb includes directory.
 	*/
-	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, \phpbb\template\template $template, \phpbb\user $user, $phpbb_root_path)
+	public function __construct($ext_name, \phpbb\config\config $config, \phpbb\extension\manager $extension_manager, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->extension_manager = $extension_manager;
-		$this->template = $template;
-		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->ext_name = $ext_name;
@@ -118,8 +102,9 @@ class metadata_manager
 				return $this->metadata;
 			break;
 
+			case 'version':
 			case 'name':
-				return ($this->validate('name')) ? $this->metadata['name'] : false;
+				return ($this->validate($element)) ? $this->metadata[$element] : false;
 			break;
 
 			case 'display-name':
@@ -149,7 +134,7 @@ class metadata_manager
 
 		if (!file_exists($this->metadata_file))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('FILE_NOT_FOUND', $this->metadata_file));
+			throw new \phpbb\extension\exception('FILE_NOT_FOUND', array($this->metadata_file));
 		}
 	}
 
@@ -163,18 +148,18 @@ class metadata_manager
 	{
 		if (!file_exists($this->metadata_file))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('FILE_NOT_FOUND', $this->metadata_file));
+			throw new \phpbb\extension\exception('FILE_NOT_FOUND', array($this->metadata_file));
 		}
 		else
 		{
 			if (!($file_contents = file_get_contents($this->metadata_file)))
 			{
-				throw new \phpbb\extension\exception($this->user->lang('FILE_CONTENT_ERR', $this->metadata_file));
+				throw new \phpbb\extension\exception('FILE_CONTENT_ERR', array($this->metadata_file));
 			}
 
 			if (($metadata = json_decode($file_contents, true)) === null)
 			{
-				throw new \phpbb\extension\exception($this->user->lang('FILE_JSON_DECODE_ERR', $this->metadata_file));
+				throw new \phpbb\extension\exception('FILE_JSON_DECODE_ERR', array($this->metadata_file));
 			}
 
 			array_walk_recursive($metadata, array($this, 'sanitize_json'));
@@ -229,7 +214,20 @@ class metadata_manager
 			case 'all':
 				$this->validate('display');
 
-				$this->validate_enable();
+				if (!$this->validate_dir())
+				{
+					throw new \phpbb\extension\exception('EXTENSION_DIR_INVALID');
+				}
+
+				if (!$this->validate_require_phpbb())
+				{
+					throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('soft-require'));
+				}
+
+				if (!$this->validate_require_php())
+				{
+					throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('require php'));
+				}
 			break;
 
 			case 'display':
@@ -246,12 +244,12 @@ class metadata_manager
 				{
 					if (!isset($this->metadata[$name]))
 					{
-						throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', $name));
+						throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array($name));
 					}
 
 					if (!preg_match($fields[$name], $this->metadata[$name]))
 					{
-						throw new \phpbb\extension\exception($this->user->lang('META_FIELD_INVALID', $name));
+						throw new \phpbb\extension\exception('META_FIELD_INVALID', array($name));
 					}
 				}
 			break;
@@ -270,14 +268,14 @@ class metadata_manager
 	{
 		if (empty($this->metadata['authors']))
 		{
-			throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'authors'));
+			throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('authors'));
 		}
 
 		foreach ($this->metadata['authors'] as $author)
 		{
 			if (!isset($author['name']))
 			{
-				throw new \phpbb\extension\exception($this->user->lang('META_FIELD_NOT_SET', 'author name'));
+				throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array('author name'));
 			}
 		}
 
@@ -344,11 +342,11 @@ class metadata_manager
 	/**
 	* Outputs the metadata into the template
 	*
-	* @return null
+	* @param \phpbb\template\template	$template	phpBB Template instance
 	*/
-	public function output_template_data()
+	public function output_template_data(\phpbb\template\template $template)
 	{
-		$this->template->assign_vars(array(
+		$template->assign_vars(array(
 			'META_NAME'			=> $this->metadata['name'],
 			'META_TYPE'			=> $this->metadata['type'],
 			'META_DESCRIPTION'	=> (isset($this->metadata['description'])) ? $this->metadata['description'] : '',
@@ -368,7 +366,7 @@ class metadata_manager
 
 		foreach ($this->metadata['authors'] as $author)
 		{
-			$this->template->assign_block_vars('meta_authors', array(
+			$template->assign_block_vars('meta_authors', array(
 				'AUTHOR_NAME'		=> $author['name'],
 				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
 				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',

@@ -124,7 +124,7 @@ function wrap_img_in_html($src, $title)
 */
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $config, $phpbb_root_path;
+	global $user, $db, $phpbb_dispatcher, $phpbb_root_path, $request;
 
 	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
 
@@ -148,6 +148,26 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Now send the File Contents to the Browser
 	$size = @filesize($filename);
+
+	/**
+	* Event to alter attachment before it is sent to browser.
+	*
+	* @event core.send_file_to_browser_before
+	* @var	array	attachment	Attachment data
+	* @var	string	upload_dir	Relative path of upload directory
+	* @var	int		category	Attachment category
+	* @var	string	filename	Path to file, including filename
+	* @var	int		size		File size
+	* @since 3.1.11-RC1
+	*/
+	$vars = array(
+		'attachment',
+		'upload_dir',
+		'category',
+		'filename',
+		'size',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
 
@@ -186,7 +206,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		header('X-Content-Type-Options: nosniff');
 	}
 
-	if ($category == ATTACHMENT_CATEGORY_FLASH && request_var('view', 0) === 1)
+	if ($category == ATTACHMENT_CATEGORY_FLASH && $request->variable('view', 0) === 1)
 	{
 		// We use content-disposition: inline for flash files and view=1 to let it correctly play with flash player 10 - any other disposition will fail to play inline
 		header('Content-Disposition: inline');
@@ -254,11 +274,21 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 				send_status_line(206, 'Partial Content');
 				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
 				header('Content-Length: ' . $range['bytes_requested']);
-			}
 
-			while (!feof($fp))
+				// First read chunks
+				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
+				{
+					echo fread($fp, 8192);
+				}
+				// Then, read the remainder
+				echo fread($fp, $range['bytes_requested'] % 8192);
+			}
+			else
 			{
-				echo fread($fp, 8192);
+				while (!feof($fp))
+				{
+					echo fread($fp, 8192);
+				}
 			}
 			fclose($fp);
 		}
@@ -529,6 +559,9 @@ function phpbb_find_range_request()
 */
 function phpbb_parse_range_request($request_array, $filesize)
 {
+	$first_byte_pos	= -1;
+	$last_byte_pos	= -1;
+
 	// Go through all ranges
 	foreach ($request_array as $range_string)
 	{
@@ -540,62 +573,61 @@ function phpbb_parse_range_request($request_array, $filesize)
 			continue;
 		}
 
+		// Substitute defaults
 		if ($range[0] === '')
 		{
-			// Return last $range[1] bytes.
-
-			if (!$range[1])
-			{
-				continue;
-			}
-
-			if ($range[1] >= $filesize)
-			{
-				return false;
-			}
-
-			$first_byte_pos	= $filesize - (int) $range[1];
-			$last_byte_pos	= $filesize - 1;
-		}
-		else
-		{
-			// Return bytes from $range[0] to $range[1]
-
-			$first_byte_pos	= (int) $range[0];
-			$last_byte_pos	= (int) $range[1];
-
-			if ($last_byte_pos && $last_byte_pos < $first_byte_pos)
-			{
-				// The requested range contains 0 bytes.
-				continue;
-			}
-
-			if ($first_byte_pos >= $filesize)
-			{
-				// Requested range not satisfiable
-				return false;
-			}
-
-			// Adjust last-byte-pos if it is absent or greater than the content.
-			if ($range[1] === '' || $last_byte_pos >= $filesize)
-			{
-				$last_byte_pos = $filesize - 1;
-			}
+			$range[0] = 0;
 		}
 
-		// We currently do not support range requests that end before the end of the file
-		if ($last_byte_pos != $filesize - 1)
+		if ($range[1] === '')
 		{
+			$range[1] = $filesize - 1;
+		}
+
+		if ($last_byte_pos >= 0 && $last_byte_pos + 1 != $range[0])
+		{
+			// We only support contiguous ranges, no multipart stuff :(
+			return false;
+		}
+
+		if ($range[1] && $range[1] < $range[0])
+		{
+			// The requested range contains 0 bytes.
 			continue;
 		}
 
-		return array(
-			'byte_pos_start'	=> $first_byte_pos,
-			'byte_pos_end'		=> $last_byte_pos,
-			'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
-			'bytes_total'		=> $filesize,
-		);
+		// Return bytes from $range[0] to $range[1]
+		if ($first_byte_pos < 0)
+		{
+			$first_byte_pos	= (int) $range[0];
+		}
+
+		$last_byte_pos	= (int) $range[1];
+
+		if ($first_byte_pos >= $filesize)
+		{
+			// Requested range not satisfiable
+			return false;
+		}
+
+		// Adjust last-byte-pos if it is absent or greater than the content.
+		if ($range[1] === '' || $last_byte_pos >= $filesize)
+		{
+			$last_byte_pos = $filesize - 1;
+		}
 	}
+
+	if ($first_byte_pos < 0 || $last_byte_pos < 0)
+	{
+		return false;
+	}
+
+	return array(
+		'byte_pos_start'	=> $first_byte_pos,
+		'byte_pos_end'		=> $last_byte_pos,
+		'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
+		'bytes_total'		=> $filesize,
+	);
 }
 
 /**

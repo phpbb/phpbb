@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>mod=</value>
+			<value></value>
+			<value>1</value>
+			<value>[mod={TEXT1}]{TEXT2}[/mod]</value>
+			<value><![CDATA[<div style="padding: .2em .5em; font-size: .8em; width: 200px; background: #FFD;">{TEXT2}<div style="font-weight: bold; text-align: right">- {TEXT1}</div></div>]]></value>
+			<value><![CDATA[!\[mod\=(.*?)\](.*?)\[/mod\]!ies]]></value>
+			<value><![CDATA['[mod='.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${1}')).':$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${2}')).'[/mod:$uid]']]></value>
+			<value><![CDATA[!\[mod\=(.*?):$uid\](.*?)\[/mod:$uid\]!s]]></value>
+			<value><![CDATA[<div style="padding: .2em .5em; font-size: .8em; width: 200px; background: #FFD;">${2}<div style="font-weight: bold; text-align: right">- ${1}</div></div>]]></value>
+		</row>
+	</table>
+</dataset>

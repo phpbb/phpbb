@@ -39,7 +39,7 @@ class plupload
 	protected $user;
 
 	/**
-	* @var \phpbb\php\ini
+	* @var \bantu\IniGetWrapper\IniGetWrapper
 	*/
 	protected $php_ini;
 
@@ -67,10 +67,10 @@ class plupload
 	* @param \phpbb\config\config $config
 	* @param \phpbb\request\request_interface $request
 	* @param \phpbb\user $user
-	* @param \phpbb\php\ini $php_ini
+	* @param \bantu\IniGetWrapper\IniGetWrapper $php_ini
 	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \phpbb\php\ini $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
@@ -266,7 +266,7 @@ class plupload
 		if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0)
 		{
 			$resize = sprintf(
-				'resize: {width: %d, height: %d, quality: 100},',
+				'resize: {width: %d, height: %d, quality: 85},',
 				(int) $this->config['img_max_width'],
 				(int) $this->config['img_max_height']
 			);
@@ -284,9 +284,9 @@ class plupload
 	public function get_chunk_size()
 	{
 		$max = min(
-			$this->php_ini->get_bytes('upload_max_filesize'),
-			$this->php_ini->get_bytes('post_max_size'),
-			max(1, $this->php_ini->get_bytes('memory_limit')),
+			$this->php_ini->getBytes('upload_max_filesize'),
+			$this->php_ini->getBytes('post_max_size'),
+			max(1, $this->php_ini->getBytes('memory_limit')),
 			$this->config['max_filesize']
 		);
 
@@ -303,7 +303,7 @@ class plupload
 			$this->temporary_directory,
 			$this->config['plupload_salt'],
 			md5($file_name),
-			\filespec::get_extension($file_name)
+			\phpbb\files\filespec::get_extension($file_name)
 		);
 	}
 

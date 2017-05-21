@@ -60,7 +60,7 @@ class report_pm extends \phpbb\notification\type\pm
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'id'	=> 'notification.type.report',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
@@ -70,8 +70,9 @@ class report_pm extends \phpbb\notification\type\pm
 	* Get the id of the parent
 	*
 	* @param array $pm The data from the pm
+	* @return int The report id
 	*/
-	public static function get_item_parent_id($pm)
+	static public function get_item_parent_id($pm)
 	{
 		return (int) $pm['report_id'];
 	}
@@ -141,11 +142,13 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_email_template_variables()
 	{
-		return array(
-			'AUTHOR_NAME'				=> htmlspecialchars_decode($user_data['username']),
-			'SUBJECT'					=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+		$user_data = $this->user_loader->get_user($this->get_data('reporter_id'));
 
-			'U_VIEW_REPORT'				=> generate_board_url() . "mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
+		return array(
+			'AUTHOR_NAME'	=> htmlspecialchars_decode($user_data['username']),
+			'SUBJECT'		=> htmlspecialchars_decode(censor_text($this->get_data('message_subject'))),
+
+			'U_VIEW_REPORT'	=> generate_board_url() . "mcp.{$this->php_ext}?r={$this->item_parent_id}&amp;i=pm_reports&amp;mode=pm_report_details",
 		);
 	}
 
@@ -166,11 +169,11 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_title()
 	{
-		$this->user->add_lang('mcp');
+		$this->language->add_lang('mcp');
 
 		$username = $this->user_loader->get_username($this->get_data('reporter_id'), 'no_profile');
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			$username
 		);
@@ -183,7 +186,7 @@ class report_pm extends \phpbb\notification\type\pm
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('message_subject'))
 		);
@@ -198,21 +201,21 @@ class report_pm extends \phpbb\notification\type\pm
 	{
 		if ($this->get_data('report_text'))
 		{
-			return $this->user->lang(
+			return $this->language->lang(
 				'NOTIFICATION_REASON',
 				$this->get_data('report_text')
 			);
 		}
 
-		if (isset($this->user->lang[$this->get_data('reason_title')]))
+		if ($this->language->is_set($this->get_data('reason_title')))
 		{
-			return $this->user->lang(
+			return $this->language->lang(
 				'NOTIFICATION_REASON',
-				$this->user->lang[$this->get_data('reason_title')]
+				$this->language->lang($this->get_data('reason_title'))
 			);
 		}
 
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REASON',
 			$this->get_data('reason_description')
 		);
@@ -237,13 +240,7 @@ class report_pm extends \phpbb\notification\type\pm
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -252,6 +249,6 @@ class report_pm extends \phpbb\notification\type\pm
 		$this->set_data('reason_description', $post['reason_description']);
 		$this->set_data('report_text', $post['report_text']);
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 }

@@ -18,20 +18,20 @@ class extension extends \Twig_Extension
 	/** @var \phpbb\template\context */
 	protected $context;
 
-	/** @var \phpbb\user */
-	protected $user;
+	/** @var \phpbb\language\language */
+	protected $language;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\template\context $context
-	* @param \phpbb\user $user
+	* @param \phpbb\language\language $language
 	* @return \phpbb\template\twig\extension
 	*/
-	public function __construct(\phpbb\template\context $context, $user)
+	public function __construct(\phpbb\template\context $context, $language)
 	{
 		$this->context = $context;
-		$this->user = $user;
+		$this->language = $language;
 	}
 
 	/**
@@ -71,6 +71,7 @@ class extension extends \Twig_Extension
 	{
 		return array(
 			new \Twig_SimpleFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
+			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
 			new \Twig_SimpleFilter('addslashes', 'addslashes'),
 		);
 	}
@@ -169,17 +170,16 @@ class extension extends \Twig_Extension
 		$args = func_get_args();
 		$key = $args[0];
 
-		$context = $this->context->get_data_ref();
-		$context_vars = $context['.'][0];
+		$context_vars = $this->context->get_root_ref();
 
 		if (isset($context_vars['L_' . $key]))
 		{
 			return $context_vars['L_' . $key];
 		}
 
-		// LA_ is transformed into lang(\'$1\')|addslashes, so we should not
+		// LA_ is transformed into lang(\'$1\')|escape('js'), so we should not
 		// need to check for it
 
-		return call_user_func_array(array($this->user, 'lang'), $args);
+		return call_user_func_array(array($this->language, 'lang'), $args);
 	}
 }

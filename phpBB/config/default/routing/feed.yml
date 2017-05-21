@@ -1,0 +1,35 @@
+phpbb_feed_forums:
+    path: /forums
+    defaults: { _controller: phpbb.feed.controller:forums }
+
+phpbb_feed_news:
+    path: /news
+    defaults: { _controller: phpbb.feed.controller:news }
+
+phpbb_feed_topics:
+    path: /topics
+    defaults: { _controller: phpbb.feed.controller:topics }
+
+phpbb_feed_topics_active:
+    path: /topics_active
+    defaults: { _controller: phpbb.feed.controller:topics_active }
+
+phpbb_feed_topics_new:
+    path: /topics_new
+    defaults: { _controller: phpbb.feed.controller:topics_new }
+
+phpbb_feed_forum:
+    path: /forum/{forum_id}
+    defaults: { _controller: phpbb.feed.controller:forum }
+    requirements:
+        forum_id: \d+
+
+phpbb_feed_topic:
+    path: /topic/{topic_id}
+    defaults: { _controller: phpbb.feed.controller:topic }
+    requirements:
+        topic_id: \d+
+
+phpbb_feed_overall:
+    path: /{mode}
+    defaults: { _controller: phpbb.feed.controller:overall }

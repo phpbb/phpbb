@@ -11,21 +11,17 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_convert_30_dbms_to_31_test extends phpbb_test_case
 {
 	public function convert_30_dbms_to_31_data()
 	{
 		return array(
-			array('mssql'),
 			array('mssql_odbc'),
 			array('mssqlnative'),
 			array('mysql'),
 			array('mysqli'),
 			array('oracle'),
 			array('postgres'),
-			array('sqlite'),
 		);
 	}
 

@@ -1,0 +1,5 @@
+[{{ test_loop_inner.foo }}|
+{% for inner in test_loop_inner.inner %}
+	[{{ test_loop_inner.foo }}|
+	{{ inner.myinner }}]
+{% endfor %}]

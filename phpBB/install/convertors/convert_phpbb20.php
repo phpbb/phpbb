@@ -38,7 +38,7 @@ $dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.1.10',
+	'phpbb_version'	=> '3.2.0',
 	'author'		=> '<a href="https://www.phpbb.com/">phpBB Limited</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -233,11 +233,11 @@ if (!$get_info)
 		$user_id = (int) $src_db->sql_fetchfield('max_user_id');
 		$src_db->sql_freeresult($result);
 
-		set_config('increment_user_id', ($user_id + 1), true);
+		$config->set('increment_user_id', ($user_id + 1), false);
 	}
 	else
 	{
-		set_config('increment_user_id', 0, true);
+		$config->set('increment_user_id', 0, false);
 	}
 
 	// Overwrite maximum avatar width/height
@@ -963,7 +963,6 @@ if (!$get_info)
 				array('pf_phpbb_interests',		'users.user_interests',				array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_location',		'users.user_from',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_icq',			'users.user_icq',					array('function1' => 'phpbb_set_encoding')),
-				array('pf_phpbb_wlm',			'users.user_msnm',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_yahoo',			'users.user_yim',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_aol',			'users.user_aim',					array('function1' => 'phpbb_set_encoding')),
 				array('pf_phpbb_website',		'users.user_website',				'validate_website'),

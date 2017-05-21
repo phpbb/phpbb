@@ -1,0 +1,57 @@
+services:
+    files.factory:
+        class: phpbb\files\factory
+        arguments:
+            - '@service_container'
+
+    files.filespec:
+        class: phpbb\files\filespec
+        shared: false
+        arguments:
+            - '@filesystem'
+            - '@language'
+            - '@php_ini'
+            - '@upload_imagesize'
+            - '%core.root_path%'
+            - '@mimetype.guesser'
+            - '@plupload'
+
+    files.upload:
+        class: phpbb\files\upload
+        shared: false
+        arguments:
+            - '@filesystem'
+            - '@files.factory'
+            - '@language'
+            - '@php_ini'
+            - '@request'
+
+    files.types.form:
+        class: phpbb\files\types\form
+        shared: false
+        arguments:
+            - '@files.factory'
+            - '@language'
+            - '@php_ini'
+            - '@plupload'
+            - '@request'
+
+    files.types.local:
+        class: phpbb\files\types\local
+        shared: false
+        arguments:
+            - '@files.factory'
+            - '@language'
+            - '@php_ini'
+            - '@request'
+
+    files.types.remote:
+        class: phpbb\files\types\remote
+        shared: false
+        arguments:
+            - '@config'
+            - '@files.factory'
+            - '@language'
+            - '@php_ini'
+            - '@request'
+            - '%core.root_path%'

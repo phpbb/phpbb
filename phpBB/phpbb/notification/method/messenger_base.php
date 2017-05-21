@@ -19,6 +19,29 @@ namespace phpbb\notification\method;
 */
 abstract class messenger_base extends \phpbb\notification\method\base
 {
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
+
+	/**
+	 * Notification Method Board Constructor
+	 *
+	 * @param \phpbb\user_loader $user_loader
+	 * @param string $phpbb_root_path
+	 * @param string $php_ext
+	 */
+	public function __construct(\phpbb\user_loader $user_loader, $phpbb_root_path, $php_ext)
+	{
+		$this->user_loader = $user_loader;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+	}
+
 	/**
 	* Notify using phpBB messenger
 	*
@@ -57,9 +80,9 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 		}
 		$messenger = new \messenger();
-		$board_url = generate_board_url();
 
 		// Time to go through the queue and send emails
+		/** @var \phpbb\notification\type\type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
 			if ($notification->get_email_template() === false)

@@ -57,7 +57,9 @@ class release_3_0_5_rc1 extends container_aware_migration
 
 	public function hash_old_passwords()
 	{
+		/* @var $passwords_manager \phpbb\passwords\manager */
 		$passwords_manager = $this->container->get('passwords.manager');
+
 		$sql = 'SELECT user_id, user_password
 				FROM ' . $this->table_prefix . 'users
 				WHERE user_pass_convert = 1';
@@ -116,7 +118,7 @@ class release_3_0_5_rc1 extends container_aware_migration
 				$result = $this->db->sql_query($sql);
 
 				// Skip first row, this is our original auth option we want to preserve
-				$row = $this->db->sql_fetchrow($result);
+				$this->db->sql_fetchrow($result);
 
 				while ($row = $this->db->sql_fetchrow($result))
 				{

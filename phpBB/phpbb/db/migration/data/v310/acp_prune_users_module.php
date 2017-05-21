@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v310;
 
-class acp_prune_users_module extends \phpbb\db\migration\migration
+class acp_prune_users_module extends \phpbb\db\migration\container_aware_migration
 {
 	public function effectively_installed()
 	{
@@ -70,12 +70,7 @@ class acp_prune_users_module extends \phpbb\db\migration\migration
 		$acp_cat_users_id = (int) $this->db->sql_fetchfield('module_id');
 		$this->db->sql_freeresult($result);
 
-		if (!class_exists('\acp_modules'))
-		{
-			include($this->phpbb_root_path . 'includes/acp/acp_modules.' . $this->php_ext);
-		}
-		$module_manager = new \acp_modules();
-		$module_manager->module_class = 'acp';
-		$module_manager->move_module($acp_prune_users_id, $acp_cat_users_id);
+		$module_manager = $this->container->get('module.manager');
+		$module_manager->move_module($acp_prune_users_id, $acp_cat_users_id, 'acp');
 	}
 }

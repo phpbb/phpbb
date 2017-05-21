@@ -84,8 +84,6 @@ class oracle extends \phpbb\db\driver\driver
 		* but I assume its because the Oracle extension provides a direct method to access it
 		* without a query.
 		*/
-
-		$use_cache = false;
 /*
 		global $cache;
 
@@ -439,12 +437,17 @@ class oracle extends \phpbb\db\driver\driver
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
+				if (!$this->query_result)
+				{
+					return false;
+				}
+
 				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
@@ -499,10 +502,10 @@ class oracle extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		if ($query_id !== false)
+		if ($query_id)
 		{
 			$row = array();
-			$result = @ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
+			$result = ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
 
 			if (!$result || !$row)
 			{
@@ -550,7 +553,7 @@ class oracle extends \phpbb\db\driver\driver
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		if ($query_id === false)
+		if (!$query_id)
 		{
 			return false;
 		}
@@ -583,18 +586,24 @@ class oracle extends \phpbb\db\driver\driver
 			{
 				$query = 'SELECT ' . $tablename[1] . '_seq.currval FROM DUAL';
 				$stmt = @ociparse($this->db_connect_id, $query);
-				@ociexecute($stmt, OCI_DEFAULT);
-
-				$temp_result = @ocifetchinto($stmt, $temp_array, OCI_ASSOC + OCI_RETURN_NULLS);
-				@ocifreestatement($stmt);
-
-				if ($temp_result)
+				if ($stmt)
 				{
-					return $temp_array['CURRVAL'];
-				}
-				else
-				{
-					return false;
+					$success = @ociexecute($stmt, OCI_DEFAULT);
+
+					if ($success)
+					{
+						$temp_result = ocifetchinto($stmt, $temp_array, OCI_ASSOC + OCI_RETURN_NULLS);
+						ocifreestatement($stmt);
+
+						if ($temp_result)
+						{
+							return $temp_array['CURRVAL'];
+						}
+						else
+						{
+							return false;
+						}
+					}
 				}
 			}
 		}
@@ -622,7 +631,7 @@ class oracle extends \phpbb\db\driver\driver
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return @ocifreestatement($query_id);
+			return ocifreestatement($query_id);
 		}
 
 		return false;
@@ -787,14 +796,20 @@ class oracle extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @ociparse($this->db_connect_id, $query);
-				$success = @ociexecute($result, OCI_DEFAULT);
-				$row = array();
-
-				while (@ocifetchinto($result, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+					$success = @ociexecute($result, OCI_DEFAULT);
+					if ($success)
+					{
+						$row = array();
+
+						while (ocifetchinto($result, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+						{
+							// Take the time spent on parsing rows into account
+						}
+						@ocifreestatement($result);
+					}
 				}
-				@ocifreestatement($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

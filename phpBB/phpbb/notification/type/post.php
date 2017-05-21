@@ -50,10 +50,26 @@ class post extends \phpbb\notification\type\base
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_POST',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
+
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
 
 	/**
 	* Is available
@@ -67,8 +83,9 @@ class post extends \phpbb\notification\type\base
 	* Get the id of the item
 	*
 	* @param array $post The data from the post
+	* @return int The post id
 	*/
-	public static function get_item_id($post)
+	static public function get_item_id($post)
 	{
 		return (int) $post['post_id'];
 	}
@@ -77,8 +94,9 @@ class post extends \phpbb\notification\type\base
 	* Get the id of the parent
 	*
 	* @param array $post The data from the post
+	* @return int The topic id
 	*/
-	public static function get_item_parent_id($post)
+	static public function get_item_parent_id($post)
 	{
 		return (int) $post['topic_id'];
 	}
@@ -131,31 +149,27 @@ class post extends \phpbb\notification\type\base
 		}
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
-		$update_notifications = array();
-		$sql = 'SELECT n.*
-			FROM ' . $this->notifications_table . ' n, ' . $this->notification_types_table . ' nt
-			WHERE n.notification_type_id = ' . (int) $this->notification_type_id . '
-				AND n.item_parent_id = ' . (int) static::get_item_parent_id($post) . '
-				AND n.notification_read = 0
-				AND nt.notification_type_id = n.notification_type_id
-				AND nt.notification_type_enabled = 1';
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			// Do not create a new notification
-			unset($notify_users[$row['user_id']]);
+		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), array(
+			'item_parent_id'	=> static::get_item_parent_id($post),
+			'read'				=> 0,
+		));
 
-			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $row);
+		foreach ($notified_users as $user => $notification_data)
+		{
+			unset($notify_users[$user]);
+
+			/** @var post $notification */
+			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
 			$update_responders = $notification->add_responders($post);
 			if (!empty($update_responders))
 			{
-				$sql = 'UPDATE ' . $this->notifications_table . '
-					SET ' . $this->db->sql_build_array('UPDATE', $update_responders) . '
-					WHERE notification_id = ' . $row['notification_id'];
-				$this->db->sql_query($sql);
+				$this->notification_manager->update_notification($notification, $update_responders, array(
+					'item_parent_id'	=> self::get_item_parent_id($post),
+					'read'				=> 0,
+					'user_id'			=> $user,
+				));
 			}
 		}
-		$this->db->sql_freeresult($result);
 
 		return $notify_users;
 	}
@@ -206,14 +220,14 @@ class post extends \phpbb\notification\type\base
 
 		if ($trimmed_responders_cnt > 20)
 		{
-			$usernames[] = $this->user->lang('NOTIFICATION_MANY_OTHERS');
+			$usernames[] = $this->language->lang('NOTIFICATION_MANY_OTHERS');
 		}
 		else if ($trimmed_responders_cnt)
 		{
-			$usernames[] = $this->user->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
+			$usernames[] = $this->language->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
 		}
 
-		return $this->user->lang(
+		return $this->language->lang(
 			$this->language_key,
 			phpbb_generate_string_list($usernames, $this->user),
 			$responders_cnt
@@ -227,7 +241,7 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			censor_text($this->get_data('topic_title'))
 		);
@@ -363,13 +377,7 @@ class post extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $post Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($post, $pre_create_data = array())
 	{
@@ -394,13 +402,14 @@ class post extends \phpbb\notification\type\base
 			$this->notification_read = true;
 		}
 
-		return parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($post, $pre_create_data);
 	}
 
 	/**
 	* Add responders to the notification
 	*
 	* @param mixed $post
+	* @return array Array of responder data
 	*/
 	public function add_responders($post)
 	{
@@ -447,6 +456,12 @@ class post extends \phpbb\notification\type\base
 			return array();
 		}
 
-		return array('notification_data' => $serialized_data);
+		$data_array = array_merge(array(
+			'post_time'		=> $post['post_time'],
+			'post_id'		=> $post['post_id'],
+			'topic_id'		=> $post['topic_id']
+		), $this->get_data(false));
+
+		return $data_array;
 	}
 }

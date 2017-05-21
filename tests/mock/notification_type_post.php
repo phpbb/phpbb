@@ -21,11 +21,12 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_mock_notification_type_post extends \phpbb\notification\type\post
 {
-	public function __construct($user_loader, $db, $cache, $user, $auth, $config, $phpbb_root_path, $php_ext, $notification_types_table, $notifications_table, $user_notifications_table)
+	public function __construct($user_loader, $db, $cache, $language, $user, $auth, $config, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->language = $language;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
@@ -34,7 +35,6 @@ class phpbb_mock_notification_type_post extends \phpbb\notification\type\post
 		$this->php_ext = $php_ext;
 
 		$this->notification_types_table = $notification_types_table;
-		$this->notifications_table = $notifications_table;
-		$this->user_notifications_table = $user_notifications_table;	
+		$this->user_notifications_table = $user_notifications_table;
 	}
 }

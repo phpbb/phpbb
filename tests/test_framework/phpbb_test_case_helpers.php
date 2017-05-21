@@ -11,6 +11,8 @@
 *
 */
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 class phpbb_test_case_helpers
 {
 	protected $expectedTriggerError = false;
@@ -114,17 +116,6 @@ class phpbb_test_case_helpers
 			$config = array_merge($config, array(
 				'dbms'		=> 'phpbb\db\driver\sqlite3',
 				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite3', // filename
-				'dbport'	=> '',
-				'dbname'	=> '',
-				'dbuser'	=> '',
-				'dbpasswd'	=> '',
-			));
-		}
-		else if (extension_loaded('sqlite'))
-		{
-			$config = array_merge($config, array(
-				'dbms'		=> 'phpbb\db\driver\sqlite',
-				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
 				'dbuser'	=> '',
@@ -297,5 +288,296 @@ class phpbb_test_case_helpers
 				unlink($path . $file);
 			}
 		}
+	}
+
+	/**
+	* Set working instances of the text_formatter.* services
+	*
+	* If no container is passed, the global $phpbb_container will be used and/or
+	* created if applicable
+	*
+	* @param  ContainerInterface $container   Service container
+	* @param  string             $fixture     Path to the XML fixture
+	* @param  string             $styles_path Path to the styles dir
+	* @return ContainerInterface
+	*/
+	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
+	{
+		static $first_run;
+		global $config, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
+
+		$cache_dir = __DIR__ . '/../tmp/';
+
+		// Remove old cache files on first run
+		if (!isset($first_run))
+		{
+			$first_run = 1;
+
+			array_map('unlink', array_merge(
+				glob($cache_dir . 'data_s9e_*'),
+				glob($cache_dir . 's9e_*')
+			));
+		}
+
+		if (!isset($container))
+		{
+			if (!isset($phpbb_container))
+			{
+				$phpbb_container = new phpbb_mock_container_builder;
+			}
+
+			$container = $phpbb_container;
+		}
+
+		if (!isset($fixture))
+		{
+			$fixture = __DIR__ . '/../text_formatter/s9e/fixtures/default_formatting.xml';
+		}
+
+		if (!isset($styles_path))
+		{
+			$styles_path = $phpbb_root_path . 'styles/';
+		}
+
+		$dataset = new DOMDocument;
+		$dataset->load($fixture);
+
+		$tables = array(
+			'phpbb_bbcodes' => array(),
+			'phpbb_smilies' => array(),
+			'phpbb_styles'  => array(),
+			'phpbb_words'   => array()
+		);
+		foreach ($dataset->getElementsByTagName('table') as $table)
+		{
+			$name = $table->getAttribute('name');
+			$columns = array();
+
+			foreach ($table->getElementsByTagName('column') as $column)
+			{
+				$columns[] = $column->textContent;
+			}
+
+			foreach ($table->getElementsByTagName('row') as $row)
+			{
+				$values = array();
+
+				foreach ($row->getElementsByTagName('value') as $value)
+				{
+					$values[] = $value->textContent;
+				}
+
+				$tables[$name][] = array_combine($columns, $values);
+			}
+		}
+
+		// Set up a default style if there's none set
+		if (empty($tables['phpbb_styles']))
+		{
+			$tables['phpbb_styles'][] = array(
+				'style_id' => 1,
+				'style_path' => 'prosilver',
+				'bbcode_bitfield' => 'kNg='
+			);
+		}
+
+		// Mock the DAL, make it return data from the fixture
+		$mb = $this->test_case->getMockBuilder('phpbb\\textformatter\\data_access');
+		$mb->setMethods(array('get_bbcodes', 'get_censored_words', 'get_smilies', 'get_styles'));
+		$mb->setConstructorArgs(array(
+			$this->test_case->getMock('phpbb\\db\\driver\\driver'),
+			'phpbb_bbcodes',
+			'phpbb_smilies',
+			'phpbb_styles',
+			'phpbb_words',
+			$styles_path
+		));
+
+		$dal = $mb->getMock();
+		$container->set('text_formatter.data_access', $dal);
+
+		$dal->expects($this->test_case->any())
+		    ->method('get_bbcodes')
+		    ->will($this->test_case->returnValue($tables['phpbb_bbcodes']));
+		$dal->expects($this->test_case->any())
+		    ->method('get_smilies')
+		    ->will($this->test_case->returnValue($tables['phpbb_smilies']));
+		$dal->expects($this->test_case->any())
+		    ->method('get_styles')
+		    ->will($this->test_case->returnValue($tables['phpbb_styles']));
+		$dal->expects($this->test_case->any())
+		    ->method('get_censored_words')
+		    ->will($this->test_case->returnValue($tables['phpbb_words']));
+
+		// Cache the parser and renderer with a key based on this method's arguments
+		$cache = new \phpbb\cache\driver\file($cache_dir);
+		$prefix = '_s9e_' . md5(serialize(func_get_args()));
+		$cache_key_parser = $prefix . '_parser';
+		$cache_key_renderer = $prefix . '_renderer';
+		$container->set('cache.driver', $cache);
+
+		if (!$container->isFrozen())
+		{
+			$container->setParameter('cache.dir', $cache_dir);
+		}
+
+		// Create a path_helper
+		if (!$container->has('path_helper') || $container->getDefinition('path_helper')->isSynthetic())
+		{
+			$path_helper = $this->test_case->getMockBuilder('phpbb\\path_helper')
+				->disableOriginalConstructor()
+				->setMethods(array('get_web_root_path'))
+				->getMock();
+			$path_helper->expects($this->test_case->any())
+				->method('get_web_root_path')
+				->will($this->test_case->returnValue('phpBB/'));
+
+			$container->set('path_helper', $path_helper);
+		}
+		else
+		{
+			$path_helper = $container->get('path_helper');
+		}
+
+		// Create an event dispatcher
+		if ($container->has('dispatcher'))
+		{
+			$dispatcher = $container->get('dispatcher');
+		}
+		else if (isset($phpbb_dispatcher))
+		{
+			$dispatcher = $phpbb_dispatcher;
+		}
+		else
+		{
+			$dispatcher = new phpbb_mock_event_dispatcher;
+		}
+		if (!isset($phpbb_dispatcher))
+		{
+			$phpbb_dispatcher = $dispatcher;
+		}
+
+		// Set up the a minimum config
+		if ($container->has('config'))
+		{
+			$config = $container->get('config');
+		}
+		elseif (!isset($config))
+		{
+			$config = new \phpbb\config\config(array());
+		}
+		$default_config = array(
+			'allow_nocensors'       => false,
+			'allowed_schemes_links' => 'http,https,ftp',
+			'script_path'           => '/phpbb',
+			'server_name'           => 'localhost',
+			'server_port'           => 80,
+			'server_protocol'       => 'http://',
+			'smilies_path'          => 'images/smilies',
+		);
+		foreach ($default_config as $config_name => $config_value)
+		{
+			if (!isset($config[$config_name]))
+			{
+				$config[$config_name] = $config_value;
+			}
+		}
+
+		// Create a fake request
+		if (!isset($request))
+		{
+			$request = new phpbb_mock_request;
+		}
+
+		// Create and register the text_formatter.s9e.factory service
+		$factory = new \phpbb\textformatter\s9e\factory($dal, $cache, $dispatcher, $config, new \phpbb\textformatter\s9e\link_helper, $cache_dir, $cache_key_parser, $cache_key_renderer);
+		$container->set('text_formatter.s9e.factory', $factory);
+
+		// Create a user if none was provided, and add the common lang strings
+		if ($container->has('user'))
+		{
+			$user = $container->get('user');
+		}
+		else
+		{
+			$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+			$lang = new \phpbb\language\language($lang_loader);
+
+			$user = $this->test_case->getMockBuilder('\phpbb\user')
+					->setConstructorArgs(array($lang, '\phpbb\datetime'))
+					->setMethods(array('format_date'))
+					->getMock();
+			$user->expects($this->test_case->any())
+			     ->method('format_date')
+			     ->will($this->test_case->returnCallback(__CLASS__ . '::format_date'));
+
+			$user->date_format = 'Y-m-d H:i:s';
+			$user->optionset('viewcensors', true);
+			$user->optionset('viewflash', true);
+			$user->optionset('viewimg', true);
+			$user->optionset('viewsmilies', true);
+			$user->timezone = new \DateTimeZone('UTC');
+			$container->set('user', $user);
+		}
+		$user->add_lang('common');
+
+		if (!isset($user->style))
+		{
+			$user->style = array('style_id' => 1);
+		}
+
+		// Create and register a quote_helper
+		$quote_helper = new \phpbb\textformatter\s9e\quote_helper(
+			$container->get('user'),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$container->set('text_formatter.s9e.quote_helper', $quote_helper);
+
+		// Create and register the text_formatter.s9e.parser service and its alias
+		$parser = new \phpbb\textformatter\s9e\parser(
+			$cache,
+			$cache_key_parser,
+			$factory,
+			$dispatcher
+		);
+		$container->set('text_formatter.parser', $parser);
+		$container->set('text_formatter.s9e.parser', $parser);
+
+		// Create and register the text_formatter.s9e.renderer service and its alias
+		$renderer = new \phpbb\textformatter\s9e\renderer(
+			$cache,
+			$cache_dir,
+			$cache_key_renderer,
+			$factory,
+			$dispatcher
+		);
+
+		// Calls configured in services.yml
+		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
+		$renderer->configure_quote_helper($quote_helper);
+		$renderer->configure_smilies_path($config, $path_helper);
+		$renderer->configure_user($user, $config, $auth);
+
+		$container->set('text_formatter.renderer', $renderer);
+		$container->set('text_formatter.s9e.renderer', $renderer);
+
+		// Create and register the text_formatter.s9e.utils service and its alias
+		$utils = new \phpbb\textformatter\s9e\utils;
+		$container->set('text_formatter.utils', $utils);
+		$container->set('text_formatter.s9e.utils', $utils);
+
+		return $container;
+	}
+
+	/**
+	* Mocked replacement for \phpbb\user::format_date()
+	*
+	* @param  integer $gmepoch unix timestamp
+	* @return string
+	*/
+	static public function format_date($gmepoch)
+	{
+		return gmdate('Y-m-d H:i:s', $gmepoch);
 	}
 }

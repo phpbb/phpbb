@@ -1,0 +1,39 @@
+{% if nonexistent_loop|length %}
+nonexistent
+{% endif %}
+
+{% if nonexistent_loop|length == 0 %}
+nonexistent = 0
+{% endif %}
+
+{% if ! nonexistent_loop|length %}
+! nonexistent
+{% endif %}
+
+{% if empty_loop|length %}
+empty
+{% endif %}
+
+{% if empty_loop|length == 0 %}
+empty = 0
+{% endif %}
+
+{% if ! empty_loop|length %}
+! empty
+{% endif %}
+
+{% if test_loop|length %}
+loop
+{% endif %}
+
+{% if test_loop|length == 0 %}
+loop = 0
+{% endif %}
+
+{% if ! test_loop|length %}
+! loop
+{% endif %}
+
+{% for test_loop_inner in test_loop %}
+in loop
+{% endfor %}

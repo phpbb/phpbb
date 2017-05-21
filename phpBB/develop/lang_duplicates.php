@@ -29,7 +29,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 $phpbb_root_path='./../';
 include($phpbb_root_path . 'common.'.$phpEx);
 
-$mode = request_var('mode', '');
+$mode = $request->variable('mode', '');
 
 $modules = find_modules($phpbb_root_path . 'language/en');
 

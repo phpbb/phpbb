@@ -18,7 +18,6 @@ class acp_foobar_info
 		return array(
 			'filename'	=> 'acp_foobar',
 			'title'		=> 'ACP Foobar',
-			'version'	=> '3.1.0-dev',
 			'modes'		=> array(
 				'test'		=> array('title' => 'Test', 'auth' => '', 'cat' => array('ACP_GENERAL')),
 			),

@@ -33,10 +33,10 @@ $module = new p_master();
 $template->assign_var('S_IN_MCP', true);
 
 // Basic parameter data
-$id = request_var('i', '');
+$id = $request->variable('i', '');
 
-$mode = request_var('mode', array(''));
-$mode = sizeof($mode) ? array_shift($mode) : request_var('mode', '');
+$mode = $request->variable('mode', array(''));
+$mode = sizeof($mode) ? array_shift($mode) : $request->variable('mode', '');
 
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
@@ -50,10 +50,10 @@ if (!$user->data['is_registered'])
 }
 
 $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
-$action = request_var('action', '');
-$action_ary = request_var('action', array('' => 0));
+$action = $request->variable('action', '');
+$action_ary = $request->variable('action', array('' => 0));
 
-$forum_action = request_var('forum_action', '');
+$forum_action = $request->variable('forum_action', '');
 if ($forum_action !== '' && $request->variable('sort', false, false, \phpbb\request\request_interface::POST))
 {
 	$action = $forum_action;
@@ -71,12 +71,12 @@ if ($mode == 'topic_logs')
 	$quickmod = false;
 }
 
-$post_id = request_var('p', 0);
-$topic_id = request_var('t', 0);
-$forum_id = request_var('f', 0);
-$report_id = request_var('r', 0);
-$user_id = request_var('u', 0);
-$username = utf8_normalize_nfc(request_var('username', '', true));
+$post_id = $request->variable('p', 0);
+$topic_id = $request->variable('t', 0);
+$forum_id = $request->variable('f', 0);
+$report_id = $request->variable('r', 0);
+$user_id = $request->variable('u', 0);
+$username = $request->variable('username', '', true);
 
 if ($post_id)
 {
@@ -111,8 +111,8 @@ if (!$auth->acl_getf_global('m_'))
 		'lock'			=> 'f_user_lock',
 		'make_sticky'	=> 'f_sticky',
 		'make_announce'	=> 'f_announce',
-		'make_global'	=> 'f_announce',
-		'make_normal'	=> array('f_announce', 'f_sticky')
+		'make_global'	=> 'f_announce_global',
+		'make_normal'	=> array('f_announce', 'f_announce_global', 'f_sticky')
 	);
 
 	$allow_user = false;
@@ -127,6 +127,7 @@ if (!$auth->acl_getf_global('m_'))
 
 	if (!$allow_user)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NOT_AUTHORISED');
 	}
 }
@@ -134,6 +135,7 @@ if (!$auth->acl_getf_global('m_'))
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
 if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
+	send_status_line(403, 'Forbidden');
 	trigger_error('NOT_AUTHORISED');
 }
 
@@ -192,7 +194,7 @@ if ($quickmod)
 
 		case 'topic_logs':
 			// Reset start parameter if we jumped from the quickmod dropdown
-			if (request_var('start', 0))
+			if ($request->variable('start', 0))
 			{
 				$request->overwrite('start', 0);
 			}

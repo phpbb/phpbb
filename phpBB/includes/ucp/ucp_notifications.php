@@ -34,7 +34,10 @@ class ucp_notifications
 		$form_time = $request->variable('form_time', 0);
 		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
+		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		switch ($mode)
@@ -67,15 +70,6 @@ class ucp_notifications
 									$phpbb_notifications->delete_subscription($type, 0, $method_data['id']);
 								}
 							}
-
-							if ($request->is_set_post(str_replace('.', '_', $type) . '_notification') && !isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->add_subscription($type);
-							}
-							else if (!$request->is_set_post(str_replace('.', '_', $type) . '_notification') && isset($subscriptions[$type]))
-							{
-								$phpbb_notifications->delete_subscription($type);
-							}
 						}
 					}
 
@@ -97,7 +91,7 @@ class ucp_notifications
 				// Mark all items read
 				if ($request->variable('mark', '') == 'all' && check_link_hash($request->variable('token', ''), 'mark_all_notifications_read'))
 				{
-					$phpbb_notifications->mark_notifications_read(false, false, $user->data['user_id'], $form_time);
+					$phpbb_notifications->mark_notifications(false, false, $user->data['user_id'], $form_time);
 
 					meta_refresh(3, $this->u_action);
 					$message = $user->lang['NOTIFICATIONS_MARK_ALL_READ_SUCCESS'];
@@ -128,11 +122,11 @@ class ucp_notifications
 
 					if (!empty($mark_read))
 					{
-						$phpbb_notifications->mark_notifications_read_by_id($mark_read, $form_time);
+						$phpbb_notifications->mark_notifications_by_id('notification.method.board', $mark_read, $form_time);
 					}
 				}
 
-				$notifications = $phpbb_notifications->load_notifications(array(
+				$notifications = $phpbb_notifications->load_notifications('notification.method.board', array(
 					'start'			=> $start,
 					'limit'			=> $config['topics_per_page'],
 					'count_total'	=> true,
@@ -193,8 +187,6 @@ class ucp_notifications
 
 					'NAME'				=> $user->lang($data['lang']),
 					'EXPLAIN'			=> (isset($user->lang[$data['lang'] . '_EXPLAIN'])) ? $user->lang($data['lang'] . '_EXPLAIN') : '',
-
-					'SUBSCRIBED'		=> (isset($subscriptions[$type])) ? true : false,
 				));
 
 				foreach ($notification_methods as $method => $method_data)

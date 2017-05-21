@@ -41,6 +41,7 @@ if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
 // check specific permissions but this is a catchall
 if (!$auth->acl_get('a_'))
 {
+	send_status_line(403, 'Forbidden');
 	trigger_error('NO_ADMIN');
 }
 
@@ -50,8 +51,8 @@ define('IN_ADMIN', true);
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) === 'on') ? true : false;
 $file_uploads	= (@ini_get('file_uploads') == '1' || strtolower(@ini_get('file_uploads')) === 'on') ? true : false;
-$module_id		= request_var('i', '');
-$mode			= request_var('mode', '');
+$module_id		= $request->variable('i', '');
+$mode			= $request->variable('mode', '');
 
 // Set custom style for admin area
 $template->set_custom_style(array(

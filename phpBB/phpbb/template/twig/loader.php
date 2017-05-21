@@ -21,6 +21,24 @@ class loader extends \Twig_Loader_Filesystem
 	protected $safe_directories = array();
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
+	 * Constructor
+	 *
+	 * @param \phpbb\filesystem\filesystem_interface $filesystem
+	 * @param string|array	$paths
+	 */
+	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $paths = array())
+	{
+		$this->filesystem = $filesystem;
+
+		parent::__construct($paths);
+	}
+
+	/**
 	* Set safe directories
 	*
 	* @param array $directories Array of directories that are safe (empty to clear)
@@ -49,7 +67,7 @@ class loader extends \Twig_Loader_Filesystem
 	*/
 	public function addSafeDirectory($directory)
 	{
-		$directory = phpbb_realpath($directory);
+		$directory = $this->filesystem->realpath($directory);
 
 		if ($directory !== false)
 		{
@@ -80,6 +98,16 @@ class loader extends \Twig_Loader_Filesystem
 	protected function validateName($name)
 	{
 		return;
+	}
+
+	/**
+	 * Adds a realpath call to fix a BC break in Twig 1.26 (https://github.com/twigphp/Twig/issues/2145)
+	 *
+	 * {@inheritdoc}
+	 */
+	public function addPath($path, $namespace = self::MAIN_NAMESPACE)
+	{
+		return parent::addPath($this->filesystem->realpath($path), $namespace);
 	}
 
 	/**
@@ -119,7 +147,7 @@ class loader extends \Twig_Loader_Filesystem
 				//	can now check if we're within a "safe" directory
 
 				// Find the real path of the directory the file is in
-				$directory = phpbb_realpath(dirname($file));
+				$directory = $this->filesystem->realpath(dirname($file));
 
 				if ($directory === false)
 				{

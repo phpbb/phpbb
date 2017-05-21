@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-
 class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 {
 	protected $provider;
@@ -28,8 +25,10 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 
 		$db = $this->new_dbal();
 		$config = new \phpbb\config\config(array());
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
 		$this->request = $this->getMock('\phpbb\request\request');
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),

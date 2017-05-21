@@ -1,0 +1,23 @@
+services:
+    http_kernel:
+        class: Symfony\Component\HttpKernel\HttpKernel
+        arguments:
+            - '@dispatcher'
+            - '@controller.resolver'
+            - '@request_stack'
+
+    # WARNING: The Symfony request does not escape the input and should be used very carefully
+    #           prefer the phpbb request (service @request) as possible
+    symfony_request:
+        class: phpbb\symfony_request
+        arguments:
+            - '@request'
+
+    request_stack:
+        class: Symfony\Component\HttpFoundation\RequestStack
+
+    request:
+        class: phpbb\request\request
+        arguments:
+            - null
+            - '%core.disable_super_globals%'

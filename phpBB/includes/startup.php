@@ -19,10 +19,6 @@ if (!defined('IN_PHPBB'))
 }
 
 // Report all errors, except notices and deprecation messages
-if (!defined('E_DEPRECATED'))
-{
-	define('E_DEPRECATED', 8192);
-}
 $level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
 error_reporting($level);
 
@@ -109,33 +105,21 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-// Prevent date/time functions from throwing E_WARNING on PHP 5.3 by setting a default timezone
-if (function_exists('date_default_timezone_set') && function_exists('date_default_timezone_get'))
-{
-	// For PHP 5.1.0 the date/time functions have been rewritten
-	// and setting a timezone is required prior to calling any date/time function.
+// In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
+// because we show E_WARNING errors and do not set a default timezone.
+// This is because we have our own timezone handling and work in UTC only anyway.
 
-	// Since PHP 5.2.0 calls to date/time functions without having a timezone set
-	// result in E_STRICT errors being thrown.
-	// Note: We already exclude E_STRICT errors
-	// (to be exact: they are not included in E_ALL in PHP 5.2)
+// So what we basically want to do is set our timezone to UTC,
+// but we don't know what other scripts (such as bridges) are involved,
+// so we check whether a timezone is already set by calling date_default_timezone_get().
 
-	// In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
-	// because we show E_WARNING errors and do not set a default timezone.
-	// This is because we have our own timezone handling and work in UTC only anyway.
+// Unfortunately, date_default_timezone_get() itself might throw E_WARNING
+// if no timezone has been set, so we have to keep it quiet with @.
 
-	// So what we basically want to do is set our timezone to UTC,
-	// but we don't know what other scripts (such as bridges) are involved,
-	// so we check whether a timezone is already set by calling date_default_timezone_get().
-
-	// Unfortunately, date_default_timezone_get() itself might throw E_WARNING
-	// if no timezone has been set, so we have to keep it quiet with @.
-
-	// date_default_timezone_get() tries to guess the correct timezone first
-	// and then falls back to UTC when everything fails.
-	// We just set the timezone to whatever date_default_timezone_get() returns.
-	date_default_timezone_set(@date_default_timezone_get());
-}
+// date_default_timezone_get() tries to guess the correct timezone first
+// and then falls back to UTC when everything fails.
+// We just set the timezone to whatever date_default_timezone_get() returns.
+date_default_timezone_set(@date_default_timezone_get());
 
 // Autoloading of dependencies.
 // Three options are supported:
@@ -172,5 +156,4 @@ else
 	require($phpbb_root_path . 'vendor/autoload.php');
 }
 
-$starttime = explode(' ', microtime());
-$starttime = $starttime[1] + $starttime[0];
+$starttime = microtime(true);

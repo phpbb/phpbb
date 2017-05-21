@@ -24,7 +24,7 @@ class base implements \phpbb\extension\extension_interface
 	protected $container;
 
 	/** @var \phpbb\finder */
-	protected $finder;
+	protected $extension_finder;
 
 	/** @var \phpbb\db\migrator */
 	protected $migrator;
@@ -73,9 +73,7 @@ class base implements \phpbb\extension\extension_interface
 	*/
 	public function enable_step($old_state)
 	{
-		$migrations = $this->get_migration_file_list();
-
-		$this->migrator->set_migrations($migrations);
+		$this->get_migration_file_list();
 
 		$this->migrator->update();
 
@@ -102,8 +100,6 @@ class base implements \phpbb\extension\extension_interface
 	public function purge_step($old_state)
 	{
 		$migrations = $this->get_migration_file_list();
-
-		$this->migrator->set_migrations($migrations);
 
 		foreach ($migrations as $migration)
 		{
@@ -136,6 +132,10 @@ class base implements \phpbb\extension\extension_interface
 			->find_from_extension($this->extension_name, $this->extension_path);
 
 		$migrations = $this->extension_finder->get_classes_from_files($migrations);
+
+		$this->migrator->set_migrations($migrations);
+
+		$migrations = $this->migrator->get_migrations();
 
 		return $migrations;
 	}

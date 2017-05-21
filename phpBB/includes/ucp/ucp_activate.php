@@ -29,11 +29,11 @@ class ucp_activate
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template, $phpbb_container, $phpbb_dispatcher;
+		global $config, $phpbb_root_path, $phpEx, $request;
+		global $db, $user, $auth, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
-		$user_id = request_var('u', 0);
-		$key = request_var('k', '');
+		$user_id = $request->variable('u', 0);
+		$key = $request->variable('k', '');
 
 		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
@@ -67,6 +67,7 @@ class ucp_activate
 			{
 				login_box('', $user->lang['NO_AUTH_OPERATION']);
 			}
+			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_OPERATION');
 		}
 
@@ -86,7 +87,10 @@ class ucp_activate
 				WHERE user_id = ' . $user_row['user_id'];
 			$db->sql_query($sql);
 
-			add_log('user', $user_row['user_id'], 'LOG_USER_NEW_PASSWORD', $user_row['username']);
+			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_NEW_PASSWORD', false, array(
+				'reportee_id' => $user_row['user_id'],
+				$user_row['username']
+			));
 		}
 
 		if (!$update_password)
@@ -101,15 +105,19 @@ class ucp_activate
 			$db->sql_query($sql);
 
 			// Create the correct logs
-			add_log('user', $user_row['user_id'], 'LOG_USER_ACTIVE_USER');
+			$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE_USER', false, array(
+				'reportee_id' => $user_row['user_id']
+			));
+
 			if ($auth->acl_get('a_user'))
 			{
-				add_log('admin', 'LOG_USER_ACTIVE', $user_row['username']);
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_ACTIVE', false, array($user_row['username']));
 			}
 		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
+			/* @var $phpbb_notifications \phpbb\notification\manager */
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 

@@ -42,7 +42,10 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		parent::setUp();
 		// Get session here so that config is mocked correctly
 		$this->session = $this->session_factory->get_session($this->db);
-		global $cache, $config, $phpbb_root_path, $phpEx;
+		global $cache, $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
+
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+
 		$this->backup_cache = $cache;
 		// Change the global cache object for this test because
 		// the mock cache object does not hit the database as is needed

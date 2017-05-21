@@ -1,0 +1,6 @@
+{% for one_inner in one %}
+	{{ one_inner.VAR }}
+	{% for one_one_inner in one_inner.one %}
+		{{ one_one_inner.VAR }}
+	{% endfor %}
+{% endfor %}

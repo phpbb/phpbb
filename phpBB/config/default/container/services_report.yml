@@ -1,0 +1,53 @@
+services:
+# ----- Report controller -----
+    phpbb.report.controller:
+        class: phpbb\report\controller\report
+        arguments:
+            - '@config'
+            - '@user'
+            - '@template'
+            - '@controller.helper'
+            - '@request'
+            - '@captcha.factory'
+            - '@phpbb.report.handler_factory'
+            - '@phpbb.report.report_reason_list_provider'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# ----- Report handler factory -----
+    phpbb.report.handler_factory:
+        class: phpbb\report\handler_factory
+        arguments:
+            - '@service_container'
+
+# ----- Report UI provider -----
+    phpbb.report.report_reason_list_provider:
+        class: phpbb\report\report_reason_list_provider
+        arguments:
+            - '@dbal.conn.driver'
+            - '@template'
+            - '@user'
+
+# ----- Report handlers -----
+# Service MUST NOT be shared for all the handlers to work correctly.
+    phpbb.report.handlers.report_handler_pm:
+        class: phpbb\report\report_handler_pm
+        shared: false
+        arguments:
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@config'
+            - '@auth'
+            - '@user'
+            - '@notification_manager'
+
+    phpbb.report.handlers.report_handler_post:
+        class: phpbb\report\report_handler_post
+        shared: false
+        arguments:
+            - '@dbal.conn.driver'
+            - '@dispatcher'
+            - '@config'
+            - '@auth'
+            - '@user'
+            - '@notification_manager'

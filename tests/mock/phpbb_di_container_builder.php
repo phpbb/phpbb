@@ -17,4 +17,22 @@ class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 	{
 		return $this->phpbb_root_path . '../../tmp/container.' . $this->php_ext;
 	}
+
+	/**
+	 * Get the filename under which the dumped extensions autoloader will be stored.
+	 *
+	 * @return string Path for dumped extensions autoloader
+	 */
+	protected function get_autoload_filename()
+	{
+		return $this->phpbb_root_path . '../../tmp/autoload.' . $this->php_ext;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function inject_dbal_driver()
+	{
+		return;
+	}
 }

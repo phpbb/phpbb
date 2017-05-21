@@ -19,14 +19,14 @@ a:link		{ color: #000000; text-decoration: none; }
 a:visited	{ color: #000000; text-decoration: none; }
 a:active	{ color: #000000; text-decoration: none; }
 
-img, .noprint, #sub-header, #sub-footer, .navbar, .box1, .divider, .signature { display: none; }
+img, .noprint, .navbar, .box1, .divider, .signature { display: none; }
 /* Display smilies (Bug #47265) */
 .content img {
 	display: inline;
 }
 
 /* Container for the main body */
-#wrap {
+.wrap {
 	margin: 0 2em;
 }
 

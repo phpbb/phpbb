@@ -13,7 +13,6 @@
 
 require_once dirname(__FILE__) . '/base.php';
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 {

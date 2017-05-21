@@ -2,7 +2,7 @@
 	<div class="inner">
 
 	<p>{L_ADD_ATTACHMENT_EXPLAIN} <span class="hidden" id="drag-n-drop-message">{L_PLUPLOAD_DRAG_TEXTAREA}</span></p>
-	
+
 	<fieldset class="fields2" id="attach-panel-basic">
 	<dl>
 		<dt><label for="fileupload">{L_FILENAME}{L_COLON}</label></dt>
@@ -17,11 +17,11 @@
 	</dl>
 	</fieldset>
 
-	<div id="attach-panel-multi">
+	<div id="attach-panel-multi" class="attach-panel-multi">
 		<input type="button" class="button2" value="{L_PLUPLOAD_ADD_FILES}" id="add_files" />
 	</div>
 
-	<div class="panel<!-- IF not .attach_row --> hidden<!-- ENDIF -->" id="file-list-container">
+	<div class="panel<!-- IF not .attach_row --> hidden<!-- ENDIF --> file-list-container" id="file-list-container">
 		<div class="inner">
 			<table class="table1 zebra-list fixed-width-table">
 				<thead>
@@ -32,7 +32,7 @@
 						<th class="attach-status">{L_PLUPLOAD_STATUS}</th>
 					</tr>
 				</thead>
-				<tbody class="responsive-skip-empty" id="file-list">
+				<tbody class="responsive-skip-empty file-list" id="file-list">
 					<tr class="attach-row" id="attach-row-tpl">
 							<td class="attach-name">
 								<span class="file-name ellipsis-text"></span>

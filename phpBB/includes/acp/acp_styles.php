@@ -32,6 +32,9 @@ class acp_styles
 	protected $styles_list_cols = 0;
 	protected $reserved_style_names = array('adm', 'admin', 'all');
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -50,6 +53,9 @@ class acp_styles
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\textformatter\cache_interface */
+	protected $text_formatter_cache;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -61,7 +67,7 @@ class acp_styles
 
 	public function main($id, $mode)
 	{
-		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher;
+		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
 
 		$this->db = $db;
 		$this->user = $user;
@@ -69,6 +75,7 @@ class acp_styles
 		$this->request = $request;
 		$this->cache = $cache;
 		$this->auth = $auth;
+		$this->text_formatter_cache = $phpbb_container->get('text_formatter.cache');
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
@@ -194,7 +201,6 @@ class acp_styles
 		$messages = array();
 		$installed_names = array();
 		$installed_dirs = array();
-		$last_installed = false;
 		foreach ($dirs as $dir)
 		{
 			if (in_array($dir, $this->reserved_style_names))
@@ -217,7 +223,6 @@ class acp_styles
 					$style['style_id'] = $this->install_style($style);
 					$style['_installed'] = true;
 					$found = true;
-					$last_installed = $style['style_id'];
 					$installed_names[] = $style['style_name'];
 					$installed_dirs[] = $style['style_path'];
 					$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['style_name']));
@@ -227,6 +232,12 @@ class acp_styles
 			{
 				$messages[] = sprintf($this->user->lang['STYLE_NOT_INSTALLED'], htmlspecialchars($dir));
 			}
+		}
+
+		// Invalidate the text formatter's cache for the new styles to take effect
+		if (!empty($installed_names))
+		{
+			$this->text_formatter_cache->invalidate();
 		}
 
 		// Show message
@@ -276,6 +287,8 @@ class acp_styles
 	*/
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
+		global $user, $phpbb_log;
+
 		$default = $this->default_style;
 		$uninstalled = array();
 		$messages = array();
@@ -335,7 +348,7 @@ class acp_styles
 		// Log action
 		if (count($uninstalled))
 		{
-			add_log('admin', 'LOG_STYLE_DELETE', implode(', ', $uninstalled));
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
 		}
 
 		// Clear cache
@@ -407,6 +420,8 @@ class acp_styles
 	*/
 	protected function action_details()
 	{
+		global $user, $phpbb_log;
+
 		$id = $this->request->variable('id', 0);
 		if (!$id)
 		{
@@ -538,7 +553,8 @@ class acp_styles
 						$this->cache->purge();
 					}
 				}
-				add_log('admin', 'LOG_STYLE_EDIT_DETAILS', $style['style_name']);
+
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
 			}
 
 			// Update default style
@@ -549,7 +565,7 @@ class acp_styles
 				{
 					trigger_error($this->user->lang['STYLE_DEFAULT_CHANGE_INACTIVE'] . adm_back_link($update_action), E_USER_WARNING);
 				}
-				set_config('default_style', $id);
+				$this->config->set('default_style', $id);
 				$this->cache->purge();
 			}
 
@@ -1135,6 +1151,8 @@ class acp_styles
 	*/
 	protected function install_style($style)
 	{
+		global $user, $phpbb_log;
+
 		// Generate row
 		$sql_ary = array();
 		foreach ($style as $key => $value)
@@ -1156,7 +1174,7 @@ class acp_styles
 
 		$this->db->sql_transaction('commit');
 
-		add_log('admin', 'LOG_STYLE_ADD', $sql_ary['style_name']);
+		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($sql_ary['style_name']));
 
 		return $id;
 	}

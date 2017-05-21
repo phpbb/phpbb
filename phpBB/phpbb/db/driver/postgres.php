@@ -123,14 +123,17 @@ class postgres extends \phpbb\db\driver\driver
 		if (!$use_cache || empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
 		{
 			$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION() AS version');
-			$row = @pg_fetch_assoc($query_id, null);
-			@pg_free_result($query_id);
-
-			$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
-
-			if (!empty($cache) && $use_cache)
+			if ($query_id)
 			{
-				$cache->put('pgsql_version', $this->sql_server_version);
+				$row = pg_fetch_assoc($query_id, null);
+				pg_free_result($query_id);
+
+				$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
+
+				if (!empty($cache) && $use_cache)
+				{
+					$cache->put('pgsql_version', $this->sql_server_version);
+				}
 			}
 		}
 
@@ -200,12 +203,17 @@ class postgres extends \phpbb\db\driver\driver
 					$this->sql_time += microtime(true) - $this->curtime;
 				}
 
+				if (!$this->query_result)
+				{
+					return false;
+				}
+
 				if ($cache && $cache_ttl)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
@@ -275,7 +283,7 @@ class postgres extends \phpbb\db\driver\driver
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id !== false) ? @pg_fetch_assoc($query_id, null) : false;
+		return ($query_id) ? pg_fetch_assoc($query_id, null) : false;
 	}
 
 	/**
@@ -295,7 +303,7 @@ class postgres extends \phpbb\db\driver\driver
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id !== false) ? @pg_result_seek($query_id, $rownum) : false;
+		return ($query_id) ? @pg_result_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -317,8 +325,8 @@ class postgres extends \phpbb\db\driver\driver
 					return false;
 				}
 
-				$temp_result = @pg_fetch_assoc($temp_q_id, null);
-				@pg_free_result($query_id);
+				$temp_result = pg_fetch_assoc($temp_q_id, null);
+				pg_free_result($query_id);
 
 				return ($temp_result) ? $temp_result['last_value'] : false;
 			}
@@ -347,7 +355,7 @@ class postgres extends \phpbb\db\driver\driver
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return @pg_free_result($query_id);
+			return pg_free_result($query_id);
 		}
 
 		return false;
@@ -453,12 +461,12 @@ class postgres extends \phpbb\db\driver\driver
 
 					if ($result = @pg_query($this->db_connect_id, "EXPLAIN $explain_query"))
 					{
-						while ($row = @pg_fetch_assoc($result, null))
+						while ($row = pg_fetch_assoc($result, null))
 						{
 							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 						}
+						pg_free_result($result);
 					}
-					@pg_free_result($result);
 
 					if ($html_table)
 					{
@@ -473,11 +481,14 @@ class postgres extends \phpbb\db\driver\driver
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @pg_query($this->db_connect_id, $query);
-				while ($void = @pg_fetch_assoc($result, null))
+				if ($result)
 				{
-					// Take the time spent on parsing rows into account
+					while ($void = pg_fetch_assoc($result, null))
+					{
+						// Take the time spent on parsing rows into account
+					}
+					pg_free_result($result);
 				}
-				@pg_free_result($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

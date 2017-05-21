@@ -21,8 +21,11 @@ namespace phpbb;
 */
 class user extends \phpbb\session
 {
-	var $lang = array();
-	var $help = array();
+	/**
+	 * @var \phpbb\language\language
+	 */
+	protected $language;
+
 	var $style = array();
 	var $date_format;
 
@@ -42,35 +45,63 @@ class user extends \phpbb\session
 	var $img_lang;
 	var $img_array = array();
 
+	/** @var bool */
+	protected $is_setup_flag;
+
 	// Able to add new options (up to id 31)
 	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'sig_bbcode' => 15, 'sig_smilies' => 16, 'sig_links' => 17);
 
 	/**
 	* Constructor to set the lang path
-	* @param string $datetime_class Class name of datetime class
+	*
+	* @param \phpbb\language\language	$lang			phpBB's Language loader
+	* @param string						$datetime_class	Class name of datetime class
 	*/
-	function __construct($datetime_class)
+	function __construct(\phpbb\language\language $lang, $datetime_class)
 	{
 		global $phpbb_root_path;
 
 		$this->lang_path = $phpbb_root_path . 'language/';
+		$this->language = $lang;
 		$this->datetime = $datetime_class;
+
+		$this->is_setup_flag = false;
 	}
 
 	/**
-	* Function to set custom language path (able to use directory outside of phpBB)
-	*
-	* @param string $lang_path New language path used.
-	* @access public
-	*/
-	function set_custom_lang_path($lang_path)
+	 * Returns whether user::setup was called
+	 *
+	 * @return bool
+	 */
+	public function is_setup()
 	{
-		$this->lang_path = $lang_path;
+		return $this->is_setup_flag;
+	}
 
-		if (substr($this->lang_path, -1) != '/')
+	/**
+	 * Magic getter for BC compatibility
+	 *
+	 * Implement array access for user::lang.
+	 *
+	 * @param string	$param_name	Name of the BC component the user want to access
+	 *
+	 * @return array	The appropriate array
+	 *
+	 * @deprecated 3.2.0-dev (To be removed: 4.0.0)
+	 */
+	public function __get($param_name)
+	{
+		if ($param_name === 'lang')
 		{
-			$this->lang_path .= '/';
+			return $this->language->get_lang_array();
 		}
+		else if ($param_name === 'help')
+		{
+			$help_array = $this->language->get_lang_array();
+			return $help_array['__help'];
+		}
+
+		return array();
 	}
 
 	/**
@@ -80,6 +111,8 @@ class user extends \phpbb\session
 	{
 		global $db, $request, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 		global $phpbb_dispatcher;
+
+		$this->language->set_default_language($config['default_lang']);
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -98,6 +131,7 @@ class user extends \phpbb\session
 			{
 				$lang_override = $request->variable($config['cookie_name'] . '_lang', '', true, \phpbb\request\request_interface::COOKIE);
 			}
+
 			if ($lang_override)
 			{
 				$use_lang = basename($lang_override);
@@ -108,6 +142,7 @@ class user extends \phpbb\session
 			{
 				$user_lang_name = basename($config['default_lang']);
 			}
+
 			$user_date_format = $config['default_dateformat'];
 			$user_timezone = $config['board_timezone'];
 
@@ -187,6 +222,8 @@ class user extends \phpbb\session
 		$this->lang_name = $user_lang_name;
 		$this->date_format = $user_date_format;
 
+		$this->language->set_user_language($user_lang_name);
+
 		try
 		{
 			$this->timezone = new \DateTimeZone($user_timezone);
@@ -195,17 +232,6 @@ class user extends \phpbb\session
 		{
 			// If the timezone the user has selected is invalid, we fall back to UTC.
 			$this->timezone = new \DateTimeZone('UTC');
-		}
-
-		// We include common language file here to not load it every time a custom language file is included
-		$lang = &$this->lang;
-
-		// Do not suppress error if in DEBUG mode
-		$include_result = (defined('DEBUG')) ? (include $this->lang_path . $this->lang_name . "/common.$phpEx") : (@include $this->lang_path . $this->lang_name . "/common.$phpEx");
-
-		if ($include_result === false)
-		{
-			die('Language file ' . $this->lang_path . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
 		}
 
 		$this->add_lang($lang_set);
@@ -401,6 +427,8 @@ class user extends \phpbb\session
 			}
 		}
 
+		$this->is_setup_flag = true;
+
 		return;
 	}
 
@@ -414,103 +442,13 @@ class user extends \phpbb\session
 	*
 	* If the first parameter is an array, the elements are used as keys and subkeys to get the language entry:
 	* Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as language entry.
+	*
+	* @deprecated 3.2.0-dev (To be removed 4.0.0)
 	*/
 	function lang()
 	{
 		$args = func_get_args();
-		$key = $args[0];
-
-		if (is_array($key))
-		{
-			$lang = &$this->lang[array_shift($key)];
-
-			foreach ($key as $_key)
-			{
-				$lang = &$lang[$_key];
-			}
-		}
-		else
-		{
-			$lang = &$this->lang[$key];
-		}
-
-		// Return if language string does not exist
-		if (!isset($lang) || (!is_string($lang) && !is_array($lang)))
-		{
-			return $key;
-		}
-
-		// If the language entry is a string, we simply mimic sprintf() behaviour
-		if (is_string($lang))
-		{
-			if (sizeof($args) == 1)
-			{
-				return $lang;
-			}
-
-			// Replace key with language entry and simply pass along...
-			$args[0] = $lang;
-			return call_user_func_array('sprintf', $args);
-		}
-		else if (sizeof($lang) == 0)
-		{
-			// If the language entry is an empty array, we just return the language key
-			return $args[0];
-		}
-
-		// It is an array... now handle different nullar/singular/plural forms
-		$key_found = false;
-
-		// We now get the first number passed and will select the key based upon this number
-		for ($i = 1, $num_args = sizeof($args); $i < $num_args; $i++)
-		{
-			if (is_int($args[$i]) || is_float($args[$i]))
-			{
-				if ($args[$i] == 0 && isset($lang[0]))
-				{
-					// We allow each translation using plural forms to specify a version for the case of 0 things,
-					// so that "0 users" may be displayed as "No users".
-					$key_found = 0;
-					break;
-				}
-				else
-				{
-					$use_plural_form = $this->get_plural_form($args[$i]);
-					if (isset($lang[$use_plural_form]))
-					{
-						// The key we should use exists, so we use it.
-						$key_found = $use_plural_form;
-					}
-					else
-					{
-						// If the key we need to use does not exist, we fall back to the previous one.
-						$numbers = array_keys($lang);
-
-						foreach ($numbers as $num)
-						{
-							if ($num > $use_plural_form)
-							{
-								break;
-							}
-
-							$key_found = $num;
-						}
-					}
-					break;
-				}
-			}
-		}
-
-		// Ok, let's check if the key was found, else use the last entry (because it is mostly the plural form)
-		if ($key_found === false)
-		{
-			$numbers = array_keys($lang);
-			$key_found = end($numbers);
-		}
-
-		// Use the language string we determined and pass it to sprintf()
-		$args[0] = $lang[$key_found];
-		return call_user_func_array('sprintf', $args);
+		return call_user_func_array(array($this->language, 'lang'), $args);
 	}
 
 	/**
@@ -520,24 +458,22 @@ class user extends \phpbb\session
 	* @param $number        int|float   The number we want to get the plural case for. Float numbers are floored.
 	* @param $force_rule    mixed   False to use the plural rule of the language package
 	*                               or an integer to force a certain plural rule
-	* @return   int     The plural-case we need to use for the number plural-rule combination
+	* @return int|bool     The plural-case we need to use for the number plural-rule combination, false if $force_rule
+	* 					   was invalid.
+	*
+	* @deprecated: 3.2.0-dev (To be removed: 3.3.0)
 	*/
 	function get_plural_form($number, $force_rule = false)
 	{
-		$number = (int) $number;
-
-		// Default to English system
-		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
-
-		return phpbb_get_plural_form($plural_rule, $number);
+		return $this->language->get_plural_form($number, $force_rule);
 	}
 
 	/**
 	* Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
 	*
 	* @param mixed $lang_set specifies the language entries to include
-	* @param bool $use_db internal variable for recursion, do not use
-	* @param bool $use_help internal variable for recursion, do not use
+	* @param bool $use_db internal variable for recursion, do not use	@deprecated 3.2.0-dev (To be removed: 3.3.0)
+	* @param bool $use_help internal variable for recursion, do not use	@deprecated 3.2.0-dev (To be removed: 3.3.0)
 	* @param string $ext_name The extension to load language from, or empty for core files
 	*
 	* Examples:
@@ -548,11 +484,14 @@ class user extends \phpbb\session
 	* $lang_set = 'posting'
 	* $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
 	* </code>
+	*
+	* Note: $use_db and $use_help should be removed. The old function was kept for BC purposes,
+	* 		so the BC logic is handled here.
+	*
+	* @deprecated: 3.2.0-dev (To be removed: 3.3.0)
 	*/
 	function add_lang($lang_set, $use_db = false, $use_help = false, $ext_name = '')
 	{
-		global $phpEx;
-
 		if (is_array($lang_set))
 		{
 			foreach ($lang_set as $key => $lang_file)
@@ -563,6 +502,7 @@ class user extends \phpbb\session
 
 				if ($key == 'db')
 				{
+					// This is never used
 					$this->add_lang($lang_file, true, $use_help, $ext_name);
 				}
 				else if ($key == 'help')
@@ -571,7 +511,7 @@ class user extends \phpbb\session
 				}
 				else if (!is_array($lang_file))
 				{
-					$this->set_lang($this->lang, $this->help, $lang_file, $use_db, $use_help, $ext_name);
+					$this->set_lang($lang_file, $use_help, $ext_name);
 				}
 				else
 				{
@@ -582,8 +522,37 @@ class user extends \phpbb\session
 		}
 		else if ($lang_set)
 		{
-			$this->set_lang($this->lang, $this->help, $lang_set, $use_db, $use_help, $ext_name);
+			$this->set_lang($lang_set, $use_help, $ext_name);
 		}
+	}
+
+	/**
+	 * BC function for loading language files
+	 *
+	 * @deprecated 3.2.0-dev (To be removed: 3.3.0)
+	 */
+	private function set_lang($lang_set, $use_help, $ext_name)
+	{
+		if (empty($ext_name))
+		{
+			$ext_name = null;
+		}
+
+		if ($use_help && strpos($lang_set, '/') !== false)
+		{
+			$component = dirname($lang_set) . '/help_' . basename($lang_set);
+
+			if ($component[0] === '/')
+			{
+				$component = substr($component, 1);
+			}
+		}
+		else
+		{
+			$component = (($use_help) ? 'help_' : '') . $lang_set;
+		}
+
+		$this->language->add_lang($component, $ext_name);
 	}
 
 	/**
@@ -593,6 +562,10 @@ class user extends \phpbb\session
 	* @param mixed $lang_set specifies the language entries to include
 	* @param bool $use_db internal variable for recursion, do not use
 	* @param bool $use_help internal variable for recursion, do not use
+	*
+	* Note: $use_db and $use_help should be removed. Kept for BC purposes.
+	*
+	* @deprecated: 3.2.0-dev (To be removed: 3.3.0)
 	*/
 	function add_lang_ext($ext_name, $lang_set, $use_db = false, $use_help = false)
 	{
@@ -602,109 +575,6 @@ class user extends \phpbb\session
 		}
 
 		$this->add_lang($lang_set, $use_db, $use_help, $ext_name);
-	}
-
-	/**
-	* Set language entry (called by add_lang)
-	* @access private
-	*/
-	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false, $ext_name = '')
-	{
-		global $phpbb_root_path, $phpEx;
-
-		// Make sure the language name is set (if the user setup did not happen it is not set)
-		if (!$this->lang_name)
-		{
-			global $config;
-			$this->lang_name = basename($config['default_lang']);
-		}
-
-		// $lang == $this->lang
-		// $help == $this->help
-		// - add appropriate variables here, name them as they are used within the language file...
-		if (!$use_db)
-		{
-			if ($use_help && strpos($lang_file, '/') !== false)
-			{
-				$filename = dirname($lang_file) . '/help_' . basename($lang_file);
-			}
-			else
-			{
-				$filename = (($use_help) ? 'help_' : '') . $lang_file;
-			}
-
-			if ($ext_name)
-			{
-				global $phpbb_extension_manager;
-				$ext_path = $phpbb_extension_manager->get_extension_path($ext_name, true);
-
-				$lang_path = $ext_path . 'language/';
-			}
-			else
-			{
-				$lang_path = $this->lang_path;
-			}
-
-			if (strpos($phpbb_root_path . $filename, $lang_path) === 0)
-			{
-				$language_filename = $phpbb_root_path . $filename;
-			}
-			else
-			{
-				$language_filename = $lang_path . $this->lang_name . '/' . $filename . '.' . $phpEx;
-			}
-
-			// If we are in install, try to use the updated version, when available
-			$install_language_filename = str_replace('language/', 'install/update/new/language/', $language_filename);
-			if (defined('IN_INSTALL') && file_exists($install_language_filename))
-			{
-				$language_filename = $install_language_filename;
-			}
-
-			if (!file_exists($language_filename))
-			{
-				global $config;
-
-				if ($this->lang_name == 'en')
-				{
-					// The user's selected language is missing the file, the board default's language is missing the file, and the file doesn't exist in /en.
-					$language_filename = str_replace($lang_path . 'en', $lang_path . $this->data['user_lang'], $language_filename);
-					trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
-				}
-				else if ($this->lang_name == basename($config['default_lang']))
-				{
-					// Fall back to the English Language
-					$reset_lang_name = $this->lang_name;
-					$this->lang_name = 'en';
-					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
-					$this->lang_name = $reset_lang_name;
-				}
-				else if ($this->lang_name == $this->data['user_lang'])
-				{
-					// Fall back to the board default language
-					$reset_lang_name = $this->lang_name;
-					$this->lang_name = basename($config['default_lang']);
-					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help, $ext_name);
-					$this->lang_name = $reset_lang_name;
-				}
-
-				return;
-			}
-
-			// Do not suppress error if in DEBUG mode
-			$include_result = (defined('DEBUG')) ? (include $language_filename) : (@include $language_filename);
-
-			if ($include_result === false)
-			{
-				trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
-			}
-		}
-		else if ($use_db)
-		{
-			// Get Database Language Strings
-			// Put them into $lang if nothing is prefixed, put them into $help if help: is prefixed
-			// For example: help:faq, posting
-		}
 	}
 
 	/**
@@ -816,7 +686,7 @@ class user extends \phpbb\session
 
 		if ($alt)
 		{
-			$alt = $this->lang($alt);
+			$alt = $this->language->lang($alt);
 			$title = ' title="' . $alt . '"';
 		}
 		return '<span class="imageset ' . $img . '"' . $title . '>' . $alt . '</span>';
@@ -877,8 +747,6 @@ class user extends \phpbb\session
 	*/
 	function leave_newly_registered()
 	{
-		global $db;
-
 		if (empty($this->data['user_new']))
 		{
 			return false;

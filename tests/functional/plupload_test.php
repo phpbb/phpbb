@@ -107,11 +107,11 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 			if ($i < self::CHUNKS - 1)
 			{
-				$this->assertContains('{"jsonrpc":"2.0","id":"id","result":null}', self::$client->getResponse()->getContent());
+				$this->assertContains('{"jsonrpc":"2.0","id":"id","result":null}', self::get_content());
 			}
 			else
 			{
-				$response = json_decode(self::$client->getResponse()->getContent(), true);
+				$response = json_decode(self::get_content(), true);
 				$this->assertEquals('valid.jpg', $response['data'][0]['real_filename']);
 			}
 
@@ -134,7 +134,8 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 			'error' => UPLOAD_ERR_OK,
 		);
 
-		$crawler = self::$client->request(
+		self::$client->setServerParameter('HTTP_X_PHPBB_USING_PLUPLOAD', '1');
+		self::$client->request(
 			'POST',
 			$url . '&sid=' . $this->sid,
 			array(
@@ -144,11 +145,10 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 				'real_filename' => 'valid.jpg',
 				'add_file' => $this->lang('ADD_FILE'),
 			),
-			array('fileupload' => $file),
-			array('X-PHPBB-USING-PLUPLOAD' => '1')
+			array('fileupload' => $file)
 		);
 
-		$response = json_decode(self::$client->getResponse()->getContent(), true);
+		$response = json_decode(self::get_content(), true);
 		$this->assertEquals('valid.jpg', $response['data'][0]['real_filename']);
 	}
 }
