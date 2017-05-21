@@ -124,7 +124,7 @@ function wrap_img_in_html($src, $title)
 */
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $config, $phpbb_root_path;
+	global $user, $db, $config, $phpbb_dispatcher, $phpbb_root_path;
 
 	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
 
@@ -148,6 +148,26 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Now send the File Contents to the Browser
 	$size = @filesize($filename);
+
+	/**
+	* Event to alter attachment before it is sent to browser.
+	*
+	* @event core.send_file_to_browser_before
+	* @var	array	attachment	Attachment data
+	* @var	string	upload_dir	Relative path of upload directory
+	* @var	int		category	Attachment category
+	* @var	string	filename	Path to file, including filename
+	* @var	int		size		File size
+	* @since 3.1.11-RC1
+	*/
+	$vars = array(
+		'attachment',
+		'upload_dir',
+		'category',
+		'filename',
+		'size',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
 

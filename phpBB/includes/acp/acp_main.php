@@ -421,23 +421,33 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.3.3', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4.0', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="https://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 
 		if ($auth->acl_get('a_board'))
 		{
+			/** @var \phpbb\version_helper $version_helper */
 			$version_helper = $phpbb_container->get('version_helper');
 			try
 			{
 				$recheck = $request->variable('versioncheck_force', false);
-				$updates_available = $version_helper->get_suggested_updates($recheck);
+				$updates_available = $version_helper->get_update_on_branch($recheck);
+				$upgrades_available = $version_helper->get_suggested_updates();
+				if (!empty($upgrades_available))
+				{
+					$upgrades_available = array_pop($upgrades_available);
+				}
 
-				$template->assign_var('S_VERSION_UP_TO_DATE', empty($updates_available));
+				$template->assign_vars(array(
+					'S_VERSION_UP_TO_DATE'		=> empty($updates_available),
+					'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
+					'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
+				));
 			}
 			catch (\RuntimeException $e)
 			{

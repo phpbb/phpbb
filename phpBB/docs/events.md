@@ -58,11 +58,29 @@ acp_email_options_after
 * Since: 3.1.2-RC1
 * Purpose: Add settings to mass email form
 
+acp_ext_details_end
+===
+* Location: adm/style/acp_ext_details.html
+* Since: 3.1.11-RC1
+* Purpose: Add more detailed information on extension after the available information.
+
+acp_ext_list_disabled_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after the name of disabled extensions in the list
+
 acp_ext_list_disabled_title_after
 ===
 * Location: adm/style/acp_ext_list.html
 * Since: 3.1.11-RC1
 * Purpose: Add text after disabled extensions section title.
+
+acp_ext_list_enabled_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after the name of enabled extensions in the list
 
 acp_ext_list_enabled_title_after
 ===
@@ -368,6 +386,13 @@ acp_profile_contact_before
     + adm/style/acp_profile.html
 * Since: 3.1.6-RC1
 * Purpose: Add extra options to custom profile field configuration in the ACP
+
+acp_profile_step_one_lang_after
+===
+* Locations:
+    + adm/style/acp_profile.html
+* Since: 3.1.11-RC1
+* Purpose: Add extra lang specific options to custom profile field step one configuration in the ACP
 
 acp_prune_forums_append
 ===
@@ -686,6 +711,14 @@ forumlist_body_last_row_after
 * Since: 3.1.0-b2
 * Purpose: Add content after the very last row of the forum list.
 
+index_body_birthday_block_before
+===
+* Locations:
+    + styles/prosilver/template/index_body.html
+    + styles/subsilver2/template/index_body.html
+* Since: 3.1.11-RC1
+* Purpose: Add new statistic blocks before the Birthday block
+
 index_body_block_birthday_append
 ===
 * Locations:
@@ -814,6 +847,14 @@ mcp_forum_actions_after
 * Since: 3.1.11-RC1
 * Purpose: Add some information after actions fieldset
 
+mcp_forum_actions_append
+===
+* Locations:
+    + styles/prosilver/template/mcp_forum.html
+    + styles/subsilver2/template/mcp_forum.html
+* Since: 3.1.11-RC1
+* Purpose: Add additional options to actions select
+
 mcp_forum_actions_before
 ===
 * Locations:
@@ -925,6 +966,20 @@ mcp_topic_postrow_post_details_before
     + styles/subsilver2/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content before post details in topic moderation
+
+mcp_topic_postrow_post_subject_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after post subject in topic moderation
+
+mcp_topic_postrow_post_subject_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before post subject in topic moderation
 
 mcp_topic_topic_title_after
 ===
@@ -1041,6 +1096,22 @@ memberlist_search_sorting_options_before
     + styles/subsilver2/template/memberlist_search.html
 * Since: 3.1.2-RC1
 * Purpose: Add information before the search sorting options field.
+
+memberlist_team_username_append
+===
+* Locations:
+    + styles/prosilver/template/memberlist_team.html
+    + styles/subsilver2/template/memberlist_team.html
+* Since: 3.1.11-RC1
+* Purpose: Append information to username of team member
+
+memberlist_team_username_prepend
+===
+* Locations:
+    + styles/prosilver/template/memberlist_team.html
+    + styles/subsilver2/template/memberlist_team.html
+* Since: 3.1.11-RC1
+* Purpose: Add information before team user username
 
 memberlist_view_contact_after
 ===
@@ -1914,6 +1985,13 @@ search_results_topic_before
 * Since: 3.1.0-b4
 * Purpose: Add data before search result topics
 
+search_results_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.11-RC1
+* Purpose: Add data after search results topic title
+
 simple_footer_after
 ===
 * Locations:
@@ -2009,6 +2087,14 @@ ucp_main_front_user_activity_after
 * Since: 3.1.6-RC1
 * Purpose: Add content right after the user activity info viewing UCP front page
 
+ucp_main_front_user_activity_append
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/subsilver2/template/ucp_main_front.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after last user activity info viewing UCP front page
+
 ucp_main_front_user_activity_before
 ===
 * Locations:
@@ -2016,6 +2102,14 @@ ucp_main_front_user_activity_before
     + styles/subsilver2/template/ucp_main_front.html
 * Since: 3.1.6-RC1
 * Purpose: Add content right before the user activity info viewing UCP front page
+
+ucp_main_front_user_activity_prepend
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/subsilver2/template/ucp_main_front.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before first user activity info viewing UCP front page
 
 ucp_pm_history_post_buttons_after
 ===
@@ -2112,6 +2206,13 @@ ucp_pm_viewmessage_custom_fields_before
 * Since: 3.1.0-a1
 * Purpose: Add data before the custom fields on the user profile when viewing
 a private message
+
+ucp_pm_viewmessage_options_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_pm_viewmessage.html
+* Since: 3.1.11-RC1
+* Purpose: Add content right before display options
 
 ucp_pm_viewmessage_post_buttons_after
 ===
@@ -2270,6 +2371,14 @@ ucp_profile_register_details_after
     + styles/subsilver2/template/ucp_profile_reg_details.html
 * Since: 3.1.4-RC1
 * Purpose: Add options in profile page fieldset - after confirm password field.
+
+ucp_register_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_register.html
+    + styles/subsilver2/template/ucp_register.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before buttons in registration form.
 
 ucp_register_credentials_before
 ===
