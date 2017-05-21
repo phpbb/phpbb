@@ -27,7 +27,7 @@ class user_notifications_table_index_p2 extends \phpbb\db\migration\migration
 		return array(
 			'add_index' => array(
 				$this->table_prefix . 'user_notifications' => array(
-					'usr_id_itm_id'					=> array('user_id', 'item_id'),
+					'uid_itm_id'					=> array('user_id', 'item_id'),
 				),
 			),
 		);
@@ -38,7 +38,7 @@ class user_notifications_table_index_p2 extends \phpbb\db\migration\migration
 		return array(
 			'drop_keys' => array(
 				$this->table_prefix . 'user_notifications' => array(
-					'usr_id_itm_id',
+					'uid_itm_id',
 				),
 			),
 		);
