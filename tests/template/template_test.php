@@ -998,6 +998,46 @@ EOT
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index out of bounds, ignored');
 	}
 
+	public function test_indexed_assign_block_vars()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+		$this->template->assign_block_vars('outer.middle', array());
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|1]outer - 1[outer|3]middle - 0[middle|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->assign_block_vars('outer[0].middle', array('VARIABLE' => 'test'));
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|2]middle - 1 - test[middle|2]outer - 1[outer|3]middle - 0[middle|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Inserting at the first outer block');
+
+		$this->template->assign_block_vars('outer[1].middle[0].inner', array());
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|2]middle - 1 - test[middle|2]outer - 1[outer|3]middle - 0[middle|2]inner - 0[inner|1]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Creating an inner block at the first middle block in the second outer block');
+
+		$this->template->assign_block_vars('outer[1].middle[0].inner', array());
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|2]middle - 1 - test[middle|2]outer - 1[outer|3]middle - 0[middle|2]inner - 0[inner|2]inner - 1[inner|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Inserting another inner block in the same place');
+
+		$this->template->assign_block_vars('outer.middle[1].inner', array('VARIABLE' => 'test'));
+
+		$expect = 'outer - 0[outer|3]middle - 0[middle|2]middle - 1 - test[middle|2]outer - 1[outer|3]middle - 0[middle|2]inner - 0[inner|2]inner - 1[inner|2]middle - 1[middle|2]outer - 2[outer|3]middle - 0[middle|3]middle - 1[middle|3]inner - 0 - test[inner|1]middle - 2[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Inserting another inner block in the same place');
+	}
 
 	public function assign_block_vars_array_data()
 	{
