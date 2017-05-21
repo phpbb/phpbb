@@ -947,7 +947,19 @@ class tools implements tools_interface
 				case 'oracle':
 				case 'sqlite3':
 					$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name, false);
-					$row[$col] = strpos($row[$col], $table_name) === 0 ? substr($row[$col], strlen($table_name) + 1) : $row[$col];
+					$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
+
+					if (strpos($index_name , $table_name) === false)
+					{
+						if (strpos($index_name, $table_prefix) !== false)
+						{
+							$row[$col] = substr($row[$col], strlen($table_prefix) + 1);
+						}
+						else
+						{
+							$row[$col] = substr($row[$col], strlen($table_name) + 1);
+						}
+					}
 				break;
 			}
 
