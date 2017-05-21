@@ -87,12 +87,8 @@ if (version_compare(PHP_VERSION, '5.4') < 0)
 {
 	die('You are running an unsupported PHP version. Please upgrade to PHP 5.4.0 or higher before trying to install or update to phpBB 3.2');
 }
-
 // Register globals and magic quotes have been dropped in PHP 5.4 so no need for extra checks
-/**
-* @ignore
-*/
-define('STRIP', false);
+
 
 // In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
 // because we show E_WARNING errors and do not set a default timezone.
