@@ -25,11 +25,6 @@ class user_notifications_table_unique_index extends \phpbb\db\migration\migratio
 	public function update_schema()
 	{
 		return array(
-			'drop_keys'			=> array(
-				$this->table_prefix . 'user_notifications' => array(
-					'itm_usr_mthd',
-				),
-			),
 			'add_unique_index'  => array(
 				$this->table_prefix . 'user_notifications' => array(
 					'itm_usr_mthd'	=> array('item_type', 'item_id', 'user_id'),
