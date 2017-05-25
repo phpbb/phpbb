@@ -13,24 +13,19 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-class user_notifications_table_unique_index extends \phpbb\db\migration\migration
+class user_notifications_table_temp_index extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v32x\user_notifications_table_remove_duplicates',
+			'\phpbb\db\migration\data\v32x\user_notifications_table_reduce_column_sizes',
 		);
 	}
 
 	public function update_schema()
 	{
 		return array(
-			'drop_keys'			=> array(
-				$this->table_prefix . 'user_notifications' => array(
-					'itm_usr_mthd',
-				),
-			),
-			'add_unique_index'  => array(
+			'add_index' => array(
 				$this->table_prefix . 'user_notifications' => array(
 					'itm_usr_mthd'	=> array('item_type', 'item_id', 'user_id', 'method'),
 				),
