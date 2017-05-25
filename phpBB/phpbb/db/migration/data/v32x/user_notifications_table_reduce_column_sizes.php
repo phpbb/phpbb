@@ -18,7 +18,7 @@ class user_notifications_table_reduce_column_sizes extends \phpbb\db\migration\m
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v32x\user_notifications_table_remove_duplicates',
+			'\phpbb\db\migration\data\v32x\user_notifications_table_index_p3',
 		);
 	}
 
