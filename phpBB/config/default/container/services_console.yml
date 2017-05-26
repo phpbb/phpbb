@@ -179,6 +179,15 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.fixup.fix_left_right_ids:
+        class: phpbb\console\command\fixup\fix_left_right_ids
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@cache.driver'
+        tags:
+            - { name: console.command }
+
     console.command.reparser.list:
         class: phpbb\console\command\reparser\list_all
         arguments:
