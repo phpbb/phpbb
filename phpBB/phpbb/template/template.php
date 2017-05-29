@@ -128,6 +128,22 @@ interface template
 	public function append_var($varname, $varval);
 
 	/**
+	* Retrieve multiple template values
+	*
+	* @param array $vararray An array with variable names
+	* @return array A hash of variable name => value pairs (value is null if not set)
+	*/
+	public function retrieve_vars(array $vararray);
+
+	/**
+	* Retreive a single scalar value from a single key.
+	*
+	* @param string $varname Variable name
+	* @return mixed Variable value, or null if not set
+	*/
+	public function retrieve_var($varname);
+
+	/**
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
@@ -142,6 +158,14 @@ interface template
 	* @return \phpbb\template\template $this
 	*/
 	public function assign_block_vars_array($blockname, array $block_vars_array);
+
+	/**
+	* Retrieve variable values from an specified block
+	* @param string $blockname Name of block to retrieve $vararray from
+	* @param array $vararray An array with variable names, empty array gets all vars
+	* @return array A hash of variable name => value pairs (value is null if not set)
+	*/
+	public function retrieve_block_vars($blockname, array $vararray);
 
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)

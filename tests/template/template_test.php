@@ -597,6 +597,37 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->assertEquals($expecting, $this->display('append_var'));
 	}
 
+	public function test_retrieve_data()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', false);
+
+		// @todo Change this
+		$this->template->assign_vars(array('ONE' => true, 'TWO' => 'two', 'THREE' => 3));
+		$this->template->assign_block_vars('outer', array('POSITION' => 'O1'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O1M1'));
+		$this->template->assign_block_vars('outer', array('POSITION' => 'O2'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O2M1'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O2M2'));
+		$this->template->assign_block_vars('outer', array('POSITION' => 'O3'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O3M1'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O3M2', 'ONE' => true, 'TWO' => 'two', 'THREE' => 3));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O3M3'));
+
+		$expect = 'outer - 0middle - 0outer - 1middle - 0middle - 1outer - 2middle - 0middle - 1middle - 2';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->assertEquals(true, $this->template->retrieve_var('ONE'), 'Retrieve a single value from the template');
+		$this->assertEquals(null, $this->template->retrieve_var('FOUR'), 'Retrieve a non_existent value from the template');
+		$this->assertEquals(array('TWO' => 'two', 'THREE' => 3, 'FOUR' => null), $this->template->retrieve_vars(array('TWO','THREE', 'FOUR')), 'Retrieve several variables from the template');
+
+		$this->assertEquals(array('POSITION' => 'O3', 'SIZE' => null), $this->template->retrieve_block_vars('outer', array('POSITION', 'SIZE')), 'Retrieve vars from a block in the template');
+		$this->assertEquals(array('POSITION' => 'O2M1'), $this->template->retrieve_block_vars('outer[1].middle[0]', array('POSITION')), 'Retrieve single var from a nested indexed block in the template');
+		$this->assertEquals(array('S_ROW_NUM' => 2), $this->template->retrieve_block_vars('outer.middle', array('S_ROW_NUM')), 'Retrieve automatic var from a block in the template');
+		$this->assertEquals(array('POSITION' => 'O3M2', 'ONE' => true, 'TWO' => 'two', 'THREE' => 3), $this->template->retrieve_block_vars('outer[2].middle[1]', array()), 'Retrieve all vars from a block in the template');
+	}
+
 	public function test_php()
 	{
 		global $phpbb_root_path;
