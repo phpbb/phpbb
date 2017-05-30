@@ -64,6 +64,12 @@ acp_ext_details_end
 * Since: 3.1.11-RC1
 * Purpose: Add more detailed information on extension after the available information.
 
+acp_ext_details_notice
+===
+* Location: adm/style/acp_ext_details.html
+* Since: 3.1.11-RC1
+* Purpose: Add extension detail notices after version check information.
+
 acp_ext_list_disabled_name_after
 ===
 * Location: adm/style/acp_ext_list.html
