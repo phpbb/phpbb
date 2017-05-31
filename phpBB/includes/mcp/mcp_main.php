@@ -632,6 +632,7 @@ function mcp_move_topic($topic_ids)
 				* @var	array	shadow	SQL array to be used by $db->sql_build_array
 				* @var	array	row		Topic data
 				* @since 3.1.11-RC1
+				* @changed 3.1.11-RC1 Added variable: row
 				*/
 				$vars = array(
 					'shadow',
