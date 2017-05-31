@@ -35,7 +35,7 @@ class loader extends \Twig_Loader_Filesystem
 	{
 		$this->filesystem = $filesystem;
 
-		parent::__construct($paths);
+		parent::__construct($paths, $this->filesystem->realpath(dirname(__FILE__)));
 	}
 
 	/**
