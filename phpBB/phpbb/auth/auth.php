@@ -514,7 +514,7 @@ class auth
 	*/
 	function acl_clear_prefetch($user_id = false)
 	{
-		global $db, $cache;
+		global $db, $cache, $phpbb_dispatcher;
 
 		// Rebuild options cache
 		$cache->destroy('_role_cache');
@@ -552,6 +552,16 @@ class auth
 				user_perm_from = 0
 			$where_sql";
 		$db->sql_query($sql);
+
+		/**
+		* Event is triggered after user(s) permission settings cache has been cleared
+		*
+		* @event core.acl_clear_prefetch_after
+		* @var	mixed	user_id	User ID(s)
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('user_id');
+		extract($phpbb_dispatcher->trigger_event('core.acl_clear_prefetch_after', compact($vars)));
 
 		return;
 	}

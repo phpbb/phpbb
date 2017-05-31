@@ -30,6 +30,11 @@
 			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
 		</div>
 	<!-- ENDIF -->
+	<!-- IF S_VERSION_UPGRADEABLE -->
+		<div class="errorbox notice">
+			<p>{UPGRADE_INSTRUCTIONS}</p>
+		</div>
+	<!-- ENDIF -->
 
 	<!-- IF S_SEARCH_INDEX_MISSING -->
 		<div class="errorbox">

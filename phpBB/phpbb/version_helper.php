@@ -184,7 +184,7 @@ class version_helper
 		$self = $this;
 		$current_version = $this->current_version;
 
-		// Filter out any versions less than to the current version
+		// Filter out any versions less than the current version
 		$versions = array_filter($versions, function($data) use ($self, $current_version) {
 			return $self->compare($data['current'], $current_version, '>=');
 		});
@@ -201,11 +201,117 @@ class version_helper
 	}
 
 	/**
+	 * Gets the latest update for the current branch the user is on
+	 * Will suggest versions from newer branches when EoL has been reached
+	 * and/or version from newer branch is needed for having all known security
+	 * issues fixed.
+	 *
+	 * @param bool $force_update Ignores cached data. Defaults to false.
+	 * @param bool $force_cache Force the use of the cache. Override $force_update.
+	 * @return array Version info or empty array if there are no updates
+	 * @throws \RuntimeException
+	 */
+	public function get_update_on_branch($force_update = false, $force_cache = false)
+	{
+		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
+
+		$self = $this;
+		$current_version = $this->current_version;
+
+		// Filter out any versions less than the current version
+		$versions = array_filter($versions, function($data) use ($self, $current_version) {
+			return $self->compare($data['current'], $current_version, '>=');
+		});
+
+		// Get the lowest version from the previous list.
+		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
+			if ($value === null && $self->compare($data['current'], $current_version, '>='))
+			{
+				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				{
+					return ($self->compare($data['current'], $current_version, '>')) ? $data : array();
+				}
+				else
+				{
+					return null;
+				}
+			}
+
+			return $value;
+		});
+
+		return $update_info === null ? array() : $update_info;
+	}
+
+	/**
+	 * Gets the latest extension update for the current phpBB branch the user is on
+	 * Will suggest versions from newer branches when EoL has been reached
+	 * and/or version from newer branch is needed for having all known security
+	 * issues fixed.
+	 *
+	 * @param bool $force_update Ignores cached data. Defaults to false.
+	 * @param bool $force_cache Force the use of the cache. Override $force_update.
+	 * @return array Version info or empty array if there are no updates
+	 * @throws \RuntimeException
+	 */
+	public function get_ext_update_on_branch($force_update = false, $force_cache = false)
+	{
+		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
+
+		$self = $this;
+		$current_version = $this->current_version;
+
+		// Get current phpBB branch from version, e.g.: 3.2
+		preg_match('/^(\d+\.\d+).*$/', $this->config['version'], $matches);
+		$current_branch = $matches[1];
+
+		// Filter out any versions less than the current version
+		$versions = array_filter($versions, function($data) use ($self, $current_version) {
+			return $self->compare($data['current'], $current_version, '>=');
+		});
+
+		// Filter out any phpbb branches less than the current version
+		$branches = array_filter(array_keys($versions), function($branch) use ($self, $current_branch) {
+			return $self->compare($branch, $current_branch, '>=');
+		});
+		if (!empty($branches))
+		{
+			$versions = array_intersect_key($versions, array_flip($branches));
+		}
+		else
+		{
+			// If branches are empty, it means the current phpBB branch is newer than any branch the
+			// extension was validated against. Reverse sort the versions array so we get the newest
+			// validated release available.
+			krsort($versions);
+		}
+
+		// Get the first available version from the previous list.
+		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
+			if ($value === null && $self->compare($data['current'], $current_version, '>='))
+			{
+				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				{
+					return $self->compare($data['current'], $current_version, '>') ? $data : array();
+				}
+				else
+				{
+					return null;
+				}
+			}
+
+			return $value;
+		});
+
+		return $update_info === null ? array() : $update_info;
+	}
+
+	/**
 	* Obtains the latest version information
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string
+	* @return array
 	* @throws \RuntimeException
 	*/
 	public function get_suggested_updates($force_update = false, $force_cache = false)
@@ -226,7 +332,7 @@ class version_helper
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string Version info
+	* @return array Version info
 	* @throws \RuntimeException
 	*/
 	public function get_versions_matching_stability($force_update = false, $force_cache = false)
@@ -246,7 +352,7 @@ class version_helper
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return string Version info, includes stable and unstable data
+	* @return array Version info, includes stable and unstable data
 	* @throws \RuntimeException
 	*/
 	public function get_versions($force_update = false, $force_cache = false)

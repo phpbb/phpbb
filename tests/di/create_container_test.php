@@ -53,7 +53,7 @@ namespace
 			$this->assertTrue($container->isFrozen());
 
 			// Checks inject_config
-			$this->assertTrue($container->hasParameter('dbal.dbhost'));
+			$this->assertTrue($container->hasParameter('core.table_prefix'));
 
 			// Checks use_extensions
 			$this->assertTrue($container->hasParameter('enabled'));
