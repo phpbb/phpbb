@@ -1300,6 +1300,7 @@ function mcp_fork_topic($topic_ids)
 			* @var	array	sql_ary		SQL array to be used by $db->sql_build_array
 			* @var	array	topic_row	Topic data
 			* @since 3.1.11-RC1
+			* @changed 3.1.11-RC1 Added variable: topic_row
 			*/
 			$vars = array(
 				'sql_ary',
