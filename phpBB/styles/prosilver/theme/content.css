@@ -519,9 +519,7 @@ blockquote cite > div {
 	font-size: 1em;
 	word-wrap: normal;
 	border: 1px solid transparent;
-	overflow-x: scroll;
 	margin: 1em 0 1.2em;
-	padding: 3px;
 }
 
 .codebox p {
@@ -530,7 +528,8 @@ blockquote cite > div {
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
 	display: block;
-	margin-bottom: 3px;
+	margin-bottom: 0;
+	padding: 3px;
 }
 
 blockquote .codebox {
@@ -544,8 +543,7 @@ blockquote .codebox {
 	overflow: auto;
 	height: auto;
 	max-height: 200px;
-	margin: 2px 0;
-	padding-top: 5px;
+	padding: 5px 3px;
 }
 
 /* Attachments
