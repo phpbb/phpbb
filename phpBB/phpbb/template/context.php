@@ -193,30 +193,15 @@ class context
 
 		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
 		$blocks = explode('.', $blockname);
-		$blockcount = sizeof($blocks) - 1;
+		$blockcount = count($blocks) - 1;
 
 		$block = &$this->tpldata;
 		for ($i = 0; $i < $blockcount; $i++)
 		{
-			if (($pos = strpos($blocks[$i], '[')) !== false)
-			{
-				$name = substr($blocks[$i], 0, $pos);
-
-				if (strpos($blocks[$i], '[]') === $pos)
-				{
-					$index = sizeof($block[$name]) - 1;
-				}
-				else
-				{
-					$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-				}
-			}
-			else
-			{
-				$name = $blocks[$i];
-				$index = sizeof($block[$name]) - 1;
-			}
+			$pos = strpos($blocks[$i], '[');
+			$name = ($pos !== false) ? substr($blocks[$i], 0, $pos) : $blocks[$i];
 			$block = &$block[$name];
+			$index = (!$pos || strpos($blocks[$i], '[]') === $pos) ? (count($block) - 1) : (min((int) substr($blocks[$i], $pos + 1, -1), count($block) - 1));
 			$block = &$block[$index];
 		}
 
