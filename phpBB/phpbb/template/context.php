@@ -209,7 +209,7 @@ class context
 		$name = $blocks[$i];
 
 		// Assign S_ROW_COUNT and S_ROW_NUM
-		$s_row_count = isset($block[$name]) ? sizeof($block[$name]) : 0;
+		$s_row_count = isset($block[$name]) ? count($block[$name]) : 0;
 		$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
 
 		// Assign S_FIRST_ROW
