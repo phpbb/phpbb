@@ -16,7 +16,7 @@
 */
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+$phpEx = pathinfo(__FILE__, PATHINFO_EXTENSION);
 include($phpbb_root_path . 'common.' . $phpEx);
 
 // Start session management
