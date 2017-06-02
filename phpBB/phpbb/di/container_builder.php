@@ -133,8 +133,18 @@ class container_builder
 	public function get_container()
 	{
 		$container_filename = $this->get_container_filename();
+		$autoload_filename = $this->get_autoload_filename();
 		if (!defined('DEBUG_CONTAINER') && $this->dump_container && file_exists($container_filename))
 		{
+			if ($this->use_extensions)
+			{
+				if (!file_exists($autoload_filename))
+				{
+					$this->build_autoload_cache($this->get_installed_extensions());
+				}
+				require($autoload_filename);
+			}
+
 			require($container_filename);
 			$this->container = new \phpbb_cache_container();
 		}
@@ -150,6 +160,10 @@ class container_builder
 			{
 				$installed_exts = $this->get_installed_extensions();
 				$container_extensions[] = new \phpbb\di\extension\ext($installed_exts);
+
+				// Load extension autoloaders
+				$this->build_autoload_cache($installed_exts);
+				require($autoload_filename);
 			}
 
 			if ($this->inject_config)
@@ -414,5 +428,46 @@ class container_builder
 	protected function get_container_filename()
 	{
 		return $this->phpbb_root_path . 'cache/container_' . md5($this->phpbb_root_path) . '.' . $this->php_ext;
+	}
+
+	/**
+	 * Get the filename under which the dumped extensions autoloader will be stored.
+	 *
+	 * @return string Path for dumped extensions autoloader
+	 */
+	protected function get_autoload_filename()
+	{
+		return $this->phpbb_root_path . 'cache/autoload_' . md5($this->phpbb_root_path) . '.' . $this->php_ext;
+	}
+
+	/**
+	 * Get the extensions autoload cache file
+	 *
+	 * @param array $installed_exts Array with installed extensions data
+	 * @return null
+	 */
+	protected function build_autoload_cache($installed_exts = array())
+	{
+		$autoload_filename = $this->get_autoload_filename();
+
+		$autoloaders = '<?php
+/**
+ * Loads all extensions custom auto-loaders.
+ *
+ * This file has been auto-generated
+ * by phpBB while loading the extensions.
+ */
+
+';
+		foreach ($installed_exts as $ext_name => $path)
+		{
+			// Load extension autoloaders
+			$filename = $path . 'vendor/autoload.php';
+			if (file_exists($filename))
+			{
+				$autoloaders .= "require('{$filename}');\n";
+			}
+		}
+		file_put_contents($autoload_filename, $autoloaders);
 	}
 }
