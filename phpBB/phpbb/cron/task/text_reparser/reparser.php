@@ -81,7 +81,7 @@ class reparser extends \phpbb\cron\task\base
 	 */
 	public function set_reparser($reparser)
 	{
-		$this->reparser_name = (!isset($this->reparsers[$reparser]) ? 'text_reparser.' : '') . $reparser;
+		$this->reparser_name = !isset($this->reparsers[$reparser]) ? $this->reparser_manager->find_reparser($reparser) : $reparser;
 
 		if ($this->resume_data === null)
 		{

@@ -29,6 +29,16 @@ services:
         tags:
             - { name: install_data_install, order: 30 }
 
+    installer.install_data.create_search_index:
+        class: phpbb\install\module\install_data\task\create_search_index
+        arguments:
+            - '@config'
+            - '@installer.helper.container_factory'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: install_data_install, order: 40 }
+
     installer.module.data_install_collection:
         class: phpbb\di\ordered_service_collection
         arguments:

@@ -644,8 +644,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	 *
 	 * @event core.move_posts_before
 	 * @var	array	post_ids	Array of post ids to move
-	 * @var	string	topic_id	The topic id the posts are moved to
-	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @var	int		topic_id	The topic id the posts are moved to
+	 * @var	bool	auto_sync	Whether or not to perform auto sync
 	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
 	 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
@@ -676,8 +676,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	 *
 	 * @event core.move_posts_after
 	 * @var	array	post_ids	Array of the moved post ids
-	 * @var	string	topic_id	The topic id the posts are moved to
-	 * @var bool	auto_sync	Whether or not to perform auto sync
+	 * @var	int		topic_id	The topic id the posts are moved to
+	 * @var	bool	auto_sync	Whether or not to perform auto sync
 	 * @var	array	forum_ids	Array of the forum ids the posts are moved from
 	 * @var	array	topic_ids	Array of the topic ids the posts are moved from
 	 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
@@ -701,6 +701,28 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		sync('topic_attachment', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true, true);
+
+		/**
+		 * Perform additional actions after move post sync
+		 *
+		 * @event core.move_posts_sync_after
+		 * @var	array	post_ids	Array of the moved post ids
+		 * @var	int		topic_id	The topic id the posts are moved to
+		 * @var	bool	auto_sync	Whether or not to perform auto sync
+		 * @var	array	forum_ids	Array of the forum ids the posts are moved from
+		 * @var	array	topic_ids	Array of the topic ids the posts are moved from
+		 * @var	array	forum_row	Array with the forum id of the topic the posts are moved to
+		 * @since 3.1.11-RC1
+		 */
+		$vars = array(
+			'post_ids',
+			'topic_id',
+			'auto_sync',
+			'forum_ids',
+			'topic_ids',
+			'forum_row',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.move_posts_sync_after', compact($vars)));
 	}
 
 	// Update posted information
@@ -1139,28 +1161,6 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 }
 
 /**
-* Delete Attachments
-*
-* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
-*
-* @param string $mode can be: post|message|topic|attach|user
-* @param mixed $ids can be: post_ids, message_ids, topic_ids, attach_ids, user_ids
-* @param bool $resync set this to false if you are deleting posts or topics
-*/
-function delete_attachments($mode, $ids, $resync = true)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
-	$num_deleted = $attachment_manager->delete($mode, $ids, $resync);
-
-	unset($attachment_manager);
-
-	return $num_deleted;
-}
-
-/**
 * Deletes shadow topics pointing to a specified forum.
 *
 * @param int		$forum_id		The forum id
@@ -1269,23 +1269,6 @@ function update_posted_info(&$topic_ids)
 	unset($posted);
 
 	$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
-}
-
-/**
-* Delete attached file
-*
-* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
-*/
-function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
-	$unlink = $attachment_manager->unlink($filename, $mode, $entry_removed);
-	unset($attachment_manager);
-
-	return $unlink;
 }
 
 /**

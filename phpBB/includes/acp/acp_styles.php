@@ -448,6 +448,9 @@ class acp_styles
 			trigger_error($this->user->lang['NO_MATCHING_STYLES_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		// Read style configuration file
+		$style_cfg = $this->read_style_cfg($style['style_path']);
+
 		// Find all available parent styles
 		$list = $this->find_possible_parents($styles, $id);
 
@@ -595,6 +598,7 @@ class acp_styles
 			'STYLE_ID'			=> $style['style_id'],
 			'STYLE_NAME'		=> htmlspecialchars($style['style_name']),
 			'STYLE_PATH'		=> htmlspecialchars($style['style_path']),
+			'STYLE_VERSION'		=> htmlspecialchars($style_cfg['style_version']),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_PARENT'		=> $style['style_parent_id'],
 			'S_STYLE_ACTIVE'	=> $style['style_active'],

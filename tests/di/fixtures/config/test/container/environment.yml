@@ -10,8 +10,16 @@ services:
         arguments:
             - '@service_container'
 
+    dbal.conn.driver:
+        synthetic: true
+
     dispatcher:
         class: phpbb\db\driver\container_mock
+
+    config:
+        class: phpbb\config\config
+        arguments:
+            - []
 
     template.twig.environment:
         class: Exception

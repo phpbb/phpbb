@@ -280,7 +280,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	bool	delete					Whether the user is deleting the PM
 		* @var	int		reply_to_all			Value of reply_to_all request variable.
 		* @since 3.1.0-RC5
-		* @change 3.2.0-a1 Removed undefined variables
+		* @changed 3.2.0-a1 Removed undefined variables
 		*/
 		$vars = array(
 			'sql',
@@ -345,7 +345,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			* @var	bool	delete				If deleting message
 			* @var	int		reply_to_all		Value of reply_to_all request variable.
 			* @since 3.1.0-RC5
-			* @change 3.2.0-a1 Removed undefined variables
+			* @changed 3.2.0-a1 Removed undefined variables
 			*/
 			$vars = array(
 				'sql',
@@ -448,6 +448,17 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	{
 		$message_attachment = 0;
 		$message_text = $message_subject = '';
+
+		/**
+		* Predefine message text and subject
+		*
+		* @event core.ucp_pm_compose_predefined_message
+		* @var	string	message_text	Message text
+		* @var	string	message_subject	Messate subject
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('message_text', 'message_subject');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_predefined_message', compact($vars)));
 
 		if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
 		{
@@ -889,13 +900,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Signature
 		if ($enable_sig && $config['allow_sig'] && $preview_signature)
 		{
-			$parse_sig = new parse_message($preview_signature);
-			$parse_sig->bbcode_uid = $preview_signature_uid;
-			$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
-
-			$parse_sig->format_display($config['allow_sig_bbcode'], $config['allow_sig_links'], $config['allow_sig_smilies']);
-			$preview_signature = $parse_sig->message;
-			unset($parse_sig);
+			$bbcode_flags = ($enable_bbcode ? OPTION_FLAG_BBCODE : 0) + ($enable_smilies ? OPTION_FLAG_SMILIES : 0) + ($enable_urls ? OPTION_FLAG_LINKS : 0);
+			$preview_signature = generate_text_for_display($preview_signature, $preview_signature_uid, $preview_signature_bitfield, $bbcode_flags);
 		}
 		else
 		{

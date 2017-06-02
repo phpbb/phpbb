@@ -30,6 +30,11 @@
 			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
 		</div>
 	<!-- ENDIF -->
+	<!-- IF S_VERSION_UPGRADEABLE -->
+		<div class="errorbox notice">
+			<p>{UPGRADE_INSTRUCTIONS}</p>
+		</div>
+	<!-- ENDIF -->
 
 	<!-- IF S_SEARCH_INDEX_MISSING -->
 		<div class="errorbox">
@@ -125,8 +130,6 @@
 		<td>{L_FILES_PER_DAY}{L_COLON} </td>
 		<td><strong>{FILES_PER_DAY}</strong></td>
 	</tr>
-
-
 	<tr>
 		<td>{L_BOARD_STARTED}{L_COLON} </td>
 		<td><strong>{START_DATE}</strong></td>
@@ -145,22 +148,25 @@
 		<td>{L_GZIP_COMPRESSION}{L_COLON} </td>
 		<td><strong>{GZIP_COMPRESSION}</strong></td>
 	</tr>
-	<!-- IF S_TOTAL_ORPHAN or S_VERSIONCHECK -->
 	<tr>
+		<td>{L_PHP_VERSION}{L_COLON} </td>
+		<td><strong>{PHP_VERSION_INFO}</strong></td>
+	<!-- IF S_TOTAL_ORPHAN -->
+		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
+		<td><strong>{TOTAL_ORPHAN}</strong></td>
+	<!-- ELSE -->
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+	<!-- ENDIF -->
+	</tr>
 	<!-- IF S_VERSIONCHECK -->
+	<tr>
 		<td>{L_BOARD_VERSION}{L_COLON} </td>
 		<td>
 			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822;" <!-- ELSEIF not S_VERSIONCHECK_FAIL -->style="color: #BC2A4D;" <!-- ENDIF -->title="{L_MORE_INFORMATION}">{BOARD_VERSION}</a></strong> [&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;]
 		</td>
-	<!-- ENDIF -->
-	<!-- IF S_TOTAL_ORPHAN -->
-		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
-		<td><strong>{TOTAL_ORPHAN}</strong></td>
-	<!-- ENDIF -->
-	<!-- IF not S_TOTAL_ORPHAN or not S_VERSIONCHECK -->
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
-	<!-- ENDIF -->
 	</tr>
 	<!-- ENDIF -->
 	</tbody>

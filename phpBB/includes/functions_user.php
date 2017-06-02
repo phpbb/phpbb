@@ -272,13 +272,15 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	* Use this event to modify the values to be inserted when a user is added
 	*
 	* @event core.user_add_modify_data
-	* @var array	user_row		Array of user details submited to user_add
-	* @var array	cp_data			Array of Custom profile fields submited to user_add
-	* @var array	sql_ary		Array of data to be inserted when a user is added
+	* @var array	user_row			Array of user details submited to user_add
+	* @var array	cp_data				Array of Custom profile fields submited to user_add
+	* @var array	sql_ary				Array of data to be inserted when a user is added
+	* @var array	notifications_data	Array of notification data to be inserted when a user is added
 	* @since 3.1.0-a1
-	* @change 3.1.0-b5
+	* @changed 3.1.0-b5 Added user_row and cp_data
+	* @changed 3.1.11-RC1 Added notifications_data
 	*/
-	$vars = array('user_row', 'cp_data', 'sql_ary');
+	$vars = array('user_row', 'cp_data', 'sql_ary', 'notifications_data');
 	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
 
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -1299,7 +1301,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $cache, $phpbb_log;
+	global $db, $user, $cache, $phpbb_log, $phpbb_dispatcher;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1373,6 +1375,20 @@ function user_unban($mode, $ban)
 				));
 			}
 		}
+
+		/**
+		* Use this event to perform actions after the unban has been performed
+		*
+		* @event core.user_unban
+		* @var	string	mode			One of the following: user, ip, email
+		* @var	array	user_ids_ary	Array with user_ids
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'mode',
+			'user_ids_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.user_unban', compact($vars)));
 	}
 
 	$cache->destroy('sql', BANLIST_TABLE);

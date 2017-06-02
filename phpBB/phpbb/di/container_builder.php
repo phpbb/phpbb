@@ -51,6 +51,11 @@ class container_builder
 	protected $container;
 
 	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $dbal_connection = null;
+
+	/**
 	 * Indicates whether extensions should be used (default to true).
 	 *
 	 * @var bool
@@ -196,6 +201,8 @@ class container_builder
 			{
 				$this->container->set('config.php', $this->config_php_file);
 			}
+
+			$this->inject_dbal_driver();
 
 			return $this->container;
 		}
@@ -408,6 +415,12 @@ class container_builder
 			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\dummy');
 			$ext_container->compile();
 
+			$config = $ext_container->get('config');
+			if (@is_file($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+			{
+				require_once($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+			}
+
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
 
 			// Load each extension found
@@ -511,7 +524,38 @@ class container_builder
 		{
 			$this->container->setParameter($key, $value);
 		}
+	}
 
+	/**
+	 * Inject the dbal connection driver into container
+	 */
+	protected function inject_dbal_driver()
+	{
+		if (empty($this->config_php_file))
+		{
+			return;
+		}
+
+		$config_data = $this->config_php_file->get_all();
+		if (!empty($config_data))
+		{
+			if ($this->dbal_connection === null)
+			{
+				$dbal_driver_class = $this->config_php_file->convert_30_dbms_to_31($this->config_php_file->get('dbms'));
+				/** @var \phpbb\db\driver\driver_interface $dbal_connection */
+				$this->dbal_connection = new $dbal_driver_class();
+				$this->dbal_connection->sql_connect(
+					$this->config_php_file->get('dbhost'),
+					$this->config_php_file->get('dbuser'),
+					$this->config_php_file->get('dbpasswd'),
+					$this->config_php_file->get('dbname'),
+					$this->config_php_file->get('dbport'),
+					false,
+					defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
+				);
+			}
+			$this->container->set('dbal.conn.driver', $this->dbal_connection);
+		}
 	}
 
 	/**

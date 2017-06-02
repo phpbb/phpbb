@@ -107,6 +107,27 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
+	public function retrieve_vars(array $vararray)
+	{
+		$result = array();
+		foreach ($vararray as $varname)
+		{
+			$result[$varname] = $this->retrieve_var($varname);
+		}
+		return $result;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function retrieve_var($varname)
+	{
+		return $this->context->retrieve_var($varname);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
 		$this->context->assign_block_vars($blockname, $vararray);
@@ -127,9 +148,25 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
+	public function retrieve_block_vars($blockname, array $vararray)
+	{
+		return $this->context->retrieve_block_vars($blockname, $vararray);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
 		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function find_key_index($blockname, $key)
+	{
+		return $this->context->find_key_index($blockname, $key);
 	}
 
 	/**

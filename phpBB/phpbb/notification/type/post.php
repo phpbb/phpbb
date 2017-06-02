@@ -456,6 +456,12 @@ class post extends \phpbb\notification\type\base
 			return array();
 		}
 
-		return array('notification_data' => $serialized_data);
+		$data_array = array_merge(array(
+			'post_time'		=> $post['post_time'],
+			'post_id'		=> $post['post_id'],
+			'topic_id'		=> $post['topic_id']
+		), $this->get_data(false));
+
+		return $data_array;
 	}
 }

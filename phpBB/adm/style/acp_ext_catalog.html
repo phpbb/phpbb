@@ -1,0 +1,130 @@
+{% include('overall_header.html') %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang( 'EXTENSIONS_CATALOG') }}</h1>
+
+<p>{{ lang( 'EXTENSIONS_CATALOG_EXPLAIN') }}</p>
+
+<fieldset class="quick quick-left">
+	<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/{{ PHPBB_MAJOR }}" target="_blank">{{ lang('BROWSE_EXTENSIONS_DATABASE') }}</a> &bull; <a href="javascript:phpbb.toggleDisplay('catalog_settings');">{{ lang('SETTINGS') }}</a></span>
+</fieldset>
+
+{% if pagination is defined %}
+	<div class="pagination top-pagination">
+		{% include('pagination.html') %}
+	</div>
+{% endif %}
+
+<form id="catalog_settings" method="post" action="{{ U_ACTION }}" style="display:none">
+	<fieldset style="clear: both;">
+		<legend>{{ lang('EXTENSIONS_CATALOG_SETTINGS') }}</legend>
+		<dl>
+			<dt><label for="enable_on_install">{{ lang('ENABLE_ON_INSTALL') }}{{ lang('COLON') }}</label></dt>
+			<dd>
+				<label><input type="radio" id="enable_on_install" name="enable_on_install" class="radio" value="1"{% if settings.enable_on_install %} checked="checked" {% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" name="enable_on_install" class="radio" value="0"{% if not settings.enable_on_install %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="purge_on_remove">{{ lang('PURGE_ON_REMOVE') }}{{ lang('COLON') }}</label></dt>
+			<dd>
+				<label><input type="radio" id="purge_on_remove" name="purge_on_remove" class="radio" value="1"{% if settings.purge_on_remove %} checked="checked" {% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" name="purge_on_remove" class="radio" value="0"{% if not settings.purge_on_remove %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="repositories">{{ lang('COMPOSER_REPOSITORIES') }}{{ lang('COLON') }}</label><br />
+				<span class="explain">
+					{{ lang('COMPOSER_REPOSITORIES_EXPLAIN') }}
+				</span>
+			</dt>
+			<dd>
+				<textarea id="repositories" name="repositories" rows="5" cols="30">{{ settings.repositories|join('\n') }}</textarea>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="enable_packagist">{{ lang('ENABLE_PACKAGIST') }}{{ lang('COLON') }}</label><br />
+				<span class="explain">
+					<strong class="error">{{ lang('WARNING') }}{{ lang('COLON') }}</strong> {{ lang('ENABLE_PACKAGIST_EXPLAIN') }}
+				</span>
+			</dt>
+			<dd>
+				<label><input type="radio" id="enable_packagist" name="enable_packagist" class="radio" value="1"{% if settings.enable_packagist %} checked="checked" {% endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" name="enable_packagist" class="radio" value="0"{% if not settings.enable_packagist %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="minimum_stability">{{ lang('COMPOSER_MINIMUM_STABILITY') }}{{ lang('COLON') }}</label><br />
+				<span class="explain">
+					<strong class="error">{{ lang('WARNING') }}{{ lang('COLON') }}</strong> {{ lang('COMPOSER_MINIMUM_STABILITY_EXPLAIN') }}
+				</span>
+			</dt>
+			<dd>
+				<select id="minimum_stability" name="minimum_stability">
+					{% for stability in settings.stabilities %}
+						<option value="{{ stability }}"{% if stability === settings.minimum_stability %} selected='selected'{% endif %}>{{ lang('STABILITY_' ~ stability|upper) }}</option>
+					{% endfor %}
+				</select>
+			</dd>
+		</dl>
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" name="update" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="reset" name="reset" value="{{ lang('RESET') }}" />
+			<input type="hidden" name="action" value="set_catalog_settings" />
+			{{ S_FORM_TOKEN }}
+		</p>
+	</fieldset>
+</form>
+
+{% if extensions is empty %}
+<tr>
+	<td colspan="4"><div class="errorbox notice">{{ lang('NO_EXTENSION_AVAILABLE') }}</div></td>
+</tr>
+{% else %}
+<table class="table1">
+	<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" >
+<thead>
+	<tr>
+		<th style="width: 25%;">{{ lang("EXTENSION_NAME") }}</th>
+		<th style="text-align: center; width: 10%;">{{ lang("VERSION") }}</th>
+		<th>{{ lang("DESCRIPTION") }}</th>
+		<th style="text-align: center; width: 15%;">{{ lang("EXTENSION_ACTIONS") }}</th>
+	</tr>
+</thead>
+<tbody>
+{% for extension in extensions %}
+	<tr>
+		<td>
+			<strong>{{ extension.display_name }}</strong><br />
+			{{ extension.name }}
+		</td>
+		<td style="text-align: center">{{ extension.version }}</td>
+		<td>{{ extension.description }} &bull; <a href="{{ extension.url }}">{{ lang('HOMEPAGE') }}</a></td>
+		<td style="text-align: center">
+			{% if extension.name in managed_extensions %}
+				<span style="color: #228822;">{{ lang('INSTALLED') }}</span>
+			{% elseif extension.name in installed_extensions -%}
+				<span style="color: #BC2A4D;">{{ lang('INSTALLED_MANUALLY') }}</span>
+				(<a href="{{ U_ACTION }}&amp;action=manage&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('MANAGE') }}</a>)
+			{% elseif not enabled -%}
+				<a href="{{ U_ACTION }}&amp;action=install&amp;extension={{ extension.composer_name|url_encode }}">{{ lang('INSTALL') }}</a>
+			{%- endif -%}
+		</td>
+	</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+{% if pagination is defined %}
+	<div class="pagination bottom-pagination">
+		{% include('pagination.html') %}
+	</div>
+{% endif %}
+
+{% include('overall_footer.html') %}

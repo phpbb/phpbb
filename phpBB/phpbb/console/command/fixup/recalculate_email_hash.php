@@ -14,13 +14,14 @@ namespace phpbb\console\command\fixup;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class recalculate_email_hash extends \phpbb\console\command\command
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\user $user, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->db = $db;
 
@@ -37,6 +38,8 @@ class recalculate_email_hash extends \phpbb\console\command\command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$sql = 'SELECT user_id, user_email, user_email_hash
 			FROM ' . USERS_TABLE . '
 			WHERE user_type <> ' . USER_IGNORE . "
@@ -59,17 +62,15 @@ class recalculate_email_hash extends \phpbb\console\command\command
 
 				if ($output->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG)
 				{
-					$output->writeln(sprintf(
-						'user_id %d, email %s => %s',
-						$row['user_id'],
-						$row['user_email'],
-						$user_email_hash
-					));
+					$io->table(
+						array('user_id', 'user_email', 'user_email_hash'),
+						array(array($row['user_id'], $row['user_email'], $user_email_hash))
+					);
 				}
 			}
 		}
 		$this->db->sql_freeresult($result);
 
-		$output->writeln('<info>' . $this->user->lang('CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS') . '</info>');
+		$io->success($this->user->lang('CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'));
 	}
 }

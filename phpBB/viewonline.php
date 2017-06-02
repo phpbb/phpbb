@@ -171,7 +171,7 @@ $sql_ary = array(
 * @var	int		guest_counter	Number of guests displayed
 * @var	array	forum_data		Array with forum data
 * @since 3.1.0-a1
-* @change 3.1.0-a2 Added vars guest_counter and forum_data
+* @changed 3.1.0-a2 Added vars guest_counter and forum_data
 */
 $vars = array('sql_ary', 'show_guests', 'guest_counter', 'forum_data');
 extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
@@ -396,7 +396,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @var	string	location_url	Page url to displayed in the list
 	* @var	array	forum_data		Array with forum data
 	* @since 3.1.0-a1
-	* @change 3.1.0-a2 Added var forum_data
+	* @changed 3.1.0-a2 Added var forum_data
 	*/
 	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data');
 	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
@@ -483,6 +483,11 @@ meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_gue
 $start = $pagination->validate_start($start, $config['topics_per_page'], $counter);
 $base_url = append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir");
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $counter, $config['topics_per_page'], $start);
+
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=> $user->lang('WHO_IS_ONLINE'),
+	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
+));
 
 // Send data to template
 $template->assign_vars(array(

@@ -311,7 +311,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->Emoticons->set(
 				$row['code'],
-				'<img class="smilies" src="{$T_SMILIES_PATH}/' . htmlspecialchars($row['smiley_url']) . '" width="' . $row['smiley_width'] . '" height="' . $row['smiley_height'] . '" alt="{.}" title="' . htmlspecialchars($row['emotion']) . '"/>'
+				'<img class="smilies" src="{$T_SMILIES_PATH}/' . $this->escape_html_attribute($row['smiley_url']) . '" width="' . $row['smiley_width'] . '" height="' . $row['smiley_height'] . '" alt="{.}" title="' . $this->escape_html_attribute($row['emotion']) . '"/>'
 			);
 		}
 
@@ -333,8 +333,7 @@ class factory implements \phpbb\textformatter\cache_interface
 			$configurator->plugins->load('Censor', array('tagName' => 'censor:tag'));
 			foreach ($censor as $row)
 			{
-				// NOTE: words are stored as HTML, we need to decode them to plain text
-				$configurator->Censor->add(htmlspecialchars_decode($row['word']),  htmlspecialchars_decode($row['replacement']));
+				$configurator->Censor->add($row['word'], $row['replacement']);
 			}
 		}
 
@@ -348,10 +347,10 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->registeredVars['max_img_width'] = 0;
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
-		$configurator->Emoji->setImageSize(18);
+		$configurator->Emoji->omitImageSize();
 		$configurator->Emoji->useSVG();
 		$tag = $configurator->Emoji->getTag();
-		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
+		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set
@@ -440,6 +439,20 @@ class factory implements \phpbb\textformatter\cache_interface
 			->resetParameters()
 			->addParameterByName('tag')
 			->addParameterByName('parser');
+	}
+
+	/**
+	* Escape a literal to be used in an HTML attribute in an XSL template
+	*
+	* Escapes "HTML special chars" for obvious reasons and curly braces to avoid them
+	* being interpreted as an attribute value template
+	*
+	* @param  string $value Original string
+	* @return string        Escaped string
+	*/
+	protected function escape_html_attribute($value)
+	{
+		return htmlspecialchars(strtr($value, ['{' => '{{', '}' => '}}']), ENT_COMPAT | ENT_XML1, 'UTF-8');
 	}
 
 	/**

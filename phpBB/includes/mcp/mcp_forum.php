@@ -466,7 +466,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		return;
 	}
 
-	$redirect = $request->variable('redirect', build_url(array('quickmod')));
+	$redirect = $request->variable('redirect', "{$phpbb_root_path}mcp.$phpEx?f=$forum_id&amp;i=main&amp;mode=forum_view");
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',

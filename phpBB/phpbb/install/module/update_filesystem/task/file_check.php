@@ -123,7 +123,7 @@ class file_check extends task_base
 		$default_update_extensions = [];
 		foreach (\phpbb\install\module\update_database\task\update_extensions::$default_extensions_update as $version => $extensions)
 		{
-			if ($this->update_helper->phpbb_version_compare($update_info['version']['from'], $version, '>'))
+			if ($this->update_helper->phpbb_version_compare($update_info['version']['from'], $version, '>='))
 			{
 				$default_update_extensions = array_merge($default_update_extensions, $extensions);
 			}

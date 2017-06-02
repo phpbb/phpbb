@@ -84,7 +84,7 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 			$email_form = array(
 				'email_enable' => array(
 					'label'			=> 'ENABLE_EMAIL',
-					'description'	=> 'COOKIE_SECURE_EXPLAIN',
+					'description'	=> 'ENABLE_EMAIL_EXPLAIN',
 					'type'			=> 'radio',
 					'options'		=> array(
 						array(

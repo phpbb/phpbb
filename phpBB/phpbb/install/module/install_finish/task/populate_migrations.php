@@ -70,6 +70,7 @@ class populate_migrations extends \phpbb\install\task_base
 
 		$migrations = $finder
 			->core_path('phpbb/db/migration/data/')
+			->set_extensions(array())
 			->get_classes();
 		$this->migrator->populate_migrations($migrations);
 	}

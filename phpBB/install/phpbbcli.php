@@ -23,7 +23,7 @@ if (php_sapi_name() !== 'cli')
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 define('PHPBB_ENVIRONMENT', 'production');
-define('PHPBB_VERSION', '3.2.0-RC2');
+define('PHPBB_VERSION', '3.3.0-a1-dev');
 $phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
@@ -38,6 +38,9 @@ $input = new ArgvInput();
 
 // Enable superglobals for cli support
 $phpbb_installer_container->get('request')->enable_super_globals();
+
+// Load compatibility globals to access deprecated globals
+require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 /** @var \phpbb\filesystem\filesystem $phpbb_filesystem */
 $phpbb_filesystem = $phpbb_installer_container->get('filesystem');

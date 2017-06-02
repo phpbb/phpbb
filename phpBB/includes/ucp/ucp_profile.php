@@ -478,7 +478,9 @@ class ucp_profile
 				$enable_smilies	= ($config['allow_sig_smilies']) ? $user->optionget('sig_smilies') : false;
 				$enable_urls	= ($config['allow_sig_links']) ? $user->optionget('sig_links') : false;
 
-				$decoded_message	= generate_text_for_edit($user->data['user_sig'], $user->data['user_sig_bbcode_uid'], $user->data['user_sig_bbcode_bitfield']);
+				$bbcode_flags = ($enable_bbcode ? OPTION_FLAG_BBCODE : 0) + ($enable_smilies ? OPTION_FLAG_SMILIES : 0) + ($enable_urls ? OPTION_FLAG_LINKS : 0);
+
+				$decoded_message	= generate_text_for_edit($user->data['user_sig'], $user->data['user_sig_bbcode_uid'], $bbcode_flags);
 				$signature			= $request->variable('signature', $decoded_message['text'], true);
 				$signature_preview	= '';
 
@@ -506,7 +508,7 @@ class ucp_profile
 				* @var	bool	submit				Whether or not the form has been sumitted
 				* @var	bool	preview				Whether or not the signature is being previewed
 				* @since 3.1.10-RC1
-				* @change 3.2.0-RC2 Removed message parser
+				* @changed 3.2.0-RC2 Removed message parser
 				*/
 				$vars = array(
 					'enable_bbcode',
@@ -662,10 +664,19 @@ class ucp_profile
 										'user_avatar_height' => $result['avatar_height'],
 									);
 
+									/**
+									* Trigger events on successfull avatar change
+									*
+									* @event core.ucp_profile_avatar_sql
+									* @var	array	result	Array with data to be stored in DB
+									* @since 3.1.11-RC1
+									*/
+									$vars = array('result');
+									extract($phpbb_dispatcher->trigger_event('core.ucp_profile_avatar_sql', compact($vars)));
+
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . (int) $user->data['user_id'];
-
 									$db->sql_query($sql);
 
 									meta_refresh(3, $this->u_action);
