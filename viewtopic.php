@@ -34,56 +34,6 @@ $topic_id	= $request->variable('t', 0);
 $post_id	= $request->variable('p', 0);
 $voted_id	= $request->variable('vote_id', array('' => 0));
 
-//generate meta tags
-
-//extract forum image
-
-	$sql = 'SELECT *
-		    FROM ' . FORUMS_TABLE . "
-			WHERE forum_id = $forum_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$phpbb_forum_image = $row['forum_image'];
-			$db->sql_freeresult($result);
-
-
-
-
-
-
-//extract topic title
-
-	$sql = 'SELECT *
-			FROM ' . TOPICS_TABLE . "
-			WHERE topic_id = $topic_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$phpbb_topic_title = $row['topic_title'];
-
-		$phpbb_topic_author = $row['topic_first_poster_name'];
-
-
-
-
-
-//extract topic description
-$sql = 'SELECT *
-			FROM ' . POSTS_TABLE . "
-			WHERE topic_id = $topic_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-$phpbb_topic_description = $row['post_text'];
-$phpbb_domain = $request->server("HTTP_HOST");
-
-$phpbb_meta_data = phpbb_make_meta_tags($phpbb_topic_author, $phpbb_forum_image, $phpbb_topic_title, $phpbb_topic_description, $phpbb_domain);
-
-
-
-
 
 
 $voted_id = (sizeof($voted_id) > 1) ? array_unique($voted_id) : $voted_id;
@@ -115,6 +65,20 @@ $s_can_vote = false;
 * @todo normalize?
 */
 $hilit_words	= $request->variable('hilit', '', true);
+
+
+//to get forum image for meta tags maker
+$sql = 'SELECT  forum_image
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$array = $db->sql_fetchrow($result);
+				$phpbb_forum_image = $array['forum_image'];
+				$db->sql_freeresult($result);
+				
+			
+
+
 
 // Do we have a topic or post id?
 if (!$topic_id && !$post_id)
@@ -224,10 +188,12 @@ if ($view && !$post_id)
 
 			if (!$row)
 			{
-				$sql = 'SELECT forum_style
+				$sql = 'SELECT forum_style, forum_image
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
+				$array = $db->sql_fetchrow($result);
+
 				$forum_style = (int) $db->sql_fetchfield('forum_style');
 				$db->sql_freeresult($result);
 
@@ -392,8 +358,8 @@ if ($post_id)
 $topic_id = (int) $topic_data['topic_id'];
 $topic_replies = $phpbb_content_visibility->get_count('topic_posts', $topic_data, $forum_id) - 1;
 
-// Check sticky/announcement/global  time limit
-if (($topic_data['topic_type'] != POST_NORMAL) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
+// Check sticky/announcement time limit
+if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == POST_ANNOUNCE) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_type = ' . POST_NORMAL . ', topic_time_limit = 0
@@ -791,6 +757,9 @@ $vars = array(
 );
 
 
+	$phpbb_topic_title = $topic_data['topic_title'];
+
+	$phpbb_topic_author = $topic_data['topic_first_poster_name'];
 
 
 
@@ -801,7 +770,6 @@ $pagination->generate_template_pagination($base_url, 'pagination', 'start', $tot
 
 // Send vars to template
 $template->assign_vars(array(
-	'META'          => $phpbb_meta_data,
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME' 	=> $topic_data['forum_name'],
 	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield'], $topic_data['forum_desc_options']),
@@ -1337,6 +1305,12 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 
+
+
+$phpbb_topic_description = $row['post_text'];
+$phpbb_domain = $request->server("HTTP_HOST");
+$phpbb_meta_data = phpbb_make_meta_tags($phpbb_topic_author, $phpbb_forum_image, $phpbb_topic_title, $phpbb_topic_description, $phpbb_domain);
+$template->assign_vars(array("META"=>$phpbb_meta_data));
 
 
 
