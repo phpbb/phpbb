@@ -1518,6 +1518,22 @@ overall_header_navigation_prepend
 * Since: 3.1.0-a1
 * Purpose: Add links before the navigation links in the header
 
+overall_header_navigation_faq_after
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.11-RC1
+* Purpose: Add links after FAQ link in the navigation
+
+overall_header_navigation_faq_before
+===
+* Locations:
+    + styles/prosilver/template/navbar_header.html
+    + styles/subsilver2/template/overall_header.html
+* Since: 3.1.11-RC1
+* Purpose: Add links before FAQ link in the navigation
+
 overall_header_navlink_append
 ===
 * Locations:
