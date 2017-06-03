@@ -139,3 +139,15 @@ services:
             - @dbal.conn
         tags:
             - { name: console.command }
+
+    console.command.fixup.update_hashes:
+        class: phpbb\console\command\fixup\update_hashes
+        arguments:
+            - @config
+            - @user
+            - @dbal.conn
+            - @passwords.manager
+            - @passwords.driver_collection
+            - %passwords.algorithms%
+        tags:
+            - { name: console.command }
