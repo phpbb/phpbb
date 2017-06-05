@@ -1603,7 +1603,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true, $update_search_index = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
+	global $db, $user, $config, $phpEx, $template, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher;
 
 	/**
 	* Modify the data for post submitting
@@ -1630,6 +1630,24 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		'update_search_index',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.modify_submit_post_data', compact($vars)));
+
+	// Use poster auth instead of current user auth.
+	// Without this alteration, moderator who edits unapproved post from user without
+	// f_postcount permission disarrays post counts.
+	if ($user->data['user_id'] == $data['poster_id'])
+	{
+		global $auth;
+	}
+	else
+	{
+		$auth = new phpbb\auth\auth();
+		$sql = 'SELECT user_id, user_permissions, user_type
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . (int) $data['poster_id'];
+		$result = $db->sql_query($sql);
+		$userdata = $db->sql_fetchrow($result);
+		$auth->acl($userdata);
+	}
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')

@@ -71,7 +71,7 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 			* No new notifications
 			*/
 			array(
-				array(),
+				array('poster_id' => 2),
 				array(
 					array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1),
 				),
@@ -94,7 +94,7 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 			*	9	=> Moderator, has only global mod permissions, should receive a notification
 			*/
 			array(
-				array('force_approved_state' => false),
+				array('force_approved_state' => false, 'poster_id' => 2),
 				array(
 					array('user_id' => 6, 'item_id' => 1, 'item_parent_id' => 1),
 				),

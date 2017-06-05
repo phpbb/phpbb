@@ -65,6 +65,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*/
 			array(
 				array(
+					'poster_id'			=> 2,
 					'message'			=> implode(' ', array(
 						'[quote=&quot;poster&quot;:uid]poster should not be notified[/quote:uid]',
 						'[quote=&quot;test&quot;:uid]test should be notified[/quote:uid]',
@@ -94,6 +95,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*/
 			array(
 				array(
+					'poster_id'			=> 2,
 					'message'			=> implode(' ', array(
 						'[quote=&quot;poster&quot;:uid]poster should not be notified[/quote:uid]',
 						'[quote=&quot;test&quot;:uid]test should be notified[/quote:uid]',
