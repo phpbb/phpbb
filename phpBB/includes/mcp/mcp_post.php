@@ -53,7 +53,10 @@ function mcp_post_details($id, $mode, $action)
 			if ($auth->acl_get('m_info', $post_info['forum_id']))
 			{
 				$ip = $request->variable('ip', '');
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				if (!function_exists('user_ipwhois'))
+				{
+					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
 				$template->assign_vars(array(
 					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
