@@ -129,7 +129,7 @@ class filespec
 		$this->class_initialized = true;
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$name = (STRIP) ? stripslashes($upload_ary['name']) : $upload_ary['name'];
+		$name = $upload_ary['name'];
 		$name = trim(utf8_basename($name));
 		$this->realname = $this->uploadname = $name;
 		$this->mimetype = $upload_ary['type'];
