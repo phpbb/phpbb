@@ -25,6 +25,7 @@ $auth->acl($user->data);
 $user->setup();
 
 $mode = request_var('mode', '');
+$template_file = 'faq_body.html';
 
 // Load the appropriate faq file
 switch ($mode)
@@ -47,13 +48,16 @@ switch ($mode)
 		 * @var	string	lang_file		Language file containing the help data
 		 * @var	string	ext_name		Vendor and extension name where the help
 		 *								language file can be loaded from
+		 * @var	string	template_file	Template file name
 		 * @since 3.1.4-RC1
+		 * @changed 3.1.11-RC1 Added template_file var
 		 */
 		$vars = array(
 			'page_title',
 			'mode',
 			'lang_file',
 			'ext_name',
+			'template_file',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.faq_mode_validation', compact($vars)));
 
@@ -106,7 +110,7 @@ $template->assign_vars(array(
 page_header($l_title);
 
 $template->set_filenames(array(
-	'body' => 'faq_body.html')
+	'body' => $template_file)
 );
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
