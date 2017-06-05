@@ -312,10 +312,16 @@ class messenger
 
 	/**
 	* Send the mail out to the recipients set previously in var $this->addresses
+	*
+	* @param int	$method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
+	* @param bool	$break	Flag indicating if the function only formats the subject
+	*						and the message without sending it
+	*
+	* @return bool
 	*/
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
-		global $config, $user;
+		global $config, $user, $phpbb_dispatcher;
 
 		// We add some standard variables we always use, no need to specify them always
 		$this->assign_vars(array(
@@ -323,6 +329,30 @@ class messenger
 			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])),
 			'SITENAME'	=> htmlspecialchars_decode($config['sitename']),
 		));
+
+		$subject = $this->subject;
+		$message = $this->msg;
+		/**
+		* Event to modify notification message text before parsing
+		*
+		* @event core.modify_notification_message
+		* @var	int		method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
+		* @var	bool	break	Flag indicating if the function only formats the subject
+		*						and the message without sending it
+		* @var	string	subject	The message subject
+		* @var	string	message	The message text
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'method',
+			'break',
+			'subject',
+			'message',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
+		$this->subject = $subject;
+		$this->msg = $message;
+		unset($subject, $message);
 
 		// Parse message through template
 		$this->msg = trim($this->template->assign_display('body'));
