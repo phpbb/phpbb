@@ -20,11 +20,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (version_compare(PHP_VERSION, '5.4') < 0)
-{
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.4.0 or higher before trying to install or update to phpBB 3.2');
-}
-
 require($phpbb_root_path . 'includes/startup.' . $phpEx);
 require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 

@@ -49,13 +49,16 @@ class acp_jabber
 		$this->tpl_name = 'acp_jabber';
 		$this->page_title = 'ACP_JABBER_SETTINGS';
 
-		$jab_enable			= $request->variable('jab_enable',			(bool) $config['jab_enable']);
-		$jab_host			= $request->variable('jab_host',			(string) $config['jab_host']);
-		$jab_port			= $request->variable('jab_port',			(int) $config['jab_port']);
-		$jab_username		= $request->variable('jab_username',		(string) $config['jab_username']);
-		$jab_password		= $request->variable('jab_password',		(string) $config['jab_password']);
-		$jab_package_size	= $request->variable('jab_package_size',	(int) $config['jab_package_size']);
-		$jab_use_ssl		= $request->variable('jab_use_ssl',		(bool) $config['jab_use_ssl']);
+		$jab_enable				= $request->variable('jab_enable',			(bool) $config['jab_enable']);
+		$jab_host				= $request->variable('jab_host',			(string) $config['jab_host']);
+		$jab_port				= $request->variable('jab_port',			(int) $config['jab_port']);
+		$jab_username			= $request->variable('jab_username',		(string) $config['jab_username']);
+		$jab_password			= $request->variable('jab_password',		(string) $config['jab_password']);
+		$jab_package_size		= $request->variable('jab_package_size',	(int) $config['jab_package_size']);
+		$jab_use_ssl			= $request->variable('jab_use_ssl',		(bool) $config['jab_use_ssl']);
+		$jab_verify_peer		= $request->variable('jab_verify_peer',		(bool) $config['jab_verify_peer']);
+		$jab_verify_peer_name	= $request->variable('jab_verify_peer_name',	(bool) $config['jab_verify_peer_name']);
+		$jab_allow_self_signed	= $request->variable('jab_allow_self_signed',	(bool) $config['jab_allow_self_signed']);
 
 		$form_name = 'acp_jabber';
 		add_form_key($form_name);
@@ -73,7 +76,7 @@ class acp_jabber
 			// Is this feature enabled? Then try to establish a connection
 			if ($jab_enable)
 			{
-				$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password, $jab_use_ssl);
+				$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password, $jab_use_ssl, $jab_verify_peer, $jab_verify_peer_name, $jab_allow_self_signed);
 
 				if (!$jabber->connect())
 				{
@@ -113,6 +116,9 @@ class acp_jabber
 			}
 			$config->set('jab_package_size', $jab_package_size);
 			$config->set('jab_use_ssl', $jab_use_ssl);
+			$config->set('jab_verify_peer', $jab_verify_peer);
+			$config->set('jab_verify_peer_name', $jab_verify_peer_name);
+			$config->set('jab_allow_self_signed', $jab_allow_self_signed);
 
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_' . $log);
 			trigger_error($message . adm_back_link($this->u_action));
@@ -128,6 +134,9 @@ class acp_jabber
 			'JAB_PASSWORD'			=> $jab_password !== '' ? '********' : '',
 			'JAB_PACKAGE_SIZE'		=> $jab_package_size,
 			'JAB_USE_SSL'			=> $jab_use_ssl,
+			'JAB_VERIFY_PEER'		=> $jab_verify_peer,
+			'JAB_VERIFY_PEER_NAME'	=> $jab_verify_peer_name,
+			'JAB_ALLOW_SELF_SIGNED'	=> $jab_allow_self_signed,
 			'S_CAN_USE_SSL'			=> jabber::can_use_ssl(),
 			'S_GTALK_NOTE'			=> (!@function_exists('dns_get_record')) ? true : false,
 		));

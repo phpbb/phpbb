@@ -637,10 +637,13 @@ function mcp_move_topic($topic_ids)
 				*
 				* @event core.mcp_main_modify_shadow_sql
 				* @var	array	shadow	SQL array to be used by $db->sql_build_array
+				* @var	array	row		Topic data
 				* @since 3.1.11-RC1
+				* @changed 3.1.11-RC1 Added variable: row
 				*/
 				$vars = array(
 					'shadow',
+					'row',
 				);
 				extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_shadow_sql', compact($vars)));
 
@@ -1343,11 +1346,14 @@ function mcp_fork_topic($topic_ids)
 			* Perform actions before forked topic is created.
 			*
 			* @event core.mcp_main_modify_fork_sql
-			* @var	array	sql_ary	SQL array to be used by $db->sql_build_array
+			* @var	array	sql_ary		SQL array to be used by $db->sql_build_array
+			* @var	array	topic_row	Topic data
 			* @since 3.1.11-RC1
+			* @changed 3.1.11-RC1 Added variable: topic_row
 			*/
 			$vars = array(
 				'sql_ary',
+				'topic_row',
 			);
 			extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_fork_sql', compact($vars)));
 

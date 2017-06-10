@@ -64,6 +64,12 @@ acp_ext_details_end
 * Since: 3.1.11-RC1
 * Purpose: Add more detailed information on extension after the available information.
 
+acp_ext_details_notice
+===
+* Location: adm/style/acp_ext_details.html
+* Since: 3.1.11-RC1
+* Purpose: Add extension detail notices after version check information.
+
 acp_ext_list_disabled_name_after
 ===
 * Location: adm/style/acp_ext_list.html
@@ -688,6 +694,20 @@ forumlist_body_last_post_title_prepend
 * Since: 3.1.0-a1
 * Purpose: Add content before the post title of the latest post in a forum on the forum list.
 
+forumlist_body_subforum_link_append
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.1.11-RC1
+* Purpose: Add content at the end of subforum link item.
+
+forumlist_body_subforum_link_prepend
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.1.11-RC1
+* Purpose: Add content at the start of subforum link item.
+
 forumlist_body_subforums_after
 ===
 * Locations:
@@ -932,6 +952,20 @@ mcp_topic_postrow_post_details_before
     + styles/prosilver/template/mcp_topic.html
 * Since: 3.1.10-RC1
 * Purpose: Add content before post details in topic moderation
+
+mcp_topic_postrow_post_subject_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.1.11-RC1
+* Purpose: Add content after post subject in topic moderation
+
+mcp_topic_postrow_post_subject_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.1.11-RC1
+* Purpose: Add content before post subject in topic moderation
 
 mcp_topic_topic_title_after
 ===
@@ -1819,6 +1853,13 @@ search_results_topic_before
     + styles/prosilver/template/search_results.html
 * Since: 3.1.0-b4
 * Purpose: Add data before search result topics
+
+search_results_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.1.11-RC1
+* Purpose: Add data after search results topic title
 
 simple_footer_after
 ===

@@ -1287,7 +1287,9 @@ ul.linklist:after,
 	display: block;
 }
 
-.notification-avatar {
+.notification-avatar,
+.notification-menu .notification-list .notification-item .avatar,
+.notification-menu .notification-list .notification-item .gravatar {
 	float: left;
 	width: auto !important;
 	max-width: 50px;
