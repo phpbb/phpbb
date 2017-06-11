@@ -11,9 +11,14 @@
  *
  */
 
-namespace phpbb\storage;
+namespace phpbb\storage\driver;
 
-class local implements storage_interface
+class ftp extends driver
 {
+	protected $connection;
 
+	public function __construct($params)
+	{
+
+	}
 }
