@@ -537,6 +537,11 @@ abstract class driver implements driver_interface
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
+		if (!is_array($array))
+		{
+			$array = array($array);
+		}
+
 		if (!sizeof($array))
 		{
 			if (!$allow_empty_set)
@@ -557,11 +562,6 @@ abstract class driver implements driver_interface
 					return '1=0';
 				}
 			}
-		}
-
-		if (!is_array($array))
-		{
-			$array = array($array);
 		}
 
 		if (sizeof($array) == 1)

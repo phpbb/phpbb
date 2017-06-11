@@ -170,7 +170,7 @@ function user_update_name($old_name, $new_name)
 * Adds an user
 *
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
-* @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
+* @param array $cp_data custom profile fields, see custom_profile::build_insert_sql_array
 * @param array $notifications_data The notifications settings for the new user
 * @return the new user's ID.
 */
@@ -2661,7 +2661,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
 
-	if (!sizeof($user_id_ary) || $result !== false)
+	if (empty($user_id_ary) || $result !== false)
 	{
 		return 'NO_USER';
 	}
@@ -2806,7 +2806,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
 
-	if (!sizeof($user_id_ary) || $result !== false)
+	if (empty($user_id_ary) || $result !== false)
 	{
 		return 'NO_USER';
 	}
@@ -3041,7 +3041,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
 
-	if (!sizeof($user_id_ary) || $result !== false)
+	if (empty($user_id_ary) || $result !== false)
 	{
 		return 'NO_USERS';
 	}
@@ -3500,7 +3500,7 @@ function group_update_listings($group_id)
 
 	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
 
-	if (!sizeof($hold_ary))
+	if (empty($hold_ary))
 	{
 		return;
 	}

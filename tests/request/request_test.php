@@ -39,7 +39,7 @@ class phpbb_request_test extends phpbb_test_case
 		$_SERVER['HTTP_ACCEPT'] = 'application/json';
 		$_SERVER['HTTP_SOMEVAR'] = '<value>';
 
-		$this->type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
+		$this->type_cast_helper = $this->createMock('\phpbb\request\type_cast_helper_interface');
 		$this->request = new \phpbb\request\request($this->type_cast_helper);
 	}
 

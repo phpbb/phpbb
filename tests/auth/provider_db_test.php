@@ -37,7 +37,7 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			));
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
-		$request = $this->getMock('\phpbb\request\request');
+		$request = $this->createMock('\phpbb\request\request');
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(

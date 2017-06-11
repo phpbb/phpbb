@@ -26,7 +26,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			'<?php class renderer_foo { public function setParameter() {} }'
 		);
 
-		$cache = $this->getMock('phpbb_mock_cache');
+		$cache = $this->createMock('phpbb_mock_cache');
 		$cache->expects($this->once())
 		      ->method('get')
 		      ->with('_foo_renderer')
@@ -50,7 +50,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		$mock = $this->getMockForAbstractClass('s9e\\TextFormatter\\Renderer');
 
-		$cache = $this->getMock('phpbb_mock_cache');
+		$cache = $this->createMock('phpbb_mock_cache');
 		$cache->expects($this->once())
 		      ->method('get')
 		      ->with('_foo_renderer')
@@ -197,7 +197,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 
 					$config = new \phpbb\config\config(array('allow_nocensors' => true));
 
-					$auth = $test->getMock('phpbb\\auth\\auth');
+					$auth = $test->createMock('phpbb\\auth\\auth');
 					$auth->expects($test->any())
 					     ->method('acl_get')
 					     ->with('u_chgcensors')
@@ -393,7 +393,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	public function test_setup_event()
 	{
 		$container = $this->get_test_case_helpers()->set_s9e_services();
-		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$dispatcher
 			->expects($this->once())
 			->method('trigger_event')
@@ -424,7 +424,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	public function test_render_event()
 	{
 		$container = $this->get_test_case_helpers()->set_s9e_services();
-		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$dispatcher
 			->expects($this->any())
 			->method('trigger_event')
