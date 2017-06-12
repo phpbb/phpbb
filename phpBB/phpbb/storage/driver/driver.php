@@ -1,9 +1,13 @@
 <?php
 namespace phpbb\storage\driver;
 
-class adapter_common
+abstract class driver
 {
 	protected $filesystem;
+
+	abstract public function get_name();
+
+	abstract public function get_params();
 
 	public function put_contents($path, $content)
 	{
@@ -12,7 +16,7 @@ class adapter_common
 
 	public function get_contents($path)
 	{
-		$this->filesystem->put_contents($path);
+		$this->filesystem->get_contents($path);
 	}
 
 	public function exists($path)

@@ -19,12 +19,12 @@ class storage extends abstract_storage
 
 	public function __construct()
 	{
-		$driver = \phpbb\storage\driver\local;
+		$this->driver = new \phpbb\storage\driver\local();
 	}
 
-	public function set_driver($driver)
+	public function set_driver($driver, $params)
 	{
-		$this->driver = $driver;
+		$this->driver = $driver($params);
 	}
 
 	public function put_contents($path, $content)

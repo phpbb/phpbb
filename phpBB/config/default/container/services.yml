@@ -25,6 +25,7 @@ imports:
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }
+    - { resource: services_storage.yml }
     - { resource: services_text_formatter.yml }
     - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }

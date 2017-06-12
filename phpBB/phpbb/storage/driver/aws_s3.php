@@ -1,7 +1,7 @@
 <?php
 namespace rubencm\phpbb\storage\driver;
 
-class aws_s3 extends adapter_common
+class aws_s3 extends driver
 {
 	public function __construct($params)
 	{
@@ -18,5 +18,15 @@ class aws_s3 extends adapter_common
 		$flysystemfs = new Filesystem($adapter);
 
 		$this->filesystem =  new \phpbb\storage\adapter\flysystem($flysystemfs);
+	}
+
+	public function get_name()
+	{
+		return 'AWSS3';
+	}
+
+	public function get_params()
+	{
+		return array();
 	}
 }

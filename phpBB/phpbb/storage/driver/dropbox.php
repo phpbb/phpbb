@@ -20,4 +20,14 @@ class dropbox extends adapter_common
 
 		$this->filesystem =  new \phpbb\storage\adapter\flysystem($flysystemfs);
 	}
+
+	public function get_name()
+	{
+		return 'DROPBOX';
+	}
+
+	public function get_params()
+	{
+		return array();
+	}
 }
