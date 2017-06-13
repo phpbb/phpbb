@@ -8,12 +8,12 @@ class local extends driver
 		$this->filesystem = new \phpbb\storage\adapter\local();
 	}
 
-	public function get_name()
+	public static function get_name()
 	{
 		return 'LOCAL';
 	}
 
-	public function get_params()
+	public static function get_params()
 	{
 		return array();
 	}
