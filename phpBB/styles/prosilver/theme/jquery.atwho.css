@@ -1,72 +1,79 @@
 .atwho-view {
-    position:absolute;
-    top: 0;
-    left: 0;
-    display: none;
-    margin-top: 18px;
-    background: white;
-    color: black;
-    border: 1px solid #DDD;
-    border-radius: 3px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    min-width: 120px;
-    z-index: 11110 !important;
+	position: absolute;
+	background: #ffffff;
+	border: 1px solid #dddddd;
+	border-radius: 3px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+	color: #000000;
+	display: none;
+	left: 0;
+	margin-top: 18px;
+	min-width: 120px;
+	top: 0;
+	z-index: 11110 !important;
 }
 
 .atwho-view .atwho-header {
-    padding: 5px;
-    margin: 5px;
-    cursor: pointer;
-    border-bottom: solid 1px #eaeff1;
-    color: #6f8092;
-    font-size: 11px;
-    font-weight: bold;
+	border-bottom: solid 1px #eaeff1;
+	color: #6f8092;
+	cursor: pointer;
+	font-size: 11px;
+	font-weight: bold;
+	margin: 5px;
+	padding: 5px;
 }
 
 .atwho-view .atwho-header .small {
-    color: #6f8092;
-    float: right;
-    padding-top: 2px;
-    margin-right: -5px;
-    font-size: 12px;
-    font-weight: normal;
+	color: #6f8092;
+	font-size: 12px;
+	font-weight: normal;
+	float: right;
+	margin-right: -5px;
+	padding-top: 2px;
 }
 
 .atwho-view .atwho-header:hover {
-    cursor: default;
+	cursor: default;
 }
 
 .atwho-view .cur {
-    background: #3366FF;
-    color: white;
+	background: #3366ff;
+	color: #ffffff;
 }
+
 .atwho-view .cur small {
-    color: white;
+	color: #ffffff;
 }
+
 .atwho-view strong {
-    color: #3366FF;
+	color: #3366ff;
 }
+
 .atwho-view .cur strong {
-    color: white;
-    font:bold;
+	font: bold;
+	color: #ffffff;
 }
+
 .atwho-view ul {
-    /* width: 100px; */
-    list-style:none;
-    padding:0;
-    margin:auto;
-    max-height: 800px;
-    overflow-y: auto;
+	/* width: 100px; */
+	overflow-y: auto;
+	max-height: 800px;
+	margin: auto;
+	padding: 0;
+	list-style: none;
 }
+
 .atwho-view ul li {
-    display: block;
-    padding: 5px 10px;
-    border-bottom: 1px solid #DDD;
-    cursor: pointer;
-    /* border-top: 1px solid #C8C8C8; */
+	border-bottom: 1px solid #dddddd;
+	cursor: pointer;
+	display: block;
+	padding: 5px 10px;
+
+	/* border-top: 1px solid #C8C8C8; */
 }
+
 .atwho-view small {
-    font-size: smaller;
-    color: #777;
-    font-weight: normal;
+	color: #777777;
+	font-size: smaller;
+	font-weight: normal;
 }
