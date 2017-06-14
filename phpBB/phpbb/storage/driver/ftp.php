@@ -16,7 +16,7 @@ namespace phpbb\storage\driver;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Ftp as Adapter;
 
-class aws_s3 extends driver
+class aws_s3 extends \phpbb\storage\driver
 {
 	public function __construct($params)
 	{

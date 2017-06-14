@@ -1,5 +1,5 @@
 <?php
-namespace phpbb\storage\driver;
+namespace phpbb\storage;
 
 abstract class driver
 {

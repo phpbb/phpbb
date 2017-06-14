@@ -1,7 +1,7 @@
 <?php
 namespace rubencm\phpbb\storage\driver;
 
-class local extends driver
+class local extends \phpbb\storage\driver
 {
 	public function __construct()
 	{
