@@ -30,6 +30,7 @@
 		"composer/composer": "^1.0",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": "~6.2",
+		"league/flysystem": "^1.0",
 		"lusitanian/oauth": "^0.8.1",
 		"marc1706/fast-image-size": "^1.1",
 		"paragonie/random_compat": "^1.4",
@@ -48,8 +49,7 @@
 		"symfony/routing": "~3.1",
 		"symfony/twig-bridge": "~3.1",
 		"symfony/yaml": "~3.1",
-		"twig/twig": "^1.0,<1.25",
-		"league/flysystem": "^1.0"
+		"twig/twig": "^1.0,<1.25"
 	},
 	"require-dev": {
 		"fabpot/goutte": "~3.1",
