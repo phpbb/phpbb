@@ -1,11 +1,9 @@
 services:
-    storage:
-        factory:
-            class: phpbb\storage\factory
-            
-        avatar:
-            class: phpbb\storage\storage
-        attachment:
-            class: phpbb\storage\storage
-        backup:
-            class: phpbb\storage\storage
+    storage.factory:
+        class: phpbb\storage\factory
+    storage.avatar:
+        class: phpbb\storage\storage
+    storage.attachment:
+        class: phpbb\storage\storage
+    storage.backup:
+        class: phpbb\storage\storage
