@@ -1,5 +1,5 @@
 <?php
-namespace rubencm\phpbb\storage\driver;
+namespace phpbb\storage\driver;
 
 class local extends \phpbb\storage\driver
 {
