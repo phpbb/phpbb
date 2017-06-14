@@ -51,4 +51,14 @@ class flysystem implements adapter_interface
 	{
 		$this->adapter->deleteDir($path);
 	}
+
+	public function read_stream($path)
+	{
+		$this->driver->readStream($path);
+	}
+
+	public function write_stream($path, $resource)
+	{
+		$this->driver->writeStream($path, $resource);
+	}
 }

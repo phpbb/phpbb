@@ -66,4 +66,14 @@ class storage extends abstract_storage
 	{
 		$this->driver->delete_dir($path);
 	}
+
+	public function read_stream($path)
+	{
+		$this->driver->read_stream($path);
+	}
+
+	public function write_stream($path, $resource)
+	{
+		$this->driver->write_stream($path, $resource);
+	}
 }

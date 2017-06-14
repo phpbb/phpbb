@@ -1,6 +1,10 @@
 <?php
 namespace phpbb\storage\adapter;
 
+// Todo:
+// Handle errors
+// Streams
+
 class local implements adapter_interface
 {
 	public function __construct()
@@ -46,5 +50,23 @@ class local implements adapter_interface
 	public function delete_dir($path)
 	{
 		rmdir($path);
+	}
+
+	// https://github.com/thephpleague/flysystem/blob/master/src/Adapter/Local.php#L147
+	public function read_stream($path)
+	{
+		return fopen($path, 'rb');
+	}
+
+	public function write_stream($path, $resource)
+	{
+		$stream = fopen($path, 'w+b');
+
+		if(!$strean)
+		{
+			// error
+		}
+
+		stream_copy_to_stream($path, $stream);
 	}
 }

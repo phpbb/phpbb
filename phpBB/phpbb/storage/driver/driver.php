@@ -5,9 +5,9 @@ abstract class driver
 {
 	protected $filesystem;
 
-	abstract public function get_name();
+	abstract static public function get_name();
 
-	abstract public function get_params();
+	abstract static public function get_params();
 
 	public function put_contents($path, $content)
 	{
@@ -47,5 +47,15 @@ abstract class driver
 	public function delete_dir($path)
 	{
 		$this->filesystem->delete_dir($path);
+	}
+
+	public function read_stream($path)
+	{
+		$this->filesystem->read_stream($path);
+	}
+
+	public function write_stream($path, $resource)
+	{
+		$this->filesystem->write_stream($path, $resource);
 	}
 }
