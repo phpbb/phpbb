@@ -6,9 +6,9 @@
 	color: #000000;
 	position: absolute;
 	z-index: 11110 !important;
+	top: 0;
 	left: 0;
 	display: none;
-	top: 0;
 	min-width: 120px;
 	margin-top: 18px;
 }
