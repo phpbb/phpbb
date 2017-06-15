@@ -13,6 +13,7 @@ imports:
     - { resource: services_update_filesystem.yml }
     - { resource: services_update_obtain_data.yml }
     - { resource: services_update_requirements.yml }
+    - { resource: services_converter_framework.yml }
 
 services:
 # -------- Installer helpers ------------------------

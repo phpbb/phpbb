@@ -1,0 +1,43 @@
+services:
+    bala.object:
+        synthetic: true
+        
+    dbal.connection.source:
+         synthetic: true
+
+    dbal.connection.destination:
+         synthetic: true
+
+    doctrine.dbal.config:
+        class: Doctrine\DBAL\Configuration
+
+    doctrine.dbal.drivermanager:
+        class: Doctrine\DBAL\DriverManager
+
+    phpbb.installer.converter.converter:
+        class: phpbb\install\converter\bin\converter
+
+        arguments:
+            - '@service_container'
+        shared: false
+
+
+
+    phpbb.installer.converter.index:
+        class: phpbb\install\converter\controller\converter_index
+        arguments:
+            - '@service_container'
+            - '@doctrine.dbal.config'
+            - '@phpbb.installer.controller.helper'
+            - '@language'
+            - '@template'
+            - '%core.root_path%'
+
+    phpbb.installer.converter.convert:
+        class: phpbb\install\converter\controller\controller_convert
+        arguments:
+            - '@service_container'
+            - '@phpbb.installer.controller.helper'
+            - '@language'
+            - '@template'
+            - '%core.root_path%'

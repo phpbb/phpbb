@@ -36,6 +36,16 @@ phpbb_installer_update_conflict_download:
     defaults:
         _controller: phpbb.installer.controller.file_downloader:conflict_archive
 
+phpbb_converter_index:
+    path: /converter/index
+    defaults:
+        _controller: phpbb.installer.converter.index:handle
+
+phpbb_converter_convert:
+    path: /converter/converter
+    defaults:
+        _controller: phpbb.installer.converter.convert:handle
+
 phpbb_convert_intro:
     path: /convert/{start_new}
     defaults:
