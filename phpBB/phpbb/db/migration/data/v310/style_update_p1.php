@@ -165,7 +165,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 
 			$this->config->set('default_style', $default_style);
 
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = 0';
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = ' .  $default_style;
 			$this->sql_query($sql);
 		}
 		else
@@ -183,9 +183,9 @@ class style_update_p1 extends \phpbb\db\migration\migration
 			}
 
 			// Reset styles for users
-			$this->sql_query('UPDATE ' . USERS_TABLE . '
-				SET user_style = 0
-				WHERE ' . $this->db->sql_in_set('user_style', $valid_styles, true));
+			$this->sql_query('UPDATE ' . USERS_TABLE . "
+				SET user_style = '" . $valid_styles[0] . "'
+				WHERE " . $this->db->sql_in_set('user_style', $valid_styles, true));
 		}
 	}
 }
