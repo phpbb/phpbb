@@ -1,8 +1,8 @@
 <?php
-use \Symfony\Component\Yaml\Yaml;
 
 namespace phpbb\install\converter\bin;
 
+use \Symfony\Component\Yaml\Yaml;
 
 class converter
 {
@@ -15,15 +15,17 @@ class converter
 	protected $container;
 
 
-	function __construct($container){
-		$this->db_source = $container->get('dbal.connection.source');
-		$this->db_destination = $container->get('dbal.connection.destination');
+	function __construct($db_source, $db_destination,\phpbb\install\converter\controller\helper $helper){
+		$this->db_source = $db_source;
+		$this->db_destination = $db_destination;
+		$this->helper = $helper;
+		$this->yamlQ = array();
 	}
-    //depracted function
+    //depracted function @todo get rid of the function. all things are being injected.
 	function config_database($dbname_source, $dbname_destination, $username, $dbpass, $dbdriver='pdo_mysql', $host='localhost')
 	{
 		$this->config = new \Doctrine\DBAL\Configuration();
-		$this->yamlQ = array();
+
 		$this->credentials_source=array( //Set up the credentianls and generate a connection object for future use.
 		  'dbname'=>$dbname_source,
 		  'user'=>$username,

@@ -1,34 +1,46 @@
 services:
-    bala.object:
-        synthetic: true
-        
-    dbal.connection.source:
-         synthetic: true
-
-    dbal.connection.destination:
-         synthetic: true
-
     doctrine.dbal.config:
         class: Doctrine\DBAL\Configuration
 
     doctrine.dbal.drivermanager:
         class: Doctrine\DBAL\DriverManager
 
-    phpbb.installer.converter.converter:
+    phpbb.installer.converter.bin.converter:
         class: phpbb\install\converter\bin\converter
-
         arguments:
-            - '@service_container'
+            - '@phpbb.dbal.source.connection'
+            - '@phpbb.dbal.destination.connection'
+            - '@phpbb.installer.converter.controller.helper'
         shared: false
 
+    phpbb.dbal.source.connection:
+        class: phpbb\install\converter\connection
+        factory: ['phpbb\install\converter\factory\dbal_connection_source_factory',get_connection]
+        arguments: ['@doctrine.dbal.config','@phpbb.installer.converter.controller.helper']
 
+    phpbb.dbal.destination.connection:
+            class: phpbb\install\converter\connection
+            factory: ['phpbb\install\converter\factory\dbal_connection_destination_factory',get_connection]
+            arguments: ['@doctrine.dbal.config','@phpbb.installer.converter.controller.helper']
+
+    phpbb.installer.converter.controller.helper:
+        class: phpbb\install\converter\controller\helper
+        arguments:
+            - '@installer.helper.config'
+            - '@language'
+            - '@language.helper.language_file'
+            - '@installer.navigation.provider'
+            - '@template'
+            - '@path_helper'
+            - '@request'
+            - '@symfony_request'
+            - '@router'
+            - '%core.root_path%'
 
     phpbb.installer.converter.index:
         class: phpbb\install\converter\controller\converter_index
         arguments:
-            - '@service_container'
-            - '@doctrine.dbal.config'
-            - '@phpbb.installer.controller.helper'
+            - '@phpbb.installer.converter.controller.helper'
             - '@language'
             - '@template'
             - '%core.root_path%'
@@ -36,8 +48,8 @@ services:
     phpbb.installer.converter.convert:
         class: phpbb\install\converter\controller\controller_convert
         arguments:
-            - '@service_container'
-            - '@phpbb.installer.controller.helper'
+            - '@phpbb.installer.converter.bin.converter'
+            - '@phpbb.installer.converter.controller.helper'
             - '@language'
             - '@template'
             - '%core.root_path%'
