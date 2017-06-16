@@ -336,6 +336,15 @@ class database
 			);
 		}
 
+		// Check if SQLite database is writable
+		if ($dbms_info['SCHEMA'] === 'sqlite'
+			&& (!$this->filesystem->is_writable($dbhost) || !$this->filesystem->is_writable(pathinfo($dbhost, PATHINFO_DIRNAME))))
+		{
+			$errors[] = array(
+				'title' =>'INST_ERR_DB_NO_WRITABLE',
+			);
+		}
+
 		// Try to connect to db
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport, false, true)))
 		{
