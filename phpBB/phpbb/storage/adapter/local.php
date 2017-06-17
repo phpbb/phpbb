@@ -61,11 +61,11 @@ class local implements adapter_interface
 	{
 		$stream = fopen($path, 'w+b');
 
-		if(!$strean)
+		if(!$stream)
 		{
 			// error
 		}
 
-		stream_copy_to_stream($path, $stream);
+		stream_copy_to_stream($resource, $stream);
 	}
 }
