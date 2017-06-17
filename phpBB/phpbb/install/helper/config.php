@@ -36,15 +36,6 @@ class config
 	protected $installer_config;
 
 	/**
-	 * Array which contains config settings for the coverter_framework just like the installer
-	 *
-	 * Contains your source and destination db details as well for DI.
-	 * Contains status of the currently and last coverted file so can estimate progress.
-	 * @var array
-	 */
-	protected $converter_config;
-
-	/**
 	 * @var string
 	 */
 	protected $install_config_file;
@@ -241,7 +232,6 @@ class config
 		$serialized_data = trim(substr($file_content, 8));
 
 		$installer_config = array();
-		$converter_config = array();
 		$progress_data = array();
 		$navigation_data = array();
 
@@ -252,13 +242,11 @@ class config
 			$installer_config = (is_array($unserialized_data['installer_config'])) ? $unserialized_data['installer_config'] : array();
 			$progress_data = (is_array($unserialized_data['progress_data'])) ? $unserialized_data['progress_data'] : array();
 			$navigation_data = (is_array($unserialized_data['navigation_data'])) ? $unserialized_data['navigation_data'] : array();
-			$converter_config = (is_array($unserialized_data['converter_config'])) ? $unserialized_data['converter_config'] : array();
 		}
 
 		$this->installer_config = array_merge($this->installer_config, $installer_config);
 		$this->progress_data = array_merge($this->progress_data, $progress_data);
 		$this->navigation_data = array_merge($this->navigation_data, $navigation_data);
-		$this->converter_config = array_merge($this->converter_config, $converter_config);
 	}
 
 	/**
@@ -327,7 +315,6 @@ class config
 			'installer_config'	=> $this->installer_config,
 			'progress_data'		=> $this->progress_data,
 			'navigation_data'	=> $this->navigation_data,
-			'converter_config'	=> $this->converter_config,
 		);
 
 		// Create file content
@@ -444,31 +431,7 @@ class config
 		$this->do_clean_up = true;
 		@unlink($this->install_config_file);
 	}
-
-	public function set_converter_source_db($source_db_config)
-	{
-		$this->converter_config['source_db_config'] = $source_db_config;
-		$this->save_config();
-	}
-
-	public function set_converter_destination_db($destination_db_config)
-	{
-		$this->converter_config['destination_db_config'] = $destination_db_config;
-		$this->save_config();
-	}
-
-	public function get_converter_source_db()
-	{
-		$this->load_config();
-		return $this->converter_config['source_db_config'];
-	}
-
-	public function get_converter_destination_db()
-	{
-		$this->load_config();
-		return $this->converter_config['destination_db_config'];
-	}
-
+	
 	/**
 	 * Filling up system_data array
 	 */
