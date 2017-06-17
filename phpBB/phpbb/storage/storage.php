@@ -13,18 +13,18 @@
 
 namespace phpbb\storage;
 
-class storage extends abstract_storage
+class storage
 {
-	protected $driver;
+	protected $adapter;
 
 	public function __construct()
 	{
 		$this->driver = new \phpbb\storage\driver\local();
 	}
 
-	public function set_driver($driver, $params)
+	public function set_adapter($adapter, $params)
 	{
-		$this->driver = $driver($params);
+		$this->adapter = $adapter($params);
 	}
 
 	public function put_contents($path, $content)

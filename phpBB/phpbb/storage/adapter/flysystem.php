@@ -1,6 +1,8 @@
 <?php
 namespace phpbb\storage\adapter;
 
+// todo: handle errors
+
 use League\Flysystem\AdapterInterface;
 
 class flysystem implements adapter_interface

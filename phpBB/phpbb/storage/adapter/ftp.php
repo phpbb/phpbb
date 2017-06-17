@@ -1,13 +1,43 @@
 <?php
-namespace phpbb\storage;
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-abstract class driver
+namespace phpbb\storage\driver;
+
+use League\Flysystem\Filesystem;
+use League\Flysystem\Adapter\Ftp as Adapter;
+
+class ftp implements adapter_interface
 {
 	protected $filesystem;
 
-	abstract static public function get_name();
+	public function __construct($params)
+	{
+		$adapter = FTP([
+			'host' => $params['host'],
+			'username' => $params['username'],
+			'password' => $params['password'],
 
-	abstract static public function get_params();
+			'port' => $params['port'],
+			'root' => $params['root'],
+			'passive' => true,
+			'ssl' => $params['ssl'],
+			'timeout' => $params['timeout'],
+		]);
+
+		$flysystemfs = new Filesystem($adapter);
+
+		$this->filesystem =  new \phpbb\storage\adapter\flysystem($flysystemfs);
+	}
 
 	public function put_contents($path, $content)
 	{
@@ -58,4 +88,5 @@ abstract class driver
 	{
 		$this->filesystem->write_stream($path, $resource);
 	}
+
 }

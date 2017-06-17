@@ -3,7 +3,6 @@ namespace phpbb\storage\adapter;
 
 // Todo:
 // Handle errors
-// Streams
 
 class local implements adapter_interface
 {

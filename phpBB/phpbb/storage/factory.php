@@ -11,12 +11,12 @@
  *
  */
 
-namespace phpbb\storages;
+namespace phpbb\storage;
 
 class factory
 {
-	public static function get_driver($driver, $params)
+	public static function get($adapter, $params)
 	{
-		return new $driver($params);
+		return new $adapter($params);
 	}
 }
