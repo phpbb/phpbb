@@ -10,6 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
+
 namespace phpbb\console\command\fixup;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -96,7 +97,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 	 * @param string	$field		The key field to fix, forum_id|module_id
 	 * @param string	$table		The table name to perform, FORUMS_TABLE|MODULES_TABLE
 	 * @param int		$parent_id	Parent item id
-	 * @param string	$where		Additional WHERE clause condition
+	 * @param array		$where		Additional WHERE clause condition
 	 *
 	 * @return bool	True on rebuild success, false otherwise
 	 */
