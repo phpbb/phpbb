@@ -17,6 +17,7 @@ class factory
 {
 	public static function get($adapter, $params)
 	{
-		return new $adapter($params);
+		$storage = new storage();
+		return $storage->set_adapter($adapter, $params);
 	}
 }
