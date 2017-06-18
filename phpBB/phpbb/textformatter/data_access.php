@@ -81,11 +81,8 @@ class data_access
 	public function get_bbcodes()
 	{
 		$sql = 'SELECT bbcode_match, bbcode_tpl FROM ' . $this->bbcodes_table;
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
 
-		return $rows;
+		return $this->fetch_decoded_rowset($sql, ['bbcode_match']);
 	}
 
 	/**
@@ -101,11 +98,8 @@ class data_access
 		$sql = 'SELECT code, emotion, smiley_url, smiley_width, smiley_height
 			FROM ' . $this->smilies_table . '
 			ORDER BY display_on_posting DESC';
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
 
-		return $rows;
+		return $this->fetch_decoded_rowset($sql, ['code', 'emotion', 'smiley_url']);
 	}
 
 	/**
@@ -116,11 +110,8 @@ class data_access
 	protected function get_styles()
 	{
 		$sql = 'SELECT style_id, style_path, style_parent_id, bbcode_bitfield FROM ' . $this->styles_table;
-		$result = $this->db->sql_query($sql);
-		$rows = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
 
-		return $rows;
+		return $this->fetch_decoded_rowset($sql);
 	}
 
 	/**
@@ -219,10 +210,43 @@ class data_access
 	public function get_censored_words()
 	{
 		$sql = 'SELECT word, replacement FROM ' . $this->words_table;
+
+		return $this->fetch_decoded_rowset($sql, ['word', 'replacement']);
+	}
+
+	/**
+	* Decode HTML special chars in given rowset
+	*
+	* @param  array $rows    Original rowset
+	* @param  array $columns List of columns to decode
+	* @return array          Decoded rowset
+	*/
+	protected function decode_rowset(array $rows, array $columns)
+	{
+		foreach ($rows as &$row)
+		{
+			foreach ($columns as $column)
+			{
+				$row[$column] = htmlspecialchars_decode($row[$column]);
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	* Fetch all rows for given query and decode plain text columns
+	*
+	* @param  string $sql     SELECT query
+	* @param  array  $columns List of columns to decode
+	* @return array
+	*/
+	protected function fetch_decoded_rowset($sql, array $columns = [])
+	{
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		return $rows;
+		return $this->decode_rowset($rows, $columns);
 	}
 }

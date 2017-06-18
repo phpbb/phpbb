@@ -115,6 +115,11 @@ class config_text implements \phpbb\db\migration\tool\tool_interface
 					$arguments[] = '';
 				}
 			break;
+
+			case 'reverse':
+				// Reversing a reverse is just the call itself
+				$call = array_shift($arguments);
+			break;
 		}
 
 		if ($call)

@@ -74,6 +74,20 @@ class cli_iohandler extends iohandler_base
 		return $result;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_raw_input($name, $default)
+	{
+		return $this->get_input($name, $default, true);
+	}
+
+	/**
+	 * Set input variable
+	 *
+	 * @param string $name Name of input variable
+	 * @param mixed $value Value of input variable
+	 */
 	public function set_input($name, $value)
 	{
 		$this->input_values[$name] = $value;
@@ -114,7 +128,7 @@ class cli_iohandler extends iohandler_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send_response()
+	public function send_response($no_more_output = false)
 	{
 	}
 
@@ -124,13 +138,14 @@ class cli_iohandler extends iohandler_base
 	public function add_error_message($error_title, $error_description = false)
 	{
 		$this->io->newLine();
-
-		if (strpos($error_title, '<br />') !== false)
-		{
-			$error_title = strip_tags(str_replace('<br />', "\n", $error_title));
-		}
 		$message = $this->translate_message($error_title, $error_description);
 		$message_string = $message['title'] . (!empty($message['description']) ? "\n" . $message['description'] : '');
+
+		if (strpos($message_string, '<br />') !== false)
+		{
+			$message_string = strip_tags(str_replace('<br />', "\n", $message_string));
+		}
+
 		$this->io->error($message_string);
 
 		if ($this->progress_bar !== null)
@@ -197,6 +212,16 @@ class cli_iohandler extends iohandler_base
 
 		if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_NORMAL)
 		{
+			if ($this->progress_bar !== null)
+			{
+				// Symfony's ProgressBar is immutable regarding task_count, so delete the old and create a new one.
+				$this->progress_bar->clear();
+			}
+			else
+			{
+				$this->io->newLine(2);
+			}
+
 			$this->progress_bar = $this->io->createProgressBar($task_count);
 			$this->progress_bar->setFormat(
 				"    %current:3s%/%max:-3s% %bar%  %percent:3s%%\n" .
@@ -211,7 +236,6 @@ class cli_iohandler extends iohandler_base
 			}
 
 			$this->progress_bar->setMessage('');
-			$this->io->newLine(2);
 			$this->progress_bar->start();
 		}
 	}

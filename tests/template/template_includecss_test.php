@@ -50,10 +50,10 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$config,
 			$filesystem,
 			$this->phpbb_path_helper,
-			$container,
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -80,7 +80,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 				)
 			)
 		);
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 

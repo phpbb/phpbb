@@ -20,6 +20,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	static protected $client;
 	static protected $cookieJar;
 	static protected $root_url;
+	static protected $install_success = false;
 
 	protected $cache = null;
 	protected $db = null;
@@ -77,6 +78,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	public function setUp()
 	{
 		parent::setUp();
+
+		if (!self::$install_success)
+		{
+			$this->fail('Installing phpBB has failed.');
+		}
 
 		$this->bootstrap();
 
@@ -203,10 +209,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		if (!$this->cache)
 		{
-			global $phpbb_container;
+			global $phpbb_container, $phpbb_root_path;
 
 			$phpbb_container = new phpbb_mock_container_builder();
 			$phpbb_container->setParameter('core.environment', PHPBB_ENVIRONMENT);
+			$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
 
 			$this->cache = new \phpbb\cache\driver\file;
 		}
@@ -256,7 +263,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,
-			$this->get_cache_driver()
+			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
 		);
 
 		return $extension_manager;
@@ -284,6 +291,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
+		$install_config_file = $phpbb_root_path . 'store/install_config.php';
+
+		if (file_exists($install_config_file))
+		{
+			unlink($install_config_file);
+		}
+
 		$container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 		$container = $container_builder
 			->with_environment('installer')
@@ -297,11 +311,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 				],
 				'cache.driver.class' => 'phpbb\cache\driver\file'
 			])
+			->with_config(new \phpbb\config_php_file($phpbb_root_path, $phpEx))
 			->without_compiled_container()
 			->get_container();
 
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
+		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
+		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
 		$container->compile();
 
 		$language = $container->get('language');
@@ -360,22 +377,35 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('script_path', $parseURL['path']);
 		$iohandler->set_input('submit_server', 'submit');
 
-		do
-		{
-			$installer->run();
-		}
-		while (file_exists($phpbb_root_path . 'store/install_config.php'));
+		$installer->run();
 
 		copy($config_file, $config_file_test);
 
-		if (file_exists($phpbb_root_path . 'cache/install_lock'))
+		self::$install_success = true;
+
+		if (file_exists($phpbb_root_path . 'store/install_config.php'))
 		{
-			unlink($phpbb_root_path . 'cache/install_lock');
+			self::$install_success = false;
+			@unlink($phpbb_root_path . 'store/install_config.php');
 		}
 
-		global $phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template;
+		if (file_exists($phpbb_root_path . 'cache/install_lock'))
+		{
+			@unlink($phpbb_root_path . 'cache/install_lock');
+		}
+
+		global $phpbb_container;
 		$phpbb_container->reset();
-		unset($phpbb_container, $cache, $phpbb_dispatcher, $request, $user, $auth, $db, $config, $phpbb_log, $symfony_request, $phpbb_filesystem, $phpbb_path_helper, $phpbb_extension_manager, $template);
+
+		$blacklist = ['phpbb_class_loader_mock', 'phpbb_class_loader_ext', 'phpbb_class_loader'];
+
+		foreach (array_keys($GLOBALS) as $key)
+		{
+			if (is_object($GLOBALS[$key]) && !in_array($key, $blacklist, true))
+			{
+				unset($GLOBALS[$key]);
+			}
+		}
 	}
 
 	public function install_ext($extension)

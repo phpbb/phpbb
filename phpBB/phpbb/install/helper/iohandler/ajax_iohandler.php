@@ -44,6 +44,11 @@ class ajax_iohandler extends iohandler_base
 	/**
 	 * @var string
 	 */
+	protected $phpbb_root_path;
+
+	/**
+	 * @var string
+	 */
 	protected $file_status;
 
 	/**
@@ -77,14 +82,20 @@ class ajax_iohandler extends iohandler_base
 	protected $redirect_url;
 
 	/**
+	 * @var resource
+	 */
+	protected $file_lock_pointer;
+
+	/**
 	 * Constructor
 	 *
 	 * @param path_helper						$path_helper
 	 * @param \phpbb\request\request_interface	$request	HTTP request interface
 	 * @param \phpbb\template\template			$template	Template engine
 	 * @param router 							$router		Router
+	 * @param string 							$root_path	Path to phpBB's root
 	 */
-	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router)
+	public function __construct(path_helper $path_helper, \phpbb\request\request_interface $request, \phpbb\template\template $template, router $router, $root_path)
 	{
 		$this->path_helper = $path_helper;
 		$this->request	= $request;
@@ -96,6 +107,7 @@ class ajax_iohandler extends iohandler_base
 		$this->download	= array();
 		$this->redirect_url = array();
 		$this->file_status = '';
+		$this->phpbb_root_path = $root_path;
 
 		parent::__construct();
 	}
@@ -106,6 +118,14 @@ class ajax_iohandler extends iohandler_base
 	public function get_input($name, $default, $multibyte = false)
 	{
 		return $this->request->variable($name, $default, $multibyte);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_raw_input($name, $default)
+	{
+		return $this->request->raw_variable($name, $default);
 	}
 
 	/**
@@ -209,9 +229,15 @@ class ajax_iohandler extends iohandler_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function send_response()
+	public function send_response($no_more_output = false)
 	{
-		$json_data_array = $this->prepare_json_array();
+		$json_data_array = $this->prepare_json_array($no_more_output);
+
+		if (empty($json_data_array))
+		{
+			return;
+		}
+
 		$json_data = json_encode($json_data_array);
 
 		// Try to push content to the browser
@@ -223,23 +249,43 @@ class ajax_iohandler extends iohandler_base
 	/**
 	 * Prepares iohandler's data to be sent out to the client.
 	 *
+	 * @param bool	$no_more_output	Whether or not there will be more output in this response
+	 *
 	 * @return array
 	 */
-	protected function prepare_json_array()
+	protected function prepare_json_array($no_more_output = false)
 	{
-		$json_array = array(
-			'errors' => $this->errors,
-			'warnings' => $this->warnings,
-			'logs' => $this->logs,
-			'success' => $this->success,
-			'download' => $this->download,
-		);
+		$json_array = array();
 
-		$this->errors = array();
-		$this->warnings = array();
-		$this->logs = array();
-		$this->success = array();
-		$this->download = array();
+		if (!empty($this->errors))
+		{
+			$json_array['errors'] = $this->errors;
+			$this->errors = array();
+		}
+
+		if (!empty($this->warnings))
+		{
+			$json_array['warnings'] = $this->warnings;
+			$this->warnings = array();
+		}
+
+		if (!empty($this->logs))
+		{
+			$json_array['logs'] = $this->logs;
+			$this->logs = array();
+		}
+
+		if (!empty($this->success))
+		{
+			$json_array['success'] = $this->success;
+			$this->success = array();
+		}
+
+		if (!empty($this->download))
+		{
+			$json_array['download'] = $this->download;
+			$this->download = array();
+		}
 
 		if (!empty($this->form))
 		{
@@ -291,6 +337,11 @@ class ajax_iohandler extends iohandler_base
 		{
 			$json_array['redirect'] = $this->redirect_url;
 			$this->redirect_url = array();
+		}
+
+		if ($no_more_output)
+		{
+			$json_array['over'] = true;
 		}
 
 		return $json_array;
@@ -398,7 +449,34 @@ class ajax_iohandler extends iohandler_base
 	public function redirect($url, $use_ajax = false)
 	{
 		$this->redirect_url = array('url' => $url, 'use_ajax' => $use_ajax);
-		$this->send_response();
+		$this->send_response(true);
+	}
+
+	/**
+	 * Acquires a file lock
+	 */
+	public function acquire_lock()
+	{
+		$lock_file = $this->phpbb_root_path . 'store/io_lock.lock';
+		$this->file_lock_pointer = @fopen($lock_file, 'w+');
+
+		if ($this->file_lock_pointer)
+		{
+			flock($this->file_lock_pointer, LOCK_EX);
+		}
+	}
+
+	/**
+	 * Release file lock
+	 */
+	public function release_lock()
+	{
+		if ($this->file_lock_pointer)
+		{
+			fwrite($this->file_lock_pointer, 'ok');
+			flock($this->file_lock_pointer, LOCK_UN);
+			fclose($this->file_lock_pointer);
+		}
 	}
 
 	/**

@@ -111,7 +111,7 @@
 				</dl>
 				<dl>
 					<dt>&nbsp;</dt>
-					<dd><input type="submit" name="login" tabindex="5" value="{L_LOGIN}" class="button1" /></dd>
+					<dd><input type="submit" name="login" tabindex="5" value="{L_LOGIN}" class="button1 button button-form" /></dd>
 				</dl>
 				{S_LOGIN_REDIRECT}
 				</fieldset>
@@ -125,6 +125,8 @@
 	<!-- ENDIF -->
 
 <!-- ENDIF -->
+
+<!-- EVENT viewforum_body_topic_row_before -->
 
 <!-- BEGIN topicrow -->
 
@@ -150,7 +152,7 @@
 		<ul class="topiclist topics">
 	<!-- ENDIF -->
 
-		<!-- EVENT viewforum_body_topic_row_before -->
+		<!-- EVENT viewforum_body_topicrow_row_before -->
 		<li class="row<!-- IF topicrow.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF topicrow.S_POST_GLOBAL --> global-announce<!-- ENDIF --><!-- IF topicrow.S_POST_ANNOUNCE --> announce<!-- ENDIF --><!-- IF topicrow.S_POST_STICKY --> sticky<!-- ENDIF --><!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ENDIF -->">
 			<!-- EVENT viewforum_body_topic_row_prepend -->
 			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
@@ -165,31 +167,34 @@
 						<!-- ENDIF -->
 						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
-								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
+							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
+								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_DELETED -->
-							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_DELETED}">
-								<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{TOPIC_DELETED}</span>
+							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
+								<i class="icon fa-recycle fa-fw icon-green" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_DELETED}</span>
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
-							<a href="{topicrow.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
-								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{TOPIC_REPORTED}</span>
+							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
 							</a>
 						<!-- ENDIF -->
 						<br />
+						<!-- EVENT topiclist_row_topic_title_after -->
 
 						<!-- IF not S_IS_BOT -->
 						<div class="responsive-show" style="display: none;">
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 							<!-- IF topicrow.S_POST_GLOBAL and FORUM_ID != topicrow.FORUM_ID --><br />{L_POSTED} {L_IN} <a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a><!-- ENDIF -->
 						</div>
-						<!-- IF topicrow.REPLIES --><span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span><!-- ENDIF -->
+							<!-- IF topicrow.REPLIES -->
+							<span class="responsive-show" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span>
+							<!-- ENDIF -->
 						<!-- ENDIF -->
 
-						<div class="responsive-hide">
+						<div class="topic-poster responsive-hide">
 							<!-- IF topicrow.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
 							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
@@ -284,9 +289,9 @@
 
 <!-- INCLUDE jumpbox.html -->
 
-<!-- IF S_DISPLAY_ONLINE_LIST -->
+<!-- IF S_DISPLAY_ONLINE_LIST and U_VIEWONLINE -->
 	<div class="stat-block online-list">
-		<h3><!-- IF U_VIEWONLINE --><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a><!-- ELSE -->{L_WHO_IS_ONLINE}<!-- ENDIF --></h3>
+		<h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3>
 		<p>{LOGGED_IN_USER_LIST}</p>
 	</div>
 <!-- ENDIF -->

@@ -98,6 +98,7 @@ $lang = array_merge($lang, array(
 	'AUTH_PROVIDER_OAUTH_SERVICE_BITLY'						=> 'Bitly',
 	'AUTH_PROVIDER_OAUTH_SERVICE_FACEBOOK'					=> 'Facebook',
 	'AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE'					=> 'Google',
+	'AUTH_PROVIDER_OAUTH_SERVICE_TWITTER'					=> 'Twitter',
 	'AUTH_PROVIDER_OAUTH_TOKEN_ERROR_NOT_STORED'			=> 'OAuth token not stored.',
 	'AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED'	=> 'OAuth token incorrectly stored.',
 	'AVATAR_DISALLOWED_CONTENT'		=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
@@ -152,6 +153,7 @@ $lang = array_merge($lang, array(
 	'BYTES_SHORT'			=> 'B',
 
 	'CANCEL'				=> 'Cancel',
+	'CANNOT_RENAME_FILE'	=> 'Cannot rename %s',
 	'CHANGE'				=> 'Change',
 	'CHANGE_FONT_SIZE'		=> 'Change font size',
 	'CHANGING_PREFERENCES'	=> 'Changing board preferences',
@@ -177,6 +179,10 @@ $lang = array_merge($lang, array(
 	'CONTACT'				=> 'Contact',
 	'CONTACT_USER'			=> 'Contact %s',
 	'CONTACT_US'			=> 'Contact us',
+	'COOKIE_CONSENT_INFO'	=> 'Learn more',
+	'COOKIE_CONSENT_MSG'	=> 'This website uses cookies to ensure you get the best experience on our website.',
+	'COOKIE_CONSENT_OK'		=> 'Got it!',
+	'COOKIE_CONSENT_HREF'	=> 'http://cookiesandyou.com',
 	'COOKIES_DELETED'		=> 'All board cookies successfully deleted.',
 	'CURRENT_TIME'			=> 'It is currently %s',
 
@@ -340,6 +346,7 @@ $lang = array_merge($lang, array(
 	'INTERESTS'					=> 'Interests',
 	'INVALID_DIGEST_CHALLENGE'	=> 'Invalid digest challenge.',
 	'INVALID_EMAIL_LOG'			=> '<strong>%s</strong> possibly an invalid email address?',
+	'INVALID_FEED_ATTACHMENTS'	=> 'The selected feed tried fetching attachments with invalid constraints.',
 	'INVALID_PLURAL_RULE'		=> 'The chosen plural rule is invalid. Valid values are integers between 0 and 15.',
 	'IP'						=> 'IP',
 	'IP_BLACKLISTED'			=> 'Your IP %1$s has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
@@ -677,7 +684,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_POSTS_BY'			=> 'Search posts by',
 	'SEARCH_SELF'				=> 'Your posts',
 	'SEARCH_TOPIC'				=> 'Search this topic…',
-	'SEARCH_UNANSWERED'			=> 'Unanswered posts',
+	'SEARCH_UNANSWERED'			=> 'Unanswered topics',
 	'SEARCH_UNREAD'				=> 'Unread posts',
 	'SEARCH_USER_POSTS'			=> 'Search user’s posts',
 	'SECONDS'					=> 'Seconds',
@@ -822,7 +829,7 @@ $lang = array_merge($lang, array(
 	'USERS'					=> 'Users',
 	'USE_PERMISSIONS'		=> 'Test out user’s permissions',
 
-	'USER_NEW_PERMISSION_DISALLOWED'	=> 'We are sorry, but you are not authorised to use this feature. You may have just registered here and may need to participate more to be able to use this feature.',
+	'USER_NEW_PERMISSION_DISALLOWED'	=> 'We are sorry, but you are not authorised to use this feature. You may have just registered here and may need to participate more in discussions to be able to use this feature.',
 
 	'VARIANT_DATE_SEPARATOR'	=> ' / ',	// Used in date format dropdown, eg: "Today, 13:37 / 01 Jan 2007, 13:37" ... to join a relative date with calendar date
 	'VIEWED'					=> 'Viewed',

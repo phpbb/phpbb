@@ -122,17 +122,6 @@ class phpbb_test_case_helpers
 				'dbpasswd'	=> '',
 			));
 		}
-		else if (extension_loaded('sqlite'))
-		{
-			$config = array_merge($config, array(
-				'dbms'		=> 'phpbb\db\driver\sqlite',
-				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite2', // filename
-				'dbport'	=> '',
-				'dbname'	=> '',
-				'dbuser'	=> '',
-				'dbpasswd'	=> '',
-			));
-		}
 
 		if (isset($_SERVER['PHPBB_TEST_CONFIG']))
 		{

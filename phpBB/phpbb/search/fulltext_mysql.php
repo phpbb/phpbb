@@ -177,8 +177,10 @@ class fulltext_mysql extends \phpbb\search\base
 			$engine === 'MyISAM' ||
 			// FULLTEXT is supported on InnoDB since MySQL 5.6.4 according to
 			// http://dev.mysql.com/doc/refman/5.6/en/innodb-storage-engine.html
+			// We also require https://bugs.mysql.com/bug.php?id=67004 to be
+			// fixed for proper overall operation. Hence we require 5.6.8.
 			$engine === 'InnoDB' &&
-			phpbb_version_compare($this->db->sql_server_info(true), '5.6.4', '>=');
+			phpbb_version_compare($this->db->sql_server_info(true), '5.6.8', '>=');
 
 		if (!$fulltext_supported)
 		{
@@ -940,38 +942,45 @@ class fulltext_mysql extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		$alter = array();
+		$alter_list = array();
 
 		if (!isset($this->stats['post_subject']))
 		{
+			$alter_entry = array();
 			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
-				$alter[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+				$alter_entry[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
 			else
 			{
-				$alter[] = 'MODIFY post_subject text NOT NULL';
+				$alter_entry[] = 'MODIFY post_subject text NOT NULL';
 			}
-			$alter[] = 'ADD FULLTEXT (post_subject)';
+			$alter_entry[] = 'ADD FULLTEXT (post_subject)';
+			$alter_list[] = $alter_entry;
 		}
 
 		if (!isset($this->stats['post_content']))
 		{
+			$alter_entry = array();
 			if ($this->db->get_sql_layer() == 'mysqli' || version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 			{
-				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
+				$alter_entry[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			}
 			else
 			{
-				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
+				$alter_entry[] = 'MODIFY post_text mediumtext NOT NULL';
 			}
 
-			$alter[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
+			$alter_entry[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
+			$alter_list[] = $alter_entry;
 		}
 
-		if (sizeof($alter))
+		if (sizeof($alter_list))
 		{
-			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			foreach ($alter_list as $alter)
+			{
+				$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			}
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);

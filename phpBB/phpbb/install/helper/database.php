@@ -54,20 +54,11 @@ class database
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'mssql',
-			'DELIM'			=> 'GO',
-			'DRIVER'		=> 'phpbb\db\driver\mssql',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
-		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
-			'DELIM'			=> 'GO',
+			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
@@ -76,7 +67,7 @@ class database
 			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
-			'DELIM'			=> 'GO',
+			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mssqlnative',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> false,
@@ -98,15 +89,6 @@ class database
 			'DRIVER'		=> 'phpbb\db\driver\postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
-		),
-		'sqlite'		=> array(
-			'LABEL'			=> 'SQLite',
-			'SCHEMA'		=> 'sqlite',
-			'MODULE'		=> 'sqlite',
-			'DELIM'			=> ';',
-			'DRIVER'		=> 'phpbb\db\driver\sqlite',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
 		),
 		'sqlite3'		=> array(
 			'LABEL'			=> 'SQLite3',
@@ -396,14 +378,6 @@ class database
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_MYSQLI',
-						);
-					}
-				break;
-				case 'sqlite':
-					if (version_compare($db->sql_server_info(true), '2.8.2', '<'))
-					{
-						$errors[] = array(
-							'title' => 'INST_ERR_DB_NO_SQLITE',
 						);
 					}
 				break;

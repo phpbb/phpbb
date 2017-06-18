@@ -40,7 +40,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	*/
 	public function get_custom_html($user, $row, $alt = '')
 	{
-		return '<img src="' . $this->get_gravatar_url($row) . '" ' .
+		return '<img class="gravatar" src="' . $this->get_gravatar_url($row) . '" ' .
 			($row['avatar_width'] ? ('width="' . $row['avatar_width'] . '" ') : '') .
 			($row['avatar_height'] ? ('height="' . $row['avatar_height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
@@ -52,8 +52,8 @@ class gravatar extends \phpbb\avatar\driver\driver
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AVATAR_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_gravatar_width', 0),
-			'AVATAR_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_gravatar_width', 0),
+			'AVATAR_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_gravatar_width', ''),
+			'AVATAR_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_gravatar_width', ''),
 			'AVATAR_GRAVATAR_EMAIL' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar']) ? $row['avatar'] : '',
 		));
 

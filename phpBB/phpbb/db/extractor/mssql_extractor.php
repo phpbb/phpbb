@@ -180,11 +180,7 @@ class mssql_extractor extends base_extractor
 			throw new extractor_not_initialized_exception();
 		}
 
-		if ($this->db->get_sql_layer() === 'mssql')
-		{
-			$this->write_data_mssql($table_name);
-		}
-		else if ($this->db->get_sql_layer() === 'mssqlnative')
+		if ($this->db->get_sql_layer() === 'mssqlnative')
 		{
 			$this->write_data_mssqlnative($table_name);
 		}
@@ -192,111 +188,6 @@ class mssql_extractor extends base_extractor
 		{
 			$this->write_data_odbc($table_name);
 		}
-	}
-
-	/**
-	* Extracts data from database table (for MSSQL driver)
-	*
-	* @param	string	$table_name	name of the database table
-	* @return null
-	* @throws \phpbb\db\extractor\exception\extractor_not_initialized_exception when calling this function before init_extractor()
-	*/
-	protected function write_data_mssql($table_name)
-	{
-		if (!$this->is_initialized)
-		{
-			throw new extractor_not_initialized_exception();
-		}
-
-		$ary_type = $ary_name = array();
-		$ident_set = false;
-		$sql_data = '';
-
-		// Grab all of the data from current table.
-		$sql = "SELECT *
-			FROM $table_name";
-		$result = $this->db->sql_query($sql);
-
-		$retrieved_data = mssql_num_rows($result);
-
-		$i_num_fields = mssql_num_fields($result);
-
-		for ($i = 0; $i < $i_num_fields; $i++)
-		{
-			$ary_type[$i] = mssql_field_type($result, $i);
-			$ary_name[$i] = mssql_field_name($result, $i);
-		}
-
-		if ($retrieved_data)
-		{
-			$sql = "SELECT 1 as has_identity
-				FROM INFORMATION_SCHEMA.COLUMNS
-				WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
-			$result2 = $this->db->sql_query($sql);
-			$row2 = $this->db->sql_fetchrow($result2);
-			if (!empty($row2['has_identity']))
-			{
-				$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
-				$ident_set = true;
-			}
-			$this->db->sql_freeresult($result2);
-		}
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$schema_vals = $schema_fields = array();
-
-			// Build the SQL statement to recreate the data.
-			for ($i = 0; $i < $i_num_fields; $i++)
-			{
-				$str_val = $row[$ary_name[$i]];
-
-				if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
-				{
-					$str_quote = '';
-					$str_empty = "''";
-					$str_val = sanitize_data_mssql(str_replace("'", "''", $str_val));
-				}
-				else if (preg_match('#date|timestamp#i', $ary_type[$i]))
-				{
-					if (empty($str_val))
-					{
-						$str_quote = '';
-					}
-					else
-					{
-						$str_quote = "'";
-					}
-				}
-				else
-				{
-					$str_quote = '';
-					$str_empty = 'NULL';
-				}
-
-				if (empty($str_val) && $str_val !== '0' && !(is_int($str_val) || is_float($str_val)))
-				{
-					$str_val = $str_empty;
-				}
-
-				$schema_vals[$i] = $str_quote . $str_val . $str_quote;
-				$schema_fields[$i] = $ary_name[$i];
-			}
-
-			// Take the ordered fields and their associated data and build it
-			// into a valid sql statement to recreate that field in the data.
-			$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\nGO\n";
-
-			$this->flush($sql_data);
-			$sql_data = '';
-		}
-		$this->db->sql_freeresult($result);
-
-		if ($retrieved_data && $ident_set)
-		{
-			$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
-		}
-		$this->flush($sql_data);
 	}
 
 	/**

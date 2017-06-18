@@ -63,6 +63,7 @@ services:
             - '@auth.provider.oauth.service_collection'
             - '%tables.users%'
             - '@service_container'
+            - '@dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
@@ -94,6 +95,14 @@ services:
 
     auth.provider.oauth.service.google:
         class: phpbb\auth\provider\oauth\service\google
+        arguments:
+            - '@config'
+            - '@request'
+        tags:
+            - { name: auth.provider.oauth.service }
+
+    auth.provider.oauth.service.twitter:
+        class: phpbb\auth\provider\oauth\service\twitter
         arguments:
             - '@config'
             - '@request'

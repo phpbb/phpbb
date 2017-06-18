@@ -36,8 +36,8 @@ class remote extends \phpbb\avatar\driver\driver
 	public function prepare_form($request, $template, $user, $row, &$error)
 	{
 		$template->assign_vars(array(
-			'AVATAR_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_remote_width', 0),
-			'AVATAR_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_remote_width', 0),
+			'AVATAR_REMOTE_WIDTH' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_remote_width', ''),
+			'AVATAR_REMOTE_HEIGHT' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_remote_width', ''),
 			'AVATAR_REMOTE_URL' => ((in_array($row['avatar_type'], array(AVATAR_REMOTE, $this->get_name(), 'remote'))) && $row['avatar']) ? $row['avatar'] : '',
 		));
 

@@ -47,7 +47,7 @@ if (!defined('IN_PHPBB'))
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param, $def_st = false, $def_sk = false, $def_sd = false)
 {
-	global $user;
+	global $user, $phpbb_dispatcher;
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -106,6 +106,42 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		$u_sort_param .= ($selected !== $sort_ary['default']) ? ((strlen($u_sort_param)) ? '&amp;' : '') . "{$name}={$selected}" : '';
 	}
 
+	/**
+	 * Run code before generated sort selects are returned
+	 *
+	 * @event core.gen_sort_selects_after
+	 * @var	int      limit_days     Days limit
+	 * @var	array    sort_by_text   Sort by text options
+	 * @var	int      sort_days      Sort by days flag
+	 * @var	string   sort_key       Sort key
+	 * @var	string   sort_dir       Sort dir
+	 * @var	string   s_limit_days   String of days limit
+	 * @var	string   s_sort_key     String of sort key
+	 * @var	string   s_sort_dir     String of sort dir
+	 * @var	string   u_sort_param   Sort URL params
+	 * @var	bool     def_st         Default sort days
+	 * @var	bool     def_sk         Default sort key
+	 * @var	bool     def_sd         Default sort dir
+	 * @var	array    sorts          Sorts
+	 * @since 3.1.9-RC1
+	 */
+	$vars = array(
+		'limit_days',
+		'sort_by_text',
+		'sort_days',
+		'sort_key',
+		'sort_dir',
+		's_limit_days',
+		's_sort_key',
+		's_sort_dir',
+		'u_sort_param',
+		'def_st',
+		'def_sk',
+		'def_sd',
+		'sorts',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.gen_sort_selects_after', compact($vars)));
+
 	return;
 }
 
@@ -114,7 +150,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false, $force_display = false)
 {
-	global $config, $auth, $template, $user, $db, $phpbb_path_helper;
+	global $config, $auth, $template, $user, $db, $phpbb_path_helper, $phpbb_dispatcher;
 
 	// We only return if the jumpbox is not forced to be displayed (in case it is needed for functionality)
 	if (!$config['load_jumpbox'] && $force_display === false)
@@ -127,16 +163,33 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql, 600);
 
+	$rowset = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$rowset[(int) $row['forum_id']] = $row;
+	}
+	$db->sql_freeresult($result);
+
 	$right = $padding = 0;
 	$padding_store = array('0' => 0);
 	$display_jumpbox = false;
 	$iteration = 0;
 
+	/**
+	* Modify the jumpbox forum list data
+	*
+	* @event core.make_jumpbox_modify_forum_list
+	* @var	array	rowset	Array with the forums list data
+	* @since 3.1.10-RC1
+	*/
+	$vars = array('rowset');
+	extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_forum_list', compact($vars)));
+
 	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
 	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
 	// If this happens, the padding could be "broken"
 
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($rowset as $row)
 	{
 		if ($row['left_id'] < $right)
 		{
@@ -169,20 +222,21 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			continue;
 		}
 
+		$tpl_ary = array();
 		if (!$display_jumpbox)
 		{
-			$template->assign_block_vars('jumpbox_forums', array(
+			$tpl_ary[] = array(
 				'FORUM_ID'		=> ($select_all) ? 0 : -1,
 				'FORUM_NAME'	=> ($select_all) ? $user->lang['ALL_FORUMS'] : $user->lang['SELECT_FORUM'],
 				'S_FORUM_COUNT'	=> $iteration,
 				'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $forum_id)),
-			));
+			);
 
 			$iteration++;
 			$display_jumpbox = true;
 		}
 
-		$template->assign_block_vars('jumpbox_forums', array(
+		$tpl_ary[] = array(
 			'FORUM_ID'		=> $row['forum_id'],
 			'FORUM_NAME'	=> $row['forum_name'],
 			'SELECTED'		=> ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '',
@@ -191,7 +245,25 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			'S_IS_LINK'		=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_IS_POST'		=> ($row['forum_type'] == FORUM_POST) ? true : false,
 			'LINK'			=> $phpbb_path_helper->append_url_params($action, array('f' => $row['forum_id'])),
-		));
+		);
+
+		/**
+		 * Modify the jumpbox before it is assigned to the template
+		 *
+		 * @event core.make_jumpbox_modify_tpl_ary
+		 * @var	array	row				The data of the forum
+		 * @var	array	tpl_ary			Template data of the forum
+		 * @since 3.1.10-RC1
+		 */
+		$vars = array(
+			'row',
+			'tpl_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.make_jumpbox_modify_tpl_ary', compact($vars)));
+
+		$template->assign_block_vars_array('jumpbox_forums', $tpl_ary);
+
+		unset($tpl_ary);
 
 		for ($i = 0; $i < $padding; $i++)
 		{
@@ -199,8 +271,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		}
 		$iteration++;
 	}
-	$db->sql_freeresult($result);
-	unset($padding_store);
+	unset($padding_store, $rowset);
 
 	$url_parts = $phpbb_path_helper->get_url_parts($action);
 
@@ -398,7 +469,20 @@ function phpbb_clean_search_string($search_string)
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $phpbb_container;
+	global $phpbb_container, $phpbb_dispatcher;
+
+	/**
+	 * Use this event to modify the message before it is decoded
+	 *
+	 * @event core.decode_message_before
+	 * @var string	message_text	The message content
+	 * @var string	bbcode_uid		The message BBCode UID
+	 * @since 3.1.9-RC1
+	 */
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
+	extract($phpbb_dispatcher->trigger_event('core.decode_message_before', compact($vars)));
+	$message = $message_text;
 
 	if (preg_match('#^<[rt][ >]#', $message))
 	{
@@ -420,10 +504,23 @@ function decode_message(&$message, $bbcode_uid = '')
 		$message = str_replace($match, $replace, $message);
 
 		$match = get_preg_expression('bbcode_htm');
-		$replace = array('\1', '\1', '\3', '\1', '', '');
+		$replace = array('\1', '\1', '\2', '\2', '\1', '', '');
 
 		$message = preg_replace($match, $replace, $message);
 	}
+
+	/**
+	* Use this event to modify the message after it is decoded
+	*
+	* @event core.decode_message_after
+	* @var string	message_text	The message content
+	* @var string	bbcode_uid		The message BBCode UID
+	* @since 3.1.9-RC1
+	*/
+	$message_text = $message;
+	$vars = array('message_text', 'bbcode_uid');
+	extract($phpbb_dispatcher->trigger_event('core.decode_message_after', compact($vars)));
+	$message = $message_text;
 }
 
 /**
@@ -589,7 +686,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_url_bbcode	Whether or not to parse the [url] BBCode
 	* @var string	mode				Mode to parse text as, e.g. post or sig
 	* @since 3.1.0-a1
-	* @changed 3.2.0-a1
+	* @changed 3.2.0-a1 Added mode
 	*/
 	$vars = array(
 		'text',
@@ -637,9 +734,11 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var string	uid				The BBCode UID
 	* @var string	bitfield		The BBCode Bitfield
 	* @var int		flags			The BBCode Flags
+	* @var string	message_parser	The message_parser object
 	* @since 3.1.0-a1
+	* @changed 3.1.11-RC1			Added message_parser to vars
 	*/
-	$vars = array('text', 'uid', 'bitfield', 'flags');
+	$vars = array('text', 'uid', 'bitfield', 'flags', 'message_parser');
 	extract($phpbb_dispatcher->trigger_event('core.modify_text_for_storage_after', compact($vars)));
 
 	return $message_parser->warn_msg;
@@ -938,7 +1037,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user, $phpbb_path_helper;
+	global $config, $user, $phpbb_path_helper, $phpbb_dispatcher;
 
 	if ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
@@ -947,6 +1046,16 @@ function smiley_text($text, $force_option = false)
 	else
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
+
+		/**
+		* Event to override the root_path for smilies
+		*
+		* @event core.smiley_text_root_path
+		* @var string root_path root_path for smilies
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('root_path');
+		extract($phpbb_dispatcher->trigger_event('core.smiley_text_root_path', compact($vars)));
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img class="smilies" src="' . $root_path . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
@@ -1029,17 +1138,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		unset($new_attachment_data);
 	}
 
-	// Sort correctly
-	if ($config['display_order'])
-	{
-		// Ascending sort
-		krsort($attachments);
-	}
-	else
-	{
-		// Descending sort
-		ksort($attachments);
-	}
+	// Make sure attachments are properly ordered
+	ksort($attachments);
 
 	foreach ($attachments as $attachment)
 	{
@@ -1247,8 +1347,6 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 	$attachments = $compiled_attachments;
 	unset($compiled_attachments);
 
-	$tpl_size = sizeof($attachments);
-
 	$unset_tpl = array();
 
 	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches, PREG_PATTERN_ORDER);
@@ -1256,8 +1354,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 	$replace = array();
 	foreach ($matches[0] as $num => $capture)
 	{
-		// Flip index if we are displaying the reverse way
-		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
+		$index = $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
 		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
@@ -1271,6 +1368,18 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 	}
 
 	$unset_tpl = array_unique($unset_tpl);
+
+	// Sort correctly
+	if ($config['display_order'])
+	{
+		// Ascending sort
+		krsort($attachments);
+	}
+	else
+	{
+		// Descending sort
+		ksort($attachments);
+	}
 
 	// Needed to let not display the inlined attachments at the end of the post again
 	foreach ($unset_tpl as $index)

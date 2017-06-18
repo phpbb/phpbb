@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_template_template_test_case extends phpbb_test_case
 {
 	protected $lang;
@@ -104,10 +102,10 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$config,
 			$filesystem,
 			$path_helper,
-			$container,
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -116,7 +114,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			)
 		);
 		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
 
@@ -172,6 +170,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$expected = str_replace(array("\n", "\r", "\t"), '', $expected);
 		$output = str_replace(array("\n", "\r", "\t"), '', $this->display('test'));
+
 		$this->assertEquals($expected, $output, "Testing $file");
 	}
 }

@@ -899,6 +899,8 @@ class manager
 	{
 		$notification_type_ids = $this->cache->get('notification_type_ids');
 
+		$this->db->sql_transaction('begin');
+
 		if ($notification_type_ids === false)
 		{
 			$notification_type_ids = array();
@@ -919,6 +921,8 @@ class manager
 		{
 			if (!isset($this->notification_types[$notification_type_name]) && !isset($this->notification_types['notification.type.' . $notification_type_name]))
 			{
+				$this->db->sql_transaction('rollback');
+
 				throw new \phpbb\notification\exception('NOTIFICATION_TYPE_NOT_EXIST', array($notification_type_name));
 			}
 
@@ -933,17 +937,24 @@ class manager
 			$this->cache->put('notification_type_ids', $notification_type_ids);
 		}
 
+		$this->db->sql_transaction('commit');
+
 		return $notification_type_ids[$notification_type_name];
 	}
 
 	/**
 	* Get notification type ids (as an array)
 	*
-	* @param array $notification_type_names Array of strings
+	* @param string|array $notification_type_names Notification type names
 	* @return array Array of integers
 	*/
-	public function get_notification_type_ids(array $notification_type_names)
+	public function get_notification_type_ids($notification_type_names)
 	{
+		if (!is_array($notification_type_names))
+		{
+			$notification_type_names = array($notification_type_names);
+		}
+
 		$notification_type_ids = array();
 
 		foreach ($notification_type_names as $name)

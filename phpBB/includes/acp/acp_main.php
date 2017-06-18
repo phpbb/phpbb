@@ -118,6 +118,7 @@ class acp_main
 					case 'online':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -134,6 +135,7 @@ class acp_main
 					case 'stats':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -189,6 +191,7 @@ class acp_main
 					case 'user':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -256,6 +259,7 @@ class acp_main
 					case 'date':
 						if (!$auth->acl_get('a_board'))
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -271,7 +275,6 @@ class acp_main
 					case 'db_track':
 						switch ($db->get_sql_layer())
 						{
-							case 'sqlite':
 							case 'sqlite3':
 								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 							break;
@@ -372,6 +375,7 @@ class acp_main
 					case 'purge_sessions':
 						if ((int) $user->data['user_type'] !== USER_FOUNDER)
 						{
+							send_status_line(403, 'Forbidden');
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
@@ -381,7 +385,6 @@ class acp_main
 						{
 							switch ($db->get_sql_layer())
 							{
-								case 'sqlite':
 								case 'sqlite3':
 									$db->sql_query("DELETE FROM $table");
 								break;
@@ -426,30 +429,39 @@ class acp_main
 		// Version check
 		$user->add_lang('install');
 
-		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4', '<'))
+		if ($auth->acl_get('a_server') && version_compare(PHP_VERSION, '5.4.0', '<'))
 		{
 			$template->assign_vars(array(
 				'S_PHP_VERSION_OLD'	=> true,
-				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], '<a href="https://www.phpbb.com/community/viewtopic.php?f=14&amp;t=2152375">', '</a>'),
+				'L_PHP_VERSION_OLD'	=> sprintf($user->lang['PHP_VERSION_OLD'], PHP_VERSION, '5.4.0', '<a href="https://www.phpbb.com/support/docs/en/3.2/ug/quickstart/requirements">', '</a>'),
 			));
 		}
 
 		if ($auth->acl_get('a_board'))
 		{
-			/* @var $version_helper \phpbb\version_helper */
 			$version_helper = $phpbb_container->get('version_helper');
 			try
 			{
 				$recheck = $request->variable('versioncheck_force', false);
-				$updates_available = $version_helper->get_suggested_updates($recheck);
+				$updates_available = $version_helper->get_update_on_branch($recheck);
+				$upgrades_available = $version_helper->get_suggested_updates();
+				if (!empty($upgrades_available))
+				{
+					$upgrades_available = array_pop($upgrades_available);
+				}
 
-				$template->assign_var('S_VERSION_UP_TO_DATE', empty($updates_available));
+				$template->assign_vars(array(
+					'S_VERSION_UP_TO_DATE'		=> empty($updates_available),
+					'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
+					'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
+				));
 			}
 			catch (\RuntimeException $e)
 			{
+				$message = call_user_func_array(array($user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$template->assign_vars(array(
 					'S_VERSIONCHECK_FAIL'		=> true,
-					'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== $user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
+					'VERSIONCHECK_FAIL_REASON'	=> ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
 				));
 			}
 		}
@@ -457,6 +469,12 @@ class acp_main
 		{
 			// We set this template var to true, to not display an outdated version notice.
 			$template->assign_var('S_VERSION_UP_TO_DATE', true);
+		}
+
+		// Incomplete update?
+		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
+		{
+			$template->assign_var('S_UPDATE_INCOMPLETE', true);
 		}
 
 		/**
@@ -559,6 +577,7 @@ class acp_main
 			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress'] && @extension_loaded('zlib')) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
+			'PHP_VERSION_INFO'	=> PHP_VERSION,
 			'BOARD_VERSION'		=> $config['version'],
 
 			'U_ACTION'			=> $this->u_action,

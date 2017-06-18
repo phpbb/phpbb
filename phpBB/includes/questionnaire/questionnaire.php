@@ -46,9 +46,9 @@ class phpbb_questionnaire_data_collector
 		$this->providers = array();
 	}
 
-	function add_data_provider(&$provider)
+	function add_data_provider($provider)
 	{
-		$this->providers[] = &$provider;
+		$this->providers[] = $provider;
 	}
 
 	/**
@@ -80,7 +80,7 @@ class phpbb_questionnaire_data_collector
 	{
 		foreach (array_keys($this->providers) as $key)
 		{
-			$provider = &$this->providers[$key];
+			$provider = $this->providers[$key];
 			$this->data[$provider->get_identifier()] = $provider->get_data();
 		}
 		$this->data['install_id'] = $this->install_id;
@@ -190,7 +190,6 @@ class phpbb_questionnaire_system_data_provider
 			// - 192.168.0.0/16
 			if ($ip_address_ary[0] == '10' ||
 				($ip_address_ary[0] == '172' && intval($ip_address_ary[1]) > 15 && intval($ip_address_ary[1]) < 32) ||
-				($ip_address_ary[0] == '192' && $ip_address_ary[1] == '168') ||
 				($ip_address_ary[0] == '192' && $ip_address_ary[1] == '168'))
 			{
 				return true;

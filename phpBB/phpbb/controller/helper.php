@@ -52,15 +52,15 @@ class helper
 	protected $routing_helper;
 
 	/**
-	* Constructor
-	*
-	* @param \phpbb\template\template $template Template object
-	* @param \phpbb\user $user User object
-	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\symfony_request $symfony_request Symfony Request object
-	* @param \phpbb\request\request_interface $request phpBB request object
-	* @param \phpbb\routing\helper $routing_helper Helper to generate the routes
-	*/
+	 * Constructor
+	 *
+	 * @param \phpbb\template\template $template Template object
+	 * @param \phpbb\user $user User object
+	 * @param \phpbb\config\config $config Config object
+	 * @param \phpbb\symfony_request $symfony_request Symfony Request object
+	 * @param \phpbb\request\request_interface $request phpBB request object
+	 * @param \phpbb\routing\helper $routing_helper Helper to generate the routes
+	 */
 	public function __construct(\phpbb\template\template $template, \phpbb\user $user, \phpbb\config\config $config, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\routing\helper $routing_helper)
 	{
 		$this->template = $template;
@@ -80,12 +80,13 @@ class helper
 	* @param bool $display_online_list Do we display online users list
 	* @param int $item_id Restrict online users to item id
 	* @param string $item Restrict online users to a certain session item, e.g. forum for session_forum_id
+	* @param bool $send_headers Whether headers should be sent by page_header(). Defaults to false for controllers.
 	*
 	* @return Response object containing rendered page
 	*/
-	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum')
+	public function render($template_file, $page_title = '', $status_code = 200, $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = false)
 	{
-		page_header($page_title, $display_online_list, $item_id, $item);
+		page_header($page_title, $display_online_list, $item_id, $item, $send_headers);
 
 		$this->template->set_filenames(array(
 			'body'	=> $template_file,
@@ -93,7 +94,9 @@ class helper
 
 		page_footer(true, false, false);
 
-		return new Response($this->template->assign_display('body'), $status_code);
+		$headers = !empty($this->user->data['is_bot']) ? array('X-PHPBB-IS-BOT' => 'yes') : array();
+
+		return new Response($this->template->assign_display('body'), $status_code, $headers);
 	}
 
 	/**
@@ -118,7 +121,7 @@ class helper
 	* @param int $code The error code (e.g. 404, 500, 503, etc.)
 	* @return Response A Response instance
 	*
-	* @deprecated 3.1.3 (To be removed: 3.3.0) Use exceptions instead.
+	* @deprecated 3.1.3 (To be removed: 4.0.0) Use exceptions instead.
 	*/
 	public function error($message, $code = 500)
 	{

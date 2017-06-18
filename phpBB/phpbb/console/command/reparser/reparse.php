@@ -122,44 +122,6 @@ class reparse extends \phpbb\console\command\command
 	}
 
 	/**
-	* Create a styled progress bar
-	*
-	* @param  integer $max Max value for the progress bar
-	* @return \Symfony\Component\Console\Helper\ProgressBar
-	*/
-	protected function create_progress_bar($max)
-	{
-		$progress = $this->io->createProgressBar($max);
-		if ($this->output->getVerbosity() === OutputInterface::VERBOSITY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%percent:3s%%]</info> %message%');
-			$progress->setOverwrite(false);
-		}
-		else if ($this->output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE)
-		{
-			$progress->setFormat('<info>[%current:s%/%max:s%]</info><comment>[%elapsed%/%estimated%][%memory%]</comment> %message%');
-			$progress->setOverwrite(false);
-		}
-		else
-		{
-			$this->io->newLine(2);
-			$progress->setFormat(
-				"    %current:s%/%max:s% %bar%  %percent:3s%%\n" .
-				"        %message% %elapsed:6s%/%estimated:-6s% %memory:6s%\n");
-			$progress->setBarWidth(60);
-		}
-
-		if (!defined('PHP_WINDOWS_VERSION_BUILD'))
-		{
-			$progress->setEmptyBarCharacter('░'); // light shade character \u2591
-			$progress->setProgressCharacter('');
-			$progress->setBarCharacter('▓'); // dark shade character \u2593
-		}
-
-		return $progress;
-	}
-
-	/**
 	* Executes the command reparser:reparse
 	*
 	* @param InputInterface $input
@@ -178,13 +140,9 @@ class reparse extends \phpbb\console\command\command
 		}
 
 		$name = $input->getArgument('reparser-name');
-		if (isset($name))
+		if ($name)
 		{
-			// Allow "post_text" to be an alias for "text_reparser.post_text"
-			if (!isset($this->reparsers[$name]))
-			{
-				$name = 'text_reparser.' . $name;
-			}
+			$name = $this->reparser_manager->find_reparser($name);
 			$this->reparse($name);
 		}
 		else
@@ -225,7 +183,7 @@ class reparse extends \phpbb\console\command\command
 	/**
 	* Reparse all text handled by given reparser within given range
 	*
-	* @param string $name Reparser name
+	* @param string $name Reparser service name
 	*/
 	protected function reparse($name)
 	{
@@ -246,7 +204,7 @@ class reparse extends \phpbb\console\command\command
 		$size = $this->get_option('range-size');
 
 		// range-max has no default value, it must be computed for each reparser
-		if ($max == null)
+		if ($max === null)
 		{
 			$max = $reparser->get_max_id();
 		}
@@ -256,10 +214,10 @@ class reparse extends \phpbb\console\command\command
 			return;
 		}
 
-		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $min, $max));
+		$this->io->section($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', $reparser->get_name(), $min, $max));
 
-		$progress = $this->create_progress_bar($max);
-		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', preg_replace('(^text_reparser\\.)', '', $name)));
+		$progress = $this->create_progress_bar($max, $this->io, $this->output, true);
+		$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING_START', $reparser->get_name()));
 		$progress->start();
 
 		// Start from $max and decrement $current by $size until we reach $min
@@ -269,7 +227,7 @@ class reparse extends \phpbb\console\command\command
 			$start = max($min, $current + 1 - $size);
 			$end   = max($min, $current);
 
-			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', preg_replace('(^text_reparser\\.)', '', $name), $start, $end));
+			$progress->setMessage($this->user->lang('CLI_REPARSER_REPARSE_REPARSING', $reparser->get_name(), $start, $end));
 			$reparser->reparse_range($start, $end);
 
 			$current = $start - 1;

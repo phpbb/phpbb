@@ -12,10 +12,7 @@
 */
 
 require_once __DIR__ . '/../../phpBB/includes/bbcode.php';
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
 require_once __DIR__ . '/../../phpBB/includes/message_parser.php';
-require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_text_processing_message_parser_test extends phpbb_test_case
 {

@@ -208,7 +208,7 @@ class module_manager
 			WHERE m1.module_class = '" . $this->db->sql_escape($module_class) . "'
 				AND m2.module_class = '" . $this->db->sql_escape($module_class) . "'
 				AND m1.module_id = $module_id
-			ORDER BY m2.left_id DESC";
+			ORDER BY m2.left_id";
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
@@ -356,7 +356,7 @@ class module_manager
 		$diff = sizeof($moved_modules) * 2;
 
 		$moved_ids = array();
-		for ($i = 0; $i < sizeof($moved_modules); ++$i)
+		for ($i = 0, $size = sizeof($moved_modules); $i < $size; ++$i)
 		{
 			$moved_ids[] = $moved_modules[$i]['module_id'];
 		}

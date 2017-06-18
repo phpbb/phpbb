@@ -87,6 +87,24 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	}
 
 	/**
+	 * @see https://tracker.phpbb.com/browse/PHPBB3-14962
+	 */
+	public function test_edit()
+	{
+		$this->login();
+		$this->create_topic(2, 'Test Topic post', 'Test topic post');
+
+		$url =  self::$client->getCrawler()->selectLink('Edit')->link()->getUri();
+		$post_id = $this->get_parameter_from_link($url, 'p');
+		$crawler = self::request('GET', "posting.php?mode=edit&f=2&p={$post_id}&sid={$this->sid}");
+		$form = $crawler->selectButton('Submit')->form();
+		$form->setValues(array('message' => 'Edited post'));
+		$crawler = self::submit($form);
+
+		$this->assertContains('Edited post', $crawler->filter("#post_content{$post_id} .content")->text());
+	}
+
+	/**
 	* @testdox max_quote_depth is applied to the text populating the posting form
 	*/
 	public function test_quote_depth_form()
@@ -159,6 +177,22 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		}
 	}
 
+	public function test_post_poll()
+	{
+		$this->login();
+
+		$post = $this->create_topic(
+			2,
+			'[ticket/14802] Test Poll Option Spacing',
+			'Empty/blank lines should not be additional poll options.',
+			array('poll_title' => 'Poll Title', 'poll_option_text' => "\n A \nB\n\nC \n D\nE\n\n \n")
+		);
+
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$this->assertEquals('Poll Title', $crawler->filter('.poll-title')->text());
+		$this->assertEquals(5, $crawler->filter('*[data-poll-option-id]')->count());
+	}
+
 	protected function set_quote_depth($depth)
 	{
 		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
@@ -229,5 +263,46 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		// Test that the preview contains the correct link
 		$this->assertEquals($url, $crawler->filter('#preview a')->attr('href'));
+	}
+
+	public function test_allowed_schemes_links()
+	{
+		$text = 'http://example.org/ tcp://localhost:22/ServiceName';
+
+		$this->login();
+		$this->admin_login();
+
+		// Post with default settings
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text,
+		));
+		$crawler = self::submit($form);
+		$this->assertContains(
+			'<a href="http://example.org/" class="postlink">http://example.org/</a> tcp://localhost:22/ServiceName',
+			$crawler->filter('#preview .content')->html()
+		);
+
+		// Update allowed schemes
+		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
+		$form = $crawler->selectButton('Submit')->form();
+		$values = $form->getValues();
+		$values['config[allowed_schemes_links]'] = 'https,tcp';
+		$form->setValues($values);
+		$crawler = self::submit($form);
+		$this->assertEquals(1, $crawler->filter('.successbox')->count());
+
+		// Post with new settings
+		$crawler = self::request('GET', 'posting.php?mode=post&f=2');
+		$form = $crawler->selectButton('Preview')->form(array(
+			'subject' => 'Test subject',
+			'message' => $text,
+		));
+		$crawler = self::submit($form);
+		$this->assertContains(
+			'http://example.org/ <a href="tcp://localhost:22/ServiceName" class="postlink">tcp://localhost:22/ServiceName</a>',
+			$crawler->filter('#preview .content')->html()
+		);
 	}
 }

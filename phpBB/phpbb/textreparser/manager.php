@@ -125,4 +125,24 @@ class manager
 			$this->schedule($reparser, $interval);
 		}
 	}
+
+	/**
+	 * Finds a reparser by name.
+	 *
+	 * If there is no reparser with the specified name, null is returned.
+	 *
+	 * @param string $name Name of the reparser to look up.
+	 * @return string A reparser service name, or null.
+	 */
+	public function find_reparser($name)
+	{
+		foreach ($this->reparsers as $service => $reparser)
+		{
+			if ($reparser->get_name() == $name)
+			{
+				return $service;
+			}
+		}
+		return null;
+	}
 }

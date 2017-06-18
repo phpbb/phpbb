@@ -52,18 +52,6 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 }
 
 /**
-* Casts a variable to the given type.
-*
-* @deprecated
-*/
-function set_var(&$result, $var, $type, $multibyte = false)
-{
-	// no need for dependency injection here, if you have the object, call the method yourself!
-	$type_cast_helper = new \phpbb\request\type_cast_helper();
-	$type_cast_helper->set_var($result, $var, $type, $multibyte);
-}
-
-/**
 * Generates an alphanumeric random string of given length
 *
 * @return string
@@ -93,25 +81,10 @@ function gen_rand_string_friendly($num_chars = 8)
 
 /**
 * Return unique id
-* @param string $extra additional entropy
 */
-function unique_id($extra = 'c')
+function unique_id()
 {
-	static $dss_seeded = false;
-	global $config;
-
-	$val = $config['rand_seed'] . microtime();
-	$val = md5($val);
-	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
-
-	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
-	{
-		$config->set('rand_seed_last_update', time(), false);
-		$config->set('rand_seed', $config['rand_seed'], false);
-		$dss_seeded = true;
-	}
-
-	return substr($val, 4, 16);
+	return bin2hex(random_bytes(8));
 }
 
 /**
@@ -868,7 +841,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['tf'][$forum_id][$topic_id36] = true;
 			}
 
-			$tracking['t'][$topic_id36] = base_convert($post_time - $config['board_startdate'], 10, 36);
+			$tracking['t'][$topic_id36] = base_convert($post_time - (int) $config['board_startdate'], 10, 36);
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
 			// This can result in old topics being unread - but most of the time it should be accurate...
@@ -1662,7 +1635,6 @@ function generate_board_url($without_script_path = false)
 	global $config, $user, $request;
 
 	$server_name = $user->host;
-	$server_port = $request->server('SERVER_PORT', 0);
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -1677,6 +1649,13 @@ function generate_board_url($without_script_path = false)
 	}
 	else
 	{
+		$server_port = $request->server('SERVER_PORT', 0);
+		$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
+
+		if (!empty($forwarded_proto) && $forwarded_proto === 'https')
+		{
+			$server_port = 443;
+		}
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
 		$cookie_secure = $request->is_secure() ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
@@ -1732,8 +1711,8 @@ function redirect($url, $return = false, $disable_cd_check = false)
 
 	if ($url_parts === false)
 	{
-		// Malformed url, redirect to current page...
-		$url = generate_board_url() . '/' . $user->page['page'];
+		// Malformed url
+		trigger_error('INSECURE_REDIRECT', E_USER_ERROR);
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
@@ -1828,6 +1807,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		echo '<html dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
 		echo '<meta charset="utf-8">';
+		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
@@ -2029,8 +2009,9 @@ function check_link_hash($token, $link_name)
 /**
 * Add a secret token to the form (requires the S_FORM_TOKEN template variable)
 * @param string  $form_name The name of the form; has to match the name used in check_form_key, otherwise no restrictions apply
+* @param string  $template_variable_suffix A string that is appended to the name of the template variable to which the form elements are assigned
 */
-function add_form_key($form_name)
+function add_form_key($form_name, $template_variable_suffix = '')
 {
 	global $config, $template, $user, $phpbb_dispatcher;
 
@@ -2047,13 +2028,15 @@ function add_form_key($form_name)
 	* Perform additional actions on creation of the form token
 	*
 	* @event core.add_form_key
-	* @var	string	form_name			The form name
-	* @var	int		now					Current time timestamp
-	* @var	string	s_fields			Generated hidden fields
-	* @var	string	token				Form token
-	* @var	string	token_sid			User session ID
+	* @var	string	form_name					The form name
+	* @var	int		now							Current time timestamp
+	* @var	string	s_fields					Generated hidden fields
+	* @var	string	token						Form token
+	* @var	string	token_sid					User session ID
+	* @var	string	template_variable_suffix	The string that is appended to template variable name
 	*
 	* @since 3.1.0-RC3
+	* @changed 3.1.11-RC1 Added template_variable_suffix
 	*/
 	$vars = array(
 		'form_name',
@@ -2061,12 +2044,11 @@ function add_form_key($form_name)
 		's_fields',
 		'token',
 		'token_sid',
+		'template_variable_suffix',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.add_form_key', compact($vars)));
 
-	$template->assign_vars(array(
-		'S_FORM_TOKEN'	=> $s_fields,
-	));
+	$template->assign_var('S_FORM_TOKEN' . $template_variable_suffix, $s_fields);
 }
 
 /**
@@ -2194,7 +2176,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
-		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
+		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang($title, 1),
 		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
 
 		'YES_VALUE'			=> $user->lang['YES'],
@@ -2248,6 +2230,21 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$user->setup();
 	}
 
+	/**
+	 * This event allows an extension to modify the login process
+	 *
+	 * @event core.login_box_before
+	 * @var string	redirect	Redirect string
+	 * @var string	l_explain	Explain language string
+	 * @var string	l_success	Success language string
+	 * @var	bool	admin		Is admin?
+	 * @var bool	s_display	Display full login form?
+	 * @var string	err			Error string
+	 * @since 3.1.9-RC1
+	 */
+	$vars = array('redirect', 'l_explain', 'l_success', 'admin', 's_display', 'err');
+	extract($phpbb_dispatcher->trigger_event('core.login_box_before', compact($vars)));
+
 	// Print out error if user tries to authenticate as an administrator without having the privileges...
 	if ($admin && !$auth->acl_get('a_'))
 	{
@@ -2257,10 +2254,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 		}
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if ($request->is_set_post('login') || ($request->is_set('login') && $request->variable('login', '') == 'external'))
+	if (empty($err) && ($request->is_set_post('login') || ($request->is_set('login') && $request->variable('login', '') == 'external')))
 	{
 		// Get credential
 		if ($admin)
@@ -2273,6 +2271,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
 				}
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_ADMIN');
 			}
 
@@ -2294,6 +2293,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			// We log the attempt to use a different username...
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ADMIN_AUTH_FAIL');
+
+			send_status_line(403, 'Forbidden');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
@@ -2329,11 +2330,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			*
 			* @event core.login_box_redirect
 			* @var  string	redirect	Redirect string
-			* @var	boolean	admin		Is admin?
-			* @var	bool	return		If true, do not redirect but return the sanitized URL.
+			* @var	bool	admin		Is admin?
 			* @since 3.1.0-RC5
+			* @changed 3.1.9-RC1 Removed undefined return variable
 			*/
-			$vars = array('redirect', 'admin', 'return');
+			$vars = array('redirect', 'admin');
 			extract($phpbb_dispatcher->trigger_event('core.login_box_redirect', compact($vars)));
 
 			// append/replace SID (may change during the session for AOL users)
@@ -2745,7 +2746,8 @@ function get_preg_expression($mode)
 			return array(
 				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 				'#<!\-\- l \-\-><a (?:class="[\w-]+" )?href="(.*?)(?:(&amp;|\?)sid=[0-9a-f]{32})?">.*?</a><!\-\- l \-\->#',
-				'#<!\-\- ([mw]) \-\-><a (?:class="[\w-]+" )?href="(.*?)">(.*?)</a><!\-\- \1 \-\->#',
+				'#<!\-\- ([mw]) \-\-><a (?:class="[\w-]+" )?href="http://(.*?)">\2</a><!\-\- \1 \-\->#',
+				'#<!\-\- ([mw]) \-\-><a (?:class="[\w-]+" )?href="(.*?)">.*?</a><!\-\- \1 \-\->#',
 				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 				'#<!\-\- .*? \-\->#s',
 				'#<.*?>#s',
@@ -3322,6 +3324,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '<html dir="ltr">';
 			echo '<head>';
 			echo '<meta charset="utf-8">';
+			echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 			echo '<title>' . $msg_title . '</title>';
 			echo '<style type="text/css">' . "\n" . '/* <![CDATA[ */' . "\n";
 			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
@@ -3507,7 +3510,7 @@ function obtain_guest_count($item_id = 0, $item = 'forum')
 
 	// Get number of online guests
 
-	if ($db->get_sql_layer() === 'sqlite' || $db->get_sql_layer() === 'sqlite3')
+	if ($db->get_sql_layer() === 'sqlite3')
 	{
 		$sql = 'SELECT COUNT(session_ip) as num_guests
 			FROM (
@@ -3660,6 +3663,30 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 			}
 		}
 	}
+
+	/**
+	* Modify online userlist data
+	*
+	* @event core.obtain_users_online_string_before_modify
+	* @var	array	online_users		Array with online users data
+	*									from obtain_users_online()
+	* @var	int		item_id				Restrict online users to item id
+	* @var	string	item				Restrict online users to a certain
+	*									session item, e.g. forum for
+	*									session_forum_id
+	* @var	array	rowset				Array with online users data
+	* @var	array	user_online_link	Array with online users items (usernames)
+	* @since 3.1.10-RC1
+	*/
+	$vars = array(
+		'online_users',
+		'item_id',
+		'item',
+		'rowset',
+		'user_online_link',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.obtain_users_online_string_before_modify', compact($vars)));
+
 	$online_userlist = implode(', ', $user_online_link);
 
 	if (!$online_userlist)
@@ -4086,7 +4113,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 /**
 * Generate page header
 */
-function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum')
+function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = true)
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
 	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
@@ -4145,6 +4172,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 			ob_start('ob_gzhandler');
 		}
 	}
+
+	$user->update_session_infos();
 
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
@@ -4295,6 +4324,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4328,6 +4360,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
+		'PHPBB_VERSION'		=> PHPBB_VERSION,
+		'PHPBB_MAJOR'		=> $phpbb_major,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
@@ -4413,6 +4447,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$web_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
 		'T_JQUERY_LINK'			=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$web_path}assets/javascript/jquery.min.js?assets_version=" . $config['assets_version'],
 		'S_ALLOW_CDN'			=> !empty($config['allow_cdn']),
+		'S_COOKIE_NOTICE'		=> !empty($config['cookie_notice']),
 
 		'T_THEME_NAME'			=> rawurlencode($user->style['style_path']),
 		'T_THEME_LANG_NAME'		=> $user->data['user_lang'],
@@ -4429,17 +4464,22 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
 
-	// An array of http headers that phpbb will set. The following event may override these.
-	$http_headers = array(
-		// application/xhtml+xml not used because of IE
-		'Content-type' => 'text/html; charset=UTF-8',
-		'Cache-Control' => 'private, no-cache="set-cookie"',
-		'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
-	);
-	if (!empty($user->data['is_bot']))
+	$http_headers = array();
+
+	if ($send_headers)
 	{
-		// Let reverse proxies know we detected a bot.
-		$http_headers['X-PHPBB-IS-BOT'] = 'yes';
+		// An array of http headers that phpbb will set. The following event may override these.
+		$http_headers += array(
+			// application/xhtml+xml not used because of IE
+			'Content-type' => 'text/html; charset=UTF-8',
+			'Cache-Control' => 'private, no-cache="set-cookie"',
+			'Expires' => gmdate('D, d M Y H:i:s', time()) . ' GMT',
+		);
+		if (!empty($user->data['is_bot']))
+		{
+			// Let reverse proxies know we detected a bot.
+			$http_headers['X-PHPBB-IS-BOT'] = 'yes';
+		}
 	}
 
 	/**
@@ -4576,8 +4616,6 @@ function page_footer($run_cron = true, $display_template = true, $exit_handler =
 	{
 		return;
 	}
-
-	$user->update_session_infos();
 
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 

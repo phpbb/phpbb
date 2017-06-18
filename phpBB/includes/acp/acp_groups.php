@@ -223,6 +223,7 @@ class acp_groups
 				}
 				else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -235,6 +236,7 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
+								send_status_line(403, 'Forbidden');
 								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
@@ -313,6 +315,7 @@ class acp_groups
 
 				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -325,10 +328,11 @@ class acp_groups
 				$avatar_data = null;
 				$avatar_error = array();
 
+				/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
+				$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+
 				if ($config['allow_avatar'])
 				{
-					/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
-					$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 					$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 					// This is normalised data, without the group_ prefix
@@ -668,6 +672,14 @@ class acp_groups
 				{
 					$avatars_enabled = false;
 					$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
+
+					// Assign min and max values before generating avatar driver html
+					$template->assign_vars(array(
+							'AVATAR_MIN_WIDTH'		=> $config['avatar_min_width'],
+							'AVATAR_MAX_WIDTH'		=> $config['avatar_max_width'],
+							'AVATAR_MIN_HEIGHT'		=> $config['avatar_min_height'],
+							'AVATAR_MAX_HEIGHT'		=> $config['avatar_max_height'],
+					));
 
 					foreach ($avatar_drivers as $current_driver)
 					{

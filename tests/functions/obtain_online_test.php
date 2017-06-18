@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
-
 class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 {
 	public function getDataSet()

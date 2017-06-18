@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class report
 {
 	/**
-	 * @var \phpbb\config\db
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
@@ -68,7 +68,7 @@ class report
 	 */
 	protected $report_reason_provider;
 
-	public function __construct(\phpbb\config\db $config, \phpbb\user $user, \phpbb\template\template $template, \phpbb\controller\helper $helper, \phpbb\request\request_interface $request, \phpbb\captcha\factory $captcha_factory, \phpbb\report\handler_factory $report_factory, \phpbb\report\report_reason_list_provider $ui_provider, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\template\template $template, \phpbb\controller\helper $helper, \phpbb\request\request_interface $request, \phpbb\captcha\factory $captcha_factory, \phpbb\report\handler_factory $report_factory, \phpbb\report\report_reason_list_provider $ui_provider, $phpbb_root_path, $php_ext)
 	{
 		$this->config			= $config;
 		$this->user				= $user;

@@ -158,10 +158,10 @@ Zeta test event in all',
 			$config,
 			$filesystem,
 			$path_helper,
-			$container,
 			$cache_path,
 			$this->extension_manager,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -170,7 +170,7 @@ Zeta test event in all',
 			)
 		);
 		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}

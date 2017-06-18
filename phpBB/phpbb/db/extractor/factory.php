@@ -49,7 +49,7 @@ class factory
 	public function get()
 	{
 		// Return the appropriate DB extractor
-		if ($this->db instanceof \phpbb\db\driver\mssql || $this->db instanceof \phpbb\db\driver\mssql_base)
+		if ($this->db instanceof \phpbb\db\driver\mssql_base)
 		{
 			return $this->container->get('dbal.extractor.extractors.mssql_extractor');
 		}
@@ -64,10 +64,6 @@ class factory
 		else if ($this->db instanceof \phpbb\db\driver\postgres)
 		{
 			return $this->container->get('dbal.extractor.extractors.postgres_extractor');
-		}
-		else if ($this->db instanceof \phpbb\db\driver\sqlite)
-		{
-			return $this->container->get('dbal.extractor.extractors.sqlite_extractor');
 		}
 		else if ($this->db instanceof \phpbb\db\driver\sqlite3)
 		{

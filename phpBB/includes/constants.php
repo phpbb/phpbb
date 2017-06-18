@@ -28,7 +28,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-@define('PHPBB_VERSION', '3.2.0-b2-dev');
+@define('PHPBB_VERSION', '3.3.0-a1-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -171,17 +171,30 @@ define('CONFIRM_REPORT', 4);
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);
 define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
-define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming - @deprecated 3.2
-define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
 define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files
-define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files - @deprecated 3.2
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 8);
 
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
+define('NUM_PREDEFINED_BBCODES', 22);
+
+// BBCode IDs
+define('BBCODE_ID_QUOTE', 0);
+define('BBCODE_ID_B', 1);
+define('BBCODE_ID_I', 2);
+define('BBCODE_ID_URL', 3);
+define('BBCODE_ID_IMG', 4);
+define('BBCODE_ID_SIZE', 5);
+define('BBCODE_ID_COLOR', 6);
+define('BBCODE_ID_U', 7);
+define('BBCODE_ID_CODE', 8);
+define('BBCODE_ID_LIST', 9);
+define('BBCODE_ID_EMAIL', 10);
+define('BBCODE_ID_FLASH', 11);
+define('BBCODE_ID_ATTACH', 12);
 
 // BBCode hard limit
 define('BBCODE_LIMIT', 1511);

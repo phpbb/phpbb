@@ -34,9 +34,8 @@ fi
 if [ "$NOTESTS" != '1' ]
 then
 	travis/setup-webserver.sh
-	travis/install-phpbb-test-dependencies.sh
 fi
 
 cd phpBB
-php ../composer.phar install --dev --no-interaction --prefer-source
+php ../composer.phar install --dev --no-interaction
 cd ..

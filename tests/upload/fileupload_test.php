@@ -11,8 +11,6 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../phpBB/includes/utf/utf_tools.php';
 require_once __DIR__ . '/../mock/filespec.php';
 
 class phpbb_fileupload_test extends phpbb_test_case
@@ -85,13 +83,13 @@ class phpbb_fileupload_test extends phpbb_test_case
 			$this->php_ini,
 			$plupload,
 			$this->request
-		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		));
 		$this->container->set('files.types.local', new \phpbb\files\types\local(
 			$this->factory,
 			$this->language,
 			$this->php_ini,
 			$this->request
-		), phpbb_mock_container_builder::SCOPE_PROTOTYPE);
+		));
 
 		$this->path = __DIR__ . '/fixture/';
 		$this->phpbb_root_path = $phpbb_root_path;

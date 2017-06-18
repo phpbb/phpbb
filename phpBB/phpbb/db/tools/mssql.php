@@ -110,7 +110,6 @@ class mssql extends tools
 		// Determine mapping database type
 		switch ($this->db->get_sql_layer())
 		{
-			case 'mssql':
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
@@ -478,7 +477,7 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
+		$statements[] = 'DROP INDEX [' . $table_name . '].[' . $index_name . ']';
 
 		return $this->_sql_run_sql($statements);
 	}
@@ -525,7 +524,10 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		$this->check_index_name_length($table_name, $index_name);
+		if ($this->is_sql_server_2000())
+		{
+			$this->check_index_name_length($table_name, $index_name);
+		}
 
 		$statements[] = 'CREATE UNIQUE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 
@@ -539,7 +541,10 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		$this->check_index_name_length($table_name, $index_name);
+		if ($this->is_sql_server_2000())
+		{
+			$this->check_index_name_length($table_name, $index_name);
+		}
 
 		// remove index length
 		$column = preg_replace('#:.*$#', '', $column);
@@ -602,10 +607,10 @@ class mssql extends tools
 		// Change the column
 		$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 
-		if (!empty($column_data['default']))
+		if (!empty($column_data['default']) && !$this->mssql_is_column_identity($table_name, $column_name))
 		{
 			// Add new default value constraint
-			$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $this->db->sql_escape($column_data['default']) . ' FOR [' . $column_name . ']';
+			$statements[] = 'ALTER TABLE [' . $table_name . '] ADD CONSTRAINT [DF_' . $table_name . '_' . $column_name . '_1] ' . $column_data['default'] . ' FOR [' . $column_name . ']';
 		}
 
 		if (!empty($indexes))
@@ -680,6 +685,37 @@ class mssql extends tools
 	}
 
 	/**
+	 * Checks to see if column is an identity column
+	 *
+	 * Identity columns cannot have defaults set for them.
+	 *
+	 * @param string $table_name
+	 * @param string $column_name
+	 * @return bool		true if identity, false if not
+	 */
+	protected function mssql_is_column_identity($table_name, $column_name)
+	{
+		if ($this->mssql_is_sql_server_2000())
+		{
+			// http://msdn.microsoft.com/en-us/library/aa175912%28v=sql.80%29.aspx
+			// Deprecated in SQL Server 2005
+			$sql = "SELECT COLUMNPROPERTY(object_id('{$table_name}'), '{$column_name}', 'IsIdentity') AS is_identity";
+		}
+		else
+		{
+			$sql = "SELECT is_identity FROM sys.columns
+					WHERE object_id = object_id('{$table_name}')
+					AND name = '{$column_name}'";
+		}
+
+		$result = $this->db->sql_query($sql);
+		$is_identity = $this->db->sql_fetchfield('is_identity');
+		$this->db->sql_freeresult($result);
+
+		return (bool) $is_identity;
+	}
+
+	/**
 	* Get a list with existing indexes for the column
 	*
 	* @param string $table_name
@@ -718,6 +754,7 @@ class mssql extends tools
 						AND cols.object_id = ix.object_id
 				WHERE ix.object_id = object_id('{$table_name}')
 					AND cols.name = '{$column_name}'
+					AND ix.is_primary_key = 0
 					AND ix.is_unique = " . ($unique ? '1' : '0');
 		}
 

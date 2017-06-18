@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 /**
 * Extends the session class to overwrite the setting of cookies.
 *

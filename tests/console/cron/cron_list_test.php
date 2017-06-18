@@ -50,19 +50,19 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 	public function test_only_ready()
 	{
 		$this->initiate_test(2, 0);
-		$this->assertContains('TASKS_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
+		$this->assertContains('TASKS_READY command1 command2', preg_replace('/[\s*=]+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_only_not_ready()
 	{
 		$this->initiate_test(0, 2);
-		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
+		$this->assertContains('TASKS_NOT_READY command1 command2', preg_replace('/[\s*=]+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function test_both_ready()
 	{
 		$this->initiate_test(2, 2);
-		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/\s+/', ' ', trim($this->command_tester->getDisplay())));
+		$this->assertSame('TASKS_READY command1 command2 TASKS_NOT_READY command3 command4', preg_replace('/[\s*=]+/', ' ', trim($this->command_tester->getDisplay())));
 	}
 
 	public function get_cron_manager(array $tasks)
@@ -74,7 +74,35 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 			$task->set_name('command' . $i);
 			$i++;
 		}
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $pathEx);
+
+		$mock_config = new \phpbb\config\config(array(
+			'force_server_vars' => false,
+			'enable_mod_rewrite' => '',
+		));
+
+		$mock_router = $this->getMockBuilder('\phpbb\routing\router')
+			->setMethods(array('setContext', 'generate'))
+			->disableOriginalConstructor()
+			->getMock();
+		$mock_router->method('setContext')
+			->willReturn(true);
+		$mock_router->method('generate')
+			->willReturn('foobar');
+
+		$request = new \phpbb\request\request();
+		$request->enable_super_globals();
+
+		$routing_helper = new \phpbb\routing\helper(
+			$mock_config,
+			$mock_router,
+			new \phpbb\symfony_request($request),
+			$request,
+			new \phpbb\filesystem\filesystem(),
+			$phpbb_root_path,
+			$pathEx
+		);
+
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $pathEx);
 	}
 
 	public function get_command_tester()

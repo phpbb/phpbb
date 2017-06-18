@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compatibility.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-
 class phpbb_request_var_test extends phpbb_test_case
 {
 	/**

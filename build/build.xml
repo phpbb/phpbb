@@ -2,9 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.2.0-b2-dev" />
-	<property name="prevversion" value="3.2.0-b1" />
-	<property name="olderversions" value="3.0.14, 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.7-pl1, 3.2.0-a1, 3.2.0-a2" />
+	<property name="newversion" value="3.3.0-a1-dev" />
+	<property name="prevversion" value="3.2.0" />
+	<property name="olderversions" value="3.0.14, 3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.7-pl1, 3.1.8, 3.1.9, 3.1.10, 3.2.0-a1, 3.2.0-a2, 3.2.0-b1, 3.2.0-b2, 3.2.0-RC1, 3.2.0-RC2" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
@@ -49,7 +49,7 @@
 	-->
 	<target name="composer">
 		<exec dir="phpBB"
-			command="php ../composer.phar install --dev"
+			command="php ../composer.phar install --ignore-platform-reqs"
 			checkreturn="true"
 			passthru="true" />
 	</target>
@@ -95,6 +95,7 @@
 				--ignore=${project.basedir}/phpBB/install/database_update.php
 				--ignore=${project.basedir}/phpBB/phpbb/*
 				--ignore=${project.basedir}/phpBB/vendor/*
+				--ignore=${project.basedir}/phpBB/vendor-ext/*
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
 		<exec command="phpBB/vendor/bin/phpcs
@@ -142,7 +143,9 @@
 
 		<phingcall target="export">
 			<property name="revision" value="release-${version}" />
+			<property name="version" value="${version}" />
 			<property name="dir" value="build/old_versions/release-${version}" />
+			<property name="skip-composer" value="true" />
 		</phingcall>
 
 		<phingcall target="clean-diff-dir">
@@ -248,26 +251,35 @@
 			<equals arg1="${composer-has-dependencies}" arg2="1" trim="true" />
 			<then>
 				<!-- We have non-dev composer dependencies -->
-				<exec dir="."
-					command="git ls-tree ${revision} composer.phar"
-					checkreturn="true"
-					outputProperty='composer-ls-tree-output' />
 				<if>
-					<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+					<not><isset property="skip-composer" /></not>
 					<then>
-						<fail message="There are composer dependencies, but composer.phar is missing." />
-					</then>
-					<else>
-						<!-- Export the phar, install dependencies, delete phar. -->
 						<exec dir="."
-							command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
-							checkreturn="true" />
-						<exec dir="${dir}"
-							command="php composer.phar install --no-dev --optimize-autoloader"
+							command="git ls-tree ${revision} composer.phar"
 							checkreturn="true"
-							passthru="true" />
-						<delete file="${dir}/composer.phar" />
-					</else>
+							outputProperty='composer-ls-tree-output' />
+						<if>
+							<equals arg1="${composer-ls-tree-output}" arg2="" trim="true" />
+							<then>
+								<fail message="There are composer dependencies, but composer.phar is missing." />
+							</then>
+							<else>
+								<!-- Export the phar, install dependencies, delete phar. -->
+								<exec dir="."
+									command="git archive ${revision} composer.phar | tar -xf - -C ${dir}"
+									checkreturn="true" />
+								<exec dir="${dir}"
+									command="php composer.phar install --no-dev --optimize-autoloader --ignore-platform-reqs"
+									checkreturn="true"
+									passthru="true" />
+								<delete file="${dir}/composer.phar" />
+
+								<phingcall target="clean-vendor-dir">
+									<property name="dir" value="${dir}" />
+								</phingcall>
+							</else>
+						</if>
+					</then>
 				</if>
 			</then>
 			<else>
@@ -275,6 +287,54 @@
 				<delete file="${dir}/composer.json" />
 				<delete file="${dir}/composer.lock" />
 			</else>
+		</if>
+
+		<!-- Checkout latest viglink to ext folder -->
+		<available file="${dir}/ext" type="dir" property="add-viglink-ext" />
+		<exec dir="${dir}"
+			command='php -r "echo version_compare(&apos;${version}&apos;, &apos;3.2.0-RC2&apos;, &apos;>=&apos;) ? &apos;true&apos; : &apos;false&apos;;"'
+			checkreturn="true"
+			outputProperty='viglink-available' />
+		<if>
+			<and>
+				<equals arg1="${add-viglink-ext}" arg2="1" trim="true" />
+				<or>
+					<equals arg1="${revision}" arg2="HEAD" trim="true" />
+					<equals arg1="${viglink-available}" arg2="1" trim="true" />
+				</or>
+			</and>
+			<then>
+				<exec dir="${dir}/ext" command="mkdir phpbb" passthru="true" />
+
+				<exec dir="${dir}/ext/phpbb" command="git clone https://github.com/phpbb-extensions/viglink.git viglink" passthru="true" checkreturn="true" />
+				<if>
+					<equals arg1="${revision}" arg2="HEAD" trim="true" />
+					<then>
+						<exec dir="${dir}/ext/phpbb/viglink"
+							command="git rev-parse release-phpbb-${version}"
+							returnProperty='viglink_head_tag_exists' />
+						<if>
+							<equals arg1="${viglink_head_tag_exists}" arg2="0" trim="true" />
+							<then>
+								<exec dir="${dir}/ext/phpbb/viglink" command="git checkout release-phpbb-${version}" passthru="true" />
+							</then>
+							<else>
+								<exec dir="${dir}/ext/phpbb/viglink" command="git checkout master" passthru="true" />
+							</else>
+						</if>
+					</then>
+					<else>
+						<exec dir="${dir}/ext/phpbb/viglink" command="git checkout release-phpbb-${version}" passthru="true" />
+					</else>
+				</if>
+				<delete dir="${dir}/ext/phpbb/viglink/.git" />
+				<delete dir="${dir}/ext/phpbb/viglink/tests" />
+				<delete dir="${dir}/ext/phpbb/viglink/travis" />
+				<delete file="${dir}/ext/phpbb/viglink/.gitattributes" />
+				<delete file="${dir}/ext/phpbb/viglink/.travis.yml" />
+				<delete file="${dir}/ext/phpbb/viglink/phpunit.xml.dist" />
+				<delete file="${dir}/ext/phpbb/viglink/README.md" />
+			</then>
 		</if>
 
 		<!-- Create schema.json -->
@@ -285,10 +345,6 @@
 		<delete dir="${dir}/install/data" />
 		<delete dir="${dir}/config/development" />
 		<delete dir="${dir}/config/test" />
-
-		<phingcall target="clean-vendor-dir">
-			<property name="dir" value="${dir}" />
-		</phingcall>
 
 		<echo msg="Setting permissions for checkout of ${revision} in ${dir}" />
 		<!-- set permissions of all files to 644, directories to 755 -->
@@ -354,6 +410,13 @@
 		<delete file="${dir}/vendor/lusitanian/oauth/.travis.yml" />
 		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
+
+		<delete dir="${dir}/vendor/paragonie/random_compat/dist" />
+		<delete dir="${dir}/vendor/paragonie/random_compat/other" />
+		<delete file="${dir}/vendor/paragonie/random_compat/CHANGELOG.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/ERRATA.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/README.md" />
+		<delete file="${dir}/vendor/paragonie/random_compat/SECURITY.md" />
 
 		<delete file="${dir}/vendor/patchwork/utf8/.travis.yml" />
 		<delete file="${dir}/vendor/patchwork/utf8/CHANGELOG.md" />
@@ -436,6 +499,13 @@
 		<delete file="${dir}/vendor/symfony/http-kernel/README.md" />
 		<delete file="${dir}/vendor/symfony/http-kernel/phpunit.xml.dist" />
 
+		<delete dir="${dir}/vendor/symfony/proxy-manager-bridge/.git" />
+		<delete dir="${dir}/vendor/symfony/proxy-manager-bridge/Tests" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/.gitignore" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/CHANGELOG.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/README.md" />
+		<delete file="${dir}/vendor/symfony/proxy-manager-bridge/phpunit.xml.dist" />
+
 		<delete dir="${dir}/vendor/symfony/routing/.git" />
 		<delete dir="${dir}/vendor/symfony/routing/Tests" />
 		<delete file="${dir}/vendor/symfony/routing/.gitignore" />
@@ -466,6 +536,15 @@
 		<delete file="${dir}/vendor/twig/twig/CHANGELOG" />
 		<delete file="${dir}/vendor/twig/twig/phpunit.xml.dist" />
 		<delete file="${dir}/vendor/twig/twig/README.rst" />
+
+		<delete file="${dir}/vendor/zendframework/zend-code/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-code/README.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-eventmanager/README.md" />
+
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/CONTRIBUTING.md" />
+		<delete file="${dir}/vendor/zendframework/zend-stdlib/README.md" />
 	</target>
 
 	<target name="clean-diff-dir">

@@ -164,7 +164,7 @@ class mcp_main
 				* @var	string	action		Topic quick moderation action name
 				* @var	bool	quickmod	Flag indicating whether MCP is in quick moderation mode
 				* @since 3.1.0-a4
-				* @change 3.1.0-RC4 Added variables: action, quickmod
+				* @changed 3.1.0-RC4 Added variables: action, quickmod
 				*/
 				$vars = array('action', 'quickmod');
 				extract($phpbb_dispatcher->trigger_event('core.modify_quickmod_actions', compact($vars)));
@@ -470,7 +470,7 @@ function change_topic_type($action, $topic_ids)
 */
 function mcp_move_topic($topic_ids)
 {
-	global $auth, $user, $db, $template, $phpbb_log, $request;
+	global $auth, $user, $db, $template, $phpbb_log, $request, $phpbb_dispatcher;
 	global $phpEx, $phpbb_root_path;
 
 	// Here we limit the operation to one forum only
@@ -631,6 +631,21 @@ function mcp_move_topic($topic_ids)
 					'poll_max_options'		=>	(int) $row['poll_max_options'],
 					'poll_last_vote'		=>	(int) $row['poll_last_vote']
 				);
+
+				/**
+				* Perform actions before shadow topic is created.
+				*
+				* @event core.mcp_main_modify_shadow_sql
+				* @var	array	shadow	SQL array to be used by $db->sql_build_array
+				* @var	array	row		Topic data
+				* @since 3.1.11-RC1
+				* @changed 3.1.11-RC1 Added variable: row
+				*/
+				$vars = array(
+					'shadow',
+					'row',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_shadow_sql', compact($vars)));
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
@@ -907,11 +922,12 @@ function mcp_delete_topic($topic_ids, $is_soft = false, $soft_delete_reason = ''
 		}
 
 		$template->assign_vars(array(
-			'S_SHADOW_TOPICS'		=> $only_shadow,
-			'S_SOFTDELETED'			=> $only_softdeleted,
-			'S_TOPIC_MODE'			=> true,
-			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
-			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_SHADOW_TOPICS'					=> $only_shadow,
+			'S_SOFTDELETED'						=> $only_softdeleted,
+			'S_TOPIC_MODE'						=> true,
+			'S_ALLOWED_DELETE'					=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'				=> $auth->acl_get('m_softdelete', $forum_id),
+			'DELETE_TOPIC_PERMANENTLY_EXPLAIN'	=> $user->lang('DELETE_TOPIC_PERMANENTLY', sizeof($topic_ids)),
 		));
 
 		$l_confirm = (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS';
@@ -1012,6 +1028,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 			$approve_log[] = array(
 				'forum_id'		=> $post_data['forum_id'],
 				'topic_id'		=> $post_data['topic_id'],
+				'post_id'		=> $post_id,
 				'post_subject'	=> $post_data['post_subject'],
 				'poster_id'		=> $post_data['poster_id'],
 				'post_username'	=> $post_data['post_username'],
@@ -1161,9 +1178,10 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 		}
 
 		$template->assign_vars(array(
-			'S_SOFTDELETED'			=> $only_softdeleted,
-			'S_ALLOWED_DELETE'		=> $auth->acl_get('m_delete', $forum_id),
-			'S_ALLOWED_SOFTDELETE'	=> $auth->acl_get('m_softdelete', $forum_id),
+			'S_SOFTDELETED'						=> $only_softdeleted,
+			'S_ALLOWED_DELETE'					=> $auth->acl_get('m_delete', $forum_id),
+			'S_ALLOWED_SOFTDELETE'				=> $auth->acl_get('m_softdelete', $forum_id),
+			'DELETE_POST_PERMANENTLY_EXPLAIN'	=> $user->lang('DELETE_POST_PERMANENTLY', sizeof($post_ids)),
 		));
 
 		$l_confirm = (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS';
@@ -1323,6 +1341,21 @@ function mcp_fork_topic($topic_ids)
 				'poll_max_options'			=> (int) $topic_row['poll_max_options'],
 				'poll_vote_change'			=> (int) $topic_row['poll_vote_change'],
 			);
+
+			/**
+			* Perform actions before forked topic is created.
+			*
+			* @event core.mcp_main_modify_fork_sql
+			* @var	array	sql_ary		SQL array to be used by $db->sql_build_array
+			* @var	array	topic_row	Topic data
+			* @since 3.1.11-RC1
+			* @changed 3.1.11-RC1 Added variable: topic_row
+			*/
+			$vars = array(
+				'sql_ary',
+				'topic_row',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_fork_sql', compact($vars)));
 
 			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 			$new_topic_id = $db->sql_nextid();

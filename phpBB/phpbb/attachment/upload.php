@@ -39,7 +39,7 @@ class upload
 	/** @var \phpbb\files\upload Upload class */
 	protected $files_upload;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
 	/** @var guesser Mimetype guesser */

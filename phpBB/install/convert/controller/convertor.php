@@ -13,6 +13,7 @@
 
 namespace phpbb\convert\controller;
 
+use phpbb\cache\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\install\controller\helper;
 use phpbb\install\helper\container_factory;
@@ -36,9 +37,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class convertor
 {
 	/**
-	 * @var \phpbb\cache\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $cache;
+
+	/**
+	 * @var driver_interface
+	 */
+	protected $installer_cache;
 
 	/**
 	 * @var \phpbb\config\db
@@ -123,6 +129,7 @@ class convertor
 	/**
 	 * Constructor
 	 *
+	 * @param driver_interface		$cache
 	 * @param container_factory		$container
 	 * @param database				$db_helper
 	 * @param helper				$controller_helper
@@ -135,8 +142,9 @@ class convertor
 	 * @param string				$phpbb_root_path
 	 * @param string				$php_ext
 	 */
-	public function __construct(container_factory $container, database $db_helper, helper $controller_helper, install_helper $install_helper, factory $iohandler, language $language, navigation_provider $nav, request_interface $request, template $template, $phpbb_root_path, $php_ext)
+	public function __construct(driver_interface $cache, container_factory $container, database $db_helper, helper $controller_helper, install_helper $install_helper, factory $iohandler, language $language, navigation_provider $nav, request_interface $request, template $template, $phpbb_root_path, $php_ext)
 	{
+		$this->installer_cache		= $cache;
 		$this->controller_helper	= $controller_helper;
 		$this->db_helper			= $db_helper;
 		$this->install_helper		= $install_helper;
@@ -245,11 +253,11 @@ class convertor
 	/**
 	 * Obtain convertor settings
 	 *
-	 * @param string	$convertor	Name of the convertor
+	 * @param string	$converter	Name of the convertor
 	 *
 	 * @return \Symfony\Component\HttpFoundation\Response|StreamedResponse
 	 */
-	public function settings($convertor)
+	public function settings($converter)
 	{
 		$this->setup_navigation('settings');
 
@@ -257,7 +265,7 @@ class convertor
 		require_once ($this->phpbb_root_path . 'includes/functions_convert.' . $this->php_ext);
 
 		// Include convertor if available
-		$convertor_file_path = $this->phpbb_root_path . 'install/convertors/convert_' . $convertor . '.' . $this->php_ext;
+		$convertor_file_path = $this->phpbb_root_path . 'install/convertors/convert_' . $converter . '.' . $this->php_ext;
 		if (!file_exists($convertor_file_path))
 		{
 			if ($this->request->is_ajax())
@@ -305,8 +313,8 @@ class convertor
 			// It must be an AJAX request at this point
 			$response = new StreamedResponse();
 			$ref = $this;
-			$response->setCallback(function() use ($ref, $convertor) {
-				$ref->proccess_settings_form($convertor);
+			$response->setCallback(function() use ($ref, $converter) {
+				$ref->proccess_settings_form($converter);
 			});
 			$response->headers->set('X-Accel-Buffering', 'no');
 
@@ -316,7 +324,7 @@ class convertor
 		{
 			$this->template->assign_vars(array(
 				'U_ACTION'	=> $this->controller_helper->route('phpbb_convert_settings', array(
-					'convertor'	=> $convertor,
+					'converter'	=> $converter,
 				))
 			));
 
@@ -379,6 +387,7 @@ class convertor
 		// If we reached this step (conversion completed) we want to purge the cache and log the user out.
 		// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 		$this->cache->purge();
+		$this->installer_cache->purge();
 
 		require_once($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 		require_once($this->phpbb_root_path . 'includes/functions_convert.' . $this->php_ext);
@@ -401,7 +410,6 @@ class convertor
 
 		switch ($this->db->get_sql_layer())
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$this->db->sql_query('DELETE FROM ' . $this->session_keys_table);
 				$this->db->sql_query('DELETE FROM ' . $this->session_table);
@@ -583,7 +591,7 @@ class convertor
 
 			$url = $this->controller_helper->route('phpbb_convert_convert', array('converter' => $convertor));
 			$this->iohandler->redirect($url);
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 		else
 		{
@@ -677,7 +685,7 @@ class convertor
 		if ($this->request->is_ajax())
 		{
 			$this->iohandler->add_user_form_group($form_title, $form_data);
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 		else
 		{
@@ -752,7 +760,7 @@ class convertor
 				'SOFTWARE'	=> $convertors[$index]['forum_name'],
 				'VERSION'	=> $convertors[$index]['version'],
 
-				'U_CONVERT'	=> $this->controller_helper->route('phpbb_convert_settings', array('convertor' => $convertors[$index]['tag'])),
+				'U_CONVERT'	=> $this->controller_helper->route('phpbb_convert_settings', array('converter' => $convertors[$index]['tag'])),
 			));
 		}
 
@@ -770,7 +778,7 @@ class convertor
 		if ($this->request->is_ajax())
 		{
 			$this->iohandler->add_error_message($msg, $desc);
-			$this->iohandler->send_response();
+			$this->iohandler->send_response(true);
 		}
 		else
 		{
@@ -794,7 +802,7 @@ class convertor
 	public function redirect_to_html($url)
 	{
 		$this->iohandler->redirect($url);
-		$this->iohandler->send_response();
+		$this->iohandler->send_response(true);
 	}
 
 	private function setup_navigation($stage)

@@ -87,6 +87,7 @@ class ucp_groups
 
 							if (!$auth->acl_get('u_chggrp'))
 							{
+								send_status_line(403, 'Forbidden');
 								trigger_error($user->lang['NOT_AUTHORISED'] . $return_page);
 							}
 
@@ -433,8 +434,8 @@ class ucp_groups
 						'GROUP_DESC_DISP'		=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 						'GROUP_TYPE'			=> $group_row['group_type'],
 
-						'AVATAR'				=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
-						'AVATAR_IMAGE'			=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
+						'AVATAR'				=> (empty($avatar) ? '<img class="avatar" src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
+						'AVATAR_IMAGE'			=> (empty($avatar) ? '<img class="avatar" src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
 						'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
 						'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 					));
@@ -472,10 +473,11 @@ class ucp_groups
 						$avatar_data = null;
 						$avatar_error = array();
 
+						/** @var \phpbb\avatar\manager $phpbb_avatar_manager */
+						$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
+
 						if ($config['allow_avatar'])
 						{
-							/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
-							$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 							$avatar_drivers = $phpbb_avatar_manager->get_enabled_drivers();
 
 							// This is normalised data, without the group_ prefix
@@ -657,6 +659,14 @@ class ucp_groups
 						{
 							$avatars_enabled = false;
 							$selected_driver = $phpbb_avatar_manager->clean_driver_name($request->variable('avatar_driver', $avatar_data['avatar_type']));
+
+							// Assign min and max values before generating avatar driver html
+							$template->assign_vars(array(
+									'AVATAR_MIN_WIDTH'		=> $config['avatar_min_width'],
+									'AVATAR_MAX_WIDTH'		=> $config['avatar_max_width'],
+									'AVATAR_MIN_HEIGHT'		=> $config['avatar_min_height'],
+									'AVATAR_MAX_HEIGHT'		=> $config['avatar_max_height'],
+							));
 
 							foreach ($avatar_drivers as $current_driver)
 							{

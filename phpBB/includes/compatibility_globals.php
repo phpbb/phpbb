@@ -18,6 +18,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+//
+// Deprecated globals
+//
+define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming - @deprecated 3.2
+define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming - @deprecated 3.2
+define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files - @deprecated 3.2
+
 /**
  * Sets compatibility globals in the global scope
  *
@@ -42,6 +49,8 @@ function register_compatibility_globals()
 
 	/* @var $request \phpbb\request\request_interface */
 	$request = $phpbb_container->get('request');
+	// Inject request instance, so only this instance is used with request_var
+	request_var('', 0, false, false, $request);
 
 	/* @var $user \phpbb\user */
 	$user = $phpbb_container->get('user');
@@ -55,6 +64,8 @@ function register_compatibility_globals()
 	// Grab global variables, re-cache if necessary
 	/* @var $config phpbb\config\db */
 	$config = $phpbb_container->get('config');
+	set_config('', '', false, $config);
+	set_config_count('', 0, false, $config);
 
 	/* @var $phpbb_log \phpbb\log\log_interface */
 	$phpbb_log = $phpbb_container->get('log');
@@ -75,5 +86,3 @@ function register_compatibility_globals()
 	/* @var $template \phpbb\template\template */
 	$template = $phpbb_container->get('template');
 }
-
-register_compatibility_globals();

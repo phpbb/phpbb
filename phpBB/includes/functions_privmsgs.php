@@ -801,6 +801,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if (!$row)
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NOT_AUTHORISED');
 			}
 
@@ -888,8 +889,15 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		SET pm_unread = 0
 		WHERE msg_id = $msg_id
 			AND user_id = $user_id
-			AND folder_id = $folder_id";
+			AND folder_id = $folder_id
+			AND pm_unread = 1";
 	$db->sql_query($sql);
+
+	// If the message is already marked as read, we just skip the rest to avoid negative PM count
+	if (!$db->sql_affectedrows())
+	{
+		return;
+	}
 
 	$sql = 'UPDATE ' . USERS_TABLE . "
 		SET user_unread_privmsg = user_unread_privmsg - 1
@@ -965,6 +973,7 @@ function handle_mark_actions($user_id, $mark_action)
 
 			if (!$auth->acl_get('u_pm_delete'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_DELETE_MESSAGE');
 			}
 
@@ -2149,7 +2158,7 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 	}
 
 	// Get maximum number of allowed recipients
-	$sql = 'SELECT MIN(g.group_' . $setting . ') as min_setting, MAX(g.group_' . $setting . ') as max_setting
+	$sql = 'SELECT MAX(g.group_' . $setting . ') as max_setting
 		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 		WHERE ug.user_id = ' . (int) $user_id . '
 			AND ug.user_pending = 0
@@ -2158,9 +2167,8 @@ function phpbb_get_max_setting_from_group(\phpbb\db\driver\driver_interface $db,
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 	$max_setting = (int) $row['max_setting'];
-	$min_setting = (int) $row['min_setting'];
 
-	return ($min_setting > 0) ? $max_setting : 0;
+	return $max_setting;
 }
 
 /**

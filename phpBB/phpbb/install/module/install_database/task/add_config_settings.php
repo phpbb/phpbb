@@ -13,6 +13,8 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\install\exception\resource_limit_reached_exception;
+
 /**
  * Create database schema
  */
@@ -127,11 +129,18 @@ class add_config_settings extends \phpbb\install\task_base
 		$this->db->sql_return_on_error(true);
 
 		$server_name	= $this->install_config->get('server_name');
-		$cookie_domain	= $this->install_config->get('cookie_domain');
 		$current_time 	= time();
 		$user_ip		= phpbb_ip_normalise($this->iohandler->get_server_variable('REMOTE_ADDR'));
 		$user_ip		= ($user_ip === false) ? '' : $user_ip;
 		$referer		= $this->iohandler->get_server_variable('REFERER');
+
+		// Calculate cookie domain
+		$cookie_domain = $server_name;
+
+		if (strpos($cookie_domain, 'www.') === 0)
+		{
+			$cookie_domain = substr($cookie_domain, 3);
+		}
 
 		// Set default config and post data, this applies to all DB's
 		$sql_ary = array(
@@ -180,6 +189,10 @@ class add_config_settings extends \phpbb\install\task_base
 			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_host')) . "'
 				WHERE config_name = 'smtp_host'",
+
+			'UPDATE ' . $this->config_table . "
+				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_port')) . "'
+				WHERE config_name = 'smtp_port'",
 
 			'UPDATE ' . $this->config_table . "
 				SET config_value = '" . $this->db->sql_escape($this->install_config->get('smtp_auth')) . "'
@@ -313,6 +326,10 @@ class add_config_settings extends \phpbb\install\task_base
 				WHERE config_name = 'allow_avatar_upload'";
 		}
 
+		$i = $this->install_config->get('add_config_settings_index', 0);
+		$total = sizeof($sql_ary);
+		$sql_ary = array_slice($sql_ary, $i);
+
 		foreach ($sql_ary as $sql)
 		{
 			if (!$this->db->sql_query($sql))
@@ -320,6 +337,20 @@ class add_config_settings extends \phpbb\install\task_base
 				$error = $this->db->sql_error($this->db->get_sql_error_sql());
 				$this->iohandler->add_error_message('INST_ERR_DB', $error['message']);
 			}
+
+			$i++;
+
+			// Stop execution if resource limit is reached
+			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
+			{
+				break;
+			}
+		}
+
+		if ($i < $total)
+		{
+			$this->install_config->set('add_config_settings_index', $i);
+			throw new resource_limit_reached_exception();
 		}
 	}
 

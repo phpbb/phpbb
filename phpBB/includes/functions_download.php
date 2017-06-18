@@ -108,6 +108,7 @@ function wrap_img_in_html($src, $title)
 	echo '<html>';
 	echo '<head>';
 	echo '<meta charset="utf-8">';
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
 	echo '<title>' . $title . '</title>';
 	echo '</head>';
 	echo '<body>';
@@ -123,7 +124,7 @@ function wrap_img_in_html($src, $title)
 */
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $phpbb_root_path, $request;
+	global $user, $db, $phpbb_dispatcher, $phpbb_root_path, $request;
 
 	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
 
@@ -148,6 +149,26 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now send the File Contents to the Browser
 	$size = @filesize($filename);
 
+	/**
+	* Event to alter attachment before it is sent to browser.
+	*
+	* @event core.send_file_to_browser_before
+	* @var	array	attachment	Attachment data
+	* @var	string	upload_dir	Relative path of upload directory
+	* @var	int		category	Attachment category
+	* @var	string	filename	Path to file, including filename
+	* @var	int		size		File size
+	* @since 3.1.11-RC1
+	*/
+	$vars = array(
+		'attachment',
+		'upload_dir',
+		'category',
+		'filename',
+		'size',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
+
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
 
 	// Check if headers already sent or not able to get the file contents.
@@ -165,7 +186,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Make sure the database record for the filesize is correct
-	if ($size > 0 && $size != $attachment['filesize'])
+	if ($size > 0 && $size != $attachment['filesize'] && strpos($attachment['physical_filename'], 'thumb_') === false)
 	{
 		// Update database record
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
@@ -253,11 +274,21 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 				send_status_line(206, 'Partial Content');
 				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
 				header('Content-Length: ' . $range['bytes_requested']);
-			}
 
-			while (!feof($fp))
+				// First read chunks
+				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
+				{
+					echo fread($fp, 8192);
+				}
+				// Then, read the remainder
+				echo fread($fp, $range['bytes_requested'] % 8192);
+			}
+			else
 			{
-				echo fread($fp, 8192);
+				while (!feof($fp))
+				{
+					echo fread($fp, 8192);
+				}
 			}
 			fclose($fp);
 		}
@@ -283,7 +314,7 @@ function header_filename($file)
 
 	// There be dragons here.
 	// Not many follows the RFC...
-	if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Safari') !== false || strpos($user_agent, 'Konqueror') !== false)
+	if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Konqueror') !== false)
 	{
 		return "filename=" . rawurlencode($file);
 	}
@@ -412,7 +443,7 @@ function set_modified_headers($stamp, $browser)
 	global $request;
 
 	// let's see if we have to send the file at all
-	$last_load 	=  $request->header('Modified-Since') ? strtotime(trim($request->header('Modified-Since'))) : false;
+	$last_load 	=  $request->header('If-Modified-Since') ? strtotime(trim($request->header('If-Modified-Since'))) : false;
 
 	if (strpos(strtolower($browser), 'msie 6.0') === false && !phpbb_is_greater_ie_version($browser, 7))
 	{
@@ -528,6 +559,9 @@ function phpbb_find_range_request()
 */
 function phpbb_parse_range_request($request_array, $filesize)
 {
+	$first_byte_pos	= -1;
+	$last_byte_pos	= -1;
+
 	// Go through all ranges
 	foreach ($request_array as $range_string)
 	{
@@ -539,62 +573,61 @@ function phpbb_parse_range_request($request_array, $filesize)
 			continue;
 		}
 
+		// Substitute defaults
 		if ($range[0] === '')
 		{
-			// Return last $range[1] bytes.
-
-			if (!$range[1])
-			{
-				continue;
-			}
-
-			if ($range[1] >= $filesize)
-			{
-				return false;
-			}
-
-			$first_byte_pos	= $filesize - (int) $range[1];
-			$last_byte_pos	= $filesize - 1;
-		}
-		else
-		{
-			// Return bytes from $range[0] to $range[1]
-
-			$first_byte_pos	= (int) $range[0];
-			$last_byte_pos	= (int) $range[1];
-
-			if ($last_byte_pos && $last_byte_pos < $first_byte_pos)
-			{
-				// The requested range contains 0 bytes.
-				continue;
-			}
-
-			if ($first_byte_pos >= $filesize)
-			{
-				// Requested range not satisfiable
-				return false;
-			}
-
-			// Adjust last-byte-pos if it is absent or greater than the content.
-			if ($range[1] === '' || $last_byte_pos >= $filesize)
-			{
-				$last_byte_pos = $filesize - 1;
-			}
+			$range[0] = 0;
 		}
 
-		// We currently do not support range requests that end before the end of the file
-		if ($last_byte_pos != $filesize - 1)
+		if ($range[1] === '')
 		{
+			$range[1] = $filesize - 1;
+		}
+
+		if ($last_byte_pos >= 0 && $last_byte_pos + 1 != $range[0])
+		{
+			// We only support contiguous ranges, no multipart stuff :(
+			return false;
+		}
+
+		if ($range[1] && $range[1] < $range[0])
+		{
+			// The requested range contains 0 bytes.
 			continue;
 		}
 
-		return array(
-			'byte_pos_start'	=> $first_byte_pos,
-			'byte_pos_end'		=> $last_byte_pos,
-			'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
-			'bytes_total'		=> $filesize,
-		);
+		// Return bytes from $range[0] to $range[1]
+		if ($first_byte_pos < 0)
+		{
+			$first_byte_pos	= (int) $range[0];
+		}
+
+		$last_byte_pos	= (int) $range[1];
+
+		if ($first_byte_pos >= $filesize)
+		{
+			// Requested range not satisfiable
+			return false;
+		}
+
+		// Adjust last-byte-pos if it is absent or greater than the content.
+		if ($range[1] === '' || $last_byte_pos >= $filesize)
+		{
+			$last_byte_pos = $filesize - 1;
+		}
 	}
+
+	if ($first_byte_pos < 0 || $last_byte_pos < 0)
+	{
+		return false;
+	}
+
+	return array(
+		'byte_pos_start'	=> $first_byte_pos,
+		'byte_pos_end'		=> $last_byte_pos,
+		'bytes_requested'	=> $last_byte_pos - $first_byte_pos + 1,
+		'bytes_total'		=> $filesize,
+	);
 }
 
 /**
@@ -676,6 +709,8 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 */
 function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 {
+	global $phpbb_dispatcher;
+
 	if (!$auth->acl_get('u_pm_download'))
 	{
 		send_status_line(403, 'Forbidden');
@@ -683,6 +718,18 @@ function phpbb_download_handle_pm_auth($db, $auth, $user_id, $msg_id)
 	}
 
 	$allowed = phpbb_download_check_pm_auth($db, $user_id, $msg_id);
+
+	/**
+	* Event to modify PM attachments download auth
+	*
+	* @event core.modify_pm_attach_download_auth
+	* @var	bool	allowed		Whether the user is allowed to download from that PM or not
+	* @var	int		msg_id		The id of the PM to download from
+	* @var	int		user_id		The user id for auth check
+	* @since 3.1.11-RC1
+	*/
+	$vars = array('allowed', 'msg_id', 'user_id');
+	extract($phpbb_dispatcher->trigger_event('core.modify_pm_attach_download_auth', compact($vars)));
 
 	if (!$allowed)
 	{

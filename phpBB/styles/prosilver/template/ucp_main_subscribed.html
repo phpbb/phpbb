@@ -30,7 +30,7 @@
 						{forumrow.FORUM_DESC}
 						<!-- IF forumrow.LAST_POST_TIME -->
 						<div class="responsive-show" style="display: none;">
-							{L_LAST_POST} {L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}">{forumrow.LAST_POST_TIME}</a>
+							{L_LAST_POST} {L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_TIME}</a>
 						</div>
 						<!-- ENDIF -->
 					</div>
@@ -40,7 +40,7 @@
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
 							<a href="{forumrow.U_LAST_POST}">
 								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
-							</a> 
+							</a>
 							<br />{forumrow.LAST_POST_TIME}</span>
 					<!-- ELSE -->
 						{L_NO_POSTS}<br />&nbsp;
@@ -87,13 +87,13 @@
 							</a>
 						<!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
-							<a href="{topicrow.U_MCP_QUEUE}" title="{TOPIC_UNAPPROVED}">
-								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{TOPIC_UNAPPROVED}</span>
-							</a>  
+							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
+								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
-							<a href="{topicrow.U_MCP_REPORT}" title="{TOPIC_REPORTED}">
-								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{TOPIC_REPORTED}</span>
+							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
 							</a>
 						<!-- ENDIF -->
 						<br />
@@ -124,7 +124,7 @@
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 						<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
-					</a> 
+					</a>
 					<br />{topicrow.LAST_POST_TIME}</span>
 				</dd>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
@@ -136,9 +136,9 @@
 	<div class="action-bar bar-bottom">
 		<div class="pagination">
 			{TOTAL_TOPICS}
-			<!-- IF .pagination --> 
+			<!-- IF .pagination -->
 				<!-- INCLUDE pagination.html -->
-			<!-- ELSE --> 
+			<!-- ELSE -->
 				 &bull; {PAGE_NUMBER}
 			<!-- ENDIF -->
 		</div>
@@ -160,7 +160,7 @@
 
 <!-- IF .topicrow or .forumrow -->
 	<fieldset class="display-actions">
-		<input type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" class="button2" />
+		<input type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" class="button1 button button-form-bold" />
 		<div><a href="#" onclick="marklist('ucp', 't', true); marklist('ucp', 'f', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', 't', false); marklist('ucp', 'f', false); return false;">{L_UNMARK_ALL}</a></div>
 		{S_FORM_TOKEN}
 	</fieldset>

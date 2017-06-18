@@ -127,6 +127,7 @@ if (!$auth->acl_getf_global('m_'))
 
 	if (!$allow_user)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NOT_AUTHORISED');
 	}
 }
@@ -134,6 +135,7 @@ if (!$auth->acl_getf_global('m_'))
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
 if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
+	send_status_line(403, 'Forbidden');
 	trigger_error('NOT_AUTHORISED');
 }
 
@@ -305,6 +307,11 @@ $vars = array(
 	'id',
 );
 extract($phpbb_dispatcher->trigger_event('core.modify_mcp_modules_display_option', compact($vars)));
+
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=> $user->lang('MCP'),
+	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}mcp.$phpEx"),
+));
 
 // Load and execute the relevant module
 $module->load_active();

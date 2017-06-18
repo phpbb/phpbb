@@ -542,6 +542,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		if (!$auth->acl_getf_global('m_report'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 	}
@@ -549,6 +550,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 	}

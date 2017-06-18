@@ -27,27 +27,30 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', { 
-			id: 'loading_indicator', 
-			class: 'loading_indicator', 
-		});
-		$loadingIndicator.appendTo('#page-footer');
+		$loadingIndicator = $('#loading_indicator');
 	}
 
 	if (!$loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeIn(phpbb.alertTime);
-		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		// Wait 60 seconds and display an error if nothing has been returned by then.
 		phpbb.clearLoadingTimeout();
 		phpbbAlertTimer = setTimeout(function() {
-			var $alert = $('#phpbb_alert');
-
-			if ($loadingIndicator.is(':visible')) {
-				phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
-			}
-		}, 15000);
+			phpbb.showTimeoutMessage();
+		}, 60000);
 	}
 
 	return $loadingIndicator;
+};
+
+/**
+ * Show timeout message
+ */
+phpbb.showTimeoutMessage = function () {
+	var $alert = $('#phpbb_alert');
+
+	if ($loadingIndicator.is(':visible')) {
+		phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
+	}
 };
 
 /**
@@ -1541,6 +1544,13 @@ phpbb.toggleSelectSettings = function(el) {
 		var $this = $(this),
 			$setting = $($this.data('toggle-setting'));
 		$setting.toggle($this.is(':selected'));
+
+		// Disable any input elements that are not visible right now
+		if ($this.is(':selected')) {
+			$($this.data('toggle-setting') + ' input').prop('disabled', false);
+		} else {
+			$($this.data('toggle-setting') + ' input').prop('disabled', true);
+		}
 	});
 };
 

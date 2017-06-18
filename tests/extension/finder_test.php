@@ -10,7 +10,6 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_extension_finder_test extends phpbb_test_case
 {

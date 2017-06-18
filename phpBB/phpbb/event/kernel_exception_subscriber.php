@@ -36,6 +36,9 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*/
 	protected $language;
 
+	/** @var \phpbb\request\type_cast_helper */
+	protected $type_caster;
+
 	/**
 	* Construct method
 	*
@@ -46,6 +49,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	{
 		$this->template = $template;
 		$this->language = $language;
+		$this->type_caster = new \phpbb\request\type_cast_helper();
 	}
 
 	/**
@@ -59,11 +63,15 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		$exception = $event->getException();
 
 		$message = $exception->getMessage();
+		$this->type_caster->set_var($message, $message, 'string', true, false);
 
 		if ($exception instanceof \phpbb\exception\exception_interface)
 		{
 			$message = $this->language->lang_array($message, $exception->get_parameters());
 		}
+
+		// Show <strong> text in bold
+		$message = preg_replace('#&lt;(/?strong)&gt;#i', '<$1>', $message);
 
 		if (!$event->getRequest()->isXmlHttpRequest())
 		{

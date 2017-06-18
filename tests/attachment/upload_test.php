@@ -11,7 +11,6 @@
 *
 */
 
-require_once(dirname(__FILE__) . '/../../phpBB/includes/functions.php');
 require_once(dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php');
 
 class phpbb_attachment_upload_test extends \phpbb_database_test_case

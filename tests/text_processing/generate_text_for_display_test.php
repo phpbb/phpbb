@@ -11,9 +11,6 @@
 *
 */
 
-require_once __DIR__ . '/../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../phpBB/includes/functions_content.php';
-
 class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_case
 {
 	public function setUp()
@@ -103,7 +100,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 		$renderer->set_viewcensors(false);
 		$this->assertSame('apple', $renderer->render($original));
-		$this->assertSame('banana', generate_text_for_display($original, '', '', 0, truee));
+		$this->assertSame('banana', generate_text_for_display($original, '', '', 0, true));
 		$this->assertSame('apple', $renderer->render($original), 'The original setting was not restored');
 	}
 
@@ -193,7 +190,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 			),
 			array(
 				'<r><E>:)</E></r>',
-				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" alt=":)" title="Smile">'
+				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" width="15" height="17" alt=":)" title="Smile">'
 			),
 			array(
 				'<r><E>:)</E></r>',

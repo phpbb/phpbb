@@ -15,6 +15,7 @@ namespace phpbb\di\extension;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -24,6 +25,8 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 */
 class core extends Extension
 {
+	const TWIG_OPTIONS_POSITION = 7;
+
 	/**
 	 * Config path
 	 * @var string
@@ -71,7 +74,7 @@ class core extends Extension
 
 		// Set the Twig options if defined in the environment
 		$definition = $container->getDefinition('template.twig.environment');
-		$twig_environment_options = $definition->getArgument(7);
+		$twig_environment_options = $definition->getArgument(static::TWIG_OPTIONS_POSITION);
 		if ($config['twig']['debug'])
 		{
 			$twig_environment_options['debug'] = true;
@@ -81,14 +84,26 @@ class core extends Extension
 			$twig_environment_options['auto_reload'] = true;
 		}
 
-		// Replace the 8th argument, the options passed to the environment
-		$definition->replaceArgument(7, $twig_environment_options);
+		// Replace the 7th argument, the options passed to the environment
+		$definition->replaceArgument(static::TWIG_OPTIONS_POSITION, $twig_environment_options);
 
 		if ($config['twig']['enable_debug_extension'])
 		{
 			$definition = $container->getDefinition('template.twig.extensions.debug');
 			$definition->addTag('twig.extension');
 		}
+
+		$composer_output = OutputInterface::VERBOSITY_NORMAL;
+		if ($config['extensions']['composer_verbose'])
+		{
+			$composer_output = OutputInterface::VERBOSITY_VERBOSE;
+		}
+		if ($config['extensions']['composer_debug'])
+		{
+			$composer_output = OutputInterface::VERBOSITY_DEBUG;
+		}
+
+		$container->setParameter('extensions.composer.output', $composer_output);
 
 		// Set the debug options
 		foreach ($config['debug'] as $name => $value)

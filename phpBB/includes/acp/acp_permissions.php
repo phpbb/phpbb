@@ -315,6 +315,7 @@ class acp_permissions
 				case 'apply_permissions':
 					if (!isset($_POST['setting']))
 					{
+						send_status_line(403, 'Forbidden');
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
@@ -328,6 +329,7 @@ class acp_permissions
 				case 'apply_all_permissions':
 					if (!isset($_POST['setting']))
 					{
+						send_status_line(403, 'Forbidden');
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
@@ -687,6 +689,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
@@ -755,6 +758,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
 
+		meta_refresh(5, $this->u_action);
 		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
@@ -772,6 +776,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
@@ -825,10 +830,12 @@ class acp_permissions
 
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
+			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids));
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
 		}
 		else
 		{
+			meta_refresh(5, $this->u_action);
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 		}
 	}
@@ -884,6 +891,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
@@ -899,10 +907,12 @@ class acp_permissions
 
 		if ($mode == 'setting_forum_local' || $mode == 'setting_mod_local')
 		{
+			meta_refresh(5, $this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id));
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
 		}
 		else
 		{
+			meta_refresh(5, $this->u_action);
 			trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 		}
 	}

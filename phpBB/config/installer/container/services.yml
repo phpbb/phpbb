@@ -12,12 +12,14 @@ services:
     cache.driver:
         class: '%cache.driver.class%'
         arguments:
-            - '%core.root_path%/cache/installer/'
+            - '%core.cache_dir%'
 
     config:
         class: phpbb\config\config
         arguments:
-            - []
+            -
+                rand_seed: 'installer_seed'
+                rand_seed_last_update: 0
 
     controller.resolver:
         class: phpbb\controller\resolver
@@ -79,11 +81,19 @@ services:
             - '@config'
             - '@filesystem'
             - '@path_helper'
-            - '@service_container'
             - '%core.template.cache_path%'
             - null
             - '@template.twig.loader'
+            - null
             - []
+        calls:
+            - [setLexer, ['@template.twig.lexer']]
+
+    user:
+        class: phpbb\user
+        arguments:
+            - '@language'
+            - '%datetime.class%'
 
     console.exception_subscriber:
         class: phpbb\console\exception_subscriber

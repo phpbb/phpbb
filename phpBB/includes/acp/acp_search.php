@@ -55,6 +55,11 @@ class acp_search
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
+		if ($submit && !check_link_hash($request->variable('hash', ''), 'acp_search'))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		$search_types = $this->get_search_types();
 
 		$settings = array(
@@ -226,7 +231,7 @@ class acp_search
 			'S_YES_SEARCH'			=> (bool) $config['load_search'],
 			'S_SETTINGS'			=> true,
 
-			'U_ACTION'				=> $this->u_action)
+			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'))
 		);
 	}
 
@@ -243,6 +248,12 @@ class acp_search
 			$action = '';
 			$this->state = array();
 			$this->save_state();
+		}
+		$submit = $request->is_set_post('submit', false);
+
+		if (!check_link_hash($request->variable('hash', ''), 'acp_search') && in_array($action, array('create', 'delete')))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($action)
@@ -294,7 +305,7 @@ class acp_search
 					if (method_exists($this->search, 'delete_index'))
 					{
 						// pass a reference to myself so the $search object can make use of save_state() and attributes
-						if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete", false)))
+						if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete&hash=" . generate_link_hash('acp_search'), false)))
 						{
 							$this->state = array('');
 							$this->save_state();
@@ -337,7 +348,7 @@ class acp_search
 						{
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
 							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter, $rows_per_second));
 						}
 					}
@@ -425,7 +436,7 @@ class acp_search
 						{
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
 							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
 						}
 					}
@@ -504,7 +515,7 @@ class acp_search
 
 		$template->assign_vars(array(
 			'S_INDEX'				=> true,
-			'U_ACTION'				=> $this->u_action,
+			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
 			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
 			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
 		));
@@ -513,7 +524,7 @@ class acp_search
 		{
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
-				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1],
+				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1] . '&amp;hash=' . generate_link_hash('acp_search'),
 				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
 				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
 			);

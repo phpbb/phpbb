@@ -129,7 +129,6 @@ class create_config_file extends \phpbb\install\task_base
 		else
 		{
 			$this->iohandler->add_error_message('UNABLE_TO_WRITE_CONFIG_FILE');
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 
@@ -139,7 +138,6 @@ class create_config_file extends \phpbb\install\task_base
 		{
 			// We were unable to create the lock file - abort
 			$this->iohandler->add_error_message('UNABLE_TO_WRITE_LOCK');
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 		@fclose($fp);

@@ -105,6 +105,13 @@ class oauth extends \phpbb\auth\provider\base
 	protected $phpbb_container;
 
 	/**
+	* phpBB event dispatcher
+	*
+	* @var \phpbb\event\dispatcher_interface
+	*/
+	protected $dispatcher;
+
+	/**
 	* phpBB root path
 	*
 	* @var string
@@ -132,10 +139,11 @@ class oauth extends \phpbb\auth\provider\base
 	* @param	\phpbb\di\service_collection	$service_providers Contains \phpbb\auth\provider\oauth\service_interface
 	* @param	string			$users_table
 	* @param	\Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container DI container
+	* @param	\phpbb\event\dispatcher_interface $dispatcher phpBB event dispatcher
 	* @param	string			$phpbb_root_path
 	* @param	string			$php_ext
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_state_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\passwords\manager $passwords_manager, \phpbb\request\request_interface $request, \phpbb\user $user, $auth_provider_oauth_token_storage_table, $auth_provider_oauth_state_table, $auth_provider_oauth_token_account_assoc, \phpbb\di\service_collection $service_providers, $users_table, \Symfony\Component\DependencyInjection\ContainerInterface $phpbb_container, \phpbb\event\dispatcher_interface $dispatcher, $phpbb_root_path, $php_ext)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -148,6 +156,7 @@ class oauth extends \phpbb\auth\provider\base
 		$this->service_providers = $service_providers;
 		$this->users_table = $users_table;
 		$this->phpbb_container = $phpbb_container;
+		$this->dispatcher = $dispatcher;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -201,7 +210,8 @@ class oauth extends \phpbb\auth\provider\base
 		$query = 'mode=login&login=external&oauth_service=' . $service_name_original;
 		$service = $this->get_service($service_name_original, $storage, $service_credentials, $query, $this->service_providers[$service_name]->get_auth_scope());
 
-		if ($this->request->is_set('code', \phpbb\request\request_interface::GET))
+		if (($service::OAUTH_VERSION === 2 && $this->request->is_set('code', \phpbb\request\request_interface::GET))
+			|| ($service::OAUTH_VERSION === 1 && $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET)))
 		{
 			$this->service_providers[$service_name]->set_external_service_provider($service);
 			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
@@ -247,6 +257,18 @@ class oauth extends \phpbb\auth\provider\base
 			// Update token storage to store the user_id
 			$storage->set_user_id($row['user_id']);
 
+			/**
+			* Event is triggered after user is successfuly logged in via OAuth.
+			*
+			* @event core.auth_oauth_login_after
+			* @var    array    row    User row
+			* @since 3.1.11-RC1
+			*/
+			$vars = array(
+				'row',
+			);
+			extract($this->dispatcher->trigger_event('core.auth_oauth_login_after', compact($vars)));
+
 			// The user is now authenticated and can be logged in
 			return array(
 				'status'		=> LOGIN_SUCCESS,
@@ -256,7 +278,15 @@ class oauth extends \phpbb\auth\provider\base
 		}
 		else
 		{
-			$url = $service->getAuthorizationUri();
+			if ($service::OAUTH_VERSION === 1)
+			{
+				$token = $service->requestRequestToken();
+				$url = $service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+			}
+			else
+			{
+				$url = $service->getAuthorizationUri();
+			}
 			header('Location: ' . $url);
 		}
 	}
@@ -280,7 +310,13 @@ class oauth extends \phpbb\auth\provider\base
 		}
 
 		$uri_factory = new \OAuth\Common\Http\Uri\UriFactory();
-		$current_uri = $uri_factory->createFromSuperGlobalArray($this->request->get_super_global(\phpbb\request\request_interface::SERVER));
+		$super_globals = $this->request->get_super_global(\phpbb\request\request_interface::SERVER);
+		if (!empty($super_globals['HTTP_X_FORWARDED_PROTO']) && $super_globals['HTTP_X_FORWARDED_PROTO'] === 'https')
+		{
+			$super_globals['HTTPS'] = 'on';
+			$super_globals['SERVER_PORT'] = 443;
+		}
+		$current_uri = $uri_factory->createFromSuperGlobalArray($super_globals);
 		$current_uri->setQuery($query);
 
 		$this->current_uri = $current_uri;
@@ -514,7 +550,8 @@ class oauth extends \phpbb\auth\provider\base
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
 		$service = $this->get_service(strtolower($link_data['oauth_service']), $storage, $service_credentials, $query, $scopes);
 
-		if ($this->request->is_set('code', \phpbb\request\request_interface::GET))
+		if (($service::OAUTH_VERSION === 2 && $this->request->is_set('code', \phpbb\request\request_interface::GET))
+			|| ($service::OAUTH_VERSION === 1 && $this->request->is_set('oauth_token', \phpbb\request\request_interface::GET)))
 		{
 			$this->service_providers[$service_name]->set_external_service_provider($service);
 			$unique_id = $this->service_providers[$service_name]->perform_auth_login();
@@ -530,7 +567,15 @@ class oauth extends \phpbb\auth\provider\base
 		}
 		else
 		{
-			$url = $service->getAuthorizationUri();
+			if ($service::OAUTH_VERSION === 1)
+			{
+				$token = $service->requestRequestToken();
+				$url = $service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+			}
+			else
+			{
+				$url = $service->getAuthorizationUri();
+			}
 			header('Location: ' . $url);
 		}
 	}
@@ -545,6 +590,18 @@ class oauth extends \phpbb\auth\provider\base
 		$sql = 'INSERT INTO ' . $this->auth_provider_oauth_token_account_assoc . '
 			' . $this->db->sql_build_array('INSERT', $data);
 		$this->db->sql_query($sql);
+
+		/**
+		 * Event is triggered after user links account.
+		 *
+		 * @event core.auth_oauth_link_after
+		 * @var    array    data    User row
+		 * @since 3.1.11-RC1
+		 */
+		$vars = array(
+			'data',
+		);
+		extract($this->dispatcher->trigger_event('core.auth_oauth_link_after', compact($vars)));
 	}
 
 	/**

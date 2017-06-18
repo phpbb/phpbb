@@ -84,7 +84,7 @@ $current_time = time();
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
 * @since 3.1.0-a1
-* @change 3.1.2-RC1			Removed 'delete' var as it does not exist
+* @changed 3.1.2-RC1			Removed 'delete' var as it does not exist
 */
 $vars = array(
 	'post_id',
@@ -104,7 +104,7 @@ $vars = array(
 extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compact($vars)));
 
 // Was cancel pressed? If so then redirect to the appropriate page
-if ($cancel || ($current_time - $lastclick < 2 && $submit))
+if ($cancel)
 {
 	$f = ($forum_id) ? 'f=' . $forum_id . '&amp;' : '';
 	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
@@ -372,7 +372,9 @@ switch ($mode)
 *							NOTE: Should be actual language strings, NOT
 *							language keys.
 * @var	bool	is_authed	Does the user have the required permissions?
+* @var	array	post_data	All post data from database
 * @since 3.1.3-RC1
+* @changed 3.1.10-RC1 Added post_data
 */
 $vars = array(
 	'post_id',
@@ -388,6 +390,7 @@ $vars = array(
 	'mode',
 	'error',
 	'is_authed',
+	'post_data',
 );
 extract($phpbb_dispatcher->trigger_event('core.modify_posting_auth', compact($vars)));
 
@@ -602,7 +605,7 @@ if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
 			AND is_orphan = 0
-		ORDER BY filetime DESC";
+		ORDER BY attach_id DESC";
 	$result = $db->sql_query($sql);
 	$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
 	$db->sql_freeresult($result);
@@ -691,13 +694,16 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	{
 		if (confirm_box(true))
 		{
+			$message_parser->message = $message;
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+
 			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'user_id'		=> (int) $user->data['user_id'],
 				'topic_id'		=> (int) $topic_id,
 				'forum_id'		=> (int) $forum_id,
 				'save_time'		=> (int) $current_time,
 				'draft_subject'	=> (string) $subject,
-				'draft_message'	=> (string) $message)
+				'draft_message'	=> (string) $message_parser->message)
 			);
 			$db->sql_query($sql);
 
@@ -813,6 +819,7 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
+$bbcode_utils = $phpbb_container->get('text_formatter.utils');
 
 if ($submit || $preview || $refresh)
 {
@@ -941,7 +948,9 @@ if ($submit || $preview || $refresh)
 	*				is posting a new topic or editing a post)
 	* @var	bool	refresh		Whether or not to retain previously submitted data
 	* @var	object	message_parser	The message parser object
+	* @var	array	error		Array of errors
 	* @since 3.1.2-RC1
+	* @changed 3.1.11-RC1 Added error
 	*/
 	$vars = array(
 		'post_data',
@@ -956,6 +965,7 @@ if ($submit || $preview || $refresh)
 		'cancel',
 		'refresh',
 		'message_parser',
+		'error',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_message_text', compact($vars)));
 
@@ -1063,7 +1073,10 @@ if ($submit || $preview || $refresh)
 	// Validate username
 	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		if (!function_exists('validate_username'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		$user->add_lang('ucp');
 
@@ -1175,7 +1188,7 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_title'] = '';
 		$post_data['poll_start'] = $post_data['poll_length'] = $post_data['poll_max_options'] = $post_data['poll_last_vote'] = $post_data['poll_vote_change'] = 0;
 	}
-	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && ($original_poll_data['poll_title'] != ''))
+	else if (!$auth->acl_get('f_poll', $forum_id) && ($mode == 'edit') && ($post_id == $post_data['topic_first_post_id']) && !$bbcode_utils->is_empty($original_poll_data['poll_title']))
 	{
 		// We have a poll but the editing user is not permitted to create/edit it.
 		// So we just keep the original poll-data.
@@ -1263,8 +1276,8 @@ if ($submit || $preview || $refresh)
 	* @var	array	error		Any error strings; a non-empty array aborts form submission.
 	*				NOTE: Should be actual language strings, NOT language keys.
 	* @since 3.1.0-RC5
-	* @change 3.1.5-RC1 Added poll array to the event
-	* @change 3.2.0-a1 Removed undefined page_title
+	* @changed 3.1.5-RC1 Added poll array to the event
+	* @changed 3.2.0-a1 Removed undefined page_title
 	*/
 	$vars = array(
 		'post_data',
@@ -1593,9 +1606,12 @@ $message_parser->decode_message($post_data['bbcode_uid']);
 
 if ($generate_quote)
 {
+	// Remove attachment bbcode tags from the quoted message to avoid mixing with the new post attachments if any
+	$message_parser->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#uis', '\\2', $message_parser->message);
+
 	if ($config['allow_bbcode'])
 	{
-		$message_parser->message = $phpbb_container->get('text_formatter.utils')->generate_quote(
+		$message_parser->message = $bbcode_utils->generate_quote(
 			censor_text($message_parser->message),
 			array(
 				'author'  => $post_data['quote_username'],
@@ -1633,7 +1649,7 @@ $attachment_data = $message_parser->attachment_data;
 $filename_data = $message_parser->filename_data;
 $post_data['post_text'] = $message_parser->message;
 
-if (sizeof($post_data['poll_options']) || !empty($post_data['poll_title']))
+if (sizeof($post_data['poll_options']) || (isset($post_data['poll_title']) && !$bbcode_utils->is_empty($post_data['poll_title'])))
 {
 	$message_parser->message = $post_data['poll_title'];
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
@@ -1753,6 +1769,7 @@ $page_data = array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
 	'L_MESSAGE_BODY_EXPLAIN'	=> $user->lang('MESSAGE_BODY_EXPLAIN', (int) $config['max_post_chars']),
+	'L_DELETE_POST_PERMANENTLY'	=> $user->lang('DELETE_POST_PERMANENTLY', 1),
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
@@ -1877,13 +1894,13 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 *				posting page via $template->assign_vars()
 * @var	object	message_parser	The message parser object
 * @since 3.1.0-a1
-* @change 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
+* @changed 3.1.0-b3 Added vars post_data, moderators, mode, page_title,
 *		s_topic_icons, form_enctype, s_action, s_hidden_fields,
 *		post_id, topic_id, forum_id, submit, preview, save, load,
 *		delete, cancel, refresh, error, page_data, message_parser
-* @change 3.1.2-RC1 Removed 'delete' var as it does not exist
-* @change 3.1.5-RC1 Added poll variables to the page_data array
-* @change 3.1.6-RC1 Added 'draft_id' var
+* @changed 3.1.2-RC1 Removed 'delete' var as it does not exist
+* @changed 3.1.5-RC1 Added poll variables to the page_data array
+* @changed 3.1.6-RC1 Added 'draft_id' var
 */
 $vars = array(
 	'post_data',

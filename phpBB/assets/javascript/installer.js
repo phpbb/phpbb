@@ -12,6 +12,8 @@
 	var progressTimer = null;
 	var currentProgress = 0;
 	var refreshRequested = false;
+	var transmissionOver = false;
+	var statusCount = 0;
 
 	// Template related variables
 	var $contentWrapper = $('.install-body').find('.main');
@@ -329,6 +331,63 @@
 		if (responseObject.hasOwnProperty('redirect')) {
 			redirect(responseObject.redirect.url, responseObject.redirect.use_ajax);
 		}
+
+		if (responseObject.hasOwnProperty('over')) {
+			if (responseObject.over) {
+				transmissionOver = true;
+			}
+		}
+	}
+
+	/**
+	 * Processes status data
+	 *
+	 * @param status
+	 */
+	function processTimeoutResponse(status) {
+		if (statusCount === 12) { // 1 minute hard cap
+			status = 'fail';
+		}
+
+		if (status === 'continue') {
+			refreshRequested = false;
+			doRefresh();
+		} else if (status === 'running') {
+			statusCount++;
+			$('#loading_indicator').css('display', 'block');
+			setTimeout(queryInstallerStatus, 5000);
+		} else {
+			$('#loading_indicator').css('display', 'none');
+			addMessage('error',
+				[{
+					title: installLang.title,
+					description: installLang.msg
+				}]
+			);
+		}
+	}
+
+	/**
+	 * Queries the installer's status
+	 */
+	function queryInstallerStatus() {
+		var url = $(location).attr('pathname');
+		var lookUp = 'install/app.php';
+		var position = url.indexOf(lookUp);
+
+		if (position === -1) {
+			lookUp = 'install';
+			position = url.indexOf(lookUp);
+
+			if (position === -1) {
+				return false;
+			}
+		}
+
+		url = url.substring(0, position) + lookUp + '/installer/status';
+		$.getJSON(url, function(data) {
+			processTimeoutResponse(data.status);
+		});
 	}
 
 	/**
@@ -357,9 +416,16 @@
 			$('#loading_indicator').css('display', 'none');
 			resetPolling();
 
+			var timeoutDetected = !transmissionOver;
+
 			if (refreshRequested) {
 				refreshRequested = false;
 				doRefresh();
+			}
+
+			if (timeoutDetected) {
+				statusCount = 0;
+				queryInstallerStatus();
 			}
 		}
 	}
@@ -420,6 +486,7 @@
 	 */
 	function startPolling(xhReq) {
 		resetPolling();
+		transmissionOver = false;
 		pollTimer = setInterval(function () {
 			pollContent(xhReq);
 		}, 250);

@@ -99,6 +99,11 @@ if (isset($_GET['avatar']))
 	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
+	if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+	{
+		require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+	}
+
 	$filename = $request->variable('avatar', '');
 	$avatar_group = false;
 	$exit = false;
@@ -272,7 +277,7 @@ else
 	* @var	string	mode				Download mode
 	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
 	* @since 3.1.6-RC1
-	* @change 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
+	* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
 	*/
 	$vars = array(
 		'attach_id',

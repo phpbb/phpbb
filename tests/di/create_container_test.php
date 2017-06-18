@@ -13,7 +13,6 @@
 
 namespace
 {
-	require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 	require_once dirname(__FILE__) . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
 	class phpbb_di_container_test extends \phpbb_test_case
@@ -47,6 +46,7 @@ namespace
 		{
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
+			$this->assertFalse($container->hasParameter('container_exception'));
 
 			// Checks the core services
 			$this->assertTrue($container->hasParameter('core'));
@@ -55,7 +55,7 @@ namespace
 			$this->assertTrue($container->isFrozen());
 
 			// Checks inject_config
-			$this->assertTrue($container->hasParameter('dbal.dbhost'));
+			$this->assertTrue($container->hasParameter('core.table_prefix'));
 
 			// Checks use_extensions
 			$this->assertTrue($container->hasParameter('enabled'));
@@ -74,8 +74,6 @@ namespace
 			// Checks the construction of a dumped container
 			$container = $this->builder->get_container();
 			$this->assertInstanceOf('phpbb_cache_container', $container);
-			$this->assertFalse($container->isFrozen());
-			$container->getParameterBag(); // needed, otherwise the container is not marked as frozen
 			$this->assertTrue($container->isFrozen());
 		}
 

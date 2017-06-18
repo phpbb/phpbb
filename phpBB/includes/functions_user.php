@@ -119,19 +119,29 @@ function user_update_name($old_name, $new_name)
 	global $config, $db, $cache, $phpbb_dispatcher;
 
 	$update_ary = array(
-		FORUMS_TABLE			=> array('forum_last_poster_name'),
-		MODERATOR_CACHE_TABLE	=> array('username'),
-		POSTS_TABLE				=> array('post_username'),
-		TOPICS_TABLE			=> array('topic_first_poster_name', 'topic_last_poster_name'),
+		FORUMS_TABLE			=> array(
+			'forum_last_poster_id'	=> 'forum_last_poster_name',
+		),
+		MODERATOR_CACHE_TABLE	=> array(
+			'user_id'	=> 'username',
+		),
+		POSTS_TABLE				=> array(
+			'poster_id'	=> 'post_username',
+		),
+		TOPICS_TABLE			=> array(
+			'topic_poster'			=> 'topic_first_poster_name',
+			'topic_last_poster_id'	=> 'topic_last_poster_name',
+		),
 	);
 
 	foreach ($update_ary as $table => $field_ary)
 	{
-		foreach ($field_ary as $field)
+		foreach ($field_ary as $id_field => $name_field)
 		{
 			$sql = "UPDATE $table
-				SET $field = '" . $db->sql_escape($new_name) . "'
-				WHERE $field = '" . $db->sql_escape($old_name) . "'";
+				SET $name_field = '" . $db->sql_escape($new_name) . "'
+				WHERE $name_field = '" . $db->sql_escape($old_name) . "'
+					AND $id_field <> " . ANONYMOUS;
 			$db->sql_query($sql);
 		}
 	}
@@ -262,13 +272,15 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	* Use this event to modify the values to be inserted when a user is added
 	*
 	* @event core.user_add_modify_data
-	* @var array	user_row		Array of user details submited to user_add
-	* @var array	cp_data			Array of Custom profile fields submited to user_add
-	* @var array	sql_ary		Array of data to be inserted when a user is added
+	* @var array	user_row			Array of user details submited to user_add
+	* @var array	cp_data				Array of Custom profile fields submited to user_add
+	* @var array	sql_ary				Array of data to be inserted when a user is added
+	* @var array	notifications_data	Array of notification data to be inserted when a user is added
 	* @since 3.1.0-a1
-	* @change 3.1.0-b5
+	* @changed 3.1.0-b5 Added user_row and cp_data
+	* @changed 3.1.11-RC1 Added notifications_data
 	*/
-	$vars = array('user_row', 'cp_data', 'sql_ary');
+	$vars = array('user_row', 'cp_data', 'sql_ary', 'notifications_data');
 	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_data', compact($vars)));
 
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -1289,7 +1301,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $cache, $phpbb_log;
+	global $db, $user, $cache, $phpbb_log, $phpbb_dispatcher;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1363,6 +1375,20 @@ function user_unban($mode, $ban)
 				));
 			}
 		}
+
+		/**
+		* Use this event to perform actions after the unban has been performed
+		*
+		* @event core.user_unban
+		* @var	string	mode			One of the following: user, ip, email
+		* @var	array	user_ids_ary	Array with user_ids
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'mode',
+			'user_ids_ary',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.user_unban', compact($vars)));
 	}
 
 	$cache->destroy('sql', BANLIST_TABLE);
@@ -2194,7 +2220,7 @@ function phpbb_avatar_explanation_string()
 {
 	global $config, $user;
 
-	return $user->lang('AVATAR_EXPLAIN',
+	return $user->lang(($config['avatar_filesize'] == 0) ? 'AVATAR_EXPLAIN_NO_FILESIZE' : 'AVATAR_EXPLAIN',
 		$user->lang('PIXELS', (int) $config['avatar_max_width']),
 		$user->lang('PIXELS', (int) $config['avatar_max_height']),
 		round($config['avatar_filesize'] / 1024));
@@ -2764,7 +2790,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 *
 * @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
-function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
+function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $log_action = true)
 {
 	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_log;
 
@@ -2899,16 +2925,19 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$vars = array('group_id', 'group_name', 'user_id_ary', 'username_ary');
 	extract($phpbb_dispatcher->trigger_event('core.group_delete_user_after', compact($vars)));
 
-	if (!$group_name)
+	if ($log_action)
 	{
-		$group_name = get_group_name($group_id);
-	}
+		if (!$group_name)
+		{
+			$group_name = get_group_name($group_id);
+		}
 
-	$log = 'LOG_GROUP_REMOVE';
+		$log = 'LOG_GROUP_REMOVE';
 
-	if ($group_name)
-	{
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
+		if ($group_name)
+		{
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log, false, array($group_name, implode(', ', $username_ary)));
+		}
 	}
 
 	group_update_listings($group_id);
@@ -3007,7 +3036,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $user, $phpbb_container, $phpbb_log;
+	global $db, $auth, $user, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -3138,6 +3167,28 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			$log = 'LOG_GROUP_DEFAULTS';
 		break;
 	}
+
+	/**
+	* Event to perform additional actions on setting user group attributes
+	*
+	* @event core.user_set_group_attributes
+	* @var	int		group_id			ID of the group
+	* @var	string	group_name			Name of the group
+	* @var	array	user_id_ary			IDs of the users to set group attributes
+	* @var	array	username_ary		Names of the users to set group attributes
+	* @var	array	group_attributes	Group attributes which were changed
+	* @var	string	action				Action to perform over the group members
+	* @since 3.1.10-RC1
+	*/
+	$vars = array(
+		'group_id',
+		'group_name',
+		'user_id_ary',
+		'username_ary',
+		'group_attributes',
+		'action',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.user_set_group_attributes', compact($vars)));
 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
@@ -3555,8 +3606,8 @@ function remove_newly_registered($user_id, $user_data = false)
 	}
 
 	// We need to call group_user_del here, because this function makes sure everything is correctly changed.
-	// A downside for a call within the session handler is that the language is not set up yet - so no log entry
-	group_user_del($group_id, $user_id);
+	// Force function to not log the removal of users from newly registered users group
+	group_user_del($group_id, $user_id, false, false, false);
 
 	// Set user_new to 0 to let this not be triggered again
 	$sql = 'UPDATE ' . USERS_TABLE . '

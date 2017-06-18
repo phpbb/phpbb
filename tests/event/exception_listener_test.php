@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class exception_listener extends phpbb_test_case
 {
 	public function phpbb_exception_data()

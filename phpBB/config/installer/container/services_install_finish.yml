@@ -2,9 +2,20 @@ services:
     installer.install_finish.populate_migrations:
         class: phpbb\install\module\install_finish\task\populate_migrations
         arguments:
+            - '@installer.helper.config'
             - '@installer.helper.container_factory'
         tags:
             - { name: install_finish, order: 10 }
+
+    installer.install_finish.install_extensions:
+        class: phpbb\install\module\install_finish\task\install_extensions
+        arguments:
+            - '@installer.helper.container_factory'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '%core.root_path%'
+        tags:
+            - { name: install_finish, order: 20 }
 
     installer.install_finish.notify_user:
         class: phpbb\install\module\install_finish\task\notify_user
@@ -15,7 +26,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
-            - { name: install_finish, order: 20 }
+            - { name: install_finish, order: 30 }
 
     installer.module.install_finish_collection:
         class: phpbb\di\ordered_service_collection
@@ -25,7 +36,7 @@ services:
             - { name: service_collection, tag: install_finish, class_name_aware: true }
 
     installer.module.finish_install:
-        class: phpbb\install\module\install_filesystem\module
+        class: phpbb\install\module\install_finish\module
         parent: installer.module_base
         arguments:
             - '@installer.module.install_finish_collection'

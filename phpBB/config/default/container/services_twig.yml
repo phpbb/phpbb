@@ -1,5 +1,5 @@
 parameters:
-    core.template.cache_path: '%core.root_path%cache/%core.environment%/twig/'
+    core.template.cache_path: '%core.cache_dir%twig/'
 
 services:
     template.twig.environment:
@@ -8,14 +8,17 @@ services:
             - '@config'
             - '@filesystem'
             - '@path_helper'
-            - '@service_container'
             - '%core.template.cache_path%'
             - '@ext.manager'
             - '@template.twig.loader'
+            - '@dispatcher'
             - []
+        calls:
+            - [setLexer, ['@template.twig.lexer']]
 
     template.twig.lexer:
         class: phpbb\template\twig\lexer
+        lazy: true
         arguments:
             - '@template.twig.environment'
 

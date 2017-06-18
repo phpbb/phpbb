@@ -282,6 +282,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 			$subforums[$parent_id][$forum_id]['children'] = array();
+			$subforums[$parent_id][$forum_id]['type'] = $row['forum_type'];
 
 			if (isset($subforums[$parent_id][$row['parent_id']]) && !$row['display_on_index'])
 			{
@@ -441,7 +442,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			* @var	array	root_data		Array with the root forum data
 			* @var	array	row				The data of the 'category'
 			* @since 3.1.0-RC4
-			* @change 3.1.7-RC1 Removed undefined catless variable
+			* @changed 3.1.7-RC1 Removed undefined catless variable
 			*/
 			$vars = array(
 				'cat_row',
@@ -490,6 +491,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 						'link'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
 						'name'		=> $subforum_row['name'],
 						'unread'	=> $subforum_unread,
+						'type'		=> $subforum_row['type'],
 					);
 				}
 				else
@@ -571,6 +573,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'U_SUBFORUM'	=> $subforum['link'],
 				'SUBFORUM_NAME'	=> $subforum['name'],
 				'S_UNREAD'		=> $subforum['unread'],
+				'IS_LINK'		=> $subforum['type'] == FORUM_LINK,
 			);
 		}
 		$s_subforums_list = (string) implode($user->lang['COMMA_SEPARATOR'], $s_subforums_list);
@@ -645,7 +648,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		* @var	array	row				The data of the forum
 		* @var	array	subforums_row	Template data of subforums
 		* @since 3.1.0-a1
-		* @change 3.1.0-b5 Added var subforums_row
+		* @changed 3.1.0-b5 Added var subforums_row
 		*/
 		$vars = array('forum_row', 'row', 'subforums_row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
@@ -726,17 +729,17 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 */
 function generate_forum_rules(&$forum_data)
 {
+	if ($forum_data['forum_rules'])
+	{
+		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
+	}
+
 	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
 	{
 		return;
 	}
 
 	global $template;
-
-	if ($forum_data['forum_rules'])
-	{
-		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
-	}
 
 	$template->assign_vars(array(
 		'S_FORUM_RULES'	=> true,
@@ -1076,7 +1079,7 @@ function display_custom_bbcodes()
 	global $db, $template, $user, $phpbb_dispatcher;
 
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
-	$num_predefined_bbcodes = 22;
+	$num_predefined_bbcodes = NUM_PREDEFINED_BBCODES;
 
 	$sql_ary = array(
 		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline',
@@ -1143,18 +1146,6 @@ function display_custom_bbcodes()
 	* @since 3.1.0-a1
 	*/
 	$phpbb_dispatcher->dispatch('core.display_custom_bbcodes');
-}
-
-/**
-* Display reasons
-*
-* @deprecated 3.2.0-dev
-*/
-function display_reasons($reason_id = 0)
-{
-	global $phpbb_container;
-
-	$phpbb_container->get('phpbb.report.report_reason_list_provider')->display_reasons($reason_id);
 }
 
 /**
@@ -1542,6 +1533,23 @@ function phpbb_get_user_rank($user_data, $user_posts)
 			}
 		}
 	}
+
+	/**
+	* Modify a user's rank before displaying
+	*
+	* @event core.get_user_rank_after
+	* @var	array	user_data		Array with user's data
+	* @var	int		user_posts		User_posts to change
+	* @var	array	user_rank_data	User rank data
+	* @since 3.1.11-RC1
+	*/
+
+	$vars = array(
+		'user_data',
+		'user_posts',
+		'user_rank_data',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.get_user_rank_after', compact($vars)));
 
 	return $user_rank_data;
 }

@@ -115,7 +115,6 @@ class obtain_file_updater_method extends task_base
 				),
 			));
 
-			$this->iohandler->send_response();
 			throw new user_interaction_required_exception();
 		}
 	}

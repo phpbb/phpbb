@@ -8,7 +8,10 @@ services:
     dbal.conn:
         class: phpbb\db\driver\factory
         arguments:
-            - @service_container
+            - '@service_container'
+
+    dbal.conn.driver:
+        synthetic: true
 
     dispatcher:
         class: phpbb\db\driver\container_mock

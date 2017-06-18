@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
 
 class phpbb_functions_user_delete_test extends phpbb_database_test_case
@@ -73,6 +72,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$oauth_provider_collection,
 			'phpbb_users',
 			$phpbb_container,
+			$phpbb_dispatcher,
 			$this->phpbb_root_path,
 			$this->php_ext
 		);

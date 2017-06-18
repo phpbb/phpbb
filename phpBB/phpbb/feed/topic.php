@@ -66,6 +66,14 @@ class topic extends post_base
 		// Make sure topic is either approved or user authed
 		if ($this->topic_data['topic_visibility'] != ITEM_APPROVED && !$this->auth->acl_get('m_approve', $this->forum_id))
 		{
+			if ($this->user->data['user_id'] != ANONYMOUS)
+			{
+				send_status_line(403, 'Forbidden');
+			}
+			else
+			{
+				send_status_line(401, 'Unauthorized');
+			}
 			throw new unauthorized_topic_exception($this->topic_id);
 		}
 
@@ -78,6 +86,14 @@ class topic extends post_base
 		// Make sure we can read this forum
 		if (!$this->auth->acl_get('f_read', $this->forum_id))
 		{
+			if ($this->user->data['user_id'] != ANONYMOUS)
+			{
+				send_status_line(403, 'Forbidden');
+			}
+			else
+			{
+				send_status_line(401, 'Unauthorized');
+			}
 			throw new unauthorized_forum_exception($this->forum_id);
 		}
 
@@ -88,6 +104,14 @@ class topic extends post_base
 
 			if (isset($forum_ids_passworded[$this->forum_id]))
 			{
+				if ($this->user->data['user_id'] != ANONYMOUS)
+				{
+					send_status_line(403, 'Forbidden');
+				}
+				else
+				{
+					send_status_line(401, 'Unauthorized');
+				}
 				throw new unauthorized_forum_exception($this->forum_id);
 			}
 
@@ -102,6 +126,8 @@ class topic extends post_base
 	 */
 	protected function get_sql()
 	{
+		parent::fetch_attachments();
+
 		$this->sql = array(
 			'SELECT'	=>	'p.post_id, p.post_time, p.post_edit_time, p.post_visibility, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.post_attachment, ' .
 				'u.username, u.user_id',

@@ -141,67 +141,67 @@ class bbcode_firstpass extends bbcode
 		// To perform custom validation in extension, use $this->validate_bbcode_by_extension()
 		// method which accepts variable number of parameters
 		$this->bbcodes = array(
-			'code'			=> array('bbcode_id' => 8,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#uis' => function ($match) use($bbcode_class)
+			'code'			=> array('bbcode_id' => BBCODE_ID_CODE,	'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_code($match[1], $match[2]);
 				}
 			)),
-			'quote'			=> array('bbcode_id' => 0,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#uis' => function ($match) use($bbcode_class)
+			'quote'			=> array('bbcode_id' => BBCODE_ID_QUOTE,	'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_quote($match[0]);
 				}
 			)),
-			'attachment'	=> array('bbcode_id' => 12,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#uis' => function ($match) use($bbcode_class)
+			'attachment'	=> array('bbcode_id' => BBCODE_ID_ATTACH,	'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_attachment($match[1], $match[2]);
 				}
 			)),
-			'b'				=> array('bbcode_id' => 1,	'regexp' => array('#\[b\](.*?)\[/b\]#uis' => function ($match) use($bbcode_class)
+			'b'				=> array('bbcode_id' => BBCODE_ID_B,	'regexp' => array('#\[b\](.*?)\[/b\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_strong($match[1]);
 				}
 			)),
-			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#uis' => function ($match) use($bbcode_class)
+			'i'				=> array('bbcode_id' => BBCODE_ID_I,	'regexp' => array('#\[i\](.*?)\[/i\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_italic($match[1]);
 				}
 			)),
-			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiU' => function ($match) use($bbcode_class)
+			'url'			=> array('bbcode_id' => BBCODE_ID_URL,	'regexp' => array('#\[url(=(.*))?\](?(1)((?s).*(?-s))|(.*))\[/url\]#uiU' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->validate_url($match[2], ($match[3]) ? $match[3] : $match[4]);
 				}
 			)),
-			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](.*)\[/img\]#uiU' => function ($match) use($bbcode_class)
+			'img'			=> array('bbcode_id' => BBCODE_ID_IMG,	'regexp' => array('#\[img\](.*)\[/img\]#uiU' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_img($match[1]);
 				}
 			)),
-			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#uis' => function ($match) use($bbcode_class)
+			'size'			=> array('bbcode_id' => BBCODE_ID_SIZE,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_size($match[1], $match[2]);
 				}
 			)),
-			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!uis' => function ($match) use($bbcode_class)
+			'color'			=> array('bbcode_id' => BBCODE_ID_COLOR,	'regexp' => array('!\[color=(#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_color($match[1], $match[2]);
 				}
 			)),
-			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#uis' => function ($match) use($bbcode_class)
+			'u'				=> array('bbcode_id' => BBCODE_ID_U,	'regexp' => array('#\[u\](.*?)\[/u\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_underline($match[1]);
 				}
 			)),
-			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#uis' => function ($match) use($bbcode_class)
+			'list'			=> array('bbcode_id' => BBCODE_ID_LIST,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_parse_list($match[0]);
 				}
 			)),
-			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#uis' => function ($match) use($bbcode_class)
+			'email'			=> array('bbcode_id' => BBCODE_ID_EMAIL,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#uis' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->validate_email($match[1], $match[2]);
 				}
 			)),
-			'flash'			=> array('bbcode_id' => 11,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ui' => function ($match) use($bbcode_class)
+			'flash'			=> array('bbcode_id' => BBCODE_ID_FLASH,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ui' => function ($match) use($bbcode_class)
 				{
 					return $bbcode_class->bbcode_flash($match[1], $match[2], $match[3]);
 				}
@@ -1219,7 +1219,7 @@ class parse_message extends bbcode_firstpass
 		* @var bool		return					Do we return after the event is triggered if $warn_msg is not empty
 		* @var array	warn_msg				Array of the warning messages
 		* @since 3.1.2-RC1
-		* @change 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
+		* @changed 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
 		*/
 		$message = $this->message;
 		$warn_msg = $this->warn_msg;
@@ -1470,7 +1470,6 @@ class parse_message extends bbcode_firstpass
 			// For now setting the ttl to 10 minutes
 			switch ($db->get_sql_layer())
 			{
-				case 'mssql':
 				case 'mssql_odbc':
 				case 'mssqlnative':
 					$sql = 'SELECT *
@@ -1861,7 +1860,7 @@ class parse_message extends bbcode_firstpass
 		// Parse Poll Option text
 		$tmp_message = $this->message;
 
-		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
+		$poll['poll_options'] = preg_split('/\s*?\n\s*/', trim($poll['poll_option_text']));
 		$poll['poll_options_size'] = sizeof($poll['poll_options']);
 
 		foreach ($poll['poll_options'] as &$poll_option)

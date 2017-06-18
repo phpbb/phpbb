@@ -53,6 +53,7 @@ services:
     phpbb.installer.controller.convert:
         class: phpbb\convert\controller\convertor
         arguments:
+            - '@cache.driver'
             - '@installer.helper.container_factory'
             - '@installer.helper.database'
             - '@phpbb.installer.controller.helper'
@@ -64,3 +65,9 @@ services:
             - '@template'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    phpbb.installer.controller.status:
+        class: phpbb\install\controller\timeout_check
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '%core.root_path%'

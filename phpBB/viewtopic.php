@@ -323,8 +323,8 @@ if ($post_id)
 $topic_id = (int) $topic_data['topic_id'];
 $topic_replies = $phpbb_content_visibility->get_count('topic_posts', $topic_data, $forum_id) - 1;
 
-// Check sticky/announcement time limit
-if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == POST_ANNOUNCE) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
+// Check sticky/announcement/global  time limit
+if (($topic_data['topic_type'] != POST_NORMAL) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_type = ' . POST_NORMAL . ', topic_time_limit = 0
@@ -376,6 +376,7 @@ if (!$overrides_f_read_check && !$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('SORRY_AUTH_READ');
 	}
 
@@ -497,6 +498,28 @@ if ($config['allow_topic_notify'])
 	}
 }
 
+/**
+* Event to modify highlight.
+*
+* @event core.viewtopic_highlight_modify
+* @var	string	highlight			String to be highlighted
+* @var	string	highlight_match		Highlight string to be used in preg_replace
+* @var	array	topic_data			Topic data
+* @var	int		start				Pagination start
+* @var	int		total_posts			Number of posts
+* @var	string	viewtopic_url		Current viewtopic URL
+* @since 3.1.11-RC1
+*/
+$vars = array(
+	'highlight',
+	'highlight_match',
+	'topic_data',
+	'start',
+	'total_posts',
+	'viewtopic_url',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_highlight_modify', compact($vars)));
+
 // Bookmarks
 if ($config['allow_bookmarks'] && $user->data['is_registered'] && $request->variable('bookmark', 0))
 {
@@ -590,6 +613,33 @@ $quickmod_array = array(
 	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
 );
 
+/**
+* Event to modify data in the quickmod_array before it gets sent to the
+* phpbb_add_quickmod_option function.
+*
+* @event core.viewtopic_add_quickmod_option_before
+* @var	int				forum_id				Forum ID
+* @var	int				post_id					Post ID
+* @var	array			quickmod_array			Array with quick moderation options data
+* @var	array			topic_data				Array with topic data
+* @var	int				topic_id				Topic ID
+* @var	array			topic_tracking_info		Array with topic tracking data
+* @var	string			viewtopic_url			URL to the topic page
+* @var	bool			allow_change_type		Topic change permissions check
+* @since 3.1.9-RC1
+*/
+$vars = array(
+	'forum_id',
+	'post_id',
+	'quickmod_array',
+	'topic_data',
+	'topic_id',
+	'topic_tracking_info',
+	'viewtopic_url',
+	'allow_change_type',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_add_quickmod_option_before', compact($vars)));
+
 foreach ($quickmod_array as $option => $qm_ary)
 {
 	if (!empty($qm_ary[1]))
@@ -653,7 +703,7 @@ $base_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=
 * @var	int		total_posts			Topic total posts count
 * @var	string	viewtopic_url		URL to the topic page
 * @since 3.1.0-RC4
-* @change 3.1.2-RC1 Added viewtopic_url
+* @changed 3.1.2-RC1 Added viewtopic_url
 */
 $vars = array(
 	'base_url',
@@ -1153,7 +1203,7 @@ $sql_ary = array(
 * @var	int		start		Pagination information
 * @var	array	sql_ary		The SQL array to get the data of posts and posters
 * @since 3.1.0-a1
-* @change 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
+* @changed 3.1.0-a2 Added vars forum_id, topic_id, topic_data, post_list, sort_days, sort_key, sort_dir, start
 */
 $vars = array(
 	'forum_id',
@@ -1269,7 +1319,6 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_title'		=> '',
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
-				'sig'				=> '',
 				'pm'				=> '',
 				'email'				=> '',
 				'jabber'			=> '',
@@ -1455,7 +1504,7 @@ if (sizeof($attach_list))
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
 				AND in_message = 0
-			ORDER BY filetime DESC, post_msg_id ASC';
+			ORDER BY attach_id DESC, post_msg_id ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1597,6 +1646,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		$parse_flags = ($user_cache[$poster_id]['sig_bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 		$user_cache[$poster_id]['sig'] = generate_text_for_display($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield'],  $parse_flags, true);
+		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
 
 	// Parse the message and subject
@@ -1965,9 +2015,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	post_row			Template block array of the post
 	* @var	array	topic_data			Array with topic data
 	* @since 3.1.0-a1
-	* @change 3.1.0-a3 Added vars start, current_row_number, end, attachments
-	* @change 3.1.0-b3 Added topic_data array, total_posts
-	* @change 3.1.0-RC3 Added poster_id
+	* @changed 3.1.0-a3 Added vars start, current_row_number, end, attachments
+	* @changed 3.1.0-b3 Added topic_data array, total_posts
+	* @changed 3.1.0-RC3 Added poster_id
 	*/
 	$vars = array(
 		'start',
@@ -2065,7 +2115,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	post_row			Template block array of the post
 	* @var	array	topic_data			Array with topic data
 	* @since 3.1.0-a3
-	* @change 3.1.0-b3 Added topic_data array, total_posts
+	* @changed 3.1.0-b3 Added topic_data array, total_posts
 	*/
 	$vars = array(
 		'start',
@@ -2228,7 +2278,7 @@ $page_title = $topic_data['topic_title'] . ($start ? ' - ' . sprintf($user->lang
 * @var	int		start			Start offset used to calculate the page
 * @var	array	post_list		Array with post_ids we are going to display
 * @since 3.1.0-a1
-* @change 3.1.0-RC4 Added post_list var
+* @changed 3.1.0-RC4 Added post_list var
 */
 $vars = array('page_title', 'topic_data', 'forum_id', 'start', 'post_list');
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_page_title', compact($vars)));

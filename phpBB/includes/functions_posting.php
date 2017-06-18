@@ -120,6 +120,15 @@ function generate_smilies($mode, $forum_id)
 
 		foreach ($smilies as $row)
 		{
+			/**
+			* Modify smiley root path before populating smiley list
+			*
+			* @event core.generate_smilies_before
+			* @var string  root_path root_path for smilies
+			* @since 3.1.11-RC1
+			*/
+			$vars = array('root_path');
+			extract($phpbb_dispatcher->trigger_event('core.generate_smilies_before', compact($vars)));
 			$template->assign_block_vars('smiley', array(
 				'SMILEY_CODE'	=> $row['code'],
 				'A_SMILEY_CODE'	=> addslashes($row['code']),
@@ -386,34 +395,6 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 //
 // Attachment related functions
 //
-
-/**
-* Upload Attachment - filedata is generated here
-* Uses upload class
-*
-* @deprecated 3.2.0-a1 (To be removed: 3.4.0)
-*
-* @param string			$form_name		The form name of the file upload input
-* @param int			$forum_id		The id of the forum
-* @param bool			$local			Whether the file is local or not
-* @param string			$local_storage	The path to the local file
-* @param bool			$is_message		Whether it is a PM or not
-* @param array			$local_filedata	A filespec object created for the local file
-*
-* @return array File data array
-*/
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\attachment\manager $attachment_manager */
-	$attachment_manager = $phpbb_container->get('attachment.manager');
-	$file = $attachment_manager->upload($form_name, $forum_id, $local, $local_storage, $is_message, $local_filedata);
-	unset($attachment_manager);
-
-	return $file;
-}
-
 /**
 * Calculate the needed size for Thumbnail
 */
@@ -544,7 +525,7 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	$used_imagick = false;
 
-	// Only use imagemagick if defined and the passthru function not disabled
+	// Only use ImageMagick if defined and the passthru function not disabled
 	if ($config['img_imagick'] && function_exists('passthru'))
 	{
 		if (substr($config['img_imagick'], -1) !== '/')
@@ -924,7 +905,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
+		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe, uu.username as post_delete_username, uu.user_colour as post_delete_user_colour',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
@@ -935,6 +916,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			array(
 				'FROM'	=> array(ZEBRA_TABLE => 'z'),
 				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+			),
+			array(
+				'FROM'	=> array(USERS_TABLE => 'uu'),
+				'ON'	=> 'uu.user_id = p.post_delete_user',
 			),
 		),
 
@@ -977,6 +962,32 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$db->sql_freeresult($result);
 	}
 
+	/**
+	* Event to modify the posts list for topic reviews
+	*
+	* @event core.topic_review_modify_post_list
+	* @var	array	attachments			Array with the post attachments data
+	* @var	int		cur_post_id			Post offset ID
+	* @var	int		forum_id			The topic's forum ID
+	* @var	string	mode				The topic review mode
+	* @var	array	post_list			Array with the post IDs
+	* @var	array	rowset				Array with the posts data
+	* @var	bool	show_quote_button	Flag indicating if the quote button should be displayed
+	* @var	int		topic_id			The topic ID that is being reviewed
+	* @since 3.1.9-RC1
+	*/
+	$vars = array(
+		'attachments',
+		'cur_post_id',
+		'forum_id',
+		'mode',
+		'post_list',
+		'rowset',
+		'show_quote_button',
+		'topic_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.topic_review_modify_post_list', compact($vars)));
+
 	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		// A non-existing rowset only happens if there was no user present for the entered poster_id
@@ -1016,6 +1027,31 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$post_anchor = ($mode == 'post_review') ? 'ppr' . $row['post_id'] : 'pr' . $row['post_id'];
 		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "f=$forum_id&amp;t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
 
+		$l_deleted_message = '';
+		if ($row['post_visibility'] == ITEM_DELETED)
+		{
+			$display_postername = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+
+			// User having deleted the post also being the post author?
+			if (!$row['post_delete_user'] || $row['post_delete_user'] == $poster_id)
+			{
+				$display_username = $display_postername;
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_delete_user'], $row['post_delete_username'], $row['post_delete_user_colour']);
+			}
+
+			if ($row['post_delete_reason'])
+			{
+				$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']);
+			}
+			else
+			{
+				$l_deleted_message = $user->lang('POST_DELETED_BY', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true));
+			}
+		}
+
 		$post_row = array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1026,6 +1062,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
 			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
+			'L_DELETE_POST'		=> $l_deleted_message,
 
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
@@ -1099,7 +1137,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $softdelete_reason = '')
 {
-	global $db, $user, $phpbb_container;
+	global $db, $user, $phpbb_container, $phpbb_dispatcher;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
@@ -1350,6 +1388,34 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 		sync('topic_reported', 'topic_id', array($topic_id));
 	}
 
+	/**
+	* This event is used for performing actions directly after a post or topic
+	* has been deleted.
+	*
+	* @event core.delete_post_after
+	* @var	int		forum_id			Post forum ID
+	* @var	int		topic_id			Post topic ID
+	* @var	int		post_id				Post ID
+	* @var	array	data				Post data
+	* @var	bool	is_soft				Soft delete flag
+	* @var	string	softdelete_reason	Soft delete reason
+	* @var	string	post_mode			delete_topic, delete_first_post, delete_last_post or delete
+	* @var	mixed	next_post_id		Next post ID in the topic (post ID or false)
+	*
+	* @since 3.1.11-RC1
+	*/
+	$vars = array(
+		'forum_id',
+		'topic_id',
+		'post_id',
+		'data',
+		'is_soft',
+		'softdelete_reason',
+		'post_mode',
+		'next_post_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_post_after', compact($vars)));
+
 	return $next_post_id;
 }
 
@@ -1465,6 +1531,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				$post_visibility = ITEM_REAPPROVE;
 			break;
 		}
+	}
+	else if (isset($data_ary['post_visibility']) && $data_ary['post_visibility'] !== false)
+	{
+		$post_visibility = $data_ary['post_visibility'];
 	}
 
 	// MODs/Extensions are able to force any visibility on posts
@@ -1606,7 +1676,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_first_poster_colour'	=> $user->data['user_colour'],
 				'topic_type'				=> $topic_type,
-				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data_ary['topic_time_limit'] * 86400) : 0,
+				'topic_time_limit'			=> $topic_type != POST_NORMAL ? ($data_ary['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'			=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
 				'topic_status'				=> (isset($data_ary['topic_status'])) ? $data_ary['topic_status'] : ITEM_UNLOCKED,
 			);
@@ -1701,7 +1771,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> $username,
 				'topic_type'				=> $topic_type,
-				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data_ary['topic_time_limit'] * 86400) : 0,
+				'topic_time_limit'			=> $topic_type != POST_NORMAL ? ($data_ary['topic_time_limit'] * 86400) : 0,
 				'poll_title'				=> (isset($poll_ary['poll_options'])) ? $poll_ary['poll_title'] : '',
 				'poll_start'				=> (isset($poll_ary['poll_options'])) ? $poll_start : 0,
 				'poll_max_options'			=> (isset($poll_ary['poll_options'])) ? $poll_ary['poll_max_options'] : 1,
@@ -2273,7 +2343,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 	$params = $add_anchor = '';
 
-	if ($post_visibility == ITEM_APPROVED)
+	if ($post_visibility == ITEM_APPROVED ||
+		($auth->acl_get('m_softdelete', $data_ary['forum_id']) && $post_visibility == ITEM_DELETED) ||
+		($auth->acl_get('m_approve', $data_ary['forum_id']) && in_array($post_visibility, array(ITEM_UNAPPROVED, ITEM_REAPPROVE))))
 	{
 		$params .= '&amp;t=' . $data_ary['topic_id'];
 
@@ -2314,7 +2386,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	* @var	string	url					The "Return to topic" URL
 	*
 	* @since 3.1.0-a3
-	* @change 3.1.0-RC3 Added vars mode, subject, username, topic_type,
+	* @changed 3.1.0-RC3 Added vars mode, subject, username, topic_type,
 	*		poll, update_message, update_search_index
 	*/
 	$vars = array(

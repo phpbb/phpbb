@@ -55,6 +55,8 @@ function adm_page_header($page_title)
 		return;
 	}
 
+	$user->update_session_infos();
+
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
@@ -63,6 +65,9 @@ function adm_page_header($page_title)
 			ob_start('ob_gzhandler');
 		}
 	}
+
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
@@ -73,6 +78,8 @@ function adm_page_header($page_title)
 		'SESSION_ID'			=> $user->session_id,
 		'ROOT_PATH'				=> $phpbb_root_path,
 		'ADMIN_ROOT_PATH'		=> $phpbb_admin_path,
+		'PHPBB_VERSION'			=> PHPBB_VERSION,
+		'PHPBB_MAJOR'			=> $phpbb_major,
 
 		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
 		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
@@ -86,6 +93,7 @@ function adm_page_header($page_title)
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
+		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$phpbb_root_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
 
@@ -165,8 +173,6 @@ function adm_page_footer($copyright_html = true)
 	{
 		return;
 	}
-
-	$user->update_session_infos();
 
 	phpbb_check_and_display_sql_report($request, $auth, $db);
 
@@ -258,46 +264,49 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		case 'text':
 		case 'url':
 		case 'email':
-		case 'color':
-		case 'date':
-		case 'time':
-		case 'datetime':
-		case 'datetime-local':
-		case 'month':
-		case 'range':
-		case 'search':
 		case 'tel':
-		case 'week':
+		case 'search':
+			// maxlength and size are only valid for these types and will be
+			// ignored for other input types.
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
 			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new_ary[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
 		break;
 
+		case 'color':
+		case 'datetime':
+		case 'datetime-local':
+		case 'month':
+		case 'week':
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '" name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
+		break;
+
+		case 'date':
+		case 'time':
 		case 'number':
-			$max = $maxlength = '';
+		case 'range':
+			$max = '';
 			$min = ( isset($tpl_type[1]) ) ? (int) $tpl_type[1] : false;
 			if ( isset($tpl_type[2]) )
 			{
 				$max = (int) $tpl_type[2];
-				$maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number" maxlength="' . (( $maxlength != '' ) ? $maxlength : 255) . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
+			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (( $min != '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
 		break;
 
 		case 'dimension':
-			$max = $maxlength = $size = '';
+			$max = '';
 
 			$min = (int) $tpl_type[1];
 
 			if ( isset($tpl_type[2]) )
 			{
 				$max = (int) $tpl_type[2];
-				$size = $maxlength = strlen( (string) $max );
 			}
 
-			$tpl = '<input id="' . $key . '" type="number"' . (( $size != '' ) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new_ary[$config_key . '_width'] . '" /> x <input type="number"' . (( $size != '' ) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength != '') ? $maxlength : 255) . '"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new_ary[$config_key . '_height'] . '" />';
+			$tpl = '<input id="' . $key . '" type="number"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new_ary[$config_key . '_width'] . '" /> x <input type="number"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new_ary[$config_key . '_height'] . '" />';
 		break;
 
 		case 'textarea':

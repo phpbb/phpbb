@@ -5,7 +5,7 @@
 <!-- EVENT memberlist_view_content_prepend -->
 
 <form method="post" action="{S_PROFILE_ACTION}" id="viewprofile">
-<div class="panel bg1<!-- IF S_ONLINE --> online<!-- ENDIF -->">
+<div class="panel bg1">
 	<div class="inner">
 
 	<!-- IF AVATAR_IMG -->
@@ -19,9 +19,11 @@
 	<!-- ENDIF -->
 
 	<dl class="left-box details profile-details">
-		<dt>{L_USERNAME}{L_COLON}</dt>
+		<dt>
+			{L_USERNAME}{L_COLON}
+		</dt>
 		<dd>
-			<!-- IF USER_COLOR --><span style="color: {USER_COLOR}; font-weight: bold;"><!-- ELSE --><span><!-- ENDIF -->{USERNAME}</span>
+			<!-- IF USER_COLOR --><span style="color: {USER_COLOR}; font-weight: bold;"><!-- ELSE --><span><!-- ENDIF -->{USERNAME}</span> <!-- IF S_ONLINE -->  <i class="icon fa-circle fa-fw icon-md online" aria-hidden="true"></i><span class="sr-only">{L_ONLINE}</span><!-- ENDIF -->
 			<!-- IF U_EDIT_SELF --> [ <a href="{U_EDIT_SELF}">{L_EDIT_PROFILE}</a> ]<!-- ENDIF -->
 			<!-- IF U_USER_ADMIN --> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]<!-- ENDIF -->
 			<!-- IF U_USER_BAN --> [ <a href="{U_USER_BAN}">{L_USER_BAN}</a> ]<!-- ENDIF -->
@@ -35,12 +37,15 @@
 		<!-- ENDIF -->
 		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}{L_COLON}</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF AGE !== '' --><dt>{L_AGE}{L_COLON}</dt> <dd>{AGE}</dd><!-- ENDIF -->
-		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}{L_COLON}</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button2" /></dd><!-- ENDIF -->
+		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}{L_COLON}</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button1 button button-form-bold" /></dd><!-- ENDIF -->
+		<!-- EVENT memberlist_view_non_contact_custom_fields_before -->
 		<!-- BEGIN custom_fields -->
 			<!-- IF not custom_fields.S_PROFILE_CONTACT -->
 				<dt>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd>
 			<!-- ENDIF -->
 		<!-- END custom_fields -->
+		<!-- EVENT memberlist_view_non_contact_custom_fields_after -->
+		<!-- EVENT memberlist_view_zebra_before -->
 		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 			<!-- IF U_REMOVE_FRIEND -->
 				<dt>&nbsp;</dt> <dd class="zebra"><a href="{U_REMOVE_FRIEND}" data-ajax="zebra"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
@@ -55,6 +60,7 @@
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		<!-- ENDIF -->
+		<!-- EVENT memberlist_view_zebra_after -->
 	</dl>
 
 	</div>
@@ -71,6 +77,7 @@
 		<!-- IF U_EMAIL --><dt>{L_EMAIL_ADDRESS}{L_COLON}</dt> <dd><a href="{U_EMAIL}">{L_SEND_EMAIL_USER}</a></dd><!-- ENDIF -->
 		<!-- IF U_PM --><dt>{L_PM}{L_COLON}</dt> <dd><a href="{U_PM}">{L_SEND_PRIVATE_MESSAGE}</a></dd><!-- ENDIF -->
 		<!-- IF U_JABBER and S_JABBER_ENABLED --><dt>{L_JABBER}{L_COLON}</dt> <dd><a href="{U_JABBER}" onclick="popup(this.href, 750, 320); return false;">{L_SEND_JABBER_MESSAGE}</a></dd><!-- ELSEIF USER_JABBER --><dt>{L_JABBER}{L_COLON}</dt> <dd>{USER_JABBER}</dd><!-- ENDIF -->
+		<!-- EVENT memberlist_view_contact_custom_fields_before -->
 		<!-- BEGIN custom_fields -->
 			<!-- IF custom_fields.S_PROFILE_CONTACT -->
 				<dt>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</dt>
@@ -81,6 +88,7 @@
 				<!-- ENDIF -->
 			<!-- ENDIF -->
 		<!-- END custom_fields -->
+		<!-- EVENT memberlist_view_contact_custom_fields_after -->
 		<!-- IF S_PROFILE_FIELD1 -->
 			<!-- NOTE: Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 			<dt>{PROFILE_FIELD1_NAME}{L_COLON}</dt> <dd>{PROFILE_FIELD1_VALUE}</dd>

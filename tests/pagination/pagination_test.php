@@ -37,16 +37,17 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
+		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
+
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
 
-		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
 			new \phpbb\routing\file_locator($filesystem, dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $manager);
-		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, dirname(__FILE__) . '/', 'php');
 
 		$request = new phpbb_mock_request();
 		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
@@ -216,6 +217,12 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				10,
 				10,
 				0,
+				'PAGE_OF-1-1',
+			),
+			array(
+				'10',
+				'10',
+				'0',
 				'PAGE_OF-1-1',
 			),
 		);

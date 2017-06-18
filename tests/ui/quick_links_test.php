@@ -16,12 +16,11 @@
 */
 class quick_links_test extends phpbb_ui_test_case
 {
-
 	public function test_quick_links()
 	{
 		$this->visit('index.php');
-		$this->assertEmpty(self::find_element('className', 'dropdown')->getText());
-		self::find_element('className', 'dropdown-toggle')->click();
-		$this->assertNotNull(self::find_element('className', 'dropdown')->getText());
+		$this->assertEmpty($this->find_element('className', 'dropdown')->getText());
+		$this->find_element('className', 'dropdown-toggle')->click();
+		$this->assertNotNull($this->find_element('className', 'dropdown')->getText());
 	}
 }

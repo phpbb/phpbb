@@ -34,11 +34,11 @@
 	<fieldset id="display-panel" class="fields2" role="tabpanel">
 	<dl>
 		<dt><label for="posts_per_page">{L_POSTS_PER_PAGE}{L_COLON}</label><br /><span>{L_POSTS_PER_PAGE_EXPLAIN}</span></dt>
-		<dd><input class="inputbox autowidth" type="number" min="0" name="posts_per_page" id="posts_per_page" size="6" value="{POSTS_PER_PAGE}" /></dd>
+		<dd><input class="inputbox autowidth" type="number" min="0" max="999999" name="posts_per_page" id="posts_per_page" value="{POSTS_PER_PAGE}" /></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_DISPLAY_POSTS}{L_COLON}</label></dt>
-		<dd>{S_SELECT_SORT_DAYS}&nbsp;&nbsp;<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label> <input type="submit" name="sort" value="{L_GO}" class="button2" /></dd>
+		<dd>{S_SELECT_SORT_DAYS}&nbsp;&nbsp;<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label> <input type="submit" name="sort" value="{L_GO}" class="button1 button button-form-bold" /></dd>
 	</dl>
 	</fieldset>
 
@@ -73,7 +73,7 @@
 	<dl>
 		<dt><label for="to_topic_id">{L_MERGE_TOPIC_ID}{L_COLON}</label></dt>
 		<dd>
-			<input class="inputbox autowidth" type="number" min="0" size="6" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
+			<input class="inputbox autowidth" type="number" min="0" max="9999999999" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
 			<a href="{U_SELECT_TOPIC}" >{L_SELECT_TOPIC}</a>
 		</dd>
 		<!-- IF TO_TOPIC_INFO --><dd>{TO_TOPIC_INFO}</dd><!-- ENDIF -->
@@ -111,12 +111,18 @@
 					</li>
 				</ul>
 
+				<!-- EVENT mcp_topic_postrow_post_subject_before -->
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
+				<!-- EVENT mcp_topic_postrow_post_subject_after -->
+
+				<!-- EVENT mcp_topic_postrow_post_details_before -->
 				<p class="author">
 					<a href="#pr{postrow.POST_ID}" title="{postrow.MINI_POST}">
 						<i class="icon fa-file fa-fw icon-lightgray icon-tiny" aria-hidden="true"></i><span class="sr-only">{postrow.MINI_POST}</span>
-					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --> 
+					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong><!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF -->
 				</p>
+				<!-- EVENT mcp_topic_postrow_post_details_after -->
+
 				<!-- IF postrow.S_POST_UNAPPROVED -->
 				<p class="post-notice unapproved">
 					<a href="{postrow.U_MCP_APPROVE}"><i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><strong>{L_POST_UNAPPROVED}</strong></a>
@@ -180,7 +186,7 @@
 		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF S_SPLIT_VIEW --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
 		<!-- IF S_CAN_SYNC --><option value="resync">{L_RESYNC}</option><!-- ENDIF -->
 	</select>&nbsp;
-	<input class="button1" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" />
+	<input class="button1 button button-form" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" />
 	<div><a href="#" onclick="marklist('mcp', 'post', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'post', false); return false;">{L_UNMARK_ALL}</a></div>
 {S_HIDDEN_FIELDS}
 {S_FORM_TOKEN}

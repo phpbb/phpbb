@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/migration/dummy.php';
 require_once dirname(__FILE__) . '/migration/unfulfillable.php';
 require_once dirname(__FILE__) . '/migration/if.php';
@@ -155,6 +154,14 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertFalse($migrator_test_if_true_failed, 'True test failed');
 		$this->assertFalse($migrator_test_if_false_failed, 'False test failed');
+
+		while ($this->migrator->migration_state('phpbb_dbal_migration_if') !== false)
+		{
+			$this->migrator->revert('phpbb_dbal_migration_if');
+		}
+
+		$this->assertFalse($migrator_test_if_true_failed, 'True test after revert failed');
+		$this->assertFalse($migrator_test_if_false_failed, 'False test after revert failed');
 	}
 
 	public function test_recall()

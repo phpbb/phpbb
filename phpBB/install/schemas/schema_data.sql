@@ -142,6 +142,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_indexer_mem_limit', '512');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_stopwords', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('help_send_statistics', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('help_send_statistics_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_create_thumbnail', '0');
@@ -276,9 +278,15 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.2.0-b2-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.0-a1-dev');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_repositories', '[]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_packagist', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_json_file', 'composer-ext.json');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_vendor_dir', 'vendor-ext/');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_enable_on_install', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_purge_on_remove', '1');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);

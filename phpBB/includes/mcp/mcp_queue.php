@@ -104,7 +104,7 @@ class mcp_queue
 
 				if (!empty($topic_id_list) && $mode == 'deleted_topics')
 				{
-					if (!function_exists('mcp_delete_topics'))
+					if (!function_exists('mcp_delete_topic'))
 					{
 						global $phpbb_root_path, $phpEx;
 						include($phpbb_root_path . 'includes/mcp/mcp_main.' . $phpEx);
@@ -577,7 +577,7 @@ class mcp_queue
 						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
-						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						'S_HAS_ATTACHMENTS'	=> $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment'],
 					));
 				}
 				unset($rowset, $forum_names);
@@ -622,6 +622,7 @@ class mcp_queue
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 
@@ -877,6 +878,7 @@ class mcp_queue
 
 		if (!phpbb_check_ids($topic_id_list, TOPICS_TABLE, 'topic_id', array('m_approve')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 
@@ -1074,6 +1076,7 @@ class mcp_queue
 
 		if (!phpbb_check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 		{
+			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
 		}
 

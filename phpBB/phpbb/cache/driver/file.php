@@ -32,9 +32,9 @@ class file extends \phpbb\cache\driver\base
 	*/
 	function __construct($cache_dir = null)
 	{
-		global $phpbb_root_path, $phpbb_container;
+		global $phpbb_container;
 
-		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/' . $phpbb_container->getParameter('core.environment') . '/';
+		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_container->getParameter('core.cache_dir');
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 
 		if (!is_dir($this->cache_dir))
@@ -574,6 +574,11 @@ class file extends \phpbb\cache\driver\base
 
 			fclose($handle);
 
+			if (function_exists('opcache_invalidate'))
+			{
+				@opcache_invalidate($this->cache_file);
+			}
+
 			try
 			{
 				$this->filesystem->phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
@@ -603,6 +608,6 @@ class file extends \phpbb\cache\driver\base
 	*/
 	protected function clean_varname($varname)
 	{
-		return str_replace('/', '-', $varname);
+		return str_replace(array('/', '\\'), '-', $varname);
 	}
 }

@@ -16,7 +16,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\cron\run;
 
 require_once dirname(__FILE__) . '/tasks/simple.php';
-require_once dirname(__FILE__) . '/../../../phpBB/includes/functions.php';
 
 class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 {
@@ -51,7 +50,35 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$tasks = array(
 			$this->task,
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phbEx);
+
+		$mock_config = new \phpbb\config\config(array(
+			'force_server_vars' => false,
+			'enable_mod_rewrite' => '',
+		));
+
+		$mock_router = $this->getMockBuilder('\phpbb\routing\router')
+			->setMethods(array('setContext', 'generate'))
+			->disableOriginalConstructor()
+			->getMock();
+		$mock_router->method('setContext')
+			->willReturn(true);
+		$mock_router->method('generate')
+			->willReturn('foobar');
+
+		$request = new \phpbb\request\request();
+		$request->enable_super_globals();
+
+		$routing_helper = new \phpbb\routing\helper(
+			$mock_config,
+			$mock_router,
+			new \phpbb\symfony_request($request),
+			$request,
+			new \phpbb\filesystem\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
+
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $phpEx);
 
 		$this->assertSame('0', $config['cron_lock']);
 	}
@@ -97,7 +124,35 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	{
 		$tasks = array(
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
+
+		$mock_config = new \phpbb\config\config(array(
+			'force_server_vars' => false,
+			'enable_mod_rewrite' => '',
+		));
+
+		$mock_router = $this->getMockBuilder('\phpbb\routing\router')
+			->setMethods(array('setContext', 'generate'))
+			->disableOriginalConstructor()
+			->getMock();
+		$mock_router->method('setContext')
+			->willReturn(true);
+		$mock_router->method('generate')
+			->willReturn('foobar');
+
+		$request = new \phpbb\request\request();
+		$request->enable_super_globals();
+
+		$routing_helper = new \phpbb\routing\helper(
+			$mock_config,
+			$mock_router,
+			new \phpbb\symfony_request($request),
+			$request,
+			new \phpbb\filesystem\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
+
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $phpEx);
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name));
 
@@ -110,7 +165,35 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 	{
 		$tasks = array(
 		);
-		$this->cron_manager = new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
+
+		$mock_config = new \phpbb\config\config(array(
+			'force_server_vars' => false,
+			'enable_mod_rewrite' => '',
+		));
+
+		$mock_router = $this->getMockBuilder('\phpbb\routing\router')
+			->setMethods(array('setContext', 'generate'))
+			->disableOriginalConstructor()
+			->getMock();
+		$mock_router->method('setContext')
+			->willReturn(true);
+		$mock_router->method('generate')
+			->willReturn('foobar');
+
+		$request = new \phpbb\request\request();
+		$request->enable_super_globals();
+
+		$routing_helper = new \phpbb\routing\helper(
+			$mock_config,
+			$mock_router,
+			new \phpbb\symfony_request($request),
+			$request,
+			new \phpbb\filesystem\filesystem(),
+			$phpbb_root_path,
+			$phpEx
+		);
+
+		$this->cron_manager = new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $phpEx);
 		$command_tester = $this->get_command_tester();
 		$exit_status = $command_tester->execute(array('command' => $this->command_name, '--verbose' => true));
 

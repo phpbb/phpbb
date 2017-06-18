@@ -157,7 +157,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=$select_single"),
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=" . (int) $select_single),
 		));
 	}
 
@@ -171,6 +171,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		case 'post':
 			if (!$auth->acl_get('u_sendpm'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 		break;
@@ -186,6 +187,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			if (!$auth->acl_get('u_sendpm'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 
@@ -226,6 +228,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		case 'delete':
 			if (!$auth->acl_get('u_pm_delete'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_DELETE_MESSAGE');
 			}
 
@@ -251,11 +254,13 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_FORWARD_MESSAGE');
 	}
 
 	if ($action == 'edit' && !$auth->acl_get('u_pm_edit'))
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_EDIT_MESSAGE');
 	}
 
@@ -275,7 +280,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	bool	delete					Whether the user is deleting the PM
 		* @var	int		reply_to_all			Value of reply_to_all request variable.
 		* @since 3.1.0-RC5
-		* @change 3.2.0-a1 Removed undefined variables
+		* @changed 3.2.0-a1 Removed undefined variables
 		*/
 		$vars = array(
 			'sql',
@@ -321,6 +326,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		{
 			if (($post['forum_id'] && !$auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NOT_AUTHORISED');
 			}
 
@@ -339,7 +345,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			* @var	bool	delete				If deleting message
 			* @var	int		reply_to_all		Value of reply_to_all request variable.
 			* @since 3.1.0-RC5
-			* @change 3.2.0-a1 Removed undefined variables
+			* @changed 3.2.0-a1 Removed undefined variables
 			*/
 			$vars = array(
 				'sql',
@@ -443,6 +449,17 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$message_attachment = 0;
 		$message_text = $message_subject = '';
 
+		/**
+		* Predefine message text and subject
+		*
+		* @event core.ucp_pm_compose_predefined_message
+		* @var	string	message_text	Message text
+		* @var	string	message_subject	Messate subject
+		* @since 3.1.11-RC1
+		*/
+		$vars = array('message_text', 'message_subject');
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_predefined_message', compact($vars)));
+
 		if ($to_user_id && $to_user_id != ANONYMOUS && $action == 'post')
 		{
 			$address_list['u'][$to_user_id] = 'to';
@@ -456,6 +473,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')))
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
 
@@ -739,6 +757,34 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
 
+		/**
+		* Modify private message
+		*
+		* @event core.ucp_pm_compose_modify_parse_before
+		* @var	bool	enable_bbcode		Whether or not bbcode is enabled
+		* @var	bool	enable_smilies		Whether or not smilies are enabled
+		* @var	bool	enable_urls			Whether or not urls are enabled
+		* @var	bool	enable_sig			Whether or not signature is enabled
+		* @var	string	subject				PM subject text
+		* @var	object	message_parser		The message parser object
+		* @var	bool	submit				Whether or not the form has been sumitted
+		* @var	bool	preview				Whether or not the signature is being previewed
+		* @var	array	error				Any error strings
+		* @since 3.1.10-RC1
+		*/
+		$vars = array(
+			'enable_bbcode',
+			'enable_smilies',
+			'enable_urls',
+			'enable_sig',
+			'subject',
+			'message_parser',
+			'submit',
+			'preview',
+			'error',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_before', compact($vars)));
+
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
@@ -854,13 +900,8 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Signature
 		if ($enable_sig && $config['allow_sig'] && $preview_signature)
 		{
-			$parse_sig = new parse_message($preview_signature);
-			$parse_sig->bbcode_uid = $preview_signature_uid;
-			$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
-
-			$parse_sig->format_display($config['allow_sig_bbcode'], $config['allow_sig_links'], $config['allow_sig_smilies']);
-			$preview_signature = $parse_sig->message;
-			unset($parse_sig);
+			$bbcode_flags = ($enable_bbcode ? OPTION_FLAG_BBCODE : 0) + ($enable_smilies ? OPTION_FLAG_SMILIES : 0) + ($enable_urls ? OPTION_FLAG_LINKS : 0);
+			$preview_signature = generate_text_for_display($preview_signature, $preview_signature_uid, $preview_signature_bitfield, $bbcode_flags);
 		}
 		else
 		{

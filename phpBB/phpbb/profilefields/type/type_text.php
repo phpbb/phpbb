@@ -61,9 +61,9 @@ class type_text extends type_string_common
 	public function get_options($default_lang_id, $field_data)
 	{
 		$options = array(
-			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="rows" size="5" value="' . $field_data['rows'] . '" /> ' . $this->user->lang['ROWS'] . '</dd><dd><input type="number" min="0" max="99999" name="columns" size="5" value="' . $field_data['columns'] . '" /> ' . $this->user->lang['COLUMNS'] . ' <input type="hidden" name="field_length" value="' . $field_data['field_length'] . '" />'),
-			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_minlen" size="10" value="' . $field_data['field_minlen'] . '" />'),
-			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_maxlen" size="10" value="' . $field_data['field_maxlen'] . '" />'),
+			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="rows" value="' . $field_data['rows'] . '" /> ' . $this->user->lang['ROWS'] . '</dd><dd><input type="number" min="0" max="99999" name="columns" value="' . $field_data['columns'] . '" /> ' . $this->user->lang['COLUMNS'] . ' <input type="hidden" name="field_length" value="' . $field_data['field_length'] . '" />'),
+			1 => array('TITLE' => $this->user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'),
+			2 => array('TITLE' => $this->user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="number" min="0" max="9999999999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
 			3 => array('TITLE' => $this->user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options($field_data) . '</select>'),
 		);
 

@@ -10,8 +10,7 @@
 * the docs/CREDITS.txt file.
 *
 */
-require_once __DIR__ . '/../../../phpBB/includes/functions.php';
-require_once __DIR__ . '/../../../phpBB/includes/functions_content.php';
+
 require_once __DIR__ . '/../../test_framework/phpbb_database_test_case.php';
 
 class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
@@ -166,8 +165,19 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$renderer = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.renderer');
 
 		$this->assertSame(
-			'<img class="smilies" src="phpBB/images/smilies/%22%27%3C&amp;%3E.png" alt="&quot;\'&lt;&amp;&gt;" title="&quot;\'&lt;&amp;&gt;">',
+			'<img class="smilies" src="phpBB/images/smilies/%22%27%3C&amp;%3E.png" width="15" height="17" alt="&quot;\'&lt;&amp;&gt;" title="&quot;\'&lt;&amp;&gt;">',
 			$renderer->render('<r><E>"\'&lt;&amp;&gt;</E></r>')
+		);
+	}
+
+	public function test_duplicate_smilies()
+	{
+		$fixture = __DIR__ . '/fixtures/smilies_duplicate.xml';
+		$parser = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.parser');
+
+		$this->assertSame(
+			'<r><E>:)</E></r>',
+			$parser->parse(':)')
 		);
 	}
 

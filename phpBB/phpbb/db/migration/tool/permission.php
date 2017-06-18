@@ -637,6 +637,11 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 					$arguments[0],
 				);
 			break;
+
+			case 'reverse':
+				// Reversing a reverse is just the call itself
+				$call = array_shift($arguments);
+			break;
 		}
 
 		if ($call)

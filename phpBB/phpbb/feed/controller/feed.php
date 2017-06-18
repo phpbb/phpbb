@@ -16,6 +16,7 @@ namespace phpbb\feed\controller;
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use \phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
 use phpbb\feed\feed_interface;
 use phpbb\feed\exception\feed_unavailable_exception;
@@ -76,6 +77,11 @@ class feed
 	protected $auth;
 
 	/**
+	 * @var dispatcher_interface
+	 */
+	protected $phpbb_dispatcher;
+
+	/**
 	 * @var string
 	 */
 	protected $php_ext;
@@ -92,9 +98,10 @@ class feed
 	 * @param feed_helper $feed_helper
 	 * @param user $user
 	 * @param auth $auth
+	 * @param dispatcher_interface $phpbb_dispatcher
 	 * @param string $php_ext
 	 */
-	public function __construct(\Twig_Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, $php_ext)
+	public function __construct(\Twig_Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, $php_ext)
 	{
 		$this->request = $request;
 		$this->controller_helper = $controller_helper;
@@ -106,6 +113,7 @@ class feed
 		$this->auth = $auth;
 		$this->php_ext = $php_ext;
 		$this->template = $twig;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 	}
 
 	/**
@@ -296,6 +304,20 @@ class feed
 		// Iterate through items
 		while ($row = $feed->get_item())
 		{
+			/**
+			 * Event to modify the feed row
+			 *
+			 * @event core.feed_modify_feed_row
+			 * @var	int		forum_id	Forum ID
+			 * @var	string	mode		Feeds mode (forums|topics|topics_new|topics_active|news)
+			 * @var	array	row			Array with feed data
+			 * @var	int		topic_id	Topic ID
+			 *
+			 * @since 3.1.10-RC1
+			 */
+			$vars = array('forum_id', 'mode', 'row', 'topic_id');
+			extract($this->phpbb_dispatcher->trigger_event('core.feed_modify_feed_row', compact($vars)));
+
 			// BBCode options to correctly disable urls, smilies, bbcode...
 			if ($feed->get('options') === null)
 			{

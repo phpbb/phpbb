@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_event_md_exporter_test extends phpbb_test_case
 {
 	static public function crawl_eventsmd_data()

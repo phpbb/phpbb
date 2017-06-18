@@ -144,7 +144,6 @@ class convertor
 		$convert->mysql_convert = false;
 		switch ($src_db->sql_layer)
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$convert->src_truncate_statement = 'DELETE FROM ';
 				break;
@@ -176,7 +175,6 @@ class convertor
 
 		switch ($db->get_sql_layer())
 		{
-			case 'sqlite':
 			case 'sqlite3':
 				$convert->truncate_statement = 'DELETE FROM ';
 				break;
@@ -373,7 +371,7 @@ class convertor
 								$val = array($val);
 							}
 
-							for ($j = 0; $j < sizeof($val); ++$j)
+							for ($j = 0, $size = sizeof($val); $j < $size; ++$j)
 							{
 								if (preg_match('/LEFT JOIN ([a-z0-9_]+) AS ([a-z0-9_]+)/i', $val[$j], $m))
 								{
@@ -717,7 +715,6 @@ class convertor
 				{
 					switch ($db->get_sql_layer())
 					{
-						case 'mssql':
 						case 'mssql_odbc':
 						case 'mssqlnative':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' ON');
@@ -845,7 +842,6 @@ class convertor
 				{
 					switch ($db->get_sql_layer())
 					{
-						case 'mssql':
 						case 'mssql_odbc':
 						case 'mssqlnative':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' OFF');
@@ -1044,7 +1040,7 @@ class convertor
 				OR config_name = 'convert_db_user'");
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
-		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
+		@unlink($phpbb_container->getParameter('core.cache_dir') . 'data_global.' . $phpEx);
 		phpbb_cache_moderators($db, $cache, $auth);
 
 		// And finally, add a note to the log

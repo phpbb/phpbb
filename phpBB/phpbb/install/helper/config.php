@@ -96,7 +96,8 @@ class config
 		$this->system_data		= array();
 		$this->progress_data	= array(
 			'last_task_module_name'		=> '', // Stores the service name of the latest finished module
-			'last_task_name'			=> '', // Stores the service name of the latest finished task
+			'last_task_module_index'	=> 0, // Stores the index of the latest finished module
+			'last_task_index'			=> 0, // Stores the index of the latest finished task
 			'max_task_progress'			=> 0,
 			'current_task_progress'		=> 0,
 			'_restart_points'			=> array(),
@@ -187,21 +188,23 @@ class config
 	/**
 	 * Saves the latest executed task
 	 *
-	 * @param string	$task_service_name	Name of the installer task service
+	 * @param int	$task_service_index	Index of the installer task service in the module
 	 */
-	public function set_finished_task($task_service_name)
+	public function set_finished_task($task_service_index)
 	{
-		$this->progress_data['last_task_name']	= $task_service_name;
+		$this->progress_data['last_task_index']	= $task_service_index;
 	}
 
 	/**
 	 * Set active module
 	 *
 	 * @param string	$module_service_name	Name of the installer module service
+	 * @param int		$module_service_index	Index of the installer module service
 	 */
-	public function set_active_module($module_service_name)
+	public function set_active_module($module_service_name, $module_service_index)
 	{
 		$this->progress_data['last_task_module_name']	= $module_service_name;
+		$this->progress_data['last_task_module_index']	= $module_service_index;
 	}
 
 	/**
@@ -391,6 +394,11 @@ class config
 	 */
 	public function set_finished_navigation_stage($nav_path)
 	{
+		if (isset($this->navigation_data['finished']) && in_array($nav_path, $this->navigation_data['finished']))
+		{
+			return;
+		}
+
 		$this->navigation_data['finished'][] = $nav_path;
 	}
 

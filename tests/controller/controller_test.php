@@ -11,7 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+include_once(__DIR__ . '/ext/vendor2/foo/controller.php');
+include_once(__DIR__.'/phpbb/controller/foo.php');
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Config\FileLocator;
@@ -47,7 +48,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			new \phpbb\routing\file_locator(new \phpbb\filesystem\filesystem(), dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php', PHPBB_ENVIRONMENT);
+		$router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php');
 		$routes = $router->get_routes();
 
 		// This will need to be updated if any new routes are defined
@@ -66,7 +67,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$this->assertNull($routes->get('controller_noroute'));
 	}
 
-	public function test_controller_resolver()
+	protected function get_foo_container()
 	{
 		$container = new ContainerBuilder();
 		// YamlFileLoader only uses one path at a time, so we need to loop
@@ -77,26 +78,59 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			$loader->load('services.yml');
 		}
 
-		// Autoloading classes within the tests folder does not work
-		// so I'll include them manually.
-		if (!class_exists('vendor2\\foo\\controller'))
-		{
-			include(__DIR__ . '/ext/vendor2/foo/controller.php');
-		}
-		if (!class_exists('phpbb\\controller\\foo'))
-		{
-			include(__DIR__.'/phpbb/controller/foo.php');
-		}
+		return $container;
+	}
+
+	public function test_controller_resolver()
+	{
+		$container = $this->get_foo_container();
 
 		$resolver = new \phpbb\controller\resolver($container, dirname(__FILE__) . '/');
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 
 		$this->assertEquals($resolver->getController($symfony_request), array(new foo\controller, 'handle'));
+		$this->assertEquals(array('foo'), $resolver->getArguments($symfony_request, $resolver->getController($symfony_request)));
 
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'core_foo.controller:bar');
 
 		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb\controller\foo, 'bar'));
+		$this->assertEquals(array(), $resolver->getArguments($symfony_request, $resolver->getController($symfony_request)));
+	}
+
+	public function data_get_arguments()
+	{
+		return array(
+			array(array(new foo\controller(), 'handle2'), array('foo', 0)),
+			array(array(new foo\controller(), 'handle_fail'), array('default'), array('no_default' => 'default')),
+			array(new foo\controller(), array(), array()),
+			array(array(new foo\controller(), 'handle_fail'), array(), array(), '\phpbb\controller\exception', 'CONTROLLER_ARGUMENT_VALUE_MISSING'),
+			array('', array(), array(), '\ReflectionException', 'Function () does not exist'),
+			array(new phpbb\controller\foo, array(), array(), '\ReflectionException', 'Method __invoke does not exist'),
+		);
+	}
+
+	/**
+	 * @dataProvider data_get_arguments
+	 */
+	public function test_get_arguments($input, $expected, $set_attributes = array(), $exception = '', $exception_message = '')
+	{
+		$container = $this->get_foo_container();
+
+		$resolver = new \phpbb\controller\resolver($container, dirname(__FILE__) . '/');
+		$symfony_request = new Request();
+
+		foreach ($set_attributes as $name => $value)
+		{
+			$symfony_request->attributes->set($name, $value);
+		}
+
+		if (!empty($exception))
+		{
+			$this->setExpectedException($exception, $exception_message);
+		}
+
+		$this->assertEquals($expected, $resolver->getArguments($symfony_request, $input));
 	}
 }

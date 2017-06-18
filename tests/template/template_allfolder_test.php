@@ -64,10 +64,10 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 			$config,
 			$filesystem,
 			$path_helper,
-			$container,
 			$cache_path,
 			$this->extension_manager,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -76,7 +76,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 			)
 		);
 		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
-		$container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->ext_template_path = 'tests/extension/ext/vendor4/bar/styles/all/template';

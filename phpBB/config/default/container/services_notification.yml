@@ -15,7 +15,7 @@ services:
             - '%tables.user_notifications%'
 
 # ----- Notification's types -----
-# Scope MUST be prototype for all the plugins to work.
+# Service MUST NOT be shared for all the plugins to work.
     notification.type_collection:
         class: phpbb\di\service_collection
         arguments:
@@ -36,7 +36,7 @@ services:
 
     notification.type.admin_activate_user:
         class: phpbb\notification\type\admin_activate_user
-        scope: prototype
+        shared: false
         parent: notification.type.base
         calls:
             - [set_user_loader, ['@user_loader']]
@@ -46,42 +46,42 @@ services:
 
     notification.type.approve_post:
         class: phpbb\notification\type\approve_post
-        scope: prototype
+        shared: false
         parent: notification.type.post
         tags:
             - { name: notification.type }
 
     notification.type.approve_topic:
         class: phpbb\notification\type\approve_topic
-        scope: prototype
+        shared: false
         parent: notification.type.topic
         tags:
             - { name: notification.type }
 
     notification.type.bookmark:
         class: phpbb\notification\type\bookmark
-        scope: prototype
+        shared: false
         parent: notification.type.post
         tags:
             - { name: notification.type }
 
     notification.type.disapprove_post:
         class: phpbb\notification\type\disapprove_post
-        scope: prototype
+        shared: false
         parent: notification.type.post
         tags:
             - { name: notification.type }
 
     notification.type.disapprove_topic:
         class: phpbb\notification\type\disapprove_topic
-        scope: prototype
+        shared: false
         parent: notification.type.topic
         tags:
             - { name: notification.type }
 
     notification.type.group_request:
         class: phpbb\notification\type\group_request
-        scope: prototype
+        shared: false
         parent: notification.type.base
         calls:
             - [set_user_loader, ['@user_loader']]
@@ -90,14 +90,14 @@ services:
 
     notification.type.group_request_approved:
         class: phpbb\notification\type\group_request_approved
-        scope: prototype
+        shared: false
         parent: notification.type.base
         tags:
             - { name: notification.type }
 
     notification.type.pm:
         class: phpbb\notification\type\pm
-        scope: prototype
+        shared: false
         parent: notification.type.base
         calls:
             - [set_user_loader, ['@user_loader']]
@@ -107,7 +107,7 @@ services:
 
     notification.type.post:
         class: phpbb\notification\type\post
-        scope: prototype
+        shared: false
         parent: notification.type.base
         calls:
             - [set_user_loader, ['@user_loader']]
@@ -117,14 +117,14 @@ services:
 
     notification.type.post_in_queue:
         class: phpbb\notification\type\post_in_queue
-        scope: prototype
+        shared: false
         parent: notification.type.post
         tags:
             - { name: notification.type }
 
     notification.type.quote:
         class: phpbb\notification\type\quote
-        scope: prototype
+        shared: false
         parent: notification.type.post
         calls:
             - [set_utils, ['@text_formatter.utils']]
@@ -133,35 +133,35 @@ services:
 
     notification.type.report_pm:
         class: phpbb\notification\type\report_pm
-        scope: prototype
+        shared: false
         parent: notification.type.pm
         tags:
             - { name: notification.type }
 
     notification.type.report_pm_closed:
         class: phpbb\notification\type\report_pm_closed
-        scope: prototype
+        shared: false
         parent: notification.type.pm
         tags:
             - { name: notification.type }
 
     notification.type.report_post:
         class: phpbb\notification\type\report_post
-        scope: prototype
+        shared: false
         parent: notification.type.post
         tags:
             - { name: notification.type }
 
     notification.type.report_post_closed:
         class: phpbb\notification\type\report_post_closed
-        scope: prototype
+        shared: false
         parent: notification.type.post
         tags:
             - { name: notification.type }
 
     notification.type.topic:
         class: phpbb\notification\type\topic
-        scope: prototype
+        shared: false
         parent: notification.type.base
         calls:
             - [set_user_loader, ['@user_loader']]
@@ -171,13 +171,13 @@ services:
 
     notification.type.topic_in_queue:
         class: phpbb\notification\type\topic_in_queue
-        scope: prototype
+        shared: false
         parent: notification.type.topic
         tags:
             - { name: notification.type }
 
 # ----- Notification's methods -----
-# Scope MUST be prototype for all the plugins to work.
+# Service MUST NOT be shared for all the plugins to work.
     notification.method_collection:
         class: phpbb\di\service_collection
         arguments:
@@ -187,7 +187,7 @@ services:
 
     notification.method.board:
         class: phpbb\notification\method\board
-        scope: prototype # scope MUST be prototype for this to work!
+        shared: false
         arguments:
             - '@user_loader'
             - '@dbal.conn'
@@ -201,7 +201,7 @@ services:
 
     notification.method.email:
         class: phpbb\notification\method\email
-        scope: prototype
+        shared: false
         arguments:
             - '@user_loader'
             - '@user'
@@ -213,7 +213,7 @@ services:
 
     notification.method.jabber:
         class: phpbb\notification\method\jabber
-        scope: prototype
+        shared: false
         arguments:
             - '@user_loader'
             - '@user'
