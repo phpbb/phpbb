@@ -210,7 +210,7 @@ foreach ($prefixes as $prefix)
 			);
 
 			$db->sql_query('INSERT INTO ' . ACL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-		
+
 			echo "<p><b>Adding $auth_option...</b></p>\n";
 
 			mass_auth('group', 0, 'guests', $auth_option, ACL_NEVER);
@@ -231,7 +231,7 @@ $db->sql_query($sql);
 $cache->destroy('_acl_options');
 
 echo "<p><b>Done</b></p>\n";
- 
+
 /*
 	$ug_type = user|group
 	$forum_id = forum ids (array|int|0) -> 0 == all forums
@@ -248,7 +248,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 	{
 		if (!isset($group_ids[$ug_id]))
 		{
-			$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " 
+			$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . "
 				WHERE group_name = '" . strtoupper($ug_id) . "'";
 			$result = $db->sql_query_limit($sql, 1);
 			$id = (int) $db->sql_fetchfield('group_id', 0, $result);
@@ -341,7 +341,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 				case ACL_NO:
 					if (isset($cur_auth[$forum][$auth_option_id]))
 					{
-						$sql_ary['delete'][] = "DELETE FROM $table 
+						$sql_ary['delete'][] = "DELETE FROM $table
 							WHERE forum_id = $forum
 								AND auth_option_id = $auth_option_id
 								AND $id_field = $ug_id";
@@ -355,10 +355,10 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 					}
 					else if ($cur_auth[$forum][$auth_option_id] != $setting)
 					{
-						$sql_ary['update'][] = "UPDATE " . $table . " 
-							SET auth_setting = $setting 
-							WHERE $id_field = $ug_id 
-								AND forum_id = $forum 
+						$sql_ary['update'][] = "UPDATE " . $table . "
+							SET auth_setting = $setting
+							WHERE $id_field = $ug_id
+								AND forum_id = $forum
 								AND auth_option_id = $auth_option_id";
 					}
 			}
