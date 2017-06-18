@@ -13,6 +13,8 @@
 
 namespace phpbb\storage;
 
+use phpbb\storage\exception\exception;
+
 class storage
 {
 	protected $adapter;
@@ -20,6 +22,11 @@ class storage
 	public function __construct()
 	{
 		$this->adapter = new \phpbb\storage\adapter\local();
+	}
+
+	public function get_adapter()
+	{
+		return $this->adapter;
 	}
 
 	public function set_adapter($adapter, $params)
@@ -74,6 +81,11 @@ class storage
 
 	public function write_stream($path, $resource)
 	{
+		if(!is_resource($resource))
+		{
+			throw new exception('INVALID_RESOURCE');
+		}
+
 		$this->adapter->write_stream($path, $resource);
 	}
 }

@@ -1,69 +1,125 @@
 <?php
 namespace phpbb\storage\adapter;
 
-// Todo:
-// Handle errors
+use phpbb\storage\exception\exception;
 
 class local implements adapter_interface
 {
+	protected $filesystem;
+
 	public function __construct()
 	{
-		// Nothing
+		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	public function put_contents($path, $content)
 	{
-		return file_put_contents($path, $content);
+		try
+		{
+			if($this->exists($path))
+			{
+				throw new exception('CANNOT_OPEN_FILE', $path);
+			}
+
+			$this->filesystem->dump_file($path, $content);
+		}
+		catch (\phpbb\filesystem\filesystem_exception $e)
+		{
+			throw new exception('CANNOT_DUMP_FILE', $path, array(), $e);
+		}
 	}
 
 	public function get_contents($path)
 	{
-		return file_get_contents($path);
+		$stream = $this->read_stream($path);
+		$contents = stream_get_contents($stream);
+		fclose($stream);
+
+		return $stream;
 	}
 
 	public function exists($path)
 	{
-		return file_exists($path);
+		return $this->filesystem->exists($path);
 	}
 
 	public function delete($path)
 	{
-		unlink($path);
+		try
+		{
+			$this->filesystem->remove($path);
+		}
+		catch (\phpbb\filesystem\filesystem_exception $e)
+		{
+			throw new exception('CANNOT_DELETE_FILES', $path, array(), $e);
+		}
 	}
 
 	public function rename($path_orig, $path_dest)
 	{
-		rename($path_orig, $path_dest);
+		try
+		{
+			$this->filesystem->rename($path_orig, $path_dest, false);
+		}
+		catch (\phpbb\filesystem\filesystem_exception $e)
+		{
+			throw new exception('CANNOT_RENAME_FILE', $path_orig, array(), $e);
+		}
 	}
 
 	public function copy($path_orig, $path_dest)
 	{
-		copy($path_orig, $path_dest);
+		try
+		{
+			$this->filesystem->copy($path_orig, $path_dest, false);
+		}
+		catch (\phpbb\filesystem\filesystem_exception $e)
+		{
+			throw new exception('CANNOT_COPY_FILES', '', array(), $e);
+		}
 	}
 
 	public function create_dir($path)
 	{
-		mkdir($path);
+		try
+		{
+			$this->filesystem->mkdir($path, 0777);
+		}
+		catch (\phpbb\filesystem\filesystem_exception $e)
+		{
+			throw new exception('CANNOT_CREATE_DIRECTORY', $path, array(), $e);
+		}
 	}
 
 	public function delete_dir($path)
 	{
-		rmdir($path);
+		$this->delete($path);
 	}
 
-	// https://github.com/thephpleague/flysystem/blob/master/src/Adapter/Local.php#L147
 	public function read_stream($path)
 	{
-		return fopen($path, 'rb');
+		$stream = @fopen($path, 'rb');
+
+		if(!$stream)
+		{
+			throw new exception('CANNOT_OPEN_FILE', $path);
+		}
+
+		return $stream;
 	}
 
 	public function write_stream($path, $resource)
 	{
-		$stream = fopen($path, 'w+b');
+		if($this->exists($path))
+		{
+			throw new exception('CANNOT_OPEN_FILE', $path);
+		}
+
+		$stream = @fopen($path, 'w+b');
 
 		if(!$stream)
 		{
-			// error
+			throw new exception('CANNOT_OPEN_FILE', $path);
 		}
 
 		stream_copy_to_stream($resource, $stream);

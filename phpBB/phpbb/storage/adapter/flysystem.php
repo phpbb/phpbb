@@ -1,8 +1,6 @@
 <?php
 namespace phpbb\storage\adapter;
 
-// todo: handle errors
-
 use League\Flysystem\AdapterInterface;
 
 class flysystem implements adapter_interface
@@ -16,51 +14,152 @@ class flysystem implements adapter_interface
 
 	public function put_contents($path, $content)
 	{
-		$this->adapter->put($path, $contents);
+		try
+		{
+			if(!$this->adapter->write($path, $contents))
+			{
+				throw new exception('CANNOT_DUMP_FILE', $path);
+			}
+		}
+		catch (\League\Flysystem\FileExistsException $e)
+		{
+			throw new exception('CANNOT_OPEN_FILE', $path, array(), $e);
+		}
 	}
 
 	public function get_contents($path)
 	{
-		$this->adapter->read($path);
+		try
+		{
+			if(!$this->adapter->read($path))
+			{
+				throw new exception('CANNOT_READ_FILE', $path);
+			}
+		}
+		catch (\League\Flysystem\FileNotFoundException $e)
+		{
+			throw new exception('CANNOT_OPEN_FILE', $path, array(), $e);
+		}
 	}
 
 	public function exists($path)
 	{
-		$this->adapter->has($path);
+		return $this->adapter->has($path);
 	}
 
 	public function delete($path)
 	{
-		$this->adapter->delete($path);
+		try
+		{
+			if(!$this->adapter->delete($path))
+			{
+				throw new exception('CANNOT_DELETE_FILES', $path_orig);
+			}
+		}
+		catch (\League\Flysystem\FileNotFoundException $e)
+		{
+			throw new exception('CANNOT_DELETE_FILES', $path_orig, array(), $e);
+		}
 	}
 
 	public function rename($path_orig, $path_dest)
 	{
-		$this->adapter->rename($path_orig, $path_dest);
+		try
+		{
+			if(!$this->adapter->rename($path_orig, $path_dest))
+			{
+				throw new exception('CANNOT_RENAME_FILE', $path_orig);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw new exception('CANNOT_RENAME_FILE', $path_orig, array(), $e);
+		}
+		/*
+		catch (\League\Flysystem\FileNotFoundException $e)
+		{
+			throw new exception('CANNOT_RENAME_FILE', $path_orig, array(), $e);
+		}
+		catch (\League\Flysystem\FileExistsException $e)
+		{
+			throw new exception('CANNOT_RENAME_FILE', $path_orig, array(), $e);
+		}*/
 	}
 
 	public function copy($path_orig, $path_dest)
 	{
-		$this->adapter->copy($path_orig, $path_dest);
+		try
+		{
+			if(!$this->adapter->copy($path_orig, $path_dest))
+			{
+				throw new exception('CANNOT_COPY_FILE', $path_orig);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw new exception('CANNOT_COPY_FILE', $path_orig, array(), $e);
+		}
+		/*
+		catch (\League\Flysystem\FileNotFoundException $e)
+		{
+			throw new exception('CANNOT_COPY_FILE', $path_orig, array(), $e);
+		}
+		catch (\League\Flysystem\FileExistsException $e)
+		{
+			throw new exception('CANNOT_COPY_FILE', $path_orig, array(), $e);
+		}*/
 	}
 
 	public function create_dir($path)
 	{
-		$this->adapter->createDir($path);
+		if(!$this->adapter->createDir($path))
+		{
+			throw new exception('CANNOT_CREATE_DIRECTORY', $path);
+		}
 	}
 
 	public function delete_dir($path)
 	{
-		$this->adapter->deleteDir($path);
+		try
+		{
+			if(!$this->adapter->deleteDir($path))
+			{
+				throw new exception('CANNOT_DELETE_FILES', $path_orig);
+			}
+		}
+		catch (\League\Flysystem\RootViolationException $e)
+		{
+			throw new exception('CANNOT_DELETE_FILES', $path_orig, array(), $e);
+		}
 	}
 
 	public function read_stream($path)
 	{
-		$this->driver->readStream($path);
+		try
+		{
+			if(!$this->adapter->readStream($path))
+			{
+				throw new exception('CANNOT_READ_FILE', $path);
+			}
+		}
+		catch (\League\Flysystem\FileNotFoundException $e)
+		{
+			throw new exception('CANNOT_OPEN_FILE', $path, array(), $e);
+		}
 	}
 
 	public function write_stream($path, $resource)
 	{
-		$this->driver->writeStream($path, $resource);
+		try
+		{
+			if(!$this->adapter->writeStream($path, $resource))
+			{
+				throw new exception('CANNOT_DUMP_FILE', $path);
+			}
+		}
+		catch (\League\Flysystem\FileExistsException $e)
+		{
+			throw new exception('CANNOT_OPEN_FILE', $path, array(), $e);
+		}
 	}
 }
