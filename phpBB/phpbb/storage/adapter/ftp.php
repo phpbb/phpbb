@@ -51,7 +51,7 @@ class ftp implements adapter_interface
 
 	public function exists($path)
 	{
-		$this->filesystem->exists($path);
+		return $this->filesystem->exists($path);
 	}
 
 	public function delete($path)
