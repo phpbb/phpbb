@@ -1,9 +1,0 @@
-services:
-    storage.factory:
-        class: phpbb\storage\factory
-    storage.avatar:
-        class: phpbb\storage\storage
-    storage.attachment:
-        class: phpbb\storage\storage
-    storage.backup:
-        class: phpbb\storage\storage
