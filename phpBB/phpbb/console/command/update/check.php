@@ -325,7 +325,7 @@ class check extends \phpbb\console\command\command
 		$io->table([
 			$this->language->lang('VERSION'),
 			$this->language->lang('ANNOUNCEMENT_TOPIC'),
-		    $this->language->lang('DOWNLOAD_LATEST'),
+			$this->language->lang('DOWNLOAD_LATEST'),
 		], $rows);
 	}
 }
