@@ -81,7 +81,7 @@ class storage
 
 	public function write_stream($path, $resource)
 	{
-		if(!is_resource($resource))
+		if (!is_resource($resource))
 		{
 			throw new exception('INVALID_RESOURCE');
 		}

@@ -1,4 +1,16 @@
 <?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
 namespace phpbb\storage\adapter;
 
 use phpbb\storage\exception\exception;
@@ -16,7 +28,7 @@ class local implements adapter_interface
 	{
 		try
 		{
-			if($this->exists($path))
+			if ($this->exists($path))
 			{
 				throw new exception('CANNOT_OPEN_FILE', $path);
 			}
@@ -100,7 +112,7 @@ class local implements adapter_interface
 	{
 		$stream = @fopen($path, 'rb');
 
-		if(!$stream)
+		if (!$stream)
 		{
 			throw new exception('CANNOT_OPEN_FILE', $path);
 		}
@@ -110,14 +122,14 @@ class local implements adapter_interface
 
 	public function write_stream($path, $resource)
 	{
-		if($this->exists($path))
+		if ($this->exists($path))
 		{
 			throw new exception('CANNOT_OPEN_FILE', $path);
 		}
 
 		$stream = @fopen($path, 'w+b');
 
-		if(!$stream)
+		if (!$stream)
 		{
 			throw new exception('CANNOT_OPEN_FILE', $path);
 		}
