@@ -443,7 +443,12 @@ function phpbb_is_writable($file)
  */
 function phpbb_is_absolute($path)
 {
-	return \phpbb\storage::is_absolute_path($path);
+	if (!class_exists('\phpbb\storage\helper'))
+	{
+		require($phpbb_root_path . 'phpbb/storage/helper.' . $phpEx);
+	}
+
+	return \phpbb\storage\helper::is_absolute_path($path);
 }
 
 /**
@@ -453,6 +458,11 @@ function phpbb_is_absolute($path)
  */
 function phpbb_realpath($path)
 {
+	if (!class_exists('\phpbb\storage\helper'))
+	{
+		require($phpbb_root_path . 'phpbb/storage/helper.' . $phpEx);
+	}
+
 	return \phpbb\storage\helper::realpath($path);
 }
 
