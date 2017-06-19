@@ -79,6 +79,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$this->lang = $lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
+		$filesystem = new \phpbb\filesystem\filesystem();
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
