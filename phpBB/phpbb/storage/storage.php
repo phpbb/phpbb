@@ -21,17 +21,7 @@ class storage
 
 	public function __construct()
 	{
-		$this->adapter = new \phpbb\storage\adapter\local();
-	}
-
-	public function get_adapter()
-	{
-		return $this->adapter;
-	}
-
-	public function set_adapter($adapter, $params)
-	{
-		$this->adapter = new $adapter($params);
+		$this->adapter = new adapter\local();
 	}
 
 	public function put_contents($path, $content)
