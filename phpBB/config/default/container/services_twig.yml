@@ -24,8 +24,6 @@ services:
 
     template.twig.loader:
         class: phpbb\template\twig\loader
-        arguments:
-            - '@filesystem'
 
     template.twig.extensions.collection:
         class: phpbb\di\service_collection

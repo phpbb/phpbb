@@ -11,9 +11,9 @@
  *
  */
 
-class phpbb_filesystem_realpath_test extends phpbb_test_case
+class phpbb_storage_realpath_test extends phpbb_test_case
 {
-	static protected $filesystem_own_realpath;
+	static protected $storage_helper_own_realpath;
 
 	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
@@ -22,9 +22,9 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 	{
 		parent::setUpBeforeClass();
 
-		$reflection_class = new ReflectionClass('\phpbb\filesystem\filesystem');
-		self::$filesystem_own_realpath = $reflection_class->getMethod('phpbb_own_realpath');
-		self::$filesystem_own_realpath->setAccessible(true);
+		$reflection_class = new ReflectionClass('\phpbb\storage\helper');
+		self::$storage_helper_own_realpath = $reflection_class->getMethod('phpbb_own_realpath');
+		self::$storage_helper_own_realpath->setAccessible(true);
 	}
 
 	public function setUp()
@@ -55,8 +55,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 			return array();
 		}
 
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$relative_path = $filesystem->make_path_relative(__DIR__, getcwd());
+		$relative_path = \phpbb\storage\helper::make_path_relative(__DIR__, getcwd());
 
 		return array(
 			array($relative_path, __DIR__),
@@ -72,7 +71,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 	 */
 	public function test_realpath_absolute_without_links($path, $expected)
 	{
-		$this->assertEquals($expected, self::$filesystem_own_realpath->invoke($this->filesystem, $path));
+		$this->assertEquals($expected, self::$storage_helper_own_realpath->invoke($this->filesystem, $path));
 	}
 
 	/**
@@ -85,6 +84,6 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 			$this->markTestSkipped('phpbb_own_realpath() cannot be tested with relative paths: getcwd is not available.');
 		}
 
-		$this->assertEquals($expected, self::$filesystem_own_realpath->invoke($this->filesystem, $path));
+		$this->assertEquals($expected, self::$storage_helper_own_realpath->invoke($this->filesystem, $path));
 	}
 }

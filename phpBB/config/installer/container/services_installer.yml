@@ -26,7 +26,6 @@ services:
     installer.helper.database:
         class: phpbb\install\helper\database
         arguments:
-            - '@filesystem'
             - '%core.root_path%'
 
     installer.helper.iohandler_factory:

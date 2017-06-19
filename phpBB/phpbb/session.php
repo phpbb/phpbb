@@ -38,7 +38,7 @@ class session
 	 */
 	static function extract_current_page($root_path)
 	{
-		global $request, $symfony_request, $phpbb_filesystem;
+		global $request, $symfony_request;
 
 		$page_array = array();
 
@@ -85,15 +85,15 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name));
 
-		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		$symfony_request_path = \phpbb\storage\helper::clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
 		}
 
 		// current directory within the phpBB root (for example: adm)
-		$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-		$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+		$root_dirs = explode('/', str_replace('\\', '/', \phpbb\storage\helper::realpath($root_path)));
+		$page_dirs = explode('/', str_replace('\\', '/', \phpbb\storage\helper::realpath('./')));
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);

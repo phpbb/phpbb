@@ -11,16 +11,12 @@
  *
  */
 
-class phpbb_filesystem_is_absolute_test extends phpbb_test_case
+class phpbb_dyptshr_is_absolute_test extends phpbb_test_case
 {
-	/** @var \phpbb\filesystem\filesystem_interface */
-	protected $filesystem;
 
 	public function setUp()
 	{
 		parent::setUp();
-
-		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	static public function is_absolute_data()
@@ -63,6 +59,6 @@ class phpbb_filesystem_is_absolute_test extends phpbb_test_case
 	 */
 	public function test_is_absolute($path, $expected)
 	{
-		$this->assertEquals($expected, $this->filesystem->is_absolute_path($path));
+		$this->assertEquals($expected, \phpbb\storage\helper::is_absolute_path($path));
 	}
 }

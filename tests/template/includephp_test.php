@@ -39,9 +39,8 @@ class phpbb_template_includephp_test extends phpbb_template_template_test_case
 	{
 		global $phpbb_root_path;
 
-		$filesystem = new \phpbb\filesystem\filesystem();
 		$path_to_php = str_replace('\\', '/', dirname(__FILE__)) . '/templates/_dummy_include.php.inc';
-		$this->assertTrue($filesystem->is_absolute_path($path_to_php));
+		$this->assertTrue(\phpbb\storage\helper::is_absolute_path($path_to_php));
 		$template_text = "Path is absolute.\n<!-- INCLUDEPHP $path_to_php -->";
 
 		$cache_dir = $phpbb_root_path . 'cache/';

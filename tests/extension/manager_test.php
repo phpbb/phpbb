@@ -176,7 +176,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$container,
 			$db,
 			$config,
-			new \phpbb\filesystem\filesystem(),
 			'phpbb_ext',
 			dirname(__FILE__) . '/',
 			$php_ext,

@@ -20,9 +20,8 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 
 	public function setUp()
 	{
-		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_root_path = '';
-		$this->database_helper = new \phpbb\install\helper\database($filesystem, $phpbb_root_path);
+		$this->database_helper = new \phpbb\install\helper\database($phpbb_root_path);
 	}
 
 	/**

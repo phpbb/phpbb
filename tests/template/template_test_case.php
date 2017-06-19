@@ -79,14 +79,12 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$this->lang = $lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
-
 		$filesystem = new \phpbb\filesystem\filesystem();
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -97,7 +95,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
