@@ -11,14 +11,12 @@
 *
 */
 
-class phpbb_filesystem_clean_path_test extends phpbb_test_case
+class phpbb_storage_clean_path_test extends phpbb_test_case
 {
-	protected $filesystem;
 
 	public function setUp()
 	{
 		parent::setUp();
-		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
 	public function clean_path_data()
@@ -49,6 +47,6 @@ class phpbb_filesystem_clean_path_test extends phpbb_test_case
 	*/
 	public function test_clean_path($input, $expected)
 	{
-		$this->assertEquals($expected, $this->filesystem->clean_path($input));
+		$this->assertEquals($expected, \phpbb\storage\helper::clean_path($input));
 	}
 }

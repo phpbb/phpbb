@@ -13,19 +13,18 @@
 
 namespace phpbb\routing;
 
-use phpbb\filesystem\filesystem_interface;
 use Symfony\Component\Config\FileLocator;
 
 class file_locator extends FileLocator
 {
-	public function __construct(filesystem_interface $filesystem, $paths = [])
+	public function __construct($paths = [])
 	{
 		$paths = (array) $paths;
 		$absolute_paths = [];
 
 		foreach ($paths as $path)
 		{
-			$absolute_paths[] = $filesystem->realpath($path);
+			$absolute_paths[] = \phpbb\storage\helper::realpath($path);
 		}
 
 		parent::__construct($absolute_paths);

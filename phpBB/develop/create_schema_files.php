@@ -44,7 +44,7 @@ require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
 $phpbb_class_loader->register();
 
-$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
+$finder = new \phpbb\finder($phpbb_root_path);
 $classes = $finder->core_path('phpbb/')
 	->directory('/db/migration/data')
 	->get_classes();

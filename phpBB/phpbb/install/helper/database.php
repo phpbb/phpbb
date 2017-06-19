@@ -21,11 +21,6 @@ use phpbb\install\exception\invalid_dbms_exception;
 class database
 {
 	/**
-	 * @var \phpbb\filesystem\filesystem_interface
-	 */
-	protected $filesystem;
-
-	/**
 	 * @var string
 	 */
 	protected $phpbb_root_path;
@@ -104,12 +99,10 @@ class database
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\filesystem\filesystem_interface	$filesystem			Filesystem interface
 	 * @param string									$phpbb_root_path	Path to phpBB's root
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
+	public function __construct($phpbb_root_path)
 	{
-		$this->filesystem		= $filesystem;
 		$this->phpbb_root_path	= $phpbb_root_path;
 	}
 
@@ -329,7 +322,7 @@ class database
 
 		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
 		if ($dbms_info['SCHEMA'] === 'sqlite'
-			&& stripos($this->filesystem->realpath($dbhost), $this->filesystem->realpath($this->phpbb_root_path) === 0))
+			&& stripos(\phpbb\storage\helper::realpath($dbhost), \phpbb\storage\helper::realpath($this->phpbb_root_path) === 0))
 		{
 			$errors[] = array(
 				'title' =>'INST_ERR_DB_FORUM_PATH',

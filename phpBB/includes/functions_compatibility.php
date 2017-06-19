@@ -87,7 +87,7 @@ function phpbb_check_hash($password, $hash)
 /**
 * Eliminates useless . and .. components from specified path.
 *
-* Deprecated, use filesystem class instead
+* Deprecated, use storage helper class instead
 *
 * @param string $path Path to clean
 * @return string Cleaned path
@@ -96,36 +96,12 @@ function phpbb_check_hash($password, $hash)
 */
 function phpbb_clean_path($path)
 {
-	global $phpbb_path_helper, $phpbb_container;
-
-	if (!$phpbb_path_helper && $phpbb_container)
+	if (!class_exists('\phpbb\storage\helper'))
 	{
-		/* @var $phpbb_path_helper \phpbb\path_helper */
-		$phpbb_path_helper = $phpbb_container->get('path_helper');
-	}
-	else if (!$phpbb_path_helper)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		// The container is not yet loaded, use a new instance
-		if (!class_exists('\phpbb\path_helper'))
-		{
-			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
-		}
-
-		$request = new phpbb\request\request();
-		$phpbb_path_helper = new phpbb\path_helper(
-			new phpbb\symfony_request(
-				$request
-			),
-			new phpbb\filesystem\filesystem(),
-			$request,
-			$phpbb_root_path,
-			$phpEx
-		);
+		require($phpbb_root_path . 'phpbb/storage/helper.' . $phpEx);
 	}
 
-	return $phpbb_path_helper->clean_path($path);
+	return \phpbb\storage\helper::clean_path($path);
 }
 
 /**
@@ -467,9 +443,7 @@ function phpbb_is_writable($file)
  */
 function phpbb_is_absolute($path)
 {
-	global $phpbb_filesystem;
-
-	return $phpbb_filesystem->is_absolute_path($path);
+	return \phpbb\storage::is_absolute_path($path);
 }
 
 /**
@@ -479,9 +453,7 @@ function phpbb_is_absolute($path)
  */
 function phpbb_realpath($path)
 {
-	global $phpbb_filesystem;
-
-	return $phpbb_filesystem->realpath($path);
+	return \phpbb\storage\helper::realpath($path);
 }
 
 /**
