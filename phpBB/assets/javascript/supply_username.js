@@ -31,7 +31,7 @@ $(document).ready(function(){
 				// 		{name:"Noah", id : 17},
 				// 		{name:"Chloe", id : 16}]
 				// callback(data);
-				$.getJSON("../../retrieve_usernames.php", {query: query}, function (data) {
+				$.getJSON("", {q: query}, function (data) {
                     callback(data)
                 });
 			}

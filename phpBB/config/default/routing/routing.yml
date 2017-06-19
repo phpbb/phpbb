@@ -26,3 +26,6 @@ phpbb_help_routing:
 
 phpbb_report_routing:
     resource: report.yml
+
+phpbb_mention_controller:
+    resource: mention.yml
