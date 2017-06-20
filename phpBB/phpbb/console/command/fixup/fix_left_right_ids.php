@@ -101,7 +101,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 	 *
 	 * @return bool	True on rebuild success, false otherwise
 	 */
-	function fix_ids_tree(&$i, $field, $table, $parent_id = 0, $where = array())
+	protected function fix_ids_tree(&$i, $field, $table, $parent_id = 0, $where = array())
 	{
 		$changes_made = false;
 		$sql = 'SELECT * FROM ' . $table . '
