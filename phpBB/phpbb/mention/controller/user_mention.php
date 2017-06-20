@@ -18,7 +18,7 @@
 	 * phpBB mentions main controller.
 	 */
 
-	class UserMentionController {
+	class user_mention {
 
 		/**
 		* @var driver_interface
@@ -49,7 +49,6 @@
 		 */
 		public function handle()
 		{
-			echo "hello";
 			$keyword = utf8_clean_string($this->request->variable('q', '', true));
 			if (strlen($keyword) < 2)
 			{
@@ -74,5 +73,3 @@
 			return new JsonResponse($return);
 		}
 	}
-
-?>

@@ -168,7 +168,7 @@ services:
             - '@file_downloader'
             - '@user'
     phpbb.mention.controller:
-        class: phpbb\mention\controller\UsermentionController
+        class: phpbb\mention\controller\user_mention
         arguments:
             - '@dbal.conn'
             - '@request'
