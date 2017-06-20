@@ -60,4 +60,69 @@ class helper extends \phpbb\install\controller\helper
 		$this->installer_config->set('destination_db_config',$db_destination);
 		$this->installer_config->save_config();
 	}
+
+	public function set_current_conversion_file($config_file)
+	{
+		$this->installer_config->set('current_conversion',$config_file);
+		$this->installer_config->save_config();
+	}
+
+	public function get_current_conversion_file()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('current_conversion');
+	}
+
+	public function set_total_files($total_files)
+	{
+		$this->installer_config->set('current_conversion_total_files', $total_files);
+		$this->installer_config->save_config();
+	}
+
+	public function get_total_files()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('current_conversion_total_files');
+	}
+
+	public function set_file_index($file_index)
+	{
+		$this->installer_config->set('current_conversion_file', $file_index);
+		$this->installer_config->save_config();
+	}
+
+	public function get_file_index()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('current_conversion_file');
+	}
+
+	public function next_file()
+	{
+		$current = $this->get_file_index();
+		if($current < $this->get_total_files())
+		{
+			$this->set_file_index($current+1);
+		}
+		else
+		{
+			$this->set_file_index(-1);
+		}
+
+	}
+
+
+	public function set_conversion_status($status)
+	{
+		$this->installer_config->set('converter.conversion.status', $status);
+		$this->installer_config->save_config();
+	}
+
+	public function get_conversion_status()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('converter.conversion.status');
+	}
+
+
 }

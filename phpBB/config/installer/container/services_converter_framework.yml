@@ -11,7 +11,7 @@ services:
             - '@phpbb.dbal.source.connection'
             - '@phpbb.dbal.destination.connection'
             - '@phpbb.installer.converter.controller.helper'
-        shared: false
+
 
     phpbb.dbal.source.connection:
         class: phpbb\install\converter\connection
@@ -50,6 +50,19 @@ services:
         arguments:
             - '@phpbb.installer.converter.bin.converter'
             - '@phpbb.installer.converter.controller.helper'
+            - '@installer.helper.iohandler_factory'
+            - '@request'
+            - '@language'
+            - '@template'
+            - '%core.root_path%'
+
+    phpbb.installer.converter.start:
+        class: phpbb\install\converter\controller\converter_start
+        arguments:
+            - '@phpbb.installer.converter.bin.converter'
+            - '@phpbb.installer.converter.controller.helper'
+            - '@installer.helper.iohandler_factory'
+            - '@request'
             - '@language'
             - '@template'
             - '%core.root_path%'

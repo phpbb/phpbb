@@ -15,6 +15,7 @@
 namespace phpbb\install\converter\controller;
 
 use Doctrine\DBAL\Driver;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class controller_convert
 {
@@ -46,6 +47,14 @@ class controller_convert
 
 	protected $config;
 
+	protected $request;
+
+	protected $factory;
+
+	protected $ajax_iohandler;
+
+	protected $yaml_queue;
+
 	/**
 	 * Constructor
 	 *
@@ -54,7 +63,7 @@ class controller_convert
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $factory, $request, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
 	{
 		$this->helper = $helper;
 		//	$this->converter = $converter_obj;
@@ -62,6 +71,9 @@ class controller_convert
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->converter = $converter;
+		$this->request = $request;
+		$this->factory = $factory;
+		//$this->ajax_iohandler = $this->factory->get('ajax');
 
 
 	}
@@ -81,23 +93,39 @@ class controller_convert
 		//also tried using $container->get. Get will give an
 		//error saying the DIC container does not know to construct the synthetic service.
 
-		$stmt = $this->converter->demo_load();
-		$val = array();
-		while($row = $stmt->fetch())
-		{
-			$val=$row;
-			break;
-		}
-		$val = array_values($val);
+		$this->yaml_queue = $this->converter->get_yaml_queue();
+
+		$this->helper->set_conversion_status(true);
+		$this->helper->set_file_index(0);
+		$this->helper->set_total_files(count($this->yaml_queue));
+
+
+
+//		$stmt = $this->converter->demo_load();
+//		$val = array();
+//		while ($row = $stmt->fetch())
+//		{
+//			$val = $row;
+//			break;
+//		}
+//		$val = array_values($val);
 
 
 		$this->template->assign_vars(array(
-			'TITLE' => $title,
-			'BODY'  => $val[0],
+			'TITLE'        => $title,
+			'BODY'         => "The following YAML files would be processed and converted",
+			'T_YAML_FILES' => $this->yaml_queue,
+			'U_LINK' => $this->helper->route('phpbb_converter_start'),
 		));
 
 
-		return $this->helper->render('converter_main.html', $title, true);
+		return $this->helper->render('converter_list.html', $title, true);
+
+	}
+
+	public function ajaxResponse()
+	{
 
 	}
 }
+

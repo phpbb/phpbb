@@ -1,0 +1,16 @@
+{{ include('installer_header.html') }}
+<h1>{TITLE}</h1>
+<p>{BODY}</p>
+
+<div class ="yaml_list" style=" ">
+
+	{% for file in T_YAML_FILES %}
+		<li>{{ file }}</li>
+	{% endfor %}
+
+</div>
+<br/>
+<div>
+	<div class="button1"><a href="{U_LINK}">NEXT</a></div>
+</div>
+{{ include('installer_footer.html') }}

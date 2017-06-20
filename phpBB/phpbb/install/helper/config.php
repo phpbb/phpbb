@@ -431,7 +431,7 @@ class config
 		$this->do_clean_up = true;
 		@unlink($this->install_config_file);
 	}
-	
+
 	/**
 	 * Filling up system_data array
 	 */

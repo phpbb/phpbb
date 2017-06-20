@@ -41,10 +41,25 @@ phpbb_converter_index:
     defaults:
         _controller: phpbb.installer.converter.index:handle
 
+phpbb_converter_ajax:
+    path: /converter/start/ajax
+    defaults:
+        _controller: phpbb.installer.converter.start:ajaxResponse
+
 phpbb_converter_convert:
     path: /converter/converter
     defaults:
         _controller: phpbb.installer.converter.convert:handle
+
+phpbb_converter_start:
+    path: /converter/start
+    defaults:
+        _controller: phpbb.installer.converter.start:handle
+
+phpbb_converter_status:
+    path: /converter/start/status
+    defaults:
+        _controller: phpbb.installer.converter.start:ajaxStatus
 
 phpbb_convert_intro:
     path: /convert/{start_new}

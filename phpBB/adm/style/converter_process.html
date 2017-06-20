@@ -1,0 +1,18 @@
+{{ include('installer_header.html') }}
+
+<h1>{TITLE}</h1>
+<p>{BODY}</p>
+
+<div>
+
+	<p>{{ DONE }}</p>
+
+	<p class="status"></p>
+
+</div>
+<div class="progress">
+	<div class="button"><a id="btn" href="#">Begin Conversion</a></div>
+</div>
+
+{{ include('installer_footer.html') }}
+<script src="/assets/javascript/converter2.js"></script>

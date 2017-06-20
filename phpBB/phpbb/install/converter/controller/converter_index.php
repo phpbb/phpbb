@@ -109,7 +109,7 @@ class converter_index
 
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,
-			'BODY'   => 'Welcome to converter framework idex. Click on the link below to begin conversion',
+			'BODY'   => 'Welcome to converter framework idex. Click on the link below to start conversion',
 			'U_LINK' => $this->helper->route('phpbb_converter_convert'),
 		));
 
