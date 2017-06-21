@@ -44,7 +44,7 @@ phpbb_converter_index:
 phpbb_converter_ajax:
     path: /converter/start/ajax
     defaults:
-        _controller: phpbb.installer.converter.start:ajaxResponse
+        _controller: phpbb.installer.converter.start:ajaxStream
 
 phpbb_converter_convert:
     path: /converter/converter
@@ -59,7 +59,7 @@ phpbb_converter_start:
 phpbb_converter_status:
     path: /converter/start/status
     defaults:
-        _controller: phpbb.installer.converter.start:ajaxStatus
+        _controller: phpbb.installer.converter.start:ajaxStream
 
 phpbb_convert_intro:
     path: /convert/{start_new}

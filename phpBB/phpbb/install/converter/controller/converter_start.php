@@ -17,7 +17,11 @@ namespace phpbb\install\converter\controller;
 use Doctrine\DBAL\Driver;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use phpbb\install\helper\iohandler\factory;
+
+use phpbb\install\helper\iohandler\ajax_iohandler;
+use phpbb\install\helper\iohandler\cli_iohandler;
+use phpbb\install\helper\iohandler\iohandler_interface;
 
 class converter_start
 {
@@ -51,7 +55,7 @@ class converter_start
 
 	protected $request;
 
-	protected $factory;
+	protected $iohandler_factory;
 
 	protected $ajax_iohandler;
 
@@ -74,7 +78,7 @@ class converter_start
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->converter = $converter;
 		$this->request = $request;
-		$this->factory = $factory;
+		$this->iohandler_factory = $factory;
 		//$this->ajax_iohandler = $this->factory->get('ajax');
 
 
@@ -140,30 +144,54 @@ class converter_start
 		}
 	}
 
-//	public function ajaxResponse()
-//	{
-//		$response = new StreamedResponse();
-//		$response->setCallback(function(){
-//
-//			$x=array(
-//				'string' =>'hello world',
-//				'stage' => 'converting',
-//			);
-//			//print(str_pad(' ', 4096) . "\n");
-//			print("start");
-//			ob_flush();
-//			flush();
-//			sleep(5);
-//			//print(str_pad(' ', 4096) . "\n");
-//			print("end");
-//			ob_flush();
-//			flush();
-//
-//
-//		});
-//		$response->headers->set('X-Accel-Buffering', 'no');
-//
-//		return $response;
-//	}
+	public function ajaxStream()
+	{
+
+			$this->iohandler_factory->set_environment('ajax');
+			$ajax_handler = $this->iohandler_factory->get();
+			$yaml_queue = $this->yaml_queue;
+			$converter = $this->converter;
+			$helper = $this->helper;
+			$this->yaml_queue = $this->converter->get_yaml_queue();
+			$response = new StreamedResponse();
+			$response->setCallback(function () use ($ajax_handler, $yaml_queue, $helper, $converter)
+			{
+
+				$helper->set_conversion_status(true);
+
+				$curr_index = $helper->get_file_index();
+
+				if ($helper->get_conversion_status() && $curr_index < count($yaml_queue))
+				{
+
+					$helper->set_current_conversion_file($this->yaml_queue[$curr_index]);
+					$log_msg = "Converting " . $yaml_queue[$curr_index];
+					$ajax_handler->add_log_message('Converting..', $log_msg);
+					$ajax_handler->set_task_count(count($yaml_queue));
+					$ajax_handler->set_progress($curr_index);
+					$ajax_handler->send_response();
+					print("yo");
+					ob_flush();
+					flush();
+
+					$converter->dummy_load($this->yaml_queue[$curr_index]);
+					sleep(10);
+					$helper->next_file();
+					$ajax_handler->request_refresh();
+				}
+//				else{
+//					$this->helper->set_conversion_status(false);
+//					return new Response('Only Ajax',Response::HTTP_OK,array('content-type'=>'text/html'));
+//				}
+				//print(str_pad(' ', 4096) . "\n");
+
+			});
+			$response->headers->set('X-Accel-Buffering', 'no');
+
+			return $response;
+		}
+
+
+
 }
 
