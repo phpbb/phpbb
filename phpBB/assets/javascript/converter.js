@@ -399,6 +399,7 @@
 	function pollContent(xhReq) {
 		console.log('polling cont');
 		var messages = xhReq.responseText;
+		console.log(messages);
 		var msgSeparator = '}\n\n';
 		var unprocessed, messageEndIndex, endOfMessageIndex, message;
 

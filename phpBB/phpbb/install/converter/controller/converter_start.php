@@ -152,7 +152,7 @@ class converter_start
 			$yaml_queue = $this->yaml_queue;
 			$converter = $this->converter;
 			$helper = $this->helper;
-			$this->yaml_queue = $this->converter->get_yaml_queue();
+			$yaml_queue = $this->converter->get_yaml_queue();
 			$response = new StreamedResponse();
 			$response->setCallback(function () use ($ajax_handler, $yaml_queue, $helper, $converter)
 			{
@@ -160,24 +160,24 @@ class converter_start
 				$helper->set_conversion_status(true);
 
 				$curr_index = $helper->get_file_index();
+				//$ajax_handler->add_log_message($yaml_queue[$curr_index]);
+				//$ajax_handler->send_response();
 
 				if ($helper->get_conversion_status() && $curr_index < count($yaml_queue))
 				{
 
-					$helper->set_current_conversion_file($this->yaml_queue[$curr_index]);
+					$helper->set_current_conversion_file($yaml_queue[$curr_index]);
 					$log_msg = "Converting " . $yaml_queue[$curr_index];
 					$ajax_handler->add_log_message('Converting..', $log_msg);
 					$ajax_handler->set_task_count(count($yaml_queue));
-					$ajax_handler->set_progress($curr_index);
+					$ajax_handler->set_progress($yaml_queue[$curr_index],$curr_index+1);
 					$ajax_handler->send_response();
-					print("yo");
-					ob_flush();
-					flush();
 
 					$converter->dummy_load($this->yaml_queue[$curr_index]);
 					sleep(10);
 					$helper->next_file();
 					$ajax_handler->request_refresh();
+					$ajax_handler->send_response();
 				}
 //				else{
 //					$this->helper->set_conversion_status(false);
