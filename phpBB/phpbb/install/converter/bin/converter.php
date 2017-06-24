@@ -15,6 +15,7 @@ class converter
 	protected $container;
 
 
+
 	function __construct($db_source, $db_destination,\phpbb\install\converter\controller\helper $helper){
 		$this->db_source = $db_source;
 		$this->db_destination = $db_destination;

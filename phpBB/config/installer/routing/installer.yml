@@ -90,3 +90,8 @@ phpbb_installer_status:
     path: /installer/status
     defaults:
         _controller: phpbb.installer.controller.status:status
+
+phpbb_installer_status:
+    path: /converter/status
+    defaults:
+        _controller: phpbb.installer.controller.status:status

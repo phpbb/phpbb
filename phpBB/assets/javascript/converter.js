@@ -371,24 +371,24 @@
 	 * Queries the installer's status
 	 */
 	function queryInstallerStatus() {
-		// var url = $(location).attr('pathname');
-		// var lookUp = 'install/app.php';
-		// var position = url.indexOf(lookUp);
-		//
-		// if (position === -1) {
-		// 	lookUp = 'install';
-		// 	position = url.indexOf(lookUp);
-		//
-		// 	if (position === -1) {
-		// 		return false;
-		// 	}
-		// }
-		//
-		// url = url.substring(0, position) + lookUp + '/installer/status';
-		// $.getJSON(url, function(data) {
-		// 	processTimeoutResponse(data.status);
-		// });
-		processTimeoutResponse('running');
+		var url = $(location).attr('pathname');
+		var lookUp = 'install/app.php';
+		var position = url.indexOf(lookUp);
+
+		if (position === -1) {
+			lookUp = 'install';
+			position = url.indexOf(lookUp);
+
+			if (position === -1) {
+				return false;
+			}
+		}
+
+		url = url.substring(0, position) + lookUp + '/installer/status';
+		$.getJSON(url, function(data) {
+			processTimeoutResponse(data.status);
+		});
+		//processTimeoutResponse('running');
 	}
 
 	/**
@@ -426,10 +426,10 @@
 				doRefresh();
 			}
 
-			// if (timeoutDetected) {
-			// 	statusCount = 0;
-			// 	queryInstallerStatus();
-			// }
+			if (timeoutDetected) {
+				statusCount = 0;
+				queryInstallerStatus();
+			}
 		}
 	}
 

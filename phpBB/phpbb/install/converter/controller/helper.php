@@ -37,28 +37,36 @@ class helper extends \phpbb\install\controller\helper
 	/**
 	 * @var config
 	 */
-	public function get_source_db()
+	public function load_config()
 	{
 		$this->installer_config->load_config();
+	}
+	public function save_config()
+	{
+		$this->installer_config->save_config();
+	}
+	public function get_source_db()
+	{
+		$this->load_config();
 		return $this->installer_config->get('source_db_config');
 	}
 
 	public function get_destination_db()
 	{
-		$this->installer_config->load_config();
+		$this->load_config();
 		return $this->installer_config->get('destination_db_config');
 	}
 
 	public function set_source_db($db_source)
 	{
 		$this->installer_config->set('source_db_config',$db_source);
-		$this->installer_config->save_config();
+		$this->save_config();
 	}
 
 	public function set_destination_db($db_destination)
 	{
 		$this->installer_config->set('destination_db_config',$db_destination);
-		$this->installer_config->save_config();
+		$this->save_config();
 	}
 
 	public function set_current_conversion_file($config_file)
@@ -108,9 +116,7 @@ class helper extends \phpbb\install\controller\helper
 		{
 			$this->set_file_index(-1);
 		}
-
 	}
-
 
 	public function set_conversion_status($status)
 	{
@@ -123,6 +129,5 @@ class helper extends \phpbb\install\controller\helper
 		$this->installer_config->load_config();
 		return $this->installer_config->get('converter.conversion.status');
 	}
-
-
 }
+

@@ -102,87 +102,46 @@ class converter_start
 
 	}
 
-	public function ajaxResponse()
-	{
-		$this->yaml_queue = $this->converter->get_yaml_queue();
-		$this->helper->set_conversion_status(true);
-
-		$curr_index = $this->helper->get_file_index();
-
-		if ($this->helper->get_conversion_status() && $curr_index < count($this->yaml_queue))
-		{
-			$this->helper->set_current_conversion_file($this->yaml_queue[$curr_index]);
-			$this->converter->dummy_load($this->yaml_queue[$curr_index]);
-			sleep(10);
-			$this->helper->next_file();
-			return new Response('reload',Response::HTTP_OK,array('content-type'=>'text/html'));
-		}
-		else{
-			$this->helper->set_conversion_status(false);
-			return new Response('end',Response::HTTP_OK,array('content-type'=>'text/html'));
-		}
-
-	}
-
-	public function ajaxStatus()
-	{
-		if($this->helper->get_conversion_status())
-		{
-			$data=array(
-				'file' =>$this->helper->get_current_conversion_file(),
-				'index'=>$this->helper->get_file_index(),
-				'total'=>count($this->yaml_queue),
-
-			);
-
-
-			return new JsonResponse($data, Response::HTTP_OK, array('content-type' => 'text/html'));
-		}
-		else
-		{
-			return new Response("no-conversion", Response::HTTP_OK, array('content-type' => 'application/json'));
-		}
-	}
-
 	public function ajaxStream()
 	{
 
 			$this->iohandler_factory->set_environment('ajax');
 			$ajax_handler = $this->iohandler_factory->get();
-			$yaml_queue = $this->yaml_queue;
 			$converter = $this->converter;
+			$phpbb_root_path=$this->phpbb_root_path;
 			$helper = $this->helper;
 			$yaml_queue = $this->converter->get_yaml_queue();
 			$response = new StreamedResponse();
-			$response->setCallback(function () use ($ajax_handler, $yaml_queue, $helper, $converter)
+			$response->setCallback(function () use ($phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
 			{
-
 				$helper->set_conversion_status(true);
-
+				$ajax_handler->acquire_lock();
 				$curr_index = $helper->get_file_index();
-				//$ajax_handler->add_log_message($yaml_queue[$curr_index]);
-				//$ajax_handler->send_response();
-
 				if ($helper->get_conversion_status() && $curr_index < count($yaml_queue))
 				{
-
 					$helper->set_current_conversion_file($yaml_queue[$curr_index]);
+					$helper->save_config();
 					$log_msg = "Converting " . $yaml_queue[$curr_index];
 					$ajax_handler->add_log_message('Converting..', $log_msg);
 					$ajax_handler->set_task_count(count($yaml_queue));
 					$ajax_handler->set_progress($yaml_queue[$curr_index],$curr_index+1);
 					$ajax_handler->send_response();
-
 					$converter->dummy_load($this->yaml_queue[$curr_index]);
-					sleep(10);
+					sleep(5);
 					$helper->next_file();
-					$ajax_handler->request_refresh();
-					$ajax_handler->send_response();
+					$ajax_handler->release_lock();
 				}
-//				else{
-//					$this->helper->set_conversion_status(false);
-//					return new Response('Only Ajax',Response::HTTP_OK,array('content-type'=>'text/html'));
-//				}
+				else{
+					$helper->set_conversion_status(false);
+					$helper->save_config();
+					$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
+					$ajax_handler->add_success_message('The Converter has finished Conversion'/* @todo make a lang var*/, array(
+						'ACP_LINK',
+						$acp_url,
+					));
+					$ajax_handler->set_progress('The Converter has finished Conversion',count($yaml_queue));
+					$ajax_handler->send_response(true);
+				}
 				//print(str_pad(' ', 4096) . "\n");
 
 			});
