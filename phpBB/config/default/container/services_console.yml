@@ -141,6 +141,33 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.extension.install:
+        class: phpbb\console\command\extension\install
+        arguments:
+            - '@user'
+            - '@ext.composer.manager'
+            - '@language'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.list_available:
+        class: phpbb\console\command\extension\list_available
+        arguments:
+            - '@user'
+            - '@ext.composer.manager'
+            - '@language'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.manage:
+        class: phpbb\console\command\extension\manage
+        arguments:
+            - '@user'
+            - '@ext.composer.manager'
+            - '@language'
+        tags:
+            - { name: console.command }
+
     console.command.extension.purge:
         class: phpbb\console\command\extension\purge
         arguments:
@@ -150,12 +177,30 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.extension.remove:
+        class: phpbb\console\command\extension\remove
+        arguments:
+            - '@user'
+            - '@ext.composer.manager'
+            - '@language'
+        tags:
+            - { name: console.command }
+
     console.command.extension.show:
         class: phpbb\console\command\extension\show
         arguments:
             - '@user'
             - '@ext.manager'
             - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.update:
+        class: phpbb\console\command\extension\update
+        arguments:
+            - '@user'
+            - '@ext.composer.manager'
+            - '@language'
         tags:
             - { name: console.command }
 

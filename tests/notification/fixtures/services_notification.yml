@@ -70,7 +70,7 @@ services:
 
     test:
         class: phpbb\notification\type\test
-        scope: prototype
+        shared: false
         parent: notification.type.base
         tags:
             - { name: notification.type }

@@ -8,7 +8,7 @@
 		<dt><label for="fileupload">{L_FILENAME}{L_COLON}</label></dt>
 		<dd>
 			<input type="file" name="fileupload" id="fileupload" class="inputbox autowidth" />
-			<input type="submit" name="add_file" value="{L_ADD_FILE}" class="button2" onclick="upload = true;" />
+			<input type="submit" name="add_file" value="{L_ADD_FILE}" class="button1 button button-form-bold" onclick="upload = true;" />
 		</dd>
 	</dl>
 	<dl>
@@ -18,7 +18,7 @@
 	</fieldset>
 
 	<div id="attach-panel-multi" class="attach-panel-multi">
-		<input type="button" class="button2" value="{L_PLUPLOAD_ADD_FILES}" id="add_files" />
+		<input type="button" class="button1 button button-form-bold" value="{L_PLUPLOAD_ADD_FILES}" id="add_files" />
 	</div>
 
 	<div class="panel<!-- IF not .attach_row --> hidden<!-- ENDIF --> file-list-container" id="file-list-container">
@@ -37,8 +37,8 @@
 							<td class="attach-name">
 								<span class="file-name ellipsis-text"></span>
 								<span class="attach-controls">
-									<input type="button" value="{L_PLACE_INLINE}" class="button2 hidden file-inline-bbcode" />&nbsp;
-									<input type="button" value="{L_DELETE_FILE}" class="button2 file-delete" />
+									<input type="button" value="{L_PLACE_INLINE}" class="button1 button button-form-bold hidden file-inline-bbcode" />&nbsp;
+									<input type="button" value="{L_DELETE_FILE}" class="button1 button button-form-bold file-delete" />
 								</span>
 								<span class="clear"></span>
 							</td>
@@ -60,8 +60,8 @@
 							<td class="attach-name">
 								<span class="file-name ellipsis-text"><a href="{attach_row.U_VIEW_ATTACHMENT}">{attach_row.FILENAME}</a></span>
 								<span class="attach-controls">
-									<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" class="button2 file-inline-bbcode" />&nbsp; <!-- ENDIF -->
-									<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button2 file-delete" />
+									<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" class="button1 button button-form-bold file-inline-bbcode" />&nbsp; <!-- ENDIF -->
+									<input type="submit" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" class="button1 button button-form-bold file-delete" />
 								</span>
 								<span class="clear"></span>
 							</td>
