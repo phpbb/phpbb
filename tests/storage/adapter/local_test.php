@@ -16,10 +16,17 @@
 	 protected $adapter;
 
 	public function setUp()
- 	{
- 		parent::setUp();
-		$this->adapter = new \phpbb\storage\adapter\local();
- 	}
+	{
+		parent::setUp();
+
+		$config = new \phpbb\config\config(array(
+			'test_path'	=> '.',
+		));
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_root_path = getcwd().DIRECTORY_SEPARATOR;
+		$path_key = 'test_path';
+		$this->adapter = new \phpbb\storage\adapter\local($config, $filesystem, $phpbb_root_path, $path_key);
+	}
 
 	public function tearDown()
 	{
@@ -44,11 +51,11 @@
 	public function test_exists()
 	{
 		// Exists with files
-		$this->assertTrue($this->adapter->exists(__DIR__.'/local_test.php'));
-		$this->assertFalse($this->adapter->exists(__DIR__.'/nonexistent_file.php'));
+		$this->assertTrue($this->adapter->exists('README.md'));
+		$this->assertFalse($this->adapter->exists('nonexistent_file.php'));
 		// exists with directory
-		$this->assertTrue($this->adapter->exists(__DIR__.'/../adapter'));
-		$this->assertFalse($this->adapter->exists(__DIR__.'/../nonexistet_folder'));
+		$this->assertTrue($this->adapter->exists('phpBB'));
+		$this->assertFalse($this->adapter->exists('nonexistet_folder'));
 	}
 
 	public function test_delete()
@@ -83,4 +90,5 @@
 		unlink('file.txt');
 		unlink('file2.txt');
 	}
+
  }

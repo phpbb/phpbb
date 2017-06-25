@@ -13,8 +13,6 @@
 
 namespace phpbb\storage;
 
-use phpbb\storage\exception\exception;
-
 class storage
 {
 	protected $adapter;
