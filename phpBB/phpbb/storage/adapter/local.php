@@ -14,7 +14,7 @@
 namespace phpbb\storage\adapter;
 
 use phpbb\storage\exception\exception;
-use phpbb\filesystem\filesystem_exception;
+use phpbb\filesystem\exception\filesystem_exception;
 
 class local implements adapter_interface
 {
@@ -31,10 +31,10 @@ class local implements adapter_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\filesystem\filesystem $filesystem, $root_path, $path_key)
+	public function __construct(\phpbb\config\config $config, \phpbb\filesystem\filesystem $filesystem, $phpbb_root_path, $path_key)
 	{
 		$this->filesystem = $filesystem;
-		$this->root_path = $root_path.$config[$path_key];
+		$this->root_path = $phpbb_root_path.$config[$path_key];
 
 		if(substr($this->root_path, -1, 1) != DIRECTORY_SEPARATOR)
 		{
@@ -47,7 +47,7 @@ class local implements adapter_interface
 	 */
 	public function put_contents($path, $content)
 	{
-		if ($this->exists($this->root_path.$path))
+		if ($this->exists($path))
 		{
 			throw new exception('', $path); // FILE_EXISTS
 		}
@@ -67,7 +67,7 @@ class local implements adapter_interface
 	 */
 	public function get_contents($path)
 	{
-		if (!$this->exists($this->root_path.$path))
+		if (!$this->exists($path))
 		{
 			throw new exception('', $path); // FILE_DONT_EXIST
 		}
