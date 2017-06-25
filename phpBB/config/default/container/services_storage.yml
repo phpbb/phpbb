@@ -2,8 +2,10 @@ services:
     storage.adapter.avatar:
         class: phpbb\storage\adapter\local
         arguments:
+            - '@config'
             - '@filesystem'
             - '%core.root_path%'
+            - 'avatar_path'
     storage.avatar:
         class: phpbb\storage\storage
         arguments:
