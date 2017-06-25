@@ -678,7 +678,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $phpbb_log, $request;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $phpbb_log, $request, $phpbb_dispatcher;
 
 	if (!$to_topic_id)
 	{
@@ -783,6 +783,20 @@ function merge_posts($topic_id, $to_topic_id)
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 		$redirect = $request->variable('redirect', "{$phpbb_root_path}viewtopic.$phpEx?f=$to_forum_id&amp;t=$to_topic_id");
 		$redirect = reapply_sid($redirect);
+
+		/**
+		 * Perform additional actions after merging posts.
+		 *
+		 * @event core.mcp_topics_merge_posts_after
+		 * @var	int		topic_id		The topic ID from which posts are being moved
+		 * @var	int		to_topic_id		The topic ID to which posts are being moved
+		 * @since 3.1.11-RC1
+		 */
+		$vars = array(
+			'topic_id',
+			'to_topic_id',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.mcp_topics_merge_posts_after', compact($vars)));
 
 		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
