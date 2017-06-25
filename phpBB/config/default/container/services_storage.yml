@@ -1,0 +1,14 @@
+services:
+    storage.adapter.avatar:
+        class: phpbb\storage\adapter\local
+        arguments:
+            - '@filesystem'
+            - '%core.root_path%'
+    storage.avatar:
+        class: phpbb\storage\storage
+        arguments:
+             - '@storage.adapter.avatar'
+    storage.controller:
+        class: phpbb\storage\controller
+        arguments:
+            - '@service_container'
