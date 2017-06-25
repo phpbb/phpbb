@@ -23,7 +23,7 @@
 			'test_path'	=> '.',
 		));
 		$filesystem = new \phpbb\filesystem\filesystem();
-		$phpbb_root_path = getcwd().DIRECTORY_SEPARATOR;
+		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 		$path_key = 'test_path';
 		$this->adapter = new \phpbb\storage\adapter\local($config, $filesystem, $phpbb_root_path, $path_key);
 	}

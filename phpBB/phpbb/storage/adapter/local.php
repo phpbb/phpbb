@@ -34,11 +34,11 @@ class local implements adapter_interface
 	public function __construct(\phpbb\config\config $config, \phpbb\filesystem\filesystem $filesystem, $phpbb_root_path, $path_key)
 	{
 		$this->filesystem = $filesystem;
-		$this->root_path = $phpbb_root_path.$config[$path_key];
+		$this->root_path = $phpbb_root_path . $config[$path_key];
 
 		if (substr($this->root_path, -1, 1) != DIRECTORY_SEPARATOR)
 		{
-			$this->root_path = $this->root_path.DIRECTORY_SEPARATOR;
+			$this->root_path = $this->root_path . DIRECTORY_SEPARATOR;
 		}
 	}
 
@@ -54,7 +54,7 @@ class local implements adapter_interface
 
 		try
 		{
-			$this->filesystem->dump_file($this->root_path.$path, $content);
+			$this->filesystem->dump_file($this->root_path . $path, $content);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -72,7 +72,7 @@ class local implements adapter_interface
 			throw new exception('', $path); // FILE_DONT_EXIST
 		}
 
-		if (($content = @file_get_contents($this->root_path.$path)) === false)
+		if (($content = @file_get_contents($this->root_path . $path)) === false)
 		{
 			throw new exception('', $path); // CANNOT READ FILE
 		}
@@ -85,7 +85,7 @@ class local implements adapter_interface
 	 */
 	public function exists($path)
 	{
-		return $this->filesystem->exists($this->root_path.$path);
+		return $this->filesystem->exists($this->root_path . $path);
 	}
 
 	/**
@@ -95,7 +95,7 @@ class local implements adapter_interface
 	{
 		try
 		{
-			$this->filesystem->remove($this->root_path.$path);
+			$this->filesystem->remove($this->root_path . $path);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -110,7 +110,7 @@ class local implements adapter_interface
 	{
 		try
 		{
-			$this->filesystem->rename($this->root_path.$path_orig, $this->root_path.$path_dest, false);
+			$this->filesystem->rename($this->root_path . $path_orig, $this->root_path . $path_dest, false);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -125,7 +125,7 @@ class local implements adapter_interface
 	{
 		try
 		{
-			$this->filesystem->copy($this->root_path.$path_orig, $this->root_path.$path_dest, false);
+			$this->filesystem->copy($this->root_path . $path_orig, $this->root_path . $path_dest, false);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -140,7 +140,7 @@ class local implements adapter_interface
 	{
 		try
 		{
-			$this->filesystem->mkdir($this->root_path.$path);
+			$this->filesystem->mkdir($this->root_path . $path);
 		}
 		catch (filesystem_exception $e)
 		{
