@@ -162,26 +162,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function clean_path($path)
 	{
-		$exploded = explode('/', $path);
-		$filtered = array();
-		foreach ($exploded as $part)
-		{
-			if ($part === '.' && !empty($filtered))
-			{
-				continue;
-			}
-
-			if ($part === '..' && !empty($filtered) && $filtered[count($filtered) - 1] !== '.' && $filtered[count($filtered) - 1] !== '..')
-			{
-				array_pop($filtered);
-			}
-			else
-			{
-				$filtered[] = $part;
-			}
-		}
-		$path = implode('/', $filtered);
-		return $path;
+		return \phpbb\storage\helper::clean_path($path);
 	}
 
 	/**
@@ -227,7 +208,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function is_absolute_path($path)
 	{
-		return (isset($path[0]) && $path[0] === '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
+		return \phpbb\storage\helper::is_absolute_path($path);
 	}
 
 	/**
@@ -305,7 +286,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function make_path_relative($end_path, $start_path)
 	{
-		return $this->symfony_filesystem->makePathRelative($end_path, $start_path);
+		return \phpbb\storage\helper::make_path_relative($end_path, $start_path);
 	}
 
 	/**
@@ -639,6 +620,8 @@ class filesystem implements filesystem_interface
 	/**
 	 * Try to resolve real path when PHP's realpath failes to do so
 	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+	 *
 	 * @param string	$path
 	 * @return bool|string
 	 */
@@ -764,6 +747,8 @@ class filesystem implements filesystem_interface
 	/**
 	 * Try to resolve symlinks in path
 	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+	 *
 	 * @param string	$path			The path to resolve
 	 * @param string	$prefix			The path prefix (on windows the drive letter)
 	 * @param bool 		$absolute		Whether or not the path is absolute
@@ -774,143 +759,6 @@ class filesystem implements filesystem_interface
 	 */
 	protected function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
 	{
-		if ($return_array)
-		{
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-		}
-
-		trim ($path, '/');
-		$path_parts = explode('/', $path);
-		$resolved = array();
-		$resolved_path = $prefix;
-		$file_found = false;
-
-		foreach ($path_parts as $path_part)
-		{
-			if ($file_found)
-			{
-				return false;
-			}
-
-			if (empty($path_part) || ($path_part === '.' && ($absolute || !empty($resolved))))
-			{
-				continue;
-			}
-			else if ($absolute && $path_part === '..')
-			{
-				if (empty($resolved))
-				{
-					// No directories above root
-					return false;
-				}
-
-				array_pop($resolved);
-				$resolved_path = false;
-			}
-			else if ($path_part === '..' && !empty($resolved) && !in_array($resolved[count($resolved) - 1], array('.', '..')))
-			{
-				array_pop($resolved);
-				$resolved_path = false;
-			}
-			else
-			{
-				if ($resolved_path === false)
-				{
-					if (empty($resolved))
-					{
-						$resolved_path = ($absolute) ? $prefix . '/' . $path_part : $path_part;
-					}
-					else
-					{
-						$tmp_array = $resolved;
-						if ($absolute)
-						{
-							array_unshift($tmp_array, $prefix);
-						}
-
-						$resolved_path = implode('/', $tmp_array);
-					}
-				}
-
-				$current_path = $resolved_path . '/' . $path_part;
-
-				// Resolve symlinks
-				if (is_link($current_path))
-				{
-					if (!function_exists('readlink'))
-					{
-						return false;
-					}
-
-					$link = readlink($current_path);
-
-					// Is link has an absolute path in it?
-					if ($this->is_absolute_path($link))
-					{
-						if (defined('PHP_WINDOWS_VERSION_MAJOR'))
-						{
-							$prefix = $link[0] . ':';
-							$link = substr($link, 2);
-						}
-						else
-						{
-							$prefix = '';
-						}
-
-						$resolved = $this->resolve_path($link, $prefix, true, true);
-						$absolute = true;
-					}
-					else
-					{
-						$resolved = $this->resolve_path($resolved_path . '/' . $link, $prefix, $absolute, true);
-					}
-
-					if (!$resolved)
-					{
-						return false;
-					}
-
-					$resolved_path = false;
-				}
-				else if (is_dir($current_path . '/'))
-				{
-					$resolved[] = $path_part;
-					$resolved_path = $current_path;
-				}
-				else if (is_file($current_path))
-				{
-					$resolved[] = $path_part;
-					$resolved_path = $current_path;
-					$file_found = true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-
-		// If at the end of the path there were a .. or .
-		// we need to build the path again.
-		// Only doing this when a string is expected in return
-		if ($resolved_path === false && $return_array === false)
-		{
-			if (empty($resolved))
-			{
-				$resolved_path = ($absolute) ? $prefix . '/' : './';
-			}
-			else
-			{
-				$tmp_array = $resolved;
-				if ($absolute)
-				{
-					array_unshift($tmp_array, $prefix);
-				}
-
-				$resolved_path = implode('/', $tmp_array);
-			}
-		}
-
-		return ($return_array) ? $resolved : $resolved_path;
+		return \phpbb\storage\helper::resolve_path($path, $prefix, $absolute, $return_array);
 	}
 }

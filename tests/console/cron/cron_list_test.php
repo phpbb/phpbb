@@ -97,7 +97,6 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 			$mock_router,
 			new \phpbb\symfony_request($request),
 			$request,
-			new \phpbb\filesystem\filesystem(),
 			$phpbb_root_path,
 			$pathEx
 		);

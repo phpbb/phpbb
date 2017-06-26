@@ -21,9 +21,6 @@ class path_helper
 	/** @var \phpbb\symfony_request */
 	protected $symfony_request;
 
-	/** @var \phpbb\filesystem\filesystem_interface */
-	protected $filesystem;
-
 	/** @var \phpbb\request\request_interface */
 	protected $request;
 
@@ -43,16 +40,14 @@ class path_helper
 	* Constructor
 	*
 	* @param \phpbb\symfony_request $symfony_request
-	* @param \phpbb\filesystem\filesystem_interface $filesystem
 	* @param \phpbb\request\request_interface $request
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP file extension
 	* @param mixed $adm_relative_path Relative path admin path to adm/ root
 	*/
-	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
+	public function __construct(\phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext, $adm_relative_path = null)
 	{
 		$this->symfony_request = $symfony_request;
-		$this->filesystem = $filesystem;
 		$this->request = $request;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -117,7 +112,7 @@ class path_helper
 				$path = substr($path, 8);
 			}
 
-			return $this->filesystem->clean_path($web_root_path . $path);
+			return \phpbb\storage\helper::clean_path($web_root_path . $path);
 		}
 
 		return $path;
@@ -163,7 +158,7 @@ class path_helper
 
 		// We do not need to escape $path_info, $request_uri and $script_name because we can not find their content in the result.
 		// Path info (e.g. /foo/bar)
-		$path_info = $this->filesystem->clean_path($this->symfony_request->getPathInfo());
+		$path_info = \phpbb\storage\helper::clean_path($this->symfony_request->getPathInfo());
 
 		// Full request URI (e.g. phpBB/app.php/foo/bar)
 		$request_uri = $this->symfony_request->getRequestUri();
@@ -178,7 +173,7 @@ class path_helper
 		*/
 		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
 		{
-			return $this->web_root_path = $this->filesystem->clean_path('./../' . $this->phpbb_root_path);
+			return $this->web_root_path = \phpbb\storage\helper::clean_path('./../' . $this->phpbb_root_path);
 		}
 
 		/*
@@ -235,7 +230,7 @@ class path_helper
 		}
 
 		// Prepend ../ to the phpbb_root_path as many times as / exists in path_info
-		$this->web_root_path = $this->filesystem->clean_path(
+		$this->web_root_path = \phpbb\storage\helper::clean_path(
 			'./' . str_repeat('../', $corrections) . $this->phpbb_root_path
 		);
 		return $this->web_root_path;
@@ -326,7 +321,7 @@ class path_helper
 		// Add length of URL delimiter to position
 		$path = substr($url, $delimiter_position + 3);
 
-		return $scheme . $this->filesystem->clean_path($path);
+		return $scheme . \phpbb\storage\helper::clean_path($path);
 	}
 
 	/**

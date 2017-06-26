@@ -62,7 +62,7 @@ echo "USE $dbname;$newline$newline";
 
 @set_time_limit(0);
 
-$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
+$finder = new \phpbb\finder($phpbb_root_path);
 $classes = $finder->core_path('phpbb/')
 	->directory('/db/migration/data')
 	->get_classes();

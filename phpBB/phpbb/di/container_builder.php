@@ -13,7 +13,6 @@
 
 namespace phpbb\di;
 
-use phpbb\filesystem\filesystem;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
@@ -180,8 +179,7 @@ class container_builder
 					$this->register_ext_compiler_pass();
 				}
 
-				$filesystem = new filesystem();
-				$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
+				$loader     = new YamlFileLoader($this->container, new FileLocator(\phpbb\storage\helper::realpath($this->get_config_path())));
 				$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 				$this->inject_custom_parameters();
