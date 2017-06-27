@@ -23,25 +23,23 @@ class phpbb_filesystem_helper_clean_path_test extends phpbb_test_case
 
 	public function clean_path_data()
 	{
-		return array(
-			array('foo', 'foo'),
-			array('foo/bar', 'foo/bar'),
-			array('foo/bar/', 'foo/bar/'),
-			array('foo/./bar', 'foo/bar'),
-			array('foo/./././bar', 'foo/bar'),
-			array('foo/bar/.', 'foo/bar'),
-			array('./foo/bar', './foo/bar'),
-			array('../foo/bar', '../foo/bar'),
-			array('./../foo/bar', './../foo/bar'),
-			array('././../foo/bar', './../foo/bar'),
-			array('one/two/three', 'one/two/three'),
-			array('one/two/../three', 'one/three'),
-			array('one/../two/three', 'two/three'),
-			array('one/two/..', 'one'),
-			array('one/two/../', 'one/'),
-			array('one/two/../three/../four', 'one/four'),
-			array('one/two/three/../../four', 'one/four'),
-		);
+		yield ['foo', 'foo'];
+		yield ['foo/bar', 'foo/bar'];
+		yield ['foo/bar/', 'foo/bar/'];
+		yield ['foo/./bar', 'foo/bar'];
+		yield ['foo/./././bar', 'foo/bar'];
+		yield ['foo/bar/.', 'foo/bar'];
+		yield ['./foo/bar', './foo/bar'];
+		yield ['../foo/bar', '../foo/bar'];
+		yield ['./../foo/bar', './../foo/bar'];
+		yield ['././../foo/bar', './../foo/bar'];
+		yield ['one/two/three', 'one/two/three'];
+		yield ['one/two/../three', 'one/three'];
+		yield ['one/../two/three', 'two/three'];
+		yield ['one/two/..', 'one'];
+		yield ['one/two/../', 'one/'];
+		yield ['one/two/../three/../four', 'one/four'];
+		yield ['one/two/three/../../four', 'one/four'];
 	}
 
 	/**

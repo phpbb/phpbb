@@ -11,7 +11,7 @@
  *
  */
 
- use phpbb\filesystem\helper as filesystem_helper;
+use phpbb\filesystem\helper as filesystem_helper;
 
 class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 {
@@ -21,7 +21,7 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 	{
 		parent::setUpBeforeClass();
 
-		self::$filesystem_helper_phpbb_own_realpath = new ReflectionMethod('filesystem_helper', 'phpbb_own_realpath');
+		self::$filesystem_helper_phpbb_own_realpath = new ReflectionMethod('\phpbb\filesystem\helper', 'phpbb_own_realpath');
 		self::$filesystem_helper_phpbb_own_realpath->setAccessible(true);
 	}
 
@@ -32,16 +32,14 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 
 	public function realpath_resolve_absolute_without_symlinks_data()
 	{
-		return array(
-			// Constant data
-			array(__DIR__, __DIR__),
-			array(__DIR__ . '/../filesystem/../filesystem', __DIR__),
-			array(__DIR__ . '/././', __DIR__),
-			array(__DIR__ . '/non_existent', false),
+		// Constant data
+		yield [__DIR__, __DIR__];
+		yield [__DIR__ . '/../filesystem/../filesystem', __DIR__];
+		yield [__DIR__ . '/././', __DIR__];
+		yield [__DIR__ . '/non_existent', false];
 
-			array(__FILE__, __FILE__),
-			array(__FILE__ . '../', false),
-		);
+		yield [__FILE__, __FILE__];
+		yield [__FILE__ . '../', false];
 	}
 
 	public function realpath_resolve_relative_without_symlinks_data()
@@ -53,13 +51,11 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 
 		$relative_path = filesystem_helper::make_path_relative(__DIR__, getcwd());
 
-		return array(
-			array($relative_path, __DIR__),
-			array($relative_path . '../filesystem/../filesystem', __DIR__),
-			array($relative_path . '././', __DIR__),
+		yield [$relative_path, __DIR__];
+		yield [$relative_path . '../filesystem/../filesystem', __DIR__];
+		yield [$relative_path . '././', __DIR__];
 
-			array($relative_path . 'helper_realpath_test.php', __FILE__),
-		);
+		yield [$relative_path . 'helper_realpath_test.php', __FILE__];
 	}
 
 	/**

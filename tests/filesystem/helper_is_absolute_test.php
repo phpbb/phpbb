@@ -11,7 +11,7 @@
  *
  */
 
- use phpbb\filesystem\helper as filesystem_helper;
+use phpbb\filesystem\helper as filesystem_helper;
 
 class phpbb_filesystem_helper_is_absolute_test extends phpbb_test_case
 {
@@ -23,37 +23,35 @@ class phpbb_filesystem_helper_is_absolute_test extends phpbb_test_case
 
 	static public function is_absolute_data()
 	{
-		return array(
-			// Empty
-			array('', false),
+		// Empty
+		yield ['', false];
 
-			// Absolute unix style
-			array('/etc/phpbb', true),
-			// Unix does not support \ so that is not an absolute path
-			array('\etc\phpbb', false),
+		// Absolute unix style
+		yield ['/etc/phpbb', true];
+		// Unix does not support \ so that is not an absolute path
+		yield ['\etc\phpbb', false];
 
-			// Absolute windows style
-			array('c:\windows', true),
-			array('C:\Windows', true),
-			array('c:/windows', true),
-			array('C:/Windows', true),
+		// Absolute windows style
+		yield ['c:\windows', true];
+		yield ['C:\Windows', true];
+		yield ['c:/windows', true];
+		yield ['C:/Windows', true];
 
-			// Executable
-			array('etc/phpbb', false),
-			array('explorer.exe', false),
+		// Executable
+		yield ['etc/phpbb', false];
+		yield ['explorer.exe', false];
 
-			// Relative subdir
-			array('Windows\System32', false),
-			array('Windows\System32\explorer.exe', false),
-			array('Windows/System32', false),
-			array('Windows/System32/explorer.exe', false),
+		// Relative subdir
+		yield ['Windows\System32', false];
+		yield ['Windows\System32\explorer.exe', false];
+		yield ['Windows/System32', false];
+		yield ['Windows/System32/explorer.exe', false];
 
-			// Relative updir
-			array('..\Windows\System32', false),
-			array('..\Windows\System32\explorer.exe', false),
-			array('../Windows/System32', false),
-			array('../Windows/System32/explorer.exe', false),
-		);
+		// Relative updir
+		yield ['..\Windows\System32', false];
+		yield ['..\Windows\System32\explorer.exe', false];
+		yield ['../Windows/System32', false];
+		yield ['../Windows/System32/explorer.exe', false];
 	}
 
 	/**
