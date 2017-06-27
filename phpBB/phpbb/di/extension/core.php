@@ -19,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
 * Container core extension
@@ -53,7 +54,7 @@ class core extends Extension
 	 */
 	public function load(array $configs, ContainerBuilder $container)
 	{
-		$loader = new YamlFileLoader($container, new FileLocator(\phpbb\filesystem\helper::realpath($this->config_path)));
+		$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($this->config_path)));
 		$loader->load($container->getParameter('core.environment') . '/container/environment.yml');
 
 		$config = $this->getConfiguration($configs, $container);

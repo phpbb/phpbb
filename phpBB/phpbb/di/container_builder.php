@@ -24,6 +24,7 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
+use phpbb\filesystem\helper as filesystem_helper;
 
 class container_builder
 {
@@ -179,7 +180,7 @@ class container_builder
 					$this->register_ext_compiler_pass();
 				}
 
-				$loader     = new YamlFileLoader($this->container, new FileLocator(\phpbb\filesystem\helper::realpath($this->get_config_path())));
+				$loader     = new YamlFileLoader($this->container, new FileLocator(filesystem_helper::realpath($this->get_config_path())));
 				$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 				$this->inject_custom_parameters();

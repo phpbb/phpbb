@@ -29,6 +29,7 @@ use phpbb\exception\runtime_exception;
 use phpbb\filesystem\filesystem;
 use phpbb\request\request;
 use Seld\JsonLint\ParsingException;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
  * Class to install packages through composer while freezing core dependencies.
@@ -108,7 +109,7 @@ class installer
 		$this->root_path = $root_path;
 		$this->request = $request;
 
-		putenv('COMPOSER_HOME=' . \phpbb\filesystem\helper::realpath($root_path) . '/store/composer');
+		putenv('COMPOSER_HOME=' . filesystem_helper::realpath($root_path) . '/store/composer');
 	}
 
 	/**

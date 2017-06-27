@@ -13,6 +13,8 @@
 
 namespace phpbb\template\twig;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * Twig Template loader
 */
@@ -49,7 +51,7 @@ class loader extends \Twig_Loader_Filesystem
 	*/
 	public function addSafeDirectory($directory)
 	{
-		$directory = \phpbb\filesystem\helper::realpath($directory);
+		$directory = filesystem_helper::realpath($directory);
 
 		if ($directory !== false)
 		{
@@ -89,7 +91,7 @@ class loader extends \Twig_Loader_Filesystem
 	 */
 	public function addPath($path, $namespace = self::MAIN_NAMESPACE)
 	{
-		return parent::addPath(\phpbb\filesystem\helper::realpath($path), $namespace);
+		return parent::addPath(filesystem_helper::realpath($path), $namespace);
 	}
 
 	/**
@@ -129,7 +131,7 @@ class loader extends \Twig_Loader_Filesystem
 				//	can now check if we're within a "safe" directory
 
 				// Find the real path of the directory the file is in
-				$directory = \phpbb\filesystem\helper::realpath(dirname($file));
+				$directory = filesystem_helper::realpath(dirname($file));
 
 				if ($directory === false)
 				{

@@ -13,6 +13,8 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * A class with various functions that are related to paths, files and the filesystem
 */
@@ -112,7 +114,7 @@ class path_helper
 				$path = substr($path, 8);
 			}
 
-			return \phpbb\filesystem\helper::clean_path($web_root_path . $path);
+			return filesystem_helper::clean_path($web_root_path . $path);
 		}
 
 		return $path;
@@ -158,7 +160,7 @@ class path_helper
 
 		// We do not need to escape $path_info, $request_uri and $script_name because we can not find their content in the result.
 		// Path info (e.g. /foo/bar)
-		$path_info = \phpbb\filesystem\helper::clean_path($this->symfony_request->getPathInfo());
+		$path_info = filesystem_helper::clean_path($this->symfony_request->getPathInfo());
 
 		// Full request URI (e.g. phpBB/app.php/foo/bar)
 		$request_uri = $this->symfony_request->getRequestUri();
@@ -173,7 +175,7 @@ class path_helper
 		*/
 		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
 		{
-			return $this->web_root_path = \phpbb\filesystem\helper::clean_path('./../' . $this->phpbb_root_path);
+			return $this->web_root_path = filesystem_helper::clean_path('./../' . $this->phpbb_root_path);
 		}
 
 		/*
@@ -230,7 +232,7 @@ class path_helper
 		}
 
 		// Prepend ../ to the phpbb_root_path as many times as / exists in path_info
-		$this->web_root_path = \phpbb\filesystem\helper::clean_path(
+		$this->web_root_path = filesystem_helper::clean_path(
 			'./' . str_repeat('../', $corrections) . $this->phpbb_root_path
 		);
 		return $this->web_root_path;
@@ -321,7 +323,7 @@ class path_helper
 		// Add length of URL delimiter to position
 		$path = substr($url, $delimiter_position + 3);
 
-		return $scheme . \phpbb\filesystem\helper::clean_path($path);
+		return $scheme . filesystem_helper::clean_path($path);
 	}
 
 	/**

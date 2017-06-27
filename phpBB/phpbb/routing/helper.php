@@ -15,6 +15,7 @@ namespace phpbb\routing;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
 * Controller helper class, contains methods that do things for controllers
@@ -133,7 +134,7 @@ class helper
 			}
 		}
 
-		$base_url = $this->request->escape(\phpbb\filesystem\helper::clean_path($base_url), true);
+		$base_url = $this->request->escape(filesystem_helper::clean_path($base_url), true);
 
 		$context->setBaseUrl($base_url);
 

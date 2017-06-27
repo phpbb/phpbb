@@ -13,6 +13,8 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * The finder provides a simple way to locate files in the core and a set of extensions
 */
@@ -241,7 +243,7 @@ class finder
 	*/
 	protected function sanitise_directory($directory)
 	{
-		$directory = \phpbb\filesystem\helper::clean_path($directory);
+		$directory = filesystem_helper::clean_path($directory);
 		$dir_len = strlen($directory);
 
 		if ($dir_len > 1 && $directory[$dir_len - 1] === '/')

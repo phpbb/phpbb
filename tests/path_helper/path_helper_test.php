@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 class phpbb_path_helper_test extends phpbb_test_case
 {
 	/** @var \phpbb\path_helper */
@@ -43,7 +45,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function set_phpbb_root_path()
 	{
-		$this->phpbb_root_path = \phpbb\filesystem\helper::clean_path(dirname(__FILE__) . '/../../phpBB/');
+		$this->phpbb_root_path = filesystem_helper::clean_path(dirname(__FILE__) . '/../../phpBB/');
 	}
 
 	public function test_get_web_root_path()
@@ -72,7 +74,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 			),
 			array(
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
-				\phpbb\filesystem\helper::clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
+				filesystem_helper::clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
 			),
 		);
 	}

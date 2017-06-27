@@ -18,6 +18,7 @@ use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
  * Container core extension
@@ -94,7 +95,7 @@ class extension_base extends Extension
 
 		if ($services_directory && $services_file)
 		{
-			$loader = new YamlFileLoader($container, new FileLocator(\phpbb\filesystem\helper::realpath($services_directory)));
+			$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($services_directory)));
 			$loader->load($services_file);
 		}
 	}

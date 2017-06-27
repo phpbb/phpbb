@@ -13,6 +13,7 @@
 
 namespace phpbb\filesystem;
 
+use Symfony\Component\Filesystem\Exception\IOException;
 use phpbb\filesystem\exception\filesystem_exception;
 
 /**
@@ -60,7 +61,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->chgrp($files, $group, $recursive);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -146,7 +147,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->chown($files, $user, $recursive);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -162,7 +163,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function clean_path($path)
 	{
-		return \phpbb\filesystem\helper::clean_path($path);
+		return helper::clean_path($path);
 	}
 
 	/**
@@ -174,7 +175,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->copy($origin_file, $target_file, $override);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			throw new filesystem_exception('CANNOT_COPY_FILES', '', array(), $e);
 		}
@@ -189,7 +190,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->dumpFile($filename, $content);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			throw new filesystem_exception('CANNOT_DUMP_FILE', $filename, array(), $e);
 		}
@@ -208,7 +209,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function is_absolute_path($path)
 	{
-		return \phpbb\filesystem\helper::is_absolute_path($path);
+		return helper::is_absolute_path($path);
 	}
 
 	/**
@@ -286,7 +287,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function make_path_relative($end_path, $start_path)
 	{
-		return \phpbb\filesystem\helper::make_path_relative($end_path, $start_path);
+		return helper::make_path_relative($end_path, $start_path);
 	}
 
 	/**
@@ -298,7 +299,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->mirror($origin_dir, $target_dir, $iterator, $options);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
@@ -316,7 +317,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->mkdir($dirs, $mode);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
@@ -499,7 +500,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->remove($files);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -519,7 +520,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->rename($origin, $target, $overwrite);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
@@ -537,7 +538,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->symlink($origin_dir, $target_dir, $copy_on_windows);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			throw new filesystem_exception('CANNOT_CREATE_SYMLINK', $origin_dir, array(), $e);
 		}
@@ -552,7 +553,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->touch($files, $time, $access_time);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -759,6 +760,6 @@ class filesystem implements filesystem_interface
 	 */
 	protected function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
 	{
-		return \phpbb\filesystem\helper::resolve_path($path, $prefix, $absolute, $return_array);
+		return helper::resolve_path($path, $prefix, $absolute, $return_array);
 	}
 }

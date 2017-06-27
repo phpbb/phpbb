@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 class phpbb_filesystem_helper_clean_path_test extends phpbb_test_case
 {
 
@@ -47,6 +49,6 @@ class phpbb_filesystem_helper_clean_path_test extends phpbb_test_case
 	*/
 	public function test_clean_path($input, $expected)
 	{
-		$this->assertEquals($expected, \phpbb\filesystem\helper::clean_path($input));
+		$this->assertEquals($expected, filesystem_helper::clean_path($input));
 	}
 }

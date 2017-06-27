@@ -14,6 +14,7 @@
 namespace phpbb\routing;
 
 use Symfony\Component\Config\FileLocator;
+use phpbb\filesystem\helper as filesystem_helper;
 
 class file_locator extends FileLocator
 {
@@ -24,7 +25,7 @@ class file_locator extends FileLocator
 
 		foreach ($paths as $path)
 		{
-			$absolute_paths[] = \phpbb\filesystem\helper::realpath($path);
+			$absolute_paths[] = filesystem_helper::realpath($path);
 		}
 
 		parent::__construct($absolute_paths);

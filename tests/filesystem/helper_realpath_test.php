@@ -11,6 +11,8 @@
  *
  */
 
+ use phpbb\filesystem\helper as filesystem_helper;
+
 class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 {
 	protected static $filesystem_helper_phpbb_own_realpath;
@@ -19,7 +21,7 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 	{
 		parent::setUpBeforeClass();
 
-		self::$filesystem_helper_phpbb_own_realpath = new ReflectionMethod('\phpbb\filesystem\helper', 'phpbb_own_realpath');
+		self::$filesystem_helper_phpbb_own_realpath = new ReflectionMethod('filesystem_helper', 'phpbb_own_realpath');
 		self::$filesystem_helper_phpbb_own_realpath->setAccessible(true);
 	}
 
@@ -49,7 +51,7 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 			return array();
 		}
 
-		$relative_path = \phpbb\filesystem\helper::make_path_relative(__DIR__, getcwd());
+		$relative_path = filesystem_helper::make_path_relative(__DIR__, getcwd());
 
 		return array(
 			array($relative_path, __DIR__),
