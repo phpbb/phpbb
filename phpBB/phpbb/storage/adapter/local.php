@@ -54,7 +54,7 @@ class local implements adapter_interface
 	{
 		if ($this->exists($path))
 		{
-			throw new exception('', $path); // FILE_EXISTS
+			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
 		try
@@ -63,7 +63,7 @@ class local implements adapter_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('', $path, array(), $e); // CANNOT_DUMP_FILE
+			throw new exception('STORAGE_CANNOT_WRITE_FILE', $path, array(), $e);
 		}
 	}
 
@@ -74,14 +74,14 @@ class local implements adapter_interface
 	{
 		if (!$this->exists($path))
 		{
-			throw new exception('', $path); // FILE_DONT_EXIST
+			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
 		$content = @file_get_contents($this->root_path . $path);
 
 		if ($content === false)
 		{
-			throw new exception('', $path); // CANNOT READ FILE
+			throw new exception('STORAGE_CANNOT_READ_FILE', $path);
 		}
 
 		return $content;
@@ -106,7 +106,7 @@ class local implements adapter_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('', $path, array(), $e); // CANNOT DELETE
+			throw new exception('STORAGE_CANNOT_DELETE', $path, array(), $e);
 		}
 	}
 
@@ -121,7 +121,7 @@ class local implements adapter_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('', $path_orig, array(), $e); // CANNOT_RENAME
+			throw new exception('STORAGE_CANNOT_RENAME', $path_orig, array(), $e);
 		}
 	}
 
@@ -136,7 +136,7 @@ class local implements adapter_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('', '', array(), $e); // CANNOT_COPY_FILES
+			throw new exception('STORAGE_CANNOT_COPY', $path_orig, array(), $e);
 		}
 	}
 
@@ -151,7 +151,7 @@ class local implements adapter_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('', $path, array(), $e); // CANNOT_CREATE_DIRECTORY
+			throw new exception('STORAGE_CANNOT_CREATE_DIR', $path, array(), $e);
 		}
 	}
 

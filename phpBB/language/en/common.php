@@ -727,6 +727,15 @@ $lang = array_merge($lang, array(
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
 
+	'STORAGE_FILE_EXISTS'			=> 'File already exists.',
+	'STORAGE_FILE_NO_EXIST'			=> 'File does not exist.',
+	'STORAGE_CANNOT_WRITE_FILE'		=> 'Can not write to file.',
+	'STORAGE_CANNOT_READ_FILE'		=> 'Can not read file.',
+	'STORAGE_CANNOT_DELETE'			=> 'Can not delete file or folder.',
+	'STORAGE_CANNOT_RENAME'			=> 'Can not rename file or folder.',
+	'STORAGE_CANNOT_COPY'			=> 'Can not copy file or folder.',
+	'STORAGE_CANNOT_CREATE_DIR'		=> 'Can not create directory.',
+
 	'TB'				=> 'TB',
 	'TERMS_USE'			=> 'Terms of use',
 	'TEST_CONNECTION'	=> 'Test connection',
