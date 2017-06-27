@@ -46,16 +46,18 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 	{
 		if (!function_exists('getcwd'))
 		{
-			return array();
+			yield [];
 		}
+		else
+		{
+			$relative_path = filesystem_helper::make_path_relative(__DIR__, getcwd());
 
-		$relative_path = filesystem_helper::make_path_relative(__DIR__, getcwd());
+			yield [$relative_path, __DIR__];
+			yield [$relative_path . '../filesystem/../filesystem', __DIR__];
+			yield [$relative_path . '././', __DIR__];
 
-		yield [$relative_path, __DIR__];
-		yield [$relative_path . '../filesystem/../filesystem', __DIR__];
-		yield [$relative_path . '././', __DIR__];
-
-		yield [$relative_path . 'helper_realpath_test.php', __FILE__];
+			yield [$relative_path . 'helper_realpath_test.php', __FILE__];
+		}
 	}
 
 	/**
