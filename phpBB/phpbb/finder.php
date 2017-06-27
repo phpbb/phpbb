@@ -241,7 +241,7 @@ class finder
 	*/
 	protected function sanitise_directory($directory)
 	{
-		$directory = \phpbb\storage\helper::clean_path($directory);
+		$directory = \phpbb\filesystem\helper::clean_path($directory);
 		$dir_len = strlen($directory);
 
 		if ($dir_len > 1 && $directory[$dir_len - 1] === '/')

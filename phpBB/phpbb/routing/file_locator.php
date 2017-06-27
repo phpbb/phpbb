@@ -24,7 +24,7 @@ class file_locator extends FileLocator
 
 		foreach ($paths as $path)
 		{
-			$absolute_paths[] = \phpbb\storage\helper::realpath($path);
+			$absolute_paths[] = \phpbb\filesystem\helper::realpath($path);
 		}
 
 		parent::__construct($absolute_paths);

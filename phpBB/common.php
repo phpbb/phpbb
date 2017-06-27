@@ -65,7 +65,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$script_path = \phpbb\storage\helper::clean_path($script_path);
+	$script_path = \phpbb\filesystem\helper::clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 

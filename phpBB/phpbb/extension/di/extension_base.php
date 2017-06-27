@@ -94,7 +94,7 @@ class extension_base extends Extension
 
 		if ($services_directory && $services_file)
 		{
-			$loader = new YamlFileLoader($container, new FileLocator(\phpbb\storage\helper::realpath($services_directory)));
+			$loader = new YamlFileLoader($container, new FileLocator(\phpbb\filesystem\helper::realpath($services_directory)));
 			$loader->load($services_file);
 		}
 	}

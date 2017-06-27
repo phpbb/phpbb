@@ -53,7 +53,7 @@ class core extends Extension
 	 */
 	public function load(array $configs, ContainerBuilder $container)
 	{
-		$loader = new YamlFileLoader($container, new FileLocator(\phpbb\storage\helper::realpath($this->config_path)));
+		$loader = new YamlFileLoader($container, new FileLocator(\phpbb\filesystem\helper::realpath($this->config_path)));
 		$loader->load($container->getParameter('core.environment') . '/container/environment.yml');
 
 		$config = $this->getConfiguration($configs, $container);

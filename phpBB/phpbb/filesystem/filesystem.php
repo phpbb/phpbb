@@ -162,7 +162,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function clean_path($path)
 	{
-		return \phpbb\storage\helper::clean_path($path);
+		return \phpbb\filesystem\helper::clean_path($path);
 	}
 
 	/**
@@ -208,7 +208,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function is_absolute_path($path)
 	{
-		return \phpbb\storage\helper::is_absolute_path($path);
+		return \phpbb\filesystem\helper::is_absolute_path($path);
 	}
 
 	/**
@@ -286,7 +286,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function make_path_relative($end_path, $start_path)
 	{
-		return \phpbb\storage\helper::make_path_relative($end_path, $start_path);
+		return \phpbb\filesystem\helper::make_path_relative($end_path, $start_path);
 	}
 
 	/**
@@ -759,6 +759,6 @@ class filesystem implements filesystem_interface
 	 */
 	protected function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
 	{
-		return \phpbb\storage\helper::resolve_path($path, $prefix, $absolute, $return_array);
+		return \phpbb\filesystem\helper::resolve_path($path, $prefix, $absolute, $return_array);
 	}
 }

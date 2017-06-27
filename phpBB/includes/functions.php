@@ -3479,7 +3479,7 @@ function phpbb_filter_root_path($errfile)
 
 	if (empty($root_path))
 	{
-		$root_path = \phpbb\storage\helper::realpath(dirname(__FILE__) . '/../');
+		$root_path = \phpbb\filesystem\helper::realpath(dirname(__FILE__) . '/../');
 	}
 
 	return str_replace(array($root_path, '\\'), array('[ROOT]', '/'), $errfile);

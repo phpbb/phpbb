@@ -133,7 +133,7 @@ class helper
 			}
 		}
 
-		$base_url = $this->request->escape(\phpbb\storage\helper::clean_path($base_url), true);
+		$base_url = $this->request->escape(\phpbb\filesystem\helper::clean_path($base_url), true);
 
 		$context->setBaseUrl($base_url);
 

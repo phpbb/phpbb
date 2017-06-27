@@ -25,7 +25,7 @@ class extension extends extension_base
 {
 	protected function load_services(ContainerBuilder $container)
 	{
-		$loader = new YamlFileLoader($container, new FileLocator(\phpbb\storage\helper::realpath($this->ext_path)));
+		$loader = new YamlFileLoader($container, new FileLocator(\phpbb\filesystem\helper::realpath($this->ext_path)));
 		$loader->load('environment.yml');
 	}
 }

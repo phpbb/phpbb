@@ -96,12 +96,12 @@ function phpbb_check_hash($password, $hash)
 */
 function phpbb_clean_path($path)
 {
-	if (!class_exists('\phpbb\storage\helper'))
+	if (!class_exists('\phpbb\filesystem\helper'))
 	{
-		require($phpbb_root_path . 'phpbb/storage/helper.' . $phpEx);
+		require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
 	}
 
-	return \phpbb\storage\helper::clean_path($path);
+	return \phpbb\filesystem\helper::clean_path($path);
 }
 
 /**
@@ -439,31 +439,31 @@ function phpbb_is_writable($file)
  * @param string $path Path to check absoluteness of
  * @return boolean
  *
- * @deprecated 3.2.0-dev	use \phpbb\storage\helper::is_absolute_path() instead
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\helper::is_absolute_path() instead
  */
 function phpbb_is_absolute($path)
 {
-	if (!class_exists('\phpbb\storage\helper'))
+	if (!class_exists('\phpbb\filesystem\helper'))
 	{
-		require($phpbb_root_path . 'phpbb/storage/helper.' . $phpEx);
+		require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
 	}
 
-	return \phpbb\storage\helper::is_absolute_path($path);
+	return \phpbb\filesystem\helper::is_absolute_path($path);
 }
 
 /**
  * A wrapper for realpath
  *
- * @deprecated 3.2.0-dev	use \phpbb\storage\helper::realpath() instead
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\helper::realpath() instead
  */
 function phpbb_realpath($path)
 {
-	if (!class_exists('\phpbb\storage\helper'))
+	if (!class_exists('\phpbb\filesystem\helper'))
 	{
-		require($phpbb_root_path . 'phpbb/storage/helper.' . $phpEx);
+		require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
 	}
 
-	return \phpbb\storage\helper::realpath($path);
+	return \phpbb\filesystem\helper::realpath($path);
 }
 
 /**

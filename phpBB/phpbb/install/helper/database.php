@@ -329,7 +329,7 @@ class database
 
 		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
 		if ($dbms_info['SCHEMA'] === 'sqlite'
-			&& stripos(\phpbb\storage\helper::realpath($dbhost), \phpbb\storage\helper::realpath($this->phpbb_root_path) === 0))
+			&& stripos(\phpbb\filesystem\helper::realpath($dbhost), \phpbb\filesystem\helper::realpath($this->phpbb_root_path) === 0))
 		{
 			$errors[] = array(
 				'title' =>'INST_ERR_DB_FORUM_PATH',
