@@ -13,6 +13,9 @@
 
 namespace phpbb\storage;
 
+/**
+ * @internal Experimental
+ */
 class storage
 {
 	protected $adapter;

@@ -16,6 +16,9 @@ namespace phpbb\storage\adapter;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
 
+/**
+ * @internal Experimental
+ */
 class local implements adapter_interface
 {
 	/**
