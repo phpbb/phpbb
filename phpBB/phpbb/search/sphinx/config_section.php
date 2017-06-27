@@ -87,7 +87,7 @@ class config_section
 	*/
 	function get_variable_by_name($name)
 	{
-		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
+		for ($i = 0, $size = count($this->variables); $i < $size; $i++)
 		{
 			// Make sure this is a variable object and not a comment
 			if (($this->variables[$i] instanceof \phpbb\search\sphinx\config_variable) && $this->variables[$i]->get_name() == $name)
@@ -106,7 +106,7 @@ class config_section
 	*/
 	function delete_variables_by_name($name)
 	{
-		for ($i = 0, $size = sizeof($this->variables); $i < $size; $i++)
+		for ($i = 0, $size = count($this->variables); $i < $size; $i++)
 		{
 			// Make sure this is a variable object and not a comment
 			if (($this->variables[$i] instanceof \phpbb\search\sphinx\config_variable) && $this->variables[$i]->get_name() == $name)
@@ -129,7 +129,7 @@ class config_section
 	function create_variable($name, $value)
 	{
 		$this->variables[] = new \phpbb\search\sphinx\config_variable($name, $value, '');
-		return $this->variables[sizeof($this->variables) - 1];
+		return $this->variables[count($this->variables) - 1];
 	}
 
 	/**

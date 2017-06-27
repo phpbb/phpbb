@@ -282,7 +282,7 @@ class type_dropdown extends type_base
 	*/
 	public function validate_options_on_submit($error, $field_data)
 	{
-		if (!sizeof($field_data['lang_options']))
+		if (!count($field_data['lang_options']))
 		{
 			$error[] = $this->user->lang['NO_FIELD_ENTRIES'];
 		}
@@ -298,7 +298,7 @@ class type_dropdown extends type_base
 		if ($step == 2 && $key == 'field_maxlen')
 		{
 			// Get the number of options if this key is 'field_maxlen'
-			return sizeof(explode("\n", $this->request->variable('lang_options', '', true)));
+			return count(explode("\n", $this->request->variable('lang_options', '', true)));
 		}
 
 		return parent::get_excluded_options($key, $action, $current_value, $field_data, $step);
@@ -310,7 +310,7 @@ class type_dropdown extends type_base
 	public function display_options(&$template_vars, &$field_data)
 	{
 		// Initialize these array elements if we are creating a new field
-		if (!sizeof($field_data['lang_options']))
+		if (!count($field_data['lang_options']))
 		{
 			// No options have been defined for the dropdown menu
 			$field_data['lang_options'] = array();

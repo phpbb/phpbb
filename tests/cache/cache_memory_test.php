@@ -116,7 +116,7 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 				$results[] = $row;
 			}
 			$this->cache->sql_freeresult($query_id);
-			$this->assertEquals($query[1], sizeof($results));
+			$this->assertEquals($query[1], count($results));
 		}
 
 		$this->cache->destroy('sql', $table);

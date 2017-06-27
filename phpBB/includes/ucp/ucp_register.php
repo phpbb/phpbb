@@ -167,7 +167,7 @@ class ucp_register
 				unset($now);
 
 				$template_vars = array(
-					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
+					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
@@ -185,7 +185,7 @@ class ucp_register
 			else
 			{
 				$template_vars = array(
-					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
+					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -319,7 +319,7 @@ class ucp_register
 			// validate custom profile fields
 			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
 
-			if (!sizeof($error))
+			if (!count($error))
 			{
 				if ($data['new_password'] != $data['password_confirm'])
 				{
@@ -340,7 +340,7 @@ class ucp_register
 			$vars = array('submit', 'data', 'cp_data', 'error');
 			extract($phpbb_dispatcher->trigger_event('core.ucp_register_data_after', compact($vars)));
 
-			if (!sizeof($error))
+			if (!count($error))
 			{
 				$server_url = generate_board_url();
 
@@ -596,7 +596,7 @@ class ucp_register
 		extract($phpbb_dispatcher->trigger_event('core.ucp_register_modify_template_data', compact($vars)));
 
 		$template_vars = array_merge($template_vars, array(
-			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+			'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 		));
 

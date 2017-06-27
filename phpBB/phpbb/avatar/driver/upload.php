@@ -167,7 +167,7 @@ class upload extends \phpbb\avatar\driver\driver
 		$file->clean_filename('avatar', $prefix, $row['id']);
 
 		// If there was an error during upload, then abort operation
-		if (sizeof($file->error))
+		if (count($file->error))
 		{
 			$file->remove();
 			$error = $file->error;
@@ -221,7 +221,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		unset($filedata);
 
-		if (!sizeof($error))
+		if (!count($error))
 		{
 			// Move file and overwrite any existing image
 			$file->move_file($destination, true);
@@ -229,7 +229,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		// If there was an error during move, then clean up leftovers
 		$error = array_merge($error, $file->error);
-		if (sizeof($error))
+		if (count($error))
 		{
 			$file->remove();
 			return false;
@@ -291,7 +291,7 @@ class upload extends \phpbb\avatar\driver\driver
 		);
 		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
 
-		if (!sizeof($error) && $this->filesystem->exists($filename))
+		if (!count($error) && $this->filesystem->exists($filename))
 		{
 			try
 			{

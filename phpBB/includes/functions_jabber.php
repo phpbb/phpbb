@@ -207,7 +207,7 @@ class jabber
 	*/
 	function login()
 	{
-		if (!sizeof($this->features))
+		if (!count($this->features))
 		{
 			$this->add_to_log('Error: No feature information from server available.');
 			return false;
@@ -293,7 +293,7 @@ class jabber
 	*/
 	function get_log()
 	{
-		if ($this->enable_logging && sizeof($this->log_array))
+		if ($this->enable_logging && count($this->log_array))
 		{
 			return implode("<br /><br />", $this->log_array);
 		}
@@ -400,14 +400,14 @@ class jabber
 	*/
 	function response($xml)
 	{
-		if (!is_array($xml) || !sizeof($xml))
+		if (!is_array($xml) || !count($xml))
 		{
 			return false;
 		}
 
 		// did we get multiple elements? do one after another
 		// array('message' => ..., 'presence' => ...)
-		if (sizeof($xml) > 1)
+		if (count($xml) > 1)
 		{
 			foreach ($xml as $key => $value)
 			{
@@ -419,7 +419,7 @@ class jabber
 		{
 			// or even multiple elements of the same type?
 			// array('message' => array(0 => ..., 1 => ...))
-			if (sizeof(reset($xml)) > 1)
+			if (count(reset($xml)) > 1)
 			{
 				foreach (reset($xml) as $value)
 				{
@@ -858,14 +858,14 @@ class jabber
 			array_push($children, $vals[$i]['value']);
 		}
 
-		while (++$i < sizeof($vals))
+		while (++$i < count($vals))
 		{
 			switch ($vals[$i]['type'])
 			{
 				case 'open':
 
 					$tagname = (isset($vals[$i]['tag'])) ? $vals[$i]['tag'] : '';
-					$size = (isset($children[$tagname])) ? sizeof($children[$tagname]) : 0;
+					$size = (isset($children[$tagname])) ? count($children[$tagname]) : 0;
 
 					if (isset($vals[$i]['attributes']))
 					{
@@ -883,7 +883,7 @@ class jabber
 				case 'complete':
 
 					$tagname = $vals[$i]['tag'];
-					$size = (isset($children[$tagname])) ? sizeof($children[$tagname]) : 0;
+					$size = (isset($children[$tagname])) ? count($children[$tagname]) : 0;
 					$children[$tagname][$size]['#'] = (isset($vals[$i]['value'])) ? $vals[$i]['value'] : array();
 
 					if (isset($vals[$i]['attributes']))

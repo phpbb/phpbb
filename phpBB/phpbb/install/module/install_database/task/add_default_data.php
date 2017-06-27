@@ -99,7 +99,7 @@ class add_default_data extends \phpbb\install\task_base
 		$sql_query = $this->database_helper->split_sql_file($sql_query, $dbms_info[$dbms]['DELIM']);
 
 		$i = $this->config->get('add_default_data_index', 0);
-		$total = sizeof($sql_query);
+		$total = count($sql_query);
 		$sql_query = array_slice($sql_query, $i);
 
 		foreach ($sql_query as $sql)

@@ -47,7 +47,7 @@ class ucp_zebra
 				$data[$var] = $request->variable($var, $default, true);
 			}
 
-			if (!empty($data['add']) || sizeof($data['usernames']))
+			if (!empty($data['add']) || count($data['usernames']))
 			{
 				if (confirm_box(true))
 				{
@@ -105,35 +105,35 @@ class ucp_zebra
 						$db->sql_freeresult($result);
 
 						// remove friends from the username array
-						$n = sizeof($data['add']);
+						$n = count($data['add']);
 						$data['add'] = array_diff($data['add'], $friends);
 
-						if (sizeof($data['add']) < $n && $mode == 'foes')
+						if (count($data['add']) < $n && $mode == 'foes')
 						{
 							$error[] = $user->lang['NOT_ADDED_FOES_FRIENDS'];
 						}
 
 						// remove foes from the username array
-						$n = sizeof($data['add']);
+						$n = count($data['add']);
 						$data['add'] = array_diff($data['add'], $foes);
 
-						if (sizeof($data['add']) < $n && $mode == 'friends')
+						if (count($data['add']) < $n && $mode == 'friends')
 						{
 							$error[] = $user->lang['NOT_ADDED_FRIENDS_FOES'];
 						}
 
 						// remove the user himself from the username array
-						$n = sizeof($data['add']);
+						$n = count($data['add']);
 						$data['add'] = array_diff($data['add'], array(utf8_clean_string($user->data['username'])));
 
-						if (sizeof($data['add']) < $n)
+						if (count($data['add']) < $n)
 						{
 							$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_SELF'];
 						}
 
 						unset($friends, $foes, $n);
 
-						if (sizeof($data['add']))
+						if (count($data['add']))
 						{
 							$sql = 'SELECT user_id, user_type
 								FROM ' . USERS_TABLE . '
@@ -159,7 +159,7 @@ class ucp_zebra
 							}
 							$db->sql_freeresult($result);
 
-							if (sizeof($user_id_ary))
+							if (count($user_id_ary))
 							{
 								// Remove users from foe list if they are admins or moderators
 								if ($mode == 'foes')
@@ -175,7 +175,7 @@ class ucp_zebra
 
 									$perms = array_unique($perms);
 
-									if (sizeof($perms))
+									if (count($perms))
 									{
 										$error[] = $user->lang['NOT_ADDED_FOES_MOD_ADMIN'];
 									}
@@ -185,7 +185,7 @@ class ucp_zebra
 									unset($perms);
 								}
 
-								if (sizeof($user_id_ary))
+								if (count($user_id_ary))
 								{
 									$sql_mode = ($mode == 'friends') ? 'friend' : 'foe';
 
@@ -218,7 +218,7 @@ class ucp_zebra
 								}
 								unset($user_id_ary);
 							}
-							else if (!sizeof($error))
+							else if (!count($error))
 							{
 								$error[] = $user->lang['USER_NOT_FOUND_OR_INACTIVE'];
 							}
@@ -244,7 +244,7 @@ class ucp_zebra
 					else if ($updated)
 					{
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((sizeof($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((count($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 					else

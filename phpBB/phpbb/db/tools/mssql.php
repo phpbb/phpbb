@@ -440,7 +440,7 @@ class mssql extends tools
 			{
 				$result = $this->sql_index_drop($table_name, $index_name);
 				$statements = array_merge($statements, $result);
-				if (sizeof($index_data) > 1)
+				if (count($index_data) > 1)
 				{
 					// Remove this column from the index and recreate it
 					$recreate_indexes[$index_name] = array_diff($index_data, array($column_name));

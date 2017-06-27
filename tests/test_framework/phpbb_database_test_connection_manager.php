@@ -621,7 +621,7 @@ class phpbb_database_test_connection_manager
 				}
 
 				// Combine all of the SETVALs into one query
-				if (sizeof($setval_queries))
+				if (count($setval_queries))
 				{
 					$queries[] = 'SELECT ' . implode(', ', $setval_queries);
 				}
