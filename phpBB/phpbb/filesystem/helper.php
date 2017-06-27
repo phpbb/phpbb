@@ -213,7 +213,7 @@ class helper
 	 */
 	public static function make_path_relative($end_path, $start_path)
 	{
-		self::get_symfony_filesystem()->makePathRelative($end_path, $start_path);
+		return self::get_symfony_filesystem()->makePathRelative($end_path, $start_path);
 	}
 
 	/**
