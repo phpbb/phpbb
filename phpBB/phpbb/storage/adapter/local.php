@@ -15,6 +15,8 @@ namespace phpbb\storage\adapter;
 
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
+use phpbb\config\config;
+use phpbb\filesystem\filesystem;
 
 /**
  * @internal Experimental
@@ -34,7 +36,7 @@ class local implements adapter_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\filesystem\filesystem $filesystem, $phpbb_root_path, $path_key)
+	public function __construct(config $config, filesystem $filesystem, $phpbb_root_path, $path_key)
 	{
 		$this->filesystem = $filesystem;
 		$this->root_path = $phpbb_root_path . $config[$path_key];
@@ -75,7 +77,9 @@ class local implements adapter_interface
 			throw new exception('', $path); // FILE_DONT_EXIST
 		}
 
-		if (($content = @file_get_contents($this->root_path . $path)) === false)
+		$content = @file_get_contents($this->root_path . $path);
+
+		if ($content === false)
 		{
 			throw new exception('', $path); // CANNOT READ FILE
 		}

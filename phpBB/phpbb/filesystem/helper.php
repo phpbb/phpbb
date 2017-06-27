@@ -13,6 +13,8 @@
 
 namespace phpbb\filesystem;
 
+use Symfony\Component\Filesystem\Filesystem as symfony_filesystem;
+
 class helper
 {
 	/**
@@ -66,7 +68,6 @@ class helper
 	 */
 	protected static function phpbb_own_realpath($path)
 	{
-
 		// Replace all directory separators with '/'
 		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
 
@@ -206,7 +207,7 @@ class helper
 	 */
 	public static function make_path_relative($end_path, $start_path)
 	{
-		$symfony_filesystem = new \Symfony\Component\Filesystem\Filesystem();
+		$symfony_filesystem = new symfony_filesystem();
 		return $symfony_filesystem->makePathRelative($end_path, $start_path);
 	}
 

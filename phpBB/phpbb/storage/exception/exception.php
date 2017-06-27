@@ -13,7 +13,9 @@
 
 namespace phpbb\storage\exception;
 
-class exception extends \phpbb\exception\runtime_exception
+use phpbb\exception\runtime_exception;
+
+class exception extends runtime_exception
 {
 	/**
 	 * Constructor
@@ -24,7 +26,7 @@ class exception extends \phpbb\exception\runtime_exception
 	 * @param \Exception	$previous	The previous runtime_exception used for the runtime_exception chaining.
 	 * @param integer		$code		The Exception code.
 	 */
-	public function __construct($message = "", $filename = '', $parameters = array(), \Exception $previous = null, $code = 0)
+	public function __construct($message = '', $filename = '', $parameters = [], \Exception $previous = null, $code = 0)
 	{
 		parent::__construct($message, array_merge(array('filename' => $filename), $parameters), $previous, $code);
 	}
@@ -36,7 +38,7 @@ class exception extends \phpbb\exception\runtime_exception
 	 */
 	public function get_filename()
 	{
-		$parameters = parent::get_parameters();
+		$parameters = $this->get_parameters();
 		return $parameters['filename'];
 	}
 }
