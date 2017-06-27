@@ -113,7 +113,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 
 	$topics = array();
 
-	if (!sizeof($topic_ids))
+	if (!count($topic_ids))
 	{
 		return array();
 	}
@@ -130,7 +130,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 		$cache_topic_ids = array();
 	}
 
-	if (sizeof($topic_ids))
+	if (count($topic_ids))
 	{
 		$sql_array = array(
 			'SELECT'	=> 't.*, f.*',
@@ -201,7 +201,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 
 	$rowset = array();
 
-	if (!sizeof($post_ids))
+	if (!count($post_ids))
 	{
 		return array();
 	}
@@ -280,7 +280,7 @@ function phpbb_get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = 
 		$forum_id = array($forum_id);
 	}
 
-	if (!sizeof($forum_id))
+	if (!count($forum_id))
 	{
 		return array();
 	}
@@ -329,7 +329,7 @@ function phpbb_get_pm_data($pm_ids)
 
 	$rowset = array();
 
-	if (!sizeof($pm_ids))
+	if (!count($pm_ids))
 	{
 		return array();
 	}
@@ -730,7 +730,7 @@ function phpbb_check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_foru
 	}
 	$db->sql_freeresult($result);
 
-	if (!sizeof($ids))
+	if (!count($ids))
 	{
 		return false;
 	}

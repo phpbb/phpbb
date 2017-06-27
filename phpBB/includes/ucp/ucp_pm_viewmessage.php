@@ -113,7 +113,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 			$db->sql_freeresult($result);
 
 			// No attachments exist, but message table thinks they do so go ahead and reset attach flags
-			if (!sizeof($attachments))
+			if (!count($attachments))
 			{
 				$sql = 'UPDATE ' . PRIVMSGS_TABLE . "
 					SET message_attachment = 0
@@ -134,7 +134,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		parse_attachments(false, $message, $attachments, $update_count);
 
 		// Update the attachment download counts
-		if (sizeof($update_count))
+		if (count($update_count))
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET download_count = download_count + 1
@@ -240,7 +240,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_PM_ACTION'		=> $url . '&amp;mode=compose&amp;f=' . $folder_id . '&amp;p=' . $message_row['msg_id'],
 
-		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
+		'S_HAS_ATTACHMENTS'	=> (count($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
@@ -330,7 +330,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
-	if (isset($attachments) && sizeof($attachments))
+	if (isset($attachments) && count($attachments))
 	{
 		foreach ($attachments as $attachment)
 		{

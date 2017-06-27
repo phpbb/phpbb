@@ -482,7 +482,7 @@ class fulltext_sphinx
 		global $user, $phpbb_log;
 
 		// No keywords? No posts.
-		if (!strlen($this->search_query) && !sizeof($author_ary))
+		if (!strlen($this->search_query) && !count($author_ary))
 		{
 			return false;
 		}
@@ -622,7 +622,7 @@ class fulltext_sphinx
 			break;
 		}
 
-		if (sizeof($author_ary))
+		if (count($author_ary))
 		{
 			$this->sphinx->SetFilter('poster_id', $author_ary);
 		}
@@ -632,14 +632,14 @@ class fulltext_sphinx
 		// but at least it will also cause the same for normal users.
 		$this->sphinx->SetFilter('post_visibility', array(ITEM_APPROVED));
 
-		if (sizeof($ex_fid_ary))
+		if (count($ex_fid_ary))
 		{
 			// All forums that a user is allowed to access
 			$fid_ary = array_unique(array_intersect(array_keys($this->auth->acl_getf('f_read', true)), array_keys($this->auth->acl_getf('f_search', true))));
 			// All forums that the user wants to and can search in
 			$search_forums = array_diff($fid_ary, $ex_fid_ary);
 
-			if (sizeof($search_forums))
+			if (count($search_forums))
 			{
 				$this->sphinx->SetFilter('forum_id', $search_forums);
 			}
@@ -789,7 +789,7 @@ class fulltext_sphinx
 			}
 			$this->db->sql_freeresult($result);
 
-			if (sizeof($post_updates))
+			if (count($post_updates))
 			{
 				$this->sphinx->UpdateAttributes($this->indexes, array('topic_last_post_time'), $post_updates);
 			}

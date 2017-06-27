@@ -169,7 +169,7 @@ class add_modules extends \phpbb\install\task_base
 		$this->db->sql_return_on_error(true);
 
 		$module_classes = array('acp', 'mcp', 'ucp');
-		$total = sizeof($module_classes);
+		$total = count($module_classes);
 		$i = $this->config->get('module_class_index', 0);
 		$module_classes = array_slice($module_classes, $i);
 

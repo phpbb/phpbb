@@ -128,8 +128,8 @@ class diff_renderer
 				if (is_array($block))
 				{
 					// How many lines to keep as context from the copy block.
-					$keep = ($i == sizeof($diffs) - 1) ? $ntrail : $nlead + $ntrail;
-					if (sizeof($edit->orig) <= $keep)
+					$keep = ($i == count($diffs) - 1) ? $ntrail : $nlead + $ntrail;
+					if (count($edit->orig) <= $keep)
 					{
 						// We have less lines in the block than we want for context => keep the whole block.
 						$block[] = $edit;
@@ -156,9 +156,9 @@ class diff_renderer
 				if (!is_array($block))
 				{
 					// Extract context lines from the preceding copy block.
-					$context = array_slice($context, sizeof($context) - $nlead);
-					$x0 = $xi - sizeof($context);
-					$y0 = $yi - sizeof($context);
+					$context = array_slice($context, count($context) - $nlead);
+					$x0 = $xi - count($context);
+					$y0 = $yi - count($context);
 					$block = array();
 
 					if ($context)
@@ -169,8 +169,8 @@ class diff_renderer
 				$block[] = $edit;
 			}
 
-			$xi += ($edit->orig) ? sizeof($edit->orig) : 0;
-			$yi += ($edit->final) ? sizeof($edit->final) : 0;
+			$xi += ($edit->orig) ? count($edit->orig) : 0;
+			$yi += ($edit->final) ? count($edit->final) : 0;
 		}
 
 		if (is_array($block))
@@ -433,7 +433,7 @@ class diff_renderer_inline extends diff_renderer
 	{
 		array_walk($lines, array(&$this, '_encode'));
 		$lines[0] = $this->_ins_prefix . $lines[0];
-		$lines[sizeof($lines) - 1] .= $this->_ins_suffix;
+		$lines[count($lines) - 1] .= $this->_ins_suffix;
 		return $this->_lines($lines, ' ', false);
 	}
 
@@ -441,7 +441,7 @@ class diff_renderer_inline extends diff_renderer
 	{
 		array_walk($lines, array(&$this, '_encode'));
 		$lines[0] = $this->_del_prefix . $lines[0];
-		$lines[sizeof($lines) - 1] .= $this->_del_suffix;
+		$lines[count($lines) - 1] .= $this->_del_suffix;
 		return $this->_lines($lines, ' ', false);
 	}
 
@@ -617,7 +617,7 @@ class diff_renderer_side_by_side extends diff_renderer
 		$this->render($diff);
 
 		// Is the diff empty?
-		if (!sizeof($this->lines))
+		if (!count($this->lines))
 		{
 			$output .= '<tr><th colspan="2">' . $user->lang['NO_VISIBLE_CHANGES'] . '</th></tr>';
 		}
@@ -672,8 +672,8 @@ class diff_renderer_side_by_side extends diff_renderer
 
 						case 'change':
 							// Pop the old/new stacks one by one, until both are empty.
-							$oldsize = sizeof($change['old']);
-							$newsize = sizeof($change['new']);
+							$oldsize = count($change['old']);
+							$newsize = count($change['new']);
 							$left = $right = '';
 
 							for ($row = 0, $row_max = max($oldsize, $newsize); $row < $row_max; ++$row)

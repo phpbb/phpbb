@@ -931,7 +931,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$where_ids = array_map('intval', $where_ids);
 
 /*		Possible code for splitting post deletion
-		if (sizeof($where_ids) >= 1001)
+		if (count($where_ids) >= 1001)
 		{
 			// Split into chunks of 1000
 			$chunks = array_chunk($where_ids, 1000);

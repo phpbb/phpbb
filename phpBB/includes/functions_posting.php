@@ -114,7 +114,7 @@ function generate_smilies($mode, $forum_id)
 	}
 	$db->sql_freeresult($result);
 
-	if (sizeof($smilies))
+	if (count($smilies))
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
 
@@ -200,7 +200,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$topic_condition = '';
 	}
 
-	if (sizeof($ids) == 1)
+	if (count($ids) == 1)
 	{
 		$sql = 'SELECT MAX(p.post_id) as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
@@ -222,7 +222,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	$last_post_ids = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (sizeof($ids) == 1)
+		if (count($ids) == 1)
 		{
 			$row[$type . '_id'] = $ids[0];
 		}
@@ -256,7 +256,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		}
 	}
 
-	if (sizeof($last_post_ids))
+	if (count($last_post_ids))
 	{
 		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -277,7 +277,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	}
 	unset($empty_forums, $ids, $last_post_ids);
 
-	if ($return_update_sql || !sizeof($update_sql))
+	if ($return_update_sql || !count($update_sql))
 	{
 		return $update_sql;
 	}
@@ -310,7 +310,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 		$template->assign_var('S_NO_ICON_CHECKED', ' checked="checked"');
 	}
 
-	if (sizeof($icons))
+	if (count($icons))
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
 
@@ -662,7 +662,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 {
 	global $template;
 
-	if (sizeof($attachment_data))
+	if (count($attachment_data))
 	{
 		$s_inline_attachment_options = '';
 
@@ -689,12 +689,12 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 	// Some default template variables
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> $show_attach_box,
-		'S_HAS_ATTACHMENTS'	=> sizeof($attachment_data),
+		'S_HAS_ATTACHMENTS'	=> count($attachment_data),
 		'FILESIZE'			=> $config['max_filesize'],
 		'FILE_COMMENT'		=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 	));
 
-	if (sizeof($attachment_data))
+	if (count($attachment_data))
 	{
 		// We display the posted attachments within the desired order.
 		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
@@ -726,7 +726,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		}
 	}
 
-	return sizeof($attachment_data);
+	return count($attachment_data);
 }
 
 //
@@ -774,13 +774,13 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	}
 	$db->sql_freeresult($result);
 
-	if (!sizeof($draft_rows))
+	if (!count($draft_rows))
 	{
 		return;
 	}
 
 	$topic_rows = array();
-	if (sizeof($topic_ids))
+	if (count($topic_ids))
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title, topic_poster
 			FROM ' . TOPICS_TABLE . '
@@ -893,7 +893,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	$db->sql_freeresult($result);
 
-	if (!sizeof($post_list))
+	if (!count($post_list))
 	{
 		return false;
 	}
@@ -988,7 +988,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	);
 	extract($phpbb_dispatcher->trigger_event('core.topic_review_modify_post_list', compact($vars)));
 
-	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
+	for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	{
 		// A non-existing rowset only happens if there was no user present for the entered poster_id
 		// This could be a broken posts table.
@@ -1215,7 +1215,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 			foreach ($shadow_forum_ids as $updated_forum => $topic_count)
 			{
-				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
+				// counting is fun! we only have to do count($forum_ids) number of queries,
 				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
 					SET forum_topics_approved = forum_topics_approved - ' . $topic_count . '
@@ -1235,7 +1235,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				$phpbb_content_visibility->remove_topic_from_statistic($data, $sql_data);
 
 				$update_sql = update_post_information('forum', $forum_id, true);
-				if (sizeof($update_sql))
+				if (count($update_sql))
 				{
 					$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
 					$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
@@ -1284,7 +1284,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				// Update last post information when hard deleting. Soft delete already did that by itself.
 				$update_sql = update_post_information('forum', $forum_id, true);
-				if (sizeof($update_sql))
+				if (count($update_sql))
 				{
 					$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . implode(', ', $update_sql[$forum_id]);
 				}
@@ -1926,7 +1926,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 		$sql_insert_ary = array();
 
-		for ($i = 0, $size = sizeof($poll_ary['poll_options']); $i < $size; $i++)
+		for ($i = 0, $size = count($poll_ary['poll_options']); $i < $size; $i++)
 		{
 			if (strlen(trim($poll_ary['poll_options'][$i])))
 			{
@@ -1934,7 +1934,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				{
 					// If we add options we need to put them to the end to be able to preserve votes...
 					$sql_insert_ary[] = array(
-						'poll_option_id'	=> (int) sizeof($cur_poll_options) + 1 + sizeof($sql_insert_ary),
+						'poll_option_id'	=> (int) count($cur_poll_options) + 1 + count($sql_insert_ary),
 						'topic_id'			=> (int) $data_ary['topic_id'],
 						'poll_option_text'	=> (string) $poll_ary['poll_options'][$i]
 					);
@@ -1952,16 +1952,16 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 		$db->sql_multi_insert(POLL_OPTIONS_TABLE, $sql_insert_ary);
 
-		if (sizeof($poll_ary['poll_options']) < sizeof($cur_poll_options))
+		if (count($poll_ary['poll_options']) < count($cur_poll_options))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
-				WHERE poll_option_id > ' . sizeof($poll_ary['poll_options']) . '
+				WHERE poll_option_id > ' . count($poll_ary['poll_options']) . '
 					AND topic_id = ' . $data_ary['topic_id'];
 			$db->sql_query($sql);
 		}
 
 		// If edited, we would need to reset votes (since options can be re-ordered above, you can't be sure if the change is for changing the text or adding an option
-		if ($mode == 'edit' && sizeof($poll_ary['poll_options']) != sizeof($cur_poll_options))
+		if ($mode == 'edit' && count($poll_ary['poll_options']) != count($cur_poll_options))
 		{
 			$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id = ' . $data_ary['topic_id']);
 			$db->sql_query('UPDATE ' . POLL_OPTIONS_TABLE . ' SET poll_option_total = 0 WHERE topic_id = ' . $data_ary['topic_id']);
@@ -1979,7 +1979,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$orphan_rows[(int) $attach_row['attach_id']] = array();
 		}
 
-		if (sizeof($orphan_rows))
+		if (count($orphan_rows))
 		{
 			$sql = 'SELECT attach_id, filesize, physical_filename
 				FROM ' . ATTACHMENTS_TABLE . '

@@ -232,9 +232,9 @@ class fulltext_mysql extends \phpbb\search\base
 		$this->split_words = $matches[1];
 
 		// We limit the number of allowed keywords to minimize load on the database
-		if ($this->config['max_num_search_keywords'] && sizeof($this->split_words) > $this->config['max_num_search_keywords'])
+		if ($this->config['max_num_search_keywords'] && count($this->split_words) > $this->config['max_num_search_keywords'])
 		{
-			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], sizeof($this->split_words)));
+			trigger_error($this->user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', (int) $this->config['max_num_search_keywords'], count($this->split_words)));
 		}
 
 		// to allow phrase search, we need to concatenate quoted words
@@ -361,7 +361,7 @@ class fulltext_mysql extends \phpbb\search\base
 
 		// remove too short or too long words
 		$text = array_values($text);
-		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
+		for ($i = 0, $n = count($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
 			if (utf8_strlen($text[$i]) < $this->config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
@@ -563,12 +563,12 @@ class fulltext_mysql extends \phpbb\search\base
 		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
-		if (sizeof($author_ary) && $author_name)
+		if (count($author_ary) && $author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
 			$sql_author = ' AND (' . $this->db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
-		else if (sizeof($author_ary))
+		else if (count($author_ary))
 		{
 			$sql_author = ' AND ' . $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
@@ -580,7 +580,7 @@ class fulltext_mysql extends \phpbb\search\base
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
-		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_where_options .= (count($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= ' AND ' . $post_visibility;
 		$sql_where_options .= $sql_author;
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -659,7 +659,7 @@ class fulltext_mysql extends \phpbb\search\base
 	public function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, &$id_ary, &$start, $per_page)
 	{
 		// No author? No posts
-		if (!sizeof($author_ary))
+		if (!count($author_ary))
 		{
 			return 0;
 		}
@@ -736,7 +736,7 @@ class fulltext_mysql extends \phpbb\search\base
 		{
 			$sql_author = $this->db->sql_in_set('p.poster_id', $author_ary);
 		}
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_fora		= (count($ex_fid_ary)) ? ' AND ' . $this->db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
@@ -889,7 +889,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$id_ary = array_unique($id_ary);
 		}
 
-		if (sizeof($id_ary))
+		if (count($id_ary))
 		{
 			$this->save_ids($search_key, '', $author_ary, $result_count, $id_ary, $start, $sort_dir);
 			$id_ary = array_slice($id_ary, 0, $per_page);
@@ -996,7 +996,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter_list[] = $alter_entry;
 		}
 
-		if (sizeof($alter_list))
+		if (count($alter_list))
 		{
 			foreach ($alter_list as $alter)
 			{
@@ -1039,7 +1039,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter[] = 'DROP INDEX post_content';
 		}
 
-		if (sizeof($alter))
+		if (count($alter))
 		{
 			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}

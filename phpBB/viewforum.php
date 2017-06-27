@@ -385,7 +385,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-	'S_TOPIC_ICONS'			=> ($s_display_active && sizeof($active_forum_ary)) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false),
+	'S_TOPIC_ICONS'			=> ($s_display_active && count($active_forum_ary)) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false),
 	'U_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
 	'U_WATCH_FORUM_TOGGLE'	=> $s_watching_forum['link_toggle'],
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
@@ -395,7 +395,7 @@ $template->assign_vars(array(
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
 	'S_SEARCHBOX_ACTION'	=> append_sid("{$phpbb_root_path}search.$phpEx"),
 	'S_SEARCH_LOCAL_HIDDEN_FIELDS'	=> build_hidden_fields($s_search_hidden_fields),
-	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
+	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && count($moderators[$forum_id]) > 1) ? false : true,
 	'S_IS_LOCKED'			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? true : false,
 	'S_VIEWFORUM'			=> true,
 
@@ -465,7 +465,7 @@ if ($user->data['is_registered'])
 		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']);
 		$sql_array['SELECT'] .= ', tt.mark_time';
 
-		if ($s_display_active && sizeof($active_forum_ary))
+		if ($s_display_active && count($active_forum_ary))
 		{
 			$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id']);
 			$sql_array['SELECT'] .= ', ft.mark_time AS forum_mark_time';
@@ -573,8 +573,8 @@ if ($start > $topics_count / 2)
 	// Select the sort order
 	$direction = (($sort_dir == 'd') ? 'ASC' : 'DESC');
 
-	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $topics_count - sizeof($announcement_list));
-	$sql_start = $pagination->reverse_start($start, $sql_limit, $topics_count - sizeof($announcement_list));
+	$sql_limit = $pagination->reverse_limit($start, $sql_limit, $topics_count - count($announcement_list));
+	$sql_start = $pagination->reverse_start($start, $sql_limit, $topics_count - count($announcement_list));
 }
 else
 {
@@ -592,7 +592,7 @@ else
 	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . $direction;
 }
 
-if ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary))
+if ($forum_data['forum_type'] == FORUM_POST || !count($active_forum_ary))
 {
 	$sql_where = 't.forum_id = ' . $forum_id;
 }
@@ -603,7 +603,7 @@ else if (empty($active_forum_ary['exclude_forum_id']))
 else
 {
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
-	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+	$sql_where = (count($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
 }
 
 // Grab just the sorted topic ids
@@ -662,7 +662,7 @@ $db->sql_freeresult($result);
 // For storing shadow topics
 $shadow_topic_list = array();
 
-if (sizeof($topic_list))
+if (count($topic_list))
 {
 	// SQL array for obtaining topics/stickies
 	$sql_array = array(
@@ -692,7 +692,7 @@ if (sizeof($topic_list))
 }
 
 // If we have some shadow topics, update the rowset to reflect their topic information
-if (sizeof($shadow_topic_list))
+if (count($shadow_topic_list))
 {
 	// SQL array for obtaining shadow topics
 	$sql_array = array(
@@ -767,7 +767,7 @@ if ($s_display_active)
 
 // We need to remove the global announcements from the forums total topic count,
 // otherwise the number is different from the one on the forum list
-$total_topic_count = $topics_count - sizeof($announcement_list);
+$total_topic_count = $topics_count - count($announcement_list);
 
 $base_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''));
 $pagination->generate_template_pagination($base_url, 'pagination', 'start', $total_topic_count, $config['topics_per_page'], $start);
@@ -794,7 +794,7 @@ $vars = array('topic_list', 'rowset', 'total_topic_count', 'forum_id');
 extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_topics_data', compact($vars)));
 
 // Okay, lets dump out the page ...
-if (sizeof($topic_list))
+if (count($topic_list))
 {
 	$mark_forum_read = true;
 	$mark_time_forum = 0;
@@ -997,7 +997,7 @@ if (sizeof($topic_list))
 // on all topics (as we do in 2.0.x). It looks for unread or new topics, if it doesn't find
 // any it updates the forum last read cookie. This requires that the user visit the forum
 // after reading a topic
-if ($forum_data['forum_type'] == FORUM_POST && sizeof($topic_list) && $mark_forum_read)
+if ($forum_data['forum_type'] == FORUM_POST && count($topic_list) && $mark_forum_read)
 {
 	update_forum_tracking_info($forum_id, $forum_data['forum_last_post_time'], false, $mark_time_forum);
 }

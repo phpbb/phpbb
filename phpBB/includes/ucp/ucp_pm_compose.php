@@ -406,7 +406,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			$quote_username = (isset($post['quote_username'])) ? $post['quote_username'] : '';
 			$icon_id = (isset($post['icon_id'])) ? $post['icon_id'] : 0;
 
-			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !count($address_list) && !$refresh && !$submit && !$preview)
 			{
 				// Add the original author as the recipient if quoting a post or only replying and not having checked "reply to all"
 				if ($action == 'quotepost' || !$reply_to_all)
@@ -428,7 +428,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 					}
 				}
 			}
-			else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+			else if ($action == 'edit' && !count($address_list) && !$refresh && !$submit && !$preview)
 			{
 				// Rebuild TO and BCC Header
 				$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
@@ -561,7 +561,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			unset($list[$user->data['user_id']]);
 		}
 
-		$max_recipients = ($max_recipients < sizeof($list)) ? sizeof($list) : $max_recipients;
+		$max_recipients = ($max_recipients < count($list)) ? count($list) : $max_recipients;
 
 		unset($list);
 	}
@@ -584,7 +584,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Check for too many recipients
-	if (!empty($address_list['u']) && $max_recipients && sizeof($address_list['u']) > $max_recipients)
+	if (!empty($address_list['u']) && $max_recipients && count($address_list['u']) > $max_recipients)
 	{
 		$address_list = get_recipients($address_list, $max_recipients);
 		$error[] = $user->lang('TOO_MANY_RECIPIENTS', $max_recipients);
@@ -788,7 +788,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
-		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
+		if (count($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
 			$message_parser->warn_msg = array();
@@ -798,7 +798,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_post_links']);
 
 		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && !$refresh)
+		if (count($message_parser->warn_msg) && !$refresh)
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
 		}
@@ -825,14 +825,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
-			if (!sizeof($address_list))
+			if (!count($address_list))
 			{
 				$error[] = $user->lang['NO_RECIPIENT'];
 			}
 		}
 
 		// Store message, sync counters
-		if (!sizeof($error) && $submit)
+		if (!count($error) && $submit)
 		{
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
@@ -889,7 +889,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Preview
-	if (!sizeof($error) && $preview)
+	if (!count($error) && $preview)
 	{
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
@@ -909,7 +909,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		}
 
 		// Attachment Preview
-		if (sizeof($message_parser->attachment_data))
+		if (count($message_parser->attachment_data))
 		{
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
 
@@ -929,7 +929,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		$preview_subject = censor_text($subject);
 
-		if (!sizeof($error))
+		if (!count($error))
 		{
 			$template->assign_vars(array(
 				'PREVIEW_SUBJECT'		=> $preview_subject,
@@ -943,7 +943,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Decode text for message display
-	$bbcode_uid = (($action == 'quote' || $action == 'forward') && !$preview && !$refresh && (!sizeof($error) || (sizeof($error) && !$submit))) ? $bbcode_uid : $message_parser->bbcode_uid;
+	$bbcode_uid = (($action == 'quote' || $action == 'forward') && !$preview && !$refresh && (!count($error) || (count($error) && !$submit))) ? $bbcode_uid : $message_parser->bbcode_uid;
 
 	$message_parser->decode_message($bbcode_uid);
 
@@ -1035,7 +1035,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 	// Build address list for display
 	// array('u' => array($author_id => 'to'));
-	if (sizeof($address_list))
+	if (count($address_list))
 	{
 		// Get Usernames and Group Names
 		$result = array();
@@ -1198,7 +1198,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
-		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
+		'ERROR'					=> (count($error)) ? implode('<br />', $error) : '',
 		'MAX_RECIPIENTS'		=> ($config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
 		'S_COMPOSE_PM'			=> true,
@@ -1300,7 +1300,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	}
 
 	// If add to or add bcc not pressed, users could still have usernames listed they want to add...
-	if (!$add_to && !$add_bcc && (sizeof($group_list) || sizeof($usernames)))
+	if (!$add_to && !$add_bcc && (count($group_list) || count($usernames)))
 	{
 		$add_to = true;
 
@@ -1321,7 +1321,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	{
 		$type = ($add_to) ? 'to' : 'bcc';
 
-		if (sizeof($group_list))
+		if (count($group_list))
 		{
 			foreach ($group_list as $group_id)
 			{
@@ -1333,13 +1333,13 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		$user_id_ary = array();
 
 		// Reveal the correct user_ids
-		if (sizeof($usernames))
+		if (count($usernames))
 		{
 			$user_id_ary = array();
 			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
 
 			// If there are users not existing, we will at least print a notice...
-			if (!sizeof($user_id_ary))
+			if (!count($user_id_ary))
 			{
 				$error[] = $user->lang['PM_NO_USERS'];
 			}
@@ -1408,7 +1408,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			$error[] = $user->lang['PM_USERS_REMOVED_NO_PERMISSION'];
 		}
 
-		if (!sizeof(array_keys($address_list['u'])))
+		if (!count(array_keys($address_list['u'])))
 		{
 			return;
 		}
@@ -1466,7 +1466,7 @@ function num_recipients($address_list)
 
 	foreach ($address_list as $field => $adr_ary)
 	{
-		$num_recipients += sizeof($adr_ary);
+		$num_recipients += count($adr_ary);
 	}
 
 	return $num_recipients;

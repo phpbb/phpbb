@@ -179,7 +179,7 @@ class mcp_queue
 
 				$post_info = phpbb_get_post_data(array($post_id), 'm_approve', true);
 
-				if (!sizeof($post_info))
+				if (!count($post_info))
 				{
 					trigger_error('NO_POST_SELECTED');
 				}
@@ -230,7 +230,7 @@ class mcp_queue
 					}
 					$db->sql_freeresult($result);
 
-					if (sizeof($attachments))
+					if (count($attachments))
 					{
 						$update_count = array();
 						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
@@ -349,7 +349,7 @@ class mcp_queue
 				{
 					$topic_info = phpbb_get_topic_data(array($topic_id));
 
-					if (!sizeof($topic_info))
+					if (!count($topic_info))
 					{
 						trigger_error('TOPIC_NOT_EXIST');
 					}
@@ -379,7 +379,7 @@ class mcp_queue
 						$forum_list[] = $row['forum_id'];
 					}
 
-					if (!sizeof($forum_list))
+					if (!count($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -395,7 +395,7 @@ class mcp_queue
 				{
 					$forum_info = phpbb_get_forum_data(array($forum_id), $m_perm);
 
-					if (!sizeof($forum_info))
+					if (!count($forum_info))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -465,7 +465,7 @@ class mcp_queue
 					}
 					$db->sql_freeresult($result);
 
-					if (sizeof($post_ids))
+					if (count($post_ids))
 					{
 						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
@@ -537,7 +537,7 @@ class mcp_queue
 					$db->sql_freeresult($result);
 				}
 
-				if (sizeof($forum_names))
+				if (count($forum_names))
 				{
 					// Select the names for the forum_ids
 					$sql = 'SELECT forum_id, forum_name
@@ -771,7 +771,7 @@ class mcp_queue
 			}
 			else
 			{
-				$success_msg = (sizeof($post_info) == 1) ? 'POST_' . strtoupper($action) . 'D_SUCCESS' : 'POSTS_' . strtoupper($action) . 'D_SUCCESS';
+				$success_msg = (count($post_info) == 1) ? 'POST_' . strtoupper($action) . 'D_SUCCESS' : 'POSTS_' . strtoupper($action) . 'D_SUCCESS';
 			}
 
 			/**
@@ -814,7 +814,7 @@ class mcp_queue
 			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 
 			// If approving one post, also give links back to post...
-			if (sizeof($post_info) == 1 && $post_url)
+			if (count($post_info) == 1 && $post_url)
 			{
 				$message .= '<br /><br />' . $user->lang('RETURN_POST', '<a href="' . $post_url . '">', '</a>');
 			}
@@ -847,14 +847,14 @@ class mcp_queue
 
 			// Create the confirm box message
 			$action_msg = strtoupper($action);
-			$num_posts = sizeof($post_id_list) - $num_topics;
+			$num_posts = count($post_id_list) - $num_topics;
 			if ($num_topics > 0 && $num_posts <= 0)
 			{
 				$action_msg .= '_TOPIC' . (($num_topics == 1) ? '' : 'S');
 			}
 			else
 			{
-				$action_msg .= '_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S');
+				$action_msg .= '_POST' . ((count($post_id_list) == 1) ? '' : 'S');
 			}
 			confirm_box(false, $action_msg, $s_hidden_fields, 'mcp_approve.html');
 		}
@@ -919,9 +919,9 @@ class mcp_queue
 				);
 			}
 
-			if (sizeof($topic_info) >= 1)
+			if (count($topic_info) >= 1)
 			{
-				$success_msg = (sizeof($topic_info) == 1) ? 'TOPIC_' . strtoupper($action) . 'D_SUCCESS' : 'TOPICS_' . strtoupper($action) . 'D_SUCCESS';
+				$success_msg = (count($topic_info) == 1) ? 'TOPIC_' . strtoupper($action) . 'D_SUCCESS' : 'TOPICS_' . strtoupper($action) . 'D_SUCCESS';
 			}
 
 			foreach ($approve_log as $log_data)
@@ -1024,7 +1024,7 @@ class mcp_queue
 			$message .= '<br /><br />' . $user->lang('RETURN_PAGE', '<a href="' . $redirect . '">', '</a>');
 
 			// If approving one topic, also give links back to topic...
-			if (sizeof($topic_info) == 1 && $topic_url)
+			if (count($topic_info) == 1 && $topic_url)
 			{
 				$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $topic_url . '">', '</a>');
 			}
@@ -1055,7 +1055,7 @@ class mcp_queue
 				'S_' . strtoupper($action)	=> true,
 			));
 
-			confirm_box(false, strtoupper($action) . '_TOPIC' . ((sizeof($topic_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
+			confirm_box(false, strtoupper($action) . '_TOPIC' . ((count($topic_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 		}
 
 		redirect($redirect);
@@ -1206,8 +1206,8 @@ class mcp_queue
 			}
 
 			// Get disapproved posts/topics counts separately
-			$num_disapproved_topics = sizeof($disapprove_log_topics);
-			$num_disapproved_posts = sizeof($disapprove_log_posts);
+			$num_disapproved_topics = count($disapprove_log_topics);
+			$num_disapproved_posts = count($disapprove_log_posts);
 
 			// Build the whole log
 			$disapprove_log = array_merge($disapprove_log_topics, $disapprove_log_posts);
@@ -1216,7 +1216,7 @@ class mcp_queue
 			unset($post_data, $disapprove_log_topics, $disapprove_log_posts);
 
 			// Let's do the job - delete disapproved posts
-			if (sizeof($post_disapprove_list))
+			if (count($post_disapprove_list))
 			{
 				if (!function_exists('delete_posts'))
 				{
@@ -1444,7 +1444,7 @@ class mcp_queue
 				$l_confirm_msg = 'DELETE_POST_PERMANENTLY';
 				$confirm_template = 'confirm_delete_body.html';
 			}
-			$l_confirm_msg .= ((sizeof($post_id_list) == 1) ? '' : 'S');
+			$l_confirm_msg .= ((count($post_id_list) == 1) ? '' : 'S');
 
 			$template->assign_vars(array(
 				'S_NOTIFY_POSTER'	=> $show_notify,

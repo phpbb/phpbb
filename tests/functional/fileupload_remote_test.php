@@ -102,7 +102,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 			->set_allowed_extensions(array('gif'))
 			->set_max_filesize(2000);
 		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'develop/test.gif');
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals(0, count($file->error));
 		$this->assertTrue(file_exists($file->get('filename')));
 		$this->assertTrue($file->is_uploaded());
 	}
@@ -115,7 +115,7 @@ class phpbb_functional_fileupload_remote_test extends phpbb_functional_test_case
 			->set_allowed_extensions(array('gif'))
 			->set_max_filesize(100);
 		$file = $upload->handle_upload('files.types.remote', self::$root_url . 'develop/test.gif');
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals(1, count($file->error));
 		$this->assertEquals('WRONG_FILESIZE', $file->error[0]);
 	}
 }

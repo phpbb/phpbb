@@ -173,7 +173,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 			->set_max_filesize(1000);
 		$file = $this->gen_valid_filespec();
 		$upload->common_checks($file);
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals(0, count($file->error));
 	}
 
 	public function test_local_upload()
@@ -184,7 +184,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals(0, count($file->error));
 		$this->assertFalse($file->additional_checks());
 		$this->assertTrue($file->move_file('../tests/upload/fixture/copies', true));
 		$file->remove();
@@ -198,10 +198,10 @@ class phpbb_fileupload_test extends phpbb_test_case
 
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals(0, count($file->error));
 		$this->assertFalse($file->move_file('../tests/upload/fixture'));
 		$this->assertFalse($file->get('file_moved'));
-		$this->assertEquals(1, sizeof($file->error));
+		$this->assertEquals(1, count($file->error));
 	}
 
 	public function test_move_existent_file_overwrite()
@@ -213,9 +213,9 @@ class phpbb_fileupload_test extends phpbb_test_case
 		copy($this->path . 'jpg', $this->path . 'jpg.jpg');
 		copy($this->path . 'jpg', $this->path . 'copies/jpg.jpg');
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg');
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals(0, count($file->error));
 		$file->move_file('../tests/upload/fixture/copies', true);
-		$this->assertEquals(0, sizeof($file->error));
+		$this->assertEquals(0, count($file->error));
 		unlink($this->path . 'copies/jpg.jpg');
 	}
 

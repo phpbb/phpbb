@@ -36,7 +36,7 @@ function mcp_topic_view($id, $mode, $action)
 	$topic_id = $request->variable('t', 0);
 	$topic_info = phpbb_get_topic_data(array($topic_id), false, true);
 
-	if (!sizeof($topic_info))
+	if (!count($topic_info))
 	{
 		trigger_error('TOPIC_NOT_EXIST');
 	}
@@ -97,7 +97,7 @@ function mcp_topic_view($id, $mode, $action)
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-		if (!sizeof($post_id_list))
+		if (!count($post_id_list))
 		{
 			trigger_error('NO_POST_SELECTED');
 		}
@@ -172,7 +172,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	// Grab extensions
 	$attachments = array();
-	if ($topic_info['topic_attachment'] && sizeof($post_id_list))
+	if ($topic_info['topic_attachment'] && count($post_id_list))
 	{
 		// Get attachments...
 		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))
@@ -326,7 +326,7 @@ function mcp_topic_view($id, $mode, $action)
 		{
 			$to_topic_info = phpbb_get_topic_data(array($to_topic_id), 'm_merge');
 
-			if (!sizeof($to_topic_info))
+			if (!count($to_topic_info))
 			{
 				$to_topic_id = 0;
 			}
@@ -408,7 +408,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	$forum_id		= $request->variable('forum_id', 0);
 	$start			= $request->variable('start', 0);
 
-	if (!sizeof($post_id_list))
+	if (!count($post_id_list))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
 		return;
@@ -422,7 +422,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	$post_id = $post_id_list[0];
 	$post_info = phpbb_get_post_data(array($post_id));
 
-	if (!sizeof($post_info))
+	if (!count($post_info))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
 		return;
@@ -446,7 +446,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	$forum_info = phpbb_get_forum_data(array($to_forum_id), 'f_post');
 
-	if (!sizeof($forum_info))
+	if (!count($forum_info))
 	{
 		$template->assign_var('MESSAGE', $user->lang['USER_CANNOT_POST']);
 		return;
@@ -530,7 +530,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			$db->sql_freeresult($result);
 		}
 
-		if (!sizeof($post_id_list))
+		if (!count($post_id_list))
 		{
 			trigger_error('NO_POST_SELECTED');
 		}
@@ -628,7 +628,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		}
 		$db->sql_freeresult($result);
 
-		if (sizeof($sql_ary))
+		if (count($sql_ary))
 		{
 			$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
 		}
@@ -649,7 +649,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		}
 		$db->sql_freeresult($result);
 
-		if (sizeof($sql_ary))
+		if (count($sql_ary))
 		{
 			$db->sql_multi_insert(BOOKMARKS_TABLE, $sql_ary);
 		}
@@ -690,7 +690,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 	$topic_data = phpbb_get_topic_data($sync_topics, 'm_merge');
 
-	if (!sizeof($topic_data) || empty($topic_data[$to_topic_id]))
+	if (!count($topic_data) || empty($topic_data[$to_topic_id]))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
@@ -707,7 +707,7 @@ function merge_posts($topic_id, $to_topic_id)
 	$post_id_list	= $request->variable('post_id_list', array(0));
 	$start			= $request->variable('start', 0);
 
-	if (!sizeof($post_id_list))
+	if (!count($post_id_list))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
 		return;
