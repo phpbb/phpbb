@@ -468,27 +468,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function realpath($path)
 	{
-		if (!function_exists('realpath'))
-		{
-			return $this->phpbb_own_realpath($path);
-		}
-
-		$realpath = realpath($path);
-
-		// Strangely there are provider not disabling realpath but returning strange values. :o
-		// We at least try to cope with them.
-		if ((!$this->is_absolute_path($path) && $realpath === $path) || $realpath === false)
-		{
-			return $this->phpbb_own_realpath($path);
-		}
-
-		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-		if (substr($realpath, -1) === DIRECTORY_SEPARATOR)
-		{
-			$realpath = substr($realpath, 0, -1);
-		}
-
-		return $realpath;
+		return helper::realpath($path);
 	}
 
 	/**
