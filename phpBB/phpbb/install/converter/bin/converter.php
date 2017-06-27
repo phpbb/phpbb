@@ -2,6 +2,8 @@
 
 namespace phpbb\install\converter\bin;
 
+require_once 'config_map.php';
+
 use \Symfony\Component\Yaml\Yaml;
 
 class converter
@@ -13,14 +15,16 @@ class converter
 	protected $config;
 	protected $yamlQ;
 	protected $container;
+	protected $phpbb_root;
 
 
 
-	function __construct($db_source, $db_destination,\phpbb\install\converter\controller\helper $helper){
+	function __construct($db_source, $db_destination,\phpbb\install\converter\controller\helper $helper,$phpbb_root){
+		$this->phpbb_root = $phpbb_root;
 		$this->db_source = $db_source;
 		$this->db_destination = $db_destination;
 		$this->helper = $helper;
-		$this->yamlQ = Yaml::parse(file_get_contents('http://localhost.phpbb/phpbb/install/converter/configmap/conversionQ.yml'));
+		$this->yamlQ = Yaml::parse(file_get_contents(/*@todo fix the file links */'http://localhost.phpbb/phpbb/install/converter/configmap/conversionQ.yml'));
 	}
 
 	function get_yaml_queue()
@@ -60,7 +64,7 @@ class converter
 		//Function responsible for starting the conversion by generating the configMap object.
 		//This function will be wrapped over by another function to process every yaml class from yamlQ;
 		//Since we havent created a Q system, we will just be using this function for now.
-		$cf = new config_map($this->con_source, $this->con_destination ,$file);
+		$cf = new config_map($this->db_source, $this->db_destination ,$file, $this->phpbb_root);
 
 	}
 }

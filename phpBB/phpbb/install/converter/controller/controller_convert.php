@@ -93,6 +93,24 @@ class controller_convert
 		//also tried using $container->get. Get will give an
 		//error saying the DIC container does not know to construct the synthetic service.
 
+		/* DB config @todo Make use of request object to set credentials array*/
+		$credentials_source = array(
+			'dbname'   => 'phpBBgsoc',
+			'user'     => 'root',
+			'password' => '123',
+			'host'     => 'localhost',
+			'driver'   => 'pdo_mysql',
+		);
+		$credentials_destination = array(
+			'dbname'   => 'phpBBgsoc_dest',
+			'user'     => 'root',
+			'password' => '123',
+			'host'     => 'localhost',
+			'driver'   => 'pdo_mysql',
+		);
+		$this->helper->set_source_db($credentials_source);
+		$this->helper->set_destination_db($credentials_destination);
+
 		$this->yaml_queue = $this->converter->get_yaml_queue();
 
 		$this->helper->set_conversion_status(true);

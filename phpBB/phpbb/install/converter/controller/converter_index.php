@@ -61,24 +61,10 @@ class converter_index
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		//$this->db_source = $db_source;
-		//DB config
-		$credentials_source = array(
-			'dbname'   => 'phpBBgsoc',
-			'user'     => 'root',
-			'password' => '123',
-			'host'     => 'localhost',
-			'driver'   => 'pdo_mysql',
-		);
+		/*
+		 * DB credentials logic now moved to controller_convert.php class
+		 */
 
-		$credentials_destination = array(
-			'dbname'   => 'phpBBgsoc_dest',
-			'user'     => 'root',
-			'password' => '123',
-			'host'     => 'localhost',
-			'driver'   => 'pdo_mysql',
-		);
-		$this->helper->set_source_db($credentials_source);
-		$this->helper->set_destination_db($credentials_destination);
 
 
 		//$this->db_source = \Doctrine\DBAL\DriverManager::getConnection($credentials_source, $this->config);
@@ -109,7 +95,7 @@ class converter_index
 
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,
-			'BODY'   => 'Welcome to converter framework idex. Click on the link below to start conversion',
+			'BODY'   => 'Welcome to converter framework index. Click on the link below to start conversion',
 			'U_LINK' => $this->helper->route('phpbb_converter_convert'),
 		));
 

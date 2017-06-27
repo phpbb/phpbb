@@ -11,6 +11,7 @@ services:
             - '@phpbb.dbal.source.connection'
             - '@phpbb.dbal.destination.connection'
             - '@phpbb.installer.converter.controller.helper'
+            - '%core.root_path%'
 
 
     phpbb.dbal.source.connection:

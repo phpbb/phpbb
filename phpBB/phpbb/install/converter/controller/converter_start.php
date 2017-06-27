@@ -115,6 +115,10 @@ class converter_start
 			$response->setCallback(function () use ($phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
 			{
 				$helper->set_conversion_status(true);
+				/*The lock must be the first thing to be acquired as the js queries every 250ms for status
+				and if we acquire the lock later the js may issue another request before previous completes
+				thus stuck in an infinite loop of continue -> lock not acquired -> again continue ....
+				*/
 				$ajax_handler->acquire_lock();
 				$curr_index = $helper->get_file_index();
 				if ($helper->get_conversion_status() && $curr_index < count($yaml_queue))
@@ -126,10 +130,15 @@ class converter_start
 					$ajax_handler->set_task_count(count($yaml_queue));
 					$ajax_handler->set_progress($yaml_queue[$curr_index],$curr_index+1);
 					$ajax_handler->send_response();
-					$converter->dummy_load($this->yaml_queue[$curr_index]);
-					sleep(5);
+					$converter->begin_conversion($yaml_queue[$curr_index]);
+					//sleep(5);
 					$helper->next_file();
 					$ajax_handler->release_lock();
+					/*
+					The moment release_lock() is called, when js queries converter_status a continue status is issued
+					causing a reload of the request, thus automatically moving to the next file
+					*/
+
 				}
 				else{
 					$helper->set_conversion_status(false);

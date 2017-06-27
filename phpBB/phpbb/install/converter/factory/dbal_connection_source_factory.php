@@ -18,6 +18,7 @@ class dbal_connection_source_factory
 	public static function get_connection($dbal_config, \phpbb\install\converter\controller\helper $helper)
 	{
 		$credentials_source=$helper->get_source_db();
+		//var_dump($credentials_source);
 		$db_source = \Doctrine\DBAL\DriverManager::getConnection($credentials_source, $dbal_config);
 		return $db_source;
 	}
