@@ -13,6 +13,11 @@
 
 namespace phpbb\style;
 
+use phpbb\cache\service as cache_service;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\filesystem\filesystem_interface;
+use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\style\exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -41,7 +46,7 @@ class manager
 	protected $styles_path;
 	protected $styles_path_absolute = 'styles';
 
-	public function __construct(\phpbb\cache\service $cache = null, \phpbb\config\config $config, ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\filesystem\filesystem_interface $filesystem, $styles_table, $users_table, $phpbb_root_path)
+	public function __construct(cache_service $cache = null, config $config, ContainerInterface $container, driver_interface $db, filesystem_interface $filesystem, $styles_table, $users_table, $phpbb_root_path)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
@@ -54,7 +59,7 @@ class manager
 
 		$this->text_formatter_cache = $container->get('text_formatter.cache');
 		$this->default_style = $config['default_style'];
-		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
+		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . DIRECTORY_SEPARATOR;
 	}
 
 	public function install($dir)
@@ -99,7 +104,7 @@ class manager
 
 		if ($cfg['parent'])
 		{
-			$parent_data = $this->get_style_name('style_name', $cfg['parent']);
+			$parent_data = $this->get_style_data('style_name', $cfg['parent']);
 			if ($parent_data)
 			{
 				$sql_ary['style_parent_id'] = $parent_data['style_id'];
@@ -126,19 +131,24 @@ class manager
 	{
 		$style_data = $this->get_style_data('style_path', $dir);
 
-		// Check if there is a style with path $dir
+		// Check if there is a style with that name
 		if (!$style_data)
 		{
 			throw new exception('STYLE_NOT_FOUND');
 		}
 
 		$id = (int) $style_data['style_id'];
-		$path = $style_data['style_path'];
+
+		// Check if the style we are trying to remove is the default style
+		if ($id == $this->config['default_style'])
+		{
+			throw new exception('UNINSTALL_DEFAULT');
+		}
 
 		// Check if style has child styles
 		$sql = 'SELECT style_id
 			FROM ' . $this->styles_table . '
-			WHERE style_parent_id = ' . (int) $id . " OR style_parent_tree = '" . $this->db->sql_escape($path) . "'";
+			WHERE style_parent_id = ' . $id . " OR style_parent_tree = '" . $this->db->sql_escape($dir) . "'";
 		$result = $this->db->sql_query($sql);
 
 		if (!$result)
@@ -156,7 +166,7 @@ class manager
 
 		// Change default style for users
 		$sql = 'UPDATE ' . $this->users_table . '
-			SET user_style = 0
+			SET user_style = ' . $this->config['default_style'] . '
 			WHERE user_style = ' . $id;
 
 		if (!$this->db->sql_query($sql))
@@ -174,8 +184,6 @@ class manager
 		}
 	}
 
-
-	// TODO: check if ids exist, check if already active, create exception
 	public function activate($dirs)
 	{
 		// Activate styles
@@ -188,8 +196,6 @@ class manager
 		$this->cache->destroy('sql', $this->styles_table);
 	}
 
-
-	// TODO: check if ids exist, check if already inactive, create exception
 	public function deactivate($dirs)
 	{
 		// Check for default style
@@ -203,7 +209,7 @@ class manager
 
 		// Reset default style for users who use selected styles
 		$sql = 'UPDATE ' . $this->users_table . '
-			SET user_style = 0
+			SET user_style = ' . $this->config['default_style'] . '
 			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
 		$this->db->sql_query($sql);
 
@@ -224,13 +230,16 @@ class manager
 	* @param string $dir Directory to remove inside style's directory
 	* @return bool True on success, false on error
 	*/
-	public function delete_style_files($path, $dir = '')
+	public function delete_style_files($path)
 	{
 		$dirname = $this->styles_path . $path . $dir;
 
-		try {
+		try
+		{
 			$this->filesystem->remove($dirname);
-		} catch (\phpbb\filesystem\exception\filesystem_exception $e) {
+		}
+		catch (filesystem_exception $e)
+		{
 			throw new exception('DELETE_STYLE_FILES_FAILED');
 		}
 	}

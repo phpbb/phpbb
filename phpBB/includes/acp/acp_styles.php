@@ -272,10 +272,6 @@ class acp_styles
 			{
 				trigger_error($this->user->lang['INVALID_STYLE_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			if ($id == $default)
-			{
-				trigger_error($this->user->lang['UNINSTALL_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
 		}
 
 		// Order by reversed style_id, so parent styles would be removed after child styles
