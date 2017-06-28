@@ -42,9 +42,9 @@ class uninstall extends command
 
 		try
 		{
-			$data = $this->manager->get_style_data('style_name', $dir);
-			$this->manager->uninstall($data['style_path']);
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), array($dir));
+			$this->manager->uninstall($dir);
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), [$dir]);
+
 			$io->success($this->user->lang('STYLE_UNINSTALLED', $dir));
 		}
 		catch (\phpbb\style\exception $e)

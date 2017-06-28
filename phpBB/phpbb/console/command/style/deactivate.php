@@ -45,11 +45,11 @@ class deactivate extends command
 			$this->manager->deactivate(array($dir));
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DEACTIVATE', time(), array($dir));
 
-			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $name));
+			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $dir));
 		}
 		catch (exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_DEACTIVATE_FAILURE', $name));
+			$io->error($this->user->lang('CLI_STYLE_DEACTIVATE_FAILURE', $dir));
 
 			return 1;
 		}
