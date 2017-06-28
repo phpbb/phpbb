@@ -17,7 +17,6 @@ use Symfony\Component\Filesystem\Filesystem as symfony_filesystem;
 
 class helper
 {
-
 	/**
 	* @var \Symfony\Component\Filesystem\Filesystem
 	*/
@@ -234,7 +233,7 @@ class helper
 			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
 		}
 
-		trim ($path, '/');
+		trim($path, '/');
 		$path_parts = explode('/', $path);
 		$resolved = array();
 		$resolved_path = $prefix;
@@ -366,7 +365,7 @@ class helper
 			}
 		}
 
-		return ($return_array) ? $resolved : $resolved_path;
+		return $return_array ? $resolved : $resolved_path;
 	}
 
 	/**

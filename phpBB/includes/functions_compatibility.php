@@ -96,11 +96,6 @@ function phpbb_check_hash($password, $hash)
 */
 function phpbb_clean_path($path)
 {
-	if (!class_exists('\phpbb\filesystem\helper'))
-	{
-		require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
-	}
-
 	return \phpbb\filesystem\helper::clean_path($path);
 }
 
@@ -443,11 +438,6 @@ function phpbb_is_writable($file)
  */
 function phpbb_is_absolute($path)
 {
-	if (!class_exists('\phpbb\filesystem\helper'))
-	{
-		require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
-	}
-
 	return \phpbb\filesystem\helper::is_absolute_path($path);
 }
 
@@ -458,11 +448,6 @@ function phpbb_is_absolute($path)
  */
 function phpbb_realpath($path)
 {
-	if (!class_exists('\phpbb\filesystem\helper'))
-	{
-		require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
-	}
-
 	return \phpbb\filesystem\helper::realpath($path);
 }
 
