@@ -226,7 +226,7 @@ class helper
 	 * @return string|array|bool	returns the resolved path or an array of parts of the path if $return_array is true
 	 * 								or false if path cannot be resolved
 	 */
-	protected static function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
+	public static function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
 	{
 		if ($return_array)
 		{
