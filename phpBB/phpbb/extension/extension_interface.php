@@ -31,7 +31,7 @@ interface extension_interface
 	*
 	* @return string|array with actual processed language string(s) (not language keys), or empty
 	*/
-	public function get_not_enableable_msg();
+	public function not_enableable_msg();
 
 	/**
 	* enable_step is executed on enabling an extension until it returns false.

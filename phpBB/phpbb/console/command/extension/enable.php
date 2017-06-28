@@ -45,7 +45,9 @@ class enable extends command
 		}
 		else
 		{
-			$output->writeln('<error>' . $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name) . '</error>');
+			$message = $this->manager->get_extension($name)->not_enableable_msg() ?: $this->user->lang('CLI_EXTENSION_ENABLE_FAILURE', $name);
+			$message = is_array($message) ? implode('\n', $message) : $message;
+			$output->writeln('<error>' . $message . '</error>');
 			return 1;
 		}
 	}

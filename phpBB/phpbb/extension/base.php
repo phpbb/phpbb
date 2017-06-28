@@ -68,7 +68,7 @@ class base implements \phpbb\extension\extension_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_not_enableable_msg()
+	public function not_enableable_msg()
 	{
 		return array();
 	}
