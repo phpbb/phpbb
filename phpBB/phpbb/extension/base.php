@@ -66,6 +66,14 @@ class base implements \phpbb\extension\extension_interface
 	}
 
 	/**
+	* {@inheritdoc}
+	*/
+	public function get_not_enableable_msg()
+	{
+		return array();
+	}
+
+	/**
 	* Single enable step that installs any included migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method

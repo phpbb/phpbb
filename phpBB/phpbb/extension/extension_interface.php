@@ -27,6 +27,13 @@ interface extension_interface
 	public function is_enableable();
 
 	/**
+	* Indicate why the extension can not be enabled.
+	*
+	* @return string|array with actual processed language string(s) (not language keys), or empty
+	*/
+	public function get_not_enableable_msg();
+
+	/**
 	* enable_step is executed on enabling an extension until it returns false.
 	*
 	* Calls to this function can be made in subsequent requests, when the

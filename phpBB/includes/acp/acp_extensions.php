@@ -167,7 +167,9 @@ class acp_extensions
 				$extension = $this->ext_manager->get_extension($ext_name);
 				if (!$extension->is_enableable())
 				{
-					trigger_error($this->user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = $extension->get_not_enableable_msg() ?: $this->user->lang['EXTENSION_NOT_ENABLEABLE'];
+					$message = is_array($message) ? implode('<br/>', $message) : $message;
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($this->ext_manager->is_enabled($ext_name))
@@ -197,7 +199,9 @@ class acp_extensions
 				$extension = $this->ext_manager->get_extension($ext_name);
 				if (!$extension->is_enableable())
 				{
-					trigger_error($this->user->lang['EXTENSION_NOT_ENABLEABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = $extension->get_not_enableable_msg() ?: $this->user->lang['EXTENSION_NOT_ENABLEABLE'];
+					$message = is_array($message) ? implode('<br/>', $message) : $message;
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				try
