@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\style;
 
+use phpbb\style\exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ class deactivate extends command
 			->setName('style:deactivate')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_DEACTIVATE_STYLE'))
 			->addArgument(
-				'style-name',
+				'style-path',
 				InputArgument::REQUIRED,
 				$this->user->lang('CLI_STYLE_NAME')
 			)
@@ -37,17 +38,19 @@ class deactivate extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$name = $input->getArgument('style-name');
+		$dir = $input->getArgument('style-path');
 
 		try
 		{
-			$this->manager->deactivate(array($name));
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DEACTIVATE', time(), array($name));
+			$this->manager->deactivate(array($dir));
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DEACTIVATE', time(), array($dir));
+
 			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $name));
 		}
-		catch (\phpbb\style\exception $e)
+		catch (exception $e)
 		{
 			$io->error($this->user->lang('CLI_STYLE_DEACTIVATE_FAILURE', $name));
+
 			return 1;
 		}
 

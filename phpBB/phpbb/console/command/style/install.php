@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\style;
 
+use phpbb\style\exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ class install extends command
 			->setName('style:install')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_INSTALL_STYLE'))
 			->addArgument(
-				'style-name',
+				'style-path',
 				InputArgument::REQUIRED,
 				$this->user->lang('CLI_STYLE_NAME')
 			)
@@ -37,37 +38,20 @@ class install extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$name = $input->getArgument('style-name');
+		$dir = $input->getArgument('style-path');
 
 		try
 		{
-			$available_styles = $this->manager->find_available(false);
-			$style_path = '';
-			$found = false;
+			$this->manager->install($dir);
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ADD', time(), array($dir));
 
-			foreach ($available_styles as $style)
-			{
-				if ($style['style_name'] == $name)
-				{
-					$style_path = $style['style_path'];
-					$found = true;
-					break;
-				}
-			}
-
-			if (!$found)
-			{
-				throw new exception(''); // Empty exception, because the error is generic
-			}
-
-			$this->manager->install($style_path);
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ADD', time(), array($name));
-			$io->success($this->user->lang('STYLE_INSTALLED', $name));
+			$io->success($this->user->lang('STYLE_INSTALLED', $dir));
 		}
 		catch (\phpbb\style\exception $e)
 		{
 			$msg = $this->user->lang($e->getMessage());
-			$io->error($this->user->lang($msg, $name));
+			$io->error($this->user->lang($msg, $dir));
+
 			return 1;
 		}
 

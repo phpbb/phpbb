@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\style;
 
+use phpbb\style\exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ class activate extends command
 			->setName('style:activate')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_ACTIVATE_STYLE'))
 			->addArgument(
-				'style-name',
+				'style-path',
 				InputArgument::REQUIRED,
 				$this->user->lang('CLI_STYLE_NAME')
 			)
@@ -37,17 +38,19 @@ class activate extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$name = $input->getArgument('style-name');
+		$dir = $input->getArgument('style-path');
 
 		try
 		{
-			$this->manager->activate(array($name));
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ACTIVATE', time(), array($name));
-			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $name));
+			$this->manager->activate([$dir]);
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ACTIVATE', time(), [$dir]);
+
+			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $dir));
 		}
-		catch (\phpbb\style\exception $e)
+		catch (exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $name));
+			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $dir));
+
 			return 1;
 		}
 

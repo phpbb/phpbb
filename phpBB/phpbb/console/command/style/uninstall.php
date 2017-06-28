@@ -27,7 +27,7 @@ class uninstall extends command
 			->setName('style:uninstall')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_UNINSTALL_STYLE'))
 			->addArgument(
-				'style-name',
+				'style-path',
 				InputArgument::REQUIRED,
 				$this->user->lang('CLI_STYLE_NAME')
 			)
@@ -38,19 +38,19 @@ class uninstall extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$name = $input->getArgument('style-name');
+		$dir = $input->getArgument('style-path');
 
 		try
 		{
-			$data = $this->manager->get_style_data('style_name', $name);
+			$data = $this->manager->get_style_data('style_name', $dir);
 			$this->manager->uninstall($data['style_path']);
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), array($name));
-			$io->success($this->user->lang('STYLE_UNINSTALLED', $name));
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), array($dir));
+			$io->success($this->user->lang('STYLE_UNINSTALLED', $dir));
 		}
 		catch (\phpbb\style\exception $e)
 		{
 			$msg = $this->user->lang($e->getMessage());
-			$io->error($this->user->lang($msg, $name));
+			$io->error($this->user->lang($msg, $dir));
 			return 1;
 		}
 
