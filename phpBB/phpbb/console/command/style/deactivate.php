@@ -41,8 +41,7 @@ class deactivate extends command
 
 		try
 		{
-			$data = $this->manager->get_style_data('style_name', $name);
-			$this->manager->deactivate(array($data['style_id']));
+			$this->manager->deactivate(array($name));
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DEACTIVATE', time(), array($name));
 			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $name));
 		}

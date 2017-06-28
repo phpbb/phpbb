@@ -176,12 +176,12 @@ class manager
 
 
 	// TODO: check if ids exist, check if already active, create exception
-	public function activate($ids)
+	public function activate($dirs)
 	{
 		// Activate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 1
-			WHERE ' . $this->db->sql_in_set('style_id', $ids);
+			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
 		$this->db->sql_query($sql);
 
 		// Purge cache
@@ -190,12 +190,12 @@ class manager
 
 
 	// TODO: check if ids exist, check if already inactive, create exception
-	public function deactivate($ids)
+	public function deactivate($dirs)
 	{
 		// Check for default style
-		foreach ($ids as $id)
+		foreach ($dirs as $path)
 		{
-			if ($id == $this->default_style)
+			if ($path == $this->default_style)
 			{
 				throw new exception($this->user->lang['DEACTIVATE_DEFAULT']);
 			}
@@ -204,13 +204,13 @@ class manager
 		// Reset default style for users who use selected styles
 		$sql = 'UPDATE ' . $this->users_table . '
 			SET user_style = 0
-			WHERE ' . $this->db->sql_in_set('style_id', $ids);
+			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
 		$this->db->sql_query($sql);
 
 		// Deactivate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 0
-			WHERE ' . $this->db->sql_in_set('style_id', $ids);
+			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
 		$this->db->sql_query($sql);
 
 		// Purge cache
