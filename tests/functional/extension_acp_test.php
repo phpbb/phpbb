@@ -165,12 +165,13 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor%2Fmoo&sid=' . $this->sid);
 		$this->assertContains($this->lang('EXTENSION_ENABLE_CONFIRM', 'phpBB Moo Extension'), $crawler->filter('#main')->text());
 
-		// Correctly submit the enable form
+		// Correctly submit the enable form, default not enableable message
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor3%2Ffoo&sid=' . $this->sid);
 		$this->assertContainsLang('EXTENSION_NOT_ENABLEABLE', $crawler->filter('.errorbox')->text());
 
 		// Custom error messages returned by not enableable extension
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=vendor4%2Ffoo&sid=' . $this->sid);
+		$this->assertContains('Reason 1', $crawler->filter('.errorbox')->text());
 		$this->assertContains('Reason 2', $crawler->filter('.errorbox')->text());
 	}
 
