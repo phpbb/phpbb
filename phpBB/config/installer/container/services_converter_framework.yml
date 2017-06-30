@@ -10,6 +10,7 @@ services:
         arguments:
             - '@phpbb.dbal.source.connection'
             - '@phpbb.dbal.destination.connection'
+            - '@installer.helper.iohandler_factory'
             - '@phpbb.installer.converter.controller.helper'
             - '%core.root_path%'
 

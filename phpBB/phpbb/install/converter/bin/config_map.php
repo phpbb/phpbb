@@ -60,6 +60,15 @@ class config_map
 
 	protected $phpbb_root;
 
+	/**
+	 * @var phpBB helper object
+	 */
+	public $helper;
+
+	public $total_rows;
+
+	public static $chunk_size =100;
+
 	public $config_file_base = 'phpbb/install/converter/configmap/';
 
 	/**
@@ -68,7 +77,7 @@ class config_map
 	 * @param $con_destination
 	 * @param $file
 	 */
-	public function __construct($con_source, $con_destination, $file, $phpbb_root)
+	public function __construct($con_source, $con_destination, $file, \phpbb\install\converter\controller\helper $helper, $phpbb_root)
 	{
 		//The constructor will initialize the constructor object, and intiitalize the mapping object data_map to begin conversion$this->db_source = $con_source;
 		$this->db_destination = $con_destination;
@@ -78,10 +87,7 @@ class config_map
 		//$con and thus $db are Doctrine\DBAL\DriverManager::getConnection() object. Basically the DBAL connection object.
 		try{
 			$fobj = file_get_contents($file_link);
-			var_dump($phpbb_root);
-			echo $phpbb_root;
-			echo '<br/>';
-			print($file_link);
+
 		} catch(Exception $e){
 			var_dump($e);
 		}
@@ -90,8 +96,9 @@ class config_map
 		$this->data_map = (object)$this->data_map_arr;
 		$this->set_table();
 		$this->set_col();
+		$this->set_total_records();
 		//$this->get_conversion_function();
-		$this->copy_data();
+		//$this->copy_data_OLD();
 	}
 
 	/**
@@ -172,18 +179,73 @@ class config_map
 		}
 	}
 
-	/**
-	 * Effects the actual conversion.
+	/*
+	 * Get total records which will be converted;
 	 */
-	public function copy_data()
+	public function set_total_records()
+	{
+		$query = 'SELECT COUNT(*) FROM '.$this->table_source;
+		var_dump($query);
+		$stmt = $this->db_source->prepare($query);
+		$stmt->execute();
+		$this->total_rows = $stmt->fetchColumn(0);
+	}
+
+	public function get_total_records()
+	{
+		return $this->total_rows;
+	}
+
+	public function copy_data($chunk)
+	{
+		/*
+		 * @todo check for timeout over here and gracefully fail since we cannot even convert 100 entries before a timeout
+		 *
+		 */
+ 		$offset = $chunk*self::$chunk_size;
+ 		$limit = ($this->total_rows-$offset>self::$chunk_size)?self::$chunk_size:($this->total_rows-$offset);
+		$query_source = $this->db_source->createQueryBuilder(); //Query Builder object;
+		var_dump($this->total_rows);
+		$query_source->select($this->source_col)->from($this->table_source)->setFirstResult($offset)->setMaxResults($limit);
+		$stmt_source = $query_source->execute();
+
+		while ($each_row = $stmt_source->fetch())
+		{ //As every row is fetched keep inserting
+			 //Holds final converted values
+			$values_row = array();
+			$values_orig_row = array_values($each_row); //we just want the values and not coloumn names from row
+			//Apply conversion functions to $values_orig_row
+			for ($i = 0; $i < count($values_orig_row); $i++)
+			{
+				if ($this->conversion_function[$i] == null)
+				{ // == used since 0, '', NULL must all get treated same
+					array_push($values_row, $values_orig_row[$i]);
+				} else
+				{
+					array_push($values_row, $this->conversion_function[$i]($values_orig_row[$i]));
+				}
+			}
+			$insert_array = array_combine($this->dest_col, $values_row); //An array of dest-col names as keys and corresponding to be inserted values as pairs.
+			$this->db_destination->insert($this->table_destination, $insert_array);
+			print_r("Succesfully completed"); //Debug
+		}
+	}
+
+
+	/**
+	 * Effects the actual conversion. @todo Old function to be depracted
+	 */
+	public function copy_data_OLD()
 	{
 		$query_source = $this->db_source->createQueryBuilder(); //Query Builder object;
 		//var_dump($this->table_source);
 		$query_source->select($this->source_col)->from($this->table_source);
 		$stmt_source = $query_source->execute();
+
 		while ($each_row = $stmt_source->fetch())
 		{ //As every row is fetched keep inserting
-			$values_row = array(); //Holds final converted values
+			 //Holds final converted values
+			$values_row = array();
 			$values_orig_row = array_values($each_row); //we just want the values and not coloumn names from row
 			//Apply conversion functions to $values_orig_row
 			for ($i = 0; $i < count($values_orig_row); $i++)

@@ -81,16 +81,16 @@ class helper extends \phpbb\install\controller\helper
 		return $this->installer_config->get('current_conversion');
 	}
 
-	public function set_total_files($total_files)
+	public function set_total_chunks($total_chunks)
 	{
-		$this->installer_config->set('current_conversion_total_files', $total_files);
+		$this->installer_config->set('current_conversion_total_chunks', $total_chunks);
 		$this->installer_config->save_config();
 	}
 
-	public function get_total_files()
+	public function get_total_chunks()
 	{
 		$this->installer_config->load_config();
-		return $this->installer_config->get('current_conversion_total_files');
+		return $this->installer_config->get('current_conversion_total_chunks');
 	}
 
 	public function set_file_index($file_index)
@@ -105,10 +105,10 @@ class helper extends \phpbb\install\controller\helper
 		return $this->installer_config->get('current_conversion_file');
 	}
 
-	public function next_file()
+	public function next_file($current, $total)
 	{
-		$current = $this->get_file_index();
-		if($current < $this->get_total_files())
+
+		if($current < $total)
 		{
 			$this->set_file_index($current+1);
 		}
@@ -129,5 +129,42 @@ class helper extends \phpbb\install\controller\helper
 		$this->installer_config->load_config();
 		return $this->installer_config->get('converter.conversion.status');
 	}
+
+	public function get_current_chunk()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('converter.conversion.chunk');
+	}
+
+	public function set_current_chunk($chunk)
+	{
+		$this->installer_config->set('converter.conversion.chunk',$chunk);
+		$this->installer_config->save_config();
+	}
+
+	public function get_chunk_status() //Returns boolean if chunk conversion is on
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('converter.conversion.chunk.status');
+	}
+
+	public function set_chunk_status($status)
+	{
+		$this->installer_config->set('converter.conversion.chunk.status',$status);
+		$this->installer_config->save_config();
+	}
+
+	public function get_current_total_chunks() //Returns boolean if chunk conversion is on
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('converter.conversion.chunks.total');
+	}
+
+	public function set_current_total_chunks($status)
+	{
+		$this->installer_config->set('converter.conversion.chunks.total',$status);
+		$this->installer_config->save_config();
+	}
+
 }
 

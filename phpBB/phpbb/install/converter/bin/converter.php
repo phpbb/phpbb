@@ -16,14 +16,21 @@ class converter
 	protected $yamlQ;
 	protected $container;
 	protected $phpbb_root;
+	protected $iohandler_factory;
+	protected $ajax_handler;
+	protected $helper;
+	public static $limit=100;
 
 
 
-	function __construct($db_source, $db_destination,\phpbb\install\converter\controller\helper $helper,$phpbb_root){
+	function __construct($db_source, $db_destination,\phpbb\install\helper\iohandler\factory $factory, \phpbb\install\converter\controller\helper $helper,$phpbb_root){
 		$this->phpbb_root = $phpbb_root;
+		$this->iohandler_factory = $factory;
+		$this->iohandler_factory->set_environment('ajax');
+		$this->ajax_handler = $this->iohandler_factory->get();
+		$this->helper = $helper;
 		$this->db_source = $db_source;
 		$this->db_destination = $db_destination;
-		$this->helper = $helper;
 		$this->yamlQ = Yaml::parse(file_get_contents(/*@todo fix the file links */'http://localhost.phpbb/phpbb/install/converter/configmap/conversionQ.yml'));
 	}
 
@@ -59,12 +66,28 @@ class converter
 		sleep(5);
 	}
 
-	function begin_conversion($file)
+	function begin_conversion($file,$helper,$ajax_handler)
 	{
 		//Function responsible for starting the conversion by generating the configMap object.
 		//This function will be wrapped over by another function to process every yaml class from yamlQ;
 		//Since we havent created a Q system, we will just be using this function for now.
-		$cf = new config_map($this->db_source, $this->db_destination ,$file, $this->phpbb_root);
+		$cf = new config_map($this->db_source, $this->db_destination ,$file, $helper, $this->phpbb_root);
+		$total_records = $cf->get_total_records();
+		$length = $total_records/self::$limit;
+		$current_chunk = $helper->get_current_chunk();
+		if($current_chunk>$length)
+		{
+			$helper->set_chunk_status(false);
+			$helper->set_current_chunk(0);
+
+		}
+		else
+		{
+			var_dump($current_chunk);
+			$helper->set_chunk_status(true);
+			$cf->copy_data($current_chunk);
+			$helper->set_current_chunk($current_chunk + 1);
+		}
 
 	}
 }

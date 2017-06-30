@@ -115,7 +115,10 @@ class controller_convert
 
 		$this->helper->set_conversion_status(true);
 		$this->helper->set_file_index(0);
-		$this->helper->set_total_files(count($this->yaml_queue));
+		//$this->helper->set_total_files(count($this->yaml_queue));
+		$this->helper->set_chunk_status(false);
+		$this->helper->set_current_chunk(0);
+
 
 
 
