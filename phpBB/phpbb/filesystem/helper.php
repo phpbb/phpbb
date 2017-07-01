@@ -40,7 +40,7 @@ class helper
 				continue;
 			}
 
-			if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '.' && $filtered[sizeof($filtered) - 1] !== '..')
+			if ($part === '..' && !empty($filtered) && $filtered[count($filtered) - 1] !== '.' && $filtered[count($filtered) - 1] !== '..')
 			{
 				array_pop($filtered);
 			}
@@ -97,7 +97,7 @@ class helper
 			else if (function_exists('debug_backtrace'))
 			{
 				$call_stack = debug_backtrace(0);
-				$working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[sizeof($call_stack) - 1]['file']));
+				$working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[count($call_stack) - 1]['file']));
 			}
 			else
 			{
@@ -109,7 +109,7 @@ class helper
 				//$dir_parts = explode(DIRECTORY_SEPARATOR, __DIR__);
 				//$namespace_parts = explode('\\', trim(__NAMESPACE__, '\\'));
 
-				//$namespace_part_count = sizeof($namespace_parts);
+				//$namespace_part_count = count($namespace_parts);
 
 				// Check if we still loading from root
 				//if (array_slice($dir_parts, -$namespace_part_count) === $namespace_parts)
@@ -261,7 +261,7 @@ class helper
 				array_pop($resolved);
 				$resolved_path = false;
 			}
-			else if ($path_part === '..' && !empty($resolved) && !in_array($resolved[sizeof($resolved) - 1], array('.', '..')))
+			else if ($path_part === '..' && !empty($resolved) && !in_array($resolved[count($resolved) - 1], array('.', '..')))
 			{
 				array_pop($resolved);
 				$resolved_path = false;
