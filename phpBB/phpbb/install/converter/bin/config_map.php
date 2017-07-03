@@ -89,7 +89,7 @@ class config_map
 			$fobj = file_get_contents($file_link);
 
 		} catch(Exception $e){
-			var_dump($e);
+
 		}
 		$this->data_map_arr = Yaml::parse($fobj);
 
@@ -185,7 +185,7 @@ class config_map
 	public function set_total_records()
 	{
 		$query = 'SELECT COUNT(*) FROM '.$this->table_source;
-		var_dump($query);
+		//var_dump($query);
 		$stmt = $this->db_source->prepare($query);
 		$stmt->execute();
 		$this->total_rows = $stmt->fetchColumn(0);
@@ -227,7 +227,7 @@ class config_map
 			}
 			$insert_array = array_combine($this->dest_col, $values_row); //An array of dest-col names as keys and corresponding to be inserted values as pairs.
 			$this->db_destination->insert($this->table_destination, $insert_array);
-			print_r("Succesfully completed"); //Debug
+			//print_r("Succesfully completed"); //Debug
 		}
 	}
 
@@ -260,7 +260,7 @@ class config_map
 			}
 			$insert_array = array_combine($this->dest_col, $values_row); //An array of dest-col names as keys and corresponding to be inserted values as pairs.
 			$this->db_destination->insert($this->table_destination, $insert_array);
-			print_r("Succesfully completed"); //Debug
+			//print_r("Succesfully completed"); //Debug
 		}
 	}
 }

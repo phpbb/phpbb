@@ -66,6 +66,14 @@ class converter
 		sleep(5);
 	}
 
+	function debug_delete_table()
+	{
+		$sql1='DELETE FROM phpBB_user';
+		$sql2= 'DELETE FROM phpBB_posts';
+		$this->db_destination->query($sql1);
+		$this->db_destination->query($sql2);
+	}
+
 	function begin_conversion($file,$helper,$ajax_handler)
 	{
 		//Function responsible for starting the conversion by generating the configMap object.
@@ -74,8 +82,9 @@ class converter
 		$cf = new config_map($this->db_source, $this->db_destination ,$file, $helper, $this->phpbb_root);
 		$total_records = $cf->get_total_records();
 		$length = $total_records/self::$limit;
+		$helper->set_total_chunks(ceil($length));
 		$current_chunk = $helper->get_current_chunk();
-		if($current_chunk>$length)
+		if($current_chunk>=$length)
 		{
 			$helper->set_chunk_status(false);
 			$helper->set_current_chunk(0);
@@ -86,7 +95,7 @@ class converter
 			var_dump($current_chunk);
 			$helper->set_chunk_status(true);
 			$cf->copy_data($current_chunk);
-			$helper->set_current_chunk($current_chunk + 1);
+
 		}
 
 	}

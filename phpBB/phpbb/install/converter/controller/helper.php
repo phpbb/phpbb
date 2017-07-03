@@ -87,6 +87,18 @@ class helper extends \phpbb\install\controller\helper
 		$this->installer_config->save_config();
 	}
 
+	public function get_total_files()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('current_conversion_total_files');
+	}
+
+	public function set_total_files($total_files)
+	{
+		$this->installer_config->set('current_conversion_total_files', $total_files);
+		$this->installer_config->save_config();
+	}
+
 	public function get_total_chunks()
 	{
 		$this->installer_config->load_config();
@@ -105,16 +117,17 @@ class helper extends \phpbb\install\controller\helper
 		return $this->installer_config->get('current_conversion_file');
 	}
 
-	public function next_file($current, $total)
+	public function next_file($current)
 	{
 
-		if($current < $total)
+		if($current < $this->get_total_files())
 		{
 			$this->set_file_index($current+1);
 		}
 		else
 		{
 			$this->set_file_index(-1);
+			//$this->set_conversion_status(false);
 		}
 	}
 
