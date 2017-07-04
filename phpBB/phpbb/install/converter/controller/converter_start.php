@@ -91,7 +91,7 @@ class converter_start
 		$title = 'Converter Framework Conversion in Progress ....';
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,
-			'BODY'   => "The following YAML files would be processed and converted",
+			'BODY'   => $this->language->lang('CONVERTER_CONVERT'),
 			'U_LINK' => "/",
 		));
 		$this->helper->set_conversion_status(false);

@@ -95,7 +95,7 @@ class converter_index
 
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,
-			'BODY'   => 'Welcome to converter framework index. Click on the link below to start conversion',
+			'BODY'   => $this->language->lang('CONVERTER_TEXT_INTRO'),
 			'U_LINK' => $this->helper->route('phpbb_converter_convert'),
 		));
 

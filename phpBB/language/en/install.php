@@ -463,7 +463,17 @@ $lang = array_merge($lang, array(
 
 	'TASK_UPDATE_EXTENSIONS'	=> 'Updating extensions',
 ));
+//Converter framework by Bala GSOC 2017 Language Additions. Do not confuse with Convert/Converter of original phpBB
+$lang = array_merge($lang, array(
+	'CONVERTER_MENU_HOME'	=> 'Converter Framework Home',
+	'CONVERTER_MENU_LIST'	=>'Show files to be converter',
+	'CONVERTER_MENU_INPROGRESS'	=>'Conversion in Progress',
 
+	'CONVERTER_TEXT_INTRO'	=>'Welcome to converter framework index. Click on the link below to start conversion',
+	'YAML_LIST_DESC'	=>'The following YAML files would be processed and converted',
+	'CONVERTER_CONVERT'	=>'The listed YAML files will now be processed in order for conversion. Click Convert to begin',
+	'CF'	=>'val dummy',
+));
 // Converter
 $lang = array_merge($lang, array(
 	// Common converter messages

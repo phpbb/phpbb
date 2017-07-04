@@ -134,7 +134,7 @@ class controller_convert
 
 		$this->template->assign_vars(array(
 			'TITLE'        => $title,
-			'BODY'         => "The following YAML files would be processed and converted",
+			'BODY'         => $this->language->lang('YAML_LIST_DESC'),
 			'T_YAML_FILES' => $this->yaml_queue,
 			'U_LINK' => $this->helper->route('phpbb_converter_start'),
 		));
