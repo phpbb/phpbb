@@ -103,4 +103,34 @@ class service_collection extends \ArrayObject
 	{
 		return $this->service_classes;
 	}
+
+	/**
+	* Get service by class name
+	*
+	* @param string	$class
+	* @return service instance
+	* @throws \phpbb\exception\exception When more than one service is found
+	*/
+	public function get_by_class($class)
+	{
+		$iterator = $this->getIterator();
+		$found = null;
+
+		foreach ($iterator as $service_class)
+		{
+			if($class == get_class($service_class))
+			{
+				if($found == null)
+				{
+					$found = $service_class;
+				}
+				else
+				{
+					throw new \Exception('There are more than one service of the same class.');
+				}
+			}
+		}
+
+		return $found;
+	}
 }
