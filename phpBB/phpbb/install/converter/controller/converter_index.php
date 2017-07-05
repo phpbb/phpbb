@@ -41,6 +41,8 @@ class converter_index
 
 	protected $converter;
 
+	protected $menu_provider;
+
 	protected $container;
 
 	protected $config;
@@ -53,10 +55,10 @@ class converter_index
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct(\phpbb\install\converter\controller\helper $helper, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($config_file, \phpbb\install\converter\controller\helper $helper, $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
 	{
 		$this->helper = $helper;
-
+		$this->menu_provider = $nav_provider;
 		$this->language = $language;
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -92,6 +94,14 @@ class converter_index
 		// $data="<html><body>";
 		// $data.=$this->converter->demo_load();
 		// $data.="</body></html>";
+
+		$this->menu_provider->set_nav_property(
+			array('converter', 0, 'home'),
+			array(
+				'selected'	=> true,
+				'completed'	=> false,
+			)
+		);
 
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,

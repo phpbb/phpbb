@@ -43,6 +43,7 @@ services:
         class: phpbb\install\converter\controller\converter_index
         arguments:
             - '@phpbb.installer.converter.controller.helper'
+            - '@installer.navigation.provider'
             - '@language'
             - '@template'
             - '%core.root_path%'
@@ -52,6 +53,7 @@ services:
         arguments:
             - '@phpbb.installer.converter.bin.converter'
             - '@phpbb.installer.converter.controller.helper'
+            - '@installer.navigation.provider'
             - '@installer.helper.iohandler_factory'
             - '@request'
             - '@language'
@@ -63,6 +65,7 @@ services:
         arguments:
             - '@phpbb.installer.converter.bin.converter'
             - '@phpbb.installer.converter.controller.helper'
+            - '@installer.navigation.provider'
             - '@installer.helper.iohandler_factory'
             - '@request'
             - '@language'

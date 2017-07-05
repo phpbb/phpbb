@@ -62,6 +62,8 @@ class converter_start
 
 	protected $ajax_iohandler;
 
+	protected $menu_provider;
+
 	protected $yaml_queue;
 
 	/**
@@ -72,11 +74,12 @@ class converter_start
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, \phpbb\install\helper\iohandler\factory $factory, $request, \phpbb\language\language $language, $container, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $nav_provider, \phpbb\install\helper\iohandler\factory $factory, $request, \phpbb\language\language $language, $container, \phpbb\template\template $template, $phpbb_root_path)
 	{
 		$this->helper = $helper;
 		//	$this->converter = $converter_obj;
 		$this->language = $language;
+		$this->menu_provider = $nav_provider;
 		$this->container_factory = $container;
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -89,6 +92,27 @@ class converter_start
 	public function handle()
 	{
 		$title = 'Converter Framework Conversion in Progress ....';
+		$this->menu_provider->set_nav_property(
+			array('converter', 0, 'progress'),
+			array(
+				'selected'	=> true,
+				'completed'	=> false,
+			)
+		);
+		$this->menu_provider->set_nav_property(
+			array('converter', 0, 'list'),
+			array(
+				'selected'	=> false,
+				'completed'	=> true,
+			)
+		);
+		$this->menu_provider->set_nav_property(
+			array('converter', 0, 'home'),
+			array(
+				'selected'	=> false,
+				'completed'	=> true,
+			)
+		);
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,
 			'BODY'   => $this->language->lang('CONVERTER_CONVERT'),
@@ -178,6 +202,8 @@ class converter_start
 					$acp_url,
 				));
 				$ajax_handler->set_progress('The Converter has finished Conversion', count($yaml_queue));
+				$ajax_handler->set_finished_stage_menu(array('converter',0,'progress'));
+				$ajax_handler->set_active_stage_menu(array('converter',0,'finished'));
 				$ajax_handler->send_response(true);
 			}
 //print(str_pad(' ', 4096) . "\n");

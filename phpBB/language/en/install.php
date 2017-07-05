@@ -468,11 +468,17 @@ $lang = array_merge($lang, array(
 	'CONVERTER_MENU_HOME'	=> 'Converter Framework Home',
 	'CONVERTER_MENU_LIST'	=>'Show files to be converter',
 	'CONVERTER_MENU_INPROGRESS'	=>'Conversion in Progress',
+	'CF_MENU'	=>'Converter Frameowork',
+	'CF_HOME'	=>'Home',
+	'CF_LIST'	=>'Files to be converted',
+	'CF_CONVERT'	=>'Conversion in progress',
+	'CF_FINISHED'	=>'Conversion Finished',
+
 
 	'CONVERTER_TEXT_INTRO'	=>'Welcome to converter framework index. Click on the link below to start conversion',
 	'YAML_LIST_DESC'	=>'The following YAML files would be processed and converted',
 	'CONVERTER_CONVERT'	=>'The listed YAML files will now be processed in order for conversion. Click Convert to begin',
-	'CF'	=>'val dummy',
+	''	=>'val dummy',
 ));
 // Converter
 $lang = array_merge($lang, array(

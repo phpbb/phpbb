@@ -40,3 +40,11 @@ services:
         shared: false
         tags:
             - { name: installer.navigation }
+
+    installer.navigation.converterframework_navigation:
+        class: phpbb\install\helper\navigation\converter_framework_navigation
+        arguments:
+            - '@installer.helper.install_helper'
+        shared: false
+        tags:
+            - { name: installer.navigation }

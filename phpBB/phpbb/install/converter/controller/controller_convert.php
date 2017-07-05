@@ -51,6 +51,8 @@ class controller_convert
 
 	protected $factory;
 
+	protected $menu_provider;
+
 	protected $ajax_iohandler;
 
 	protected $yaml_queue;
@@ -63,11 +65,12 @@ class controller_convert
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $factory, $request, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $nav_provider, $factory, $request, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
 	{
 		$this->helper = $helper;
 		//	$this->converter = $converter_obj;
 		$this->language = $language;
+		$this->menu_provider = $nav_provider;
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->converter = $converter;
@@ -130,6 +133,20 @@ class controller_convert
 //			break;
 //		}
 //		$val = array_values($val);
+		$this->menu_provider->set_nav_property(
+			array('converter', 0, 'list'),
+			array(
+				'selected'	=> true,
+				'completed'	=> false,
+			)
+		);
+		$this->menu_provider->set_nav_property(
+			array('converter', 0, 'home'),
+			array(
+				'selected'	=> false,
+				'completed'	=> true,
+			)
+		);
 
 
 		$this->template->assign_vars(array(
