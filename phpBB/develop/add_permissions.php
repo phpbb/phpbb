@@ -43,6 +43,7 @@ define('ACL_USERS_TABLE', $table_prefix.'acl_users');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('USERS_TABLE', $table_prefix.'users');
 
+
 $cache		= new acm();
 $db			= new sql_db();
 

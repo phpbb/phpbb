@@ -14,6 +14,7 @@
 /**
 * @ignore
 */
+
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -1012,6 +1013,13 @@ if ($submit || $preview || $refresh)
 	// Also check if subject got updated...
 	$update_subject = $mode != 'edit' || ($post_data['post_subject_md5'] && $post_data['post_subject_md5'] != md5($post_data['post_subject']));
 
+	/* Send the posted text to parser to decode the @mentions and convert each mention into links to corresponding user profiles and push notification to the mentioned users.*/
+	$notification_manager_obj = $phpbb_container->get('notification_manager');
+	$helper_container = $phpbb_container->get('phpbb_mention_helper');
+	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message, $post_data, $notification_manager_obj);
+	$message_parser->message = $post_parsing_data["new_post_text"];
+	$helper_container->send_notifications($post_parsing_data["users_mentioned"], $notification_manager_obj, $post_parsing_data["notif_type_object"]);
+
 	// Parse message
 	if ($update_message)
 	{
@@ -1938,7 +1946,9 @@ posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 // Output page ...
 page_header($page_title);
-
+$template->assign_vars([
+	'UA_AJAX_MENTION_URL'    => $controller_helper->route('phpbb_mention_controller')
+]);
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
 );

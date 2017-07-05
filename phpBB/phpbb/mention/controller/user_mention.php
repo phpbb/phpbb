@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * phpBB mentions. An extension for the phpBB Forum Software package.
+ * phpBB mentions. A controller class for the phpBB Forum Software package.
  *
  * @copyright (c) 2016, paul999, https://www.phpbbextensions.io
  * @license GNU General Public License, version 2 (GPL-2.0)
@@ -18,7 +18,8 @@
 	 * phpBB mentions main controller.
 	 */
 
-	class user_mention {
+	class user_mention
+	{
 
 		/**
 		* @var driver_interface
@@ -35,14 +36,15 @@
 	 	*/
 		protected $helper;
 
-		public function __construct(driver_interface $db, request_interface $request) {
+		public function __construct(driver_interface $db, request_interface $request)
+		{
 			$this->db = $db;
 			$this->request = $request;
 			$this->helper = $helper;
 		}
 
 		/**
-		 * get a list of users matching on a username (Minimal 3 chars)
+		 * get a list of users matching on a username.
 		 *
 		 *
 		 * @return \Symfony\Component\HttpFoundation\Response A Symfony Response object
@@ -54,13 +56,8 @@
 			{
 				return new JsonResponse(['usernames' => []]);
 			}
-
-			$sql_query = 'SELECT user_id, username
-						FROM ' . USERS_TABLE . '
-						WHERE user_id <> ' . ANONYMOUS . '
-						AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  '
-						AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
-			$result = $this->db->sql_query($sql);
+			$sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
+			$result = $this->db->sql_query($sql_query);
 			$return_usernames_userid = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
@@ -70,6 +67,6 @@
 				];
 			}
 			$this->db->sql_freeresult($result);
-			return new JsonResponse($return);
+			return new JsonResponse($return_usernames_userid);
 		}
 	}

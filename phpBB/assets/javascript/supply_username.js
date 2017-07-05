@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+	console.log(U_AJAX_MENTION_URL);
 	$('#message').atwho({
 		at: "@",
 		insertTpl: '[mention]${name}[/mention]',
@@ -31,7 +31,8 @@ $(document).ready(function(){
 				// 		{name:"Noah", id : 17},
 				// 		{name:"Chloe", id : 16}]
 				// callback(data);
-				$.getJSON("", {q: query}, function (data) {
+				$.getJSON(U_AJAX_MENTION_URL, {q: query}, function (data) {
+					// console.log(typeof data);
                     callback(data)
                 });
 			}
