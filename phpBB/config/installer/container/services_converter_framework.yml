@@ -1,4 +1,5 @@
 services:
+
     doctrine.dbal.config:
         class: Doctrine\DBAL\Configuration
 
@@ -43,10 +44,12 @@ services:
         class: phpbb\install\converter\controller\converter_index
         arguments:
             - '@phpbb.installer.converter.controller.helper'
+            - '@installer.helper.container_factory'
             - '@installer.navigation.provider'
             - '@language'
             - '@template'
             - '%core.root_path%'
+            - '%core.php_ext%'
 
     phpbb.installer.converter.convert:
         class: phpbb\install\converter\controller\controller_convert
@@ -59,6 +62,7 @@ services:
             - '@language'
             - '@template'
             - '%core.root_path%'
+            - '%core.php_ext%'
 
     phpbb.installer.converter.start:
         class: phpbb\install\converter\controller\converter_start

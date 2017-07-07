@@ -14,6 +14,7 @@
 namespace phpbb\install\converter\controller;
 
 use Doctrine\DBAL\Driver;
+use phpbb\config_php_file;
 
 class converter_index
 {
@@ -48,6 +49,12 @@ class converter_index
 	protected $config;
 
 	/**
+	 * @var \phpbb\config_php_file
+	 */
+	protected $config_php_file;
+
+
+	/**
 	 * Constructor
 	 *
 	 * @param helper                   $helper
@@ -55,13 +62,14 @@ class converter_index
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct($config_file, \phpbb\install\converter\controller\helper $helper, $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct(\phpbb\install\converter\controller\helper $helper, $container, $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->menu_provider = $nav_provider;
 		$this->language = $language;
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->config_php_file = new config_php_file($phpbb_root_path,$php_ext);
 		//$this->db_source = $db_source;
 		/*
 		 * DB credentials logic now moved to controller_convert.php class
@@ -108,6 +116,13 @@ class converter_index
 			'BODY'   => $this->language->lang('CONVERTER_TEXT_INTRO'),
 			'U_LINK' => $this->helper->route('phpbb_converter_convert'),
 		));
+
+		if($this->config_php_file!=NULL){
+			var_dump($this->config_php_file->get('dbms'));
+		}
+		else{
+			var_dump("nope");
+		}
 
 		//	$doctrine = $container->get('doctrine');
 		return $this->helper->render('converter_main.html', $title, true);

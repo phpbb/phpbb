@@ -16,6 +16,8 @@ namespace phpbb\install\converter\controller;
 
 use Doctrine\DBAL\Driver;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use phpbb\config_php_file;
+
 
 class controller_convert
 {
@@ -58,6 +60,11 @@ class controller_convert
 	protected $yaml_queue;
 
 	/**
+	 * @var \phpbb\config_php_file
+	 */
+	protected $config_php_file;
+
+	/**
 	 * Constructor
 	 *
 	 * @param helper                   $helper
@@ -65,7 +72,7 @@ class controller_convert
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $nav_provider, $factory, $request, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $nav_provider, $factory, $request, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		//	$this->converter = $converter_obj;
@@ -76,6 +83,7 @@ class controller_convert
 		$this->converter = $converter;
 		$this->request = $request;
 		$this->factory = $factory;
+		$this->config_php_file = new config_php_file($phpbb_root_path,$php_ext);
 		//$this->ajax_iohandler = $this->factory->get('ajax');
 
 
@@ -104,13 +112,24 @@ class controller_convert
 			'host'     => 'localhost',
 			'driver'   => 'pdo_mysql',
 		);
-		$credentials_destination = array(
+
+		$credentials_destination =array(
+			'dbname'   => 'phpBBgsoc_dest',//Not changed since during testing we have another DB not the phpBB DB
+			'user'     => $this->config_php_file->get('dbuser'),
+			'password' => $this->config_php_file->get('dbpasswd'),
+			'host'     => $this->config_php_file->get('dbhost'),
+			'driver'   => 'pdo_mysql', //driver value from phpBB and DBAL different. @todo an array of key->value pairs will be provided.
+		);
+
+		/*
+		 * $credentials_destination = array(
 			'dbname'   => 'phpBBgsoc_dest',
 			'user'     => 'root',
 			'password' => '123',
 			'host'     => 'localhost',
 			'driver'   => 'pdo_mysql',
-		);
+
+		);*/
 		$this->helper->set_source_db($credentials_source);
 		$this->helper->set_destination_db($credentials_destination);
 
