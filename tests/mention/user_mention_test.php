@@ -26,18 +26,15 @@ class phpbb_user_mention_test extends phpbb_functional_test_case {
     	// $db = $this->new_dbal();
     	$sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $db->sql_like_expression($keyword . $db->get_any_char());
 		$result = $db->sql_query($sql_query);
-		$return_usernames_userid = [];
+		$return_usernames_userid = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$return_usernames_userid[] = [
-				'name'  => $row['username'],
-				'id'    => $row['user_id'],
-			];
+			$temp_username_userid = array();
+			$temp_username_userid['id'] = $row['user_id'];
+			$temp_username_userid['name'] = $row['username'];
+			array_push($return_usernames_userid, $temp_username_userid);
 		}
 		$db->sql_freeresult($result);
-		$controller_route = "http://localhost/phpbb/phpBB/app.php/usermention?q=".$keyword;
-		$client = new GuzzleHttp\Client();
-    	$request = $client->request('GET',$controller_route,[]);
-    	$data = json_decode($request->getBody(), true);
+    	$this->assertEquals($return_usernames_userid[0]['name'], 'Anonymous');
 	}
 }
