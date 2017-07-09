@@ -176,10 +176,14 @@ class content_visibility
 
 		if ($this->auth->acl_get('m_approve', $forum_id))
 		{
-			return $where_sql . '1 = 1';
+			$where_sql .= '1 = 1';
+		}
+		else
+		{
+			$where_sql .= $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
 		}
 
-		return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+		return '(' . $where_sql . ')';
 	}
 
 	/**
@@ -195,16 +199,21 @@ class content_visibility
 	*/
 	public function get_forums_visibility_sql($mode, $forum_ids = array(), $table_alias = '')
 	{
-		$where_sql = '(';
+		$where_sql = '';
 
-		$approve_forums = array_intersect($forum_ids, array_keys($this->auth->acl_getf('m_approve', true)));
+		$approve_forums = array_keys($this->auth->acl_getf('m_approve', true));
+		if ($forum_ids && $approve_forums)
+		{
+			$approve_forums = array_intersect($forum_ids, $approve_forums);
+			$forum_ids = array_diff($forum_ids, $approve_forums);
+		}
 
 		$get_forums_visibility_sql_overwrite = false;
 		/**
 		* Allow changing the result of calling get_forums_visibility_sql
 		*
 		* @event core.phpbb_content_visibility_get_forums_visibility_before
-		* @var	string		where_sql							The action the user tried to execute
+		* @var	string		where_sql							Extra visibility conditions. It must end with either an SQL "AND" or an "OR"
 		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
 		* @var	array		forum_ids							Array of forum ids which the posts/topics are limited to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
@@ -229,33 +238,13 @@ class content_visibility
 			return $get_forums_visibility_sql_overwrite;
 		}
 
-		if (sizeof($approve_forums))
-		{
-			// Remove moderator forums from the rest
-			$forum_ids = array_diff($forum_ids, $approve_forums);
-
-			if (!sizeof($forum_ids))
-			{
-				// The user can see all posts/topics in all specified forums
-				return $where_sql . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ')';
-			}
-			else
-			{
-				// Moderator can view all posts/topics in some forums
-				$where_sql .= $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums) . ' OR ';
-			}
-		}
-		else
-		{
-			// The user is just a normal user
-			return $where_sql . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-				AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . ')';
-		}
-
+		// Moderator can view all posts/topics in the moderated forums
+		$where_sql .= '(' . $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums, false, true) . ' OR ';
+		// Normal user can view approved items only
 		$where_sql .= '(' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . '
-			AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids) . '))';
+			AND ' . $this->db->sql_in_set($table_alias . 'forum_id', $forum_ids, false, true) . '))';
 
-		return $where_sql;
+		return '(' . $where_sql . ')';
 	}
 
 	/**
@@ -281,12 +270,12 @@ class content_visibility
 		* Allow changing the result of calling get_global_visibility_sql
 		*
 		* @event core.phpbb_content_visibility_get_global_visibility_before
-		* @var	array		where_sqls							The action the user tried to execute
+		* @var	array		where_sqls							Array of extra visibility conditions. Will be joined by imploding with "OR".
 		* @var	string		mode								Either "topic" or "post" depending on the query this is being used in
 		* @var	array		exclude_forum_ids					Array of forum ids the current user doesn't have access to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
 		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
-		* @var	string		visibility_sql_overwrite	Forces the function to return an implosion of where_sqls (joined by "OR")
+		* @var	string		visibility_sql_overwrite	If a string, forces the function to return visibility_sql_overwrite after executing the event
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -304,24 +293,17 @@ class content_visibility
 			return $visibility_sql_overwrite;
 		}
 
-		if (sizeof($exclude_forum_ids))
-		{
-			$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true) . '
-				AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
-		}
-		else
-		{
-			$where_sqls[] = $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
-		}
+		// Include approved items in all forums but the excluded
+		$where_sqls[] = '(' . $this->db->sql_in_set($table_alias . 'forum_id', $exclude_forum_ids, true, true) . '
+			AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
 
+		// If user has moderator permissions, add everything in the moderated forums
 		if (sizeof($approve_forums))
 		{
 			$where_sqls[] = $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
-			return '(' . implode(' OR ', $where_sqls) . ')';
 		}
 
-		// There is only one element, so we just return that one
-		return $where_sqls[0];
+		return '(' . implode(' OR ', $where_sqls) . ')';
 	}
 
 	/**
