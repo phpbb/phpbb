@@ -16,7 +16,7 @@ matrix:
       env: DB=sqlite3
     - php: 5.5
       env: DB=mysqli;SLOWTESTS=1
-    - php: 5.6
+    - php: 5.6.30
       env: DB=mysqli
     - php: 7.0
       env: DB=mysqli
