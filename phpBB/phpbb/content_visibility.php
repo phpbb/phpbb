@@ -419,7 +419,7 @@ class content_visibility
 		 * @var			int			topic_id		Topic of the post IDs to be modified.
 		 * @var			int			forum_id		Forum ID that the topic_id resides in.
 		 * @var			int			user_id			User ID doing this action.
-		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			int			time			Timestamp of this action.
 		 * @var			string		reason			Reason specified by the user for this change.
 		 * @var			bool		is_starter		Are we changing the topic's starter?
 		 * @var			bool		is_latest		Are we changing the topic's latest post?
@@ -432,7 +432,7 @@ class content_visibility
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'is_starter',
 			'is_latest',
@@ -604,7 +604,7 @@ class content_visibility
 		 * @var			int			topic_id		Topic of the post IDs to be modified.
 		 * @var			int			forum_id		Forum ID that the topic_id resides in.
 		 * @var			int			user_id			User ID doing this action.
-		 * @var			int			timestamp		Timestamp of this action.
+		 * @var			int			time			Timestamp of this action.
 		 * @var			string		reason			Reason specified by the user for this change.
 		 * @var			bool		is_starter		Are we changing the topic's starter?
 		 * @var			bool		is_latest		Are we changing the topic's latest post?
@@ -617,7 +617,7 @@ class content_visibility
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'is_starter',
 			'is_latest',
@@ -691,7 +691,7 @@ class content_visibility
 		 * @var			int			topic_id			Topic of the post IDs to be modified.
 		 * @var			int			forum_id			Forum ID that the topic_id resides in.
 		 * @var			int			user_id				User ID doing this action.
-		 * @var			int			timestamp			Timestamp of this action.
+		 * @var			int			time				Timestamp of this action.
 		 * @var			string		reason				Reason specified by the user for this change.
 		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
 		 * @var			array		data				The data array for this action.
@@ -702,7 +702,7 @@ class content_visibility
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'force_update_all',
 			'data',
@@ -740,7 +740,7 @@ class content_visibility
 		 * @var			int			topic_id			Topic of the post IDs to be modified.
 		 * @var			int			forum_id			Forum ID that the topic_id resides in.
 		 * @var			int			user_id				User ID doing this action.
-		 * @var			int			timestamp			Timestamp of this action.
+		 * @var			int			time				Timestamp of this action.
 		 * @var			string		reason				Reason specified by the user for this change.
 		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
 		 * @var			array		data				The data array for this action.
@@ -751,7 +751,7 @@ class content_visibility
 			'topic_id',
 			'forum_id',
 			'user_id',
-			'timestamp',
+			'time',
 			'reason',
 			'force_update_all',
 			'data',
