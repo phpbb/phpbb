@@ -389,12 +389,15 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	{
 		return array(
 			array('127.0.0.1:91?foo.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array(gethostbyname('secure.gravatar.com') . '/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80),
+			array(gethostbyname('secure.gravatar.com') . '/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80),
 			array(gethostbyname('secure.gravatar.com') . ':120/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com:80/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com:80?55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com?55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')), // should be a 404
+			array('2001:db8:0:0:0:0:2:1/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
+			array('secure.gravatar.com/2001:db8:0:0:0:0:2:1/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
+			array('secure.gravatar.com/127.0.0.1:80/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 		);
 	}
 
