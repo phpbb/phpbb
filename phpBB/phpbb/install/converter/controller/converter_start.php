@@ -54,7 +54,7 @@ class converter_start
 
 	protected $container;
 
-	protected $config;
+	protected $install_config;
 
 	protected $request;
 
@@ -66,6 +66,8 @@ class converter_start
 
 	protected $yaml_queue;
 
+	protected $module;
+
 	/**
 	 * Constructor
 	 *
@@ -74,7 +76,7 @@ class converter_start
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $nav_provider, \phpbb\install\helper\iohandler\factory $factory, $request, \phpbb\language\language $language, $container, \phpbb\template\template $template, $phpbb_root_path)
+	public function __construct($converter, \phpbb\install\converter\controller\helper $helper, $nav_provider, \phpbb\install\helper\iohandler\factory $factory, $config, $module, $request, \phpbb\language\language $language, $container, \phpbb\template\template $template, $phpbb_root_path)
 	{
 		$this->helper = $helper;
 		//	$this->converter = $converter_obj;
@@ -86,6 +88,8 @@ class converter_start
 		$this->converter = $converter;
 		$this->request = $request;
 		$this->iohandler_factory = $factory;
+		$this->module = $module;
+		$this->install_config = $config;
 		//$this->ajax_iohandler = $this->factory->get('ajax');
 	}
 
@@ -129,68 +133,33 @@ class converter_start
 
 		$this->iohandler_factory->set_environment('ajax');
 		$ajax_handler = $this->iohandler_factory->get();
+		$module = $this->module;
+		$module->setup($this->install_config,$ajax_handler);
 		$converter = $this->converter;
 		$phpbb_root_path = $this->phpbb_root_path;
 		$helper = $this->helper;
 		$yaml_queue = $this->converter->get_yaml_queue();
 		$helper->set_total_files(count($yaml_queue));
 		$response = new StreamedResponse();
-		$response->setCallback(function () use ($phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
+		$container_factory = $this->container_factory;
+		$response->setCallback(function () use ($container_factory, $module,$phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
 		{
-			$helper->set_conversion_status(true);
-			/*The lock must be the first thing to be acquired as the js queries every 250ms for status
-			and if we acquire the lock later the js may issue another request before previous completes
-			thus stuck in an infinite loop of continue -> lock not acquired -> again continue ....
-			*/
+
+
 			$ajax_handler->acquire_lock();
-			$curr_index = $helper->get_file_index();
-			if ($helper->get_conversion_status() && $curr_index < count($yaml_queue))
+			$module->run();
+
+
+
+			if ($helper->get_conversion_status() && ($helper->get_file_index() < count($yaml_queue)))
 			{
-				if (!$helper->get_chunk_status() || $helper->get_chunk_status() === null)
-				{
-					$helper->set_current_conversion_file($yaml_queue[$curr_index]);
-					$ajax_handler->add_log_message('Loading..', 'Fetching next file');
-					$helper->set_current_chunk(0);
-					$helper->set_chunk_status(true);
-					$log_msg = "Converting " . $yaml_queue[$curr_index];
-					$ajax_handler->set_task_count(1, true);
-					$ajax_handler->set_progress($log_msg, 0.01); //Gives 1 % value at progress bar initially
-					$ajax_handler->add_log_message('Converting..', $log_msg);
-					$ajax_handler->send_response();
-				}
-				else
-				{
-					$total_chunks = $helper->get_total_chunks();
-					$chunk = $helper->get_current_chunk();
-					$log_msg = "Converting " . $yaml_queue[$curr_index] . "Part[ " . ($chunk+1) . " ]";
-					$ajax_handler->add_log_message('Converting..', $log_msg);
-					$ajax_handler->set_task_count($total_chunks);
-					$ajax_handler->set_progress($log_msg, ($chunk+1));
-					$helper->set_current_chunk($chunk + 1);
-					$ajax_handler->send_response();
-
-				}
-
-
-				$converter->begin_conversion($yaml_queue[$curr_index], $helper, $ajax_handler);
-				if (!$helper->get_chunk_status())
-				{
-					$helper->next_file($curr_index);
-					sleep(2); //sleeps 2 seconds to prevent abrupt change of progress bar.
-
-					$ajax_handler->send_response();
-				}
 				$ajax_handler->release_lock();
-				/*
-				The moment release_lock() is called, when js queries converter_status a continue status is issued
-				causing a reload of the request, thus automatically moving to the next file
-				*/
-
 			}
 			else
 			{
-				$user = $this->container_factory->get('user');
-				$auth = $this->container_factory->get('auth');
+
+				$user = $container_factory->get('user');
+				$auth = $container_factory->get('auth');
 				$user->session_begin();
 				$auth->acl($user->data);
 				$user->setup();
@@ -206,7 +175,77 @@ class converter_start
 				$ajax_handler->set_active_stage_menu(array('converter',0,'finished'));
 				$ajax_handler->send_response(true);
 			}
-//print(str_pad(' ', 4096) . "\n");
+
+//			$helper->set_conversion_status(true);
+//			/*The lock must be the first thing to be acquired as the js queries every 250ms for status
+//			and if we acquire the lock later the js may issue another request before previous completes
+//			thus stuck in an infinite loop of continue -> lock not acquired -> again continue ....
+//			*/
+//			$ajax_handler->acquire_lock();
+//			$curr_index = $helper->get_file_index();
+//			if ($helper->get_conversion_status() && $curr_index < count($yaml_queue))
+//			{
+//				if (!$helper->get_chunk_status() || $helper->get_chunk_status() === null)
+//				{
+//					$helper->set_current_conversion_file($yaml_queue[$curr_index]);
+//					$ajax_handler->add_log_message('Loading..', 'Fetching next file');
+//					$helper->set_current_chunk(0);
+//					$helper->set_chunk_status(true);
+//					$log_msg = "Converting " . $yaml_queue[$curr_index];
+//					$ajax_handler->set_task_count(1, true);
+//					$ajax_handler->set_progress($log_msg, 0.01); //Gives 1 % value at progress bar initially
+//					$ajax_handler->add_log_message('Converting..', $log_msg);
+//					$ajax_handler->send_response();
+//				}
+//				else
+//				{
+//					$total_chunks = $helper->get_total_chunks();
+//					$chunk = $helper->get_current_chunk();
+//					$log_msg = "Converting " . $yaml_queue[$curr_index] . "Part[ " . ($chunk+1) . " ]";
+//					$ajax_handler->add_log_message('Converting..', $log_msg);
+//					$ajax_handler->set_task_count($total_chunks);
+//					$ajax_handler->set_progress($log_msg, ($chunk+1));
+//					$helper->set_current_chunk($chunk + 1);
+//					$ajax_handler->send_response();
+//
+//				}
+//
+//
+//				$converter->begin_conversion($yaml_queue[$curr_index], $helper, $ajax_handler);
+//				if (!$helper->get_chunk_status())
+//				{
+//					$helper->next_file($curr_index);
+//					sleep(2); //sleeps 2 seconds to prevent abrupt change of progress bar.
+//
+//					$ajax_handler->send_response();
+//				}
+//				$ajax_handler->release_lock();
+//				/*
+//				The moment release_lock() is called, when js queries converter_status a continue status is issued
+//				causing a reload of the request, thus automatically moving to the next file
+//				*/
+//
+//			}
+//			else
+//			{
+//				$user = $this->container_factory->get('user');
+//				$auth = $this->container_factory->get('auth');
+//				$user->session_begin();
+//				$auth->acl($user->data);
+//				$user->setup();
+//				$helper->set_conversion_status(false);
+//				$helper->save_config();
+//				$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
+//				$ajax_handler->add_success_message('The Converter has finished Conversion'/* @todo make a lang var */, array(
+//					'ACP_LINK',
+//					$acp_url,
+//				));
+//				$ajax_handler->set_progress('The Converter has finished Conversion', count($yaml_queue));
+//				$ajax_handler->set_finished_stage_menu(array('converter',0,'progress'));
+//				$ajax_handler->set_active_stage_menu(array('converter',0,'finished'));
+//				$ajax_handler->send_response(true);
+//			}
+////print(str_pad(' ', 4096) . "\n");
 
 		});
 		$response->headers->set('X-Accel-Buffering', 'no');

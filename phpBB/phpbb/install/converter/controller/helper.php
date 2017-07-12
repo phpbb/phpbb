@@ -179,5 +179,17 @@ class helper extends \phpbb\install\controller\helper
 		$this->installer_config->save_config();
 	}
 
+	public function get_yaml_queue() //Returns boolean if chunk conversion is on
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('converter.conversion.yamlQ');
+	}
+
+	public function set_yaml_queue($yaml_queue)
+	{
+		$this->installer_config->set('converter.conversion.yamlQ',$yaml_queue);
+		$this->installer_config->save_config();
+	}
+
 }
 

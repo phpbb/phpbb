@@ -1,0 +1,29 @@
+services:
+    converter.obtain.db.credentials:
+        class: phpbb\install\converter\module\converter_obtain_data\task\obtain_data
+        arguments:
+            - '@phpbb.installer.converter.bin.converter'
+            - '@phpbb.installer.converter.controller.helper'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.container_factory'
+            - '%core.root_path%'
+        tags:
+            - { name: converter_db_cred, order: 10 }
+
+    converter.module.obtain_data_collection:
+            class: phpbb\di\ordered_service_collection
+            arguments:
+                - '@service_container'
+            tags:
+                - { name: service_collection, tag: converter_db_cred, class_name_aware: true }
+
+    converter.module.obtain_data:
+        class: phpbb\install\converter\module\converter_obtain_data\module
+        arguments:
+                - '@converter.module.obtain_data_collection'
+        tags:
+            - { name: converter_module, order: 10 }
+
+
+

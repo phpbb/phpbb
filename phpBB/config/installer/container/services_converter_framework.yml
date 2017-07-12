@@ -1,3 +1,5 @@
+imports:
+    - { resource: service_converter_data.yml }
 services:
 
     doctrine.dbal.config:
@@ -48,6 +50,9 @@ services:
             - '@installer.navigation.provider'
             - '@language'
             - '@template'
+            - '@converter.module.obtain_data'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler_factory'
             - '%core.root_path%'
             - '%core.php_ext%'
 
@@ -71,6 +76,8 @@ services:
             - '@phpbb.installer.converter.controller.helper'
             - '@installer.navigation.provider'
             - '@installer.helper.iohandler_factory'
+            - '@installer.helper.config'
+            - '@converter.module.obtain_data'
             - '@request'
             - '@language'
             - '@installer.helper.container_factory'

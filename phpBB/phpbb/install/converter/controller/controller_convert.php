@@ -134,6 +134,7 @@ class controller_convert
 		$this->helper->set_destination_db($credentials_destination);
 
 		$this->yaml_queue = $this->converter->get_yaml_queue();
+		$this->helper->set_yaml_queue($this->yaml_queue);
 
 		$this->helper->set_conversion_status(true);
 		$this->helper->set_file_index(0);

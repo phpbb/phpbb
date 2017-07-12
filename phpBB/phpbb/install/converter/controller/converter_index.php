@@ -46,7 +46,11 @@ class converter_index
 
 	protected $container;
 
-	protected $config;
+	protected $install_config;
+
+	protected $module;
+
+	protected $iohandler_factory;
 
 	/**
 	 * @var \phpbb\config_php_file
@@ -62,7 +66,7 @@ class converter_index
 	 * @param \phpbb\template\template $template
 	 * @param string                   $phpbb_root_path
 	 */
-	public function __construct(\phpbb\install\converter\controller\helper $helper, $container, $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\install\converter\controller\helper $helper, $container, $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, $module, $install_config, $iohandler, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->menu_provider = $nav_provider;
@@ -70,6 +74,9 @@ class converter_index
 		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config_php_file = new config_php_file($phpbb_root_path,$php_ext);
+		$this->module = $module;
+		$this->install_config = $install_config;
+		$this->iohandler_factory = $iohandler;
 		//$this->db_source = $db_source;
 		/*
 		 * DB credentials logic now moved to controller_convert.php class
@@ -110,6 +117,10 @@ class converter_index
 				'completed'	=> false,
 			)
 		);
+		$this->iohandler_factory->set_environment('ajax');
+		$ajax_handler = $this->iohandler_factory->get();
+		//$this->module->setup($this->install_config, $ajax_handler);
+		//$this->module->run();
 
 		$this->template->assign_vars(array(
 			'TITLE'  => $title,
@@ -117,12 +128,7 @@ class converter_index
 			'U_LINK' => $this->helper->route('phpbb_converter_convert'),
 		));
 
-		if($this->config_php_file!=NULL){
-			var_dump($this->config_php_file->get('dbms'));
-		}
-		else{
-			var_dump("nope");
-		}
+
 
 		//	$doctrine = $container->get('doctrine');
 		return $this->helper->render('converter_main.html', $title, true);
