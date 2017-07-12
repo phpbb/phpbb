@@ -921,6 +921,16 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		return;
 	}
+	else if ($mode == 'usermention')
+	{
+		/* @var $phpbb_notifications \phpbb\notification\manager */
+		$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+		// Mark post notifications read for this user in this topic
+		$phpbb_notifications->mark_notifications(array(
+			'notification.type.mention',
+		), $topic_id, $user->data['user_id']);
+	}
 }
 
 /**
