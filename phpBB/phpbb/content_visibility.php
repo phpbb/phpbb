@@ -131,6 +131,42 @@ class content_visibility
 		return (int) $data[$mode . '_approved'] + (int) $data[$mode . '_unapproved'] + (int) $data[$mode . '_softdeleted'];
 	}
 
+
+	/**
+	* Check topic/post visibility for a given forum ID
+	*
+	* Note: Read permissions are not checked.
+	*
+	* @param $mode		string	Either "topic" or "post"
+	* @param $forum_id	int		The forum id is used for permission checks
+	* @param $data		array	Array with item information to check visibility
+	* @return bool		True if the item is visible, false if not
+	*/
+	public function is_visible($mode, $forum_id, $data)
+	{
+		$is_visible = $this->auth->acl_get('m_approve', $forum_id) || $data[$mode . '_visibility'] == ITEM_APPROVED;
+
+		/**
+		* Allow changing the result of calling is_visible
+		*
+		* @event core.phpbb_content_visibility_is_visible
+		* @var	bool		is_visible			Default visibility condition, to be modified by extensions if needed.
+		* @var	string		mode				Either "topic" or "post"
+		* @var	int			forum_id			Forum id of the current item
+		* @var	array		data				Array of item information
+		* @since 3.1.12-RC1
+		*/
+		$vars = array(
+			'is_visible',
+			'mode',
+			'forum_id',
+			'data',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.phpbb_content_visibility_is_visible', compact($vars)));
+
+		return $is_visible;
+	}
+
 	/**
 	* Create topic/post visibility SQL for a given forum ID
 	*

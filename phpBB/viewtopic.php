@@ -262,7 +262,7 @@ if (!$topic_data)
 $forum_id = (int) $topic_data['forum_id'];
 
 // Now we know the forum_id and can check the permissions
-if ($topic_data['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $forum_id))
+if (!$phpbb_content_visibility->is_visible('topic', $forum_id, $topic_data))
 {
 	trigger_error('NO_TOPIC');
 }

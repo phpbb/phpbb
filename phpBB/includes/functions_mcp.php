@@ -197,7 +197,7 @@ function phpbb_get_topic_data($topic_ids, $acl_list = false, $read_tracking = fa
 */
 function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth, $config, $user;
+	global $db, $auth, $config, $user, $phpbb_container;
 
 	$rowset = array();
 
@@ -246,6 +246,8 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 	$result = $db->sql_query($sql);
 	unset($sql_array);
 
+	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -253,7 +255,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 			continue;
 		}
 
-		if ($row['post_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+		if (!$phpbb_content_visibility->is_visible('post', $row['forum_id'], $row))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
