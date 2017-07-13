@@ -1017,8 +1017,16 @@ if ($submit || $preview || $refresh)
 	$notification_manager_obj = $phpbb_container->get('notification_manager');
 	$helper_container = $phpbb_container->get('phpbb_mention_helper');
 	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message, $post_data, $notification_manager_obj);
-	$message_parser->message = $post_parsing_data["new_post_text"];
-	$helper_container->send_notifications($post_parsing_data["users_mentioned"], $notification_manager_obj, $post_parsing_data["notif_type_object"]);
+
+	if(is_array($post_parsing_data) && isset($post_parsing_data["new_post_text"]) && isset($post_parsing_data["users_mentioned"]) && count($post_parsing_data["users_mentioned"] > 0) && isset($post_parsing_data["notif_type_object"])) {
+
+		$message_parser->message = $post_parsing_data["new_post_text"];
+		$helper_container->send_notifications($post_parsing_data["users_mentioned"], $notification_manager_obj, $post_parsing_data["notif_type_object"]);
+	} else {
+		if(is_string($post_parsing_data)) {
+			$message_parser->message = $post_parsing_data;
+		}
+	}
 
 	// Parse message
 	if ($update_message)

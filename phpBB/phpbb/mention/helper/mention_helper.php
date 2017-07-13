@@ -3,7 +3,7 @@
  *
  * phpBB mentions. A feature for the phpBB Forum Software package.
  *
- * @copyright (c) 2016, paul999, https://www.phpbbextensions.io
+ * @copyright (c) 2016, phpBB, https://www.phpbbextensions.io
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
@@ -13,7 +13,6 @@ use phpbb\db\driver\driver_interface;
 use phpbb\request\request_interface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use phpbb\controller\helper;
-
 
 class mention_helper
 {
@@ -58,7 +57,6 @@ class mention_helper
 		{
 			if (!in_array($matches[1][$i][0], $user_list, true))
 			{
-
 				array_push($user_list, $matches[1][$i][0]);
 			}
 		}
@@ -103,7 +101,6 @@ class mention_helper
 			//maintain al list of all different userids.
 			if (!in_array($userid_list[$username_clean], $users_already_mapped, true))
 			{
-
 				array_push($users_already_mapped, $userid_list[$username_clean]);
 			}
 		}
@@ -125,16 +122,26 @@ class mention_helper
 		$regular_expression_match = '#\[mention\](.*?)\[/mention\]#';
 		$matches = false;
 		$matches = $this->get_regex_match($regular_expression_match, $post_text);
-		$start_tag_length = strlen("[mention]");
-		$end_tag_length = strlen("[\mention]");
-		$user_list = array();
-		$userid_list = array();
-		$user_list = $this->get_user_list($matches);
-		$temp_notif_type_object = $notif_manager_obj->get_item_type_class("notification.type.mention");
-		$userid_list = $temp_notif_type_object->find_users_for_notification($this->db, $user_list);
-		$new_post_data = $this->get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list);
+		if(count($matches[1]) > 0) {
 
-		return array("new_post_text" => $new_post_data["post_text"], "users_mentioned" => $new_post_data["users_mapped"], "notif_type_object" => $temp_notif_type_object);
+			$start_tag_length = strlen("[mention]");
+			$end_tag_length = strlen("[\mention]");
+			$user_list = array();
+			$userid_list = array();
+			$user_list = $this->get_user_list($matches);
+			if(count($user_list) > 0) {
+
+				$temp_notif_type_object = $notif_manager_obj->get_item_type_class("notification.type.mention");
+				$userid_list = $temp_notif_type_object->find_users_for_notification($this->db, $user_list);
+				if(count($userid_list) > 0) {
+
+					$new_post_data = $this->get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list);
+					return array("new_post_text" => $new_post_data["post_text"], "users_mentioned" => $new_post_data["users_mapped"], "notif_type_object" => $temp_notif_type_object);
+				}
+
+			}
+		}
+		return $post_text;
 	}
 
 
@@ -151,20 +158,22 @@ class mention_helper
 		$notification_method_array = array();
 		$notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list, $notif_manager_obj);
 		$user_index = 0;
-
 		//add notification details to queue and send notifications one by one.
-		foreach ($notification_details_list as $details)
-		{
-			$notification_type = $details["notif_type"];
-			$notification_method = $details["notif_method"];
-			$notification_type->user_id = $details["user_id"];
-			$notification_type->create_insert_array($this->data);
-			$notification_method->add_to_queue($notification_type);
-			array_push($notification_method_array, $notification_method);
-		}
-		foreach ($notification_method_array as $method)
-		{
-			$method->notify();
+		if(count($notification_details_list) > 0) {
+
+			foreach ($notification_details_list as $details)
+			{
+				$notification_type = $details["notif_type"];
+				$notification_method = $details["notif_method"];
+				$notification_type->user_id = $details["user_id"];
+				$notification_type->create_insert_array($this->data);
+				$notification_method->add_to_queue($notification_type);
+				array_push($notification_method_array, $notification_method);
+			}
+			foreach ($notification_method_array as $method)
+			{
+				$method->notify();
+			}
 		}
 	}
 

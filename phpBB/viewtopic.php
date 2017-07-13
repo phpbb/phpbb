@@ -2170,8 +2170,6 @@ else
 {
 	$all_marked_read = true;
 }
-
-markread('usermention', $forum_id, $topic_id);
 // If there are absolutely no more unread posts in this forum
 // and unread posts shown, we can safely show the #unread link
 if ($all_marked_read)

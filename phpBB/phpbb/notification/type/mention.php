@@ -117,15 +117,19 @@ class mention extends \phpbb\notification\type\base
 	*/
 	public function find_users_for_notification($db, $users_to_notify = array())
 	{
-		$sql_ary = "SELECT users.user_id, users.username_clean FROM ". USERS_TABLE . " as users, " . USER_NOTIFICATIONS_TABLE . " as notif WHERE " . $db->sql_in_set('username_clean', $users_to_notify) . " AND users.user_id = notif.user_id AND notif.item_type = 'notification.type.mention' " ;
-		$result = $db->sql_query($sql_ary);
-		$user_list = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$user_list[$row["username_clean"]] = $row["user_id"];
+		if(count($users_to_notify) > 0) {
+
+			$sql_ary = "SELECT users.user_id, users.username_clean FROM ". USERS_TABLE . " as users, " . USER_NOTIFICATIONS_TABLE . " as notif WHERE " . $db->sql_in_set('username_clean', $users_to_notify) . " AND users.user_id = notif.user_id AND notif.item_type = 'notification.type.mention' " ;
+			$result = $db->sql_query($sql_ary);
+			$user_list = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$user_list[$row["username_clean"]] = $row["user_id"];
+			}
+			$db->sql_freeresult($result);
+			return $user_list;
 		}
-		$db->sql_freeresult($result);
-		return $user_list;
+		return array();
 	}
 
 	/**
@@ -136,20 +140,22 @@ class mention extends \phpbb\notification\type\base
 	*/
 	public function get_notification_type_and_method($db, $user_list, $notif_manager)
 	{
-		$integer_ids = array_map('intval', $user_list);
-		$sql_query = "SELECT user_id, item_type, method FROM " . USER_NOTIFICATIONS_TABLE . " where " . $db->sql_in_set("user_id", $integer_ids) . " AND item_type = 'notification.type.mention'";
-		$result = $db->sql_query($sql_query);
 		$notif_list = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$temp_notif_list = array();
-			$temp_notif_list["user_id"] = $row["user_id"];
-			$temp_notif_list["notif_type"] = $notif_manager->get_item_type_class($row["item_type"]);
-			$temp_notif_list["notif_method"] = $notif_manager->get_method_class($row["method"]);
-			array_push($notif_list, $temp_notif_list);
+		if(count($user_list) > 0) {
+			$integer_ids = array_map('intval', $user_list);
+			$sql_query = "SELECT user_id, item_type, method FROM " . USER_NOTIFICATIONS_TABLE . " where " . $db->sql_in_set("user_id", $integer_ids) . " AND item_type = 'notification.type.mention'";
+			$result = $db->sql_query($sql_query);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$temp_notif_list = array();
+				$temp_notif_list["user_id"] = $row["user_id"];
+				$temp_notif_list["notif_type"] = $notif_manager->get_item_type_class($row["item_type"]);
+				$temp_notif_list["notif_method"] = $notif_manager->get_method_class($row["method"]);
+				array_push($notif_list, $temp_notif_list);
+			}
+			$db->sql_freeresult($result);
 		}
-		$db->sql_freeresult($result);
-		return $notif_list;
+			return $notif_list;
 	}
 
 
