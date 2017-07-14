@@ -33,6 +33,8 @@ interface adapter_interface
 	 *
 	 * @throws \phpbb\storage\exception\exception	When the file dont exists
 	 * 												When cannot read file contents
+	 * @return string	Returns file contents
+	 *
 	 */
 	public function get_contents($path);
 

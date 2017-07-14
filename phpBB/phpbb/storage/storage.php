@@ -32,7 +32,7 @@ class storage
 
 	public function get_contents($path)
 	{
-		$this->adapter->put_contents($path);
+		return $this->adapter->get_contents($path);
 	}
 
 	public function exists($path)
