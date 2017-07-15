@@ -13,7 +13,7 @@
 
 namespace phpbb\console\command\style;
 
-use phpbb\style\exception;
+use phpbb\style\exception as style_exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,7 +51,7 @@ class deactivate extends command
 
 			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $style_name));
 		}
-		catch (exception $e)
+		catch (style_exception $e)
 		{
 			$io->error($this->user->lang('CLI_STYLE_DEACTIVATE_FAILURE', $style_name));
 

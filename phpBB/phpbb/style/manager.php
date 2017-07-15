@@ -195,7 +195,7 @@ class manager
 
 		$this->db->sql_freeresult($result);
 
-		if($nb_styles != count($ids))
+		if ($nb_styles != count($ids))
 		{
 			throw new exception('STYLE_ERROR_ACTIVATE');
 		}
@@ -231,7 +231,7 @@ class manager
 
 		$this->db->sql_freeresult($result);
 
-		if($nb_styles != count($ids))
+		if ($nb_styles != count($ids))
 		{
 			throw new exception('STYLE_ERROR_DEACTIVATE');
 		}
@@ -251,7 +251,7 @@ class manager
 			SET style_active = 0
 			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 
-		if(!$this->db->sql_query($sql))
+		if (!$this->db->sql_query($sql))
 		{
 			throw new exception('STYLE_ERROR_DEACTIVATE');
 		}

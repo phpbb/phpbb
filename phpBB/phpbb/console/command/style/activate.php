@@ -13,7 +13,7 @@
 
 namespace phpbb\console\command\style;
 
-use phpbb\style\exception;
+use phpbb\style\exception as style_exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -50,7 +50,7 @@ class activate extends command
 
 			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $style_name));
 		}
-		catch (exception $e)
+		catch (style_exception $e)
 		{
 			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $style_name));
 

@@ -13,7 +13,7 @@
 
 namespace phpbb\console\command\style;
 
-use phpbb\style\exception;
+use phpbb\style\exception as style_exception;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -51,7 +51,7 @@ class install extends command
 
 			$io->success($this->user->lang('STYLE_INSTALLED', $style_name));
 		}
-		catch (\phpbb\style\exception $e)
+		catch (style_exception $e)
 		{
 			$msg = $this->user->lang($e->getMessage());
 			$io->error($this->user->lang($msg, $style_name));
