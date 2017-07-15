@@ -29,7 +29,7 @@ class install extends command
 			->addArgument(
 				'style-path',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_STYLE_NAME')
+				$this->user->lang('CLI_STYLE_PATH')
 			)
 		;
 	}
@@ -38,19 +38,23 @@ class install extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$dir = $input->getArgument('style-path');
+		$style_path = $input->getArgument('style-path');
+
+		$style = $this->manager->read_style_cfg($style_path);
+		$style_name = $style ? $style['name'] : 'Uknown';
 
 		try
 		{
-			$this->manager->install($dir);
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ADD', time(), array($dir));
+			$this->manager->install($style_path);
 
-			$io->success($this->user->lang('STYLE_INSTALLED', $dir));
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ADD', time(), array($style_name));
+
+			$io->success($this->user->lang('STYLE_INSTALLED', $style_name));
 		}
 		catch (\phpbb\style\exception $e)
 		{
 			$msg = $this->user->lang($e->getMessage());
-			$io->error($this->user->lang($msg, $dir));
+			$io->error($this->user->lang($msg, $style_name));
 
 			return 1;
 		}

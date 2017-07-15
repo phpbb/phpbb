@@ -58,7 +58,6 @@ class manager
 		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->text_formatter_cache = $container->get('text_formatter.cache');
-		$this->default_style = $config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . DIRECTORY_SEPARATOR;
 	}
 
@@ -127,9 +126,9 @@ class manager
 		$this->text_formatter_cache->invalidate();
 	}
 
-	public function uninstall($dir)
+	public function uninstall($id)
 	{
-		$style_data = $this->get_style_data('style_path', $dir);
+		$style_data = $this->get_style_data('style_id', $id);
 
 		// Check if there is a style with that name
 		if (!$style_data)
@@ -184,40 +183,78 @@ class manager
 		}
 	}
 
-	public function activate($dirs)
+	public function activate($ids)
 	{
+		// Check if all the selected styles exist and are deactivated
+		$sql = 'SELECT COUNT(*) as num_styles
+			FROM ' . $this->styles_table . '
+			WHERE style_active = 0 AND ' . $this->db->sql_in_set('style_id', $ids);
+		$result = $this->db->sql_query($sql);
+
+		$nb_styles = (int) $this->db->sql_fetchfield('num_styles');
+
+		$this->db->sql_freeresult($result);
+
+		if($nb_styles != count($ids))
+		{
+			throw new exception('STYLE_ERROR_ACTIVATE');
+		}
+
 		// Activate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 1
-			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
 		$this->db->sql_query($sql);
 
 		// Purge cache
 		$this->cache->destroy('sql', $this->styles_table);
 	}
 
-	public function deactivate($dirs)
+	public function deactivate($ids)
 	{
 		// Check for default style
-		foreach ($dirs as $path)
+		foreach ($ids as $id)
 		{
-			if ($path == $this->default_style)
+			if ($id == $this->config['default_style'])
 			{
-				throw new exception($this->user->lang['DEACTIVATE_DEFAULT']);
+				throw new exception('DEACTIVATE_DEFAULT');
 			}
+		}
+
+		// Check if all the selected styles exist and are activated
+		$sql = 'SELECT COUNT(*) as num_styles
+			FROM ' . $this->styles_table . '
+			WHERE style_active = 1 AND ' . $this->db->sql_in_set('style_id', $ids);
+		$result = $this->db->sql_query($sql);
+
+		$nb_styles = (int) $this->db->sql_fetchfield('num_styles');
+
+		$this->db->sql_freeresult($result);
+
+		if($nb_styles != count($ids))
+		{
+			throw new exception('STYLE_ERROR_DEACTIVATE');
 		}
 
 		// Reset default style for users who use selected styles
 		$sql = 'UPDATE ' . $this->users_table . '
 			SET user_style = ' . $this->config['default_style'] . '
-			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
-		$this->db->sql_query($sql);
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
+
+		if (!$this->db->sql_query($sql))
+		{
+			throw new exception('STYLE_DEACTIVATE_UNABLE_UPDATE_USERS');
+		}
 
 		// Deactivate styles
 		$sql = 'UPDATE ' . $this->styles_table . '
 			SET style_active = 0
-			WHERE ' . $this->db->sql_in_set('style_path', $dirs);
-		$this->db->sql_query($sql);
+			WHERE ' . $this->db->sql_in_set('style_id', $ids);
+
+		if(!$this->db->sql_query($sql))
+		{
+			throw new exception('STYLE_ERROR_DEACTIVATE');
+		}
 
 		// Purge cache
 		$this->cache->destroy('sql', $this->styles_table);
@@ -232,7 +269,7 @@ class manager
 	*/
 	public function delete_style_files($path)
 	{
-		$dirname = $this->styles_path . $path . $dir;
+		$dirname = $this->styles_path . $path;
 
 		try
 		{

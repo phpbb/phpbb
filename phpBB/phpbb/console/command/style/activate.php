@@ -29,7 +29,7 @@ class activate extends command
 			->addArgument(
 				'style-path',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_STYLE_NAME')
+				$this->user->lang('CLI_STYLE_PATH')
 			)
 		;
 	}
@@ -38,18 +38,21 @@ class activate extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$dir = $input->getArgument('style-path');
+		$style = $this->manager->get_style_data('style_path', $input->getArgument('style-path'));
+
+		$style_id = (int) $style['style_id'];
+		$style_name = $style['style_name'];
 
 		try
 		{
-			$this->manager->activate([$dir]);
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ACTIVATE', time(), [$dir]);
+			$this->manager->activate([$style_id]);
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ACTIVATE', time(), [$style_name]);
 
-			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $dir));
+			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $style_name));
 		}
 		catch (exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $dir));
+			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $style_name));
 
 			return 1;
 		}

@@ -49,6 +49,9 @@ $lang = array_merge($lang, array(
 	'DELETE_STYLE_FILES_SUCCESS'	=> 'Files for style "%s" have been deleted.',
 	'DETAILS'					=> 'Details',
 
+	'STYLE_ERROR_ACTIVATE'		=> 'Error activating styles',
+	'STYLE_ERROR_DEACTIVATE'	=> 'Error deactivating styles',
+
 	'INHERITING_FROM'			=> 'Inherits from',
 	'INSTALL_STYLE'				=> 'Install style',
 	'INSTALL_STYLES'			=> 'Install styles',
@@ -68,6 +71,7 @@ $lang = array_merge($lang, array(
 	'STYLE_DEFAULT'				=> 'Make default style',
 	'STYLE_DEFAULT_CHANGE_INACTIVE'	=> 'You must activate style before making it default style.',
 	'STYLE_ALREADY_INSTALLED'	=> 'Style %s is already installed',
+	'STYLE_DEACTIVATE_UNABLE_UPDATE_USERS'	=> 'Could not remove "%s" style from users table.',
 	'STYLE_ERR_INVALID_PARENT'	=> 'Invalid parent style.',
 	'STYLE_ERR_NAME_EXIST'		=> 'A style with that name already exists.',
 	'STYLE_ERR_STYLE_NAME'		=> 'You must supply a name for this style.',

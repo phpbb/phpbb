@@ -29,7 +29,7 @@ class deactivate extends command
 			->addArgument(
 				'style-path',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_STYLE_NAME')
+				$this->user->lang('CLI_STYLE_PATH')
 			)
 		;
 	}
@@ -38,18 +38,22 @@ class deactivate extends command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$dir = $input->getArgument('style-path');
+		$style = $this->manager->get_style_data('style_path', $input->getArgument('style-path'));
+
+		$style_id = (int) $style['style_id'];
+		$style_name = $style['style_name'];
 
 		try
 		{
-			$this->manager->deactivate(array($dir));
-			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DEACTIVATE', time(), array($dir));
+			$this->manager->deactivate(array($style_id));
 
-			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $dir));
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DEACTIVATE', time(), array($style_name));
+
+			$io->success($this->user->lang('CLI_STYLE_DEACTIVATE_SUCCESS', $style_name));
 		}
 		catch (exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_DEACTIVATE_FAILURE', $dir));
+			$io->error($this->user->lang('CLI_STYLE_DEACTIVATE_FAILURE', $style_name));
 
 			return 1;
 		}

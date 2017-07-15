@@ -37,7 +37,7 @@ class show extends command
 		$enabled = array_filter($installed, function($v) {
 			return $v['style_active'];
 		});
-		$enabled = array_column($enabled, 'style_name');
+		$enabled = array_column($enabled, 'style_path');
 		$io->section($this->user->lang('CLI_STYLES_ACTIVATED'));
 		$io->listing($enabled);
 
@@ -45,13 +45,13 @@ class show extends command
 		$disabled = array_filter($installed, function($v) {
 			return !$v['style_active'];
 		});
-		$disabled = array_column($disabled, 'style_name');
+		$disabled = array_column($disabled, 'style_path');
 		$io->section($this->user->lang('CLI_STYLES_DEACTIVATED'));
 		$io->listing($disabled);
 
 		// Get available styles
 		$available = $this->manager->find_available(false);
-		$available = array_column($available, 'style_name');
+		$available = array_column($available, 'style_path');
 		$io->section($this->user->lang('CLI_STYLES_AVAILABLE'));
 		$io->listing($available);
 	}

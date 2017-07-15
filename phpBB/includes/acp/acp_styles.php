@@ -37,6 +37,9 @@ class acp_styles
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\style\manager */
+	protected $manager;
+
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -69,6 +72,7 @@ class acp_styles
 		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
 
 		$this->db = $db;
+		$this->manager = $phpbb_container->get('style.manager');
 		$this->user = $user;
 		$this->template = $template;
 		$this->request = $request;
@@ -190,9 +194,7 @@ class acp_styles
 	*/
 	protected function action_install()
 	{
-		global $phpbb_container, $phpbb_log, $user;
-
-		$style_manager = $phpbb_container->get('style.manager');
+		global $phpbb_log;
 
 		// Get list of styles to install
 		$dirs = $this->request_vars('dir', '', true);
@@ -201,13 +203,15 @@ class acp_styles
 
 		foreach ($dirs as $dir)
 		{
+			$style = $this->manager->read_style_cfg($dir);
+
 			try {
-				$style_manager->install($dir);
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($dir)); // TODO: Style name
-				$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($dir)); // TODO: Style name instead of dir
+				$this->manager->install($dir);
+				$phpbb_log->add('admin', $this->user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($style['name']));
+				$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['name']));
 			} catch (exception $e) {
 				$msg = $this->user->lang($e->getMessage());
-				$messages[] = sprintf($msg, htmlspecialchars($style['style_name'])); // TODO: Style name instead of dir
+				$messages[] = sprintf($msg, htmlspecialchars($style['name']));
 			}
 		}
 
@@ -258,9 +262,7 @@ class acp_styles
 	*/
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
-		global $user, $phpbb_log, $phpbb_container;
-
-		$style_manager = $phpbb_container->get('style.manager');
+		global $phpbb_log;
 
 		$default = $this->default_style;
 		$messages = array();
@@ -292,7 +294,7 @@ class acp_styles
 			// Uninstall style
 			try
 			{
-				$style_manager->uninstall($style['style_path']);
+				$this->manager->uninstall($style['style_id']);
 				$uninstalled[] = $style['style_name'];
 				$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], htmlspecialchars($style['style_name']));
 			}
@@ -307,7 +309,7 @@ class acp_styles
 			{
 				try
 				{
-					$style_manager->delete_style_files($style['style_path']);
+					$this->manager->delete_style_files($style['style_path']);
 					$messages[] = sprintf($this->user->lang['DELETE_STYLE_FILES_SUCCESS'], htmlspecialchars($style['style_name']));
 				}
 				catch (exception $e)
@@ -327,7 +329,7 @@ class acp_styles
 		// Log action
 		if (count($uninstalled))
 		{
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
+			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
 		}
 
 		// Clear cache
@@ -342,18 +344,14 @@ class acp_styles
 	*/
 	protected function action_activate()
 	{
-		global $phpbb_container;
-
-		$style_manager = $phpbb_container->get('style.manager');
-
 		// Get list of styles to activate
 		$ids = $this->request_vars('id', 0, true);
 
 		try
 		{
-			$style_manager->activate($ids);
+			$this->manager->activate($ids);
 			// TODO: show names instead of ids, and add one entry per style
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_ACTIVATE', false, array($ids));
+			//$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_ACTIVATE', false, array($ids));
 		}
 		catch (exception $e)
 		{
@@ -369,18 +367,14 @@ class acp_styles
 	*/
 	protected function action_deactivate()
 	{
-		global $phpbb_container;
-
-		$style_manager = $phpbb_container->get('style.manager');
-
 		// Get list of styles to deactivate
 		$ids = $this->request_vars('id', 0, true);
 
 		try
 		{
-			$style_manager->deactivate($ids);
+			$sthis->manager->deactivate($ids);
 			// TODO: Show names instead of ids, and add one entry per style
-			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_DEACTIVATE', false, array($ids));
+			//$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_DEACTIVATE', false, array($ids));
 		}
 		catch (exception $e)
 		{
@@ -396,9 +390,7 @@ class acp_styles
 	*/
 	protected function action_details()
 	{
-		global $user, $phpbb_log, $phpbb_container;
-
-		$style_manager = $phpbb_container->get('style.manager');
+		global $phpbb_log;
 
 		$id = $this->request->variable('id', 0);
 		if (!$id)
@@ -407,7 +399,7 @@ class acp_styles
 		}
 
 		// Get all styles
-		$styles = $style_manager->get_installed_styles();
+		$styles = $this->manager->get_installed_styles();
 		usort($styles, array($this, 'sort_styles'));
 
 		// Find current style
@@ -427,7 +419,7 @@ class acp_styles
 		}
 
 		// Read style configuration file
-		$style_cfg = $phpbb_container->get('style.manager')->read_style_cfg($style['style_path']);
+		$style_cfg = $this->manager->read_style_cfg($style['style_path']);
 
 		// Find all available parent styles
 		$list = $this->find_possible_parents($styles, $id);
@@ -527,7 +519,7 @@ class acp_styles
 				if (isset($update['style_parent_id']))
 				{
 					// Update styles tree
-					$styles = $style_manager->get_installed_styles();
+					$styles = $this->manager->get_installed_styles();
 					if ($this->update_styles_tree($styles, $style))
 					{
 						// Something was changed in styles tree, purge all cache
@@ -535,7 +527,7 @@ class acp_styles
 					}
 				}
 
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
 			}
 
 			// Update default style
@@ -590,12 +582,8 @@ class acp_styles
 	*/
 	protected function show_installed()
 	{
-		global $phpbb_container;
-
-		$style_manager = $phpbb_container->get('style.manager');
-
 		// Get all installed styles
-		$styles = $style_manager->get_installed_styles();
+		$styles = $this->manager->get_installed_styles();
 
 		if (!count($styles))
 		{
@@ -659,12 +647,8 @@ class acp_styles
 	*/
 	protected function show_available()
 	{
-		global $phpbb_container;
-
-		$style_manager = $phpbb_container->get('style.manager');
-
 		// Get list of styles
-		$styles = $style_manager->find_available(true);
+		$styles = $this->manager->find_available(true);
 
 		// Show styles
 		if (empty($styles))
