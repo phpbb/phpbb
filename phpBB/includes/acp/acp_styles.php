@@ -207,7 +207,7 @@ class acp_styles
 
 			try {
 				$this->manager->install($dir);
-				$phpbb_log->add('admin', $this->user->data['user_id'], $user->ip, 'LOG_STYLE_ADD', false, array($style['name']));
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_ADD', false, array($style['name']));
 				$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['name']));
 			} catch (exception $e) {
 				$msg = $this->user->lang($e->getMessage());
@@ -297,26 +297,18 @@ class acp_styles
 				$this->manager->uninstall($style['style_id']);
 				$uninstalled[] = $style['style_name'];
 				$messages[] = sprintf($this->user->lang['STYLE_UNINSTALLED'], htmlspecialchars($style['style_name']));
+
+				// Attempt to delete files
+				if ($delete_files)
+				{
+					$this->manager->delete_style_files($style['style_path']);
+					$messages[] = sprintf($this->user->lang['DELETE_STYLE_FILES_SUCCESS'], htmlspecialchars($style['style_name']));
+				}
 			}
 			catch (exception $e)
 			{
 				$msg = $this->user->lang($e->getMessage());
 				$messages[] = sprintf($msg, htmlspecialchars($style['style_name']));
-			}
-
-			// Attempt to delete files
-			if ($delete_files)
-			{
-				try
-				{
-					$this->manager->delete_style_files($style['style_path']);
-					$messages[] = sprintf($this->user->lang['DELETE_STYLE_FILES_SUCCESS'], htmlspecialchars($style['style_name']));
-				}
-				catch (exception $e)
-				{
-					$msg = $this->user->lang($e->getMessage());
-					$messages[] = sprintf($msg, htmlspecialchars($style['style_name']));
-				}
 			}
 		}
 
@@ -355,7 +347,8 @@ class acp_styles
 		}
 		catch (exception $e)
 		{
-			trigger_error($e->getMessage() . adm_back_link($this->u_action), E_USER_WARNING);
+			$msg = $e->getMessage();
+			trigger_error($this->user->lang($msg) . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Show styles list
@@ -372,13 +365,14 @@ class acp_styles
 
 		try
 		{
-			$sthis->manager->deactivate($ids);
+			$this->manager->deactivate($ids);
 			// TODO: Show names instead of ids, and add one entry per style
 			//$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_DEACTIVATE', false, array($ids));
 		}
 		catch (exception $e)
 		{
-			trigger_error($e->getMessage() . adm_back_link($this->u_action), E_USER_WARNING);
+			$msg = $e->getMessage();
+			trigger_error($this->user->lang($msg) . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Show styles list

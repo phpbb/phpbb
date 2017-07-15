@@ -480,7 +480,7 @@ class manager
 	protected function default_bitfield()
 	{
 		// Hardcoded template bitfield to add for new templates
-		$bitfield = new \phpbb\bitfield();
+		$bitfield = new \bitfield();
 		$bitfield->set(0);
 		$bitfield->set(1);
 		$bitfield->set(2);
