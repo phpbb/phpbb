@@ -3754,6 +3754,41 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 }
 
 /**
+* Get option bitfield from custom data
+*
+* @param int	$bit		The bit/value to get
+* @param int	$data		Current bitfield to check
+* @return bool	Returns true if value of constant is set in bitfield, else false
+*/
+function phpbb_optionget($bit, $data)
+{
+	return ($data & 1 << (int) $bit) ? true : false;
+}
+
+/**
+* Set option bitfield
+*
+* @param int	$bit		The bit/value to set/unset
+* @param bool	$set		True if option should be set, false if option should be unset.
+* @param int	$data		Current bitfield to change
+*
+* @return int	The new bitfield
+*/
+function phpbb_optionset($bit, $set, $data)
+{
+	if ($set && !($data & 1 << $bit))
+	{
+		$data += 1 << $bit;
+	}
+	else if (!$set && ($data & 1 << $bit))
+	{
+		$data -= 1 << $bit;
+	}
+
+	return $data;
+}
+
+/**
 * Login using http authenticate.
 *
 * @param array	$param		Parameter array, see $param_defaults array.

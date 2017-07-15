@@ -33,9 +33,9 @@ class user_signature extends \phpbb\textreparser\row_based_plugin
 
 		$options = $row['user_options'];
 		$row += array(
-			'enable_bbcode'    => \phpbb\bitfield::optionget($this->keyoptions['sig_bbcode'], $options),
-			'enable_smilies'   => \phpbb\bitfield::optionget($this->keyoptions['sig_smilies'], $options),
-			'enable_magic_url' => \phpbb\bitfield::optionget($this->keyoptions['sig_links'], $options),
+			'enable_bbcode'    => phpbb_optionget($this->keyoptions['sig_bbcode'], $options),
+			'enable_smilies'   => phpbb_optionget($this->keyoptions['sig_smilies'], $options),
+			'enable_magic_url' => phpbb_optionget($this->keyoptions['sig_links'], $options),
 		);
 
 		return parent::add_missing_fields($row);

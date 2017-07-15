@@ -702,7 +702,7 @@ class user extends \phpbb\session
 	function optionget($key, $data = false)
 	{
 		$var = ($data !== false) ? $data : $this->data['user_options'];
-		return \phpbb\bitfield::optionget($this->keyoptions[$key], $var);
+		return phpbb_optionget($this->keyoptions[$key], $var);
 	}
 
 	/**
@@ -721,7 +721,7 @@ class user extends \phpbb\session
 	{
 		$var = ($data !== false) ? $data : $this->data['user_options'];
 
-		$new_var = \phpbb\bitfield::optionset($this->keyoptions[$key], $value, $var);
+		$new_var = phpbb_optionset($this->keyoptions[$key], $value, $var);
 
 		if ($data === false)
 		{

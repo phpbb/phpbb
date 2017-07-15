@@ -1069,7 +1069,7 @@ class acp_board
 		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
 		foreach ($forum_list as $f_id => $f_row)
 		{
-			$f_row['selected'] = \phpbb\bitfield::optionget(FORUM_OPTION_FEED_NEWS, $f_row['forum_options']);
+			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_NEWS, $f_row['forum_options']);
 
 			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 		}
@@ -1086,7 +1086,7 @@ class acp_board
 		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
 		foreach ($forum_list as $f_id => $f_row)
 		{
-			$f_row['selected'] = \phpbb\bitfield::optionget(FORUM_OPTION_FEED_EXCLUDE, $f_row['forum_options']);
+			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $f_row['forum_options']);
 
 			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 		}

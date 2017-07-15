@@ -151,7 +151,7 @@ class data_access
 			$bbcodes = array();
 
 			// Collect the name of the BBCodes whose bit is set in the style's bbcode_bitfield
-			$template_bitfield = new \phpbb\bitfield($style['bbcode_bitfield']);
+			$template_bitfield = new \bitfield($style['bbcode_bitfield']);
 			foreach ($bbcode_ids as $bbcode_name => $bit)
 			{
 				if ($template_bitfield->get($bit))

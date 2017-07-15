@@ -130,7 +130,7 @@ function is_valid_flash_bbcode($cleaned_content, $uid)
 // 11 = flash bit
 function has_flash_enabled($bitfield_data)
 {
-	$bitfield = new \phpbb\bitfield($bitfield_data);
+	$bitfield = new bitfield($bitfield_data);
 	return $bitfield->get(11);
 }
 

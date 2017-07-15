@@ -2606,7 +2606,7 @@ class acp_users
 
 		$var = ($data !== false) ? $data : $user_row['user_options'];
 
-		$new_var = \phpbb\bitfield::optionset($user->keyoptions[$key], $value, $var);
+		$new_var = phpbb_optionset($user->keyoptions[$key], $value, $var);
 
 		if ($data === false)
 		{
@@ -2641,6 +2641,6 @@ class acp_users
 		global $user;
 
 		$var = ($data !== false) ? $data : $user_row['user_options'];
-		return \phpbb\bitfield::optionget($user->keyoptions[$key], $var);
+		return phpbb_optionget($user->keyoptions[$key], $var);
 	}
 }

@@ -60,7 +60,7 @@ class bbcode_firstpass extends bbcode
 		global $user;
 
 		$this->bbcode_bitfield = '';
-		$bitfield = new \phpbb\bitfield();
+		$bitfield = new bitfield();
 
 		foreach ($this->bbcodes as $bbcode_name => $bbcode_data)
 		{
