@@ -115,6 +115,17 @@ code {
 	padding: 0 4px;
 }
 
+pre {
+	color: #006600;
+	font-weight: normal;
+	font-family: 'Courier New', monospace;
+	border-color: #D1D7DC;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #FAFAFA;
+	padding: 0 4px
+}
+
 #wrap {
 	padding: 0 20px;
 	min-width: 650px;
