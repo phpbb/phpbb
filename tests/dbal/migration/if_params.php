@@ -23,11 +23,11 @@ class phpbb_dbal_migration_if_params extends \phpbb\db\migration\migration
 		return array(
 			array('if', array(
 				true,
-				array('custom', array(array(&$this, 'test'), array('true'))),
+				array('custom', array(array($this, 'test'), array('true'))),
 			)),
 			array('if', array(
 				false,
-				array('custom', array(array(&$this, 'test'), array('false'))),
+				array('custom', array(array($this, 'test'), array('false'))),
 			)),
 		);
 	}
