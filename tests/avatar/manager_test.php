@@ -424,11 +424,10 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			'avatar_remote_height'	=> $height,
 		));
 
-		$user = new \phpbb\user('\phpbb\datetime');
 		$row = array();
 		$error = array();
 
-		$return = $remote_avatar->process_form($request, null, $user, $row, $error);
+		$return = $remote_avatar->process_form($request, null, $this->user, $row, $error);
 		if (count($expected_error) > 0)
 		{
 			$this->assertFalse($return);
