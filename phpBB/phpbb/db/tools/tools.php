@@ -941,29 +941,19 @@ class tools implements tools_interface
 				continue;
 			}
 
-			// These DBMS prefix index name with the table name
 			switch ($this->sql_layer)
 			{
+				// These DBMS prefix index name with the table name
 				case 'oracle':
 				case 'sqlite3':
-					$index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name, false);
-					$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
-
-					if (strpos($index_name , $table_name) === false)
-					{
-						if (strpos($index_name, $table_prefix) !== false)
-						{
-							$row[$col] = substr($row[$col], strlen($table_prefix) + 1);
-						}
-						else
-						{
-							$row[$col] = substr($row[$col], strlen($table_name) + 1);
-						}
-					}
+					$new_index_name = $this->check_index_name_length($table_name, $table_name . '_' . $index_name, false);
+				break;
+				default:
+					$new_index_name = $this->check_index_name_length($table_name, $index_name, false);
 				break;
 			}
 
-			if (strtolower($row[$col]) == strtolower($index_name))
+			if (strtolower($row[$col]) == strtolower($new_index_name))
 			{
 				$this->db->sql_freeresult($result);
 				return true;
@@ -1577,15 +1567,17 @@ class tools implements tools_interface
 			$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
 			if (strpos($index_name, $table_prefix) === 0)
 			{
-				$index_name = substr($index_name, strlen($table_prefix) + 1);
-				return $this->check_index_name_length($table_name, $index_name);
+				$index_name = substr($index_name, strlen($table_prefix));
+				return $this->check_index_name_length($table_name, $index_name, $throw_error);
 			}
 
-			// Try removing the table name then
-			if (strpos($index_name, $table_name) === 0)
+			// Try removing the remaining suffix part of table name then
+			$table_suffix = substr($table_name, strlen($table_prefix));
+			if (strpos($index_name, $table_suffix) === 0)
 			{
-				$index_name = substr($index_name, strlen($table_name) + 1);
-				return $this->check_index_name_length($table_name, $index_name);
+				// Remove the suffix and underscore separator between table_name and index_name
+				$index_name = substr($index_name, strlen($table_suffix) + 1);
+				return $this->check_index_name_length($table_name, $index_name, $throw_error);
 			}
 
 			if ($throw_error)
