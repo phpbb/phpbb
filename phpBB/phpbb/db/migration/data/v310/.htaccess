@@ -1,0 +1,33 @@
+# With Apache 2.4 the "Order, Deny" syntax has been deprecated and moved from
+# module mod_authz_host to a new module called mod_access_compat (which may be
+# disabled) and a new "Require" syntax has been introduced to mod_authz_host.
+# We could just conditionally provide both versions, but unfortunately Apache
+# does not explicitly tell us its version if the module mod_version is not
+# available. In this case, we check for the availability of module
+# mod_authz_core (which should be on 2.4 or higher only) as a best guess.
+<IfModule mod_version.c>
+	<IfVersion < 2.4>
+		<Files "*">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+	</IfVersion>
+	<IfVersion >= 2.4>
+		<Files "*">
+			Require all denied
+		</Files>
+	</IfVersion>
+</IfModule>
+<IfModule !mod_version.c>
+	<IfModule !mod_authz_core.c>
+		<Files "*">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+	</IfModule>
+	<IfModule mod_authz_core.c>
+		<Files "*">
+			Require all denied
+		</Files>
+	</IfModule>
+</IfModule>
