@@ -155,11 +155,12 @@ services:
             - '@user'
             - '@php_ini'
             - '@mimetype.guesser'
-    phpbb.mention.controller:
+    phpbb.usermention.controller:
         class: phpbb\mention\controller\user_mention
         arguments:
             - '@dbal.conn'
             - '@request'
+            - '@service_container'
 
     phpbb_mention_helper:
         class: phpbb\mention\helper\mention_helper

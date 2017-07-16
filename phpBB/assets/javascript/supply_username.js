@@ -7,7 +7,7 @@ $(document).ready(function(){
 		maxLen: 25,
 		callbacks: {
 		/*
-		 It function is given, At.js will invoke it if local filter can not find any data
+		 If a function is given, At.js will invoke it when local filter can not find any data
 		 @param query [String] matched query
 		 @param callback [Function] callback to render page.
 		*/

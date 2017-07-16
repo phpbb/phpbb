@@ -9,6 +9,7 @@
  */
 
 namespace phpbb\mention\helper;
+
 use phpbb\db\driver\driver_interface;
 use phpbb\request\request_interface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,165 +17,185 @@ use phpbb\controller\helper;
 
 class mention_helper
 {
-	/**
-	* @var driver_interface
-	*/
-	private $db;
+    /**
+    * @var driver_interface
+    */
+    private $db;
 
-	/**
-	* @var Notification Details
-	*/
-	private $data;
+    /**
+    * @var Notification Details
+    */
+    private $data;
 
-	public function __construct(driver_interface $db)
-	{
-		$this->db = $db;
-	}
+    /**
+    *
+    * @param $db   Database Driver Interface Object.
+    *
+    * @return \phpbb\mention\helper\mention_helper
+    */
+    public function __construct(driver_interface $db)
+    {
+        $this->db = $db;
+    }
 
-	/**
-	* Function to extract the mentioned users using regex exp.
-	*
-	* @param string $$regular_expression_match- regex exp.
-	* @param string $post_text - Text pilled up from the board.
-	* @return array Consisiting of matches.
-	*/
-	public function get_regex_match($regular_expression_match, $post_text) {
-		$matches = false;
-		preg_match_all($regular_expression_match, $post_text, $matches, PREG_OFFSET_CAPTURE);
-		return $matches;
-	}
+    /**
+    * Extract the mentioned users using regex exp.
+    *
+    * @param string    $regular_expression_match     regex exp.
+    * @param string    $post_text                    Text pilled up from the board.
+    *
+    * @return array Consisiting of matches.
+    */
+    private function get_regex_match($regular_expression_match, $post_text)
+    {
+        $matches = false;
+        preg_match_all($regular_expression_match, $post_text, $matches, PREG_OFFSET_CAPTURE);
+        return $matches;
+    }
 
-	/**
-	* Function to extract the mentioned users using regex exp.
-	*
-	* @param array $matches- all matches with [mention][/mention].
-	* @return array List of all different users tagged in the text..
-	*/
-	public function get_user_list($matches) {
-		$user_list = array();
-		// get list of all different users tagged.
-		for ($i = 0, $len = count($matches[1]); $i < $len; $i++)
-		{
-			if (!in_array($matches[1][$i][0], $user_list, true))
-			{
-				array_push($user_list, $matches[1][$i][0]);
-			}
-		}
-		return $user_list;
-	}
+    /**
+    * Extract the mentioned users using regex exp. and make list of all unique users
+    * tagged.
+    *
+    * @param array    $matches   all matches with [mention][/mention].
+    *
+    * @return array List of all different users tagged in the text..
+    */
+    private function get_user_list($matches)
+    {
+        $user_list = array();
+        $regexp_matches_count = count($matches[1]);
+        for ($i = 0; $i < $regexp_matches_count; $i++)
+        {
+            if (!in_array($matches[1][$i][0], $user_list, true))
+            {
+                $user_list[] = $matches[1][$i][0];
+            }
+        }
+        return $user_list;
+    }
 
-	/**
-	* Function to extract the mentioned users using regex exp.
-	*
-	* @param array $matches- all the matches with regexp.
-	* @param integer $start_tag_length - Length of tag [mention].
-	* @param integer $end_tag_length - Length of tag [\mention].
-	* @param integer $userid_list- Ids of users tagged in the post.
-	* @return array Consisiting of new text and array of userid.
-	*/
-	public function get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list) {
+    /**
+    * Extract the mentioned users using regex exp.
+    *
+    * @param array    $matches            all the matches with regexp.
+    * @param integer  $start_tag_length   Length of tag [mention].
+    * @param integer  $end_tag_length     Length of tag [\mention].
+    * @param integer  $userid_list        Ids of users tagged in the post.
+    *
+    * @return array Consisiting of new text and array of userid.
+    */
+    private function get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list)
+    {
+        $users_already_mapped = array();
+        $regexp_matches_count = count($matches[1]);
+        for ($i = 0; $i < $regexp_matches_count; $i++)
+        {
+            $username_clean = utf8_clean_string($matches[1][$i][0]);
+            $startpos = $matches[1][$i][1] - $start_tag_length;
+            $length = strlen($matches[1][$i][0]);
+            $endpos = $matches[1][$i][1] + $length + $end_tag_length - 1;
+            $userid = $userid_list[$username_clean];
+            $add_url_tag = '[url=' . generate_board_url() . '/memberlist.php?mode=viewprofile&u=' . $userid . ']' . $username_clean . '[/url]';
+            if ($i==0)
+            {
+                $new_post_text = substr($post_text, 0, $startpos);
+                $new_post_text = $new_post_text . $add_url_tag;
+                $prev_end_pos = $endpos + 1;
+            }
+            else
+            {
+                $strip_mention = substr($post_text, $prev_end_pos, $startpos - $prev_end_pos);
+                $new_post_text = $new_post_text . $strip_mention;
+                $new_post_text = $new_post_text . $add_url_tag;
+                $prev_end_pos = $endpos + 1;
+            }
+            if (!in_array($userid_list[$username_clean], $users_already_mapped, true))
+            {
+                $users_already_mapped[] = $userid_list[$username_clean];
+            }
+        }
+        return array('post_text' => $new_post_text, 'users_mapped' => $users_already_mapped) ;
+    }
 
-		$users_already_mapped = array();
-		//Iterate over all [mention][/mention] matches.
-		for ($i = 0, $len = count($matches[1]); $i < $len; $i++)
-		{
-			$username_clean = utf8_clean_string($matches[1][$i][0]);
-			//Inititalize all variables like length of usernames and link to all users.
-			$startpos = $matches[1][$i][1] - $start_tag_length;
-			$length = strlen($matches[1][$i][0]);
-			$endpos = $matches[1][$i][1] + $length + $end_tag_length - 1;
-			$userid = $userid_list[$username_clean];
-			$add_url_tag = "[url=" . generate_board_url() . "/memberlist.php?mode=viewprofile&u=" . $userid . "]" . $username_clean . "[/url]";
-			//Strip text by [mention][/mention] and then append $add_url_tag to the stripped text .
-			if ($i==0)
-			{
-				$new_post_text = substr($post_text, 0, $startpos);
-				$new_post_text = $new_post_text . $add_url_tag;
-				$prev_end_pos = $endpos + 1;
-			} else
-			{
-				$strip_mention = substr($post_text, $prev_end_pos, $startpos - $prev_end_pos);
-				$new_post_text = $new_post_text . $strip_mention;
-				$new_post_text = $new_post_text . $add_url_tag;
-				$prev_end_pos = $endpos + 1;
-			}
-			//maintain al list of all different userids.
-			if (!in_array($userid_list[$username_clean], $users_already_mapped, true))
-			{
-				array_push($users_already_mapped, $userid_list[$username_clean]);
-			}
-		}
-		return array("post_text" => $new_post_text, "users_mapped" => $users_already_mapped) ;
-	}
+    /**
+    * Centralized function for calling other functions to extract users, sustitute their
+    * profile links and return the new text back to posting.php.
+    *
+    * @param string   $post              post text
+    * @param array    $data              Notification details
+    * @param \phpbb\notification\manager   $notif_manager_obj  Notification Manager
+    *                                                          object.
+    *
+    * @return array Array of responder data
+    */
+    public function get_mentioned_users($post_text, $data, $notif_manager_obj)
+    {
+        $this->data = $data;
+        $regular_expression_match = '#\[mention\](.*?)\[/mention\]#';
+        $matches = false;
+        $matches = $this->get_regex_match($regular_expression_match, $post_text);
+        if (count($matches[1]) > 0)
+        {
+            $start_tag_length = strlen('[mention]');
+            $end_tag_length = strlen('[\mention]');
+            $user_list = array();
+            $userid_list = array();
+            $user_list = $this->get_user_list($matches);
+            if (count($user_list) > 0)
+            {
+                $temp_notif_type_object = $notif_manager_obj->get_item_type_class('notification.type.mention');
+                $userid_list = $temp_notif_type_object->find_users_for_notification($this->db, $user_list);
+                if (count($userid_list) > 0)
+                {
+                    $new_post_data = $this->get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list);
+                    return array('new_post_text' => $new_post_data['post_text'], 'users_mentioned' => $new_post_data['users_mapped'], 'notif_type_object' => $temp_notif_type_object);
+                }
+            }
+        }
+        return $post_text;
+    }
 
-	/**
-	* Function to extract the mentioned users and replace them with links to the user
-	* profile
-	*
-	* @param string $post- post text
-	* @param array $data - Notification details
-	* @param Notification Manager object $notif_manager_obj
-	* @return array Array of responder data
-	*/
-	public function get_mentioned_users($post_text, $data = array(), $notif_manager_obj)
-	{
-		$this->data = $data;
-		$regular_expression_match = '#\[mention\](.*?)\[/mention\]#';
-		$matches = false;
-		$matches = $this->get_regex_match($regular_expression_match, $post_text);
-		if(count($matches[1]) > 0) {
+    /**
+    * Function to generate Notifications.
+    *
+    * @param $user_list    array           Array containing userids to send
+    *                                       notifications to.
+    * @param $notif_manager_obj  \phpbb\notification\manager  Notification Manager object
+    * @param $temp_notif_type_object      object    Temporary notiifcation type object\
+    *                                                to call the method from
+    *                                                new notiifcation type - mention.
+    *
+    */
+    public function send_notifications($user_list, $notif_manager_obj, $temp_notif_type_object)
+    {
+        $notification_method_array = array();
+        $notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list, $notif_manager_obj);
+        $notif_manager_obj->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
+    }
 
-			$start_tag_length = strlen("[mention]");
-			$end_tag_length = strlen("[\mention]");
-			$user_list = array();
-			$userid_list = array();
-			$user_list = $this->get_user_list($matches);
-			if(count($user_list) > 0) {
-
-				$temp_notif_type_object = $notif_manager_obj->get_item_type_class("notification.type.mention");
-				$userid_list = $temp_notif_type_object->find_users_for_notification($this->db, $user_list);
-				if(count($userid_list) > 0) {
-
-					$new_post_data = $this->get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list);
-					return array("new_post_text" => $new_post_data["post_text"], "users_mentioned" => $new_post_data["users_mapped"], "notif_type_object" => $temp_notif_type_object);
-				}
-
-			}
-		}
-		return $post_text;
-	}
-
-
-	/**
-	* Function to generate Notifications.
-	* @param array $user_list - Array containing userids to send notifications to.
-	* @param Notification Manager object $notif_manager_obj
-	* @param Temporary notiifcation type object to call the method from new
-	* notiifcation type - mention.
-	*/
-	public function send_notifications($user_list, $notif_manager_obj, $temp_notif_type_object)
-	{
-		//get notification type and method for mentioned userids.
-		$notification_method_array = array();
-		$notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list, $notif_manager_obj);
-		$user_index = 0;
-		//add notification details to queue and send notifications one by one.
-		if(count($notification_details_list) > 0) {
-
-			foreach ($notification_details_list as $details)
-			{
-				$notification_type = $details["notif_type"];
-				$notification_method = $details["notif_method"];
-				$notification_type->user_id = $details["user_id"];
-				$notification_type->create_insert_array($this->data);
-				$notification_method->add_to_queue($notification_type);
-				array_push($notification_method_array, $notification_method);
-			}
-			foreach ($notification_method_array as $method)
-			{
-				$method->notify();
-			}
-		}
-	}
-
+    /**
+    * Function to generate list of all users eligible to be tagged in posts.
+    *
+    * @param $keyword    string     Extract only users whose username matches keyword.
+    *
+    * @return $return_usernames_userid   array   Array containing user details matching
+    *                                            the keyword.
+    *
+    */
+    public function get_allusers($keyword)
+    {
+        $sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
+        $result = $this->db->sql_query($sql_query);
+        $return_usernames_userid = [];
+        while ($row = $this->db->sql_fetchrow($result))
+        {
+            $return_usernames_userid[] = [
+                'name'  => $row['username'],
+                'id'    => $row['user_id'],
+            ];
+        }
+        $this->db->sql_freeresult($result);
+        return $return_usernames_userid;
+    }
 }

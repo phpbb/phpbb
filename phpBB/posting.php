@@ -1018,12 +1018,15 @@ if ($submit || $preview || $refresh)
 	$helper_container = $phpbb_container->get('phpbb_mention_helper');
 	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message, $post_data, $notification_manager_obj);
 
-	if(is_array($post_parsing_data) && isset($post_parsing_data["new_post_text"]) && isset($post_parsing_data["users_mentioned"]) && count($post_parsing_data["users_mentioned"] > 0) && isset($post_parsing_data["notif_type_object"])) {
-
+	if (is_array($post_parsing_data) && isset($post_parsing_data["new_post_text"]) && isset($post_parsing_data["users_mentioned"]) && count($post_parsing_data["users_mentioned"] > 0) && isset($post_parsing_data["notif_type_object"]))
+	{
 		$message_parser->message = $post_parsing_data["new_post_text"];
 		$helper_container->send_notifications($post_parsing_data["users_mentioned"], $notification_manager_obj, $post_parsing_data["notif_type_object"]);
-	} else {
-		if(is_string($post_parsing_data)) {
+	}
+	else
+	{
+		if (is_string($post_parsing_data))
+		{
 			$message_parser->message = $post_parsing_data;
 		}
 	}
@@ -1955,7 +1958,7 @@ posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 // Output page ...
 page_header($page_title);
 $template->assign_vars([
-	'UA_AJAX_MENTION_URL'    => $controller_helper->route('phpbb_mention_controller')
+	'UA_AJAX_MENTION_URL'    => $controller_helper->route('phpbb_usermention_controller')
 ]);
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
