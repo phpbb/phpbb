@@ -41,8 +41,15 @@ class ucp_remind
 		$email		= strtolower($request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
+		add_form_key('ucp_remind');
+
 		if ($submit)
 		{
+			if (!check_form_key('ucp_remind'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$sql_array = array(
 				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason',
 				'FROM'		=> array(USERS_TABLE => 'u'),
