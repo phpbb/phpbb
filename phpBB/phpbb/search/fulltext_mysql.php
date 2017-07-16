@@ -272,6 +272,27 @@ class fulltext_mysql extends \phpbb\search\base
 
 		foreach ($this->split_words as $i => $word)
 		{
+			// Check for not allowed search queries for InnoDB.
+			// We assume similar restrictions for MyISAM, which is usually even
+			// slower but not as restrictive as InnoDB.
+			// InnoDB full-text search does not support the use of a leading
+			// plus sign with wildcard ('+*'), a plus and minus sign
+			// combination ('+-'), or leading a plus and minus sign combination.
+			// InnoDB full-text search only supports leading plus or minus signs.
+			// For example, InnoDB supports '+apple' but does not support 'apple+'.
+			// Specifying a trailing plus or minus sign causes InnoDB to report
+			// a syntax error. InnoDB full-text search does not support the use
+			// of multiple operators on a single search word, as in this example:
+			// '++apple'. Use of multiple operators on a single search word
+			// returns a syntax error to standard out.
+			// Also, ensure that the wildcard character is only used at the
+			// end of the line as it's intended by MySQL.
+			if (preg_match('#^(\+[+-]|\+\*|.+[+-]$|.+\*(?!$))#', $word))
+			{
+				unset($this->split_words[$i]);
+				continue;
+			}
+
 			$clean_word = preg_replace('#^[+\-|"]#', '', $word);
 
 			// check word length
