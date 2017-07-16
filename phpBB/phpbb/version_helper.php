@@ -60,6 +60,23 @@ class version_helper
 	/** @var \phpbb\file_downloader */
 	protected $file_downloader;
 
+	protected $version_schema = array(
+		'stable' => array(
+			'current'		=> 'version',
+			'download'		=> 'url',
+			'announcement'	=> 'url',
+			'eol'			=> 'url',
+			'security'		=> 'bool',
+		),
+		'unstable' => array(
+			'current'		=> 'version',
+			'download'		=> 'url',
+			'announcement'	=> 'url',
+			'eol'			=> 'url',
+			'security'		=> 'bool',
+		),
+	);
+
 	/**
 	 * Constructor
 	 *
@@ -392,9 +409,101 @@ class version_helper
 			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];
 			$info['unstable'] = (empty($info['unstable'])) ? $info['stable'] : $info['unstable'];
 
+			$info = $this->validate_versions($info);
+
 			$this->cache->put($cache_file, $info, 86400); // 24 hours
 		}
 
 		return $info;
+	}
+
+	/**
+	 * Validate versions info input
+	 *
+	 * @param array $versions_info Decoded json data array. Will be modified
+	 *		and cleaned by this method
+	 *
+	 * @return array Versions info array
+	 * @throws version_check_exception
+	 */
+	public function validate_versions($versions_info)
+	{
+		$array_diff = array_diff_key($versions_info, array($this->version_schema));
+
+		// Remove excessive data
+		if (count($array_diff) > 0)
+		{
+			$old_versions_info = $versions_info;
+			$versions_info = array(
+				'stable'	=> !empty($old_versions_info['stable']) ? $old_versions_info['stable'] : array(),
+				'unstable'	=> !empty($old_versions_info['unstable']) ? $old_versions_info['unstable'] : array(),
+			);
+			unset($old_versions_info);
+		}
+
+		foreach ($versions_info as $stability_type => &$versions_data)
+		{
+			foreach ($versions_data as $branch => &$version_data)
+			{
+				if (!preg_match('/^[0-9a-z\-\.]+$/i', $branch))
+				{
+					unset($versions_data[$branch]);
+					continue;
+				}
+
+				$stability_diff = array_diff_key($version_data, $this->version_schema[$stability_type]);
+
+				if (count($stability_diff) > 0)
+				{
+					$old_version_data = $version_data;
+					$version_data = array();
+					foreach ($this->version_schema[$stability_type] as $key => $value)
+					{
+						if (isset($old_version_data[$key]))
+						{
+							$version_data[$key] = $old_version_data[$key];
+						}
+					}
+					unset($old_version_data);
+				}
+
+				foreach ($version_data as $key => &$value)
+				{
+					if (!isset($this->version_schema[$stability_type][$key]))
+					{
+						unset($version_data[$key]);
+						throw new version_check_exception('VERSIONCHECK_INVALID_ENTRY');
+					}
+
+					switch ($this->version_schema[$stability_type][$key])
+					{
+						case 'bool':
+							$value = (bool) $value;
+						break;
+
+						case 'url':
+							if (!empty($value) && !preg_match('#^' . get_preg_expression('url') . '$#iu', $value) &&
+								!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $value))
+							{
+								throw new version_check_exception('VERSIONCHECK_INVALID_URL');
+							}
+						break;
+
+						case 'version':
+							if (!empty($value) && !preg_match(get_preg_expression('semantic_version'), $value))
+							{
+								throw new version_check_exception('VERSIONCHECK_INVALID_VERSION');
+							}
+						break;
+
+						default:
+							// Shouldn't be possible to trigger this
+							throw new version_check_exception('VERSIONCHECK_INVALID_ENTRY');
+					}
+				}
+			}
+		}
+
+		return $versions_info;
 	}
 }
