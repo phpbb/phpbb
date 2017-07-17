@@ -129,7 +129,7 @@ class acp_extensions
 				else
 				{
 					$this->config->set('extension_force_unstable', false);
-					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($this->user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 				break;
 
@@ -138,7 +138,7 @@ class acp_extensions
 				if (confirm_box(true))
 				{
 					$this->config->set('extension_force_unstable', true);
-					trigger_error($this->user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($this->user->lang('CONFIG_UPDATED') . adm_back_link($this->u_action));
 				}
 
 				$this->list_enabled_exts();
@@ -167,7 +167,7 @@ class acp_extensions
 				$extension = $this->ext_manager->get_extension($ext_name);
 				if (!$extension->is_enableable())
 				{
-					$message = $extension->not_enableable_reason() ?: $this->user->lang['EXTENSION_NOT_ENABLEABLE'];
+					$message = $extension->not_enableable_reason() ?: $this->user->lang('EXTENSION_NOT_ENABLEABLE');
 					$message = is_array($message) ? implode('<br/>', $message) : $message;
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -199,7 +199,7 @@ class acp_extensions
 				$extension = $this->ext_manager->get_extension($ext_name);
 				if (!$extension->is_enableable())
 				{
-					$message = $extension->not_enableable_reason() ?: $this->user->lang['EXTENSION_NOT_ENABLEABLE'];
+					$message = $extension->not_enableable_reason() ?: $this->user->lang('EXTENSION_NOT_ENABLEABLE');
 					$message = is_array($message) ? implode('<br/>', $message) : $message;
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
