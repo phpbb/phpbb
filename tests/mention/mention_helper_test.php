@@ -1,7 +1,20 @@
 <?php
+/**
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use phpbb\notification\manager;
+use phpbb\notification\type\mention;
+
 
 class phpbb_mention_helper_test extends phpbb_test_case
 {
@@ -18,13 +31,16 @@ class phpbb_mention_helper_test extends phpbb_test_case
     public function test_get_mentioned_users()
     {
         global $request;
-        $notification_manager = $this->prophesize(manager::class)->reveal();
-        $container = $this->prophesize(ContainerInterface::class);
-        $container->get('notification_manager')->willReturn($notification_manager);
-        $container = $container->reveal();
+        // $notification_manager = $this->prophesize(manager::class)->reveal;
+        // $notif_type_class = $this->prophesize(mention::class)->reveal();
+        // $container = $this->prophesize(ContainerInterface::class);
+        // $container->get('notification_manager')->willReturn($notification_manager);
+        // $container = $container->reveal();
         $sample_text = 'cbwkf kfbwkef wkfwb @robdyrdek vghjgjdsrshc ftfkyugb buykyuf yiglyftydtrf gyg ygiy @RickyBahner vgjdrs jfytg jbhjv ygfjh @HackMurphy kdnkwe [url = #]@andream[/url] [url = http://www.google.com]google[/url]wifhr [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13]LindsayM[/url] wewe [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13] @LindsayM [/url][mention]admin[/mention][mention]admin[/mention] dwjpfw [mention]admin[/mention]';
         $request = new phpbb_mock_request();
         $db = $this->getMock('\phpbb\db\driver\driver_interface');
+        // $notification_manager = $this->getMockBuilder('\phpbb\notification\manager')->disableOriginalConstructor()->setMethods(['get_item_type_class', 'load_object'])->getMock();
+        // $notification_manager = $this->getMock('\phpbb\notification\manager', array('get_item_type_class', 'load_object'));
         $helper_container = new \phpbb\mention\helper\mention_helper($db, $notification_manager);
         $post_parsing_text = $helper_container->get_mentioned_users($sample_text);
     }

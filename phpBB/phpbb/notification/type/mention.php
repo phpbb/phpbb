@@ -215,7 +215,6 @@ class mention extends \phpbb\notification\type\post
             'AUTHOR_NAME'               => htmlspecialchars_decode($username),
             'POST_SUBJECT'              => htmlspecialchars_decode(censor_text($this->get_data('post_subject'))),
             'TOPIC_TITLE'               => htmlspecialchars_decode(censor_text($this->get_data('topic_title'))),
-
             'U_VIEW_POST'               => generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
             'U_NEWEST_POST'             => generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&e=1&view=unread#unread",
             'U_TOPIC'                   => generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",

@@ -1,12 +1,15 @@
 <?php
 /**
- *
- * phpBB mentions. A feature for the phpBB Forum Software package.
- *
- * @copyright (c) 2016, phpBB, https://www.phpbbextensions.io
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 namespace phpbb\mention\helper;
 
@@ -25,7 +28,7 @@ class mention_helper
     /**
      * @var \phpbb\notification\manager
      */
-    protected $notifications;
+    protected $notification_manager;
 
     /**
     * @var Notification Details
@@ -38,10 +41,10 @@ class mention_helper
     *
     * @return \phpbb\mention\helper\mention_helper
     */
-    public function __construct(driver_interface $db, \phpbb\notification\manager $notification)
+    public function __construct(driver_interface $db, \phpbb\notification\manager $notification_manager)
     {
         $this->db = $db;
-        $this->notification = $notification;
+        $this->notification_manager = $notification_manager;
     }
 
     /**
@@ -103,7 +106,7 @@ class mention_helper
             $endpos = $matches[1][$i][1] + $length + $end_tag_length - 1;
             $userid = $userid_list[$username_clean];
             $add_url_tag = '[url=' . generate_board_url() . '/memberlist.php?mode=viewprofile&u=' . $userid . ']' . $username_clean . '[/url]';
-            if ($i==0)
+            if ($i == 0)
             {
                 $new_post_text = substr($post_text, 0, $startpos);
                 $new_post_text = $new_post_text . $add_url_tag;
@@ -149,7 +152,7 @@ class mention_helper
             $user_list = $this->get_user_list($matches);
             if (count($user_list) > 0)
             {
-                $temp_notif_type_object = $this->notification->get_item_type_class('notification.type.mention');
+                $temp_notif_type_object = $this->notification_manager->get_item_type_class('notification.type.mention');
                 $userid_list = $temp_notif_type_object->find_users_for_notification($this->db, $user_list);
                 if (count($userid_list) > 0)
                 {
@@ -177,7 +180,7 @@ class mention_helper
         $this->data = $data;
         $notification_method_array = array();
         $notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list, $notif_manager_obj);
-        $this->notification->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
+        $this->notification_manager->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
     }
 
     /**
@@ -191,7 +194,11 @@ class mention_helper
     */
     public function get_allusers($keyword)
     {
-        $sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
+        $sql_query = 'SELECT user_id, username
+                      FROM ' . USERS_TABLE . '
+                      WHERE user_id <> ' . ANONYMOUS . '
+                        AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  '
+                        AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
         $result = $this->db->sql_query($sql_query);
         $return_usernames_userid = [];
         while ($row = $this->db->sql_fetchrow($result))

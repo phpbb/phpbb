@@ -1,12 +1,15 @@
 <?php
 /**
- *
- * phpBB mentions. A controller class for the phpBB Forum Software package.
- *
- * @copyright (c) 2016, phpBB, https://www.phpbbextensions.io
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 namespace phpbb\mention\controller;
 
@@ -16,14 +19,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use phpbb\controller\helper;
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 /**
  * phpBB mentions main controller.
  */
-
 class user_mention
 {
     /**
@@ -55,7 +53,6 @@ class user_mention
         $this->request = $request;
         $this->container = $container;
     }
-
     /**
     *
     * Get a list of users matching on a username.
@@ -64,13 +61,13 @@ class user_mention
     */
     public function handle()
     {
-        $keyword = utf8_clean_string($this->request->variable('q', '', true));
-        if (strlen($keyword) < 2)
+        $user_search_keyword = utf8_clean_string($this->request->variable('q', '', true));
+        if (strlen($user_search_keyword) < 3)
         {
             return new JsonResponse(['usernames' => []]);
         }
         $helper_container = $this->container->get('phpbb_mention_helper');
-        $return_usernames_userid = $helper_container->get_allusers($keyword);
+        $return_usernames_userid = $helper_container->get_allusers($user_search_keyword);
         return new JsonResponse($return_usernames_userid);
     }
 }
