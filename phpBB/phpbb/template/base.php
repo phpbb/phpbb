@@ -64,16 +64,6 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function destroy_block_vars($blockname)
-	{
-		$this->context->destroy_block_vars($blockname);
-
-		return $this;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
 	public function assign_vars(array $vararray)
 	{
 		foreach ($vararray as $key => $val)
@@ -128,9 +118,9 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function assign_block_vars($blockname, array $vararray)
+	public function assign_block_vars($block_selector, array $vararray)
 	{
-		$this->context->assign_block_vars($blockname, $vararray);
+		$this->context->assign_block_vars($block_selector, $vararray);
 
 		return $this;
 	}
@@ -138,9 +128,9 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function assign_block_vars_array($blockname, array $block_vars_array)
+	public function assign_block_vars_array($block_selector, array $block_vars_array)
 	{
-		$this->context->assign_block_vars_array($blockname, $block_vars_array);
+		$this->context->assign_block_vars_array($block_selector, $block_vars_array);
 
 		return $this;
 	}
@@ -148,25 +138,35 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function retrieve_block_vars($blockname, array $vararray)
+	public function retrieve_block_vars($block_selector, array $vararray)
 	{
-		return $this->context->retrieve_block_vars($blockname, $vararray);
+		return $this->context->retrieve_block_vars($block_selector, $vararray);
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
+	public function destroy_block_vars($block_selector)
 	{
-		return $this->context->alter_block_array($blockname, $vararray, $key, $mode);
+		$this->context->destroy_block_vars($block_selector);
+
+		return $this;
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function find_key_index($blockname, $key)
+	public function find_key_index($block_selector, $key)
 	{
-		return $this->context->find_key_index($blockname, $key);
+		return $this->context->find_key_index($block_selector, $key);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function alter_block_array($block_selector, array $vararray, $key = false, $mode = 'insert')
+	{
+		return $this->context->alter_block_array($block_selector, $vararray, $key, $mode);
 	}
 
 	/**
