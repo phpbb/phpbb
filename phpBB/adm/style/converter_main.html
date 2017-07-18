@@ -1,6 +1,44 @@
-<!-- INCLUDE installer_header.html -->
+{{ include('installer_header.html') }}
 
 	<h1>{TITLE}</h1>
-	<p>{BODY}</p>
+	<p>{CONTENT}</p>
+<form id="install_install" method="POST" action="{U_ACTION}">
+	<fieldset class="Source Database Details">
+		<legend>Database Details</legend>
+		<dl>
+			<dt>
+				<label for="db_name">Database name</label>
+			</dt>
+			<dd>
+				<input type="text" name="db_name">
+			</dd>
+			<dt>
+				<label for="db_user">Database user</label>
+			</dt>
+			<dd>
+				<input type="text" name="db_user">
+			</dd>
+			<dt>
+				<label for="db_pass">Database password</label>
+			</dt>
+			<dd>
+				<input type="text" name="db_pass">
+			</dd>
+
+			<dt>
+				<label for="db_host">Database host</label>
+			</dt>
+			<dd>
+				<input type="text" name="db_host">
+			</dd>
+
+		</dl>
+	</fieldset>
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" name="install" type="submit" value="Next" />
+	</fieldset>
+</form>
 <div><a href="{U_LINK}">Next</a></div>
-<!-- INCLUDE installer_footer.html -->
+{{ include('installer_footer.html') }}
+<script src="/assets/javascript/converter.js"></script>

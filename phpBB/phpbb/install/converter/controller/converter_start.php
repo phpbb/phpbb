@@ -96,36 +96,89 @@ class converter_start
 	public function handle()
 	{
 		$title = 'Converter Framework Conversion in Progress ....';
-		$this->menu_provider->set_nav_property(
-			array('converter', 0, 'progress'),
-			array(
-				'selected'	=> true,
-				'completed'	=> false,
-			)
-		);
-		$this->menu_provider->set_nav_property(
-			array('converter', 0, 'list'),
-			array(
-				'selected'	=> false,
-				'completed'	=> true,
-			)
-		);
-		$this->menu_provider->set_nav_property(
-			array('converter', 0, 'home'),
-			array(
-				'selected'	=> false,
-				'completed'	=> true,
-			)
-		);
-		$this->template->assign_vars(array(
-			'TITLE'  => $title,
-			'BODY'   => $this->language->lang('CONVERTER_CONVERT'),
-			'U_LINK' => "/",
-		));
-		$this->helper->set_conversion_status(false);
-		$this->converter->debug_delete_table();
-		return $this->helper->render('converter_process.html', $title, true);
+		if ($this->request->is_ajax())
+		{
+			$this->iohandler_factory->set_environment('ajax');
+			$ajax_handler = $this->iohandler_factory->get();
+			$module = $this->module;
+			$module->setup($this->install_config, $ajax_handler);
+			$converter = $this->converter;
+			$phpbb_root_path = $this->phpbb_root_path;
+			$helper = $this->helper;
+			$yaml_queue = $this->converter->get_yaml_queue();
+			$helper->set_total_files(count($yaml_queue));
+			$response = new StreamedResponse();
+			$container_factory = $this->container_factory;
+			$response->setCallback(function () use ($container_factory, $module, $phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
+			{
 
+
+				$ajax_handler->acquire_lock();
+				$module->run();
+
+
+				if ($helper->get_conversion_status() && ($helper->get_file_index() < count($yaml_queue)))
+				{
+					$ajax_handler->release_lock();
+				}
+				else
+				{
+
+					$user = $container_factory->get('user');
+					$auth = $container_factory->get('auth');
+					$user->session_begin();
+					$auth->acl($user->data);
+					$user->setup();
+					$helper->set_conversion_status(false);
+					$helper->save_config();
+					$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
+					$ajax_handler->add_success_message('The Converter has finished Conversion'/* @todo make a lang var */, array(
+						'ACP_LINK',
+						$acp_url,
+					));
+					$ajax_handler->set_progress('The Converter has finished Conversion', count($yaml_queue));
+					$ajax_handler->set_finished_stage_menu(array('converter', 0, 'progress'));
+					$ajax_handler->set_active_stage_menu(array('converter', 0, 'finished'));
+					$ajax_handler->send_response(true);
+				}
+			});
+			$response->headers->set('X-Accel-Buffering', 'no');
+
+			return $response;
+		}
+		else
+		{
+			$this->menu_provider->set_nav_property(
+				array('converter', 0, 'progress'),
+				array(
+					'selected'  => true,
+					'completed' => false,
+				)
+			);
+			$this->menu_provider->set_nav_property(
+				array('converter', 0, 'list'),
+				array(
+					'selected'  => false,
+					'completed' => true,
+				)
+			);
+			$this->menu_provider->set_nav_property(
+				array('converter', 0, 'home'),
+				array(
+					'selected'  => false,
+					'completed' => true,
+				)
+			);
+			$this->template->assign_vars(array(
+				'TITLE'  => $title,
+				'BODY'   => $this->language->lang('CONVERTER_CONVERT'),
+				'U_LINK' => $this->helper->route('phpbb_converter_start'),
+			));
+			$this->helper->set_conversion_status(false);
+			$this->converter->debug_delete_table();
+			return $this->helper->render('converter_process.html', $title, true);
+
+		}
 	}
 
 	public function ajaxStream()

@@ -8,6 +8,7 @@ services:
             - '@installer.helper.iohandler'
             - '@installer.helper.container_factory'
             - '%core.root_path%'
+            - '%core.php_ext%'
         tags:
             - { name: converter_db_cred, order: 10 }
 

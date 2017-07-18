@@ -503,7 +503,8 @@
 		resetPolling();
 
 		var xhReq = createXhrObject();
-		xhReq.open('GET', 'http://localhost.phpbb/install/app.php/converter/start/ajax', true);
+		xhReq.open('GET', $(location).attr('pathname'), true);
+		//xhReq.open('GET', 'http://localhost.phpbb/install/app.php/converter/start/ajax', true);
 		xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 		xhReq.send();
 
@@ -570,7 +571,8 @@
 		$form.css('display', 'none');
 
 		var xhReq = createXhrObject();
-		xhReq.open('POST', 'http://localhost.phpbb/install/app.php/converter/start/ajax', true);
+		xhReq.open('POST', $form.attr('action'), true);
+		//xhReq.open('POST', 'http://localhost.phpbb/install/app.php/converter/start/ajax', true);
 		xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 		xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 		xhReq.send(getFormFields($form, $submitBtn));

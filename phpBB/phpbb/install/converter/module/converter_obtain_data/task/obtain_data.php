@@ -14,6 +14,7 @@
 namespace phpbb\install\converter\module\converter_obtain_data\task;
 
 use phpbb\install\exception\user_interaction_required_exception;
+use phpbb\config_php_file;
 
 /**
  * This class requests and validates database information from the user
@@ -41,6 +42,9 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 
 	protected $container_factory;
 
+	protected $yaml_queue;
+
+
 	/**
 	 * Constructor
 	 *
@@ -51,7 +55,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 	public function __construct($converter, $helper,
 		\phpbb\install\helper\config $install_config,
 		\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-		$container_factory, $phpbb_root_path)
+		$container_factory, $phpbb_root_path, $php_ext)
 	{
 		$this->helper = $helper;
 		$this->install_config = $install_config;
@@ -59,6 +63,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 		$this->converter = $converter;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->container_factory = $container_factory;
+		$this->config_php_file = new config_php_file($phpbb_root_path,$php_ext);
 
 		parent::__construct(true);
 	}
@@ -68,63 +73,70 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 	 */
 	public function run()
 	{
+		//do not use var_dump as it adds an extra < which causes issues with the js.
+		$this->set_menus();
+		$this->set_source_database();
+		$this->set_destination_database();
+		$this->init_converter();
+		$url = append_sid($this->helper->route('phpbb_converter_start'));
+		$this->io_handler->add_success_message('Database Configuration Completed',array(
+			'CONVERTER_START',
+			$url,
+		));
+		$this->io_handler->send_response(true);
+
+	}
+
+	public function set_menus()
+	{
+		$this->install_config->set_finished_navigation_stage(array('converter', 0, 'home'));
+		$this->io_handler->set_finished_stage_menu(array('converter', 0, 'home'));
+		$this->install_config->set_active_navigation_stage(array('converter', 0, 'list'));
+		$this->io_handler->set_active_stage_menu(array('converter', 0, 'list'));
+	}
+
+	public function set_source_database()
+	{
+		$db_name = $this->io_handler->get_input('db_name','NULL');
+		$db_user = $this->io_handler->get_input('db_user','NULL');
+		$db_pass = $this->io_handler->get_input('db_pass','NULL');
+		$db_host = $this->io_handler->get_input('db_host','NULL');
+		$credentials_source = array(
+			'dbname'   => $db_name,
+			'user'     => $db_user,
+			'password' => $db_pass,
+			'host'     => $db_host,
+			'driver'   => 'pdo_mysql',// todo: Convert from phpbb driver to Doctrine driver names.
+		);
+
+		$this->helper->set_source_db($credentials_source);
+
+
+	}
+
+	public function set_destination_database()
+	{
+		$credentials_destination =array(
+			'dbname'   => 'phpBBgsoc_dest',//todo Not changed since during testing we have another DB not the phpBB DB
+			'user'     => $this->config_php_file->get('dbuser'),
+			'password' => $this->config_php_file->get('dbpasswd'),
+			'host'     => $this->config_php_file->get('dbhost'),
+			'driver'   => 'pdo_mysql', //driver value from phpBB and DBAL different. @todo an array of key->value pairs will be provided.
+		);
+		$this->helper->set_destination_db($credentials_destination);
+	}
+
+	public function init_converter()
+	{
+		$this->yaml_queue = $this->converter->get_yaml_queue();
+		$this->helper->set_yaml_queue($this->yaml_queue);
 
 		$this->helper->set_conversion_status(true);
-		
-		/*The lock must be the first thing to be acquired as the js queries every 250ms for status
-		and if we acquire the lock later the js may issue another request before previous completes
-		thus stuck in an infinite loop of continue -> lock not acquired -> again continue ....
-		*/
-		$yaml_queue = $this->helper->get_yaml_queue();
-
-		$curr_index = $this->helper->get_file_index();
-		if ($this->helper->get_conversion_status() && $curr_index < count($yaml_queue))
-		{
-			if (!$this->helper->get_chunk_status() || $this->helper->get_chunk_status() === null)
-			{
-				$this->helper->set_current_conversion_file($yaml_queue[$curr_index]);
-				$this->io_handler->add_log_message('Loading..', 'Fetching next file');
-				$this->helper->set_current_chunk(0);
-				$this->helper->set_chunk_status(true);
-				$log_msg = "Converting " . $yaml_queue[$curr_index];
-				$this->io_handler->set_task_count(1, true);
-				$this->io_handler->set_progress($log_msg, 0.01); //Gives 1 % value at progress bar initially
-				$this->io_handler->add_log_message('Converting..', $log_msg);
-				$this->io_handler->send_response();
-			}
-			else
-			{
-				$total_chunks = $this->helper->get_total_chunks();
-				$chunk = $this->helper->get_current_chunk();
-				$log_msg = "Converting " . $yaml_queue[$curr_index] . "Part[ " . ($chunk + 1) . " ]";
-				$this->io_handler->add_log_message('Converting..', $log_msg);
-				$this->io_handler->set_task_count($total_chunks);
-				$this->io_handler->set_progress($log_msg, ($chunk + 1));
-				$this->helper->set_current_chunk($chunk + 1);
-				$this->io_handler->send_response();
-
-			}
-
-
-			$this->converter->begin_conversion($yaml_queue[$curr_index], $this->helper, $this->io_handler);
-			if (!$this->helper->get_chunk_status())
-			{
-				$this->helper->next_file($curr_index);
-				sleep(2); //sleeps 2 seconds to prevent abrupt change of progress bar.
-
-				$this->io_handler->send_response();
-			}
-
-			/*
-			The moment release_lock() is called, when js queries converter_status a continue status is issued
-			causing a reload of the request, thus automatically moving to the next file
-			*/
-
-		}
-
-
-//print(str_pad(' ', 4096) . "\n");
-
+		$this->helper->set_file_index(0);
+		//$this->helper->set_total_files(count($this->yaml_queue));
+		$this->helper->set_chunk_status(false);
+		$this->helper->set_current_chunk(0);
+		$this->io_handler->add_log_message('Config Files to be converted',$this->yaml_queue);
 	}
 
 	/**

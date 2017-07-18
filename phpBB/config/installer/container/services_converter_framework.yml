@@ -1,4 +1,5 @@
 imports:
+    - { resource: service_converter_convert.yml }
     - { resource: service_converter_data.yml }
 services:
 
@@ -53,8 +54,10 @@ services:
             - '@converter.module.obtain_data'
             - '@installer.helper.config'
             - '@installer.helper.iohandler_factory'
+            - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'
+
 
     phpbb.installer.converter.convert:
         class: phpbb\install\converter\controller\controller_convert
@@ -77,7 +80,7 @@ services:
             - '@installer.navigation.provider'
             - '@installer.helper.iohandler_factory'
             - '@installer.helper.config'
-            - '@converter.module.obtain_data'
+            - '@converter.module.converter_convert'
             - '@request'
             - '@language'
             - '@installer.helper.container_factory'

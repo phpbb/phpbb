@@ -478,7 +478,8 @@ $lang = array_merge($lang, array(
 	'CONVERTER_TEXT_INTRO'	=>'Welcome to converter framework index. Click on the link below to start conversion',
 	'YAML_LIST_DESC'	=>'The following YAML files would be processed and converted',
 	'CONVERTER_CONVERT'	=>'The listed YAML files will now be processed in order for conversion. Click Convert to begin',
-	''	=>'val dummy',
+	'CONVERTER_START'	=>'Proceed to <a href="%1$s">Conversion</a>',
+
 ));
 // Converter
 $lang = array_merge($lang, array(

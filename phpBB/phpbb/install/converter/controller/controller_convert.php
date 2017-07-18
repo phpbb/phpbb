@@ -11,7 +11,9 @@
  *
  */
 
-
+/*todo This file has now been deprecated. The file remains only for reference while development.
+  todo Functionality of this file is now moved to obtain_data.php task.
+*/
 namespace phpbb\install\converter\controller;
 
 use Doctrine\DBAL\Driver;
