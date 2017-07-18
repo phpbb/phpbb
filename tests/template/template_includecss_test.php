@@ -35,7 +35,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 				new phpbb_mock_request()
 			),
 			$filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);

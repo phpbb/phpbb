@@ -146,7 +146,7 @@ class extension extends \Twig_Extension
 			//  of items to grab (length)
 
 			// Start must always be the actual starting number for this calculation (not negative)
-			$start = ($start < 0) ? sizeof($item) + $start : $start;
+			$start = ($start < 0) ? count($item) + $start : $start;
 			$end = $end - $start;
 		}
 

@@ -203,7 +203,7 @@ class ucp_notifications
 		}
 
 		$template->assign_vars(array(
-			strtoupper($block) . '_COLS' => sizeof($notification_methods) + 2,
+			strtoupper($block) . '_COLS' => count($notification_methods) + 2,
 		));
 	}
 

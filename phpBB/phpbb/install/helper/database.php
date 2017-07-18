@@ -372,7 +372,7 @@ class database
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
 
-			if (sizeof($table_intersect))
+			if (count($table_intersect))
 			{
 				$errors[] = array(
 					'title' => 'INST_ERR_PREFIX',

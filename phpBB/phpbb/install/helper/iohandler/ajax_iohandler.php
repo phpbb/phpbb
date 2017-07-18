@@ -202,7 +202,7 @@ class ajax_iohandler extends iohandler_base
 
 			if (in_array($input_options['type'], array('select', 'radio'), true))
 			{
-				for ($i = 0, $total = sizeof($input_options['options']); $i < $total; $i++)
+				for ($i = 0, $total = count($input_options['options']); $i < $total; $i++)
 				{
 					if (isset($input_options['options'][$i]['label']))
 					{
@@ -369,7 +369,7 @@ class ajax_iohandler extends iohandler_base
 	 */
 	public function set_active_stage_menu($menu_path)
 	{
-		$this->nav_data['active'] = $menu_path[sizeof($menu_path) - 1];
+		$this->nav_data['active'] = $menu_path[count($menu_path) - 1];
 		$this->send_response();
 	}
 
@@ -378,7 +378,7 @@ class ajax_iohandler extends iohandler_base
 	 */
 	public function set_finished_stage_menu($menu_path)
 	{
-		$this->nav_data['finished'][] = $menu_path[sizeof($menu_path) - 1];
+		$this->nav_data['finished'][] = $menu_path[count($menu_path) - 1];
 		$this->send_response();
 	}
 

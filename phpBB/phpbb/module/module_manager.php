@@ -311,7 +311,7 @@ class module_manager
 				// we're turning a category into a module
 				$branch = $this->get_module_branch($module_data['module_id'], $module_data['module_class'], 'children', false);
 
-				if (sizeof($branch))
+				if (count($branch))
 				{
 					throw new module_not_found_exception('NO_CATEGORY_TO_MODULE');
 				}
@@ -353,10 +353,10 @@ class module_manager
 		}
 
 		$from_data = $moved_modules[0];
-		$diff = sizeof($moved_modules) * 2;
+		$diff = count($moved_modules) * 2;
 
 		$moved_ids = array();
-		for ($i = 0, $size = sizeof($moved_modules); $i < $size; ++$i)
+		for ($i = 0, $size = count($moved_modules); $i < $size; ++$i)
 		{
 			$moved_ids[] = $moved_modules[$i]['module_id'];
 		}
@@ -443,7 +443,7 @@ class module_manager
 
 		$branch = $this->get_module_branch($module_id, $module_class, 'children', false);
 
-		if (sizeof($branch))
+		if (count($branch))
 		{
 			throw new module_exception('CANNOT_REMOVE_MODULE');
 		}
@@ -506,7 +506,7 @@ class module_manager
 		}
 		$this->db->sql_freeresult($result);
 
-		if (!sizeof($target))
+		if (!count($target))
 		{
 			// The module is already on top or bottom
 			throw new module_not_found_exception();

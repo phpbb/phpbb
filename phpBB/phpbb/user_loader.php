@@ -75,7 +75,7 @@ class user_loader
 		// Do not load users we already have in $this->users
 		$user_ids = array_diff($user_ids, array_keys($this->users));
 
-		if (sizeof($user_ids))
+		if (count($user_ids))
 		{
 			$sql = 'SELECT *
 				FROM ' . $this->users_table . '

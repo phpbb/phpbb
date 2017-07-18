@@ -729,7 +729,7 @@ switch ($mode)
 
 			'S_PROFILE_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'	=> $group_options,
-			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
+			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && count($profile_fields['row'])) ? true : false,
 
 			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
@@ -992,7 +992,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if ((($mode == '' || $mode == 'searchuser') || sizeof(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if ((($mode == '' || $mode == 'searchuser') || count(array_intersect($request->variable_names(\phpbb\request\request_interface::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= $request->variable('username', '', true);
 			$email		= strtolower($request->variable('email', ''));
@@ -1039,7 +1039,7 @@ switch ($mode)
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
-			if (isset($find_key_match[$joined_select]) && sizeof($joined) == 3)
+			if (isset($find_key_match[$joined_select]) && count($joined) == 3)
 			{
 				$joined_time = gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]);
 
@@ -1049,7 +1049,7 @@ switch ($mode)
 				}
 			}
 
-			if (isset($find_key_match[$active_select]) && sizeof($active) == 3 && $auth->acl_get('u_viewonline'))
+			if (isset($find_key_match[$active_select]) && count($active) == 3 && $auth->acl_get('u_viewonline'))
 			{
 				$active_time = gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]);
 
@@ -1513,7 +1513,7 @@ switch ($mode)
 
 		$leaders_set = false;
 		// So, did we get any users?
-		if (sizeof($user_list))
+		if (count($user_list))
 		{
 			// Session time?! Session time...
 			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
@@ -1598,7 +1598,7 @@ switch ($mode)
 			$vars = array('user_list', 'use_contact_fields');
 			extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_before', compact($vars)));
 
-			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
+			for ($i = 0, $end = count($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
 				$row = $id_cache[$user_id];
@@ -1614,21 +1614,21 @@ switch ($mode)
 				$memberrow = array_merge(phpbb_show_profile($row, false, false, false), array(
 					'ROW_NUMBER'		=> $i + ($start + 1),
 
-					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
+					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && count($cp_row['row'])) ? true : false,
 					'S_GROUP_LEADER'	=> $is_leader,
 					'S_INACTIVE'		=> $row['user_type'] == USER_INACTIVE,
 
 					'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $row['username']),
 				));
 
-				if (isset($cp_row['row']) && sizeof($cp_row['row']))
+				if (isset($cp_row['row']) && count($cp_row['row']))
 				{
 					$memberrow = array_merge($memberrow, $cp_row['row']);
 				}
 
 				$template->assign_block_vars('memberrow', $memberrow);
 
-				if (isset($cp_row['blockrow']) && sizeof($cp_row['blockrow']))
+				if (isset($cp_row['blockrow']) && count($cp_row['blockrow']))
 				{
 					foreach ($cp_row['blockrow'] as $field_data)
 					{

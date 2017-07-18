@@ -55,7 +55,7 @@ class acp_bots
 		switch ($action)
 		{
 			case 'activate':
-				if ($bot_id || sizeof($mark))
+				if ($bot_id || count($mark))
 				{
 					$sql_id = ($bot_id) ? " = $bot_id" : ' IN (' . implode(', ', $mark) . ')';
 
@@ -69,7 +69,7 @@ class acp_bots
 			break;
 
 			case 'deactivate':
-				if ($bot_id || sizeof($mark))
+				if ($bot_id || count($mark))
 				{
 					$sql_id = ($bot_id) ? " = $bot_id" : ' IN (' . implode(', ', $mark) . ')';
 
@@ -83,7 +83,7 @@ class acp_bots
 			break;
 
 			case 'delete':
-				if ($bot_id || sizeof($mark))
+				if ($bot_id || count($mark))
 				{
 					if (confirm_box(true))
 					{
@@ -109,7 +109,7 @@ class acp_bots
 							WHERE bot_id $sql_id";
 						$db->sql_query($sql);
 
-						if (sizeof($user_id_ary))
+						if (count($user_id_ary))
 						{
 							$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
 							foreach ($_tables as $table)
@@ -207,7 +207,7 @@ class acp_bots
 						$error[] = $user->lang['BOT_NAME_TAKEN'];
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						// New bot? Create a new user and group entry
 						if ($action == 'add')
@@ -338,7 +338,7 @@ class acp_bots
 					'L_TITLE'		=> $user->lang['BOT_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
-					'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR_MSG'		=> (count($error)) ? implode('<br />', $error) : '',
 
 					'BOT_NAME'		=> $bot_row['bot_name'],
 					'BOT_IP'		=> $bot_row['bot_ip'],
@@ -348,7 +348,7 @@ class acp_bots
 					'S_ACTIVE_OPTIONS'	=> $s_active_options,
 					'S_STYLE_OPTIONS'	=> $style_select,
 					'S_LANG_OPTIONS'	=> $lang_select,
-					'S_ERROR'			=> (sizeof($error)) ? true : false,
+					'S_ERROR'			=> (count($error)) ? true : false,
 					)
 				);
 

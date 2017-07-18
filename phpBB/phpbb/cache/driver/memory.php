@@ -188,7 +188,7 @@ abstract class memory extends \phpbb\cache\driver\base
 		}
 		else
 		{
-			if (!sizeof($this->vars))
+			if (!count($this->vars))
 			{
 				$this->load();
 			}

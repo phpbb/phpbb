@@ -42,7 +42,7 @@ class phpbb_files_types_form_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 		$this->request->expects($this->any())
 			->method('file')
 			->willReturn(array());
@@ -137,7 +137,7 @@ class phpbb_files_types_form_test extends phpbb_test_case
 	 */
 	public function test_upload_form($upload, $expected, $plupload = array())
 	{
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 		$this->request->expects($this->any())
 			->method('file')
 			->willReturn($upload);

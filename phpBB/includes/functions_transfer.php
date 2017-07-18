@@ -112,7 +112,7 @@ class transfer
 		$dir = explode('/', $dir);
 		$dirs = '';
 
-		for ($i = 0, $total = sizeof($dir); $i < $total; $i++)
+		for ($i = 0, $total = count($dir); $i < $total; $i++)
 		{
 			$result = true;
 

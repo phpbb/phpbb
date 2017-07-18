@@ -402,7 +402,7 @@ class acp_language
 
 		unset($installed);
 
-		if (sizeof($new_ary))
+		if (count($new_ary))
 		{
 			foreach ($new_ary as $iso => $lang_ary)
 			{

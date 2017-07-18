@@ -409,7 +409,7 @@ class compress_zip extends compress
 	function close()
 	{
 		// Write out central file directory and footer ... if it exists
-		if (sizeof($this->ctrl_dir))
+		if (count($this->ctrl_dir))
 		{
 			fwrite($this->fp, $this->file());
 		}
@@ -511,8 +511,8 @@ class compress_zip extends compress
 		$ctrldir = implode('', $this->ctrl_dir);
 
 		return $ctrldir . $this->eof_cdh .
-			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries "on this disk"
-			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries overall
+			pack('v', count($this->ctrl_dir)) .	// total # of entries "on this disk"
+			pack('v', count($this->ctrl_dir)) .	// total # of entries overall
 			pack('V', strlen($ctrldir)) .			// size of central dir
 			pack('V', $this->datasec_len) .			// offset to start of central dir
 			"\x00\x00";								// .zip file comment length

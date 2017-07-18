@@ -58,7 +58,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$db = $this->db;
 
 		// Auth
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_get')
 			->with($this->stringContains('_'),
@@ -92,7 +92,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		// User
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			$lang,
 			'\phpbb\datetime'
 		));
@@ -105,8 +105,8 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		);
 
 		// Request
-		$type_cast_helper = $this->getMock('\phpbb\request\type_cast_helper_interface');
-		$request = $this->getMock('\phpbb\request\request');
+		$type_cast_helper = $this->createMock('\phpbb\request\type_cast_helper_interface');
+		$request = $this->createMock('\phpbb\request\request');
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);

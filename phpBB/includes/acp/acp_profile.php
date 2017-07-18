@@ -446,7 +446,7 @@ class acp_profile
 				{
 					$exploded_options = (is_array($options)) ? $options : explode("\n", $options);
 
-					if (sizeof($exploded_options) == sizeof($lang_options) || $action == 'create')
+					if (count($exploded_options) == count($lang_options) || $action == 'create')
 					{
 						// The number of options in the field is equal to the number of options already in the database
 						// Or we are creating a new dropdown list.
@@ -567,7 +567,7 @@ class acp_profile
 					}
 				}
 
-				if (sizeof($error))
+				if (count($error))
 				{
 					$submit = false;
 				}
@@ -600,9 +600,9 @@ class acp_profile
 					$s_hidden_fields .= build_hidden_fields($_new_key_ary);
 				}
 
-				if (!sizeof($error))
+				if (!count($error))
 				{
-					if (($step == 3 && (sizeof($this->lang_defs['iso']) == 1 || $save)) || ($action == 'edit' && $save))
+					if (($step == 3 && (count($this->lang_defs['iso']) == 1 || $save)) || ($action == 'edit' && $save))
 					{
 						if (!check_form_key($form_key))
 						{
@@ -616,7 +616,7 @@ class acp_profile
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_EDIT_MODE'		=> ($action == 'edit') ? true : false,
-					'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR_MSG'			=> (count($error)) ? implode('<br />', $error) : '',
 
 					'L_TITLE'			=> $user->lang['STEP_' . $step . '_TITLE_' . strtoupper($action)],
 					'L_EXPLAIN'			=> $user->lang['STEP_' . $step . '_EXPLAIN_' . strtoupper($action)],
@@ -664,7 +664,7 @@ class acp_profile
 
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
+							'L_NEXT_STEP'			=> (count($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
 						);
 
 						// Build options based on profile type
@@ -750,7 +750,7 @@ class acp_profile
 			$active_value = (!$row['field_active']) ? 'activate' : 'deactivate';
 			$id = $row['field_id'];
 
-			$s_need_edit = (sizeof($this->lang_defs['diff'][$row['field_id']])) ? true : false;
+			$s_need_edit = (count($this->lang_defs['diff'][$row['field_id']])) ? true : false;
 
 			if ($s_need_edit)
 			{
@@ -1011,7 +1011,7 @@ class acp_profile
 			$this->update_insert(PROFILE_LANG_TABLE, $sql_ary, array('field_id' => $field_id, 'lang_id' => $default_lang_id));
 		}
 
-		if (is_array($cp->vars['l_lang_name']) && sizeof($cp->vars['l_lang_name']))
+		if (is_array($cp->vars['l_lang_name']) && count($cp->vars['l_lang_name']))
 		{
 			foreach ($cp->vars['l_lang_name'] as $lang_id => $data)
 			{
@@ -1087,7 +1087,7 @@ class acp_profile
 			}
 		}
 
-		if (is_array($cp->vars['l_lang_options']) && sizeof($cp->vars['l_lang_options']))
+		if (is_array($cp->vars['l_lang_options']) && count($cp->vars['l_lang_options']))
 		{
 			$empty_lang = array();
 
@@ -1098,7 +1098,7 @@ class acp_profile
 					$lang_ary = explode("\n", $lang_ary);
 				}
 
-				if (sizeof($lang_ary) != sizeof($cp->vars['lang_options']))
+				if (count($lang_ary) != count($cp->vars['lang_options']))
 				{
 					$empty_lang[$lang_id] = true;
 				}
@@ -1150,7 +1150,7 @@ class acp_profile
 			}
 		}
 
-		if (sizeof($profile_lang_fields))
+		if (count($profile_lang_fields))
 		{
 			foreach ($profile_lang_fields as $sql)
 			{
@@ -1213,7 +1213,7 @@ class acp_profile
 			$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . $db->sql_escape($value) . "'" : (int) $value);
 		}
 
-		if (!sizeof($where_sql))
+		if (!count($where_sql))
 		{
 			return;
 		}
@@ -1229,14 +1229,14 @@ class acp_profile
 		{
 			$sql_ary = array_merge($where_fields, $sql_ary);
 
-			if (sizeof($sql_ary))
+			if (count($sql_ary))
 			{
 				$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
 			}
 		}
 		else
 		{
-			if (sizeof($sql_ary))
+			if (count($sql_ary))
 			{
 				$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE ' . implode(' AND ', $where_sql);

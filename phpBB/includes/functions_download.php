@@ -568,7 +568,7 @@ function phpbb_parse_range_request($request_array, $filesize)
 		$range = explode('-', trim($range_string));
 
 		// "-" is invalid, "0-0" however is valid and means the very first byte.
-		if (sizeof($range) != 2 || $range[0] === '' && $range[1] === '')
+		if (count($range) != 2 || $range[0] === '' && $range[1] === '')
 		{
 			continue;
 		}
