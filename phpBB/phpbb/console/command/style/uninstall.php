@@ -26,11 +26,11 @@ class uninstall extends command
 	{
 		$this
 			->setName('style:uninstall')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_UNINSTALL_STYLE'))
+			->setDescription($this->uiser->lang('CLI_DESCRIPTION_UNINSTALL_STYLE'))
 			->addArgument(
 				'style-path',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_STYLE_PATH')
+				$this->language->lang('CLI_STYLE_PATH')
 			)
 		;
 	}
@@ -49,12 +49,12 @@ class uninstall extends command
 			$this->manager->uninstall($style_id);
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_DELETE', time(), [$style_name]);
 
-			$io->success($this->user->lang('STYLE_UNINSTALLED', $style_name));
+			$io->success($this->language->lang('STYLE_UNINSTALLED', $style_name));
 		}
 		catch (style_exception $e)
 		{
-			$msg = $this->user->lang($e->getMessage());
-			$io->error($this->user->lang($msg, $style_name));
+			$msg = $this->language->lang($e->getMessage());
+			$io->error($this->language->lang($msg, $style_name));
 			return 1;
 		}
 

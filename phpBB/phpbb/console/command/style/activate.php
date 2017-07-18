@@ -25,11 +25,11 @@ class activate extends command
 	{
 		$this
 			->setName('style:activate')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_ACTIVATE_STYLE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_ACTIVATE_STYLE'))
 			->addArgument(
 				'style-path',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_STYLE_PATH')
+				$this->language->lang('CLI_STYLE_PATH')
 			)
 		;
 	}
@@ -48,11 +48,11 @@ class activate extends command
 			$this->manager->activate([$style_id]);
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ACTIVATE', time(), [$style_name]);
 
-			$io->success($this->user->lang('CLI_STYLE_ACTIVATE_SUCCESS', $style_name));
+			$io->success($this->language->lang('CLI_STYLE_ACTIVATE_SUCCESS', $style_name));
 		}
 		catch (style_exception $e)
 		{
-			$io->error($this->user->lang('CLI_STYLE_ACTIVATE_FAILURE', $style_name));
+			$io->error($this->language->lang('CLI_STYLE_ACTIVATE_FAILURE', $style_name));
 
 			return 1;
 		}

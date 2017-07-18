@@ -22,7 +22,7 @@ class show extends command
 	{
 		$this
 			->setName('style:show')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_LIST_STYLES'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_LIST_STYLES'))
 		;
 	}
 
@@ -38,7 +38,7 @@ class show extends command
 			return $v['style_active'];
 		});
 		$enabled = array_column($enabled, 'style_path');
-		$io->section($this->user->lang('CLI_STYLES_ACTIVATED'));
+		$io->section($this->language->lang('CLI_STYLES_ACTIVATED'));
 		$io->listing($enabled);
 
 		// Get styles that are disabled from the installed styles
@@ -46,13 +46,13 @@ class show extends command
 			return !$v['style_active'];
 		});
 		$disabled = array_column($disabled, 'style_path');
-		$io->section($this->user->lang('CLI_STYLES_DEACTIVATED'));
+		$io->section($this->language->lang('CLI_STYLES_DEACTIVATED'));
 		$io->listing($disabled);
 
 		// Get available styles
 		$available = $this->manager->find_available(false);
 		$available = array_column($available, 'style_path');
-		$io->section($this->user->lang('CLI_STYLES_AVAILABLE'));
+		$io->section($this->language->lang('CLI_STYLES_AVAILABLE'));
 		$io->listing($available);
 	}
 }

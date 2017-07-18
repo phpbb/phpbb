@@ -25,11 +25,11 @@ class install extends command
 	{
 		$this
 			->setName('style:install')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_INSTALL_STYLE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_INSTALL_STYLE'))
 			->addArgument(
 				'style-path',
 				InputArgument::REQUIRED,
-				$this->user->lang('CLI_STYLE_PATH')
+				$this->language->lang('CLI_STYLE_PATH')
 			)
 		;
 	}
@@ -49,12 +49,12 @@ class install extends command
 
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_STYLE_ADD', time(), array($style_name));
 
-			$io->success($this->user->lang('STYLE_INSTALLED', $style_name));
+			$io->success($this->language->lang('STYLE_INSTALLED', $style_name));
 		}
 		catch (style_exception $e)
 		{
-			$msg = $this->user->lang($e->getMessage());
-			$io->error($this->user->lang($msg, $style_name));
+			$msg = $this->language->lang($e->getMessage());
+			$io->error($this->language->lang($msg, $style_name));
 
 			return 1;
 		}
