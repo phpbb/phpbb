@@ -14,7 +14,9 @@
 /**
 * @ignore
 */
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -1014,14 +1016,14 @@ if ($submit || $preview || $refresh)
 	$update_subject = $mode != 'edit' || ($post_data['post_subject_md5'] && $post_data['post_subject_md5'] != md5($post_data['post_subject']));
 
 	/* Send the posted text to parser to decode the @mentions and convert each mention into links to corresponding user profiles and push notification to the mentioned users.*/
-	$notification_manager_obj = $phpbb_container->get('notification_manager');
+	// $notification_manager_obj = $phpbb_container->get('notification_manager');
 	$helper_container = $phpbb_container->get('phpbb_mention_helper');
-	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message, $post_data, $notification_manager_obj);
+	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message);
 
 	if (is_array($post_parsing_data) && isset($post_parsing_data["new_post_text"]) && isset($post_parsing_data["users_mentioned"]) && count($post_parsing_data["users_mentioned"] > 0) && isset($post_parsing_data["notif_type_object"]))
 	{
 		$message_parser->message = $post_parsing_data["new_post_text"];
-		$helper_container->send_notifications($post_parsing_data["users_mentioned"], $notification_manager_obj, $post_parsing_data["notif_type_object"]);
+		$helper_container->send_notifications($post_parsing_data["users_mentioned"], $post_parsing_data["notif_type_object"], $post_data);
 	}
 	else
 	{

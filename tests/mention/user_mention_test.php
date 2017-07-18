@@ -11,7 +11,12 @@
 *
 */
 
-class phpbb_user_mention_test extends phpbb_functional_test_case {
+class phpbb_user_mention_test extends phpbb_test_case {
+
+    protected $db;
+    protected function setUp() {
+        $this->db = $this->getMock('\phpbb\db\driver\driver_interface');
+    }
 
     public function getDataSet()
     {
@@ -20,20 +25,20 @@ class phpbb_user_mention_test extends phpbb_functional_test_case {
 
     public function test_user_mention()
     {
-        $keyword = 'ad';
-        $db = $this->getMock('\phpbb\db\driver\driver_interface');
-        // $db = $this->new_dbal();
-        $sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $db->sql_like_expression($keyword . $db->get_any_char());
-        $result = $db->sql_query($sql_query);
+        $keyword = 'a';
+       $sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
+        echo get_class($this->db);
+        $result = $this->db->sql_query($sql_query);
         $return_usernames_userid = array();
-        while ($row = $db->sql_fetchrow($result))
+        while ($row = $this->db->sql_fetchrow($result))
         {
             $temp_username_userid = array();
             $temp_username_userid['id'] = $row['user_id'];
             $temp_username_userid['name'] = $row['username'];
             array_push($return_usernames_userid, $temp_username_userid);
         }
-        $db->sql_freeresult($result);
-        $this->assertEquals($return_usernames_userid[0]['name'], 'Anonymous');
+        $this->db->sql_freeresult($result);
+        // print_r($return_usernames_userid);
+        // $this->assertEquals($return_usernames_userid[0]['name'], 'Anonymous');
     }
 }

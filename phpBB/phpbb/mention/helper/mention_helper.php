@@ -23,6 +23,11 @@ class mention_helper
     private $db;
 
     /**
+     * @var \phpbb\notification\manager
+     */
+    protected $notifications;
+
+    /**
     * @var Notification Details
     */
     private $data;
@@ -33,9 +38,10 @@ class mention_helper
     *
     * @return \phpbb\mention\helper\mention_helper
     */
-    public function __construct(driver_interface $db)
+    public function __construct(driver_interface $db, \phpbb\notification\manager $notification)
     {
         $this->db = $db;
+        $this->notification = $notification;
     }
 
     /**
@@ -129,9 +135,8 @@ class mention_helper
     *
     * @return array Array of responder data
     */
-    public function get_mentioned_users($post_text, $data, $notif_manager_obj)
+    public function get_mentioned_users($post_text)
     {
-        $this->data = $data;
         $regular_expression_match = '#\[mention\](.*?)\[/mention\]#';
         $matches = false;
         $matches = $this->get_regex_match($regular_expression_match, $post_text);
@@ -144,7 +149,7 @@ class mention_helper
             $user_list = $this->get_user_list($matches);
             if (count($user_list) > 0)
             {
-                $temp_notif_type_object = $notif_manager_obj->get_item_type_class('notification.type.mention');
+                $temp_notif_type_object = $this->notification->get_item_type_class('notification.type.mention');
                 $userid_list = $temp_notif_type_object->find_users_for_notification($this->db, $user_list);
                 if (count($userid_list) > 0)
                 {
@@ -167,11 +172,12 @@ class mention_helper
     *                                                new notiifcation type - mention.
     *
     */
-    public function send_notifications($user_list, $notif_manager_obj, $temp_notif_type_object)
+    public function send_notifications($user_list, $temp_notif_type_object, $data)
     {
+        $this->data = $data;
         $notification_method_array = array();
         $notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list, $notif_manager_obj);
-        $notif_manager_obj->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
+        $this->notification->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
     }
 
     /**
