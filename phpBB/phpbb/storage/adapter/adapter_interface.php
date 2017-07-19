@@ -16,6 +16,13 @@ namespace phpbb\storage\adapter;
 interface adapter_interface
 {
 	/**
+	 * Set adapter parameters
+	 *
+	 * @param array	options		Storage-specific options.
+	 */
+	public function configure($options);
+
+	/**
 	 * Dumps content into a file.
 	 *
 	 * @param string	path		The file to be written to.
