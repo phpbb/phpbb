@@ -26,7 +26,7 @@ class phpbb_mention_helper_test extends phpbb_test_case
 
     public function setUp()
     {
-        // $this->notification_manager = $this->getMockBuilder('\phpbb\notification\manager')->disableOriginalConstructor()->setMethods(['get_item_type_class', 'load_object'])->getMock();
+        $this->notification_manager = $this->getMockBuilder('\phpbb\notification\manager')->disableOriginalConstructor()->setMethods(['get_item_type_class', 'load_object'])->getMock();
     }
 
     public function getDataSet()
