@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use phpbb\notification\manager;
 use phpbb\notification\type\mention;
 
-
 class phpbb_mention_helper_test extends phpbb_test_case
 {
 
@@ -39,6 +38,7 @@ class phpbb_mention_helper_test extends phpbb_test_case
     public function test_get_mentioned_users()
     {
         global $request;
+        $request = new phpbb_mock_request();
         $sample_text = 'cbwkf kfbwkef wkfwb @robdyrdek vghjgjdsrshc ftfkyugb buykyuf yiglyftydtrf gyg ygiy @RickyBahner vgjdrs jfytg jbhjv ygfjh @HackMurphy kdnkwe [url = #]@andream[/url] [url = http://www.google.com]google[/url]wifhr [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13]LindsayM[/url] wewe [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13] @LindsayM [/url][mention]admin[/mention][mention]admin[/mention] dwjpfw [mention]admin[/mention]';
         $db = $this->getMock('\phpbb\db\driver\driver_interface');
         $helper_container = new \phpbb\mention\helper\mention_helper($db, $this->notification_manager);
