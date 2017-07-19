@@ -38,14 +38,23 @@ class phpbb_mention_helper_test extends phpbb_test_case
     public function test_get_mentioned_users()
     {
         global $request;
-        $request = new phpbb_mock_request();
+        global $config;
+        global $user;
+       $config = new \phpbb\config\config(array(
+            'script_path'           => '/phpbb',
+            'server_name'           => 'localhost',
+            'server_port'           => 80,
+            'server_protocol'       => 'http://',
+        ));
+        $request = new phpbb_mock_request;
+        $user = new phpbb_mock_user;
         $sample_text = 'cbwkf kfbwkef wkfwb @robdyrdek vghjgjdsrshc ftfkyugb buykyuf yiglyftydtrf gyg ygiy @RickyBahner vgjdrs jfytg jbhjv ygfjh @HackMurphy kdnkwe [url = #]@andream[/url] [url = http://www.google.com]google[/url]wifhr [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13]LindsayM[/url] wewe [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13] @LindsayM [/url][mention]admin[/mention][mention]admin[/mention] dwjpfw [mention]admin[/mention]';
         $db = $this->getMock('\phpbb\db\driver\driver_interface');
         $helper_container = new \phpbb\mention\helper\mention_helper($db, $this->notification_manager);
         $user_list = $helper_container->get_allusers('');
         $post_parsing_text = $helper_container->get_mentioned_users($sample_text);
         $new_post_text = $post_parsing_text['new_post_text'];
-        $expected_text = 'cbwkf kfbwkef wkfwb @robdyrdek vghjgjdsrshc ftfkyugb buykyuf yiglyftydtrf gyg ygiy @RickyBahner vgjdrs jfytg jbhjv ygfjh @HackMurphy kdnkwe [url = #]@andream[/url] [url = http://www.google.com]google[/url]wifhr [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13]LindsayM[/url] wewe [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13] @LindsayM [/url][url=http://memberlist.php?mode=viewprofile&u=2]admin[/url][url=http://memberlist.php?mode=viewprofile&u=2]admin[/url] dwjpfw [url=http://memberlist.php?mode=viewprofile&u=2]admin[/url]';
+        $expected_text = 'cbwkf kfbwkef wkfwb @robdyrdek vghjgjdsrshc ftfkyugb buykyuf yiglyftydtrf gyg ygiy @RickyBahner vgjdrs jfytg jbhjv ygfjh @HackMurphy kdnkwe [url = #]@andream[/url] [url = http://www.google.com]google[/url]wifhr [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13]LindsayM[/url] wewe [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13] @LindsayM [/url][url=http://testhost/memberlist.php?mode=viewprofile&u=2]admin[/url][url=http://testhost/memberlist.php?mode=viewprofile&u=2]admin[/url] dwjpfw [url=http://testhost/memberlist.php?mode=viewprofile&u=2]admin[/url]';
         $this->assertEquals($expected_text, $new_post_text);
     }
 }
