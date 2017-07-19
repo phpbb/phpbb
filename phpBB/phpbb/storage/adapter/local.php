@@ -51,7 +51,7 @@ class local implements adapter_interface
 	{
 		$this->root_path = $this->phpbb_root_path . $options['path'];
 
-		if (substr($this->root_path, -1, 1) != DIRECTORY_SEPARATOR)
+		if (substr($this->root_path, -1, 1) !== DIRECTORY_SEPARATOR)
 		{
 			$this->root_path = $this->root_path . DIRECTORY_SEPARATOR;
 		}
