@@ -59,9 +59,4 @@ class storage
 	{
 		$this->adapter->create_dir($path);
 	}
-
-	public function delete_dir($path)
-	{
-		$this->adapter->delete_dir($path);
-	}
 }
