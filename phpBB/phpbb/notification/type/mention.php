@@ -152,7 +152,7 @@ class mention extends \phpbb\notification\type\post
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// $temp_notif_list = array();
-				if(is_array($notif_list[$row["user_id"]]))
+				if (is_array($notif_list[$row["user_id"]]))
 				{
 					$notif_list[$row["user_id"]][] = $row["method"];
 				}
