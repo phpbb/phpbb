@@ -44,10 +44,9 @@ services:
             - '%core.root_path%'
 
     phpbb.installer.converter.index:
-        class: phpbb\install\converter\controller\converter_index
+        class: phpbb\install\converter\controller\index
         arguments:
             - '@phpbb.installer.converter.controller.helper'
-            - '@installer.helper.container_factory'
             - '@installer.navigation.provider'
             - '@language'
             - '@template'
@@ -73,14 +72,14 @@ services:
             - '%core.php_ext%'
 
     phpbb.installer.converter.start:
-        class: phpbb\install\converter\controller\converter_start
+        class: phpbb\install\converter\controller\start
         arguments:
             - '@phpbb.installer.converter.bin.converter'
             - '@phpbb.installer.converter.controller.helper'
             - '@installer.navigation.provider'
             - '@installer.helper.iohandler_factory'
             - '@installer.helper.config'
-            - '@converter.module.converter_convert'
+            - '@converter.module.converter'
             - '@request'
             - '@language'
             - '@installer.helper.container_factory'

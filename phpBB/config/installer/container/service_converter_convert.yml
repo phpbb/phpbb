@@ -1,6 +1,6 @@
 services:
     converter.task.do.conversion:
-        class: phpbb\install\converter\module\converter_convert\task\convert
+        class: phpbb\install\converter\module\converter\task\convert
         arguments:
             - '@phpbb.installer.converter.bin.converter'
             - '@phpbb.installer.converter.controller.helper'
@@ -9,21 +9,18 @@ services:
             - '@installer.helper.container_factory'
             - '%core.root_path%'
         tags:
-            - { name: converter_convert, order: 10 }
+            - { name: converter, order: 10 }
 
-    converter.module.converter_convert_collection:
+    converter.module.converter_collection:
             class: phpbb\di\ordered_service_collection
             arguments:
                 - '@service_container'
             tags:
-                - { name: service_collection, tag: converter_convert, class_name_aware: true }
+                - { name: service_collection, tag: converter, class_name_aware: true }
 
-    converter.module.converter_convert:
-        class: phpbb\install\converter\module\converter_convert\module
+    converter.module.converter:
+        class: phpbb\install\converter\module\converter\module
         arguments:
-                - '@converter.module.converter_convert_collection'
+                - '@converter.module.converter_collection'
         tags:
             - { name: converter_module, order: 20 }
-
-
-

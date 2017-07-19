@@ -75,7 +75,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 	{
 		//do not use var_dump as it adds an extra < which causes issues with the js.
 		$this->set_menus();
-		$this->set_source_database();
+		$this->set_source_database(); // @todo Validation code to be added.
 		$this->set_destination_database();
 		$this->init_converter();
 		$url = append_sid($this->helper->route('phpbb_converter_start'));
@@ -97,6 +97,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 
 	public function set_source_database()
 	{
+		// todo get_input only for ajax. For CLI we shall use a config file directly.
 		$db_name = $this->io_handler->get_input('db_name','NULL');
 		$db_user = $this->io_handler->get_input('db_user','NULL');
 		$db_pass = $this->io_handler->get_input('db_pass','NULL');

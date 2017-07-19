@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\install\converter\module\converter_convert\task;
+namespace phpbb\install\converter\module\converter\task;
 
 use phpbb\install\exception\user_interaction_required_exception;
 
@@ -35,10 +35,19 @@ class convert extends \phpbb\install\task_base implements \phpbb\install\task_in
 	 */
 	protected $io_handler;
 
+	/**
+	 * @var bool
+	 */
 	protected $converter;
 
+	/**
+	 * @var
+	 */
 	protected $phpbb_root_path;
 
+	/**
+	 * @var
+	 */
 	protected $container_factory;
 
 	/**
@@ -59,7 +68,6 @@ class convert extends \phpbb\install\task_base implements \phpbb\install\task_in
 		$this->converter = $converter;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->container_factory = $container_factory;
-
 		parent::__construct(true);
 	}
 
@@ -68,15 +76,8 @@ class convert extends \phpbb\install\task_base implements \phpbb\install\task_in
 	 */
 	public function run()
 	{
-
 		$this->helper->set_conversion_status(true);
-
-		/*The lock must be the first thing to be acquired as the js queries every 250ms for status
-		and if we acquire the lock later the js may issue another request before previous completes
-		thus stuck in an infinite loop of continue -> lock not acquired -> again continue ....
-		*/
 		$yaml_queue = $this->helper->get_yaml_queue();
-
 		$curr_index = $this->helper->get_file_index();
 		if ($this->helper->get_conversion_status() && $curr_index < count($yaml_queue))
 		{
@@ -86,45 +87,35 @@ class convert extends \phpbb\install\task_base implements \phpbb\install\task_in
 				$this->io_handler->add_log_message('Loading..', 'Fetching next file');
 				$this->helper->set_current_chunk(0);
 				$this->helper->set_chunk_status(true);
-				$log_msg = "Converting " . $yaml_queue[$curr_index];
+				$log_msg = $this->language->lang('CF_LOG_CONVERTING').$yaml_queue[$curr_index];
 				$this->io_handler->set_task_count(1, true);
 				$this->io_handler->set_progress($log_msg, 0.01); //Gives 1 % value at progress bar initially
-				$this->io_handler->add_log_message('Converting..', $log_msg);
+				$this->io_handler->add_log_message($this->language->lang('CF_LOG_CONVERTING'), $log_msg);
 				$this->io_handler->send_response();
 			}
 			else
 			{
 				$total_chunks = $this->helper->get_total_chunks();
 				$chunk = $this->helper->get_current_chunk();
-				$log_msg = "Converting " . $yaml_queue[$curr_index] . "Part[ " . ($chunk + 1) . " ]";
-				$this->io_handler->add_log_message('Converting..', $log_msg);
+				$log_msg = $this->language->lang('CF_LOG_CONVERTING').$yaml_queue[$curr_index] . " ".$this->language->lang('CF_LOG_PART')."[ " . ($chunk + 1) . " ]";
+				$this->io_handler->add_log_message($this->language->lang('CF_LOG_CONVERTING'), $log_msg);
 				$this->io_handler->set_task_count($total_chunks);
 				$this->io_handler->set_progress($log_msg, ($chunk + 1));
 				$this->helper->set_current_chunk($chunk + 1);
 				$this->io_handler->send_response();
-
 			}
-
-
 			$this->converter->begin_conversion($yaml_queue[$curr_index], $this->helper, $this->io_handler);
 			if (!$this->helper->get_chunk_status())
 			{
 				$this->helper->next_file($curr_index);
 				sleep(2); //sleeps 2 seconds to prevent abrupt change of progress bar.
-
 				$this->io_handler->send_response();
 			}
-
 			/*
 			The moment release_lock() is called, when js queries converter_status a continue status is issued
 			causing a reload of the request, thus automatically moving to the next file
 			*/
-
 		}
-
-
-//print(str_pad(' ', 4096) . "\n");
-
 	}
 
 	/**

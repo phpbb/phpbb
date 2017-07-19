@@ -473,6 +473,10 @@ $lang = array_merge($lang, array(
 	'CF_LIST'	=>'Files to be converted',
 	'CF_CONVERT'	=>'Conversion in progress',
 	'CF_FINISHED'	=>'Conversion Finished',
+	'CF_TITLE_HOME'	=>'Converter Framework Home',
+	'CF_IN_PROGRESS'	=>'Converter Framework conversion in progress .....',
+	'CF_LOG_CONVERTING'	=>'Converting..',
+	'CF_LOG_PART'	=>'Part',
 
 
 	'CONVERTER_TEXT_INTRO'	=>'Welcome to converter framework index. Click on the link below to start conversion',

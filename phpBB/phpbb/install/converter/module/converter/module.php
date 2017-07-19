@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\install\converter\module\converter_convert;
+namespace phpbb\install\converter\module\converter;
 
 /**
  * Converter module for getting database parameters.
