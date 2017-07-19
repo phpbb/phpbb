@@ -19,9 +19,9 @@ namespace phpbb\avatar\driver;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
-	 * @var \phpbb\filesystem\filesystem_interface
+	 * @var \phpbb\storage\storage
 	 */
-	protected $filesystem;
+	protected $storage;
 
 	/**
 	* @var \phpbb\event\dispatcher_interface
@@ -39,18 +39,18 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\config\config $config phpBB configuration
 	* @param string $phpbb_root_path Path to the phpBB root
 	* @param string $php_ext PHP file extension
-	* @param \phpbb\filesystem\filesystem_interface $filesystem phpBB filesystem helper
+	* @param \phpbb\storage\storage phpBB avatar storage
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
 	* @param \phpbb\files\factory $files_factory File classes factory
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\storage\storage $storage, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->filesystem = $filesystem;
+		$this->storage = $storage;
 		$this->path_helper = $path_helper;
 		$this->dispatcher = $dispatcher;
 		$this->files_factory = $files_factory;
@@ -116,7 +116,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		if (!empty($upload_file['name']))
 		{
-			$file = $upload->handle_upload('files.types.form', 'avatar_upload_file');
+			$file = $upload->handle_upload('files.types.form_storage', 'avatar_upload_file');
 		}
 		else if (!empty($this->config['allow_avatar_remote_upload']) && !empty($url))
 		{
@@ -156,7 +156,7 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			$file = $upload->handle_upload('files.types.remote', $url);
+			$file = $upload->handle_upload('files.types.remote_storage', $url);
 		}
 		else
 		{
@@ -169,24 +169,9 @@ class upload extends \phpbb\avatar\driver\driver
 		// If there was an error during upload, then abort operation
 		if (count($file->error))
 		{
-			$file->remove();
+			$file->remove($this->storage);
 			$error = $file->error;
 			return false;
-		}
-
-		// Calculate new destination
-		$destination = $this->config['avatar_path'];
-
-		// Adjust destination path (no trailing slash)
-		if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
-		{
-			$destination = substr($destination, 0, -1);
-		}
-
-		$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-		if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
-		{
-			$destination = '';
 		}
 
 		$filedata = array(
@@ -203,7 +188,6 @@ class upload extends \phpbb\avatar\driver\driver
 		*
 		* @event core.avatar_driver_upload_move_file_before
 		* @var	array	filedata			Array containing uploaded file data
-		* @var	string	destination			Destination directory where the file is going to be moved
 		* @var	string	prefix				Prefix for the avatar filename
 		* @var	array	row					Array with avatar row data
 		* @var	array	error				Array of errors, if filled in by this event file will not be moved
@@ -212,7 +196,6 @@ class upload extends \phpbb\avatar\driver\driver
 		*/
 		$vars = array(
 			'filedata',
-			'destination',
 			'prefix',
 			'row',
 			'error',
@@ -224,14 +207,14 @@ class upload extends \phpbb\avatar\driver\driver
 		if (!count($error))
 		{
 			// Move file and overwrite any existing image
-			$file->move_file($destination, true);
+			$file->move_file($this->storage, true);
 		}
 
 		// If there was an error during move, then clean up leftovers
 		$error = array_merge($error, $file->error);
 		if (count($error))
 		{
-			$file->remove();
+			$file->remove($this->storage);
 			return false;
 		}
 
@@ -268,10 +251,9 @@ class upload extends \phpbb\avatar\driver\driver
 	{
 
 		$error = array();
-		$destination = $this->config['avatar_path'];
 		$prefix = $this->config['avatar_salt'] . '_';
 		$ext = substr(strrchr($row['avatar'], '.'), 1);
-		$filename = $this->phpbb_root_path . $destination . '/' . $prefix . $row['id'] . '.' . $ext;
+		$filename = $prefix . $row['id'] . '.' . $ext;
 
 		/**
 		* Before deleting an existing avatar
@@ -284,21 +266,20 @@ class upload extends \phpbb\avatar\driver\driver
 		* @since 3.1.6-RC1
 		*/
 		$vars = array(
-			'destination',
 			'prefix',
 			'row',
 			'error',
 		);
 		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
 
-		if (!count($error) && $this->filesystem->exists($filename))
+		if (!count($error) && $this->storage->exists($filename))
 		{
 			try
 			{
-				$this->filesystem->remove($filename);
+				$this->storage->delete($filename);
 				return true;
 			}
-			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			catch (\phpbb\storage\exception\exception $e)
 			{
 				// Fail is covered by return statement below
 			}
@@ -316,12 +297,12 @@ class upload extends \phpbb\avatar\driver\driver
 	}
 
 	/**
-	* Check if user is able to upload an avatar
+	* Check if user is able to upload an avatar to a temporary folder
 	*
 	* @return bool True if user can upload, false if not
 	*/
 	protected function can_upload()
 	{
-		return ($this->filesystem->exists($this->phpbb_root_path . $this->config['avatar_path']) && $this->filesystem->is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
+		return (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on');
 	}
 }

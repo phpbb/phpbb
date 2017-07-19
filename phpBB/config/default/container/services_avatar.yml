@@ -61,7 +61,7 @@ services:
             - '@config'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '@filesystem'
+            - '@storage.avatar'
             - '@path_helper'
             - '@dispatcher'
             - '@files.factory'
