@@ -15,7 +15,6 @@ namespace phpbb\storage\adapter;
 
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
-use phpbb\config\config;
 use phpbb\filesystem\filesystem;
 
 /**
@@ -31,15 +30,26 @@ class local implements adapter_interface
 	protected $filesystem;
 
 	/** @var string path */
+	protected $phpbb_root_path;
+
+	/** @var string path */
 	protected $root_path;
 
 	/**
 	 * Constructor
 	 */
-	public function __construct(config $config, filesystem $filesystem, $phpbb_root_path, $path_key)
+	public function __construct(filesystem $filesystem, $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
-		$this->root_path = $phpbb_root_path . $config[$path_key];
+		$this->phpbb_root_path = $phpbb_root_path;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function configure($options)
+	{
+		$this->root_path = $this->phpbb_root_path . $options['path'];
 
 		if (substr($this->root_path, -1, 1) != DIRECTORY_SEPARATOR)
 		{
