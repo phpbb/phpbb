@@ -1010,11 +1010,11 @@ if ($submit || $preview || $refresh)
 	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
 
 	// Also check if subject got updated...
-	$update_subject = $mode != 'edit' ||
-					  ($post_data['post_subject_md5'] &&
-					  $post_data['post_subject_md5'] != md5($post_data['post_subject']));
+	$update_subject = $mode != 'edit' || ($post_data['post_subject_md5'] && $post_data['post_subject_md5'] != md5($post_data['post_subject']));
 
-	/* Send the posted text to parser to decode the @mentions and convert each mention into links to corresponding user profiles and push notification to the mentioned users.*/
+	/* Send the posted text to parser to decode the @mentions.
+	   Convert each mention into links to corresponding user profiles
+	   Push notification to the mentioned users.*/
 	$helper_container = $phpbb_container->get('phpbb_mention_helper');
 	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message);
 

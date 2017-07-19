@@ -11,11 +11,32 @@
 *
 */
 
+use phpbb\db\driver\driver_interface;
+use phpbb\request\request_interface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use phpbb\mention\helper\mention_helper;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 class phpbb_user_mention_test extends phpbb_test_case {
 
     protected $db;
+    protected $request;
+    protected $container;
+    protected $helper;
+
     protected function setUp() {
         $this->db = $this->getMock('\phpbb\db\driver\driver_interface');
+        $this->helper = $this->getMockBuilder('phpbb\mention\helper\mention_helper')->disableOriginalConstructor()->setMethods(['get_allusers'])->getMock();
+        $this->helper->method('get_allusers')
+            ->willReturn(array("name" => "admin", "id" => 2));
+        $conatiner_functions = ['set', 'get', 'has', 'initialized', 'getParameter', 'setParameter', 'hasParameter'];
+        $this->container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->disableOriginalConstructor()->setMethods($conatiner_functions)->getMock();
+        $this->container->method('get')
+            ->willReturn($this->helper);
+        $request_functions = ['overwrite','variable','raw_variable','server','header','is_set_post','is_set','is_ajax','is_secure','variable_names','get_super_global', 'escape'];
+        $this->request = $this->getMockBuilder('phpbb\request\request_interface')->disableOriginalConstructor()->setMethods($request_functions)->getMock();
+        $this->request->method('variable')
+            ->willReturn('adm');
     }
 
     public function getDataSet()
@@ -23,22 +44,11 @@ class phpbb_user_mention_test extends phpbb_test_case {
         return $this->createXMLDataSet(dirname(__FILE__) . '/users/user_details.xml');
     }
 
-    public function test_user_mention()
+    public function test_handle()
     {
-        $keyword = 'a';
-       $sql_query = 'SELECT user_id, username FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . ' AND ' . $this->db->sql_in_set('user_type', [USER_NORMAL, USER_FOUNDER]) .  ' AND username_clean ' . $this->db->sql_like_expression($keyword . $this->db->get_any_char());
-        echo get_class($this->db);
-        $result = $this->db->sql_query($sql_query);
-        $return_usernames_userid = array();
-        while ($row = $this->db->sql_fetchrow($result))
-        {
-            $temp_username_userid = array();
-            $temp_username_userid['id'] = $row['user_id'];
-            $temp_username_userid['name'] = $row['username'];
-            array_push($return_usernames_userid, $temp_username_userid);
-        }
-        $this->db->sql_freeresult($result);
-        // print_r($return_usernames_userid);
-        // $this->assertEquals($return_usernames_userid[0]['name'], 'Anonymous');
+        $mention_controller_class = new \phpbb\mention\controller\user_mention($this->db, $this->request, $this->container);
+        $json_response = $mention_controller_class->handle();
+        $user_suggestion = json_decode($json_response->getContent());
+        $this->assertEquals(array($user_suggestion->name,$user_suggestion->id), array("admin", 2));
     }
 }
