@@ -13,6 +13,8 @@
 
 namespace phpbb\avatar\driver;
 
+use \phpbb\storage\exception\exception as storage_exception;
+
 /**
 * Handles avatars uploaded to the board
 */
@@ -279,7 +281,7 @@ class upload extends \phpbb\avatar\driver\driver
 				$this->storage->delete($filename);
 				return true;
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (storage_exception $e)
 			{
 				// Fail is covered by return statement below
 			}
