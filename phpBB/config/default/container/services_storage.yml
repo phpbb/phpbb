@@ -12,7 +12,6 @@ services:
         class: phpbb\storage\adapter_factory
         arguments:
             - '@config'
-            - '@service_container'
             - '@storage.adapter_collection'
             - '@storage.provider_collection'
 

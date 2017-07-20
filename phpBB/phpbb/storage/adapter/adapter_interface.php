@@ -25,13 +25,6 @@ interface adapter_interface
 	/**
 	 * Dumps content into a file.
 	 *
-	 * @param array	options		Storage-specific options.
-	 */
-	public function configure($options);
-
-	/**
-	 * Dumps content into a file.
-	 *
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
 	 *
