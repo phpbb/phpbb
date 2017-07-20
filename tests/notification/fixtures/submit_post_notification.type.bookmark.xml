@@ -43,6 +43,14 @@
 			<value>0</value>
 			<value></value>
 		</row>
+		<row>
+			<value>2</value>
+			<value>6</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_notification_types">
 		<column>notification_type_id</column>
@@ -175,14 +183,7 @@
 			<value>0</value>
 			<value>6</value>
 			<value>notification.method.board</value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>notification.type.mention</value>
 			<value>0</value>
-			<value>6</value>
-			<value>notification.method.board</value>
-			<value>1</value>
 		</row>
 		<row>
 			<value>notification.type.mention</value>
