@@ -17,7 +17,7 @@ namespace phpbb\notification\type;
 * Post notifications class
 * This class handles notifications for replies to a topic
 */
-class mention extends \phpbb\notification\type\post
+class mention extends \phpbb\notification\type\base
 {
 	/**
 	* Get notification type name
