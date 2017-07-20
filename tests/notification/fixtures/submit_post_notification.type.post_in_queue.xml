@@ -15,6 +15,14 @@
 			<value>0</value>
 			<value></value>
 		</row>
+		<row>
+			<value>2</value>
+			<value>6</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_notification_types">
 		<column>notification_type_id</column>
@@ -23,6 +31,11 @@
 		<row>
 			<value>1</value>
 			<value>notification.type.post_in_queue</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>notification.type.mention</value>
 			<value>1</value>
 		</row>
 	</table>
