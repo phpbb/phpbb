@@ -923,7 +923,7 @@ class manager
 			{
 				$this->db->sql_transaction('rollback');
 
-				throw new \phpbb\notification\exception('NOTIFICATION_TYPE_NOT_EXIST', array($notification_type_name));
+				throw new \phpbb\notification\exception('NOTIFICATION_TYPE_NOT_EXIST' + $notification_type_name, array($notification_type_name));
 			}
 
 			$sql = 'INSERT INTO ' . $this->notification_types_table . ' ' . $this->db->sql_build_array('INSERT', array(
