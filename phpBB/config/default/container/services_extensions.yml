@@ -5,7 +5,6 @@ services:
             - '@service_container'
             - '@dbal.conn'
             - '@config'
-            - '@filesystem'
             - '%tables.ext%'
             - '%core.root_path%'
             - '%core.php_ext%'

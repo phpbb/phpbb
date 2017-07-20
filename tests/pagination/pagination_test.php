@@ -39,12 +39,11 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 
-		$filesystem = new \phpbb\filesystem\filesystem();
 		$manager = new phpbb_mock_extension_manager(dirname(__FILE__) . '/', array());
 
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator($filesystem, dirname(__FILE__) . '/')
+			new \phpbb\routing\file_locator(dirname(__FILE__) . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $manager);
 		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, dirname(__FILE__) . '/', 'php');
@@ -58,7 +57,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			$request
 		);
 
-		$this->routing_helper = new \phpbb\routing\helper($this->config, $router, $symfony_request, $request, $filesystem, '', 'php');
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $router, $symfony_request, $request, '', 'php');
 		$this->helper = new phpbb_mock_controller_helper($this->template, $this->user, $this->config, $symfony_request, $request, $this->routing_helper);
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper, $phpbb_dispatcher);
 	}

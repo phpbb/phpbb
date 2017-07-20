@@ -11,11 +11,11 @@
  *
  */
 
-namespace phpbb\filesystem\exception;
+namespace phpbb\storage\exception;
 
 use phpbb\exception\runtime_exception;
 
-class filesystem_exception extends runtime_exception
+class exception extends runtime_exception
 {
 	/**
 	 * Constructor
@@ -26,7 +26,7 @@ class filesystem_exception extends runtime_exception
 	 * @param \Exception	$previous	The previous runtime_exception used for the runtime_exception chaining.
 	 * @param integer		$code		The Exception code.
 	 */
-	public function __construct($message = '', $filename = '', $parameters = array(), \Exception $previous = null, $code = 0)
+	public function __construct($message = '', $filename = '', $parameters = [], \Exception $previous = null, $code = 0)
 	{
 		parent::__construct($message, array_merge(array('filename' => $filename), $parameters), $previous, $code);
 	}
