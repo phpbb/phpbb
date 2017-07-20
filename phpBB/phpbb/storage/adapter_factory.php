@@ -15,19 +15,16 @@ namespace phpbb\storage;
 
 use phpbb\config\config;
 use phpbb\di\service_collection;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class adapter_factory
 {
 	protected $config;
-	protected $container;
 	protected $adapters;
 	protected $providers;
 
-	public function __construct(config $config, ContainerInterface $container, service_collection $adapters, service_collection $providers)
+	public function __construct(config $config, service_collection $adapters, service_collection $providers)
 	{
 		$this->config = $config;
-		$this->container = $container;
 		$this->adapters = $adapters;
 		$this->providers = $providers;
 	}
