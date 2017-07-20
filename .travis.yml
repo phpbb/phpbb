@@ -1,4 +1,6 @@
 language: php
+sudo: required
+dist: precise
 
 matrix:
   include:
