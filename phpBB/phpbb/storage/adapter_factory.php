@@ -18,10 +18,28 @@ use phpbb\di\service_collection;
 
 class adapter_factory
 {
+	/**
+	 * @var \phpbb\config\config
+	 */
 	protected $config;
+
+	/**
+	 * @var \phpbb\di\service_collection
+	 */
 	protected $adapters;
+
+	/**
+	 * @var \phpbb\di\service_collection
+	 */
 	protected $providers;
 
+	/**
+	 * Constructor
+	 *
+	 * @param \phpbb\config\config				$config
+	 * @param \phpbb\di\service_collection		$adapters
+	 * @param \phpbb\di\service_collection		$providers
+	 */
 	public function __construct(config $config, service_collection $adapters, service_collection $providers)
 	{
 		$this->config = $config;
@@ -29,6 +47,13 @@ class adapter_factory
 		$this->providers = $providers;
 	}
 
+	/**
+	 * Obtains a configured adapters for a given storage
+	 *
+	 * @param string	$storage_name
+	 *
+	 * @return \phpbb\storage\adapter\adapter_interface
+	 */
 	public function get($storage_name)
 	{
 		$provider_class = $this->config['storage\\' . $storage_name . '\\adapter'];
@@ -40,6 +65,14 @@ class adapter_factory
 		return $adapter;
 	}
 
+	/**
+	 * Obtains configuration for a given storage
+	 *
+	 * @param string	$storage_name
+	 * @param array		$definitions
+	 *
+	 * @return array	Returns storage configuration values
+	 */
 	public function build_options($storage_name, array $definitions)
 	{
 		$options = [];

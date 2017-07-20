@@ -15,11 +15,17 @@ namespace phpbb\storage\provider;
 
 class local implements provider_interface
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_class()
 	{
 		return \phpbb\storage\adapter\local::class;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_options()
 	{
 		return ['path'];

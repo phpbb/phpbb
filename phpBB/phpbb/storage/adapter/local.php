@@ -29,10 +29,14 @@ class local implements adapter_interface
 	 */
 	protected $filesystem;
 
-	/** @var string path */
+	/**
+	 * @var string path
+	 */
 	protected $phpbb_root_path;
 
-	/** @var string path */
+	/**
+	 * @var string path
+	 */
 	protected $root_path;
 
 	/**
