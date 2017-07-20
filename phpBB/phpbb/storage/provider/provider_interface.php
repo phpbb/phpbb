@@ -15,6 +15,17 @@ namespace phpbb\storage\provider;
 
 interface provider_interface
 {
+	/**
+	 * Gets adapter class.
+	 *
+	 * @return \phpbb\storage\adapter\adapter_interface
+	 */
 	public function get_class();
+
+	/**
+	 * Gets adapter options.
+	 *
+	 * @return string	Configuration keys
+	 */
 	public function get_options();
 }
