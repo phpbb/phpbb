@@ -440,7 +440,7 @@ class filespec_storage
 			}
 		}
 
-		if($overwrite && $storage->exists($this->destination_file))
+		if ($overwrite && $storage->exists($this->destination_file))
 		{
 			$storage->delete($this->destination_file);
 		}
