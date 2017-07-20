@@ -11,7 +11,6 @@
  *
  */
 
-
 namespace phpbb\install\converter\controller;
 
 use phpbb\install\converter\bin\converter;
@@ -214,7 +213,7 @@ class start
 				'U_LINK' => $this->helper->route('phpbb_converter_start'),
 			));
 			$this->helper->set_conversion_status(false);
-			$this->converter->debug_delete_table();
+			//$this->converter->debug_delete_table();
 			return $this->helper->render('converter_process.html', 'CF_IN_PROGRESS', true);
 		}
 	}

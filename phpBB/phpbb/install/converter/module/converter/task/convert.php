@@ -21,7 +21,7 @@ use phpbb\install\exception\user_interaction_required_exception;
 class convert extends \phpbb\install\task_base implements \phpbb\install\task_interface
 {
 	/**
-	 * @var \phpbb\install\helper\database
+	 * @var \phpbb\install\helper\install_helper
 	 */
 	protected $helper;
 
@@ -46,21 +46,31 @@ class convert extends \phpbb\install\task_base implements \phpbb\install\task_in
 	protected $phpbb_root_path;
 
 	/**
-	 * @var
+	 * @var \phpbb\install\helper\container_factory
 	 */
 	protected $container_factory;
 
 	/**
-	 * Constructor
-	 *
-	 * @param \phpbb\install\helper\database                      $database_helper Installer's database helper
-	 * @param \phpbb\install\helper\config                        $install_config  Installer's config helper
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface $iohandler       Installer's input-output handler
+	 * @var \phpbb\language\language
 	 */
-	public function __construct($converter, $helper,
+	protected $language;
+
+	/**
+	 * convert constructor.
+	 *
+	 * @param \phpbb\install\converter\bin\converter              $converter
+	 * @param \phpbb\install\helper\install_helper                $helper
+	 * @param \phpbb\install\helper\config                        $install_config
+	 * @param \phpbb\install\helper\iohandler\iohandler_interface $iohandler
+	 * @param \phpbb\install\helper\container_factory             $container_factory
+	 * @param \phpbb\language\language                            $language
+	 * @param                                                     $phpbb_root_path
+	 */
+	public function __construct(\phpbb\install\converter\bin\converter $converter, $helper,
 		\phpbb\install\helper\config $install_config,
 		\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-		$container_factory, $phpbb_root_path)
+		\phpbb\install\helper\container_factory $container_factory,
+		\phpbb\language\language $language, $phpbb_root_path)
 	{
 		$this->helper = $helper;
 		$this->install_config = $install_config;
@@ -68,6 +78,7 @@ class convert extends \phpbb\install\task_base implements \phpbb\install\task_in
 		$this->converter = $converter;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->container_factory = $container_factory;
+		$this->language = $language;
 		parent::__construct(true);
 	}
 

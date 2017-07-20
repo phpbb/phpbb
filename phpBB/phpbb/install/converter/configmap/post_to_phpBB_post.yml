@@ -2,9 +2,6 @@ table_def:
   table_source: posts
   table_destination: phpBB_posts
 col_def:
-  - col1: ID
-    col2: uid
-
   - col1: uname
     col2: user_name
 

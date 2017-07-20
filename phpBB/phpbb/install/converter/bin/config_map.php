@@ -1,4 +1,15 @@
 <?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license       GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\install\converter\bin;
 
@@ -6,7 +17,6 @@ require_once 'util_conversion_functions.php';
 
 //Get the YAML component ready to use
 use \Symfony\Component\Yaml\Yaml;
-
 
 /**
  * Class config_map
@@ -65,10 +75,19 @@ class config_map
 	 */
 	public $helper;
 
+	/**
+	 * @var int
+	 */
 	public $total_rows;
 
+	/**
+	 * @var int
+	 */
 	public static $chunk_size =100;
 
+	/**
+	 * @var string
+	 */
 	public $config_file_base = 'phpbb/install/converter/configmap/';
 
 	/**
@@ -89,10 +108,8 @@ class config_map
 			$fobj = file_get_contents($file_link);
 
 		} catch(Exception $e){
-
 		}
 		$this->data_map_arr = Yaml::parse($fobj);
-
 		$this->data_map = (object)$this->data_map_arr;
 		$this->set_table();
 		$this->set_col();
@@ -196,6 +213,10 @@ class config_map
 		return $this->total_rows;
 	}
 
+	/**
+	 * @param $chunk
+	 *
+	 */
 	public function copy_data($chunk)
 	{
 		/*
@@ -208,7 +229,6 @@ class config_map
 		var_dump($this->total_rows);
 		$query_source->select($this->source_col)->from($this->table_source)->setFirstResult($offset)->setMaxResults($limit);
 		$stmt_source = $query_source->execute();
-
 		while ($each_row = $stmt_source->fetch())
 		{ //As every row is fetched keep inserting
 			 //Holds final converted values
@@ -233,7 +253,7 @@ class config_map
 
 
 	/**
-	 * Effects the actual conversion. @todo Old function to be depracted
+	 * Effects the actual conversion. @todo Old function to be deprecated
 	 */
 	public function copy_data_OLD()
 	{
@@ -241,7 +261,6 @@ class config_map
 		//var_dump($this->table_source);
 		$query_source->select($this->source_col)->from($this->table_source);
 		$stmt_source = $query_source->execute();
-
 		while ($each_row = $stmt_source->fetch())
 		{ //As every row is fetched keep inserting
 			 //Holds final converted values

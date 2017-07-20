@@ -64,7 +64,6 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->container_factory = $container_factory;
 		$this->config_php_file = new config_php_file($phpbb_root_path,$php_ext);
-
 		parent::__construct(true);
 	}
 
@@ -84,7 +83,6 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 			$url,
 		));
 		$this->io_handler->send_response(true);
-
 	}
 
 	public function set_menus()
@@ -109,10 +107,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 			'host'     => $db_host,
 			'driver'   => 'pdo_mysql',// todo: Convert from phpbb driver to Doctrine driver names.
 		);
-
 		$this->helper->set_source_db($credentials_source);
-
-
 	}
 
 	public function set_destination_database()
@@ -131,7 +126,6 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 	{
 		$this->yaml_queue = $this->converter->get_yaml_queue();
 		$this->helper->set_yaml_queue($this->yaml_queue);
-
 		$this->helper->set_conversion_status(true);
 		$this->helper->set_file_index(0);
 		//$this->helper->set_total_files(count($this->yaml_queue));
