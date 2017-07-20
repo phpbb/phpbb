@@ -80,10 +80,10 @@ interface adapter_interface
 
 	/**
 	 * Creates a directory recursively.
- 	 *
+	 *
 	 * @param string	$path	The directory path
- 	 *
+	 *
 	 * @throws \phpbb\storage\exception\exception	On any directory creation failure
- 	 */
+	 */
 	public function create_dir($path);
 }
