@@ -60,4 +60,11 @@ interface module_interface
 	 * @return array
 	 */
 	public function get_navigation_stage_path();
+
+	/**
+	 * Returns task index from the request
+	 *
+	 * @return int
+	 */
+	public function select_task_index();
 }

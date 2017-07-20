@@ -30,4 +30,12 @@ class install_module extends \phpbb\install\module_base
 	{
 		return 0;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function select_task_index()
+	{
+		return $get_tast_index = (int) $this->iohandler->get_input('task_index', 0);
+	}
 }

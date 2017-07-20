@@ -112,20 +112,24 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 				'description'	=> 'ADMIN_USERNAME_EXPLAIN',
 				'type'			=> 'text',
 				'default'		=> $admin_username,
+				'load'		=> $this->install_config->get('admin_name')
 			),
 			'board_email'	=> array(
 				'label'		=> 'CONTACT_EMAIL',
 				'type'		=> 'email',
 				'default'	=> $admin_email,
+				'load'		=> $this->install_config->get('board_email')
 			),
 			'admin_pass1'	=> array(
 				'label'			=> 'ADMIN_PASSWORD',
 				'description'	=> 'ADMIN_PASSWORD_EXPLAIN',
 				'type'			=> 'password',
+				'load'		=> $this->install_config->get('admin_passwd')
 			),
 			'admin_pass2'	=> array(
 				'label'	=> 'ADMIN_PASSWORD_CONFIRM',
 				'type'	=> 'password',
+				'load'		=> $this->install_config->get('admin_passwd')
 			),
 			'submit_admin'	=> array(
 				'label'	=> 'SUBMIT',
@@ -215,4 +219,12 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 	{
 		return '';
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_admin_data');
+    }
 }

@@ -137,7 +137,7 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 			$dbms_select[] = array(
 				'value'		=> $dbms_key,
 				'label'		=> 'DB_OPTION_' . strtoupper($dbms_key),
-				'selected'	=> ($dbms_key === $dbms),
+				'selected'	=> ((($dbms_key === $dbms) && !$this->install_config->get('dbms')) || ($dbms_key == $this->install_config->get('dbms'))),
 			);
 		}
 
@@ -152,32 +152,38 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 				'description'	=> 'DB_HOST_EXPLAIN',
 				'type'			=> 'text',
 				'default'		=> $dbhost,
+                'load'		=> $this->install_config->get('dbhost')
 			),
 			'dbport' => array(
 				'label'			=> 'DB_PORT',
 				'description'	=> 'DB_PORT_EXPLAIN',
 				'type'			=> 'text',
 				'default'		=> $dbport,
+                'load'		=> $this->install_config->get('dbport')
 			),
 			'dbuser' => array(
 				'label'		=> 'DB_USERNAME',
 				'type'		=> 'text',
 				'default'	=> $dbuser,
+                'load'		=> $this->install_config->get('dbuser')
 			),
 			'dbpasswd' => array(
 				'label'		=> 'DB_PASSWORD',
 				'type'	=> 'password',
+                'load'		=> $this->install_config->get('dbpasswd')
 			),
 			'dbname' => array(
 				'label'		=> 'DB_NAME',
 				'type'		=> 'text',
 				'default'	=> $dbname,
+                'load'		=> $this->install_config->get('dbname')
 			),
 			'table_prefix' => array(
 				'label'			=> 'TABLE_PREFIX',
 				'description'	=> 'TABLE_PREFIX_EXPLAIN',
 				'type'			=> 'text',
 				'default'		=> $table_prefix,
+                'load'		=> $this->install_config->get('table_prefix')
 			),
 			'submit_database' => array(
 				'label'	=> 'SUBMIT',
@@ -267,4 +273,12 @@ class obtain_database_data extends \phpbb\install\task_base implements \phpbb\in
 	{
 		return '';
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_database_data');
+    }
 }

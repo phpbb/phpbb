@@ -41,7 +41,7 @@ class install_navigation implements navigation_interface
 		{
 			return array();
 		}
-
+		// creation of data array for navigation bar
 		return array(
 			'install'	=> array(
 				'label'	=> 'INSTALL',
@@ -58,15 +58,55 @@ class install_navigation implements navigation_interface
 						'stage'	=> true,
 						'order'	=> 1,
 					),
-					'obtain_data'	=> array(
-						'label'	=> 'STAGE_OBTAIN_DATA',
+					'obtain_admin_data'	=> array(
+						'label'	=> 'ADMIN_CONFIG',
 						'stage'	=> true,
+						'is_link'	=> true,
+						'link'	=> 'phpbb_installer_install',
+						'class'	=> 'set_task_index',
+						'task_index'	=> '1',
 						'order'	=> 2,
+					),
+					'obtain_database_data'	=> array(
+						'label'	=> 'DB_CONFIG',
+						'stage'	=> true,
+						'is_link'	=> true,
+						'link'	=> 'phpbb_installer_install',
+						'class'	=> 'set_task_index',
+						'task_index'	=> '2',
+						'order'	=> 3,
+					),
+					'obtain_server_data'	=> array(
+						'label'	=> 'SERVER_CONFIG',
+						'stage'	=> true,
+						'is_link'	=> true,
+						'link'	=> 'phpbb_installer_install',
+						'class'	=> 'set_task_index',
+						'task_index'	=> '3',
+						'order'	=> 4,
+					),
+					'obtain_email_data'	=> array(
+						'label'	=> 'EMAIL_CONFIG',
+						'stage'	=> true,
+						'is_link'	=> true,
+						'link'	=> 'phpbb_installer_install',
+						'class'	=> 'set_task_index',
+						'task_index'	=> '4',
+						'order'	=> 5,
+					),
+					'obtain_board_data'	=> array(
+						'label'	=> 'BOARD_CONFIG',
+						'stage'	=> true,
+						'is_link'	=> true,
+						'link'	=> 'phpbb_installer_install',
+						'class'	=> 'set_task_index',
+						'task_index'	=> '5',
+						'order'	=> 6,
 					),
 					'install'	=> array(
 						'label'	=> 'STAGE_INSTALL',
 						'stage'	=> true,
-						'order'	=> 3,
+						'order'	=> 7,
 					),
 				),
 			),

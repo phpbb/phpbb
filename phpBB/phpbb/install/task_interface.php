@@ -58,4 +58,11 @@ interface task_interface
 	 * @return string
 	 */
 	public function get_task_lang_name();
+	
+	/**
+	 * Returns an array to the correct navigation stage
+	 *
+	 * @return array
+	 */
+    public function get_navigation_stage_path()
 }

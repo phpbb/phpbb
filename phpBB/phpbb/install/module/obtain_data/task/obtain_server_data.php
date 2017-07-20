@@ -122,12 +122,12 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 						array(
 							'value'		=> 0,
 							'label'		=> 'NO',
-							'selected'	=> (!$cookie_secure),
+							'selected'	=> (!$cookie_secure && !$this->install_config->get('cookie_secure')),
 						),
 						array(
 							'value'		=> 1,
 							'label'		=> 'YES',
-							'selected'	=> ($cookie_secure),
+							'selected'	=> ($cookie_secure || $this->install_config->get('cookie_secure')),
 						),
 					),
 				),
@@ -139,12 +139,12 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 						array(
 							'value'		=> 0,
 							'label'		=> 'NO',
-							'selected'	=> true,
+							'selected'	=> !$this->install_config->get('force_server_vars'),
 						),
 						array(
 							'value'		=> 1,
 							'label'		=> 'YES',
-							'selected'	=> false,
+							'selected'	=> $this->install_config->get('force_server_vars'),
 						),
 					),
 				),
@@ -153,24 +153,28 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 					'description'	=> 'SERVER_PROTOCOL_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $server_protocol,
+                    'load'		=> $this->install_config->get('server_protocol')
 				),
 				'server_name' => array(
 					'label'			=> 'SERVER_NAME',
 					'description'	=> 'SERVER_NAME_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $server_name,
+                    'load'		=> $this->install_config->get('server_name')
 				),
 				'server_port' => array(
 					'label'			=> 'SERVER_PORT',
 					'description'	=> 'SERVER_PORT_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $server_port,
+                    'load'		=> $this->install_config->get('server_port')
 				),
 				'script_path' => array(
 					'label'			=> 'SCRIPT_PATH',
 					'description'	=> 'SCRIPT_PATH_EXPLAIN',
 					'type'			=> 'text',
 					'default'		=> $script_path,
+                    'load'		=> $this->install_config->get('script_path')
 				),
 				'submit_server' => array(
 					'label'	=> 'SUBMIT',
@@ -199,4 +203,10 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 	{
 		return '';
 	}
+
+	// Returns the task name for navigation bar
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_server_data');
+    }
 }

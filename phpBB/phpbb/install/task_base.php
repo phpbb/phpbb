@@ -50,4 +50,12 @@ abstract class task_base implements task_interface
 	{
 		return true;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'install');
+    }
 }

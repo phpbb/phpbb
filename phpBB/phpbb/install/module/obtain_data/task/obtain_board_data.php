@@ -136,7 +136,9 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 			$lang_options[] = array(
 				'value'		=> $lang['iso'],
 				'label'		=> $lang['local_name'],
-				'selected'	=> ($default_lang === $lang['iso']),
+				'selected'	=> ((($default_lang === $lang['iso']) 
+								 && !$this->install_config->get('board_name')) 
+								|| ($this->install_config->get('board_name') == $lang['iso'])),
 			);
 		}
 
@@ -150,11 +152,13 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 				'label'		=> 'BOARD_NAME',
 				'type'		=> 'text',
 				'default'	=> $board_name,
+                'load'		=> $this->install_config->get('board_name')
 			),
 			'board_description' => array(
 				'label'		=> 'BOARD_DESCRIPTION',
 				'type'		=> 'text',
 				'default'	=> $board_desc,
+                'load'		=> $this->install_config->get('board_description')
 			),
 			'submit_board'	=> array(
 				'label'	=> 'SUBMIT',
@@ -182,4 +186,12 @@ class obtain_board_data extends \phpbb\install\task_base implements \phpbb\insta
 	{
 		return '';
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+    public function get_navigation_stage_path()
+    {
+        return array('install', 0, 'obtain_board_data');
+    }
 }

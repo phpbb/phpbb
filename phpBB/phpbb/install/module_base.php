@@ -102,15 +102,36 @@ abstract class module_base implements module_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function select_task_index()
+	{
+		return 0;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function run()
 	{
 		// Recover install progress
 		$task_index	= $this->recover_progress();
 		$iterator	= $this->task_collection->getIterator();
 
+
 		if ($task_index < $iterator->count())
 		{
-			$iterator->seek($task_index);
+			// Receiving task index
+			$get_task_index = (int)$this->select_task_index();
+			// Validation check
+			if ($get_task_index)
+			{
+				$get_task_index--;
+				$iterator->seek($get_task_index);
+				$this->install_config->set_finished_task($get_task_index);
+			}
+			else
+			{
+				$iterator->seek($task_index);
+			}
 		}
 		else
 		{
@@ -146,8 +167,13 @@ abstract class module_base implements module_interface
 					$this->iohandler->send_response();
 				}
 
+				// Setting current module in navigation bar as active
+				$this->iohandler->set_active_stage_menu($task->get_navigation_stage_path());
+				$this->iohandler->send_response();
 				$task->run();
 
+				$this->iohandler->set_finished_stage_menu($task->get_navigation_stage_path());
+				$this->iohandler->send_response();
 				if ($this->allow_progress_bar)
 				{
 					// Only increment progress by one, as if a task has more than one steps
