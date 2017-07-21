@@ -19,6 +19,16 @@ namespace phpbb\storage;
 class storage
 {
 	/**
+	 * @var string
+	 */
+	protected $storage_name;
+
+	/**
+	 * @var \phpbb\storage\adapter_factory
+	 */
+	protected $factory;
+
+	/**
 	 * @var \phpbb\storage\adapter\adapter_interface
 	 */
 	protected $adapter;
@@ -31,7 +41,23 @@ class storage
 	 */
 	public function __construct(adapter_factory $factory, $storage_name)
 	{
-		$this->adapter = $factory->get($storage_name);
+		$this->factory = $factory;
+		$this->storage_name = $storage_name;
+	}
+
+	/**
+	 * Returns an adapter instance
+	 *
+	 * @return \phpbb\storage\adapter\adapter_interface
+	 */
+	protected function get_adapter()
+	{
+		if ($this->adapter === null)
+		{
+			$this->adapter = $this->factory->get($this->storage_name);
+		}
+
+		return $this->adapter;
 	}
 
 	/**
@@ -45,7 +71,7 @@ class storage
 	 */
 	public function put_contents($path, $content)
 	{
-		$this->adapter->put_contents($path, $content);
+		$this->get_adapter()->put_contents($path, $content);
 	}
 
 	/**
@@ -60,7 +86,7 @@ class storage
 	 */
 	public function get_contents($path)
 	{
-		return $this->adapter->get_contents($path);
+		return $this->get_adapter()->get_contents($path);
 	}
 
 	/**
@@ -72,7 +98,7 @@ class storage
 	 */
 	public function exists($path)
 	{
-		return $this->adapter->exists($path);
+		return $this->get_adapter()->exists($path);
 	}
 
 	/**
@@ -84,7 +110,7 @@ class storage
 	 */
 	public function delete($path)
 	{
-		$this->adapter->delete($path);
+		$this->get_adapter()->delete($path);
 	}
 
 	/**
@@ -98,7 +124,7 @@ class storage
 	 */
 	public function rename($path_orig, $path_dest)
 	{
-		$this->adapter->rename($path_orig, $path_dest);
+		$this->get_adapter()->rename($path_orig, $path_dest);
 	}
 
 	/**
@@ -112,7 +138,7 @@ class storage
 	 */
 	public function copy($path_orig, $path_dest)
 	{
-		$this->adapter->copy($path_orig, $path_dest);
+		$this->get_adapter()->copy($path_orig, $path_dest);
 	}
 
 	/**
@@ -124,6 +150,6 @@ class storage
 	 */
 	public function create_dir($path)
 	{
-		$this->adapter->create_dir($path);
+		$this->get_adapter()->create_dir($path);
 	}
 }
