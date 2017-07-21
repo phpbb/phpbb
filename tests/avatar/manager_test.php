@@ -93,7 +93,6 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		{
 			if ($driver !== 'upload')
 			{
-
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
 					->setMethods(array('get_name'))
 					->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
