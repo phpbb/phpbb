@@ -36,6 +36,13 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->will($this->returnArgument(0));
 
 		$filesystem = new \phpbb\filesystem\filesystem();
+		$adapter = new \phpbb\storage\adapter\local($filesystem, $phpbb_root_path);
+		$adapter->configure(['path' => 'images/avatars/upload']);
+		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
+		$adapter_factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($adapter);
+		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
 
 		// Prepare dependencies for avatar manager and driver
 		$this->config = new \phpbb\config\config(array());
@@ -86,6 +93,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		{
 			if ($driver !== 'upload')
 			{
+
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
 					->setMethods(array('get_name'))
 					->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
@@ -95,7 +103,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			{
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
 				->setMethods(array('get_name'))
-				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache))
+				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $cache))
 				->getMock();
 			}
 			$cur_avatar->expects($this->any())
