@@ -143,13 +143,6 @@
 			<value>1</value>
 		</row>
 		<row>
-			<value>notification.type.mention</value>
-			<value>0</value>
-			<value>3</value>
-			<value>notification.method.board</value>
-			<value>1</value>
-		</row>
-		<row>
 			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>4</value>
@@ -164,30 +157,9 @@
 			<value>1</value>
 		</row>
 		<row>
-			<value>notification.type.mention</value>
-			<value>0</value>
-			<value>5</value>
-			<value>notification.method.board</value>
-			<value>1</value>
-		</row>
-		<row>
 			<value>notification.type.bookmark</value>
 			<value>0</value>
 			<value>6</value>
-			<value>notification.method.board</value>
-			<value>0</value>
-		</row>
-		<row>
-			<value>notification.type.mention</value>
-			<value>0</value>
-			<value>7</value>
-			<value>notification.method.board</value>
-			<value>1</value>
-		</row>
-		<row>
-			<value>notification.type.bookmark</value>
-			<value>0</value>
-			<value>7</value>
 			<value>notification.method.board</value>
 			<value>0</value>
 		</row>
