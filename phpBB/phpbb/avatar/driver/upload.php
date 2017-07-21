@@ -261,7 +261,6 @@ class upload extends \phpbb\avatar\driver\driver
 		* Before deleting an existing avatar
 		*
 		* @event core.avatar_driver_upload_delete_before
-		* @var	string	destination			Destination directory where the file is going to be deleted
 		* @var	string	prefix				Prefix for the avatar filename
 		* @var	array	row					Array with avatar row data
 		* @var	array	error				Array of errors, if filled in by this event file will not be deleted
