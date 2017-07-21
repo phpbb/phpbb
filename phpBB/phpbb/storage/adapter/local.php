@@ -16,6 +16,7 @@ namespace phpbb\storage\adapter;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
  * @internal Experimental
@@ -66,6 +67,8 @@ class local implements adapter_interface
 	 */
 	public function put_contents($path, $content)
 	{
+		$this->ensure_directory_exists($path);
+
 		if ($this->exists($path))
 		{
 			throw new exception('STORAGE_FILE_EXISTS', $path);
@@ -129,6 +132,8 @@ class local implements adapter_interface
 	 */
 	public function rename($path_orig, $path_dest)
 	{
+		$this->ensure_directory_exists($path_dest);
+
 		try
 		{
 			$this->filesystem->rename($this->root_path . $path_orig, $this->root_path . $path_dest, false);
@@ -144,6 +149,8 @@ class local implements adapter_interface
 	 */
 	public function copy($path_orig, $path_dest)
 	{
+		$this->ensure_directory_exists($path_dest);
+
 		try
 		{
 			$this->filesystem->copy($this->root_path . $path_orig, $this->root_path . $path_dest, false);
@@ -155,9 +162,13 @@ class local implements adapter_interface
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Creates a directory recursively.
+	 *
+	 * @param string	$path	The directory path
+	 *
+	 * @throws \phpbb\storage\exception\exception	On any directory creation failure
 	 */
-	public function create_dir($path)
+	protected function create_dir($path)
 	{
 		try
 		{
@@ -169,4 +180,19 @@ class local implements adapter_interface
 		}
 	}
 
+	/**
+	 * Ensures that the directory of a file exists.
+	 *
+	 * @param string	$path	The file path
+	 */
+	protected function ensure_directory_exists($path)
+	{
+		$path = dirname($this->root_path . $path);
+		$path = filesystem_helper::make_path_relative($directory, $this->root_path);
+
+		if (!$this->exists($path))
+		{
+			$this->create_dir($path);
+		}
+	}
 }
