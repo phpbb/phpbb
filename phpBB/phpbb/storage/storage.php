@@ -140,16 +140,4 @@ class storage
 	{
 		$this->get_adapter()->copy($path_orig, $path_dest);
 	}
-
-	/**
-	 * Creates a directory recursively.
-	 *
-	 * @param string	$path	The directory path
-	 *
-	 * @throws \phpbb\storage\exception\exception	On any directory creation failure
-	 */
-	public function create_dir($path)
-	{
-		$this->get_adapter()->create_dir($path);
-	}
 }

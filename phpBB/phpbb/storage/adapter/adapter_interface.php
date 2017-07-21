@@ -84,13 +84,4 @@ interface adapter_interface
 	 * 												When the file cannot be copied
 	 */
 	public function copy($path_orig, $path_dest);
-
-	/**
-	 * Creates a directory recursively.
-	 *
-	 * @param string	$path	The directory path
-	 *
-	 * @throws \phpbb\storage\exception\exception	On any directory creation failure
-	 */
-	public function create_dir($path);
 }
