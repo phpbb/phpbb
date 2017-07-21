@@ -188,7 +188,7 @@ class local implements adapter_interface
 	protected function ensure_directory_exists($path)
 	{
 		$path = dirname($this->root_path . $path);
-		$path = filesystem_helper::make_path_relative($directory, $this->root_path);
+		$path = filesystem_helper::make_path_relative($path, $this->root_path);
 
 		if (!$this->exists($path))
 		{
