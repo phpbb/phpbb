@@ -20,7 +20,7 @@ interface provider_interface
 	 *
 	 * @return \phpbb\storage\adapter\adapter_interface
 	 */
-	public function geti_adapter_class();
+	public function get_adapter_class();
 
 	/**
 	 * Gets adapter options.
