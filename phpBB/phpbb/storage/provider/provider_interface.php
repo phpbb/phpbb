@@ -25,7 +25,7 @@ interface provider_interface
 	/**
 	 * Gets adapter options.
 	 *
-	 * @return string	Configuration keys
+	 * @return array	Configuration keys
 	 */
 	public function get_options();
 }
