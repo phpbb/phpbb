@@ -18,7 +18,7 @@ class local implements provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_class()
+	public function get_adapter_class()
 	{
 		return \phpbb\storage\adapter\local::class;
 	}
