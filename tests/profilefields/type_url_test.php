@@ -89,6 +89,19 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 				'FIELD_INVALID_URL-field',
 				'Field should reject invalid URL having multi value parameters',
 			),
+			// Not allowed schemes
+			array(
+				'ftp://example.com/',
+				array(),
+				'FIELD_INVALID_URL-field',
+				'Field should reject invalid URL having multi value parameters',
+			),
+			array(
+				'javascript://alert.com',
+				array(),
+				'FIELD_INVALID_URL-field',
+				'Field should reject invalid URL having multi value parameters',
+			),
 
 			// IDN url type profilefields
 			array(
