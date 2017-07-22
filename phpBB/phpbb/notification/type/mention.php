@@ -57,15 +57,6 @@ class mention extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Initiate the class member with the object of class \phpbb]user_loader.
-	*
-	*/
-	public function set_user_loader(\phpbb\user_loader $user_loader)
-	{
-		$this->user_loader = $user_loader;
-	}
-
-	/**
 	* Is available
 	*/
 	public function is_available()
@@ -93,14 +84,6 @@ class mention extends \phpbb\notification\type\post
 	static public function get_item_parent_id($post)
 	{
 		return (int) $post['topic_id'];
-	}
-
-	/**
-	* Get the user's avatar
-	*/
-	public function get_avatar()
-	{
-		return $this->user_loader->get_avatar($this->get_data('poster_id'), false, true);
 	}
 
 	/**
@@ -237,168 +220,5 @@ class mention extends \phpbb\notification\type\post
 		$this->set_data('forum_name', $post['forum_name']);
 		$this->notification_time = $post['post_time'];
 		parent::create_insert_array($post, $pre_create_data);
-	}
-
-	/**
-	* Get the HTML formatted title of this notification
-	*
-	* @return string
-	*/
-	public function get_title()
-	{
-		$responders = $this->get_data('responders');
-		$usernames = array();
-
-		if (!is_array($responders))
-		{
-			$responders = array();
-		}
-
-		$responders = array_merge(array(array(
-			'poster_id'     => $this->get_data('poster_id'),
-			'username'      => $this->get_data('post_username'),
-		)), $responders);
-
-		$responders_cnt = count($responders);
-		$responders = $this->trim_user_ary($responders);
-		$trimmed_responders_cnt = $responders_cnt - count($responders);
-
-		foreach ($responders as $responder)
-		{
-			if ($responder['username'])
-			{
-				$usernames[] = $responder['username'];
-			}
-			else
-			{
-				$usernames[] = $this->user_loader->get_username($responder['poster_id'], 'no_profile');
-			}
-		}
-
-		if ($trimmed_responders_cnt > 20)
-		{
-			$usernames[] = $this->language->lang('NOTIFICATION_MANY_OTHERS');
-		}
-		else if ($trimmed_responders_cnt)
-		{
-			$usernames[] = $this->language->lang('NOTIFICATION_X_OTHERS', $trimmed_responders_cnt);
-		}
-
-		return $this->language->lang(
-			$this->language_key,
-			phpbb_generate_string_list($usernames, $this->user),
-			$responders_cnt
-		);
-	}
-
-	/**
-	* Users needed to query before this notification can be displayed
-	*
-	* @return array Array of user_ids
-	*/
-	public function users_to_query()
-	{
-		$responders = $this->get_data('responders');
-		$users = array(
-			$this->get_data('poster_id'),
-		);
-
-		if (is_array($responders))
-		{
-			foreach ($responders as $responder)
-			{
-				$users[] = $responder['poster_id'];
-			}
-		}
-
-		return $this->trim_user_ary($users);
-	}
-
-	/**
-	* Trim the user array passed down to 3 users if the array contains
-	* more than 4 users.
-	*
-	* @param array $users Array of users
-	* @return array Trimmed array of user_ids
-	*/
-	public function trim_user_ary($users)
-	{
-		if (count($users) > 4)
-		{
-			array_splice($users, 3);
-		}
-		return $users;
-	}
-
-	/**
-	* Get the HTML formatted reference of the notification
-	*
-	* @return string
-	*/
-	public function get_reference()
-	{
-		return $this->language->lang(
-			'NOTIFICATION_REFERENCE',
-			censor_text($this->get_data('topic_title'))
-		);
-	}
-
-	/**
-	* Add responders to the notification
-	*
-	* @param mixed $post
-	* @return array Array of responder data
-	*/
-	public function add_responders($post)
-	{
-		// Do not add them as a responder if they were the original poster that created the notification
-		if ($this->get_data('poster_id') == $post['poster_id'])
-		{
-			return array();
-		}
-
-		$responders = $this->get_data('responders');
-
-		$responders = ($responders === null) ? array() : $responders;
-
-		// Do not add more than 25 responders,
-		// we trim the username list to "a, b, c and x others" anyway
-		// so there is no use to add all of them anyway.
-		if (count($responders) > 25)
-		{
-			return array();
-		}
-
-		foreach ($responders as $responder)
-		{
-			// Do not add them as a responder multiple times
-			if ($responder['poster_id'] == $post['poster_id'])
-			{
-				return array();
-			}
-		}
-
-		$responders[] = array(
-			'poster_id'     => $post['poster_id'],
-			'username'      => (($post['poster_id'] == ANONYMOUS) ? $post['post_username'] : ''),
-		);
-
-		$this->set_data('responders', $responders);
-
-		$serialized_data = serialize($this->get_data(false));
-
-		// If the data is longer then 4000 characters, it would cause a SQL error.
-		// We don't add the username to the list if this is the case.
-		if (utf8_strlen($serialized_data) >= 4000)
-		{
-			return array();
-		}
-
-		$data_array = array_merge(array(
-			'post_time'     => $post['post_time'],
-			'post_id'       => $post['post_id'],
-			'topic_id'      => $post['topic_id']
-		), $this->get_data(false));
-		return $data_array;
 	}
 }

@@ -1020,9 +1020,9 @@ if ($submit || $preview || $refresh)
 
 	if (is_array($post_parsing_data) &&
 		isset($post_parsing_data['new_post_text']) &&
-	 	isset($post_parsing_data['users_mentioned']) &&
-	 	count($post_parsing_data['users_mentioned'] > 0) &&
-	 	isset($post_parsing_data['notif_type_object']))
+		isset($post_parsing_data['users_mentioned']) &&
+		count($post_parsing_data['users_mentioned'] > 0) &&
+		isset($post_parsing_data['notif_type_object']))
 	{
 		$message_parser->message = $post_parsing_data['new_post_text'];
 		$helper_container->send_notifications($post_parsing_data['users_mentioned'], $post_parsing_data['notif_type_object'], $post_data);

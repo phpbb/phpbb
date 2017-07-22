@@ -35,6 +35,7 @@ class mention_helper
 	/**
 	*
 	* @param $db   Database Driver Interface Object.
+	* @param $notification_manager  \phpbb\notification\manager
 	*
 	* @return \phpbb\mention\helper\mention_helper
 	*/
@@ -82,9 +83,11 @@ class mention_helper
 	}
 
 	/**
-	* Extract the mentioned users using regex exp.
+	* Extract the mentioned users using regex exp and substitute them with
+	* links to profiles of respective users.
 	*
 	* @param array    $matches            all the matches with regexp.
+	* @param string   $post_text          post text
 	* @param integer  $start_tag_length   Length of tag [mention].
 	* @param integer  $end_tag_length     Length of tag [\mention].
 	* @param integer  $userid_list        Ids of users tagged in the post.
@@ -128,10 +131,7 @@ class mention_helper
 	* Centralized function for calling other functions to extract users, sustitute their
 	* profile links and return the new text back to posting.php.
 	*
-	* @param string   $post              post text
-	* @param array    $data              Notification details
-	* @param \phpbb\notification\manager   $notif_manager_obj  Notification Manager
-	*                                                          object.
+	* @param string   $post_text              post text
 	*
 	* @return array Array of responder data
 	*/
@@ -166,10 +166,10 @@ class mention_helper
 	*
 	* @param $user_list    array           Array containing userids to send
 	*                                       notifications to.
-	* @param $notif_manager_obj  \phpbb\notification\manager  Notification Manager object
-	* @param $temp_notif_type_object      object    Temporary notiifcation type object\
-	*                                                to call the method from
-	*                                                new notiifcation type - mention.
+	* @param $notif_manager_obj        \phpbb\notification\manager        Notification
+	*																	  Manager object
+	* @param $temp_notif_type_object   \phpbb\notification\type\mention    Mention Type
+	* 																	   object
 	*
 	*/
 	public function send_notifications($user_list, $temp_notif_type_object, $data)
