@@ -382,7 +382,18 @@ class factory implements \phpbb\textformatter\cache_interface
 			unset($configurator->tags['censor:tag']);
 		}
 
-		$objects  = $configurator->finalize();
+		$objects = $configurator->finalize();
+
+		/**
+		* Access the objects returned by finalize() before they are saved to cache
+		*
+		* @event core.text_formatter_s9e_configure_finalize
+		* @var array objects Array containing a "parser" object, a "renderer" object and optionally a "js" string
+		* @since 3.2.2-RC1
+		*/
+		$vars = array('objects');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_finalize', compact($vars)));
+
 		$parser   = $objects['parser'];
 		$renderer = $objects['renderer'];
 
