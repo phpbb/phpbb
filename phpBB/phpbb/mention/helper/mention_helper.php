@@ -33,6 +33,7 @@ class mention_helper
 	private $data;
 
 	/**
+	* User Mention Helper Constructor
 	*
 	* @param $db   Database Driver Interface Object.
 	* @param $notification_manager  \phpbb\notification\manager
