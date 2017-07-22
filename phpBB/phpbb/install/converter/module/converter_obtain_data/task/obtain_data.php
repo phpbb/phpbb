@@ -15,6 +15,7 @@ namespace phpbb\install\converter\module\converter_obtain_data\task;
 
 use phpbb\install\exception\user_interaction_required_exception;
 use phpbb\config_php_file;
+use \Symfony\Component\Yaml\Yaml;
 
 /**
  * This class requests and validates database information from the user
@@ -52,7 +53,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 	 * @param \phpbb\install\helper\config                        $install_config  Installer's config helper
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface $iohandler       Installer's input-output handler
 	 */
-	public function __construct($converter, $helper,
+	public function __construct($helper,
 		\phpbb\install\helper\config $install_config,
 		\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
 		$container_factory, $phpbb_root_path, $php_ext)
@@ -60,7 +61,6 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 		$this->helper = $helper;
 		$this->install_config = $install_config;
 		$this->io_handler = $iohandler;
-		$this->converter = $converter;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->container_factory = $container_factory;
 		$this->config_php_file = new config_php_file($phpbb_root_path,$php_ext);
@@ -124,7 +124,7 @@ class obtain_data extends \phpbb\install\task_base implements \phpbb\install\tas
 
 	public function init_converter()
 	{
-		$this->yaml_queue = $this->converter->get_yaml_queue();
+		$this->yaml_queue = Yaml::parse(file_get_contents(/*@todo fix the file links */'http://localhost.phpbb/phpbb/install/converter/configmap/conversionQ.yml'));
 		$this->helper->set_yaml_queue($this->yaml_queue);
 		$this->helper->set_conversion_status(true);
 		$this->helper->set_file_index(0);

@@ -191,5 +191,18 @@ class helper extends \phpbb\install\controller\helper
 		$this->installer_config->save_config();
 	}
 
+	public function get_error_state()
+	{
+		$this->installer_config->load_config();
+		return $this->installer_config->get('converter.conversion.error');
+	}
+
+	public function set_error_state($is_error)
+	{
+		$this->installer_config->set('converter.conversion.error',$is_error);
+		$this->installer_config->save_config();
+	}
+
+
 }
 

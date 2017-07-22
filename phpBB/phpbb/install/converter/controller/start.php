@@ -163,22 +163,25 @@ class start
 				}
 				else
 				{
-					$user = $container_factory->get('user');
-					$auth = $container_factory->get('auth');
-					$user->session_begin();
-					$auth->acl($user->data);
-					$user->setup();
-					$helper->set_conversion_status(false);
-					$helper->save_config();
-					$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
-					$ajax_handler->add_success_message('CF_FINISHED'/* @todo make a lang var */, array(
-						'ACP_LINK',
-						$acp_url,
-					));// todo language files to be added.
-					$ajax_handler->set_progress('The Converter has finished Conversion', count($yaml_queue));
-					$ajax_handler->set_finished_stage_menu(array('converter', 0, 'progress'));
-					$ajax_handler->set_active_stage_menu(array('converter', 0, 'finished'));
-					$ajax_handler->send_response(true);
+					if(!$helper->get_error_state()) //No error has occured
+					{
+						$user = $container_factory->get('user');
+						$auth = $container_factory->get('auth');
+						$user->session_begin();
+						$auth->acl($user->data);
+						$user->setup();
+						$helper->set_conversion_status(false);
+						$helper->save_config();
+						$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
+						$ajax_handler->add_success_message('CF_FINISHED'/* @todo make a lang var */, array(
+							'ACP_LINK',
+							$acp_url,
+						));// todo language files to be added.
+						$ajax_handler->set_progress('CF_FINISHED', count($yaml_queue));
+						$ajax_handler->set_finished_stage_menu(array('converter', 0, 'progress'));
+						$ajax_handler->set_active_stage_menu(array('converter', 0, 'finished'));
+						$ajax_handler->send_response(true);
+					}
 				}
 			});
 			$response->headers->set('X-Accel-Buffering', 'no');

@@ -2,7 +2,6 @@ services:
     converter.obtain.db.credentials:
         class: phpbb\install\converter\module\converter_obtain_data\task\obtain_data
         arguments:
-            - '@phpbb.installer.converter.bin.converter'
             - '@phpbb.installer.converter.controller.helper'
             - '@installer.helper.config'
             - '@installer.helper.iohandler'

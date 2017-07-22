@@ -16,7 +16,6 @@ namespace phpbb\install\converter\bin;
 require_once 'config_map.php';
 
 use \Symfony\Component\Yaml\Yaml;
-
 /**
  * Class converter
  *
@@ -147,9 +146,14 @@ class converter
 	function begin_conversion($file,$helper,$ajax_handler)
 	{
 		//Function responsible for starting the conversion by generating the configMap object.
-		//This function will be wrapped over by another function to process every yaml class from yamlQ;
-		//Since we havent created a Q system, we will just be using this function for now.
-		$cf = new config_map($this->db_source, $this->db_destination ,$file, $helper, $this->phpbb_root);
+		try
+		{
+			$cf = new config_map($this->db_source, $this->db_destination, $file, $helper, $this->phpbb_root);
+		}
+		catch(\Exception $e)
+		{
+			throw $e;
+		}
 		$total_records = $cf->get_total_records();
 		$length = $total_records/self::$limit;
 		$helper->set_total_chunks(ceil($length));

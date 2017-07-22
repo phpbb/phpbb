@@ -114,6 +114,11 @@ class index
 				thus stuck in an infinite loop of continue -> lock not acquired -> again continue ....
 				*/
 				$ajax_handler->acquire_lock();
+//				$ajax_handler->add_success_message('Database Configuration Completed',array(
+//					'CONVERTER_START',
+//					'#',
+//				));
+//				$ajax_handler->send_response(true);
 				$module->run();
 			});
 			$response->headers->set('X-Accel-Buffering', 'no');

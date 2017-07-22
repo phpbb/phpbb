@@ -17,6 +17,7 @@ require_once 'util_conversion_functions.php';
 
 //Get the YAML component ready to use
 use \Symfony\Component\Yaml\Yaml;
+use \Exception;
 
 /**
  * Class config_map
@@ -104,10 +105,18 @@ class config_map
 		$this->phpbb_root = $phpbb_root;
 		$file_link= $phpbb_root.$this->config_file_base.$file;
 		//$con and thus $db are Doctrine\DBAL\DriverManager::getConnection() object. Basically the DBAL connection object.
-		try{
-			$fobj = file_get_contents($file_link);
-
-		} catch(Exception $e){
+		try
+		{
+			//$fobj = file_get_contents($file_link);
+			$fobj = false;
+			if($fobj == false )
+			{
+				throw new Exception('Config file not found exception');
+			}
+		}
+		catch(\Exception $e)
+		{
+			throw $e;
 		}
 		$this->data_map_arr = Yaml::parse($fobj);
 		$this->data_map = (object)$this->data_map_arr;
