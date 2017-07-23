@@ -141,6 +141,7 @@ class start
 			$this->iohandler_factory->set_environment('ajax');
 			$ajax_handler = $this->iohandler_factory->get();
 			$module = $this->module;
+			$install_config = $this->install_config;
 			$module->setup($this->install_config, $ajax_handler);
 			$converter = $this->converter;
 			$phpbb_root_path = $this->phpbb_root_path;
@@ -149,7 +150,7 @@ class start
 			$helper->set_total_files(count($yaml_queue));
 			$response = new StreamedResponse();
 			$container_factory = $this->container_factory;
-			$response->setCallback(function () use ($container_factory, $module, $phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
+			$response->setCallback(function () use ($install_config, $container_factory, $module, $phpbb_root_path, $ajax_handler, $yaml_queue, $helper, $converter)
 			{
 				/*The lock must be the first thing to be acquired as the js queries every 250ms for status
 				and if we acquire the lock later the js may issue another request before previous completes
@@ -173,15 +174,21 @@ class start
 						$helper->set_conversion_status(false);
 						$helper->save_config();
 						$acp_url = append_sid($phpbb_root_path . 'adm/index.php', 'i=acp_help_phpbb&mode=help_phpbb', true, $user->session_id);
-						$ajax_handler->add_success_message('CF_FINISHED'/* @todo make a lang var */, array(
+						$ajax_handler->add_success_message('CF_FINISHED', array(
 							'ACP_LINK',
 							$acp_url,
-						));// todo language files to be added.
+						));
 						$ajax_handler->set_progress('CF_FINISHED', count($yaml_queue));
 						$ajax_handler->set_finished_stage_menu(array('converter', 0, 'progress'));
 						$ajax_handler->set_active_stage_menu(array('converter', 0, 'finished'));
 						$ajax_handler->send_response(true);
 					}
+					//Cleanup code;
+					$install_config->clean_up_config_file();
+					$cache = $container_factory->get('cache.driver');
+					$cache->purge();
+					$ajax_handler->release_lock();
+					//Cleanup done;
 				}
 			});
 			$response->headers->set('X-Accel-Buffering', 'no');

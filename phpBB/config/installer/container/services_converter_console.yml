@@ -1,0 +1,12 @@
+services:
+    console.converter.command.convert:
+        class: phpbb\install\console\command\converter\convert
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.container_factory'
+            - '@language'
+            - '@installer.helper.iohandler_factory'
+            - '@converter.module.obtain_data'
+            - '@phpbb.installer.converter.controller.helper'
+        tags:
+            - { name: console.installer.command}

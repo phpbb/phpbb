@@ -478,6 +478,9 @@ $lang = array_merge($lang, array(
 	'CF_LOG_CONVERTING'	=>'Converting..',
 	'CF_LOG_PART'	=>'Part',
 
+	//Command Line Language Files
+	'CLI_CF_CONVERT'	=>'Executes the converter framework with the given config.yml file',
+
 
 	'CONVERTER_TEXT_INTRO'	=>'Welcome to converter framework index. Click on the link below to start conversion',
 	'YAML_LIST_DESC'	=>'The following YAML files would be processed and converted',

@@ -1,0 +1,6 @@
+database:
+    db_name:    phpBBgsoc
+    db_user:    root
+    db_pass:    123
+    db_host:    localhost
+

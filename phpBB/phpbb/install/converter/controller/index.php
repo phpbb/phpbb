@@ -69,6 +69,11 @@ class index
 	protected $config_php_file;
 
 	/**
+	 * @var container_factory;
+	 */
+	protected $container_factory;
+
+	/**
 	 * index constructor.
 	 *
 	 * @param \phpbb\install\converter\controller\helper                                                                 $helper
@@ -82,8 +87,9 @@ class index
 	 * @param                                                                                                            $phpbb_root_path
 	 * @param                                                                                                            $php_ext
 	 */
-	public function __construct(\phpbb\install\converter\controller\helper $helper, \phpbb\install\helper\navigation\navigation_provider $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\install\module_interface $module, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\factory $iohandler, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\install\helper\container_factory $container_facotry,\phpbb\install\converter\controller\helper $helper, \phpbb\install\helper\navigation\navigation_provider $nav_provider, \phpbb\language\language $language, \phpbb\template\template $template, \phpbb\install\module_interface $module, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\factory $iohandler, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext)
 	{
+		$this->container_factory = $container_facotry;
 		$this->helper = $helper;
 		$this->menu_provider = $nav_provider;
 		$this->language = $language;
@@ -126,6 +132,19 @@ class index
 		}
 		else
 		{
+			//ALWAYS PURGE CACHES ELSE DI CONTAINER WONT BE REFRESHED
+			if (!$this->install_config->get('cache_purged_before', false))
+			{
+				var_dump('Im in cleanup');
+				// DO NOT REMOVE THIS LINE. OLD installer_config.php might completely mess the converter framework
+				$this->install_config->clean_up_config_file(); //Get rid of any accidental store/installer_config.php left over by previous commands
+				/** @var \phpbb\cache\driver\driver_interface $cache */
+				$cache = $this->container_factory->get('cache.driver');
+				$cache->purge();
+				$this->install_config->set('cache_purged_before', true);
+				$this->install_config->save_config();//Generate a fresh config file
+			}
+
 			$this->menu_provider->set_nav_property(
 				array('converter', 0, 'home'),
 				array(

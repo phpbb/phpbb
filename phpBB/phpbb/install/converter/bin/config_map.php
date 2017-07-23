@@ -107,8 +107,8 @@ class config_map
 		//$con and thus $db are Doctrine\DBAL\DriverManager::getConnection() object. Basically the DBAL connection object.
 		try
 		{
-			//$fobj = file_get_contents($file_link);
-			$fobj = false;
+			$fobj = file_get_contents($file_link);
+			//$fobj = false; @todo testing
 			if($fobj == false )
 			{
 				throw new Exception('Config file not found exception');

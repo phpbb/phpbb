@@ -1,6 +1,7 @@
 imports:
-    - { resource: service_converter_convert.yml }
-    - { resource: service_converter_data.yml }
+    - { resource: services_converter_convert.yml }
+    - { resource: services_converter_data.yml }
+    - { resource: services_converter_console.yml}
 services:
 
     doctrine.dbal.config:
@@ -46,6 +47,7 @@ services:
     phpbb.installer.converter.index:
         class: phpbb\install\converter\controller\index
         arguments:
+            - '@installer.helper.container_factory'
             - '@phpbb.installer.converter.controller.helper'
             - '@installer.navigation.provider'
             - '@language'
