@@ -71,4 +71,19 @@ class type_url extends type_string
 
 		return false;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_profile_value($field_value, $field_data)
+	{
+		if (!preg_match('#^' . get_preg_expression('url_http') . '$#iu', $field_value))
+		{
+			return null;
+		}
+
+		$field_value = make_clickable($field_value);
+
+		return parent::get_profile_value($field_value, $field_data);
+	}
 }
