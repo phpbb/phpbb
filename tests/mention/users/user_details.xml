@@ -1,21 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-      <dataset>
-        <!-- Table phpbb_users -->
-            <table name="phpbb_users">
-                  <column>user_id</column>
-                  <column>user_type</column>
-                  <column>group_id</column>
-                  <column>user_perm_from</column>
-                  <column>username"</column>
-                  <column>username_clean</column>
-                  <row>
-                        <value>1</value>
-                        <value>2</value>
-                        <value>1</value>
-                        <value>0</value>
-                        <value>Anonymous</value>
-                        <value>Anonymous</value>
-
-                  </row>
-            </table>
-      </dataset>
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <!-- Table phpbb_users -->
+      <table name="phpbb_users">
+            <column>user_id</column>
+            <column>user_type</column>
+            <column>group_id</column>
+            <column>user_perm_from</column>
+            <column>username</column>
+            <column>username_clean</column>
+            <row>
+                  <value>1</value>
+                  <value>2</value>
+                  <value>1</value>
+                  <value>0</value>
+                  <value>Anonymous</value>
+                  <value>Anonymous</value>
+            </row>
+      </table>
+</dataset>

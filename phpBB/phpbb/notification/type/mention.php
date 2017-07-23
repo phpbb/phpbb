@@ -110,7 +110,7 @@ class mention extends \phpbb\notification\type\post
 			$user_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_list[$row["username_clean"]] = $row["user_id"];
+				$user_list[$row['username_clean']] = $row['user_id'];
 			}
 			$db->sql_freeresult($result);
 			return $user_list;
@@ -130,19 +130,19 @@ class mention extends \phpbb\notification\type\post
 		if (count($user_list) > 0)
 		{
 			$integer_ids = array_map('intval', $user_list);
-			$sql_query = "SELECT user_id, item_type, method FROM " . USER_NOTIFICATIONS_TABLE . " where " . $db->sql_in_set("user_id", $integer_ids) . " AND item_type = 'notification.type.mention'";
+			$sql_query = "SELECT user_id, item_type, method FROM " . USER_NOTIFICATIONS_TABLE . " WHERE " . $db->sql_in_set('user_id', $integer_ids) . " AND item_type = 'notification.type.mention'";
 			$result = $db->sql_query($sql_query);
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// $temp_notif_list = array();
-				if (is_array($notif_list[$row["user_id"]]))
+				if (is_array($notif_list[$row['user_id']]))
 				{
-					$notif_list[$row["user_id"]][] = $row["method"];
+					$notif_list[$row['user_id']][] = $row['method'];
 				}
 				else
 				{
-					$notif_list[$row["user_id"]] = array();
-					$notif_list[$row["user_id"]][] = $row["method"];
+					$notif_list[$row['user_id']] = array();
+					$notif_list[$row['user_id']][] = $row['method'];
 				}
 			}
 			$db->sql_freeresult($result);
