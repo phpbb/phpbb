@@ -68,7 +68,7 @@ class memcached extends \phpbb\cache\driver\memory
 		foreach (explode(',', PHPBB_ACM_MEMCACHE) as $u)
 		{
 			preg_match('#(.*)/(\d+)#', $u, $parts);
-			$this->memcache->addServer(trim($parts[1]), (int) trim($parts[2]));
+			$this->memcached->addServer(trim($parts[1]), (int) trim($parts[2]));
 		}
 	}
 
