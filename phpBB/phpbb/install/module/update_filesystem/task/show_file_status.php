@@ -129,9 +129,9 @@ class show_file_status extends task_base
 
 			// Add form to continue update
 			$this->iohandler->add_user_form_group('UPDATE_CONTINUE_FILE_UPDATE', array(
-				'submit_continue_file_update'	=> array(
-					'label'	=> 'UPDATE_CONTINUE_FILE_UPDATE',
-					'type'	=> 'submit',
+				'submit_continue_file_update' => array(
+					'label' => 'UPDATE_CONTINUE_FILE_UPDATE',
+					'type' => 'submit',
 				),
 			));
 
