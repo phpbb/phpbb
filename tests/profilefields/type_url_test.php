@@ -12,6 +12,8 @@
 */
 
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
+require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_profilefield_type_url_test extends phpbb_test_case
 {
@@ -26,6 +28,9 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	*/
 	public function setUp()
 	{
+		global $request, $user, $cache;
+
+		$cache = new phpbb_mock_cache;
 		$user = $this->getMock('\phpbb\user', array(), array('\phpbb\datetime'));
 		$user->expects($this->any())
 			->method('lang')
@@ -173,6 +178,55 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 				'Field should return correct raw value',
 			),
 		);
+	}
+
+	public function profile_value_data()
+	{
+		return array(
+			array(
+				'http://foobar.com',
+				array('field_show_novalue' => true),
+				'<!-- l --><a class="postlink-local" href="http://foobar.com">foobar.com</a><!-- l -->',
+				'Field should output the given value',
+			),
+			array(
+				'http://foobar.com',
+				array('field_show_novalue' => false),
+				'<!-- l --><a class="postlink-local" href="http://foobar.com">foobar.com</a><!-- l -->',
+				'Field should output the given value',
+			),
+			array(
+				'test',
+				array('field_show_novalue' => true),
+				null,
+				'Field should output nothing for empty value',
+			),
+			array(
+				'test',
+				array('field_show_novalue' => false),
+				null,
+				'Field should simply output null for empty value',
+			),
+			array(
+				'javascript://foobar.com',
+				array('field_show_novalue' => true),
+				null,
+				'Field should output nothing for empty value',
+			),
+		);
+	}
+
+
+	/**
+	 * @dataProvider profile_value_data
+	 */
+	public function test_get_profile_value($value, $field_options, $expected, $description)
+	{
+		$field_options = array_merge($this->field_options, $field_options);
+
+		$result = $this->cp->get_profile_value($value, $field_options);
+
+		$this->assertSame($expected, $result, $description);
 	}
 
 	/**

@@ -270,6 +270,18 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 				null,
 				'Field should simply output null for empty vlaue',
 			),
+			array(
+				'http://foobar.com',
+				array('field_show_novalue' => false),
+				'http://foobar.com',
+				'Field should output the given value but not make it clickable',
+			),
+			array(
+				'javascript://foobar.com',
+				array('field_show_novalue' => true),
+				'javascript://foobar.com',
+				'Field should output the given value but not make it clickable',
+			),
 		);
 	}
 
