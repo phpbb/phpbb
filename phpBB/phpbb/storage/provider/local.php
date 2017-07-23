@@ -30,4 +30,12 @@ class local implements provider_interface
 	{
 		return ['path'];
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function is_available()
+	{
+		return true;
+	}
 }

@@ -28,4 +28,11 @@ interface provider_interface
 	 * @return array	Configuration keys
 	 */
 	public function get_options();
+
+	/**
+	 * Return true if the adapter is available.
+	 *
+	 * @return bool
+	 */
+	public function is_available();
 }
