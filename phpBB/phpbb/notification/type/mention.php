@@ -39,61 +39,12 @@ class mention extends \phpbb\notification\type\post
 	/** @var \phpbb\user_loader */
 	protected $user_loader;
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/**
-	* Inherit notification read status from post.
-	*
-	* @var bool
-	*/
-	protected $inherit_read_status = true;
-
-	static public $notification_option = false;
-
-	public function set_config(\phpbb\config\config $config)
-	{
-		$this->config = $config;
-	}
-
 	/**
 	* Is available
 	*/
 	public function is_available()
 	{
 		return $this->config['allow_topic_notify'];
-	}
-
-	/**
-	* Get the id of the item
-	*
-	* @param array $post The data from the post
-	* @return int The post id
-	*/
-	static public function get_item_id($post)
-	{
-		return (int) $post['post_id'];
-	}
-
-	/**
-	* Get the id of the parent
-	*
-	* @param array $post The data from the post
-	* @return int The topic id
-	*/
-	static public function get_item_parent_id($post)
-	{
-		return (int) $post['topic_id'];
-	}
-
-	/**
-	* Retrieves an ArrayIterator over the configuration values.
-	*
-	* @return \ArrayIterator An iterator over all config data
-	*/
-	public function getIterator()
-	{
-		return new \ArrayIterator($this->config);
 	}
 
 	/**
@@ -148,24 +99,6 @@ class mention extends \phpbb\notification\type\post
 			$db->sql_freeresult($result);
 		}
 		return $notif_list;
-	}
-
-	/**
-	* Get the url to this item
-	*
-	* @return string URL
-	*/
-	public function get_url()
-	{
-		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "p={$this->item_id}#p{$this->item_id}");
-	}
-
-	/**
-	* {inheritDoc}
-	*/
-	public function get_redirect_url()
-	{
-		return append_sid($this->phpbb_root_path . 'viewtopic.' . $this->php_ext, "t={$this->item_parent_id}&amp;view=unread#unread");
 	}
 
 	/**

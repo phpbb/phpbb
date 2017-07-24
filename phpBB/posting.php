@@ -1025,7 +1025,6 @@ if ($submit || $preview || $refresh)
 		isset($post_parsing_data['notif_type_object']))
 	{
 		$message_parser->message = $post_parsing_data['new_post_text'];
-		$helper_container->send_notifications($post_parsing_data['users_mentioned'], $post_parsing_data['notif_type_object'], $post_data);
 	}
 	else
 	{
@@ -1307,7 +1306,6 @@ if ($submit || $preview || $refresh)
 		'error',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_submission_errors', compact($vars)));
-
 	// Store message, sync counters
 	if (!sizeof($error) && $submit)
 	{
@@ -1437,6 +1435,28 @@ if ($submit || $preview || $refresh)
 			);
 			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_before', compact($vars)));
 
+			/* Send the posted text to parser to decode the @mentions.
+			Convert each mention into links to corresponding user profiles
+			Push notification to the mentioned users.*/
+			$helper_container = $phpbb_container->get('phpbb_mention_helper');
+			$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message);
+
+			if (is_array($post_parsing_data) &&
+				isset($post_parsing_data['new_post_text']) &&
+				isset($post_parsing_data['users_mentioned']) &&
+				count($post_parsing_data['users_mentioned'] > 0) &&
+				isset($post_parsing_data['notif_type_object']))
+			{
+				$message_parser->message = $post_parsing_data['new_post_text'];
+				$helper_container->send_notifications($post_parsing_data['users_mentioned'], $post_parsing_data['notif_type_object'], $post_data);
+			}
+			else
+			{
+				if (is_string($post_parsing_data))
+				{
+					$message_parser->message = $post_parsing_data;
+				}
+			}
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
@@ -1606,7 +1626,6 @@ if (!sizeof($error) && $preview)
 		));
 	}
 }
-
 // Remove quotes that would become nested too deep before decoding the text
 $generate_quote = ($mode == 'quote' && !$submit && !$preview && !$refresh);
 if ($generate_quote && $config['max_quote_depth'] > 0)
