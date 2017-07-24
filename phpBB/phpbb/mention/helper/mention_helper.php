@@ -159,18 +159,17 @@ class mention_helper
 				}
 			}
 		}
-		return $post_text;
+		return array('new_post_text' => $post_text);
 	}
 
 	/**
 	* Function to generate Notifications.
 	*
-	* @param $user_list    array           Array containing userids to send
+	* @param $user_list    \Array           Array containing userids to send
 	*                                       notifications to.
-	* @param $notif_manager_obj        \phpbb\notification\manager        Notification
-	*																	  Manager object
 	* @param $temp_notif_type_object   \phpbb\notification\type\mention    Mention Type
 	* 																	   object
+	* @param $data        \Array        Notification Data Array
 	*
 	*/
 	public function send_notifications($user_list, $temp_notif_type_object, $data)

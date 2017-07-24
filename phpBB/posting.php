@@ -1452,10 +1452,7 @@ if ($submit || $preview || $refresh)
 			}
 			else
 			{
-				if (is_string($post_parsing_data))
-				{
-					$message_parser->message = $post_parsing_data;
-				}
+				$message_parser->message = $post_parsing_data['new_post_text'];
 			}
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
