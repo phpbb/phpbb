@@ -1441,8 +1441,7 @@ if ($submit || $preview || $refresh)
 			$helper_container = $phpbb_container->get('phpbb_mention_helper');
 			$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message);
 
-			if (is_array($post_parsing_data) &&
-				isset($post_parsing_data['new_post_text']) &&
+			if (isset($post_parsing_data['new_post_text']) &&
 				isset($post_parsing_data['users_mentioned']) &&
 				count($post_parsing_data['users_mentioned'] > 0) &&
 				isset($post_parsing_data['notif_type_object']))

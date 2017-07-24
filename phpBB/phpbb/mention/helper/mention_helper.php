@@ -35,7 +35,7 @@ class mention_helper
 	/**
 	* User Mention Helper Constructor
 	*
-	* @param $db   Database Driver Interface Object.
+	* @param $db   					phpbb\db\driver\driver_interface
 	* @param $notification_manager  \phpbb\notification\manager
 	*
 	* @return \phpbb\mention\helper\mention_helper

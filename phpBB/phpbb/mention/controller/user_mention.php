@@ -41,8 +41,9 @@ class user_mention
 	/**
 	* User Mention Controller Constructor
 	*
-	* @param $db       Database Driver Interface Object.
-	* @param $request  Request Interface Object.
+	* @param $db          	phpbb\db\driver\driver_interface
+	* @param $request     phpbb\request\request_interface
+	*  @param $container  Symfony\Component\DependencyInjection\ContainerInterface
 	*
 	* @return \phpbb\mention\controller\user_mention
 	*/
