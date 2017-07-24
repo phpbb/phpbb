@@ -6,6 +6,8 @@ services:
         arguments:
             - '@storage.adapter.factory'
             - 'avatar'
+        tags:
+            - { name: storage }
 
 # Factory
     storage.adapter.factory:
