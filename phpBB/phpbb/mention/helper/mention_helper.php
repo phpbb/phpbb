@@ -177,7 +177,7 @@ class mention_helper
 	{
 		$this->data = $data;
 		$notification_method_array = array();
-		$notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list, $notif_manager_obj);
+		$notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list);
 		$this->notification_manager->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
 	}
 

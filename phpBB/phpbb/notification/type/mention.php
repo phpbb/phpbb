@@ -75,7 +75,7 @@ class mention extends \phpbb\notification\type\post
 	* @return \Array Array containing the notification type object and notification
 	* method object.
 	*/
-	public function get_notification_type_and_method($db, $user_list, $notif_manager)
+	public function get_notification_type_and_method($db, $user_list)
 	{
 		$notif_list = array();
 		if (count($user_list) > 0)
