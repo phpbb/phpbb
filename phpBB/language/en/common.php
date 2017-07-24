@@ -727,6 +727,7 @@ $lang = array_merge($lang, array(
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
 
+	'STORAGE_ADAPTER_NOT_AVAILABLE'	=> 'Selected storage is not available.',
 	'STORAGE_FILE_EXISTS'			=> 'File already exists.',
 	'STORAGE_FILE_NO_EXIST'			=> 'File does not exist.',
 	'STORAGE_CANNOT_WRITE_FILE'		=> 'Can not write to file.',

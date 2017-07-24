@@ -15,6 +15,7 @@ namespace phpbb\storage;
 
 use phpbb\config\config;
 use phpbb\di\service_collection;
+use phpbb\storage\exception\exception;
 
 class adapter_factory
 {
@@ -58,6 +59,11 @@ class adapter_factory
 	{
 		$provider_class = $this->config['storage\\' . $storage_name . '\\adapter'];
 		$provider = $this->providers->get_by_class($provider_class);
+
+		if (!$provider->is_available())
+		{
+			throw new exception('STORAGE_ADAPTER_NOT_AVAILABLE');
+		}
 
 		$adapter = $this->adapters->get_by_class($provider->get_adapter_class());
 		$adapter->configure($this->build_options($storage_name, $provider->get_options()));
