@@ -45,6 +45,21 @@ class storage
 		$this->storage_name = $storage_name;
 	}
 
+	public function get_id()
+	{
+		return $this->storage_name;
+	}
+
+	public function get_name()
+	{
+		return strtoupper('STORAGE_' . $this->storage_name . '_NAME');
+	}
+
+	public function get_description()
+	{
+		return strtoupper('STORAGE_' . $this->storage_name . '_DESCRIPTION');
+	}
+
 	/**
 	 * Returns an adapter instance
 	 *
