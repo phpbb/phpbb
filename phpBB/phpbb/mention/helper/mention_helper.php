@@ -14,6 +14,7 @@
 namespace phpbb\mention\helper;
 
 use phpbb\db\driver\driver_interface;
+use phpbb\notification\manager;
 
 class mention_helper
 {
@@ -35,12 +36,12 @@ class mention_helper
 	/**
 	* User Mention Helper Constructor
 	*
-	* @param $db   					phpbb\db\driver\driver_interface
-	* @param $notification_manager  \phpbb\notification\manager
+	* @param $db   					    \phpbb\db\driver\driver_interface
+	* @param $notification_manager      \phpbb\notification\manager
 	*
 	* @return \phpbb\mention\helper\mention_helper
 	*/
-	public function __construct(driver_interface $db, \phpbb\notification\manager $notification_manager)
+	public function __construct(driver_interface $db, manager $notification_manager)
 	{
 		$this->db = $db;
 		$this->notification_manager = $notification_manager;
@@ -56,7 +57,7 @@ class mention_helper
 	*/
 	private function get_regex_match($regular_expression_match, $post_text)
 	{
-		$matches = false;
+		$matches = [];
 		preg_match_all($regular_expression_match, $post_text, $matches, PREG_OFFSET_CAPTURE);
 		return $matches;
 	}
@@ -71,7 +72,7 @@ class mention_helper
 	*/
 	private function get_user_list($matches)
 	{
-		$user_list = array();
+		$user_list = [];
 		$regexp_matches_count = count($matches[1]);
 		for ($i = 0; $i < $regexp_matches_count; $i++)
 		{
@@ -97,7 +98,7 @@ class mention_helper
 	*/
 	private function get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list)
 	{
-		$users_already_mapped = array();
+		$users_already_mapped = [];
 		$regexp_matches_count = count($matches[1]);
 		for ($i = 0; $i < $regexp_matches_count; $i++)
 		{
@@ -125,7 +126,7 @@ class mention_helper
 				$users_already_mapped[] = $userid_list[$username_clean];
 			}
 		}
-		return array('post_text' => $new_post_text, 'users_mapped' => $users_already_mapped) ;
+		return ['post_text' => $new_post_text, 'users_mapped' => $users_already_mapped] ;
 	}
 
 	/**
@@ -139,14 +140,14 @@ class mention_helper
 	public function get_mentioned_users($post_text)
 	{
 		$regular_expression_match = '#\[mention\](.*?)\[/mention\]#';
-		$matches = false;
+		$matches = [];
 		$matches = $this->get_regex_match($regular_expression_match, $post_text);
 		if (count($matches[1]) > 0)
 		{
 			$start_tag_length = strlen('[mention]');
 			$end_tag_length = strlen('[\mention]');
-			$user_list = array();
-			$userid_list = array();
+			$user_list = [];
+			$userid_list = [];
 			$user_list = $this->get_user_list($matches);
 			if (count($user_list) > 0)
 			{
@@ -155,11 +156,11 @@ class mention_helper
 				if (count($userid_list) > 0)
 				{
 					$new_post_data = $this->get_regex_substituted_text($matches, $post_text, $start_tag_length, $end_tag_length, $userid_list);
-					return array('new_post_text' => $new_post_data['post_text'], 'users_mentioned' => $new_post_data['users_mapped'], 'notif_type_object' => $temp_notif_type_object);
+					return ['new_post_text' => $new_post_data['post_text'], 'users_mentioned' => $new_post_data['users_mapped'], 'notif_type_object' => $temp_notif_type_object];
 				}
 			}
 		}
-		return array('new_post_text' => $post_text);
+		return ['new_post_text' => $post_text];
 	}
 
 	/**
@@ -175,7 +176,7 @@ class mention_helper
 	public function send_notifications($user_list, $temp_notif_type_object, $data)
 	{
 		$this->data = $data;
-		$notification_method_array = array();
+		$notification_method_array = [];
 		$notification_details_list = $temp_notif_type_object->get_notification_type_and_method($this->db, $user_list);
 		$this->notification_manager->add_notifications_for_users('notification.type.mention', $this->data, $notification_details_list);
 	}
