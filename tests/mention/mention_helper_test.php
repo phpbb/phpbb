@@ -50,7 +50,7 @@ class phpbb_mention_helper_test extends phpbb_test_case
         $user = new phpbb_mock_user;
         $sample_text = 'cbwkf kfbwkef wkfwb @robdyrdek vghjgjdsrshc ftfkyugb buykyuf yiglyftydtrf gyg ygiy @RickyBahner vgjdrs jfytg jbhjv ygfjh @HackMurphy kdnkwe [url = #]@andream[/url] [url = http://www.google.com]google[/url]wifhr [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13]LindsayM[/url] wewe [url = http://localhost/phpbb/phpBB/memberlist.php?mode=viewprofile&u=13] @LindsayM [/url][mention]admin[/mention][mention]admin[/mention] dwjpfw [mention]admin[/mention]';
         $db = $this->getMock('\phpbb\db\driver\driver_interface');
-        $helper_container = new \phpbb\mention\helper\mention_helper($db, $this->notification_manager);
+        $helper_container = new \phpbb\mention\helper\mention_helper($db, $this->notification_manager, 'php');
         $user_list = $helper_container->get_allusers('');
         $post_parsing_text = $helper_container->get_mentioned_users($sample_text);
         $new_post_text = $post_parsing_text['new_post_text'];
