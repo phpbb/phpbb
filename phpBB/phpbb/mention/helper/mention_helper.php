@@ -34,6 +34,13 @@ class mention_helper
 	private $data;
 
 	/**
+	* PHP file extension.
+	*
+	* @var string
+	*/
+	protected $php_ext;
+
+	/**
 	* User Mention Helper Constructor
 	*
 	* @param $db   					    \phpbb\db\driver\driver_interface
@@ -41,10 +48,11 @@ class mention_helper
 	*
 	* @return \phpbb\mention\helper\mention_helper
 	*/
-	public function __construct(driver_interface $db, manager $notification_manager)
+	public function __construct(driver_interface $db, manager $notification_manager, $php_ext)
 	{
 		$this->db = $db;
 		$this->notification_manager = $notification_manager;
+		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -107,7 +115,8 @@ class mention_helper
 			$length = strlen($matches[1][$i][0]);
 			$endpos = $matches[1][$i][1] + $length + $end_tag_length - 1;
 			$userid = $userid_list[$username_clean];
-			$add_url_tag = '[url=' . generate_board_url() . '/memberlist.php?mode=viewprofile&u=' . $userid . ']' . $username_clean . '[/url]';
+			echo $this->php_ext;
+			$add_url_tag = '[url=' . generate_board_url() . '/memberlist.' . $this->php_ext .'?mode=viewprofile&u=' . $userid . ']' . $username_clean . '[/url]';
 			if ($i == 0)
 			{
 				$new_post_text = substr($post_text, 0, $startpos);
@@ -166,11 +175,11 @@ class mention_helper
 	/**
 	* Function to generate Notifications.
 	*
-	* @param $user_list    \Array           Array containing userids to send
+	* @param $user_list    Array           Array containing userids to send
 	*                                       notifications to.
 	* @param $temp_notif_type_object   \phpbb\notification\type\mention    Mention Type
 	* 																	   object
-	* @param $data        \Array        Notification Data Array
+	* @param $data        Array        Notification Data Array
 	*
 	*/
 	public function send_notifications($user_list, $temp_notif_type_object, $data)

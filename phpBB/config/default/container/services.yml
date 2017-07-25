@@ -167,6 +167,7 @@ services:
         arguments:
             - '@dbal.conn'
             - '@notification_manager'
+            - '%core.php_ext%'
 
     upload_imagesize:
         class: FastImageSize\FastImageSize
