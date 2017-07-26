@@ -120,7 +120,7 @@ do
 	$pct_encoded = "%[\dA-F]{2}";
 	$unreserved = "$add_chars\pL0-9\-._~";
 	$sub_delims = ($inline) ? '!$&\'(*+,;=' : '!$&\'()*+,;=';
-	$scheme = ($inline) ? '[a-z][a-z\d+]*': '[a-z][a-z\d+\-.]*' ; // avoid automatic parsing of "word" in "last word.http://..."
+	$scheme = ($inline) ? '[a-z][a-z\d+]*(?<!javascript)': '[a-z][a-z\d+\-.]*(?<!javascript)' ; // avoid automatic parsing of "word" in "last word.http://..."
 	$pchar = "(?:[^$remove_chars]*[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
 
 	$reg_name = "(?:[^$remove_chars]*[$unreserved$sub_delims:@|]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" and no ":" (included instead of userinfo)

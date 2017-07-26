@@ -56,6 +56,10 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 				'<!-- l --><a class="postlink-local" href="http://testhost/viewtopic.php?t=1">viewtopic.php?t=1</a><!-- l -->'
 			),
 			array(
+				'javascript://testhost/viewtopic.php?t=1',
+				'javascript://testhost/viewtopic.php?t=1'
+			),
+			array(
 				'email@domain.com',
 				'<!-- e --><a href="mailto:email@domain.com">email@domain.com</a><!-- e -->'
 			),
@@ -91,6 +95,10 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 			array(
 				'ftp://ftp.täst.de/',
 				'<!-- m --><a class="postlink" href="ftp://ftp.täst.de/">ftp://ftp.täst.de/</a><!-- m -->'
+			),
+			array(
+				'javascript://täst.de/',
+				'javascript://täst.de/'
 			),
 			array(
 				'sip://bantu@täst.de',
