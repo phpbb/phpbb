@@ -78,16 +78,23 @@ class download_updated_files extends task_base
 		}
 		else if ($this->iohandler->get_input('update_recheck_files_submit', false))
 		{
+			$this->installer_config->set('file_updater_elem_progress', '');
+			$this->installer_config->set('update_files', array());
 			throw new jump_to_restart_point_exception('check_update_files');
 		}
 		else
 		{
-			// Render download box
-			$this->iohandler->add_download_link(
-				'phpbb_installer_update_file_download',
-				'DOWNLOAD_UPDATE_METHOD',
-				'DOWNLOAD_UPDATE_METHOD_EXPLAIN'
-			);
+			$file_update_info = $this->installer_config->get('update_files', array());
+
+			if (count($file_update_info) > 0)
+			{
+				// Render download box
+				$this->iohandler->add_download_link(
+					'phpbb_installer_update_file_download',
+					'DOWNLOAD_UPDATE_METHOD',
+					'DOWNLOAD_UPDATE_METHOD_EXPLAIN'
+				);
+			}
 
 			// Add form to continue update
 			$this->iohandler->add_user_form_group('UPDATE_CONTINUE_UPDATE_PROCESS', array(
@@ -96,8 +103,9 @@ class download_updated_files extends task_base
 					'type'	=> 'submit',
 				),
 				'database_update_submit'	=> array(
-					'label'	=> 'UPDATE_CONTINUE_UPDATE_PROCESS',
-					'type'	=> 'submit',
+					'label'		=> 'UPDATE_CONTINUE_UPDATE_PROCESS',
+					'type'		=> 'submit',
+					'disabled'	=> count($file_update_info) > 0,
 				),
 			));
 

@@ -103,6 +103,29 @@ class file_check extends task_base
 			$file_update_info = array();
 			$file_update_info['update_without_diff'] = array_diff($update_info['binary'], $update_info['deleted']);
 
+			foreach ($file_update_info['update_without_diff'] as $key => $binary_file)
+			{
+				$new_file = $new_path . $binary_file;
+				$file = $this->phpbb_root_path . $binary_file;
+
+				if (!$this->filesystem->exists($file))
+				{
+					continue;
+				}
+
+				if (md5_file($file) === md5_file($new_file))
+				{
+					// File already up to date
+					unset($file_update_info['update_without_diff'][$key]);
+				}
+			}
+
+			// Remove update without diff info if empty
+			if (count($file_update_info['update_without_diff']) < 1)
+			{
+				unset($file_update_info['update_without_diff']);
+			}
+
 			// Filter out files that are already deleted
 			$file_update_info['delete'] = array_filter(
 				$update_info['deleted'],
@@ -111,6 +134,12 @@ class file_check extends task_base
 					return file_exists($root_path . $filename);
 				}
 			);
+
+			// Remove files to delete list if empty
+			if (count($file_update_info['delete']) < 1)
+			{
+				unset($file_update_info['delete']);
+			}
 		}
 
 		$progress_count = $this->installer_config->get('file_check_progress_count', 0);
