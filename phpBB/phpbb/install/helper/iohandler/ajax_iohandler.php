@@ -186,6 +186,7 @@ class ajax_iohandler extends iohandler_base
 			$tpl_ary['TITLE'] = $this->language->lang($input_options['label']);
 			$tpl_ary['KEY'] = $input_name;
 			$tpl_ary['S_EXPLAIN'] = false;
+			$tpl_ary['DISABLED'] = isset($input_options['disabled']) ? $input_options['disabled'] : false;
 
 			if (isset($input_options['default']))
 			{
@@ -218,6 +219,11 @@ class ajax_iohandler extends iohandler_base
 		}
 
 		$this->template->assign_var('S_NOT_ONLY_BUTTON_FORM', $not_button_form);
+
+		if (!$not_button_form)
+		{
+			$this->template->destroy_block_vars('options');
+		}
 
 		$this->template->set_filenames(array(
 			'form_install' => 'installer_form.html',

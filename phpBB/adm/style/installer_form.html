@@ -49,7 +49,7 @@
 <fieldset class="submit-buttons">
 	<legend>{L_SUBMIT}</legend>
 	<!-- BEGIN submit_buttons -->
-	<input class="button1" type="submit" name="{submit_buttons.KEY}" value="{submit_buttons.TITLE}" />
+	<input class="button1<!-- IF submit_buttons.DISABLED --> disabled<!-- ENDIF -->" type="submit" name="{submit_buttons.KEY}" value="{submit_buttons.TITLE}"<!-- IF submit_buttons.DISABLED --> disabled="disabled"<!-- ENDIF --> />
 	<!-- END submit_buttons -->
 </fieldset>
 <!-- ENDIF -->
