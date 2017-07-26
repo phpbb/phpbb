@@ -1306,6 +1306,7 @@ if ($submit || $preview || $refresh)
 		'error',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.posting_modify_submission_errors', compact($vars)));
+
 	// Store message, sync counters
 	if (!sizeof($error) && $submit)
 	{
@@ -1447,7 +1448,7 @@ if ($submit || $preview || $refresh)
 				isset($post_parsing_data['notif_type_object']))
 			{
 				$message_parser->message = $post_parsing_data['new_post_text'];
-				$helper_container->send_notifications($post_parsing_data['users_mentioned'], $post_parsing_data['notif_type_object'], $post_data);
+				$helper_container->send_notifications($post_parsing_data['users_mentioned'], $post_parsing_data['user_mention_object'], $post_data);
 			}
 			else
 			{
@@ -1622,6 +1623,7 @@ if (!sizeof($error) && $preview)
 		));
 	}
 }
+
 // Remove quotes that would become nested too deep before decoding the text
 $generate_quote = ($mode == 'quote' && !$submit && !$preview && !$refresh);
 if ($generate_quote && $config['max_quote_depth'] > 0)

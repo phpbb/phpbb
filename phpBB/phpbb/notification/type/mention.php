@@ -50,11 +50,10 @@ class mention extends \phpbb\notification\type\post
 	/**
 	* Extract user_ids of all users mentioned in the post.
 	*
-	* @param $db  \phpbb\db\driver\driver_interface     DB driver interface.
-	* @param $users_to_notify  Array                    Usernames of all users emntioned
-	*													in the post.
+	* @param $db  \phpbb\db\driver\driver_interface  DB driver interface.
+	* @param $users_to_notify  array  Usernames of all users mentioned in the post.
 	*
-	* @return  Array                                   An array of all mentioned userids.
+	* @return  array  An array of all mentioned userids.
 	*/
 	public function find_users_for_notification($db, $users_to_notify = [])
 	{
@@ -77,10 +76,9 @@ class mention extends \phpbb\notification\type\post
 	* Get the type and method of notification corresponding the user
 	*
 	* @param $db          \phpbb\db\driver\driver_interface  DB driver interface.
-	* @param $user_list   Array                         Array containing all
-	*													user_ids mentioned in the post.
+	* @param $user_list   array  Array containing all user_ids mentioned in the post.
 	*
-	* @return Array       Array containing the notification type object and notification
+	* @return array       Array containing the notification type object and notification
 	*                     method object.
 	*/
 	public function get_notification_type_and_method($db, $user_list)

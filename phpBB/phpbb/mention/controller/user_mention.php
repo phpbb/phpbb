@@ -17,6 +17,7 @@ use phpbb\db\driver\driver_interface;
 use phpbb\request\request_interface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use phpbb\mention\helper\mention_helper;
 
 /**
  * phpBB mentions main controller.
@@ -34,9 +35,9 @@ class user_mention
 	private $request;
 
 	/**
-	* @var container_interface
+	* @var mention_helper
 	*/
-	private $container;
+	private $helper;
 
 	/**
 	* User Mention Controller Constructor
@@ -47,11 +48,11 @@ class user_mention
 	*
 	* @return \phpbb\mention\controller\user_mention
 	*/
-	public function __construct(driver_interface $db, request_interface $request, ContainerInterface $container)
+	public function __construct(driver_interface $db, request_interface $request, mention_helper $helper)
 	{
 		$this->db = $db;
 		$this->request = $request;
-		$this->container = $container;
+		$this->helper = $helper;
 	}
 	/**
 	*
@@ -66,8 +67,7 @@ class user_mention
 		{
 			return new JsonResponse(['usernames' => []]);
 		}
-		$helper_container = $this->container->get('phpbb_mention_helper');
-		$return_usernames_userid = $helper_container->get_allusers($user_search_keyword);
+		$return_usernames_userid = $this->helper->get_allusers($user_search_keyword);
 		return new JsonResponse($return_usernames_userid);
 	}
 }
