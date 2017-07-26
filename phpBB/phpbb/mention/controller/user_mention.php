@@ -41,9 +41,9 @@ class user_mention
 	/**
 	* User Mention Controller Constructor
 	*
-	* @param $db          	\phpbb\db\driver\driver_interface
-	* @param $request       \phpbb\request\request_interface
-	*  @param $helper   	\phpbb\mention\helper\mention_helper
+	* @param $db \phpbb\db\driver\driver_interface
+	* @param $request   \phpbb\request\request_interface
+	*  @param $helper   \phpbb\mention\helper\mention_helper
 	*
 	* @return \phpbb\mention\controller\user_mention
 	*/

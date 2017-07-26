@@ -74,7 +74,7 @@ class mention_helper
 	* Extract the mentioned users using regex exp. and make list of all unique users
 	* tagged.
 	*
-	* @param array    $matches   all matches with [mention][/mention].
+	* @param array|\Traversable    $matches   all matches with [mention][/mention].
 	*
 	* @return array List of all different users tagged in the text..
 	*/
@@ -96,7 +96,7 @@ class mention_helper
 	* Extract the mentioned users using regex exp and substitute them with
 	* links to profiles of respective users.
 	*
-	* @param array    $matches            all the matches with regexp.
+	* @param array|\Traversable  $matches all the matches with regexp.
 	* @param string   $post_text          post text
 	* @param integer  $start_tag_length   Length of tag [mention].
 	* @param integer  $end_tag_length     Length of tag [\mention].
@@ -142,9 +142,9 @@ class mention_helper
 	* Centralized function for calling other functions to extract users, sustitute their
 	* profile links and return the new text back to posting.php.
 	*
-	* @param string   $post_text              post text
+	* @param string   $post_text post text
 	*
-	* @return array Array of responder data
+	* @return array|\Traversable Array of responder data
 	*/
 	public function get_mentioned_users($post_text)
 	{
@@ -175,10 +175,11 @@ class mention_helper
 	/**
 	* Function to generate Notifications.
 	*
-	* @param $user_list   array  Array containing userids to send notifications to.
-	* @param $temp_notif_type_object   \phpbb\notification\type\mention    Mention Type
+	* @param $user_list  array|\Traversable  Array containing userids to send
+	*										  notifications to.
+	* @param $temp_notif_type_object  \phpbb\notification\type\mention  Mention Type
 	* 																	   object
-	* @param $data  array Notification Data Array
+	* @param $data  array|\Traversable  Notification Data Array
 	*
 	*/
 	public function send_notifications($user_list, $user_mention_object, $data)
@@ -191,10 +192,11 @@ class mention_helper
 	/**
 	* Function to generate list of all users eligible to be tagged in posts.
 	*
-	* @param $keyword    string     Extract only users whose username matches keyword.
+	* @param $keyword  string  Extract only users whose username matches keyword.
 	*
-	* @return $return_usernames_userid   array   Array containing user details matching
-	*                                            the keyword.
+	* @return $return_usernames_userid  array|\Traversable  Array containing user
+	* 														  details matching the
+	*														  keyword.
 	*
 	*/
 	public function get_allusers($keyword)
