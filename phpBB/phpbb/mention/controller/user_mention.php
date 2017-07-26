@@ -15,7 +15,6 @@ namespace phpbb\mention\controller;
 
 use phpbb\db\driver\driver_interface;
 use phpbb\request\request_interface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use phpbb\mention\helper\mention_helper;
 
@@ -44,7 +43,7 @@ class user_mention
 	*
 	* @param $db          	\phpbb\db\driver\driver_interface
 	* @param $request       \phpbb\request\request_interface
-	*  @param $container    \Symfony\Component\DependencyInjection\ContainerInterface
+	*  @param $helper   	\phpbb\mention\helper\mention_helper
 	*
 	* @return \phpbb\mention\controller\user_mention
 	*/
