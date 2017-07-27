@@ -54,7 +54,7 @@ class mention extends \phpbb\notification\type\post
 	* @param $users_to_notify  array|\Traversable  Usernames of all users mentioned in
 	*											   the post.
 	*
-	* @return  array|\Traversable  An array of all mentioned userids.
+	* @return  array|\Traversable   An array of all mentioned userids.
 	*/
 	public function find_users_for_notification($db, $users_to_notify = [])
 	{
