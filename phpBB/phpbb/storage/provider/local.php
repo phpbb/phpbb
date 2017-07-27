@@ -15,6 +15,16 @@ namespace phpbb\storage\provider;
 
 class local implements provider_interface
 {
+	public function get_name()
+	{
+		return 'local';
+	}
+
+	public function get_class()
+	{
+		return get_class($this);
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -28,7 +38,7 @@ class local implements provider_interface
 	 */
 	public function get_options()
 	{
-		return ['path'];
+		return ['path' => array('lang' => 'PATH', 'validate' => 'string', 'type' => 'text:40:255', 'explain' => false)];
 	}
 
 	/**

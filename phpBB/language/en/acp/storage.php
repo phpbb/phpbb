@@ -37,4 +37,15 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'STORAGE_TITLE'					=> 'Storage Settings',
+	'STORAGE_TITLE_EXPLAIN'			=> 'Here you can change the storage.',
+	'STORAGE_SELECT'				=> 'Select storage',
+	'STORAGE_SELECT_DESC'			=> 'Select an storage from the list.',
+
+	'STORAGE_ATTACHMENT_TITLE'		=> 'Attachments storage',
+	'STORAGE_AVATAR_TITLE'			=> 'Avatars storage',
+	'STORAGE_BACKUP_TITLE'			=> 'Backup storage',
+
+	'STORAGE_ADAPTER_LOCAL_NAME'	=> 'Local',
+
 ));

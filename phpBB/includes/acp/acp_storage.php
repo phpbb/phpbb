@@ -40,6 +40,12 @@ class acp_storage
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\di\service_collection */
+	protected $provider_collection;
+
+	/** @var \phpbb\di\service_collection */
+	protected $storage_collection;
+
 	/** @var string */
 	public $page_title;
 
@@ -58,9 +64,11 @@ class acp_storage
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
 		$this->user = $phpbb_container->get('user');
+		$this->provider_collection = $phpbb_container->get('storage.provider_collection');
+		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
 
 		// Add necesary language files
-		$this->user->add_lang(array('acp/storage'));
+		$this->lang->add_lang(array('acp/storage'));
 
 		switch($mode)
 		{
@@ -75,35 +83,6 @@ class acp_storage
 		$form_name = 'acp_storage';
 		add_form_key($form_name);
 
-		global $phpbb_container;
-		$storage_collection = $phpbb_container->get('storage.storage_collection');
-		$adapter_provider_collection = $phpbb_container->get('storage.provider_collection');
-
-		$storages = array();
-
-		foreach($storage_collection->getIterator() as $storage)
-		{
-			$this->template->assign_block_vars('storage', array(
-				'LEGEND' => $storage->get_name(),
-				'TITLE' => $storage->get_name(),
-				'TITLE_EXPLAIN' => $storage->get_description(),
-				'OPTIONS' => $this->generate_adapter_options(),
-			));
-
-			foreach($adapter_provider_collection as $provider)
-			{
-				if(!$provider->is_available())
-				{
-					continue;
-				}
-
-				$this->template->assign_block_vars('storage.adapter', array(
-					'NAME' => get_class($provider),
-					'SETTINGS' => print_r($provider->get_options(), 1),
-				));
-			}
-		}
-
 		// Template from adm/style
 		$this->tpl_name = 'acp_storage';
 
@@ -111,22 +90,8 @@ class acp_storage
 		$this->page_title = 'STORAGE_TITLE';
 
 		$this->template->assign_vars(array(
+			'STORAGES' => $this->storage_collection,
+			'PROVIDERS' => $this->provider_collection
 		));
-	}
-
-	protected function generate_adapter_options()
-	{
-		global $phpbb_container;
-		$adapter_provider_collection = $phpbb_container->get('storage.provider_collection');
-
-		$options = '';
-
-		foreach($adapter_provider_collection as $provider)
-		{
-			$class = get_class($provider);
-			$options .= "<option value=\"$class\" data-toggle-setting=\"\">$class</option>";
-		}
-
-		return $options;
 	}
 }

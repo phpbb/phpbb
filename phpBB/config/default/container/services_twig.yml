@@ -15,6 +15,7 @@ services:
             - []
         calls:
             - [setLexer, ['@template.twig.lexer']]
+            - [addGlobal, ['config', '@config']]
 
     template.twig.lexer:
         class: phpbb\template\twig\lexer
