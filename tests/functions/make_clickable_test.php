@@ -60,6 +60,10 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 				'javascript://testhost/viewtopic.php?t=1'
 			),
 			array(
+				"java\nscri\npt://testhost/viewtopic.php?t=1",
+				"java\nscri\n<!-- m --><a class=\"postlink\" href=\"pt://testhost/viewtopic.php?t=1\">pt://testhost/viewtopic.php?t=1</a><!-- m -->"
+			),
+			array(
 				'email@domain.com',
 				'<!-- e --><a href="mailto:email@domain.com">email@domain.com</a><!-- e -->'
 			),
