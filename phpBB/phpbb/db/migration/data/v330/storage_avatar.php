@@ -18,7 +18,7 @@ class storage_avatar extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.add', array('storage\\avatar\\adapter', \phpbb\storage\provider\local::class)),
+			array('config.add', array('storage\\avatar\\provider', \phpbb\storage\provider\local::class)),
 			array('config.add', array('storage\\avatar\\config\\path', $this->config['avatar_path'])),
 			array('config.remove', array('avatar_path')),
 		);
