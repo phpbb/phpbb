@@ -57,7 +57,7 @@ class adapter_factory
 	 */
 	public function get($storage_name)
 	{
-		$provider_class = $this->config['storage\\' . $storage_name . '\\adapter'];
+		$provider_class = $this->config['storage\\' . $storage_name . '\\provider'];
 		$provider = $this->providers->get_by_class($provider_class);
 
 		if (!$provider->is_available())
