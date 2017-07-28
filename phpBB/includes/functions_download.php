@@ -25,7 +25,9 @@ if (!defined('IN_PHPBB'))
 */
 function send_avatar_to_browser($file, $browser)
 {
-	global $config, $phpbb_root_path;
+	global $config, $phpbb_container;
+
+	$storage = $phpbb_container->get('storage.avatar');
 
 	$prefix = $config['avatar_salt'] . '_';
 	$image_dir = $config['avatar_path'];
@@ -41,14 +43,11 @@ function send_avatar_to_browser($file, $browser)
 	{
 		$image_dir = '';
 	}
-	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
+	$file_path = $image_dir . '/' . $prefix . $file;
 
-	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
+	if ($storage->exists($file_path) && !headers_sent())
 	{
 		header('Cache-Control: public');
-
-		$image_data = @getimagesize($file_path);
-		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
 		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
@@ -69,12 +68,6 @@ function send_avatar_to_browser($file, $browser)
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 		}
 
-		$size = @filesize($file_path);
-		if ($size)
-		{
-			header("Content-Length: $size");
-		}
-
 		if (@readfile($file_path) == false)
 		{
 			$fp = @fopen($file_path, 'rb');
@@ -88,6 +81,8 @@ function send_avatar_to_browser($file, $browser)
 				fclose($fp);
 			}
 		}
+
+		echo $storage->get_contents($file_path);
 
 		flush();
 	}
