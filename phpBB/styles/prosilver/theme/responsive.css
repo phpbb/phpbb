@@ -538,8 +538,8 @@ fieldset.display-actions {
 
 @media only screen and (max-width: 500px), only screen and (max-device-width: 500px) {
 	p.responsive-center {
-		float: none;
-		text-align: center;
+		float: none !important;
+		text-align: center !important;
 		margin-bottom: 5px;
 	}
 
