@@ -1136,4 +1136,10 @@ li.breadcrumbs span:first-child > a {
 	.captcha-panel dd.captcha {
 		margin-right: 0;
 	}
+	
+	.rtl p.responsive-center {
+		float: none;
+		text-align: center;
+		margin-bottom: 5px;
+	}
 }
