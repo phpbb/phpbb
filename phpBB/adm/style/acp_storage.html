@@ -29,7 +29,7 @@
 			<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
 				<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
 				{% for name, options in provider.get_options %}
-					{% set lang_name = 'STORAGE_ADAPTER_' ~ storage.get_name | upper ~ '_OPTION_' ~ name | upper %}
+					{% set lang_name = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
 					{% set options =  options|merge({'name': storage.get_name ~ '[' ~ name ~ ']'}) %}
 					{{ adm_block(lang(lang_name), '', input(options)) }}
 				{% endfor %}
