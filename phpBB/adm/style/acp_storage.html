@@ -11,24 +11,28 @@
 	{% for storage in STORAGES %}
 		<fieldset>
 			<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
-		<dl>
-			<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
-			<dd>
-				<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
-					{% for provider in PROVIDERS if provider.is_available %}
-						<option value="{{ provider.get_class }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  provider.get_class ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
-							{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
-						</option>
-					{% endfor %}
-				</select>
-			</dd>
-		</dl>
+			<dl>
+				<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
+				<dd>
+					<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
+						{% for provider in PROVIDERS if provider.is_available %}
+							<option value="{{ provider.get_class }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  provider.get_class ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
+								{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
+							</option>
+						{% endfor %}
+					</select>
+				</dd>
+			</dl>
 		</fieldset>
 
 		{% for provider in PROVIDERS if provider.is_available %}
 			<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
 				<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
-				provider.get_options
+				{% for name, options in provider.get_options %}
+					{% set lang_name = 'STORAGE_ADAPTER_' ~ storage.get_name | upper ~ '_OPTION_' ~ name | upper %}
+					{% set options =  options|merge({'name': storage.get_name ~ '[' ~ name ~ ']'}) %}
+					{{ adm_block(lang(lang_name), '', input(options)) }}
+				{% endfor %}
 			</fieldset>
 		{% endfor %}
 

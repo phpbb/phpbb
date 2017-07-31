@@ -46,6 +46,8 @@ $lang = array_merge($lang, array(
 	'STORAGE_AVATAR_TITLE'			=> 'Avatars storage',
 	'STORAGE_BACKUP_TITLE'			=> 'Backup storage',
 
+	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'		=> 'Path',
+
 	'STORAGE_ADAPTER_LOCAL_NAME'	=> 'Local',
 
 ));

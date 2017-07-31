@@ -38,7 +38,7 @@ class local implements provider_interface
 	 */
 	public function get_options()
 	{
-		return ['path' => array('lang' => 'PATH', 'validate' => 'string', 'type' => 'text:40:255', 'explain' => false)];
+		return ['path' => array('type' => 'text')];
 	}
 
 	/**
