@@ -83,7 +83,7 @@ class adapter_factory
 	{
 		$options = [];
 
-		foreach ($definitions as $def)
+		foreach (array_keys($definitions) as $def)
 		{
 			$options[$def] = $this->config['storage\\' . $storage_name . '\\config\\' . $def];
 		}
