@@ -31,7 +31,7 @@
 				{% for name, options in provider.get_options %}
 					{% set lang_name = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
 					{% set options =  options|merge({'name': storage.get_name ~ '[' ~ name ~ ']'}) %}
-					{{ adm_block(lang(lang_name), '', input(options)) }}
+					{{ adm_block(lang(lang_name), '', input(options, attribute(CONFIG, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name))) }}
 				{% endfor %}
 			</fieldset>
 		{% endfor %}

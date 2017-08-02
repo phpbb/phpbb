@@ -78,6 +78,7 @@ class acp_storage
 		}
 	}
 
+	// TODO: Validate data
 	public function overview($id, $mode)
 	{
 		$form_name = 'acp_storage';
@@ -89,9 +90,65 @@ class acp_storage
 		// Set page title
 		$this->page_title = 'STORAGE_TITLE';
 
+		if ($this->request->is_set_post('submit'))
+		{
+			foreach ($this->storage_collection as $storage)
+			{
+				$modified = false;
+				$provider = $this->provider_collection->get_by_class($this->config['storage\\' . $storage->get_name() . '\\provider']);
+
+				// Check if provider have been modified
+				if ($this->request->variable([$storage->get_name(), 'provider'], '') != $this->config['storage\\' . $storage->get_name() . '\\provider'])
+				{
+					$modified = true;
+				}
+
+				// Check if options have been modified
+				if(!$modified)
+				{
+					foreach($provider->get_options() as $option => $params)
+					{
+						if ($this->request->variable([$storage->get_name(), $option], '') != $this->config['storage\\' . $storage->get_name() . '\\provider'])
+						{
+							$modified = true;
+							break;
+						}
+					}
+				}
+
+				// Update storage
+				if($modified)
+				{
+					// TODO: Allow to move data to the new storage automatically
+
+					// TODO: Validate data
+
+					// Remove old straoge config
+					foreach (array_keys($provider->get_options()) as $def)
+					{
+						$this->config->delete('storage\\' . $storage->get_name() . '\\config\\' . $def);
+					}
+
+					// Update provider
+					$this->config->set('storage\\' . $storage->get_name() . '\\provider', $this->request->variable([$storage->get_name(), 'provider'], ''));
+
+					// Set new storage config
+					$new_provider = $this->provider_collection->get_by_class($this->config['storage\\' . $storage->get_name() . '\\provider']);
+
+					foreach (array_keys($new_provider->get_options()) as $def)
+					{
+						$this->config->set('storage\\' . $storage->get_name() . '\\config\\' . $def, $this->request->variable([$storage->get_name(), $def], ''));
+					}
+				}
+			}
+
+			// Updated succesfuly
+		}
+
 		$this->template->assign_vars(array(
 			'STORAGES' => $this->storage_collection,
-			'PROVIDERS' => $this->provider_collection
+			'PROVIDERS' => $this->provider_collection,
+			'CONFIG' => $this->config // Maybe this should be added to \phpbb\templat\twig\extension
 		));
 	}
 }

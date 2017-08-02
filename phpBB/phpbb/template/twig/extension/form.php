@@ -32,9 +32,9 @@ class form extends \Twig_Extension
 		];
 	}
 
-	public static function generate_input($options)
+	public static function generate_input($options, $value = '')
 	{
-		$input = '<input ';
+		$input = '<input value="' . $value . '"';
 
 		switch ($options['type'])
 		{
