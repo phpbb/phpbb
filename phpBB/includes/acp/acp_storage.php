@@ -57,7 +57,7 @@ class acp_storage
 
 	public function main($id, $mode)
 	{
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		$this->config = $phpbb_container->get('config');
 		$this->lang = $phpbb_container->get('language');
@@ -69,6 +69,17 @@ class acp_storage
 
 		// Add necesary language files
 		$this->lang->add_lang(array('acp/storage'));
+
+		/**
+		 * Add language strings
+		 *
+		 * @event core.acp_storage_load
+		 * @var array
+		 * @since 3.3.0-a1
+		 */
+		$vars = array(
+		);
+		extract($phpbb_dispatcher->trigger_event('core.acp_storage_load', compact($vars)));
 
 		switch($mode)
 		{
