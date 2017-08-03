@@ -1,0 +1,28 @@
+{% macro input(name, value, type, size) %}
+    <input type="{{ type|default('text') }}" name="{{ name }}" value="{{ value|e }}" size="{{ size|default(20) }}" />
+{% endmacro %}
+
+{% macro textarea(name, value, rows, cols) %}
+    <textarea name="{{ name }}" rows="{{ rows|default(10) }}" cols="{{ cols|default(40) }}">{{ value|e }}</textarea>
+{% endmacro %}
+
+{% macro form_control(params) %}
+	{% if params['type'] == 'text' %}
+		{{ _self.input(params['name'], params['value'], params['type']) }}
+	{% endif %}
+{% endmacro %}
+
+{% macro form_label(name, description = '') %}
+	<label for="">{{ lang(name) }}</label>{% if description is not empty %}<br /><span>{{ lang(description) }}</span>{% endif %}
+{% endmacro %}
+
+{% macro form_row(left_content, right_content) %}
+<dl>
+	<dt>
+		{{ left_content }}
+	</dt>
+	<dd>
+		{{ right_content}}
+	</dd>
+</dl>
+{% endmacro %}

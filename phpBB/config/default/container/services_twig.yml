@@ -48,12 +48,6 @@ services:
         tags:
             - { name: twig.extension }
 
-    template.twig.extensions.form:
-        class: phpbb\template\twig\extension\form
-        arguments:
-        tags:
-            - { name: twig.extension }
-
     template.twig.extensions.debug:
         class: Twig_Extension_Debug
 
