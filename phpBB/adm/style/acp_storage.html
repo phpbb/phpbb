@@ -1,4 +1,3 @@
-{% import 'forms.html' as forms %}
 <!-- INCLUDE overall_header.html -->
 
 <a id="maincontent"></a>
@@ -30,13 +29,35 @@
 			<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
 				<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
 				{% for name, options in provider.get_options %}
-					{% set l_name = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
-					{% set options = options|merge({'name': storage.get_name ~ '[' ~ name ~ ']'}) %}
-					{% set options = options|merge({'value': attribute(CONFIG, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name)}) %}
-					{{ forms.form_row(
-						forms.form_label(l_name),
-						forms.form_control(options)
-					) }}
+					<dl>
+						<dt>
+							<label for="">{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper) }}{{ lang('COLON') }}</label>{% if description is not empty %}<br /><span>{{ lang(description) }}</span>{% endif %}
+						</dt>
+						<dd>
+							{% set input_type = options['type'] %}
+							{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
+							{% set input_value = attribute(CONFIG, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
+
+							{% if
+								input_type == 'text' or
+								input_type == 'password' or
+								input_type == 'email' %}
+								<input id="" type="{{ input_type }}" name="{{ input_name }}" value="{{ input_value }}" maxlength="{{ options['maxlength'] ?: 255 }}" />
+							{% elseif input_type == 'textarea' %}
+								<textarea id="" name="{{ input_name }}">{{ input_value }}</textarea>
+							{% elseif input_type == 'radio' %}
+								{% for option_name, option_value in options['options'] %}
+									<label><input type="radio" name="{{ input_name }}" value="{{ option_value }}" class="radio" id=""{{ (option_value == input_value) ? ' checked="checked"' }}>{{ lang(option_name) }}</textarea></label>
+								{% endfor %}
+							{% elseif input_type == 'select' %}
+								<select name="{{ input_name }}">
+									{% for option_name, option_value in options['options'] %}
+										<option value="{{ option_value }}"{{ (option_value == input_value) ? ' selected' }}>{{ lang(option_name) }}</option>
+									{% endfor %}
+								</select>
+							{% endif %}
+						</dd>
+					</dl>
 				{% endfor %}
 			</fieldset>
 		{% endfor %}

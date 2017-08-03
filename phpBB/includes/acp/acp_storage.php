@@ -12,10 +12,6 @@
 */
 
 /**
-* @todo add cron intervals to server settings? (database_gc, queue_interval, session_gc, search_gc, cache_gc, warnings_gc)
-*/
-
-/**
 * @ignore
 */
 if (!defined('IN_PHPBB'))
