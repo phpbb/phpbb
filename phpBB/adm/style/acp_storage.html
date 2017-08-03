@@ -47,7 +47,7 @@
 								<textarea id="" name="{{ input_name }}">{{ input_value }}</textarea>
 							{% elseif input_type == 'radio' %}
 								{% for option_name, option_value in options['options'] %}
-									<label><input type="radio" name="{{ input_name }}" value="{{ option_value }}" class="radio" id=""{{ (option_value == input_value) ? ' checked="checked"' }}>{{ lang(option_name) }}</textarea></label>
+									<label><input type="radio" name="{{ input_name }}" value="{{ option_value }}" class="radio" id=""{{ (option_value == input_value) ? ' checked="checked"' }}> {{ lang(option_name) }}</label>
 								{% endfor %}
 							{% elseif input_type == 'select' %}
 								<select name="{{ input_name }}">
