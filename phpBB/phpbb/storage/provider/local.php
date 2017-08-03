@@ -15,14 +15,12 @@ namespace phpbb\storage\provider;
 
 class local implements provider_interface
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_name()
 	{
 		return 'local';
-	}
-
-	public function get_class()
-	{
-		return get_class($this);
 	}
 
 	/**
