@@ -36,7 +36,7 @@
 						<dd>
 							{% set input_type = options['type'] %}
 							{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
-							{% set input_value = attribute(CONFIG, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
+							{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
 
 							{% if
 								input_type == 'text' or
