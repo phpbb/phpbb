@@ -38,10 +38,7 @@
 							{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
 							{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
 
-							{% if
-								input_type == 'text' or
-								input_type == 'password' or
-								input_type == 'email' %}
+							{% if input_type in ['text', 'password', 'email'] %}
 								<input id="" type="{{ input_type }}" name="{{ input_name }}" value="{{ input_value }}" maxlength="{{ options['maxlength'] ?: 255 }}" />
 							{% elseif input_type == 'textarea' %}
 								<textarea id="" name="{{ input_name }}">{{ input_value }}</textarea>
