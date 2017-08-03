@@ -77,8 +77,7 @@ class acp_storage
 		 * @var array
 		 * @since 3.3.0-a1
 		 */
-		$vars = array(
-		);
+		$vars = array();
 		extract($phpbb_dispatcher->trigger_event('core.acp_storage_load', compact($vars)));
 
 		switch($mode)
