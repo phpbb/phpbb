@@ -154,7 +154,7 @@ class acp_storage
 		$this->template->assign_vars(array(
 			'STORAGES' => $this->storage_collection,
 			'PROVIDERS' => $this->provider_collection,
-			'CONFIG' => $this->config // Maybe this should be added to \phpbb\templat\twig\extension
+			'CONFIG' => $this->config
 		));
 	}
 }
