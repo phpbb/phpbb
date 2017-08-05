@@ -77,7 +77,7 @@ class acp_storage
 		$vars = array();
 		extract($phpbb_dispatcher->trigger_event('core.acp_storage_load', compact($vars)));
 
-		switch($mode)
+		switch ($mode)
 		{
 			case 'settings':
 				$this->overview($id, $mode);
@@ -213,21 +213,21 @@ class acp_storage
 		// Check options
 		$new_options = $this->get_provider_options($this->get_new_provider($storage_name));
 
-		foreach($new_options as $def_k => $def_v)
+		foreach ($new_options as $def_k => $def_v)
 		{
 			$value = $this->get_new_def($storage_name, $def_k);
 
 			switch ($def_v['type'])
 			{
 				case 'email':
-					if(!filter_var($value, FILTER_VALIDATE_EMAIL))
+					if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT');
 					}
 				case 'text':
 				case 'password':
 					$maxlength = isset($def_v['maxlength']) ? $def_v['maxlength'] : 255;
-					if(strlen($value) > $maxlength)
+					if (strlen($value) > $maxlength)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG');
 					}
@@ -236,7 +236,7 @@ class acp_storage
 				case 'select':
 					if (!in_array($value, array_values($def_v['options'])))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_SELECT_NOT_AVAILABLE');
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE');
 					}
 					break;
 			}
