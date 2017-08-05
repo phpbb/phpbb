@@ -54,12 +54,11 @@ $lang = array_merge($lang, array(
 	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'		=> 'Path',
 
 	// Form validation
-	// Todo" more descriptive form errors showing storage name and field name
 	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storages were successfuly updated.',
 	'STORAGE_NO_CHANGES'						=>	'No changes has been made.',
-	'STORAGE_PROVIDER_NOT_EXISTS'				=>	'Provider selected for %s dont exist.',
+	'STORAGE_PROVIDER_NOT_EXISTS'				=>	'Provider selected for %s doesn\'t exist.',
 	'STORAGE_PROVIDER_NOT_AVAILABLE'			=>	'Provider selected for %s is not available.',
-	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email',
-	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long',
-	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available',
+	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email for %s of %s.',
+	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long for %s of %s.',
+	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available for %s of %s.',
 ));

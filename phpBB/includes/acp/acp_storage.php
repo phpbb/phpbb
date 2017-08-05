@@ -215,6 +215,9 @@ class acp_storage
 
 		foreach ($new_options as $def_k => $def_v)
 		{
+			$provider = $this->provider_collection->get_by_class($this->get_new_provider($storage_name));
+			$def_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($def_k));
+
 			$value = $this->get_new_def($storage_name, $def_k);
 
 			switch ($def_v['type'])
@@ -222,21 +225,21 @@ class acp_storage
 				case 'email':
 					if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT');
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $def_title, $storage_title);
 					}
 				case 'text':
 				case 'password':
 					$maxlength = isset($def_v['maxlength']) ? $def_v['maxlength'] : 255;
 					if (strlen($value) > $maxlength)
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG');
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $def_title, $storage_title);
 					}
 					break;
 				case 'radio':
 				case 'select':
 					if (!in_array($value, array_values($def_v['options'])))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE');
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $def_title, $storage_title);
 					}
 					break;
 			}
