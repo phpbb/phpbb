@@ -85,7 +85,6 @@ class acp_storage
 		}
 	}
 
-	// TODO: Validate data
 	public function overview($id, $mode)
 	{
 		$form_name = 'acp_storage';
@@ -99,23 +98,29 @@ class acp_storage
 
 		if ($this->request->is_set_post('submit'))
 		{
+			$modified_storages = [];
+			$messages = [];
+
 			foreach ($this->storage_collection as $storage)
 			{
+				$storage_name = $storage->get_name();
+
+				$options = $this->get_provider_options($this->get_current_provider($storage_name));
+
 				$modified = false;
-				$provider = $this->provider_collection->get_by_class($this->config['storage\\' . $storage->get_name() . '\\provider']);
 
 				// Check if provider have been modified
-				if ($this->request->variable([$storage->get_name(), 'provider'], '') != $this->config['storage\\' . $storage->get_name() . '\\provider'])
+				if ($this->get_new_provider($storage_name) != $this->get_current_provider($storage_name))
 				{
 					$modified = true;
 				}
 
 				// Check if options have been modified
-				if(!$modified)
+				if (!$modified)
 				{
-					foreach($provider->get_options() as $option => $params)
+					foreach (array_keys($options) as $def)
 					{
-						if ($this->request->variable([$storage->get_name(), $option], '') != $this->config['storage\\' . $storage->get_name() . '\\provider'])
+						if ($this->get_new_def($storage_name, $def) != $this->get_current_def($storage_name, $def))
 						{
 							$modified = true;
 							break;
@@ -123,38 +128,140 @@ class acp_storage
 					}
 				}
 
-				// Update storage
-				if($modified)
+				// If the storage have been modified, validate options
+				if ($modified)
 				{
-					// TODO: Allow to move data to the new storage automatically
-
-					// TODO: Validate data
-
-					// Remove old straoge config
-					foreach (array_keys($provider->get_options()) as $def)
-					{
-						$this->config->delete('storage\\' . $storage->get_name() . '\\config\\' . $def);
-					}
-
-					// Update provider
-					$this->config->set('storage\\' . $storage->get_name() . '\\provider', $this->request->variable([$storage->get_name(), 'provider'], ''));
-
-					// Set new storage config
-					$new_provider = $this->provider_collection->get_by_class($this->config['storage\\' . $storage->get_name() . '\\provider']);
-
-					foreach (array_keys($new_provider->get_options()) as $def)
-					{
-						$this->config->set('storage\\' . $storage->get_name() . '\\config\\' . $def, $this->request->variable([$storage->get_name(), $def], ''));
-					}
+					$modified_storages[] = $storage_name;
+					$this->validate_data($storage_name, $messages);
 				}
 			}
 
-			// Updated succesfuly
+			if (count($modified_storages))
+			{
+				if (!count($messages))
+				{
+					foreach ($modified_storages as $storage_name)
+					{
+						$this->update_storage_config($storage_name);
+					}
+
+					trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action), E_USER_NOTICE);
+				}
+				else
+				{
+					trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+			}
+
+			// If there is no errors
+			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$this->template->assign_vars(array(
 			'STORAGES' => $this->storage_collection,
 			'PROVIDERS' => $this->provider_collection,
 		));
+	}
+
+	protected function get_current_provider($storage_name)
+	{
+		return $this->config['storage\\' . $storage_name . '\\provider'];
+	}
+
+	protected function get_new_provider($storage_name)
+	{
+		return $this->request->variable([$storage_name, 'provider'], '');
+	}
+
+	protected function get_provider_options($provider)
+	{
+		return $this->provider_collection->get_by_class($provider)->get_options();
+	}
+
+	protected function get_current_def($storage_name, $def)
+	{
+		return $this->config['storage\\' . $storage_name . '\\config\\' . $def];
+	}
+
+	protected function get_new_def($storage_name, $def)
+	{
+		return $this->request->variable([$storage_name, $def], '');
+	}
+
+	protected function validate_data($storage_name, &$messages)
+	{
+		$storage_title = $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
+
+		// Check if provider exists
+		try
+		{
+			$new_provider = $this->provider_collection->get_by_class($this->get_new_provider($storage_name));
+		}
+		catch (\Exception $e)
+		{
+			$messages[] = $this->lang->lang('STORAGE_PROVIDER_NOT_EXISTS', $storage_title);
+			return;
+		}
+
+		// Check if provider is available
+		if (!$new_provider->is_available())
+		{
+			$messages[] = $this->lang->lang('STORAGE_PROVIDER_NOT_AVAILABLE', $storage_title);
+			return;
+		}
+
+		// Check options
+		$new_options = $this->get_provider_options($this->get_new_provider($storage_name));
+
+		foreach($new_options as $def_k => $def_v)
+		{
+			$value = $this->get_new_def($storage_name, $def_k);
+
+			switch ($def_v['type'])
+			{
+				case 'email':
+					if(!filter_var($value, FILTER_VALIDATE_EMAIL))
+					{
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT');
+					}
+				case 'text':
+				case 'password':
+					$maxlength = isset($def_v['maxlength']) ? $def_v['maxlength'] : 255;
+					if(strlen($value) > $maxlength)
+					{
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG');
+					}
+					break;
+				case 'radio':
+				case 'select':
+					if (!in_array($value, array_values($def_v['options'])))
+					{
+						$messages[] = $this->lang->lang('STORAGE_FORM_SELECT_NOT_AVAILABLE');
+					}
+					break;
+			}
+		}
+	}
+
+	protected function update_storage_config($storage_name)
+	{
+		$current_options = $this->get_provider_options($this->get_current_provider($storage_name));
+
+		// Remove old storage config
+		foreach (array_keys($current_options) as $def)
+		{
+			$this->config->delete('storage\\' . $storage_name . '\\config\\' . $def);
+		}
+
+		// Update provider
+		$this->config->set('storage\\' . $storage_name . '\\provider', $this->get_new_provider($storage_name));
+
+		// Set new storage config
+		$new_options = $this->get_provider_options($this->get_new_provider($storage_name));
+
+		foreach (array_keys($new_options) as $def)
+		{
+			$this->config->set('storage\\' . $storage_name . '\\config\\' . $def, $this->get_new_def($storage_name, $def));
+		}
 	}
 }

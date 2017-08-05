@@ -37,17 +37,29 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+
+	// Template
 	'STORAGE_TITLE'					=> 'Storage Settings',
 	'STORAGE_TITLE_EXPLAIN'			=> 'Here you can change the storage.',
 	'STORAGE_SELECT'				=> 'Select storage',
 	'STORAGE_SELECT_DESC'			=> 'Select an storage from the list.',
 
+	// Storage ma,es
 	'STORAGE_ATTACHMENT_TITLE'		=> 'Attachments storage',
 	'STORAGE_AVATAR_TITLE'			=> 'Avatars storage',
 	'STORAGE_BACKUP_TITLE'			=> 'Backup storage',
 
+	// Local adapter
+	'STORAGE_ADAPTER_LOCAL_NAME'			=> 'Local',
 	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'		=> 'Path',
 
-	'STORAGE_ADAPTER_LOCAL_NAME'	=> 'Local',
-
+	// Form validation
+	// Todo" more descriptive form errors showing storage name and field name
+	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storages were successfuly updated.',
+	'STORAGE_NO_CHANGES'						=>	'No changes has been made.',
+	'STORAGE_PROVIDER_NOT_EXISTS'				=>	'Provider selected for %s dont exist.',
+	'STORAGE_PROVIDER_NOT_AVAILABLE'			=>	'Provider selected for %s is not available.',
+	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email',
+	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long',
+	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available',
 ));

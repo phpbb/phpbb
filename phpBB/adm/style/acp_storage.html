@@ -16,7 +16,7 @@
 				<dd>
 					<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
 						{% for provider in PROVIDERS if provider.is_available %}
-							<option value="{{ provider.get_class }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  provider.get_class ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
+							<option value="{{ get_class(provider) }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  get_class(provider) ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
 								{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
 							</option>
 						{% endfor %}
