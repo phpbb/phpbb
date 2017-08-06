@@ -498,6 +498,13 @@ acp_styles_list_before
 * Since: 3.1.7-RC1
 * Purpose: Add content before list of styles
 
+acp_users_mode_add
+===
+* Locations:
+    + adm/style/acp_users.html
+* Since: 3.2.2-RC1
+* Purpose: Add extra modes to the ACP user page
+
 acp_users_profile_before
 ===
 * Locations:
