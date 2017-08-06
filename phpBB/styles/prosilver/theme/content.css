@@ -141,6 +141,7 @@ dl.row-item {
 	background-repeat: no-repeat;
 	background-position: 10px 50%;		/* Position of folder icon */
 	background-size: 32px;
+	image-rendering: -webkit-optimize-contrast;
 }
 
 dl.row-item dt {
