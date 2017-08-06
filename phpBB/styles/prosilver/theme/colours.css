@@ -335,7 +335,7 @@ ul.forums {
 	background-image: linear-gradient(to bottom, #d2e0eb 0%, #eef5f9 100%);
 }
 
-ul.topiclist li {
+ul.topiclist > li {
 	color: #4c5d77;
 }
 

@@ -908,14 +908,14 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .pagination > ul {
 	display: inline-block;
 	margin-left: 5px;
-	list-style: none !important;
+	list-style: none;
 }
 
 .pagination > ul > li {
 	font-size: 100%;
 	line-height: normal;
 	vertical-align: middle;
-	display: inline-block !important;
+	display: inline-block;
 	padding: 0;
 }
 
