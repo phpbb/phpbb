@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_dbal_migration_if extends \phpbb\db\migration\migration
+class phpbb_dbal_migration_if_params extends \phpbb\db\migration\migration
 {
 	function update_schema()
 	{
@@ -23,26 +23,22 @@ class phpbb_dbal_migration_if extends \phpbb\db\migration\migration
 		return array(
 			array('if', array(
 				true,
-				array('custom', array(array($this, 'test_true'))),
+				array('custom', array(array($this, 'test'), array('true'))),
 			)),
 			array('if', array(
 				false,
-				array('custom', array(array($this, 'test_false'))),
+				array('custom', array(array($this, 'test'), array('false'))),
 			)),
 		);
 	}
 
-	function test_true()
+	function test($param)
 	{
-		global $migrator_test_if_true_failed;
+		global $migrator_test_if_true_failed, $migrator_test_if_false_failed;
 
-		$migrator_test_if_true_failed = !$migrator_test_if_true_failed;
+		$var = 'migrator_test_if_' . $param . '_failed';
+
+		${$var} = !${$var};
 	}
 
-	function test_false()
-	{
-		global $migrator_test_if_false_failed;
-
-		$migrator_test_if_false_failed = !$migrator_test_if_false_failed;
-	}
 }

@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_dbal_migration_recall extends \phpbb\db\migration\migration
+class phpbb_dbal_migration_recall_params extends \phpbb\db\migration\migration
 {
 	function update_schema()
 	{
@@ -21,18 +21,18 @@ class phpbb_dbal_migration_recall extends \phpbb\db\migration\migration
 	function update_data()
 	{
 		return array(
-			array('custom', array(array($this, 'test_call'))),
+			array('custom', array(array($this, 'test_call'), array(5))),
 		);
 	}
 
-	// This function should be called 10 times
-	function test_call($input)
+	// This function should be called 5 times
+	function test_call($times, $input)
 	{
 		global $migrator_test_call_input;
 
 		$migrator_test_call_input = (int) $input;
 
-		if ($migrator_test_call_input < 10)
+		if ($migrator_test_call_input < $times)
 		{
 			return ($migrator_test_call_input + 1);
 		}
