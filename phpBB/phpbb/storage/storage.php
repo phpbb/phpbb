@@ -160,7 +160,22 @@ class storage
 	 */
 	public function read_stream($path)
 	{
-		$this->get_adapter()->read_stream($path);
+		$stream = null;
+		$adapter = $this->get_adapter();
+
+		if ($adapter instanceof stream_interface)
+		{
+			$stream = $adapter->read_stream($path);
+		}
+		else
+		{
+			// Simulate the stream
+			$stream = tmpfile();
+			fwrite($stream, $adapter->get_contents($path));
+			rewind($stream);
+		}
+
+		return $stream;
 	}
 
 	/**
@@ -173,6 +188,16 @@ class storage
 	 */
 	public function write_stream($path, $resource)
 	{
-		$this->get_adapter()->write_stream($path, $resource);
+		$adapter = $this->get_adapter();
+
+		if ($adapter instanceof stream_interface)
+		{
+			$adapter>write_stream($path, $resource);
+		}
+		else
+		{
+			// Simulate the stream
+			$adapter->put_contents($path, stream_get_contents($resource));
+		}
 	}
 }
