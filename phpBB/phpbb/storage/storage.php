@@ -192,7 +192,7 @@ class storage
 
 		if ($adapter instanceof stream_interface)
 		{
-			$adapter>write_stream($path, $resource);
+			$adapter->write_stream($path, $resource);
 		}
 		else
 		{
