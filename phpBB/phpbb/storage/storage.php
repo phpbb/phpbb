@@ -140,4 +140,32 @@ class storage
 	{
 		$this->get_adapter()->copy($path_orig, $path_dest);
 	}
+
+	/**
+	 * Reads a file as a stream.
+	 *
+	 * @param string	$path	File to read
+	 *
+	 * @throws \phpbb\storage\exception\exception	When cannot open file
+	 *
+	 * @return resource	Returns a file pointer
+	 */
+	public function read_stream($path)
+	{
+		$this->get_adapter()->read_stream($path);
+	}
+
+	/**
+	 * Writes a new file using a stream.
+	 *
+	 * @param string	$path		The target file
+	 * @param resource	$resource	The resource
+	 *
+	 * @throws \phpbb\storage\exception\exception	When target file exists
+	 * 												When target file cannot be created
+	 */
+	public function write_stream($path, $resource)
+	{
+		$this->get_adapter()->write_stream($path, $resource);
+	}
 }
