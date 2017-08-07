@@ -103,4 +103,23 @@
 		unlink($this->path . 'file2.txt');
 	}
 
+	public function test_read_stream()
+	{
+		file_put_contents($this->path . 'file.txt', '');
+		$stream = $this->adapter->read_stream($this->path . 'file.txt');
+		$this->assertTrue(is_resource($stream));
+		fclose($stream);
+		unlink($this->path . 'file.txt');
+	}
+
+	public function test_write_stream()
+	{
+		file_put_contents($this->path . 'file.txt', 'abc');
+		$stream = fopen($this->path . 'file.txt', 'r');
+		$this->adapter->write_stream($this->path . 'file2.txt', $stream);
+		fclose($stream);
+		$this->assertEquals(file_get_contents($this->path . 'file2.txt'), 'abc');
+		unlink($this->path . 'file.txt');
+		unlink($this->path . 'file2.txt');
+	}
  }
