@@ -115,7 +115,7 @@
 	public function test_write_stream()
 	{
 		file_put_contents($this->path . 'file.txt', 'abc');
-		$stream = fopen($this->path . 'file.txt', 'rb');
+		$stream = fopen($this->path . 'file.txt', 'w+b');
 		$this->adapter->write_stream('file2.txt', $stream);
 		fclose($stream);
 		$this->assertEquals(file_get_contents($this->path . 'file2.txt'), 'abc');
