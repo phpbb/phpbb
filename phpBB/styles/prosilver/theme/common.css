@@ -884,9 +884,15 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 /* Pagination in viewforum for multipage topics */
+.pagination,
+.no-wrap{
+    word-wrap: normal;
+    white-space: nowrap;
+}
+
 .row .pagination {
 	display: block;
-	margin-top: -12px;
+	margin-top: 0;
 }
 
 .row .pagination > ul {

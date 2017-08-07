@@ -107,31 +107,32 @@
 							<!-- EVENT topiclist_row_topic_title_after -->
 
 							<!-- IF not S_IS_BOT -->
-								<div class="responsive-show" style="display: none;">
-									{L_LAST_POST} {L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL} &laquo; <a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{searchresults.LAST_POST_TIME}</a>
-									<br />{L_POSTED} {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
-								</div>
-							<!-- IF searchresults.TOPIC_REPLIES --><span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></span><!-- ENDIF -->
-							<!-- ENDIF -->
+							<div>
+    								<span class="responsive-show" style="display: none;">
+    									{L_LAST_POST} {L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL} &laquo; <a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{searchresults.LAST_POST_TIME}</a>
+    									<br />{L_POSTED} {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
+    								</span>
+    							<!-- IF searchresults.TOPIC_REPLIES --><span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></span><!-- ENDIF -->
+    							<!-- ENDIF -->
 
-							<div class="responsive-hide">
-								<!-- IF searchresults.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
-								<!-- IF searchresults.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
-								{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} &raquo; {searchresults.FIRST_POST_TIME} &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
-							</div>
+								<span class="responsive-hide">
+									<!-- IF searchresults.S_HAS_POLL --><i class="icon fa-bar-chart fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+									<!-- IF searchresults.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF -->
+									<span class="no-wrap">{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL}</span> <span class="no-wrap">&raquo; {searchresults.FIRST_POST_TIME}</span> <span class="no-wrap">&raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></span>
+								</span>
 
-							<!-- IF .searchresults.pagination -->
-							<div class="pagination">
-								<span><i class="icon fa-clone fa-fw" aria-hidden="true"></i></span>
-								<ul>
-								<!-- BEGIN pagination -->
-									<!-- IF searchresults.pagination.S_IS_PREV -->
-									<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li class="active"><span>{searchresults.pagination.PAGE_NUMBER}</span></li>
-									<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
-									<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
-									<!-- ELSE --><li><a class="button" href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
-									<!-- ENDIF -->
-								<!-- END pagination -->
+								<!-- IF .searchresults.pagination -->
+								<span class="pagination">
+									<span><i class="icon fa-clone fa-fw" aria-hidden="true"></i></span>
+									<ul>
+									<!-- BEGIN pagination -->
+										<!-- IF searchresults.pagination.S_IS_PREV -->
+										<!-- ELSEIF searchresults.pagination.S_IS_CURRENT --><li class="active"><span>{searchresults.pagination.PAGE_NUMBER}</span></li>
+										<!-- ELSEIF searchresults.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+										<!-- ELSEIF searchresults.pagination.S_IS_NEXT -->
+										<!-- ELSE --><li><a class="button" href="{searchresults.pagination.PAGE_URL}">{searchresults.pagination.PAGE_NUMBER}</a></li>
+										<!-- ENDIF -->
+									<!-- END pagination -->
 								</ul>
 							</div>
 							<!-- ENDIF -->
