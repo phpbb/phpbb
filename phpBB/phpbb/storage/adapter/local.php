@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\adapter;
 
+use phpbb\storage\stream_interface;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
@@ -21,7 +22,7 @@ use phpbb\filesystem\helper as filesystem_helper;
 /**
  * @internal Experimental
  */
-class local implements adapter_interface
+class local implements adapter_interface, stream_interface
 {
 	/**
 	 * Filesystem component

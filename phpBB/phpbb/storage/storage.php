@@ -155,8 +155,7 @@ class storage
 	 * @param string	$path	File to read
 	 *
 	 * @throws \phpbb\storage\exception\exception		When cannot open file
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
-	 *
+
 	 * @return resource	Returns a file pointer
 	 */
 	public function read_stream($path)
@@ -169,9 +168,7 @@ class storage
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
-	 *
-	 * @throws \phpbb\storage\exception\exception		When target file exists
-	 * 													When target file cannot be created
+	 *										When target file cannot be created
 	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function write_stream($path, $resource)
