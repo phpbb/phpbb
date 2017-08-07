@@ -201,7 +201,7 @@ class local implements adapter_interface
 	 */
 	public function read_stream($path)
 	{
-		$stream = @fopen($path, 'rb');
+		$stream = @fopen($this->root_path . $path, 'rb');
 
 		if (!$stream)
 		{
@@ -221,7 +221,7 @@ class local implements adapter_interface
 			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
-		$stream = @fopen($path, 'w+b');
+		$stream = @fopen($this->root_path . $path, 'w+b');
 
 		if (!$stream)
 		{
