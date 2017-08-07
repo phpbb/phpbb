@@ -66,8 +66,9 @@ class storage
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
 	 *
-	 * @throws \phpbb\storage\exception\exception	When the file already exists
-	 * 												When the file cannot be written
+	 * @throws \phpbb\storage\exception\exception		When the file already exists
+	 * 													When the file cannot be written
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function put_contents($path, $content)
 	{
@@ -79,8 +80,10 @@ class storage
 	 *
 	 * @param string	$path	The file to read
 	 *
-	 * @throws \phpbb\storage\exception\exception	When the file dont exists
-	 * 												When cannot read file contents
+	 * @throws \phpbb\storage\exception\exception		When the file dont exists
+	 * 													When cannot read file contents
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
+	 *
 	 * @return string	Returns file contents
 	 *
 	 */
@@ -94,6 +97,8 @@ class storage
 	 *
 	 * @param string	$path	file/directory to check
 	 *
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
+	 *
 	 * @return bool	Returns true if all files/directories exist, false otherwise
 	 */
 	public function exists($path)
@@ -106,7 +111,8 @@ class storage
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception	When removal fails.
+	 * @throws \phpbb\storage\exception\exception		When removal fails.
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function delete($path)
 	{
@@ -119,8 +125,9 @@ class storage
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
 	 *
-	 * @throws \phpbb\storage\exception\exception	When target exists
-	 * 												When file/directory cannot be renamed
+	 * @throws \phpbb\storage\exception\exception		When target exists
+	 * 													When file/directory cannot be renamed
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function rename($path_orig, $path_dest)
 	{
@@ -133,8 +140,9 @@ class storage
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
 	 *
-	 * @throws \phpbb\storage\exception\exception	When target exists
-	 * 												When the file cannot be copied
+	 * @throws \phpbb\storage\exception\exception		When target exists
+	 * 													When the file cannot be copied
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function copy($path_orig, $path_dest)
 	{
@@ -146,7 +154,8 @@ class storage
 	 *
 	 * @param string	$path	File to read
 	 *
-	 * @throws \phpbb\storage\exception\exception	When cannot open file
+	 * @throws \phpbb\storage\exception\exception		When cannot open file
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 *
 	 * @return resource	Returns a file pointer
 	 */
@@ -161,8 +170,9 @@ class storage
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
 	 *
-	 * @throws \phpbb\storage\exception\exception	When target file exists
-	 * 												When target file cannot be created
+	 * @throws \phpbb\storage\exception\exception		When target file exists
+	 * 													When target file cannot be created
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function write_stream($path, $resource)
 	{
