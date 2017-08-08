@@ -17,10 +17,19 @@ use phpbb\storage\exception\not_implemented;
 
 class file_info
 {
+	/**
+	 * @var \phpbb\storage\adapter\adapter_interface
+	 */
 	protected $adapter;
 
+	/**
+	 * @var string
+	 */
 	protected $path;
 
+	/**
+	 * @var array
+	 */
 	protected $properties;
 
 	public function __construct($adapter, $path)
@@ -29,6 +38,11 @@ class file_info
 		$this->path = $path;
 	}
 
+	/**
+	 * Load propertys lazily.
+	 *
+	 * @param string	path		The file path.
+	 */
 	protected function fill_properties($path)
 	{
 		if ($this->properties === null)
@@ -42,6 +56,13 @@ class file_info
 		}
 	}
 
+	/**
+	 * Load propertys lazily.
+	 *
+	 * @param string	name		The property name.
+	 *
+	 * @return string	Returns the property value
+	 */
 	public function get($name)
 	{
 		$this->fill_properties($this->path);
@@ -59,6 +80,9 @@ class file_info
 		return $this->properties[$name];
 	}
 
+	/**
+	 * Alias of \phpbb\storage\file_info->get()
+	 */
 	public function __get($name)
 	{
 		return $this->get($name);

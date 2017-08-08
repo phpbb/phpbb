@@ -236,16 +236,43 @@ class local implements adapter_interface, stream_interface
 		}
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function file_properties($path)
 	{
 		return [];
 	}
 
+	/**
+	 * Get file size.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @throws \phpbb\storage\exception\exception		When cannot get size
+	 *
+	 * @return int File size in bytes
+	 */
 	public function file_size($path)
 	{
-		return filesize($this->root_path . $path);
+		$size = filesize($this->root_path . $path);
+
+		if ($size === null)
+		{
+			throw new exception('STORAGE_CANNOT_GET_FILESIZE');
+		}
+
+		return $size;
 	}
 
+
+	/**
+	 * Get file mimetype.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return string	Mime type
+	 */
 	public function file_mimetype($path)
 	{
 		return mime_content_type($this->root_path . $path);
