@@ -229,6 +229,9 @@ class local implements adapter_interface, stream_interface
 			throw new exception('STORAGE_CANNOT_CREATE_FILE', $path);
 		}
 
-		stream_copy_to_stream($resource, $stream);
+		if (stream_copy_to_stream($resource, $stream) === false)
+		{
+			throw new exception('STORAGE_CANNOT_COPY_RESOURCE');
+		}
 	}
 }

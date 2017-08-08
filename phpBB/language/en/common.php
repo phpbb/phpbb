@@ -735,6 +735,7 @@ $lang = array_merge($lang, array(
 	'STORAGE_CANNOT_DELETE'			=> 'Can not delete file or folder.',
 	'STORAGE_CANNOT_RENAME'			=> 'Can not rename file or folder.',
 	'STORAGE_CANNOT_COPY'			=> 'Can not copy file or folder.',
+	'STORAGE_CANNOT_COPY_RESOURCE'	=> 'Can not copy resource.',
 	'STORAGE_CANNOT_CREATE_DIR'		=> 'Can not create directory.',
 	'STORAGE_CANNOT_OPEN_FILE'		=> 'Can not open file.',
 	'STORAGE_CANNOT_CREATE_FILE'	=> 'Can not create file.',
