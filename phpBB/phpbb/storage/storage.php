@@ -170,7 +170,7 @@ class storage
 		else
 		{
 			// Simulate the stream
-			$stream = tmpfile();
+			$stream = fopen('php://temp', 'w+b');
 			fwrite($stream, $adapter->get_contents($path));
 			rewind($stream);
 		}
