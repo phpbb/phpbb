@@ -47,7 +47,16 @@ function send_avatar_to_browser($file, $browser)
 
 	if ($storage->exists($file_path) && !headers_sent())
 	{
+		$file_info = $storage->file_info($file_path);
+
 		header('Cache-Control: public');
+
+		try {
+			header('Content-Type: ' . $file_info->mimetype);
+		} catch (\phpbb\storage\exception\not_implemented $e) {
+			// Just dont send this header
+		}
+
 
 		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
@@ -68,6 +77,12 @@ function send_avatar_to_browser($file, $browser)
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 		}
 
+		try {
+			header('Content-Type: ' . $file_info->size);
+		} catch (\phpbb\storage\exception\not_implemented $e) {
+			// Just dont send this header
+		}
+
 		if (@readfile($file_path) == false)
 		{
 			$fp = @fopen($file_path, 'rb');
@@ -82,7 +97,18 @@ function send_avatar_to_browser($file, $browser)
 			}
 		}
 
-		echo $storage->get_contents($file_path);
+		try {
+			$fp = $storage->read_stream($file_path);
+
+			while (!feof($fp))
+			{
+				echo fread($fp, 8192);
+			}
+
+			fclose($fp);
+		} catch (\Exception $e) {
+
+		}
 
 		flush();
 	}

@@ -35,7 +35,7 @@ class file_info
 		{
 			$this->properties = [];
 
-			foreach($this->adapter->get_file_info($this->path) as $name => $value) {
+			foreach($this->adapter->file_properties($this->path) as $name => $value) {
 				$this->properties[$name] = $value;
 			}
 		}
@@ -47,12 +47,12 @@ class file_info
 
 		if (!isset($this->properties[$name]))
 		{
-			if (!method_exists($this->adapter, 'get_' . $name))
+			if (!method_exists($this->adapter, 'file_' . $name))
 			{
 				throw new not_implemented();
 			}
 
-			$this->properties[$name] = call_user_func($this->adapter, 'get_' . $name);
+			$this->properties[$name] = call_user_func($this->adapter, 'file_' . $name);
 		}
 
 		return $this->properties[$name];

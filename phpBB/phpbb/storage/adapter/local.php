@@ -236,17 +236,17 @@ class local implements adapter_interface, stream_interface
 		}
 	}
 
-	public function get_file_info($path)
+	public function file_properties($path)
 	{
 		return [];
 	}
 
-	public function get_size($path)
+	public function file_size($path)
 	{
 		return filesize($this->root_path . $path);
 	}
 
-	public function get_mimetype($path)
+	public function file_mimetype($path)
 	{
 		return mime_content_type($this->root_path . $path);
 	}
