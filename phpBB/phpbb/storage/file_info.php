@@ -43,7 +43,7 @@ class file_info
 
 	public function get($name)
 	{
-		$this->fill_properties();
+		$this->fill_properties($this->path);
 
 		if (!isset($this->properties[$name]))
 		{
@@ -52,7 +52,7 @@ class file_info
 				throw new not_implemented();
 			}
 
-			$this->properties[$name] = call_user_func($this->adapter, 'file_' . $name);
+			$this->properties[$name] = call_user_func([$this->adapter, 'file_' . $name], $this->path);
 		}
 
 		return $this->properties[$name];
