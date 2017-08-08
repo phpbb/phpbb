@@ -57,7 +57,6 @@ function send_avatar_to_browser($file, $browser)
 			// Just dont send this header
 		}
 
-
 		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));

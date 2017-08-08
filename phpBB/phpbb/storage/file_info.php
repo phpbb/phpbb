@@ -35,7 +35,8 @@ class file_info
 		{
 			$this->properties = [];
 
-			foreach($this->adapter->file_properties($this->path) as $name => $value) {
+			foreach ($this->adapter->file_properties($this->path) as $name => $value)
+			{
 				$this->properties[$name] = $value;
 			}
 		}
