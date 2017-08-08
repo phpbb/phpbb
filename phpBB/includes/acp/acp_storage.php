@@ -77,12 +77,7 @@ class acp_storage
 		$vars = array();
 		extract($phpbb_dispatcher->trigger_event('core.acp_storage_load', compact($vars)));
 
-		switch ($mode)
-		{
-			case 'settings':
-				$this->overview($id, $mode);
-				break;
-		}
+		$this->overview($id, $mode);
 	}
 
 	public function overview($id, $mode)
