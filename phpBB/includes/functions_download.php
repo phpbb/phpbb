@@ -83,20 +83,6 @@ function send_avatar_to_browser($file, $browser)
 			// Just dont send this header
 		}
 
-		if (@readfile($file_path) == false)
-		{
-			$fp = @fopen($file_path, 'rb');
-
-			if ($fp !== false)
-			{
-				while (!feof($fp))
-				{
-					echo fread($fp, 8192);
-				}
-				fclose($fp);
-			}
-		}
-
 		try {
 			$fp = $storage->read_stream($file_path);
 
