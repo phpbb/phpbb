@@ -19,7 +19,7 @@ use phpbb\files\filespec;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 
-class local extends base
+class local_storage extends base
 {
 	/** @var factory Files factory */
 	protected $factory;

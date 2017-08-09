@@ -293,7 +293,7 @@ class upload
 				$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
 				$this->file_data['post_attach'] = false;
 
-				$this->file->remove();
+				$this->file->remove($this->storage);
 
 				return false;
 			}

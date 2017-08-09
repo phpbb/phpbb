@@ -158,7 +158,6 @@ function send_file_to_browser($attachment, $category)
 		$size = 0;
 	}
 
-
 	/**
 	* Event to alter attachment before it is sent to browser.
 	*
