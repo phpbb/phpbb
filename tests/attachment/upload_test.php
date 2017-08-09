@@ -157,8 +157,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$this->plupload,
 			$this->storage,
-			$this->user,
-			$this->phpbb_root_path
+			$this->user
 		);
 	}
 
@@ -250,8 +249,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$this->plupload,
 			$this->storage,
-			$this->user,
-			$this->phpbb_root_path
+			$this->user
 		);
 
 		$filedata = $this->upload->upload('foobar', 1, true);
@@ -415,8 +413,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 			$this->phpbb_dispatcher,
 			$plupload,
 			$this->storage,
-			$this->user,
-			$this->phpbb_root_path
+			$this->user
 		);
 
 		$filedata = $this->upload->upload('foobar', 1, true, '', false, array(

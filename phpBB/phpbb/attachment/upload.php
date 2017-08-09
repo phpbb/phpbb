@@ -81,9 +81,8 @@ class upload
 	 * @param dispatcher $phpbb_dispatcher
 	 * @param plupload $plupload
 	 * @param user $user
-	 * @param $phpbb_root_path
 	 */
-	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, user $user, $phpbb_root_path)
+	public function __construct(auth $auth, service $cache, config $config, \phpbb\files\upload $files_upload, language $language, guesser $mimetype_guesser, dispatcher $phpbb_dispatcher, plupload $plupload, storage $storage, user $user)
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -95,7 +94,6 @@ class upload
 		$this->plupload = $plupload;
 		$this->storage = $storage;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -309,26 +307,6 @@ class upload
 	 */
 	protected function check_disk_space()
 	{
-		if ($free_space = @disk_free_space($this->phpbb_root_path . $this->config['upload_path']))
-		{
-			if ($free_space <= $this->file->get('filesize'))
-			{
-				if ($this->auth->acl_get('a_'))
-				{
-					$this->file_data['error'][] = $this->language->lang('ATTACH_DISK_FULL');
-				}
-				else
-				{
-					$this->file_data['error'][] = $this->language->lang('ATTACH_QUOTA_REACHED');
-				}
-				$this->file_data['post_attach'] = false;
-
-				$this->file->remove();
-
-				return false;
-			}
-		}
-
 		return true;
 	}
 

@@ -1163,7 +1163,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
+		$filename = utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -1219,6 +1219,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
+							//
 							$dimension = @getimagesize($filename);
 
 							// If the dimensions could not be determined or the image being 0x0 we display it as a link for safety purposes
@@ -1283,6 +1284,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 				// Macromedia Flash Files
 				case ATTACHMENT_CATEGORY_FLASH:
+				//
 					list($width, $height) = @getimagesize($filename);
 
 					$block_array += array(

@@ -6,9 +6,8 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@dispatcher'
-            - '@filesystem'
             - '@attachment.resync'
-            - '%core.root_path%'
+            - '@storage.attachment'
 
     attachment.manager:
         class: phpbb\attachment\manager
@@ -38,4 +37,3 @@ services:
             - '@plupload'
             - '@storage.attachment'
             - '@user'
-            - '%core.root_path%'

@@ -30,8 +30,6 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	/** @var \phpbb\attachment\delete */
 	protected $attachment_delete;
 
-	protected $phpbb_root_path;
-
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/resync.xml');
@@ -54,9 +52,17 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->filesystem->expects($this->any())
 			->method('exists')
 			->willReturn(true);
-		$this->phpbb_root_path = $phpbb_root_path;
+		$local_adapter = new \phpbb\storage\adapter\local($this->filesystem, $phpbb_root_path);
+		$local_adapter->configure(['path' => 'files']);
+		$adapter_factory_mock = $this->getMockBuilder('\phpbb\storage\adapter_factory')
+			->disableOriginalConstructor()
+			->getMock();
+		$adapter_factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($local_adapter);
+		$this->storage = new \phpbb\storage\storage($adapter_factory_mock, 'attachment');
 		$this->dispatcher = new \phpbb_mock_event_dispatcher();
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->filesystem, $this->resync, $phpbb_root_path);
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 	}
 
 	public function data_attachment_delete()
@@ -121,7 +127,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 			->method('exists')
 			->willReturn($exists_success);
 
-		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->filesystem, $this->resync, $this->phpbb_root_path);
+		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 		$this->assertSame($expected, $this->attachment_delete->unlink_attachment('foobar'));
 	}
 }
