@@ -275,6 +275,16 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_mimetype($path)
 	{
-		return mime_content_type($this->root_path . $path);
+		if (class_exists('finfo'))
+		{
+			$finfo = new \finfo(FILEINFO_MIME_TYPE);
+			$mimetype = $finfo->file($this->root_path . $path);
+		}
+		else
+		{
+			$mimetype = mime_content_type($this->root_path . $path);
+		}
+
+		return $mimetype;
 	}
 }
