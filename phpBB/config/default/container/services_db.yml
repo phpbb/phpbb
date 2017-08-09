@@ -34,7 +34,6 @@ services:
         class: phpbb\db\extractor\mssql_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -42,7 +41,6 @@ services:
         class: phpbb\db\extractor\mysql_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -50,7 +48,6 @@ services:
         class: phpbb\db\extractor\oracle_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -58,7 +55,6 @@ services:
         class: phpbb\db\extractor\postgres_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -66,6 +62,5 @@ services:
         class: phpbb\db\extractor\sqlite3_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
             - '@request'
             - '@dbal.conn.driver'
