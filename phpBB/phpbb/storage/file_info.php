@@ -36,24 +36,7 @@ class file_info
 	{
 		$this->adapter = $adapter;
 		$this->path = $path;
-	}
-
-	/**
-	 * Load propertys lazily.
-	 *
-	 * @param string	path		The file path.
-	 */
-	protected function fill_properties($path)
-	{
-		if ($this->properties === null)
-		{
-			$this->properties = [];
-
-			foreach ($this->adapter->file_properties($this->path) as $name => $value)
-			{
-				$this->properties[$name] = $value;
-			}
-		}
+		$this->properties = [];
 	}
 
 	/**
@@ -65,8 +48,6 @@ class file_info
 	 */
 	public function get($name)
 	{
-		$this->fill_properties($this->path);
-
 		if (!isset($this->properties[$name]))
 		{
 			if (!method_exists($this->adapter, 'file_' . $name))
@@ -74,7 +55,7 @@ class file_info
 				throw new not_implemented();
 			}
 
-			$this->properties[$name] = call_user_func([$this->adapter, 'file_' . $name], $this->path);
+			$this->properties = array_merge($this->properties, call_user_func([$this->adapter, 'file_' . $name], $this->path));
 		}
 
 		return $this->properties[$name];

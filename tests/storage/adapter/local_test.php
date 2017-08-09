@@ -24,7 +24,7 @@
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 
-		$this->adapter = new \phpbb\storage\adapter\local($filesystem, $phpbb_root_path);
+		$this->adapter = new \phpbb\storage\adapter\local($filesystem, new \FastImageSize\FastImageSize(), $phpbb_root_path);
 		$this->adapter->configure(['path' => 'test_path']);
 
 		$this->path = $phpbb_root_path . 'test_path/';

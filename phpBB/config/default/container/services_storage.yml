@@ -38,6 +38,7 @@ services:
         shared: false
         arguments:
             - '@filesystem'
+            - '@upload_imagesize'
             - '%core.root_path%'
         tags:
             - { name: storage.adapter }
