@@ -27,6 +27,9 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	/** @var \phpbb\attachment\resync */
 	protected $resync;
 
+	/** @var \phpbb\storage\storage */
+	protected $storage;
+
 	/** @var \phpbb\attachment\delete */
 	protected $attachment_delete;
 
@@ -52,15 +55,13 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->filesystem->expects($this->any())
 			->method('exists')
 			->willReturn(true);
-		$local_adapter = new \phpbb\storage\adapter\local($this->filesystem, $phpbb_root_path);
-		$local_adapter->configure(['path' => 'files']);
-		$adapter_factory_mock = $this->getMockBuilder('\phpbb\storage\adapter_factory')
-			->disableOriginalConstructor()
-			->getMock();
+		$adapter = new \phpbb\storage\adapter\local($this->filesystem, $phpbb_root_path);
+		$adapter->configure(['path' => 'files']);
+		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
-			->willReturn($local_adapter);
-		$this->storage = new \phpbb\storage\storage($adapter_factory_mock, 'attachment');
+			->willReturn($adapter);
+		$this->storage = new \phpbb\storage\storage($adapter_factory_mock, '');
 		$this->dispatcher = new \phpbb_mock_event_dispatcher();
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 	}
@@ -109,24 +110,6 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	 */
 	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
 	{
-		$this->filesystem = $this->createMock('\phpbb\filesystem\filesystem', array('remove', 'exists'));
-		if ($throw_exception)
-		{
-			$this->filesystem->expects($this->any())
-				->method('remove')
-				->willThrowException(new \phpbb\filesystem\exception\filesystem_exception);;
-		}
-		else
-		{
-			$this->filesystem->expects($this->any())
-				->method('remove')
-				->willReturn($remove_success);
-		}
-
-		$this->filesystem->expects($this->any())
-			->method('exists')
-			->willReturn($exists_success);
-
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 		$this->assertSame($expected, $this->attachment_delete->unlink_attachment('foobar'));
 	}

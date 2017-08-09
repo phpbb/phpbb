@@ -71,11 +71,12 @@ class delete
 	 * @param resync $resync
 	 * @param storage $storage
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, resync $resync, $storage)
+	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, resync $resync, storage $storage)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->dispatcher = $dispatcher;
+		$this->resync = $resync;
 		$this->storage = $storage;
 	}
 
@@ -411,7 +412,7 @@ class delete
 		{
 			if ($this->storage->exists($filename))
 			{
-				$this->storage->remove($filename);
+				$this->storage->delete($filename);
 				return true;
 			}
 		}

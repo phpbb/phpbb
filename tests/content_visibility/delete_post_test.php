@@ -298,6 +298,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
+		$adapter = new \phpbb\storage\adapter\local(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
+		$adapter->configure(['path' => 'files']);
+		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
+		$adapter_factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($adapter);
+		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+
 		// Create auth mock
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
@@ -309,7 +317,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$attachment_delete = new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\filesystem\filesystem(), new \phpbb\attachment\resync($db), $phpbb_root_path);
+		$attachment_delete = new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage);
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
