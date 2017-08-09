@@ -118,7 +118,7 @@ class lexer extends \Twig_Lexer
 
 		// Replace all of our variables, {VARNAME}, with Twig style, {{ VARNAME }}
 		// Appends any filters
-		$code = preg_replace('#{([a-zA-Z][a-zA-Z0-9_\.]*)(\|[^}]+?)?}#', '{{ $1$2 }}', $code);
+		$code = preg_replace('#{([a-zA-Z_][a-zA-Z0-9_\.]*)(\|[^}]+?)?}#', '{{ $1$2 }}', $code);
 
 		return parent::tokenize($code, $filename);
 	}
