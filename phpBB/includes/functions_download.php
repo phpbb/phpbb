@@ -30,20 +30,7 @@ function send_avatar_to_browser($file, $browser)
 	$storage = $phpbb_container->get('storage.avatar');
 
 	$prefix = $config['avatar_salt'] . '_';
-	$image_dir = $config['avatar_path'];
-
-	// Adjust image_dir path (no trailing slash)
-	if (substr($image_dir, -1, 1) == '/' || substr($image_dir, -1, 1) == '\\')
-	{
-		$image_dir = substr($image_dir, 0, -1) . '/';
-	}
-	$image_dir = str_replace(array('../', '..\\', './', '.\\'), '', $image_dir);
-
-	if ($image_dir && ($image_dir[0] == '/' || $image_dir[0] == '\\'))
-	{
-		$image_dir = '';
-	}
-	$file_path = $image_dir . '/' . $prefix . $file;
+	$file_path = $prefix . $file;
 
 	if ($storage->exists($file_path) && !headers_sent())
 	{

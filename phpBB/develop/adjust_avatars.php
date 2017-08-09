@@ -19,7 +19,7 @@ $auth->acl($user->data);
 $user->setup();
 
 $echos = 0;
- 
+
 if (!isset($config['avatar_salt']))
 {
 	$cache->purge();
@@ -28,6 +28,11 @@ if (!isset($config['avatar_salt']))
 		die('database not up to date');
 	}
 	die('database not up to date');
+}
+
+if (!isset($config['storage\\avatar\\config\\path']) || $config['storage\\avatar\\config\\path'] != 'phpbb\\storage\\provider\\local')
+{
+	die('use local provider');
 }
 
 // let's start with the users using a group_avatar.
@@ -46,16 +51,16 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$new_avatar_name = adjust_avatar($row['group_avatar'], 'g' . $row['group_id']);
 	$group_avatars[] = $new_avatar_name;
-	
+
 	// failure is probably due to the avatar name already being adjusted
 	if ($new_avatar_name !== false)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_avatar = '" . $db->sql_escape($new_avatar_name) . "'
-			WHERE user_avatar = '" . $db->sql_escape($row['group_avatar']) . "' 
+			WHERE user_avatar = '" . $db->sql_escape($row['group_avatar']) . "'
 			AND user_avatar_type = " . AVATAR_UPLOAD;
 		$db->sql_query($sql);
-		
+
 		$sql = 'UPDATE ' . GROUPS_TABLE . "
 			SET group_avatar = '" . $db->sql_escape($new_avatar_name) . "'
 			WHERE group_id = {$row['group_id']}";
@@ -80,8 +85,8 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 $sql = 'SELECT user_id, username, user_avatar, user_avatar_type
-	FROM ' . USERS_TABLE . ' 
-	WHERE user_avatar_type = ' . AVATAR_UPLOAD . ' 
+	FROM ' . USERS_TABLE . '
+	WHERE user_avatar_type = ' . AVATAR_UPLOAD . '
 	AND ' . $db->sql_in_set('user_avatar', $group_avatars, true, true);
 $result = $db->sql_query($sql);
 
@@ -108,7 +113,7 @@ while ($row = $db->sql_fetchrow($result))
 		$db->sql_query($sql);
 		echo '<br /> Failed updating user ' . $row['user_id'] . "\n";
 	}
-	
+
 	if ($echos > 200)
 	{
 		echo '<br />' . "\n";
@@ -131,8 +136,8 @@ $db->sql_close();
 function adjust_avatar($old_name, $midfix)
 {
 	global $config, $phpbb_root_path;
-	
-	$avatar_path = $phpbb_root_path . $config['avatar_path'];
+
+	$avatar_path = $phpbb_root_path . $config['storage\\avatar\\config\\path'];
 	$extension = strtolower(substr(strrchr($old_name, '.'), 1));
 	$new_name = $config['avatar_salt'] . '_' . $midfix . '.' . $extension;
 

@@ -311,7 +311,7 @@ if (!$get_info)
 	$convertor = array(
 		'test_file'				=> 'viewtopic.php',
 
-		'avatar_path'			=> get_config_value('avatar_path') . '/',
+		'avatar_path'			=> get_config_value('storage\\avatar\\config\\path') . '/',
 		'avatar_gallery_path'	=> get_config_value('avatar_gallery_path') . '/',
 		'smilies_path'			=> get_config_value('smilies_path') . '/',
 		'upload_path'			=> (defined('MOD_ATTACHMENT')) ? phpbb_get_files_dir() . '/' : '',

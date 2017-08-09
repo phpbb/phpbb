@@ -2164,7 +2164,9 @@ function phpbb_style_is_active($style_id)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $phpbb_root_path, $config;
+	global $config, $phpbb_container;
+
+	$storage = $phpbb_container->get('storage.avatar');
 
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
@@ -2181,13 +2183,16 @@ function avatar_delete($mode, $row, $clean_db = false)
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
 
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
+	try
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
+		$storage->delete($filename);
+
 		return true;
 	}
-
-	return false;
+	catch (\phpbb\storage\exception\exception $e)
+	{
+		return false;
+	}
 }
 
 /**
@@ -2505,7 +2510,9 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_correct_avatar($group_id, $old_entry)
 {
-	global $config, $db, $phpbb_root_path;
+	global $config, $db, $phpbb_container;
+
+	$storage = $phpbb_container->get('storage.avatar');
 
 	$group_id		= (int) $group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
@@ -2513,13 +2520,18 @@ function group_correct_avatar($group_id, $old_entry)
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
 	$new_entry 		= 'g' . $group_id . '_' . substr(time(), -5) . ".$ext";
 
-	$avatar_path = $phpbb_root_path . $config['avatar_path'];
-	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
+	try
 	{
+		$this->storage->rename($old_filename, $new_filename);
+
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
 			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'
 			WHERE group_id = $group_id";
 		$db->sql_query($sql);
+	}
+	catch (\phpbb\storage\exception\exception $e)
+	{
+
 	}
 }
 
