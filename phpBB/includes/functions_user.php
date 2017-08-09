@@ -2191,8 +2191,10 @@ function avatar_delete($mode, $row, $clean_db = false)
 	}
 	catch (\phpbb\storage\exception\exception $e)
 	{
-		return false;
+		// Fail is covered by return statement below
 	}
+
+	return false;
 }
 
 /**
