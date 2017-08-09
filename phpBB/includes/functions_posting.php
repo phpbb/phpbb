@@ -1442,7 +1442,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 {
 	global $db, $auth, $user, $config, $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
-	$attachment_storage = $phpbb_container->get('storage.avatar');
+	$attachment_storage = $phpbb_container->get('storage.attachment');
 
 	$poll = $poll_ary;
 	$data = $data_ary;

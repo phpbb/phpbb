@@ -55,7 +55,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->filesystem->expects($this->any())
 			->method('exists')
 			->willReturn(true);
-		$adapter = new \phpbb\storage\adapter\local($this->filesystem, $phpbb_root_path);
+		$adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), $phpbb_root_path);
 		$adapter->configure(['path' => 'files']);
 		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
 		$adapter_factory_mock->expects($this->any())
@@ -110,6 +110,23 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	 */
 	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
 	{
+		$this->storage = $this->createMock('\phpbb\storage\storage', array('delete', 'exists'));
+		if ($throw_exception)
+		{
+			$this->storage->expects($this->any())
+				->method('delete')
+				->willThrowException(new \phpbb\storage\exception\exception);;
+		}
+		else
+		{
+			$this->storage->expects($this->any())
+				->method('delete')
+				->willReturn($remove_success);
+		}
+		$this->storage->expects($this->any())
+			->method('exists')
+			->willReturn($exists_success);
+
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 		$this->assertSame($expected, $this->attachment_delete->unlink_attachment('foobar'));
 	}

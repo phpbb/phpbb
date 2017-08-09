@@ -161,6 +161,15 @@ class upload
 		// Make sure the image category only holds valid images...
 		$this->check_image($is_image);
 
+		if (count($this->file->error))
+		{
+			$this->file->remove($this->storage);
+			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
+			$this->file_data['post_attach'] = false;
+
+			return $this->file_data;
+		}
+
 		$this->fill_file_data();
 
 		$filedata = $this->file_data;
@@ -193,15 +202,6 @@ class upload
 		// Are we uploading an image *and* this image being within the image category?
 		// Only then perform additional image checks.
 		$this->file->move_file($this->storage, false, !$is_image);
-
-		if (count($this->file->error))
-		{
-			$this->file->remove($this->storage);
-			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
-			$this->file_data['post_attach'] = false;
-
-			return $this->file_data;
-		}
 
 		return $this->file_data;
 	}

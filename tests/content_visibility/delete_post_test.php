@@ -298,7 +298,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$adapter = new \phpbb\storage\adapter\local(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
+		$adapter = new \phpbb\storage\adapter\local(new \phpbb\filesystem\filesystem(), new \FastImageSize\FastImageSize(), $phpbb_root_path);
 		$adapter->configure(['path' => 'files']);
 		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
 		$adapter_factory_mock->expects($this->any())

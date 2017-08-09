@@ -91,6 +91,15 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		// Language
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
+		// Storage
+		$adapter = new \phpbb\storage\adapter\local(new \phpbb\filesystem\filesystem(), new \FastImageSize\FastImageSize(), $phpbb_root_path);
+		$adapter->configure(['path' => 'files']);
+		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
+		$adapter_factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($adapter);
+		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+
 		// User
 		$user = $this->createMock('\phpbb\user', array(), array(
 			$lang,
@@ -125,6 +134,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $phpbb_dispatcher);
+		$phpbb_container->set('storage.attachment', $storage);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
