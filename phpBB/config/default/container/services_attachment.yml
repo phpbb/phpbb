@@ -36,5 +36,6 @@ services:
             - '@mimetype.guesser'
             - '@dispatcher'
             - '@plupload'
+            - '@storage.attachment'
             - '@user'
             - '%core.root_path%'

@@ -121,13 +121,15 @@ function wrap_img_in_html($src, $title)
 /**
 * Send file to browser
 */
-function send_file_to_browser($attachment, $upload_dir, $category)
+function send_file_to_browser($attachment, $category)
 {
-	global $user, $db, $phpbb_dispatcher, $phpbb_root_path, $request;
+	global $user, $db, $phpbb_dispatcher, $request, $phpbb_container;
 
-	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
+	$storage = $phpbb_container->get('storage.attachment');
 
-	if (!@file_exists($filename))
+	$filename = $attachment['physical_filename'];
+
+	if (!$storage->exists($filename))
 	{
 		send_status_line(404, 'Not Found');
 		trigger_error('ERROR_NO_ATTACHMENT');
@@ -146,14 +148,22 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Now send the File Contents to the Browser
-	$size = @filesize($filename);
+	try
+	{
+		$file_info = $storage->file_info($filename);
+		$size = $file_info->size;
+	}
+	catch (\Exception $e)
+	{
+		$size = 0;
+	}
+
 
 	/**
 	* Event to alter attachment before it is sent to browser.
 	*
 	* @event core.send_file_to_browser_before
 	* @var	array	attachment	Attachment data
-	* @var	string	upload_dir	Relative path of upload directory
 	* @var	int		category	Attachment category
 	* @var	string	filename	Path to file, including filename
 	* @var	int		size		File size
@@ -161,7 +171,6 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	*/
 	$vars = array(
 		'attachment',
-		'upload_dir',
 		'category',
 		'filename',
 		'size',
@@ -171,15 +180,8 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
 
 	// Check if headers already sent or not able to get the file contents.
-	if (headers_sent() || !@file_exists($filename) || !@is_readable($filename))
+	if (headers_sent())
 	{
-		// PHP track_errors setting On?
-		if (!empty($php_errormsg))
-		{
-			send_status_line(500, 'Internal Server Error');
-			trigger_error($user->lang['UNABLE_TO_DELIVER_FILE'] . '<br />' . sprintf($user->lang['TRACKED_PHP_ERROR'], $php_errormsg));
-		}
-
 		send_status_line(500, 'Internal Server Error');
 		trigger_error('UNABLE_TO_DELIVER_FILE');
 	}
@@ -235,24 +237,6 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
-		// We make sure those have to be enabled manually by defining a constant
-		// because of the potential disclosure of full attachment path
-		// in case support for features is absent in the webserver software.
-		if (defined('PHPBB_ENABLE_X_ACCEL_REDIRECT') && PHPBB_ENABLE_X_ACCEL_REDIRECT)
-		{
-			// X-Accel-Redirect - http://wiki.nginx.org/XSendfile
-			header('X-Accel-Redirect: ' . $user->page['root_script_path'] . $upload_dir . '/' . $attachment['physical_filename']);
-			exit;
-		}
-		else if (defined('PHPBB_ENABLE_X_SENDFILE') && PHPBB_ENABLE_X_SENDFILE && !phpbb_http_byte_range($size))
-		{
-			// X-Sendfile - http://blog.lighttpd.net/articles/2006/07/02/x-sendfile
-			// Lighttpd's X-Sendfile does not support range requests as of 1.4.26
-			// and always requires an absolute path.
-			header('X-Sendfile: ' . dirname(__FILE__) . "/../$upload_dir/{$attachment['physical_filename']}");
-			exit;
-		}
-
 		if ($size)
 		{
 			header("Content-Length: $size");
@@ -261,7 +245,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		// Try to deliver in chunks
 		@set_time_limit(0);
 
-		$fp = @fopen($filename, 'rb');
+		$fp = $storage->read_stream($filename);
 
 		if ($fp !== false)
 		{
@@ -290,10 +274,6 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 				}
 			}
 			fclose($fp);
-		}
-		else
-		{
-			@readfile($filename);
 		}
 
 		flush();

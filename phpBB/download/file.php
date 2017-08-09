@@ -324,7 +324,7 @@ else
 		}
 		else
 		{
-			send_file_to_browser($attachment, $config['upload_path'], $display_cat);
+			send_file_to_browser($attachment, $display_cat);
 			file_gc();
 		}
 	}

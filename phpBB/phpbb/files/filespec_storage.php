@@ -51,9 +51,6 @@ class filespec_storage
 	/** @var string Destination file name */
 	protected $destination_file = '';
 
-	/** @var string Destination file path */
-	protected $destination_path = '';
-
 	/** @var bool Whether file was moved */
 	protected $file_moved = false;
 
