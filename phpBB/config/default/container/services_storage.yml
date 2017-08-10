@@ -39,6 +39,7 @@ services:
         arguments:
             - '@filesystem'
             - '@upload_imagesize'
+            - '@mimetype.guesser'
             - '%core.root_path%'
         tags:
             - { name: storage.adapter }

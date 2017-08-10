@@ -18,6 +18,7 @@ use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
 use phpbb\filesystem\helper as filesystem_helper;
+use phpbb\mimetype\guesser;
 use FastImageSize\FastImageSize;
 
 /**
@@ -33,11 +34,18 @@ class local implements adapter_interface, stream_interface
 	protected $filesystem;
 
 	/**
-	 * Filesystem component
+	 * FastImageSize
 	 *
 	 * @var \FastImageSize\FastImageSize
 	 */
 	protected $imagesize;
+
+	/**
+	 * Mimetype Guesser component
+	 *
+	 * @var \phpbb\mimetype\guesser
+	 */
+	protected $mimetype_guesser;
 
 	/**
 	 * @var string path
@@ -52,10 +60,11 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(filesystem $filesystem, FastImageSize $imagesize, $phpbb_root_path)
+	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->imagesize = $imagesize;
+		$this->mimetype_guesser = $mimetype_guesser;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -275,17 +284,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_mimetype($path)
 	{
-		if (class_exists('finfo'))
-		{
-			$finfo = new \finfo(FILEINFO_MIME_TYPE);
-			$mimetype = $finfo->file($this->root_path . $path);
-		}
-		else
-		{
-			$mimetype = mime_content_type($this->root_path . $path);
-		}
-
-		return ['mimetype' => $mimetype];
+		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $path)];
 	}
 
 	/**
