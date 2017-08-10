@@ -392,22 +392,26 @@ class php_exporter
 	public function get_vars_from_single_line_array($line, $throw_multiline = true)
 	{
 		$match = array();
-		preg_match('#^\$vars = array\(\'([a-zA-Z0-9_\' ,]+)\'\);$#', $line, $match);
 
-		if (isset($match[1]))
+		if (preg_match('#^\$vars = array\((\'([a-zA-Z0-9_\' ,]+)\')?\);$#', $line, $match))
 		{
-			$vars_array = explode("', '", $match[1]);
-			if ($throw_multiline && count($vars_array) > 6)
+			if (isset($match[2]))
 			{
-				throw new \LogicException('Should use multiple lines for $vars definition '
-					. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
+				$vars_array = explode("', '", $match[2]);
+				if ($throw_multiline && count($vars_array) > 6)
+				{
+					throw new \LogicException('Should use multiple lines for $vars definition '
+						. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
+				}
+				return $vars_array;
 			}
-			return $vars_array;
+			else
+			{
+				return [];
+			}
 		}
-		else
-		{
-			throw new \LogicException("Can not find '\$vars = array();'-line for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 1);
-		}
+
+		throw new \LogicException("Can not find '\$vars = array();'-line for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 1);
 	}
 
 	/**
@@ -475,12 +479,6 @@ class php_exporter
 				// Reached the start of the file
 				throw new \LogicException("Can not find end of docblock for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
 			}
-		}
-
-		if (empty($doc_vars))
-		{
-			// Reached the start of the file
-			throw new \LogicException("Can not find @var lines for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
 		}
 
 		foreach ($doc_vars as $var)

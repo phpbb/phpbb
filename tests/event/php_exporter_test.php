@@ -338,6 +338,16 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				3,
 				array('_Strange123', 'phpBB3_Test'),
 			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$vars = array();',
+					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
+				),
+				3,
+				array(),
+			),
 		);
 	}
 
@@ -378,16 +388,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 					'/**',
 					'*/',
 					'$vars = array(\'$bertie\');',
-					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
-				),
-				3,
-				1,
-			),
-			array(
-				array(
-					'/**',
-					'*/',
-					'$vars = array();',
 					'$phpbb_dispatcher->trigger_event(\'test\', compact($vars));',
 				),
 				3,
@@ -463,6 +463,15 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				4,
 				array('name1', 'name2'),
 			),
+			array(
+				array(
+					'/**',
+					'*/',
+					'$phpbb_dispatcher->dispatch(\'test\');',
+				),
+				2,
+				array(),
+			),
 		);
 	}
 
@@ -497,15 +506,6 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				),
 				4,
 				1,
-			),
-			array(
-				array(
-					'/**',
-					'*/',
-					'$phpbb_dispatcher->dispatch(\'test\');',
-				),
-				2,
-				3,
 			),
 			array(
 				array(
