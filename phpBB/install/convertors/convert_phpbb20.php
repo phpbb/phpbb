@@ -439,7 +439,6 @@ if (!$get_info)
 				array('group_name',				'extension_groups.group_name',			array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('cat_id',					'extension_groups.cat_id',				'phpbb_attachment_category'),
 				array('allow_group',			'extension_groups.allow_group',			''),
-				array('download_mode',			1,										''),
 				array('upload_icon',			'',										''),
 				array('max_filesize',			'extension_groups.max_filesize',		''),
 				array('allowed_forums',			'extension_groups.forum_permissions',	'phpbb_attachment_forum_perms'),

@@ -586,11 +586,6 @@ class acp_attachments
 							'allow_in_pm'	=> ($allow_in_pm) ? 1 : 0,
 						);
 
-						if ($action == 'add')
-						{
-							$group_ary['download_mode'] = INLINE_LINK;
-						}
-
 						$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
 						$sql .= $db->sql_build_array((($action == 'add') ? 'INSERT' : 'UPDATE'), $group_ary);
 						$sql .= ($action == 'edit') ? " WHERE group_id = $group_id" : '';

@@ -214,7 +214,6 @@ class service
 
 				$extensions[$extension] = array(
 					'display_cat'	=> (int) $row['cat_id'],
-					'download_mode'	=> (int) $row['download_mode'],
 					'upload_icon'	=> trim($row['upload_icon']),
 					'max_filesize'	=> (int) $row['max_filesize'],
 					'allow_group'	=> $row['allow_group'],
