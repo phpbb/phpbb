@@ -72,7 +72,8 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$user->optionset('viewcensors', false);
+		// Do not ignore word censoring by user (switch censoring on in UCP)
+		$user->optionset('viewcensors', true);
 
 		$config = new \phpbb\config\config(array('allow_nocensors' => true));
 
@@ -102,6 +103,14 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 		$this->assertSame('apple', $renderer->render($original));
 		$this->assertSame('banana', generate_text_for_display($original, '', '', 0, true));
 		$this->assertSame('apple', $renderer->render($original), 'The original setting was not restored');
+
+		// Test user option switch to ignore censoring
+		$renderer->set_viewcensors(true);
+		// 1st: censoring is still on in UCP
+		$this->assertSame('banana', generate_text_for_display($original, '', '', 0, true));
+		// 2nd: switch censoring off in UCP
+		$user->optionset('viewcensors', false);
+		$this->assertSame('apple', generate_text_for_display($original, '', '', 0, true));
 	}
 
 	/**
