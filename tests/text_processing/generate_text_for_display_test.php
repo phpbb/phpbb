@@ -29,7 +29,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 	*/
 	public function test_legacy($original, $expected, $uid = '', $bitfield = '', $flags = 0, $censor_text = true)
 	{
-		global $cache, $user;
+		global $auth, $cache, $config, $user;
 
 		global $phpbb_root_path, $phpEx;
 
@@ -63,7 +63,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 	public function test_censor_is_restored()
 	{
-		global $phpbb_container;
+		global $auth, $user, $config, $phpbb_container;
 
 		$phpbb_container = new phpbb_mock_container_builder;
 
@@ -109,7 +109,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 	*/
 	public function test_text_formatter($original, $expected, $censor_text = true, $setup = null)
 	{
-		global $phpbb_container;
+		global $auth, $user, $config, $phpbb_container;
 
 		$phpbb_container = new phpbb_mock_container_builder;
 
