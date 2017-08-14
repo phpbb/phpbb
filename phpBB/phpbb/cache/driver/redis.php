@@ -137,7 +137,7 @@ class redis extends \phpbb\cache\driver\memory
 	*/
 	function _write($var, $data, $ttl = 2592000)
 	{
-		if($ttl == 0)
+		if ($ttl == 0)
 		{
 			return $this->redis->set($var, $data);
 		}
