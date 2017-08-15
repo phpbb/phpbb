@@ -136,7 +136,7 @@ interface template
 	public function retrieve_vars(array $vararray);
 
 	/**
-	* Retreive a single scalar value from a single key.
+	* Retrieve a single scalar value from a single key.
 	*
 	* @param string $varname Variable name
 	* @return mixed Variable value, or null if not set

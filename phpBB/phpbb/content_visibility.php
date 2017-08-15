@@ -664,7 +664,7 @@ class content_visibility
 	* @param $time			int		Timestamp when the action is performed
 	* @param $reason		string	Reason why the visibilty was changed.
 	* @param $force_update_all	bool	Force to update all posts within the topic
-	* @return array		Changed topic data, empty array if an error occured.
+	* @return array		Changed topic data, empty array if an error occurred.
 	*/
 	public function set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason, $force_update_all = false)
 	{

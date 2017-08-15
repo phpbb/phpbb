@@ -76,7 +76,7 @@ class guesser
 	* should be used first and vice versa. usort() orders the array values
 	* from low to high depending on what the comparison function returns
 	* to it. Return value should be smaller than 0 if value a is smaller
-	* than value b. This has been reversed in the comparision function in
+	* than value b. This has been reversed in the comparison function in
 	* order to sort the guessers from high to low.
 	* Method has been set to public in order to allow proper testing.
 	*

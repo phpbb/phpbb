@@ -33,7 +33,7 @@ class phpbb_mock_session_testable extends \phpbb\session
 	* @param PHPUnit_Framework_Assert test    The test from which this is called
 	* @param array(string => mixed)   cookies The cookie data to check against.
 	*				The keys are cookie names, the values can either be null to
-	*				check only the existance of the cookie, or an array(d, t),
+	*				check only the existence of the cookie, or an array(d, t),
 	*				where d is the cookie data to check, or null to skip the
 	*				check and t is the cookie time to check, or null to skip.
 	*/
