@@ -194,7 +194,7 @@ class mssql extends tools
 				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
 			}
 
-			// create sequence DDL based off of the existance of auto incrementing columns
+			// create sequence DDL based off of the existence of auto incrementing columns
 			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
 			{
 				$create_sequence = $column_name;

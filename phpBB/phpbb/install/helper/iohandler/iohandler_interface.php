@@ -31,7 +31,7 @@ interface iohandler_interface
 	 * @param string	$name		Name of the input variable to obtain
 	 * @param mixed		$default	A default value that is returned if the variable was not set.
 	 * 								This function will always return a value of the same type as the default.
-	 * @param bool		$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+	 * @param bool		$multibyte	If $default is a string this parameter has to be true if the variable may contain any UTF-8 characters
 	 *								Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
 	 *
 	 * @return mixed	Value of the input variable

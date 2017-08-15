@@ -17,7 +17,7 @@ namespace phpbb\feed;
  * Active Topics feed
  *
  * This will give you the last {$this->num_items} topics
- * with replies made withing the last {$this->sort_days} days
+ * with replies made within the last {$this->sort_days} days
  * including the last post.
  */
 class topics_active extends topic_base

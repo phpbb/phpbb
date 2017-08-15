@@ -117,7 +117,7 @@ class release_3_0_4_rc1 extends \phpbb\db\migration\migration
 			}
 			else
 			{
-				// equivelant to "none", which is the "Display in user control panel" option
+				// equivalent to "none", which is the "Display in user control panel" option
 				$sql_ary['field_show_profile'] = 1;
 			}
 
