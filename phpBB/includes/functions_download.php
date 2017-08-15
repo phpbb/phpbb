@@ -64,7 +64,7 @@ function send_avatar_to_browser($file, $browser)
 		}
 
 		try {
-			header('Content-Type: ' . $file_info->size);
+			header('Content-Length: ' . $file_info->size);
 		} catch (\phpbb\storage\exception\not_implemented $e) {
 			// Just dont send this header
 		}
