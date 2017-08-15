@@ -239,7 +239,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 
 	/**
 	* These do not work because of changes with PHPBB3-11386
-	* They do not seem neccessary to me, so I am commenting them out for now
+	* They do not seem necessary to me, so I am commenting them out for now
 	public function test_get_classes_create_cache()
 	{
 		$cache = new phpbb_mock_cache;

@@ -123,7 +123,7 @@ class user_loader
 	/**
 	* Get a user row from our users cache
 	*
-	* @param int $user_id User ID of the user you want to retreive
+	* @param int $user_id User ID of the user you want to retrieve
 	* @param bool $query Should we query the database if this user has not yet been loaded?
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()
@@ -150,7 +150,7 @@ class user_loader
 	/**
 	* Get username
 	*
-	* @param int $user_id User ID of the user you want to retreive the username for
+	* @param int $user_id User ID of the user you want to retrieve the username for
 	* @param string $mode The mode to load (same as get_username_string). One of the following:
 	* 			profile (for getting an url to the profile)
 	* 			username (for obtaining the username)
@@ -204,7 +204,7 @@ class user_loader
 	/**
 	* Get rank
 	*
-	* @param int $user_id User ID of the user you want to retreive the rank for
+	* @param int $user_id User ID of the user you want to retrieve the rank for
 	* @param bool $query Should we query the database if this user has not yet been loaded?
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()

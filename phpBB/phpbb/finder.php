@@ -80,7 +80,7 @@ class finder
 	/**
 	* Set the array of extensions
 	*
-	* @param array $extensions		A list of extensions that should be searched aswell
+	* @param array $extensions		A list of extensions that should be searched as well
 	* @param bool $replace_list		Should the list be emptied before adding the extensions
 	* @return \phpbb\finder This object for chaining calls
 	*/
@@ -237,7 +237,7 @@ class finder
 	}
 
 	/**
-	* Removes occurances of /./ and makes sure path ends without trailing slash
+	* Removes occurrences of /./ and makes sure path ends without trailing slash
 	*
 	* @param string $directory A directory pattern
 	* @return string A cleaned up directory pattern

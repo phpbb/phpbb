@@ -460,7 +460,7 @@ function parseDocument($container) {
 			$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
 			persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
 			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occured.
+			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occurred.
 
 		// Add a hidden drop-down menu to each links list (except those that already have one)
 		if (!persistent) {

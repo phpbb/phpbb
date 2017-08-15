@@ -90,7 +90,7 @@ hr {
 	font-size: 75%;
 }
 
-/* Dont want to print url for names or titles in content area */
+/* Don't want to print url for names or titles in content area */
 .postbody .author a:link, .postbody .author a:visited,
 html>body .postbody .author a:link:after,
 html>body .postbody .author a:visited:after,

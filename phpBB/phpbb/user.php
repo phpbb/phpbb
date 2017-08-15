@@ -327,7 +327,7 @@ class user extends \phpbb\session
 		}
 
 		// Disable board if the install/ directory is still present
-		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
+		// For the brave development army we do not care about this, else we need to comment out this every time we develop locally
 		if (!defined('DEBUG') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
@@ -752,7 +752,7 @@ class user extends \phpbb\session
 	}
 
 	/**
-	* Funtion to make the user leave the NEWLY_REGISTERED system group.
+	* Function to make the user leave the NEWLY_REGISTERED system group.
 	* @access public
 	*/
 	function leave_newly_registered()

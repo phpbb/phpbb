@@ -181,7 +181,7 @@ class container_factory
 			$this->request->disable_super_globals();
 		}
 
-		// Get compatibilty globals and constants
+		// Get compatibility globals and constants
 		$this->update_helper->include_file('includes/compatibility_globals.' . $this->php_ext);
 
 		register_compatibility_globals();

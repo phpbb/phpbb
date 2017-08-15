@@ -204,7 +204,7 @@ interface filesystem_interface
 	 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
 	 * The function determines owner and group from common.php file and sets the same to the provided file.
 	 * The function uses bit fields to build the permissions.
-	 * The function sets the appropiate execute bit on directories.
+	 * The function sets the appropriate execute bit on directories.
 	 *
 	 * Supported constants representing bit fields are:
 	 *
