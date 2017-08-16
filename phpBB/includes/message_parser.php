@@ -1530,7 +1530,7 @@ class parse_message extends bbcode_firstpass
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
 		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		$error = array();
 
@@ -1598,6 +1598,20 @@ class parse_message extends bbcode_firstpass
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+
+					/**
+					* Modify attachment data on submit
+					*
+					* @event core.modify_attachment_data_on_submit
+					* @var	array	attachment_data		Array containing attachment data
+					* @since 3.2.2-RC1
+					*/
+					$attachment_data = $this->attachment_data;
+					$vars = array('attachment_data');
+					extract($phpbb_dispatcher->trigger_event('core.modify_attachment_data_on_submit', compact($vars)));
+					$this->attachment_data = $attachment_data;
+					unset($attachment_data);
+
 					$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', function ($match) {
 						return '[attachment='.($match[1] + 1).']' . $match[2] . '[/attachment]';
 					}, $this->message);
@@ -1719,6 +1733,20 @@ class parse_message extends bbcode_firstpass
 						);
 
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+
+						/**
+						* Modify attachment data on upload
+						*
+						* @event core.modify_attachment_data_on_upload
+						* @var	array	attachment_data		Array containing attachment data
+						* @since 3.2.2-RC1
+						*/
+						$attachment_data = $this->attachment_data;
+						$vars = array('attachment_data');
+						extract($phpbb_dispatcher->trigger_event('core.modify_attachment_data_on_upload', compact($vars)));
+						$this->attachment_data = $attachment_data;
+						unset($attachment_data);
+
 						$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', function ($match) {
 							return '[attachment=' . ($match[1] + 1) . ']' . $match[2] . '[/attachment]';
 						}, $this->message);
