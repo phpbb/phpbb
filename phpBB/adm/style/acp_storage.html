@@ -31,7 +31,9 @@
 				{% for name, options in provider.get_options %}
 					<dl>
 						<dt>
-							<label for="">{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper) }}{{ lang('COLON') }}</label>{% if description is not empty %}<br /><span>{{ lang(description) }}</span>{% endif %}
+							{% set title = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
+							{% set description = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper ~ '_EXPLAIN' %}
+							<label for="">{{ lang(title) }}{{ lang('COLON') }}</label>{% if description != lang(description) %}<br /><span>{{ lang(description) }}</span>{% endif %}
 						</dt>
 						<dd>
 							{% set input_type = options['type'] %}
