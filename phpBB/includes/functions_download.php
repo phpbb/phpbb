@@ -71,13 +71,10 @@ function send_avatar_to_browser($file, $browser)
 
 		try {
 			$fp = $storage->read_stream($file_path);
-
-			while (!feof($fp))
-			{
-				echo fread($fp, 8192);
-			}
-
+			$output = fopen('php://output', 'w+b');
+			stream_copy_to_stream($fp, $output);
 			fclose($fp);
+			fclose($output);
 		} catch (\Exception $e) {
 
 		}
