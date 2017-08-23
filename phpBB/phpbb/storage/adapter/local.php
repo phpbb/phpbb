@@ -231,6 +231,7 @@ class local implements adapter_interface, stream_interface
 
 		if (stream_copy_to_stream($resource, $stream) === false)
 		{
+			fclose($stream);
 			throw new exception('STORAGE_CANNOT_COPY_RESOURCE');
 		}
 	}
