@@ -21,7 +21,6 @@ interface stream_interface
 	 * @param string	$path	File to read
 	 *
 	 * @throws \phpbb\storage\exception\exception		When cannot open file
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 *
 	 * @return resource	Returns a file pointer
 	 */
@@ -35,7 +34,6 @@ interface stream_interface
 	 *
 	 * @throws \phpbb\storage\exception\exception		When target file exists
 	 * 													When target file cannot be created
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function write_stream($path, $resource);
 }
