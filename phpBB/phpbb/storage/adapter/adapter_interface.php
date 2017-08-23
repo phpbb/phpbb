@@ -55,7 +55,7 @@ interface adapter_interface
 	 *
 	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 *
-	 * @return bool	Returns true if all files/directories exist, false otherwise
+	 * @return bool	Returns true if the file/directory exist, false otherwise.
 	 */
 	public function exists($path);
 
