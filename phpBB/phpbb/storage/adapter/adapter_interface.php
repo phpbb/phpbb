@@ -30,7 +30,6 @@ interface adapter_interface
 	 *
 	 * @throws \phpbb\storage\exception\exception		When the file already exists
 	 * 													When the file cannot be written
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function put_contents($path, $content);
 
@@ -41,7 +40,6 @@ interface adapter_interface
 	 *
 	 * @throws \phpbb\storage\exception\exception		When the file dont exists
 	 * 													When cannot read file contents
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 *
 	 * @return string	Returns file contents
 	 *
@@ -53,8 +51,6 @@ interface adapter_interface
 	 *
 	 * @param string	$path	file/directory to check
 	 *
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
-	 *
 	 * @return bool	Returns true if the file/directory exist, false otherwise.
 	 */
 	public function exists($path);
@@ -65,7 +61,6 @@ interface adapter_interface
 	 * @param string	$path	file/directory to remove
 	 *
 	 * @throws \phpbb\storage\exception\exception		When removal fails.
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function delete($path);
 
@@ -77,7 +72,6 @@ interface adapter_interface
 	 *
 	 * @throws \phpbb\storage\exception\exception		When target exists
 	 * 													When file/directory cannot be renamed
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function rename($path_orig, $path_dest);
 
@@ -89,7 +83,6 @@ interface adapter_interface
 	 *
 	 * @throws \phpbb\storage\exception\exception		When target exists
 	 * 													When the file cannot be copied
-	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
 	 */
 	public function copy($path_orig, $path_dest);
 }
