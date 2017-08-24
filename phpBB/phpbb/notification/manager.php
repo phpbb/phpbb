@@ -475,9 +475,10 @@ class manager
 				if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
 				{
 					$options = array_merge(array(
-						'id' => $type->get_type(),
-						'lang' => 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
-						'group' => 'NOTIFICATION_GROUP_MISCELLANEOUS',
+						'type'	=> $type,
+						'id'	=> $type->get_type(),
+						'lang'	=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
+						'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
 					), (($type::$notification_option !== false) ? $type::$notification_option : array()));
 
 					$this->subscription_types[$options['group']][$options['id']] = $options;
@@ -509,6 +510,7 @@ class manager
 		foreach ($this->get_available_subscription_methods() as $method_name => $method)
 		{
 			$subscription_methods[$method_name] = array(
+				'method'	=> $method,
 				'id'		=> $method->get_type(),
 				'lang'		=> str_replace('.', '_', strtoupper($method->get_type())),
 			);

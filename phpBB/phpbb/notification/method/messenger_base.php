@@ -43,6 +43,19 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	}
 
 	/**
+	* Is this method available for the user?
+	* This is checked on the notifications options
+	*
+	* @param \phpbb\notification\type\type_interface $notification_type	An optional instance of a notification type. This method returns false
+	*																	only if the type is provided and if it doesn't provide an email template.
+	* @return bool
+	*/
+	public function is_available(\phpbb\notification\type\type_interface $notification_type = null)
+	{
+		return $notification_type === null || $notification_type->get_email_template() !== false;
+	}
+
+	/**
 	* Notify using phpBB messenger
 	*
 	* @param int $notify_method				Notify method for messenger (e.g. NOTIFY_IM)
