@@ -273,6 +273,11 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->BBCodes->addCustom($bbcode['usage'], $bbcode['template']);
 		}
+		if (isset($configurator->tags['QUOTE']))
+		{
+			// Remove the nesting limit and let other services remove quotes at parsing time
+			$configurator->tags['QUOTE']->nestingLimit = PHP_INT_MAX;
+		}
 
 		// Modify the template to disable images/flash depending on user's settings
 		foreach (array('FLASH', 'IMG') as $name)
