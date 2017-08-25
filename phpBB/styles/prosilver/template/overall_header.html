@@ -4,7 +4,32 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 {META}
+
+<!-- IF S_VIEWTOPIC -->
+
+<!--meta tags for search engine bots-->
+<meta name="title" content ="{PHPBB_TOPIC_TITLE}">
+<meta name="description" content="{PHPBB_TOPIC_DESCRIPTION}">
+<meta name="author" content="{PHPBB_TOPIC_AUTHOR}">
+<!--meta tags for facebook-->
+<meta property="og:url" content="{PHPBB_DOMAIN}"/>
+<meta property="og:type" content="article" />
+<meta property="og:title" content="{PHPBB_TOPIC_TITLE}" />
+<meta property="og:description" content="{PHPBB_TOPIC_DESCRIPTION}"/>
+<meta property="og:image" content="{PHPBB_FORUM_IMAGE}" />
+
+<!--meta tags for twitter-->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@{PHPBB_DOMAIN}">
+<meta name="twitter:creator" content="{PHPBB_TOPIC_AUTHOR}">
+<meta name="twitter:title" content="{PHPBB_TOPIC_TITLE}">
+<meta name="twitter:description" content="{PHPBB_TOPIC_DESCRIPTION}">
+<meta name="twitter:image" content="{PHPBB_FORUM_IMAGE}">
+
+<!-- ENDIF -->
+
 <title><!-- IF UNREAD_NOTIFICATIONS_COUNT -->({UNREAD_NOTIFICATIONS_COUNT}) <!-- ENDIF --><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
 <!-- IF S_ENABLE_FEEDS -->
