@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\adapter;
 
+use phpbb\storage\stream_interface;
 use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
@@ -21,7 +22,7 @@ use phpbb\filesystem\helper as filesystem_helper;
 /**
  * @internal Experimental
  */
-class local implements adapter_interface
+class local implements adapter_interface, stream_interface
 {
 	/**
 	 * Filesystem component
@@ -193,6 +194,45 @@ class local implements adapter_interface
 		if (!$this->exists($path))
 		{
 			$this->create_dir($path);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function read_stream($path)
+	{
+		$stream = @fopen($this->root_path . $path, 'rb');
+
+		if (!$stream)
+		{
+			throw new exception('STORAGE_CANNOT_OPEN_FILE', $path);
+		}
+
+		return $stream;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function write_stream($path, $resource)
+	{
+		if ($this->exists($path))
+		{
+			throw new exception('STORAGE_FILE_EXISTS', $path);
+		}
+
+		$stream = @fopen($this->root_path . $path, 'w+b');
+
+		if (!$stream)
+		{
+			throw new exception('STORAGE_CANNOT_CREATE_FILE', $path);
+		}
+
+		if (stream_copy_to_stream($resource, $stream) === false)
+		{
+			fclose($stream);
+			throw new exception('STORAGE_CANNOT_COPY_RESOURCE');
 		}
 	}
 }

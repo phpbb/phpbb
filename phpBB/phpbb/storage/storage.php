@@ -66,8 +66,8 @@ class storage
 	 * @param string	path		The file to be written to.
 	 * @param string	content		The data to write into the file.
 	 *
-	 * @throws \phpbb\storage\exception\exception	When the file already exists
-	 * 												When the file cannot be written
+	 * @throws \phpbb\storage\exception\exception		When the file already exists
+	 * 													When the file cannot be written
 	 */
 	public function put_contents($path, $content)
 	{
@@ -79,8 +79,9 @@ class storage
 	 *
 	 * @param string	$path	The file to read
 	 *
-	 * @throws \phpbb\storage\exception\exception	When the file dont exists
-	 * 												When cannot read file contents
+	 * @throws \phpbb\storage\exception\exception		When the file dont exists
+	 * 													When cannot read file contents
+	 *
 	 * @return string	Returns file contents
 	 *
 	 */
@@ -94,7 +95,7 @@ class storage
 	 *
 	 * @param string	$path	file/directory to check
 	 *
-	 * @return bool	Returns true if all files/directories exist, false otherwise
+	 * @return bool	Returns true if the file/directory exist, false otherwise.
 	 */
 	public function exists($path)
 	{
@@ -106,7 +107,7 @@ class storage
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws \phpbb\storage\exception\exception	When removal fails.
+	 * @throws \phpbb\storage\exception\exception		When removal fails.
 	 */
 	public function delete($path)
 	{
@@ -119,8 +120,8 @@ class storage
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
 	 *
-	 * @throws \phpbb\storage\exception\exception	When target exists
-	 * 												When file/directory cannot be renamed
+	 * @throws \phpbb\storage\exception\exception		When target exists
+	 * 													When file/directory cannot be renamed
 	 */
 	public function rename($path_orig, $path_dest)
 	{
@@ -133,11 +134,62 @@ class storage
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
 	 *
-	 * @throws \phpbb\storage\exception\exception	When target exists
-	 * 												When the file cannot be copied
+	 * @throws \phpbb\storage\exception\exception		When target exists
+	 * 													When the file cannot be copied
 	 */
 	public function copy($path_orig, $path_dest)
 	{
 		$this->get_adapter()->copy($path_orig, $path_dest);
+	}
+
+	/**
+	 * Reads a file as a stream.
+	 *
+	 * @param string	$path	File to read
+	 *
+	 * @throws \phpbb\storage\exception\exception		When unable to open file
+
+	 * @return resource	Returns a file pointer
+	 */
+	public function read_stream($path)
+	{
+		$stream = null;
+		$adapter = $this->get_adapter();
+
+		if ($adapter instanceof stream_interface)
+		{
+			$stream = $adapter->read_stream($path);
+		}
+		else
+		{
+			// Simulate the stream
+			$stream = fopen('php://temp', 'w+b');
+			fwrite($stream, $adapter->get_contents($path));
+			rewind($stream);
+		}
+
+		return $stream;
+	}
+
+	/**
+	 * Writes a new file using a stream.
+	 *
+	 * @param string	$path		The target file
+	 * @param resource	$resource	The resource
+	 *										When target file cannot be created
+	 */
+	public function write_stream($path, $resource)
+	{
+		$adapter = $this->get_adapter();
+
+		if ($adapter instanceof stream_interface)
+		{
+			$adapter->write_stream($path, $resource);
+		}
+		else
+		{
+			// Simulate the stream
+			$adapter->put_contents($path, stream_get_contents($resource));
+		}
 	}
 }

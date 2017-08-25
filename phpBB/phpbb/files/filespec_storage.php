@@ -447,7 +447,9 @@ class filespec_storage
 
 		try
 		{
-			$storage->put_contents($this->destination_file, file_get_contents($this->filename));
+			$fp = fopen($this->filename, 'rb');
+			$storage->write_stream($this->destination_file, $fp);
+			fclose($fp);
 		}
 		catch (\phpbb\storage\exception\exception $e)
 		{
