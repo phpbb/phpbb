@@ -147,7 +147,7 @@ class storage
 	 *
 	 * @param string	$path	File to read
 	 *
-	 * @throws \phpbb\storage\exception\exception		When cannot open file
+	 * @throws \phpbb\storage\exception\exception		When unable to open file
 
 	 * @return resource	Returns a file pointer
 	 */
