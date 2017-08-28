@@ -21,7 +21,7 @@ class storage_backup extends \phpbb\db\migration\migration
 			'add_tables' => array(
 				$this->table_prefix . 'backups'	=> array(
 					'COLUMNS' => array(
-						'backup_id'			=> array('UINT', NULL, 'auto_increment'),
+						'backup_id'			=> array('UINT', null, 'auto_increment'),
 						'filename'			=> array('VCHAR', ''),
 					),
 					'PRIMARY_KEY'	=> 'backup_id',
