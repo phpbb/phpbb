@@ -30,7 +30,7 @@ if (!isset($config['avatar_salt']))
 	die('database not up to date');
 }
 
-if (!isset($config['storage\\avatar\\config\\path']) || $config['storage\\avatar\\config\\path'] != 'phpbb\\storage\\provider\\local')
+if (!isset($config['storage\\avatar\\config\\path']) || $config['storage\\avatar\\config\\path'] !== 'phpbb\\storage\\provider\\local')
 {
 	die('use local provider');
 }

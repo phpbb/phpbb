@@ -141,7 +141,7 @@ class remote_storage extends base
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
 		}
 
-		if ($content_length == 0)
+		if ($content_length === 0)
 		{
 			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'EMPTY_REMOTE_DATA');
 		}

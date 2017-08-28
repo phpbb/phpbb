@@ -38,9 +38,12 @@ function send_avatar_to_browser($file, $browser)
 
 		header('Cache-Control: public');
 
-		try {
+		try
+		{
 			header('Content-Type: ' . $file_info->mimetype);
-		} catch (\phpbb\storage\exception\not_implemented $e) {
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
 			// Just dont send this header
 		}
 
@@ -63,20 +66,26 @@ function send_avatar_to_browser($file, $browser)
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
 		}
 
-		try {
+		try
+		{
 			header('Content-Length: ' . $file_info->size);
-		} catch (\phpbb\storage\exception\not_implemented $e) {
+		}
+		catch (\phpbb\storage\exception\exception $e)
+		{
 			// Just dont send this header
 		}
 
-		try {
+		try
+		{
 			$fp = $storage->read_stream($file_path);
 			$output = fopen('php://output', 'w+b');
 			stream_copy_to_stream($fp, $output);
 			fclose($fp);
 			fclose($output);
-		} catch (\Exception $e) {
-
+		}
+		catch (\Exception $e)
+		{
+			// Send nothing
 		}
 
 		flush();

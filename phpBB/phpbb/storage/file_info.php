@@ -13,7 +13,8 @@
 
 namespace phpbb\storage;
 
-use phpbb\storage\exception\not_implemented;
+use phpbb\storage\exception\exception;
+use phpbb\storage\adapter\adapter_interface;
 
 class file_info
 {
@@ -23,16 +24,29 @@ class file_info
 	protected $adapter;
 
 	/**
+	 * Path of the file
+	 *
 	 * @var string
 	 */
 	protected $path;
 
 	/**
+	 * Stores the properties of $path file, so dont have to be consulted  multiple times.
+	 * For example, when you need the width of an image, using getimagesize() you get
+	 * both dimensions, so you store both here, and when you get the height, you dont have
+	 * to call getimagesize() again.
+	 *
 	 * @var array
 	 */
 	protected $properties;
 
-	public function __construct($adapter, $path)
+	/**
+	 * Constructor
+	 *
+	 * @param \Symfony\Component\DependencyInjection\ContainerInterface $adapter
+	 * @param string $path
+	 */
+	public function __construct(adapter_interface $adapter, $path)
 	{
 		$this->adapter = $adapter;
 		$this->path = $path;
@@ -52,7 +66,7 @@ class file_info
 		{
 			if (!method_exists($this->adapter, 'file_' . $name))
 			{
-				throw new not_implemented();
+				throw new exception('STORAGE_METHOD_NOT_IMPLEMENTED');
 			}
 
 			$this->properties = array_merge($this->properties, call_user_func([$this->adapter, 'file_' . $name], $this->path));
