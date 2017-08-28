@@ -886,7 +886,6 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
-	margin-top: -12px;
 }
 
 .row .pagination > ul {
