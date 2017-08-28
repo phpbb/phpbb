@@ -580,12 +580,3 @@
     	width: 80px;
 	}
 }
-
-@media (max-width: 992px) {
-	.row .pagination {
-		text-align: left;
-		float: left;
-		margin-top: 4px;
-		margin-bottom: 4px;
-	}
-}
