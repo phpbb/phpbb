@@ -88,6 +88,18 @@ ul.topiclist dfn {
 	padding-top: 5px;
 }
 
+.forum-desc {
+	display: none;
+}
+
+.forum-mods {
+	display: none;
+}
+
+.forum-subs {
+	display: none;
+}
+
 li.row {
 	border-top: 1px solid transparent;
 	border-bottom: 1px solid transparent;
