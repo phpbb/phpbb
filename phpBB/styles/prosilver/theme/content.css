@@ -89,15 +89,15 @@ ul.topiclist dfn {
 }
 
 .forum-desc {
-	display: none;
+	display: block;
 }
 
 .forum-mods {
-	display: none;
+	display: block;
 }
 
 .forum-subs {
-	display: none;
+	display: block;
 }
 
 li.row {
