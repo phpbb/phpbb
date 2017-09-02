@@ -161,7 +161,7 @@
 		"selector-type-no-unknown": true,
 
 		"selector-descendant-combinator-no-non-space": true,
-		"selector-no-id": true,
+		"selector-max-id": 0,
 		"selector-no-qualifying-type": [
 			true, {
 				"ignore": ["attribute"]
