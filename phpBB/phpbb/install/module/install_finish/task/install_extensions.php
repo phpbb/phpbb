@@ -118,6 +118,13 @@ class install_extensions extends \phpbb\install\task_base
 
 			try
 			{
+				$extension = $this->extension_manager->get_extension($ext_name);
+
+				if (!$extension->is_enableable())
+				{
+					continue;
+				}
+
 				$this->extension_manager->enable($ext_name);
 				$extensions = $this->get_extensions();
 
