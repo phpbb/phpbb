@@ -44,7 +44,7 @@ $lang = array_merge($lang, array(
 	'STORAGE_SELECT'				=> 'Select storage',
 	'STORAGE_SELECT_DESC'			=> 'Select an storage from the list.',
 
-	// Storage ma,es
+	// Storage names
 	'STORAGE_ATTACHMENT_TITLE'		=> 'Attachments storage',
 	'STORAGE_AVATAR_TITLE'			=> 'Avatars storage',
 	'STORAGE_BACKUP_TITLE'			=> 'Backup storage',
