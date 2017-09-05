@@ -122,6 +122,7 @@ class install_extensions extends \phpbb\install\task_base
 
 				if (!$extension->is_enableable())
 				{
+					$this->iohandler->add_log_message(array('CLI_EXTENSION_NOT_ENABLEABLE', $ext_name));
 					continue;
 				}
 
