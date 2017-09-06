@@ -323,6 +323,9 @@ class factory implements \phpbb\textformatter\cache_interface
 			// Only parse emoticons at the beginning of the text or if they're preceded by any
 			// one of: a new line, a space, a dot, or a right square bracket
 			$configurator->Emoticons->notAfter = '[^\\n .\\]]';
+
+			// Ignore emoticons that are immediately followed by a "word" character
+			$configurator->Emoticons->notBefore = '\\w';
 		}
 
 		// Load the censored words
