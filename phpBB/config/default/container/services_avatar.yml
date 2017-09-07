@@ -65,6 +65,7 @@ services:
             - '@path_helper'
             - '@dispatcher'
             - '@files.factory'
+            - '@php_ini'
         calls:
             - [set_name, [avatar.driver.upload]]
         tags:
