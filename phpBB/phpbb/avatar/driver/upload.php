@@ -22,9 +22,29 @@ use \phpbb\storage\exception\exception as storage_exception;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
+	 * @var \phpbb\config\config
+	 */
+	protected $config;
+
+	/**
+	 * @var string
+	 */
+	protected $phpbb_root_path;
+
+	/**
+	 * @var string
+	 */
+	protected $php_ext;
+
+	/**
 	 * @var \phpbb\storage\storage
 	 */
 	protected $storage;
+
+	/**
+	 * @var \phpbb\path_helper
+	 */
+	protected $path_helper;
 
 	/**
 	* @var \phpbb\event\dispatcher_interface
@@ -40,6 +60,11 @@ class upload extends \phpbb\avatar\driver\driver
 	 * @var IniGetWrapper
 	 */
 	protected $php_ini;
+
+	/**
+	 * @var \phpbb\cache\driver\driver_interface
+	 */
+	protected $cache;
 
 	/**
 	* Construct a driver object
