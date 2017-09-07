@@ -89,6 +89,8 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 		$files_factory = new \phpbb\files\factory($phpbb_container);
 
+		$php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
+
 		foreach ($this->avatar_drivers() as $driver)
 		{
 			if ($driver !== 'upload')
@@ -102,7 +104,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			{
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
 				->setMethods(array('get_name'))
-				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $cache))
+				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $php_ini))
 				->getMock();
 			}
 			$cur_avatar->expects($this->any())

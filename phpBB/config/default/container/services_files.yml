@@ -42,6 +42,7 @@ services:
         arguments:
             - '@files.factory'
             - '@language'
+            - '@php_ini'
             - '@plupload'
             - '@request'
 
@@ -51,6 +52,7 @@ services:
         arguments:
             - '@files.factory'
             - '@language'
+            - '@php_ini'
             - '@plupload'
             - '@request'
 
