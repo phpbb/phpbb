@@ -521,7 +521,9 @@ class factory implements \phpbb\textformatter\cache_interface
 	protected function extract_templates($template)
 	{
 		// Capture the template fragments
-		preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END .*? -->#s', $template, $matches, PREG_SET_ORDER);
+		// Allow either phpBB template or the Twig syntax
+		preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END .*? -->#s', $template, $matches, PREG_SET_ORDER) ?:
+			preg_match_all('#{% for (.*?) in .*? %}(.*?){% endfor %}#s', $template, $matches, PREG_SET_ORDER);
 
 		$fragments = array();
 		foreach ($matches as $match)

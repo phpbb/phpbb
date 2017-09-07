@@ -32,9 +32,15 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		return __DIR__ . '/../../tmp/';
 	}
 
-	public function get_factory()
+	public function get_factory($styles_path = null)
 	{
 		global $config, $phpbb_root_path, $request, $user;
+
+		if (!isset($styles_path))
+		{
+			$styles_path = $phpbb_root_path . 'styles/';
+		}
+
 		$this->cache = new phpbb_mock_cache;
 		$dal = new \phpbb\textformatter\data_access(
 			$this->new_dbal(),
@@ -42,7 +48,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			'phpbb_smilies',
 			'phpbb_styles',
 			'phpbb_words',
-			$phpbb_root_path . 'styles/'
+			$styles_path
 		);
 		$factory = new \phpbb\textformatter\s9e\factory(
 			$dal,
@@ -68,10 +74,8 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		return $factory;
 	}
 
-	public function test_get_configurator()
+	public function run_configurator_assertions($configurator)
 	{
-		$configurator = $this->get_factory()->get_configurator();
-
 		$this->assertInstanceOf('s9e\\TextFormatter\\Configurator', $configurator);
 
 		$this->assertTrue(isset($configurator->plugins['Autoemail']));
@@ -95,6 +99,17 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$this->assertTrue(isset($configurator->BBCodes['CUSTOM']));
 
 		$this->assertTrue(isset($configurator->Emoticons[':D']));
+	}
+
+	public function test_get_configurator()
+	{
+		$configurator = $this->get_factory()->get_configurator();
+		$this->run_configurator_assertions($configurator);
+
+		// Test with twigified bbcode.html
+		$configurator = $this->get_factory(__DIR__ . '/fixtures/styles/')->get_configurator();
+		$this->run_configurator_assertions($configurator);
+
 	}
 
 	public function test_regenerate()

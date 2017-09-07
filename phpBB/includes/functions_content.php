@@ -557,6 +557,7 @@ function strip_bbcode(&$text, $uid = '')
 function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {
 	static $bbcode;
+	global $auth, $config, $user;
 	global $phpbb_dispatcher, $phpbb_container;
 
 	if ($text === '')
@@ -584,6 +585,13 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 
 		// Temporarily switch off viewcensors if applicable
 		$old_censor = $renderer->get_viewcensors();
+
+		// Check here if the user is having viewing censors disabled (and also allowed to do so).
+		if (!$user->optionget('viewcensors') && $config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
+		{
+			$censor_text = false;
+		}
+
 		if ($old_censor !== $censor_text)
 		{
 			$renderer->set_viewcensors($censor_text);
