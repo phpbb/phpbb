@@ -111,9 +111,9 @@ class acp_storage
 				// Check if options have been modified
 				if (!$modified)
 				{
-					foreach (array_keys($options) as $def)
+					foreach (array_keys($options) as $definition)
 					{
-						if ($this->get_new_def($storage_name, $def) != $this->get_current_def($storage_name, $def))
+						if ($this->get_new_definition($storage_name, $definition) != $this->get_current_definition($storage_name, $definition))
 						{
 							$modified = true;
 							break;
@@ -171,14 +171,14 @@ class acp_storage
 		return $this->provider_collection->get_by_class($provider)->get_options();
 	}
 
-	protected function get_current_def($storage_name, $def)
+	protected function get_current_definition($storage_name, $definition)
 	{
-		return $this->config['storage\\' . $storage_name . '\\config\\' . $def];
+		return $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
 	}
 
-	protected function get_new_def($storage_name, $def)
+	protected function get_new_definition($storage_name, $definition)
 	{
-		return $this->request->variable([$storage_name, $def], '');
+		return $this->request->variable([$storage_name, $definition], '');
 	}
 
 	protected function validate_data($storage_name, &$messages)
@@ -206,33 +206,33 @@ class acp_storage
 		// Check options
 		$new_options = $this->get_provider_options($this->get_new_provider($storage_name));
 
-		foreach ($new_options as $def_k => $def_v)
+		foreach ($new_options as $definition_key => $definition_value)
 		{
 			$provider = $this->provider_collection->get_by_class($this->get_new_provider($storage_name));
-			$def_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($def_k));
+			$definition_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
 
-			$value = $this->get_new_def($storage_name, $def_k);
+			$value = $this->get_new_definition($storage_name, $definition_key);
 
-			switch ($def_v['type'])
+			switch ($definition_value['type'])
 			{
 				case 'email':
 					if (!filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $def_title, $storage_title);
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
 				case 'text':
 				case 'password':
-					$maxlength = isset($def_v['maxlength']) ? $def_v['maxlength'] : 255;
+					$maxlength = isset($definition_value['maxlength']) ? $definition_value['maxlength'] : 255;
 					if (strlen($value) > $maxlength)
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $def_title, $storage_title);
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
 					break;
 				case 'radio':
 				case 'select':
-					if (!in_array($value, array_values($def_v['options'])))
+					if (!in_array($value, array_values($definition_value['options'])))
 					{
-						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $def_title, $storage_title);
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
 					}
 					break;
 			}
@@ -244,9 +244,9 @@ class acp_storage
 		$current_options = $this->get_provider_options($this->get_current_provider($storage_name));
 
 		// Remove old storage config
-		foreach (array_keys($current_options) as $def)
+		foreach (array_keys($current_options) as $definition)
 		{
-			$this->config->delete('storage\\' . $storage_name . '\\config\\' . $def);
+			$this->config->delete('storage\\' . $storage_name . '\\config\\' . $definition);
 		}
 
 		// Update provider
@@ -255,9 +255,9 @@ class acp_storage
 		// Set new storage config
 		$new_options = $this->get_provider_options($this->get_new_provider($storage_name));
 
-		foreach (array_keys($new_options) as $def)
+		foreach (array_keys($new_options) as $definition)
 		{
-			$this->config->set('storage\\' . $storage_name . '\\config\\' . $def, $this->get_new_def($storage_name, $def));
+			$this->config->set('storage\\' . $storage_name . '\\config\\' . $definition, $this->get_new_definition($storage_name, $definition));
 		}
 	}
 }
