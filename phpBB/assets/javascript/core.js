@@ -190,9 +190,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
 		var confirmed = this.name === 'confirm';
 
-		if (confirmed) {
-			callback(true);
-		}
+		callback(confirmed);
 		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
 		phpbb.alert.close($confirmDiv, fadedark || !confirmed);
 
