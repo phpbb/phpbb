@@ -31,9 +31,6 @@ class remote_storage extends base
 	/** @var language */
 	protected $language;
 
-	/** @var IniGetWrapper */
-	protected $php_ini;
-
 	/** @var request_interface */
 	protected $request;
 

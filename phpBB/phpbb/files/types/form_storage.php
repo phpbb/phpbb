@@ -28,9 +28,6 @@ class form_storage extends base
 	/** @var language */
 	protected $language;
 
-	/** @var IniGetWrapper */
-	protected $php_ini;
-
 	/** @var plupload */
 	protected $plupload;
 
