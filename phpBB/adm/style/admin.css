@@ -8,7 +8,7 @@
 	------------------------------------------------------------------------
 */
 
-/* stylelint-disable selector-no-id */
+/* stylelint-disable selector-max-id */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
 /* stylelint-disable declaration-property-unit-blacklist */
@@ -2966,15 +2966,15 @@ fieldset.permissions .permissions-switch {
 	min-height: 18px;
 }
 
-/* stylelint-enable selector-no-id */
-/* stylelint-enable selector-max-compound-selectors */
-/* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-blacklist */
-/* stylelint-enable declaration-property-unit-whitelist */
-
 .console-output {
 	font-family: monospace;
 	background-color: #2a2a2a;
 	color: #f1f1f1;
 	overflow-x: scroll;
 }
+
+/* stylelint-enable selector-max-id */
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
+/* stylelint-enable declaration-property-unit-blacklist */
+/* stylelint-enable declaration-property-unit-whitelist */
