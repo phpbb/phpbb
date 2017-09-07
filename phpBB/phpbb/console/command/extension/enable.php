@@ -37,11 +37,18 @@ class enable extends command
 		$io = new SymfonyStyle($input, $output);
 
 		$name = $input->getArgument('extension-name');
+		$extension = $this->manager->get_extension($name);
+
+		if (!$extension->is_enableable())
+		{
+			$io->error($this->user->lang('CLI_EXTENSION_NOT_ENABLEABLE', $name));
+			return 1;
+		}
 
 		if ($this->manager->is_enabled($name))
 		{
 			$io->error($this->user->lang('CLI_EXTENSION_ENABLED', $name));
-			return 2;
+			return 1;
 		}
 
 		$this->manager->enable($name);
