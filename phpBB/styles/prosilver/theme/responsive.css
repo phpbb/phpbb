@@ -636,15 +636,6 @@
 	}
 }
 
-@media (max-width: 992px) {
-	.row .pagination {
-		text-align: left;
-		float: left;
-		margin-top: 4px;
-		margin-bottom: 4px;
-	}
-}
-
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
 /* stylelint-enable declaration-property-unit-whitelist */
