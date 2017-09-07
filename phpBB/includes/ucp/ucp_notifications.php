@@ -180,13 +180,13 @@ class ucp_notifications
 				'GROUP_NAME'	=> $user->lang($group),
 			));
 
-			foreach ($subscription_types as $type => $data)
+			foreach ($subscription_types as $type => $type_data)
 			{
 				$template->assign_block_vars($block, array(
 					'TYPE'				=> $type,
 
-					'NAME'				=> $user->lang($data['lang']),
-					'EXPLAIN'			=> (isset($user->lang[$data['lang'] . '_EXPLAIN'])) ? $user->lang($data['lang'] . '_EXPLAIN') : '',
+					'NAME'				=> $user->lang($type_data['lang']),
+					'EXPLAIN'			=> (isset($user->lang[$type_data['lang'] . '_EXPLAIN'])) ? $user->lang($type_data['lang'] . '_EXPLAIN') : '',
 				));
 
 				foreach ($notification_methods as $method => $method_data)
@@ -195,6 +195,8 @@ class ucp_notifications
 						'METHOD'			=> $method_data['id'],
 
 						'NAME'				=> $user->lang($method_data['lang']),
+
+						'AVAILABLE'			=> $method_data['method']->is_available($type_data['type']),
 
 						'SUBSCRIBED'		=> (isset($subscriptions[$type]) && in_array($method_data['id'], $subscriptions[$type])) ? true : false,
 					));
