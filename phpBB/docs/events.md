@@ -2671,6 +2671,13 @@ viewtopic_topic_title_after
 * Since: 3.1.7-RC1
 * Purpose: Add content directly after the topic title link on the View topic screen (outside of the h2 HTML tag)
 
+viewtopic_topic_title_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content directly before the topic title link on the View topic screen (outside of the h2 HTML tag)
+
 viewtopic_topic_title_append
 ===
 * Locations:
