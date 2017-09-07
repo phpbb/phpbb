@@ -65,7 +65,6 @@ services:
             - '@path_helper'
             - '@dispatcher'
             - '@files.factory'
-            - '@cache.driver'
         calls:
             - [set_name, [avatar.driver.upload]]
         tags:
