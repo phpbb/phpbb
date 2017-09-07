@@ -270,6 +270,7 @@ class upload extends \phpbb\avatar\driver\driver
 		* @var	array	row					Array with avatar row data
 		* @var	array	error				Array of errors, if filled in by this event file will not be deleted
 		* @since 3.1.6-RC1
+		* @changed 3.3.0-a1					Remove destination
 		*/
 		$vars = array(
 			'prefix',
