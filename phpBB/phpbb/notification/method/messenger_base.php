@@ -13,6 +13,8 @@
 
 namespace phpbb\notification\method;
 
+use phpbb\notification\type\type_interface;
+
 /**
 * Abstract notification method handling email and jabber notifications
 * using the phpBB messenger.
@@ -46,11 +48,11 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*
-	* @param \phpbb\notification\type\type_interface $notification_type	An optional instance of a notification type. This method returns false
-	*																	only if the type is provided and if it doesn't provide an email template.
+	* @param type_interface $notification_type	An optional instance of a notification type. This method returns false
+	*											only if the type is provided and if it doesn't provide an email template.
 	* @return bool
 	*/
-	public function is_available(\phpbb\notification\type\type_interface $notification_type = null)
+	public function is_available(type_interface $notification_type = null)
 	{
 		return $notification_type === null || $notification_type->get_email_template() !== false;
 	}

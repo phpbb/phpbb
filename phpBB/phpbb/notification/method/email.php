@@ -13,6 +13,8 @@
 
 namespace phpbb\notification\method;
 
+use phpbb\notification\type\type_interface;
+
 /**
 * Email notification method class
 * This class handles sending emails for notifications
@@ -57,11 +59,11 @@ class email extends \phpbb\notification\method\messenger_base
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*
-	* @param \phpbb\notification\type\type_interface $notification_type An optional instance of a notification type. If provided, this
-	*																	method additionally checks if the type provides an email template.
+	* @param type_interface $notification_type  An optional instance of a notification type. If provided, this
+	*											method additionally checks if the type provides an email template.
 	* @return bool
 	*/
-	public function is_available(\phpbb\notification\type\type_interface $notification_type = null)
+	public function is_available(type_interface $notification_type = null)
 	{
 		return parent::is_available($notification_type) && $this->config['email_enable'] && $this->user->data['user_email'];
 	}
