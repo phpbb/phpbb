@@ -13,6 +13,7 @@
 
 namespace phpbb\avatar\driver;
 
+use bantu\IniGetWrapper\IniGetWrapper;
 use \phpbb\storage\exception\exception as storage_exception;
 
 /**
@@ -36,6 +37,11 @@ class upload extends \phpbb\avatar\driver\driver
 	protected $files_factory;
 
 	/**
+	 * @var IniGetWrapper
+	 */
+	protected $php_ini;
+
+	/**
 	* Construct a driver object
 	*
 	* @param \phpbb\config\config $config phpBB configuration
@@ -45,9 +51,10 @@ class upload extends \phpbb\avatar\driver\driver
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
 	* @param \phpbb\files\factory $files_factory File classes factory
+	* @param IniGetWrapper		$php_ini	ini_get() wrapper
 	* @param \phpbb\cache\driver\driver_interface $cache Cache driver
 	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\storage\storage $storage, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\storage\storage $storage, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, IniGetWrapper $php_ini, \phpbb\cache\driver\driver_interface $cache = null)
 	{
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -56,6 +63,7 @@ class upload extends \phpbb\avatar\driver\driver
 		$this->path_helper = $path_helper;
 		$this->dispatcher = $dispatcher;
 		$this->files_factory = $files_factory;
+		$this->php_ini = $php_ini;
 		$this->cache = $cache;
 	}
 
@@ -303,6 +311,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	protected function can_upload()
 	{
-		return (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on');
+		return $this->php_ini->getBool('file_uploads');
 	}
 }

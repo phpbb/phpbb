@@ -13,7 +13,6 @@
 
 namespace phpbb\files\types;
 
-use bantu\IniGetWrapper\IniGetWrapper;
 use phpbb\files\factory;
 use phpbb\files\filespec;
 use phpbb\language\language;
@@ -27,9 +26,6 @@ class form_storage extends base
 
 	/** @var language */
 	protected $language;
-
-	/** @var IniGetWrapper */
-	protected $php_ini;
 
 	/** @var plupload */
 	protected $plupload;
@@ -45,15 +41,13 @@ class form_storage extends base
 	 *
 	 * @param factory			$factory	Files factory
 	 * @param language			$language	Language class
-	 * @param IniGetWrapper		$php_ini	ini_get() wrapper
 	 * @param plupload			$plupload	Plupload
 	 * @param request_interface	$request	Request object
 	 */
-	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, plupload $plupload, request_interface $request)
+	public function __construct(factory $factory, language $language, plupload $plupload, request_interface $request)
 	{
 		$this->factory = $factory;
 		$this->language = $language;
-		$this->php_ini = $php_ini;
 		$this->plupload = $plupload;
 		$this->request = $request;
 	}
