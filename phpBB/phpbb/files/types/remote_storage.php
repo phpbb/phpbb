@@ -28,14 +28,8 @@ class remote_storage extends base
 	/** @var factory Files factory */
 	protected $factory;
 
-	/** @var language */
-	protected $language;
-
 	/** @var request_interface */
 	protected $request;
-
-	/** @var \phpbb\files\upload */
-	protected $upload;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
@@ -75,7 +69,6 @@ class remote_storage extends base
 	 *
 	 * @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
 	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
-	 * @access public
 	 */
 	protected function remote_upload($upload_url)
 	{

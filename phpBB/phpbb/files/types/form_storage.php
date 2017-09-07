@@ -25,17 +25,11 @@ class form_storage extends base
 	/** @var factory Files factory */
 	protected $factory;
 
-	/** @var language */
-	protected $language;
-
 	/** @var plupload */
 	protected $plupload;
 
 	/** @var request_interface */
 	protected $request;
-
-	/** @var \phpbb\files\upload */
-	protected $upload;
 
 	/**
 	 * Construct a form upload type
@@ -71,7 +65,6 @@ class form_storage extends base
 	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
 	 *
 	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
-	 * @access public
 	 */
 	protected function form_upload($form_name)
 	{
