@@ -734,9 +734,11 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	* @var	array	user_ids	IDs of the deleted user
 	* @var	mixed	retain_username	True if username should be retained
 	*				or false if not
+	* @var	array	user_rows	Array containing data of the deleted users
 	* @since 3.1.0-a1
+	* @changed 3.2.2-RC1 Added user_rows
 	*/
-	$vars = array('mode', 'user_ids', 'retain_username');
+	$vars = array('mode', 'user_ids', 'retain_username', 'user_rows');
 	extract($phpbb_dispatcher->trigger_event('core.delete_user_after', compact($vars)));
 
 	// Reset newest user info if appropriate

@@ -684,7 +684,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user;
+	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 
 	// Some default template variables
 	$template->assign_vars(array(
@@ -702,6 +702,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		foreach ($attachment_data as $count => $attach_row)
 		{
 			$hidden = '';
+			$attachrow_template_vars = array();
 			$attach_row['real_filename'] = utf8_basename($attach_row['real_filename']);
 
 			foreach ($attach_row as $key => $value)
@@ -711,7 +712,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 
 			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
 
-			$template->assign_block_vars('attach_row', array(
+			$attachrow_template_vars[(int) $attach_row['attach_id']] = array(
 				'FILENAME'			=> utf8_basename($attach_row['real_filename']),
 				'A_FILENAME'		=> addslashes(utf8_basename($attach_row['real_filename'])),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
@@ -721,9 +722,22 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 				'FILESIZE'			=> get_formatted_filesize($attach_row['filesize']),
 
 				'U_VIEW_ATTACHMENT'	=> $download_link,
-				'S_HIDDEN'			=> $hidden)
+				'S_HIDDEN'			=> $hidden,
 			);
 		}
+
+		/**
+		* Modify inline attachments template vars
+		*
+		* @event core.modify_inline_attachments_template_vars
+		* @var	array	attachment_data				Array containing attachments data
+		* @var	array	attachrow_template_vars		Array containing attachments template vars
+		* @since 3.2.2-RC1
+		*/
+		$vars = array('attachment_data', 'attachrow_template_vars');
+		extract($phpbb_dispatcher->trigger_event('core.modify_inline_attachments_template_vars', compact($vars)));
+
+		$template->assign_block_vars_array('attach_row', $attachrow_template_vars);
 	}
 
 	return count($attachment_data);

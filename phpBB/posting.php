@@ -547,6 +547,27 @@ if ($post_data['poll_start'])
 	$db->sql_freeresult($result);
 }
 
+/**
+* This event allows you to modify the post data before parsing
+*
+* @event core.posting_modify_post_data
+* @var	int		forum_id	ID of the forum
+* @var	string	mode		What action to take if the form has been submitted
+*							post|reply|quote|edit|delete|bump|smilies|popup
+* @var	array	post_data	Array with post data
+* @var	int		post_id		ID of the post
+* @var	int		topic_id	ID of the topic
+* @since 3.2.2-RC1
+*/
+$vars = array(
+	'forum_id',
+	'mode',
+	'post_data',
+	'post_id',
+	'topic_id',
+);
+extract($phpbb_dispatcher->trigger_event('core.posting_modify_post_data', compact($vars)));
+
 if ($mode == 'edit')
 {
 	$original_poll_data = array(

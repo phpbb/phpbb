@@ -993,6 +993,16 @@ if (count($topic_list))
 	}
 }
 
+/**
+* This event is to perform additional actions on viewforum page
+*
+* @event core.viewforum_generate_page_after
+* @var	array	forum_data	Array with the forum data
+* @since 3.2.2-RC1
+*/
+$vars = array('forum_data');
+extract($phpbb_dispatcher->trigger_event('core.viewforum_generate_page_after', compact($vars)));
+
 // This is rather a fudge but it's the best I can think of without requiring information
 // on all topics (as we do in 2.0.x). It looks for unread or new topics, if it doesn't find
 // any it updates the forum last read cookie. This requires that the user visit the forum

@@ -1643,7 +1643,7 @@ switch ($mode)
 		$pagination->generate_template_pagination($pagination_url, 'pagination', 'start', $total_users, $config['topics_per_page'], $start);
 
 		// Generate page
-		$template->assign_vars(array(
+		$template_vars = array(
 			'TOTAL_USERS'	=> $user->lang('LIST_USERS', (int) $total_users),
 
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
@@ -1668,8 +1668,22 @@ switch ($mode)
 			'S_LEADERS_SET'		=> $leaders_set,
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
-			'S_MODE_ACTION'		=> $pagination_url)
+			'S_MODE_ACTION'		=> $pagination_url,
 		);
+
+		/**
+		 * Modify memberlist page template vars
+		 *
+		 * @event core.memberlist_modify_template_vars
+		 * @var array	params				Array containing URL parameters
+		 * @var string	sort_url			Sorting URL base
+		 * @var array	template_vars		Array containing template vars
+		 * @since 3.2.2-RC1
+		 */
+		$vars = array('params', 'sort_url', 'template_vars');
+		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_template_vars', compact($vars)));
+
+		$template->assign_vars($template_vars);
 }
 
 // Output the page
