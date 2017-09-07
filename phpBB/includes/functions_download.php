@@ -44,7 +44,7 @@ function send_avatar_to_browser($file, $browser)
 		}
 		catch (\phpbb\storage\exception\exception $e)
 		{
-			// Just dont send this header
+			// Just don't send this header
 		}
 
 		if ((strpos(strtolower($browser), 'msie') !== false) && !phpbb_is_greater_ie_version($browser, 7))
@@ -72,7 +72,7 @@ function send_avatar_to_browser($file, $browser)
 		}
 		catch (\phpbb\storage\exception\exception $e)
 		{
-			// Just dont send this header
+			// Just don't send this header
 		}
 
 		try

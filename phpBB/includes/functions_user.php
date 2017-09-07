@@ -2533,7 +2533,7 @@ function group_correct_avatar($group_id, $old_entry)
 	}
 	catch (\phpbb\storage\exception\exception $e)
 	{
-
+		// If rename fail, dont execute the query
 	}
 }
 
