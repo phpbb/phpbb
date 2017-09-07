@@ -123,6 +123,7 @@ $lang = array_merge($lang, array(
 	'CLI_EXTENSION_UPDATE_FAILURE'		=> 'Could not update extension %s',
 	'CLI_EXTENSION_UPDATE_SUCCESS'		=> 'Successfully updated extension %s',
 	'CLI_EXTENSION_NOT_FOUND'			=> 'No extensions were found.',
+	'CLI_EXTENSION_NOT_ENABLEABLE'		=> 'Extension %s is not enableable.',
 	'CLI_EXTENSIONS_AVAILABLE'			=> 'Available',
 	'CLI_EXTENSIONS_DISABLED'			=> 'Disabled',
 	'CLI_EXTENSIONS_ENABLED'			=> 'Enabled',
