@@ -6,7 +6,7 @@
 
 <p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
 
-<form id="acp_storage" method="post" action="{U_ACTION}">
+<form id="acp_storage" method="post" action="{{ U_ACTION }}">
 
 	{% for storage in STORAGES %}
 		<fieldset>
@@ -69,7 +69,7 @@
 		<legend>{{ lang('SUBMIT') }}</legend>
 		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
-		{S_FORM_TOKEN}
+		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>
 
