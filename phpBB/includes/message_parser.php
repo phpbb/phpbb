@@ -1072,7 +1072,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['force_server_vars'])
 		{
-			$check_path = $config['script_path'];
+			$check_path = !empty($config['script_path']) ? $config['script_path'] : '/';
 		}
 		else
 		{
