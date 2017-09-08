@@ -37,7 +37,10 @@
 					{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
 					<dl>
 						<dt>
-							<label for="{{ input_id }}">{{ lang(title) }}{{ lang('COLON') }}</label>{% if description != lang(description) %}<br /><span>{{ lang(description) }}</span>{% endif %}
+							<label for="{{ input_id }}}">{{ lang(title) }}{{ lang('COLON') }}</label>
+							{% if lang_defined(description) %}
+								<br /><span>{{ lang(description) }}</span>
+							{% endif %}
 						</dt>
 						<dd>
 							{% if input_type in ['text', 'password', 'email'] %}
