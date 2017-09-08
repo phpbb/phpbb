@@ -570,7 +570,7 @@ $message_parser->set_mimetype_guesser($mimetype_guesser);
 if (isset($post_data['post_text']))
 {
 	$message_parser->message = &$post_data['post_text'];
-	unset($post_data['post_text']);
+	//unset($post_data['post_text']);
 }
 
 // Set some default variables
