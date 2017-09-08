@@ -160,7 +160,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 				FROM ' . STYLES_TABLE . "
 				WHERE style_name = 'prosilver'";
 			$result = $this->sql_query($sql);
-			$default_style = $this->db->sql_fetchfield('style_id');
+			$default_style = (int) $this->db->sql_fetchfield('style_id');
 			$this->db->sql_freeresult($result);
 
 			$this->config->set('default_style', $default_style);
@@ -184,7 +184,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 
 			// Reset styles for users
 			$this->sql_query('UPDATE ' . USERS_TABLE . "
-				SET user_style = '" . $valid_styles[0] . "'
+				SET user_style = '" . (int) $valid_styles[0] . "'
 				WHERE " . $this->db->sql_in_set('user_style', $valid_styles, true));
 		}
 	}
