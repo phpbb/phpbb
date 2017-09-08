@@ -192,4 +192,18 @@ class storage
 			$adapter->put_contents($path, stream_get_contents($resource));
 		}
 	}
+
+	/**
+	 * Get file info.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @throws \phpbb\storage\exception\not_implemented	When the adapter doesnt implement the method
+	 *
+	 * @return \phpbb\storage\file_info	Returns file_info object
+	 */
+	public function file_info($path)
+	{
+		return new file_info($this->adapter, $path);
+	}
 }

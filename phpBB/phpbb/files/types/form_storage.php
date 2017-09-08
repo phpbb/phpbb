@@ -20,7 +20,7 @@ use phpbb\language\language;
 use phpbb\plupload\plupload;
 use phpbb\request\request_interface;
 
-class form extends base
+class form_storage extends base
 {
 	/** @var factory Files factory */
 	protected $factory;
@@ -65,7 +65,6 @@ class form extends base
 	 * @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
 	 *
 	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
-	 * @access public
 	 */
 	protected function form_upload($form_name)
 	{
@@ -79,7 +78,7 @@ class form extends base
 		}
 
 		/** @var filespec $file */
-		$file = $this->factory->get('filespec')
+		$file = $this->factory->get('filespec_storage')
 			->set_upload_ary($upload)
 			->set_upload_namespace($this->upload);
 
@@ -110,7 +109,7 @@ class form extends base
 
 		// PHP Upload file size check
 		$file = $this->check_upload_size($file);
-		if (count($file->error))
+		if (sizeof($file->error))
 		{
 			return $file;
 		}

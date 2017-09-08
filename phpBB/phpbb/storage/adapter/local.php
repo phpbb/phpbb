@@ -18,6 +18,8 @@ use phpbb\storage\exception\exception;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
 use phpbb\filesystem\helper as filesystem_helper;
+use phpbb\mimetype\guesser;
+use FastImageSize\FastImageSize;
 
 /**
  * @internal Experimental
@@ -32,6 +34,20 @@ class local implements adapter_interface, stream_interface
 	protected $filesystem;
 
 	/**
+	 * FastImageSize
+	 *
+	 * @var \FastImageSize\FastImageSize
+	 */
+	protected $imagesize;
+
+	/**
+	 * Mimetype Guesser component
+	 *
+	 * @var \phpbb\mimetype\guesser
+	 */
+	protected $mimetype_guesser;
+
+	/**
 	 * @var string path
 	 */
 	protected $phpbb_root_path;
@@ -44,9 +60,11 @@ class local implements adapter_interface, stream_interface
 	/**
 	 * Constructor
 	 */
-	public function __construct(filesystem $filesystem, $phpbb_root_path)
+	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
+		$this->imagesize = $imagesize;
+		$this->mimetype_guesser = $mimetype_guesser;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -234,5 +252,83 @@ class local implements adapter_interface, stream_interface
 			fclose($stream);
 			throw new exception('STORAGE_CANNOT_COPY_RESOURCE');
 		}
+	}
+
+	/**
+	 * Get file size.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @throws \phpbb\storage\exception\exception		When cannot get size
+	 *
+	 * @return array Properties
+	 */
+	public function file_size($path)
+	{
+		$size = filesize($this->root_path . $path);
+
+		if ($size === null)
+		{
+			throw new exception('STORAGE_CANNOT_GET_FILESIZE');
+		}
+
+		return ['size' => $size];
+	}
+
+	/**
+	 * Get file mimetype.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return array	Properties
+	 */
+	public function file_mimetype($path)
+	{
+		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $path)];
+	}
+
+	/**
+	 * Get image dimensions.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return array	Properties
+	 */
+	protected function image_dimensions($path)
+	{
+		$size = $this->imagesize->getImageSize($this->root_path . $path);
+
+		// For not supported types like swf
+		if ($size === false)
+		{
+			$imsize = getimagesize($this->root_path . $path);
+			$size = ['width' => $imsize[0], 'height' => $imsize[1]];
+		}
+
+		return ['image_width' => $size['width'], 'image_height' => $size['height']];
+	}
+
+	/**
+	 * Get image width.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return array	Properties
+	 */
+	public function file_image_width($path)
+	{
+		return $this->image_dimensions($path);
+	}
+
+	/**
+	 * Get image height.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return array	Properties
+	 */
+	public function file_image_height($path)
+	{
+		return $this->image_dimensions($path);
 	}
 }

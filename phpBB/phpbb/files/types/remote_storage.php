@@ -20,7 +20,7 @@ use phpbb\files\filespec;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 
-class remote extends base
+class remote_storage extends base
 {
 	/** @var config phpBB config */
 	protected $config;
@@ -69,7 +69,6 @@ class remote extends base
 	 *
 	 * @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
 	 * @return filespec $file Object "filespec" is returned, all further operations can be done with this object
-	 * @access public
 	 */
 	protected function remote_upload($upload_url)
 	{
@@ -132,7 +131,7 @@ class remote extends base
 			return $this->factory->get('filespec')->set_error($this->language->lang($this->upload->error_prefix . 'WRONG_FILESIZE', $max_filesize['value'], $max_filesize['unit']));
 		}
 
-		if ($content_length == 0)
+		if ($content_length === 0)
 		{
 			return $this->factory->get('filespec')->set_error($this->upload->error_prefix . 'EMPTY_REMOTE_DATA');
 		}
@@ -153,7 +152,7 @@ class remote extends base
 		$upload_ary['tmp_name'] = $filename;
 
 		/** @var filespec $file */
-		$file = $this->factory->get('filespec')
+		$file = $this->factory->get('filespec_storage')
 			->set_upload_ary($upload_ary)
 			->set_upload_namespace($this->upload);
 		$this->upload->common_checks($file);
