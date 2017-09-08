@@ -79,8 +79,8 @@ class acp_storage
 
 	public function overview($id, $mode)
 	{
-		$form_name = 'acp_storage';
-		add_form_key($form_name);
+		$form_key = 'acp_storage';
+		add_form_key($form_key);
 
 		// Template from adm/style
 		$this->tpl_name = 'acp_storage';
@@ -92,6 +92,11 @@ class acp_storage
 		{
 			$modified_storages = [];
 			$messages = [];
+
+			if (!check_form_key($form_key))
+			{
+				$messages[] = $this->lang->lang('FORM_INVALID');
+			}
 
 			foreach ($this->storage_collection as $storage)
 			{
