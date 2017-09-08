@@ -185,7 +185,7 @@ class extension extends \Twig_Extension
 	}
 
 	/**
-	* Check if a language variable exist
+	* Check if a language variable exists
 	*
 	* @return bool
 	*/
