@@ -128,9 +128,9 @@ class acp_storage
 				}
 			}
 
-			if (count($modified_storages))
+			if (!empty($modified_storages))
 			{
-				if (!count($messages))
+				if (empty($messages))
 				{
 					foreach ($modified_storages as $storage_name)
 					{
