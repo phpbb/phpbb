@@ -43,8 +43,8 @@ class fix_user_styles extends \phpbb\db\migration\migration
 		$this->db->sql_freeresult($result);
 
 		// Set the default style to users who have an invalid style
-		$this->sql_query('UPDATE ' . USERS_TABLE . "
-			SET user_style = $default_style
-			WHERE " . $this->db->sql_in_set('user_style', $enabled_styles, true));
+		$this->sql_query('UPDATE ' . USERS_TABLE . '
+			SET user_style = ' . (int) $default_style . '
+			WHERE ' . $this->db->sql_in_set('user_style', $enabled_styles, true));
 	}
 }

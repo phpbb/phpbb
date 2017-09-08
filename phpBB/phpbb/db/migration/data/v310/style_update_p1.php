@@ -165,7 +165,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 
 			$this->config->set('default_style', $default_style);
 
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = ' .  $default_style;
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_style = ' .  (int) $default_style;
 			$this->sql_query($sql);
 		}
 		else
