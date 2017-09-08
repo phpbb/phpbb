@@ -464,16 +464,16 @@ class bbcode
 			global $user;
 
 			$bbcode_hardtpl = array(
-				'b_open'	=> '<span style="font-weight: bold">',
-				'b_close'	=> '</span>',
-				'i_open'	=> '<span style="font-style: italic">',
-				'i_close'	=> '</span>',
-				'u_open'	=> '<span style="text-decoration: underline">',
+				'b_open'	=> '<strong class="text-bold c-post-copy-bold">',
+				'b_close'	=> '</strong>',
+				'i_open'	=> '<em class="text-italics c-post-copy-italic">',
+				'i_close'	=> '</em>',
+				'u_open'	=> '<span class="c-post-copy-underline">',
 				'u_close'	=> '</span>',
-				'img'		=> '<img src="$1" class="postimage" alt="' . $user->lang['IMAGE'] . '" />',
-				'size'		=> '<span style="font-size: $1%; line-height: normal">$2</span>',
-				'color'		=> '<span style="color: $1">$2</span>',
-				'email'		=> '<a href="mailto:$1">$2</a>'
+				'img'		=> '<img class="postimage c-post-copy-img" src="$1" alt="' . $user->lang['IMAGE'] . '" />',
+				'size'		=> '<span class="c-post-copy-size" style="font-size: $1%; line-height: normal">$2</span>',
+				'color'		=> '<span class="c-post-copy-color" style="color: $1">$2</span>',
+				'email'		=> '<a class="c-post-copy-email" href="mailto:$1">$2</a>'
 			);
 		}
 

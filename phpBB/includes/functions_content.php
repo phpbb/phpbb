@@ -927,7 +927,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 * Cuts down displayed size of link if over 50 chars, turns absolute links
 * into relative versions when the server/script path matches the link
 */
-function make_clickable($text, $server_url = false, $class = 'postlink')
+function make_clickable($text, $server_url = false, $class = 'c-post-copy-link')
 {
 	if ($server_url === false)
 	{
@@ -940,8 +940,8 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 	if (!isset($magic_url_match_args[$server_url]) || $static_class != $class)
 	{
 		$static_class = $class;
-		$class = ($static_class) ? ' class="' . $static_class . '"' : '';
-		$local_class = ($static_class) ? ' class="' . $static_class . '-local"' : '';
+		$class = ($static_class) ? ' class="postlink ' . $static_class . '"' : '';
+		$local_class = ($static_class) ? ' class="postlink ' . $static_class . $static_class . '-local"' : '';
 
 		if (!is_array($magic_url_match_args))
 		{

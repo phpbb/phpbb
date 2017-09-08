@@ -512,7 +512,8 @@ li.breadcrumbs span:first-child > a {
 /* Content container styles
 ---------------------------------------- */
 .rtl .content ul,
-.rtl .content ol {
+.rtl .content ol,
+.rtl .c-post-copy-list {
 	margin-right: 3em;
 	margin-left: 0;
 }

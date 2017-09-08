@@ -109,7 +109,7 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
-/* Post body links */
+/* Post body links DEPRECATED */
 .postlink {
 	text-decoration: none;
 	border-bottom: 1px solid transparent;

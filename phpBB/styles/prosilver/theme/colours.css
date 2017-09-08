@@ -54,18 +54,21 @@ th a:hover {
 	color: #a8d8ff;
 }
 
-/* post body links */
-.postlink {
+/* post body links DEPRECATED */
+.postlink,
+.c-post-copy-link {
 	border-bottom-color: #368ad2;
 	color: #368ad2;
 }
 
-.postlink:visited {
+.postlink:visited,
+.c-post-copy-link:visited {
 	border-bottom-color: #5d8fbd;
 	color: #5d8fbd;
 }
 
-.postlink:hover {
+.postlink:hover,
+.c-post-copy-link:hover {
 	background-color: #d0e4f6;
 	color: #0d4473;
 }
@@ -118,11 +121,7 @@ th a:hover {
 	color: #28313f;
 }
 
-.post:target .content {
-	color: #000000;
-}
-
-.post:target h3 a {
+.post-title-link {
 	color: #000000;
 }
 
@@ -381,7 +380,8 @@ li.header dd {
 }
 
 /* content container styles */
-.content {
+.content,
+.c-post-copy {
 	color: #333333;
 }
 
@@ -590,6 +590,7 @@ dd.profile-warnings {
 /* Show scrollbars for items with overflow on iOS devices
 ---------------------------------------- */
 .postbody .content::-webkit-scrollbar,
+.c-post-copy::-webkit-scrollbar,
 .topicreview::-webkit-scrollbar,
 .post_details::-webkit-scrollbar,
 .codebox code::-webkit-scrollbar,
@@ -600,6 +601,7 @@ dd.profile-warnings {
 }
 
 .postbody .content::-webkit-scrollbar-thumb,
+.c-post-copy::-webkit-scrollbar-thumb,
 .topicreview::-webkit-scrollbar-thumb,
 .post_details::-webkit-scrollbar-thumb,
 .codebox code::-webkit-scrollbar-thumb,

@@ -27,9 +27,9 @@ $replace = array(
 	'<!-- w --><a href="',
 );
 $with = array(
-	'<!-- l --><a class="postlink-local" href="',
-	'<!-- m --><a class="postlink" href="',
-	'<!-- w --><a class="postlink" href="',
+	'<!-- l --><a class="postlink-local c-copy-post-link c-copy-post-link-local" href="',
+	'<!-- m --><a class="postlink c-copy-post-link" href="',
+	'<!-- w --><a class="postlink c-copy-post-link" href="',
 );
 
 // Adjust user signatures
