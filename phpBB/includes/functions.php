@@ -1839,7 +1839,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 /**
 * Re-Apply session id after page reloads
 */
-function reapply_sid($url)
+function reapply_sid($url, $is_route = false)
 {
 	global $phpEx, $phpbb_root_path;
 
@@ -1861,7 +1861,7 @@ function reapply_sid($url)
 		$url = preg_replace("/$phpEx(&amp;|&)+?/", "$phpEx?", $url);
 	}
 
-	return append_sid($url);
+	return append_sid($url, false, true, false, $is_route);
 }
 
 /**
@@ -2184,7 +2184,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
 	$use_page = ($u_action) ? $u_action : str_replace('&', '&amp;', $user->page['page']);
-	$u_action = reapply_sid($phpbb_path_helper->get_valid_page($use_page, $config['enable_mod_rewrite']));
+	$u_action = reapply_sid($phpbb_path_helper->get_valid_page($use_page, $config['enable_mod_rewrite']), $phpbb_path_helper->is_router_used());
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(

@@ -136,6 +136,22 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'forum' => 0,
 				),
 			),
+			array(
+				'./community',
+				'/app.php',
+				'',
+				'/',
+				'/kb',
+				array(
+					'page_name' => 'app.php/kb',
+					'page_dir' => '..',
+					'query_string' => '',
+					'script_path' => '/',
+					'root_script_path' => '/community/',
+					'page' => '../app.php/kb',
+					'forum' => 0,
+				),
+			),
 		);
 	}
 
