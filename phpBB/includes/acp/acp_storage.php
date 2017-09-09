@@ -51,6 +51,10 @@ class acp_storage
 	/** @var string */
 	public $u_action;
 
+	/**
+	 *  @param string $id
+	 * @param string $mode
+	 */
 	public function main($id, $mode)
 	{
 		global $phpbb_container, $phpbb_dispatcher;
@@ -77,6 +81,10 @@ class acp_storage
 		$this->overview($id, $mode);
 	}
 
+	/**
+	 * @param string $id
+	 * @param string $mode
+	 */
 	public function overview($id, $mode)
 	{
 		$form_key = 'acp_storage';
@@ -160,31 +168,69 @@ class acp_storage
 		));
 	}
 
+	/**
+	 * Get the current provider from config
+	 *
+	 * @param string $key Storage name
+	 * @return string The current provider
+	 */
 	protected function get_current_provider($storage_name)
 	{
 		return $this->config['storage\\' . $storage_name . '\\provider'];
 	}
 
+	/**
+	 * Get the new provider from the request
+	 *
+	 * @param string $key Storage name
+	 * @return string The new provider
+	 */
 	protected function get_new_provider($storage_name)
 	{
 		return $this->request->variable([$storage_name, 'provider'], '');
 	}
 
+	/**
+	 * Get adapter definitions from a provider
+	 *
+	 * @param string $provider Provider class
+	 * @return array Adapter definitions
+	 */
 	protected function get_provider_options($provider)
 	{
 		return $this->provider_collection->get_by_class($provider)->get_options();
 	}
 
+	/**
+	 * Get the current value of the definition of a storage from config
+	 *
+	 * @param string $storage_name Storage name
+	 * @param string $definition Definition
+	 * @return string Definition value
+	 */
 	protected function get_current_definition($storage_name, $definition)
 	{
 		return $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
 	}
 
+	/**
+	 * Get the new value of the definition of a storage from the request
+	 *
+	 * @param string $storage_name Storage name
+	 * @param string $definition Definition
+	 * @return string Definition value
+	 */
 	protected function get_new_definition($storage_name, $definition)
 	{
 		return $this->request->variable([$storage_name, $definition], '');
 	}
 
+	/**
+	 * Validates data
+	 *
+	 * @param string $storage_name Storage name
+	 * @param array $messages Reference to messages array
+	 */
 	protected function validate_data($storage_name, &$messages)
 	{
 		$storage_title = $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
@@ -243,6 +289,11 @@ class acp_storage
 		}
 	}
 
+	/**
+	 * Updates an storage with the info provided in the form
+	 *
+	 * @param string $storage_name Storage name
+	 */
 	protected function update_storage_config($storage_name)
 	{
 		$current_options = $this->get_provider_options($this->get_current_provider($storage_name));
