@@ -101,8 +101,8 @@ class session
 		else
 		{
 			// current directory within the phpBB root (for example: adm)
-			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+			$root_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath('./')));
 		}
 
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
