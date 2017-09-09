@@ -18,6 +18,13 @@ services:
             - '@storage.provider_collection'
 
 # Collections
+    storage.storage_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: storage }
+
     storage.adapter_collection:
         class: phpbb\di\service_collection
         arguments:

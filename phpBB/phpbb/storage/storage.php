@@ -46,6 +46,16 @@ class storage
 	}
 
 	/**
+	 * Returns storage name
+	 *
+	 * @return string
+	 */
+	public function get_name()
+	{
+		return $this->storage_name;
+	}
+
+	/**
 	 * Returns an adapter instance
 	 *
 	 * @return \phpbb\storage\adapter\adapter_interface

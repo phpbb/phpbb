@@ -18,6 +18,14 @@ class local implements provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_name()
+	{
+		return 'local';
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_adapter_class()
 	{
 		return \phpbb\storage\adapter\local::class;
@@ -28,7 +36,7 @@ class local implements provider_interface
 	 */
 	public function get_options()
 	{
-		return ['path'];
+		return ['path' => array('type' => 'text')];
 	}
 
 	/**
