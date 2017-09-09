@@ -53,6 +53,12 @@
 			<value>notification.type.bookmark</value>
 			<value>1</value>
 		</row>
+		<row>
+			<value>2</value>
+			<value>notification.type.mention</value>
+			<value>1</value>
+		</row>
+
 	</table>
 	<table name="phpbb_posts">
 		<column>post_id</column>

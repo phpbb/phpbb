@@ -1,0 +1,3 @@
+phpbb_usermention_controller:
+    path: /user/mention
+    defaults: { _controller: phpbb.usermention.controller:handle}

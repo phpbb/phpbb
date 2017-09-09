@@ -143,6 +143,20 @@ services:
             - '@user'
             - '@php_ini'
             - '@mimetype.guesser'
+    phpbb_mention_helper:
+        class: phpbb\mention\helper\mention_helper
+        arguments:
+            - '@dbal.conn'
+            - '@notification_manager'
+            - '%core.php_ext%'
+
+    phpbb.usermention.controller:
+        class: phpbb\mention\controller\user_mention
+        arguments:
+            - '@dbal.conn'
+            - '@request'
+            - '@phpbb_mention_helper'
+
 
     upload_imagesize:
         class: FastImageSize\FastImageSize

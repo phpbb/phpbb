@@ -1,0 +1,16 @@
+Subject: User mention notification - "{TOPIC_TITLE}"
+
+Hello {USERNAME},
+
+You are receiving this notification because you have been mentioned in the topic "{TOPIC_TITLE}" at "{SITENAME}" <!-- IF AUTHOR_NAME != '' --> by {AUTHOR_NAME}<!-- ENDIF --> .
+
+If you want to view the post in which you have been mentioned, click the folloing Link:
+{U_VIEW_POST}
+
+If you want to view the topic, click the following link:
+{U_TOPIC}
+
+If you want to view the forum, click the following link:
+{U_FORUM}
+
+{EMAIL_SIG}'

@@ -1031,6 +1031,28 @@ if ($submit || $preview || $refresh)
 	// Also check if subject got updated...
 	$update_subject = $mode != 'edit' || ($post_data['post_subject_md5'] && $post_data['post_subject_md5'] != md5($post_data['post_subject']));
 
+	/* Send the posted text to parser to decode the @mentions.
+	   Convert each mention into links to corresponding user profiles
+	   Push notification to the mentioned users.*/
+	$helper_container = $phpbb_container->get('phpbb_mention_helper');
+	$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message);
+
+	if (is_array($post_parsing_data) &&
+		isset($post_parsing_data['new_post_text']) &&
+		isset($post_parsing_data['users_mentioned']) &&
+		count($post_parsing_data['users_mentioned'] > 0) &&
+		isset($post_parsing_data['notif_type_object']))
+	{
+		$message_parser->message = $post_parsing_data['new_post_text'];
+	}
+	else
+	{
+		if (is_string($post_parsing_data))
+		{
+			$message_parser->message = $post_parsing_data;
+		}
+	}
+
 	// Parse message
 	if ($update_message)
 	{
@@ -1441,6 +1463,24 @@ if ($submit || $preview || $refresh)
 			);
 			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_before', compact($vars)));
 
+			/* Send the posted text to parser to decode the @mentions.
+			Convert each mention into links to corresponding user profiles
+			Push notification to the mentioned users.*/
+			$helper_container = $phpbb_container->get('phpbb_mention_helper');
+			$post_parsing_data = $helper_container->get_mentioned_users($message_parser->message);
+
+			if (isset($post_parsing_data['new_post_text']) &&
+				isset($post_parsing_data['users_mentioned']) &&
+				count($post_parsing_data['users_mentioned'] > 0) &&
+				isset($post_parsing_data['notif_type_object']))
+			{
+				$message_parser->message = $post_parsing_data['new_post_text'];
+				$helper_container->send_notifications($post_parsing_data['users_mentioned'], $post_parsing_data['user_mention_object'], $post_data);
+			}
+			else
+			{
+				$message_parser->message = $post_parsing_data['new_post_text'];
+			}
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
@@ -1965,7 +2005,9 @@ posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 // Output page ...
 page_header($page_title);
-
+$template->assign_vars([
+	'UA_AJAX_MENTION_URL'    => $controller_helper->route('phpbb_usermention_controller')
+]);
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
 );
