@@ -128,13 +128,12 @@ a.lastsubject:hover {
 
 /* Profile links */
 .postprofile a,
-.postprofile dt.author a {
+.postprofile dt a {
 	font-weight: bold;
 	text-decoration: none;
 }
 
-.postprofile a:hover,
-.postprofile dt.author a:hover {
+.postprofile dt a:hover {
 	text-decoration: underline;
 }
 

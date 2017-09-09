@@ -81,41 +81,6 @@
 	padding-left: 3px;
 }
 
-/* Poster contact icons
----------------------------------------- */
-.contact-icons.dropdown-contents {
-	font-size: 0;
-	min-width: 0;
-	padding: 0;
-}
-
-.contact-icon {
-	background-repeat: no-repeat;
-	display: block;
-	width: 16px;
-	height: 16px;
-}
-
-.contact-icons a {
-	border-right: 1px dotted;
-	border-bottom: 1px dotted;
-	display: block;
-	float: left;
-	padding: 8px;
-}
-
-.contact-icons .last-cell {
-	border-right: none;
-}
-
-.contact-icons div:last-child a {
-	border-bottom: none;
-}
-
-.contact-icons div {
-	clear: left;
-}
-
 /* Post control buttons
 --------------------------------------------- */
 .post-buttons {
