@@ -17,7 +17,7 @@ class acp_storage_info
 	{
 		return array(
 			'filename'	=> 'acp_storage',
-			'title'		=> 'ACP_STORAGE',
+			'title'		=> 'ACP_STORAGE_SETTINGS',
 			'modes'		=> array(
 				'settings'	=> array('title' => 'ACP_STORAGE_SETTINGS', 'auth' => 'acl_a_storage', 'cat' => array('ACP_SERVER_CONFIGURATION')),
 			),
