@@ -37,6 +37,9 @@ class acp_styles
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\log\log */
+	protected $log;
+
 	/** @var \phpbb\style\manager */
 	protected $manager;
 
@@ -69,9 +72,10 @@ class acp_styles
 
 	public function main($id, $mode)
 	{
-		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
+		global $db, $user, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container, $phpbb_log;
 
 		$this->db = $db;
+		$this->log = $phpb_log;
 		$this->manager = $phpbb_container->get('style.manager');
 		$this->user = $user;
 		$this->template = $template;
@@ -194,8 +198,6 @@ class acp_styles
 	*/
 	protected function action_install()
 	{
-		global $phpbb_log;
-
 		// Get list of styles to install
 		$dirs = $this->request_vars('dir', '', true);
 
@@ -207,7 +209,7 @@ class acp_styles
 
 			try {
 				$this->manager->install($dir);
-				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_ADD', false, array($style['name']));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_ADD', false, array($style['name']));
 				$messages[] = sprintf($this->user->lang['STYLE_INSTALLED'], htmlspecialchars($style['name']));
 			} catch (exception $e) {
 				$msg = $this->user->lang($e->getMessage());
@@ -262,8 +264,6 @@ class acp_styles
 	*/
 	protected function action_uninstall_confirmed($ids, $delete_files)
 	{
-		global $phpbb_log;
-
 		$default = $this->default_style;
 		$messages = array();
 
@@ -321,7 +321,7 @@ class acp_styles
 		// Log action
 		if (count($uninstalled))
 		{
-			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_DELETE', false, array(implode(', ', $uninstalled)));
 		}
 
 		// Clear cache
@@ -521,7 +521,7 @@ class acp_styles
 					}
 				}
 
-				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
+				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STYLE_EDIT_DETAILS', false, array($style['style_name']));
 			}
 
 			// Update default style
