@@ -105,7 +105,7 @@ else
 	set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 }
 
-$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
+$phpbb_class_loader_ext = new \phpbb\extension\safe_class_loader('\\', 'ext/', $phpbb_root_path, $phpEx);
 $phpbb_class_loader_ext->register();
 
 // Set up container

@@ -26,10 +26,10 @@ namespace phpbb;
 */
 class class_loader
 {
-	private $namespace;
-	private $path;
-	private $php_ext;
-	private $cache;
+	protected $namespace;
+	protected $path;
+	protected $php_ext;
+	protected $cache;
 
 	/**
 	* A map of looked up class names to paths relative to $this->path.
