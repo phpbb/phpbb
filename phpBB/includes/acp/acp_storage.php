@@ -64,7 +64,7 @@ class acp_storage
 		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
 
 		// Add necesary language files
-		$this->lang->add_lang(['common', 'acp/storage']);
+		$this->lang->add_lang(['acp/storage']);
 
 		/**
 		 * Add language strings
