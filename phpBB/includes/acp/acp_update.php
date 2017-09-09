@@ -52,7 +52,10 @@ class acp_update
 			$updates_available = array();
 		}
 
-		$template->assign_block_vars('updates_available', $updates_available);
+		if (!empty($updates_available))
+		{
+			$template->assign_block_vars('updates_available', $updates_available);
+		}
 
 		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
 
