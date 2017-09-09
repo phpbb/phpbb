@@ -9,7 +9,7 @@ services:
         arguments:
             - '@template'
             - '@language'
-            - '%?debug.exceptions'
+            - '%debug.exceptions%'
         tags:
             - { name: kernel.event_subscriber }
 
