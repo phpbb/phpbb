@@ -2506,6 +2506,10 @@ fieldset.permissions .padding {
 /* Classes for additional tasks
 ---------------------------------------- */
 
+.outdated-ext-icon {
+	color: #BC2A4D;
+}
+
 .phpinfo {
 	overflow: auto;
 	width: 99%;

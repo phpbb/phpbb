@@ -52,7 +52,7 @@
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
 				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong>
-				<!-- IF not enabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- IF not enabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext-icon" aria-hidden="true"></i><!-- ENDIF -->
 				<!-- ELSE -->
 				{enabled.META_VERSION}
 				<!-- ENDIF -->
@@ -78,7 +78,7 @@
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
 				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong>
-				<!-- IF not disabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- IF not disabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext-icon" aria-hidden="true"></i><!-- ENDIF -->
 				<!-- ELSE -->
 				{disabled.META_VERSION}
 				<!-- ENDIF -->
