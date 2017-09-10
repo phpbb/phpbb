@@ -1661,7 +1661,7 @@ function generate_board_url($without_script_path = false)
 	}
 	else
 	{
-		$server_port = $symfony_request->getPort();
+		$server_port = (int) $symfony_request->getPort();
 
 		$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
 
