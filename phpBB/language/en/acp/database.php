@@ -43,7 +43,7 @@ $lang = array_merge($lang, array(
 
 	'BACKUP_DELETE'		=> 'The backup file has been deleted successfully.',
 	'BACKUP_INVALID'	=> 'The selected file to backup is invalid.',
-	'BACKUP_ERROR'		=> 'Error when saving file.',
+	'BACKUP_ERROR'		=> 'Error while saving file.',
 	'BACKUP_OPTIONS'	=> 'Backup options',
 	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully.',
 	'BACKUP_TYPE'		=> 'Backup type',
