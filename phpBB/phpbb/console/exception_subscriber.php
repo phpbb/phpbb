@@ -29,12 +29,10 @@ class exception_subscriber implements EventSubscriberInterface
 	 * Construct method
 	 *
 	 * @param \phpbb\language\language $language Language object
-	 * @param bool $debug Debug mode
 	 */
-	public function __construct(\phpbb\language\language $language, $debug = false)
+	public function __construct(\phpbb\language\language $language)
 	{
 		$this->language = $language;
-		$this->debug = $debug;
 	}
 
 	/**
@@ -52,14 +50,7 @@ class exception_subscriber implements EventSubscriberInterface
 			$parameters = array_merge(array($original_exception->getMessage()), $original_exception->get_parameters());
 			$message = call_user_func_array(array($this->language, 'lang'), $parameters);
 
-			if ($this->debug)
-			{
-				$exception = new \RuntimeException($message , $original_exception->getCode(), $original_exception);
-			}
-			else
-			{
-				$exception = new \RuntimeException($message , $original_exception->getCode());
-			}
+			$exception = new \RuntimeException($message , $original_exception->getCode(), $original_exception);
 
 			$event->setException($exception);
 		}
