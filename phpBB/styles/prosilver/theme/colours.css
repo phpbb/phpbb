@@ -1,16 +1,20 @@
 /* -------------------------------------------------------------- /*
 	$Colours
-/* -------------------------------------------------------------- */
+/* -------------------------------------------------------------- *
+
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable no-indistinguishable-colors */
 
-/*	colours and backgrounds for common.css
-	------------------------------------------------------------- */
+/*	colours and backgrounds for common.css */
 html,
 body {
-	background-color: #f5f7fa;
-	color: #536482;
+	background-color: #f5f5f5;
+	color: #47536b;
+}
+
+.wrap {
+	background-color: #ffffff;
+	border-color: #ededed;
 }
 
 h1 {
@@ -18,27 +22,26 @@ h1 {
 }
 
 h2 {
-	color: #28313f;
+	color: #29303d;
 }
 
 h3 {
-	border-bottom-color: #cccccc;
-	color: #115098;
+	border-bottom-color: #dedede;
+	color: #0059b3;
 }
 
 hr {
 	border-color: #ffffff;
-	border-top-color: #cccccc;
+	border-top-color: #dedede;
 }
 
-/*	colours and backgrounds for links.css
-	------------------------------------------------------------- */
+/*	colours and backgrounds for links.css */
 a {
-	color: #105289;
+	color: #0f4d8a;
 }
 
 a:hover {
-	color: #d31141;
+	color: #d41142;
 }
 
 /* links on gradient backgrounds */
@@ -51,71 +54,63 @@ th a {
 .forumbg .header a:hover,
 .forabg .header a:hover,
 th a:hover {
-	color: #a8d8ff;
+	color: #80bfff;
 }
 
 /* post body links */
 .postlink {
-	border-bottom-color: #368ad2;
-	color: #368ad2;
+	border-bottom-color: #2d80d2;
+	color: #2d80d2;
 }
 
 .postlink:visited {
-	border-bottom-color: #5d8fbd;
-	color: #5d8fbd;
+	border-bottom-color: #5380ac;
+	color: #5380ac;
 }
 
 .postlink:hover {
-	background-color: #d0e4f6;
-	color: #0d4473;
-}
-
-.signature a,
-.signature a:hover {
-	background-color: transparent;
+	background-color: #d4e6f7;
+	color: #164069;
 }
 
 /* back to top of page */
 .top i {
-	color: #999999;
+	color: #9e9e9e;
 }
 
 /* arrow links  */
 .arrow-left:hover,
 .arrow-right:hover {
-	color: #368ad2;
+	color: #2d80d2;
 }
 
 /* round cornered boxes and backgrounds */
-.wrap {
-	background-color: #ffffff;
-	border-color: #e6e9ed;
-}
-
 .headerbar {
 	color: #ffffff;
 }
 
 .headerbar,
 .forumbg {
-	background-color: #12a3eb;
-	background-image: linear-gradient(to bottom, #6aceff 0%, #0076b1 2px, #12a3eb 92px, #12a3eb 100%);
+	background-color: #13a4ec;
+	background-image: -webkit-linear-gradient(top, #80d5ff 0%, #0077b3 2px, #13a4ec 92px, #13a4ec 100%);
+	background-image: linear-gradient(to bottom, #80d5ff 0%, #0077b3 2px, #13a4ec 92px, #13a4ec 100%);
 	background-repeat: repeat-x;
 }
 
 .forabg {
-	background-color: #0076b1;
-	background-image: linear-gradient(to bottom, #6aceff 0%, #12a3eb 2px, #0076b1 92px, #0076b1 100%);
+	background-color: #0077b3;
+	background-image: -webkit-linear-gradient(top, #80d5ff 0%, #13a4ec 2px, #0077b3 92px, #0077b3 100%);
+	background-image: linear-gradient(to bottom, #80d5ff 0%, #13a4ec 2px, #0077b3 92px, #0077b3 100%);
 	background-repeat: repeat-x;
 }
 
 .navbar {
-	background-color: #cadceb;
+	background-color: #c9dee8;
 }
 
 .panel {
-	background-color: #ecf1f3;
-	color: #28313f;
+	background-color: #f0f3f5;
+	color: #29303d;
 }
 
 .post:target .content {
@@ -127,37 +122,28 @@ th a:hover {
 }
 
 .bg1 {
-	background-color: #ecf3f7;
+	background-color: #edf4f7;
 }
 
 table.zebra-list tr:nth-child(odd) td,
 ul.zebra-list li:nth-child(odd) {
-	background-color: #ecf3f7;
+	background-color: #edf4f7;
 }
 
 .bg2 {
-	background-color: #e1ebf2;
+	background-color: #dbe9f0;
 }
 
 table.zebra-list tr:nth-child(even) td,
 ul.zebra-list li:nth-child(even) {
-	background-color: #e1ebf2;
+	background-color: #dbe9f0;
 }
 
 .bg3 {
-	background-color: #cadceb;
-}
-
-.ucprowbg {
-	background-color: #dcdee2;
-}
-
-.fieldsbg {
-	background-color: #e7e8ea;
+	background-color: #c9dee8;
 }
 
 /* horizontal lists */
-
 ul.navlinks {
 	border-top-color: #ffffff;
 }
@@ -168,17 +154,17 @@ table.table1 thead th {
 }
 
 table.table1 tbody tr {
-	border-color: #bfc1cf;
+	border-color: #c9dee8;
 }
 
 table.table1 tbody tr:hover,
 table.table1 tbody tr.hover {
-	background-color: #cfe1f6;
+	background-color: #d4e6f7;
 	color: #000000;
 }
 
 table.table1 td {
-	color: #536482;
+	color: #47536b;
 }
 
 table.table1 tbody td {
@@ -188,7 +174,7 @@ table.table1 tbody td {
 table.table1 tbody th {
 	background-color: #ffffff;
 	border-bottom-color: #000000;
-	color: #333333;
+	color: #212121;
 }
 
 table.info tbody th {
@@ -201,17 +187,13 @@ dl.details dt {
 }
 
 dl.details dd {
-	color: #536482;
-}
-
-.sep {
-	color: #1198d9;
+	color: #47536b;
 }
 
 /* icon styles */
 .icon.icon-blue,
 a:hover .icon.icon-blue {
-	color: #196db5;
+	color: #0059b3;
 }
 
 .icon.online {
@@ -220,37 +202,37 @@ a:hover .icon.icon-blue {
 
 .icon.icon-green,
 a:hover .icon.icon-green {
-	color: #1b9a1b;
+	color: #4db355;
 }
 
 .icon.icon-red,
 a:hover .icon.icon-red {
-	color: #bc2a4d;
+	color: #d41142;
 }
 
 .icon.icon-orange,
 a:hover .icon.icon-orange {
-	color: #ff6600;
+	color: #ff9500;
 }
 
 .icon.icon-bluegray,
 a:hover .icon.icon-bluegray {
-	color: #536482;
+	color: #47536b;
 }
 
 .icon.icon-gray,
 a:hover .icon.icon-gray {
-	color: #777777;
+	color: #757575;
 }
 
 .icon.icon-lightgray,
 a:hover .icon.icon-lightgray {
-	color: #999999;
+	color: #9e9e9e;
 }
 
 .icon.icon-black,
 a:hover .icon.icon-black {
-	color: #333333;
+	color: #212121;
 }
 
 .alert_close .icon:before {
@@ -259,57 +241,57 @@ a:hover .icon.icon-black {
 
 /* jumpbox */
 .jumpbox .dropdown li {
-	border-top-color: #cccccc;
+	border-top-color: #dedede;
 }
 
 .jumpbox-cat-link {
-	background-color: #0076b1;
-	border-top-color: #0076b1;
+	background-color: #0077b3;
+	border-top-color: #0077b3;
 	color: #ffffff;
 }
 
-.jumpbox-cat-link:hover {
-	background-color: #12a3eb;
-	border-top-color: #12a3eb;
+.jumpbox-cat-link:hover,
+.jumpbox-cat-link:focus {
+	background-color: #13a4ec;
+	border-top-color: #13a4ec;
 	color: #ffffff;
 }
 
 .jumpbox-forum-link {
-	background-color: #e1ebf2;
+	background-color: #dbe9f0;
 }
 
 .jumpbox-forum-link:hover {
-	background-color: #f6f4d0;
+	background-color: #fffbcc;
 }
 
 .jumpbox .dropdown .pointer-inner {
-	border-color: #e1ebf2 transparent;
+	border-color: #dbe9f0 transparent;
 }
 
 .jumpbox-sub-link {
-	background-color: #e1ebf2;
+	background-color: #dbe9f0;
 }
 
 .jumpbox-sub-link:hover {
-	background-color: #f1f8ff;
+	background-color: #e6f7ff;
 }
 
 /* miscellaneous styles */
-
 .copyright {
-	color: #555555;
+	color: #424242;
 }
 
 .error {
-	color: #bc2a4d;
+	color: #d41142;
 }
 
 .reported {
-	background-color: #f7ecef;
+	background-color: #f7edf0;
 }
 
 li.reported:hover {
-	background-color: #ecd5d8 !important;
+	background-color: #f0dbe0 !important;
 }
 
 .sticky,
@@ -318,25 +300,24 @@ li.reported:hover {
 }
 
 div.rules {
-	background-color: #ecd5d8;
-	color: #bc2a4d;
+	background-color: #f0dbe0;
+	color: #d41142;
 }
 
 p.post-notice {
-	background-color: #ecd5d8;
+	background-color: #f0dbe0;
 	background-image: none;
 }
 
-/*	colours and backgrounds for content.css
-	------------------------------------------------------------- */
-
+/*	colours and backgrounds for content.css */
 ul.forums {
-	background-color: #eef5f9;
-	background-image: linear-gradient(to bottom, #d2e0eb 0%, #eef5f9 100%);
+	background-color: #edf4f7;
+	background-image: -webkit-linear-gradient(top, #b8d3e0 0%, #edf4f7 100%);
+	background-image: linear-gradient(to bottom, #b8d3e0 0%, #edf4f7 100%);
 }
 
 ul.topiclist > li {
-	color: #4c5d77;
+	color: #47536b;
 }
 
 ul.topiclist dd {
@@ -350,7 +331,7 @@ ul.topiclist dd {
 
 li.row {
 	border-top-color: #ffffff;
-	border-bottom-color: #00608f;
+	border-bottom-color: #0077b3;
 }
 
 li.row strong {
@@ -358,15 +339,15 @@ li.row strong {
 }
 
 li.row:hover {
-	background-color: #f6f4d0;
+	background-color: #fffbcc;
 }
 
 li.row:hover dd {
-	border-left-color: #cccccc;
+	border-left-color: #dedede;
 }
 
 .rtl li.row:hover dd {
-	border-right-color: #cccccc;
+	border-right-color: #dedede;
 	border-left-color: transparent;
 }
 
@@ -377,27 +358,27 @@ li.header dd {
 
 /* post body styles */
 .postbody {
-	color: #333333;
+	color: #212121;
 }
 
 /* content container styles */
 .content {
-	color: #333333;
+	color: #212121;
 }
 
 .content h2,
 .panel h2 {
-	border-bottom-color: #cccccc;
-	color: #115098;
+	border-bottom-color: #dedede;
+	color: #0059b3;
 }
 
 dl.faq dt {
-	color: #333333;
+	color: #212121;
 }
 
 .posthilit {
-	background-color: #f3bfcc;
-	color: #bc2a4d;
+	background-color: #f4becb;
+	color: #d41142;
 }
 
 .announce,
@@ -407,100 +388,94 @@ dl.faq dt {
 
 /* post signature */
 .signature {
-	border-top-color: #cccccc;
+	border-top-color: #dedede;
 }
 
 /* post noticies */
 .notice {
-	border-top-color: #cccccc;
+	border-top-color: #dedede;
 }
 
-/* bb code styles */
+/*  bb code styles */
 
 /* quote block */
 blockquote {
-	background-color: #ebeadd;
-	border-color: #dbdbce;
+	background-color: #f4f1d7;
+	border-color: #f1efda;
 }
 
 blockquote blockquote {
 	/* nested quotes */
-	background-color: #efeed9;
+	background-color: #f7f4d4;
 }
 
 blockquote blockquote blockquote {
 	/* nested quotes */
-	background-color: #ebeadd;
+	background-color: #f4f1d7;
 }
 
 /* code block */
 .codebox {
 	background-color: #ffffff;
-	border-color: #c9d2d8;
+	border-color: #c0d3dd;
 }
 
 .codebox p {
-	border-bottom-color: #cccccc;
+	border-bottom-color: #dedede;
 }
 
 .codebox code {
-	color: #2e8b57;
+	color: #4db355;
 }
 
 /* attachments */
 .attachbox {
 	background-color: #ffffff;
-	border-color: #c9d2d8;
-}
-
-.pm-message .attachbox {
-	background-color: #f2f3f3;
+	border-color: #c0d3dd;
 }
 
 .attachbox dd {
-	border-top-color: #c9d2d8;
+	border-top-color: #c0d3dd;
 }
 
 .attachbox p {
-	color: #666666;
+	color: #616161;
 }
 
 .attachbox p.stats {
-	color: #666666;
+	color: #616161;
 }
 
 .attach-image img {
-	border-color: #999999;
+	border-color: #9e9e9e;
 }
 
 /* inline image thumbnails */
-
 dl.file dd {
-	color: #666666;
+	color: #616161;
 }
 
 dl.thumbnail img {
 	background-color: #ffffff;
-	border-color: #666666;
+	border-color: #616161;
 }
 
 dl.thumbnail dd {
-	color: #666666;
+	color: #616161;
 }
 
 dl.thumbnail dt a:hover {
-	background-color: #eeeeee;
+	background-color: #ededed;
 }
 
 dl.thumbnail dt a:hover img {
-	border-color: #368ad2;
+	border-color: #2d80d2;
 }
 
 /* post poll styles */
-
 fieldset.polls dl {
-	border-top-color: #dcdee2;
-	color: #666666;
+	border-top-color: #c9dee8;
+	color: #616161;
 }
 
 fieldset.polls dl.voted {
@@ -520,63 +495,63 @@ fieldset.polls dd div {
 }
 
 .pollbar1 {
-	background-color: #aa2346;
-	border-right-color: #74162c;
-	border-bottom-color: #74162c;
+	background-color: #b31a40;
+	border-right-color: #821732;
+	border-bottom-color: #821732;
 }
 
 .rtl .pollbar1 {
-	border-left-color: #74162c;
+	border-left-color: #821732;
 }
 
 .pollbar2 {
-	background-color: #be1e4a;
-	border-right-color: #8c1c38;
-	border-bottom-color: #8c1c38;
+	background-color: #cf1745;
+	border-right-color: #9c1638;
+	border-bottom-color: #9c1638;
 }
 
 .rtl .pollbar2 {
-	border-left-color: #8c1c38;
+	border-left-color: #9c1638;
 }
 
 .pollbar3 {
-	background-color: #d11a4e;
-	border-right-color: #aa2346;
-	border-bottom-color: #aa2346;
+	background-color: #ec1349;
+	border-right-color: #cf1745;
+	border-bottom-color: #cf1745;
 }
 
 .rtl .pollbar3 {
-	border-left-color: #aa2346;
+	border-left-color: #cf1745;
 }
 
 .pollbar4 {
-	background-color: #e41653;
-	border-right-color: #be1e4a;
-	border-bottom-color: #be1e4a;
+	background-color: #f42559;
+	border-right-color: #ec1349;
+	border-bottom-color: #ec1349;
 }
 
 .rtl .pollbar4 {
-	border-left-color: #be1e4a;
+	border-left-color: #ec1349;
 }
 
 .pollbar5 {
-	background-color: #f81157;
-	border-right-color: #d11a4e;
-	border-bottom-color: #d11a4e;
+	background-color: #fa3869;
+	border-right-color: #f42559;
+	border-bottom-color: #f42559;
 }
 
 .rtl .pollbar5 {
-	border-left-color: #d11a4e;
+	border-left-color: #f42559;
 }
 
 /* poster profile block */
 .postprofile {
 	border-color: #ffffff;
-	color: #666666;
+	color: #616161;
 }
 
 .pm .postprofile {
-	border-color: #dddddd;
+	border-color: #dedede;
 }
 
 .postprofile strong {
@@ -584,11 +559,10 @@ fieldset.polls dd div {
 }
 
 dd.profile-warnings {
-	color: #bc2a4d;
+	color: #d41142;
 }
 
-/* Show scrollbars for items with overflow on iOS devices
----------------------------------------- */
+/* Show scrollbars for items with overflow on iOS devices */
 .postbody .content::-webkit-scrollbar,
 .topicreview::-webkit-scrollbar,
 .post_details::-webkit-scrollbar,
@@ -609,86 +583,83 @@ dd.profile-warnings {
 	background: rgba(0, 0, 0, 0.3);
 }
 
-/*	colours and backgrounds for buttons.css
-	------------------------------------------------------------- */
+/*	colours and backgrounds for buttons.css */
 .button {
-	background-color: #e9e9e9;
-	background-image: linear-gradient(to bottom, #ffffff 0%, #e9e9e9 100%);
-	border-color: #c7c3bf;
-	-webkit-box-shadow: 0 0 0 1px #ffffff inset;
+	background-color: #e0e0e0;
+	background-image: -webkit-linear-gradient(top, #ffffff 0%, #e0e0e0 100%);
+	background-image: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%);
+	border-color: #bdbdbd;
 	box-shadow: 0 0 0 1px #ffffff inset;
-	color: #d31141;
+	color: #d41142;
 }
 
 .button:hover,
 .button:focus {
-	background-color: #ffffff;
-	background-image: linear-gradient(to bottom, #e9e9e9 0%, #ffffff 100%);
-	border-color: #0a8ed0;
-	text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, -1px -1px 0 rgba(188, 42, 77, 0.2);
+	background-image: -webkit-linear-gradient(top, #e0e0e0 0%, #ffffff 100%);
+	background-image: linear-gradient(to bottom, #e0e0e0 0%, #ffffff 100%);
+	border-color: #0077b3;
+	text-shadow: 1px 1px 0 #ffffff, -1px -1px 0 #ffffff, -1px -1px 0 rgba(189, 40, 77, 0.2);
+	color: #d41142;
 }
 
 .button .icon,
 .button-secondary {
-	color: #8f8f8f;
+	color: #9e9e9e;
 }
 
 .button-form,
 .button-form-bold {
-	border-color: #666666;
-	-webkit-box-shadow: none;
+	border-color: #757575;
 	box-shadow: none;
-	color: #333333;
+	color: #212121;
 }
 
 .button-form:hover,
 .button-form-bold:hover {
-	border-color: #d31141;
+	border-color: #d41142;
 	text-shadow: none;
-	color: #d31141;
+	color: #d41142;
 }
 
 .button-form:focus,
 .button-form-bold:focus {
-	border-color: #0a8ed0;
+	border-color: #0077b3;
 	text-shadow: none;
-	color: #0a8ed0;
+	color: #0077b3;
 }
 
 .button-secondary:focus,
 .button-secondary:hover,
 .button:focus .icon,
 .button:hover .icon {
-	color: #0a8ed0;
+	color: #0077b3;
 }
 
 .button-search:hover,
 .button-search-end:hover {
-	border-color: #c7c3bf;
+	border-color: #bdbdbd;
 }
 
 .caret {
-	border-color: #c7c3bf;
+	border-color: #bdbdbd;
 }
 
 .contact-icons a {
-	border-color: #dcdcdc;
+	border-color: #dedede;
 }
 
 .contact-icons a:hover {
-	background-color: #f2f6f9;
+	background-color: #ededed;
 }
 
 /* pagination */
-
 .pagination li a {
-	background: #ecedee;
+	background: #ededed;
 	-webkit-filter: none;
 	filter: none;
-	border-color: #b4bac0;
-	-webkit-box-shadow: none;
+	border-color: #bdbdbd;
 	box-shadow: none;
-	color: #5c758c;
+	color: #9e9e9e;
 }
 
 .pagination li.ellipsis span {
@@ -697,8 +668,8 @@ dd.profile-warnings {
 }
 
 .pagination li.active span {
-	background: #4692bf;
-	border-color: #4692bf;
+	background: #2d80d2;
+	border-color: #2d80d2;
 	color: #ffffff;
 }
 
@@ -706,27 +677,24 @@ dd.profile-warnings {
 .pagination li a:hover .icon,
 .pagination .dropdown-visible a.dropdown-trigger,
 .nojs .pagination .dropdown-container:hover a.dropdown-trigger {
-	background: #368ad2;
-	-webkit-filter: none;
-	filter: none;
-	border-color: #368ad2;
+	background: #2d80d2;
+	border-color: #2d80d2;
 	text-shadow: none;
 	color: #ffffff;
 }
 
 /* search box */
-
 .search-box .inputbox,
 .search-box .inputbox:hover,
 .search-box .inputbox:focus {
-	border-color: #c7c3bf;
+	border-color: #bdbdbd;
 }
 
 .search-header {
-	box-shadow: 0 0 10px #0075b0;
+	box-shadow: 0 0 10px #0077b3;
 }
 
-
+/*  icon images */
 .site_logo { background-image: url("./images/site_logo.gif"); }
 .contact-icon { background-image: url("./images/icons_contact.png"); }
 
@@ -798,24 +766,22 @@ dd.profile-warnings {
 .topic_unread_locked { background-image: url("./images/topic_unread_locked.gif"); }
 .topic_unread_locked_mine { background-image: url("./images/topic_unread_locked_mine.gif"); }
 
-/*	colours and backgrounds for cp.css
-	------------------------------------------------------------- */
+/*	colours and backgrounds for cp.css */
 
 /* main cp box */
-
 .panel-container h3,
 .panel-container hr,
 .cp-menu hr {
-	border-color: #a4b3bf;
+	border-color: #c9dee8;
 }
 
 .panel-container .panel li.row {
-	border-top-color: #f9f9f9;
-	border-bottom-color: #b5c1cb;
+	border-top-color: #fafafa;
+	border-bottom-color: #c9dee8;
 }
 
 ul.cplist {
-	border-top-color: #b5c1cb;
+	border-top-color: #c9dee8;
 }
 
 .panel-container .panel li.header dd,
@@ -824,101 +790,95 @@ ul.cplist {
 }
 
 .panel-container table.table1 thead th {
-	border-bottom-color: #333333;
-	color: #333333;
-}
-
-.cp-main .pm-message {
-	background-color: #ffffff;
-	border-color: #dbdee2;
+	border-bottom-color: #212121;
+	color: #212121;
 }
 
 /* cp tabbed menu */
 .tabs .tab > a {
-	background: #baccd9;
-	color: #536482;
+	background: #c0d3dd;
+	color: #47536b;
 }
 
 .tabs .tab > a:hover {
-	background: #ddedfb;
-	color: #d31141;
-}
-
-.tabs .activetab > a,
-.tabs .activetab > a:hover {
-	background-color: #cadceb;
-	background-image: linear-gradient(to bottom, #e2f2ff 0%, #cadceb 100%);
-	border-color: #cadceb;
-	box-shadow: 0 1px 1px #f2f9ff inset;
-	color: #333333;
-}
-
-.tabs .activetab > a:hover {
-	color: #000000;
-}
-
-/* mini tabbed menu used in mcp */
-.minitabs .tab > a {
-	background-color: #e1ebf2;
-}
-
-.minitabs .activetab > a,
-.minitabs .activetab > a:hover {
-	background-color: #f9f9f9;
-	color: #333333;
+	background: #e6f7ff;
+	color: #d41142;
 }
 
 /* responsive tabs */
 .responsive-tab .responsive-tab-link:before {
-	border-color: #536482;
+	border-color: #47536b;
 }
 
 .responsive-tab .responsive-tab-link:hover:before {
-	border-color: #d31141;
+	border-color: #d41142;
 }
 
-/* ucp navigation menu */
+.tabs .activetab > a,
+.tabs .activetab > a:hover {
+	background-color: #c9dee8;
+	background-image: -webkit-linear-gradient(top, #e6f7ff 0%, #c9dee8 100%);
+	background-image: linear-gradient(to bottom, #e6f7ff 0%, #c9dee8 100%);
+	border-color: #c9dee8;
+	box-shadow: 0 1px 1px #e6f7ff inset;
+	color: #212121;
+}
+
+/* mini tabbed menu used in mcp */
+.minitabs .tab > a {
+	background-color: #dbe9f0;
+}
+
+.minitabs .activetab > a,
+.minitabs .activetab > a:hover {
+	background-color: #fafafa;
+	color: #212121;
+}
+
+/*  ucp navigation menu */
 
 /* link styles for the sub-section links */
 .navigation a {
-	background: #cadceb;
-	background-image: linear-gradient(to right, #b4c4d1 50%, #cadceb 100%);
-	color: #333333;
+	background: #c0d3dd;
+	background-image: -webkit-linear-gradient(left, #aab9c0 50%, #c0d3dd 100%);
+	background-image: linear-gradient(to right, #aab9c0 50%, #c0d3dd 100%);
+	color: #212121;
 }
 
 .rtl .navigation a {
-	background: #b4c4d1;
-	background-image: linear-gradient(to right, #cadceb 50%, #b4c4d1 100%);
+	background: #afc5cf;
+	background-image: -webkit-linear-gradient(left, #c0d3dd 50%, #aab9c0 100%);
+	background-image: linear-gradient(to right, #c0d3dd 50%, #aab9c0 100%);
 }
 
 .navigation a:hover {
-	background: #aabac6;
-	color: #bc2a4d;
+	background: #aab9c0;
+	color: #d41142;
 }
 
 .navigation .active-subsection a {
-	background: #f9f9f9;
-	color: #d31141;
+	background: #fafafa;
+	color: #d41142;
 }
 
 .navigation .active-subsection a:hover {
-	color: #d31141;
+	color: #d41142;
 }
 
 @media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
 	.navigation a,
 	.rtl .navigation a {
-		background: #b2c2cf;
+		background: #aab9c0;
 	}
 }
 
 /* preferences pane layout */
 .panel-container h2 {
-	color: #333333;
+	color: #212121;
 }
 
 .panel-container .panel {
-	background-color: #f9f9f9;
+	background-color: #fafafa;
 }
 
 .cp-main .pm {
@@ -927,14 +887,14 @@ ul.cplist {
 
 /* friends list */
 .cp-mini {
-	background-color: #eef5f9;
+	background-color: #edf4f7;
 }
 
 dl.mini dt {
-	color: #425067;
+	color: #47536b;
 }
 
-/* pm styles */
+/*  pm styles */
 
 /* pm message history */
 .current {
@@ -944,23 +904,23 @@ dl.mini dt {
 /* pm marking colours */
 .pmlist li.pm_message_reported_colour,
 .pm_message_reported_colour {
-	border-right-color: #bc2a4d;
-	border-left-color: #bc2a4d;
+	border-right-color: #ec1349;
+	border-left-color: #ec1349;
 }
 
 .pmlist li.pm_marked_colour,
 .pm_marked_colour {
-	border-color: #ff6600;
+	border-color: #ff9500;
 }
 
 .pmlist li.pm_replied_colour,
 .pm_replied_colour {
-	border-color: #a9b8c2;
+	border-color: #a3b8c2;
 }
 
 .pmlist li.pm_friend_colour,
 .pm_friend_colour {
-	border-color: #5d8fbd;
+	border-color: #4582a1;
 }
 
 .pmlist li.pm_foe_colour,
@@ -971,25 +931,24 @@ dl.mini dt {
 /* avatar gallery */
 .gallery label {
 	background: #ffffff;
-	border-color: #cccccc;
+	border-color: #dedede;
 }
 
 .gallery label:hover {
-	background-color: #eeeeee;
+	background-color: #ededed;
 }
 
-/*	colours and backgrounds for forms.css
-	------------------------------------------------------------- */
+/*	colours and backgrounds for forms.css */
 
 /* general form styles */
 select {
 	background-color: #fafafa;
-	border-color: #666666;
+	border-color: #616161;
 	color: #000000;
 }
 
 label {
-	color: #425067;
+	color: #47536b;
 }
 
 option.disabled-option {
@@ -998,7 +957,7 @@ option.disabled-option {
 
 /* definition list layout for forms */
 dd label {
-	color: #333333;
+	color: #212121;
 }
 
 fieldset.fields1 {
@@ -1014,64 +973,49 @@ fieldset.fields2 dl:hover dt label {
 	color: inherit;
 }
 
-/* quick-login on index page */
-fieldset.quick-login input.inputbox {
-	background-color: #f2f3f3;
-}
-
 /* posting page styles */
-
 .message-box textarea {
-	color: #333333;
+	color: #212121;
 }
 
 .message-box textarea.drag-n-drop {
-	outline-color: rgba(102, 102, 102, 0.5);
+	outline-color: rgba(97, 97, 97, 0.5);
 }
 
 .message-box textarea.drag-n-drop-highlight {
-	outline-color: rgba(17, 163, 234, 0.5);
+	outline-color: rgba(19, 164, 236, 0.5);
 }
 
 /* input field styles */
 .inputbox {
 	background-color: #ffffff;
-	border-color: #b4bac0;
-	color: #333333;
+	border-color: #bdbdbd;
+	color: #212121;
 }
 
-.inputbox:-moz-placeholder {
-	color: #333333;
-}
-
+.inputbox:-moz-placeholder,
 .inputbox::-webkit-input-placeholder {
-	color: #333333;
+	color: #212121;
 }
 
-.inputbox:hover {
-	border-color: #11a3ea;
-}
-
+.inputbox:hover,
 .inputbox:focus {
-	border-color: #11a3ea;
+	border-color: #13a4ec;
 }
 
-.inputbox:focus:-moz-placeholder {
-	color: transparent;
-}
-
+.inputbox:focus:-moz-placeholder,
 .inputbox:focus::-webkit-input-placeholder {
 	color: transparent;
 }
 
 input.disabled {
-	color: #666666;
+	color: #616161;
 }
 
 /* jquery popups */
 .phpbb_alert {
 	background-color: #ffffff;
-	border-color: #999999;
+	border-color: #9e9e9e;
 }
 
 .darken {
@@ -1101,11 +1045,11 @@ input.disabled {
 }
 
 .dropdown-extended .dropdown-extended-item {
-	border-top-color: #b9b9b9;
+	border-top-color: #bdbdbd;
 }
 
 .dropdown-extended .dropdown-extended-item:hover {
-	background-color: #cfe1f6;
+	background-color: #d4e6f7;
 	color: #000000;
 }
 
@@ -1115,7 +1059,7 @@ input.disabled {
 
 .dropdown-extended .header,
 .dropdown-extended .footer {
-	border-color: #b9b9b9;
+	border-color: #bdbdbd;
 	color: #000000;
 }
 
@@ -1125,12 +1069,13 @@ input.disabled {
 }
 
 .dropdown-extended .header {
-	background-color: #f1f8ff;
-	background-image: linear-gradient(to bottom, #f1f8ff 0%, #cadceb 100%);
+	background-color: #e6f7ff;
+	background-image: -webkit-linear-gradient(top, #e6f7ff 0%, #c9dee8 100%);
+	background-image: linear-gradient(to bottom, #e6f7ff 0%, #c9dee8 100%);
 }
 
 .dropdown .pointer {
-	border-color: #b9b9b9 transparent;
+	border-color: #bdbdbd transparent;
 }
 
 .dropdown .pointer-inner {
@@ -1138,12 +1083,12 @@ input.disabled {
 }
 
 .dropdown-extended-pointer .pointer-inner {
-	border-color: #f1f8ff transparent;
+	border-color: #e6f7ff transparent;
 }
 
 .dropdown .dropdown-contents {
 	background: #ffffff;
-	border-color: #b9b9b9;
+	border-color: #bdbdbd;
 	box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -1153,29 +1098,24 @@ input.disabled {
 
 .dropdown li,
 .dropdown li li {
-	border-color: #dcdcdc;
+	border-color: #dedede;
 }
 
 .dropdown li.separator {
-	border-color: #dcdcdc;
+	border-color: #dedede;
 }
 
 /* notifications */
-
 .notification-time {
-	color: #4c5d77;
+	color: #47536b;
 }
 
 .notification-reported strong,
 .notification-disapproved strong {
-	color: #d31141;
+	color: #d41142;
 }
 
 .badge {
-	background-color: #d31141;
+	background-color: #d41142;
 	color: #ffffff;
 }
-
-/* stylelint-enable selector-max-compound-selectors */
-/* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable no-indistinguishable-colors */
