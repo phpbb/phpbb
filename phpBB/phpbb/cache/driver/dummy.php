@@ -76,13 +76,6 @@ class dummy extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
-	function purge()
-	{
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
 	function destroy($var_name, $table = '')
 	{
 	}
