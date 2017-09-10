@@ -2576,6 +2576,22 @@ class acp_users
 
 			break;
 
+			default:
+
+				/**
+				* Additional modes provided by extensions
+				*
+				* @event core.acp_users_mode_add
+				* @var	string	mode			New mode
+				* @var	int		user_id			User id of the user to manage
+				* @var	array	user_row		Array with user data
+				* @var	array	error			Array with errors data
+				* @since 3.2.2-RC1
+				*/
+				$vars = array('mode', 'user_id', 'user_row', 'error');
+				extract($phpbb_dispatcher->trigger_event('core.acp_users_mode_add', compact($vars)));
+
+			break;
 		}
 
 		// Assign general variables
