@@ -23,7 +23,6 @@ class add_storage_permission extends \phpbb\db\migration\migration
 
 			// Set permissions
 			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'a_storage')),
-			array('permission.permission_set', array('ROLE_ADMIN_STANDARD', 'a_storage')),
 		);
 	}
 }
