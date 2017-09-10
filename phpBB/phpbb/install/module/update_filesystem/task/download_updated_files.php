@@ -99,8 +99,9 @@ class download_updated_files extends task_base
 			// Add form to continue update
 			$this->iohandler->add_user_form_group('UPDATE_CONTINUE_UPDATE_PROCESS', array(
 				'update_recheck_files_submit'	=> array(
-					'label'	=> 'UPDATE_RECHECK_UPDATE_FILES',
-					'type'	=> 'submit',
+					'label'			=> 'UPDATE_RECHECK_UPDATE_FILES',
+					'type'			=> 'submit',
+					'is_secondary'	=> count($file_update_info) < 1,
 				),
 				'database_update_submit'	=> array(
 					'label'		=> 'UPDATE_CONTINUE_UPDATE_PROCESS',
