@@ -350,10 +350,7 @@ class acp_database
 								$stream = $storage->read_stream($file_name);
 								$fp = fopen($temp_file_name, 'w+b');
 
-								while (!feof($stream))
-								{
-									fwrite($fp, fread($stream, 8192));
-								}
+								stream_copy_to_stream($stream, $fp);
 
 								fclose($fp);
 								fclose($stream);
