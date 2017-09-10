@@ -34,7 +34,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 	public function get_factory($styles_path = null)
 	{
-		global $config, $phpbb_root_path, $request, $user;
+		global $config, $phpbb_root_path, $request, $symfony_request, $user;
 
 		if (!isset($styles_path))
 		{
@@ -69,6 +69,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			'server_protocol'       => 'http://',
 		));
 		$request = new phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request($request);
 		$user = new phpbb_mock_user;
 
 		return $factory;
@@ -152,7 +153,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 	public function test_local_url()
 	{
-		global $config, $user, $request;
+		global $config, $user, $request, $symfony_request;
 		$config = new \phpbb\config\config(array(
 			'force_server_vars' => true,
 			'server_protocol' => 'http://',
@@ -163,6 +164,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		));
 		$user = new phpbb_mock_user;
 		$request = new phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request($request);
 
 		$fixture = __DIR__ . '/fixtures/local_url.xml';
 		$renderer = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.renderer');
