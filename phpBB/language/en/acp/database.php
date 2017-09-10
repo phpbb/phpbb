@@ -59,6 +59,7 @@ $lang = array_merge($lang, array(
 	'FILE_WRITE_FAIL'	=> 'Unable to write file to storage folder.',
 	'FULL_BACKUP'		=> 'Full',
 
+	'RESTORE_DOWNLOAD_FAIL'	=> 'Error while copying file from storage to local temporary folder.',
 	'RESTORE_FAILURE'		=> 'The backup file may be corrupt.',
 	'RESTORE_OPTIONS'		=> 'Restore options',
 	'RESTORE_SELECTED_BACKUP'	=> 'Are you sure you want to restore the selected backup?',

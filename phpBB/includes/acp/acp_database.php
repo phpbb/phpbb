@@ -335,7 +335,7 @@ class acp_database
 								}
 								catch (\phpbb\storage\exception\exception $e)
 								{
-
+									// If open fails, just finish
 								}
 
 								flush();
@@ -360,8 +360,7 @@ class acp_database
 							}
 							catch (\phpbb\storage\exception\exception $e)
 							{
-								// Error while copying file from storage to temp
-								exit;
+								trigger_error($user->lang['RESTORE_DOWNLOAD_FAIL'] . adm_back_link($this->u_action));
 							}
 
 							switch ($matches[1])
