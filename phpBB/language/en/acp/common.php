@@ -419,9 +419,6 @@ $lang = array_merge($lang, array(
 	'PURGE_SESSIONS_EXPLAIN'	=> 'Purge all sessions. This will log out all users by truncating the session table.',
 	'PURGE_SESSIONS_SUCCESS'	=> 'Sessions successfully purged.',
 
-	'RESET_DATE'					=> 'Reset board’s start date',
-	'RESET_DATE_CONFIRM'			=> 'Are you sure you wish to reset the board’s start date?',
-	'RESET_DATE_SUCCESS'				=> 'Board’s start date reset',
 	'RESET_ONLINE'					=> 'Reset most users ever online',
 	'RESET_ONLINE_CONFIRM'			=> 'Are you sure you wish to reset the most users ever online counter?',
 	'RESET_ONLINE_SUCCESS'				=> 'Most users ever online reset',

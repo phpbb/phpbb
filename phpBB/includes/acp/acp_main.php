@@ -79,10 +79,6 @@ class acp_main
 						$confirm = true;
 						$confirm_lang = 'RESYNC_POSTCOUNTS_CONFIRM';
 					break;
-					case 'date':
-						$confirm = true;
-						$confirm_lang = 'RESET_DATE_CONFIRM';
-					break;
 					case 'db_track':
 						$confirm = true;
 						$confirm_lang = 'RESYNC_POST_MARKING_CONFIRM';
@@ -253,22 +249,6 @@ class acp_main
 						if ($request->is_ajax())
 						{
 							trigger_error('RESYNC_POSTCOUNTS_SUCCESS');
-						}
-					break;
-
-					case 'date':
-						if (!$auth->acl_get('a_board'))
-						{
-							send_status_line(403, 'Forbidden');
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
-
-						$config->set('board_startdate', time() - 1);
-						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_RESET_DATE');
-
-						if ($request->is_ajax())
-						{
-							trigger_error('RESET_DATE_SUCCESS');
 						}
 					break;
 
