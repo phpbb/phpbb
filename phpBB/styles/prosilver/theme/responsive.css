@@ -344,7 +344,7 @@
 	}
 
 	fieldset dd, fieldset.fields1 dd, fieldset.fields2 dd {
-		margin-left: 20px;
+		margin-left: 0px;
 	}
 
 	textarea, dd textarea, .message-box textarea {
