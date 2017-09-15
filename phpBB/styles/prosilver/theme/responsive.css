@@ -386,7 +386,7 @@
 	fieldset dd,
 	fieldset.fields1 dd,
 	fieldset.fields2 dd {
-		margin-left: 0px;
+		margin-left: 0;
 	}
 
 	textarea,
