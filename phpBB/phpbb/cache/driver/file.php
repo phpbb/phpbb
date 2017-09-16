@@ -576,7 +576,7 @@ class file extends \phpbb\cache\driver\base
 
 			if (function_exists('opcache_invalidate'))
 			{
-				@opcache_invalidate($this->cache_file);
+				@opcache_invalidate($file);
 			}
 
 			try
