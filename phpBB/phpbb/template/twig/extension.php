@@ -86,7 +86,7 @@ class extension extends \Twig_Extension
 		return array(
 			new \Twig_SimpleFunction('lang', array($this, 'lang')),
 			new \Twig_SimpleFunction('lang_defined', array($this, 'lang_defined')),
-			new \Twig_SimpleFunction('get_class', array($this, 'get_class')),
+			new \Twig_SimpleFunction('get_class', 'get_class'),
 		);
 	}
 
@@ -193,17 +193,5 @@ class extension extends \Twig_Extension
 	public function lang_defined($key)
 	{
 		return call_user_func_array([$this->language, 'is_set'], [$key]);
-	}
-
-	/*
-	 * Returns the name of the class of an object
-	 *
-	 * @param object            $object         The object
-	 *
-	 * @return string
-	 */
-	public function get_class($object)
-	{
-		return get_class($object);
 	}
 }
