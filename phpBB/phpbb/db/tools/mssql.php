@@ -524,7 +524,7 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		if ($this->is_sql_server_2000())
+		if ($this->mssql_is_sql_server_2000())
 		{
 			$this->check_index_name_length($table_name, $index_name);
 		}
@@ -541,7 +541,7 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		if ($this->is_sql_server_2000())
+		if ($this->mssql_is_sql_server_2000())
 		{
 			$this->check_index_name_length($table_name, $index_name);
 		}
