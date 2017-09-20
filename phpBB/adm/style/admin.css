@@ -2506,7 +2506,11 @@ fieldset.permissions .padding {
 /* Classes for additional tasks
 ---------------------------------------- */
 
-.outdated-ext-icon {
+.current-ext {
+	color: #228822;
+}
+
+.outdated-ext {
 	color: #BC2A4D;
 }
 
