@@ -552,7 +552,7 @@ class acp_board
 
 				if ($config_name == 'allow_quick_reply' && isset($_POST['allow_quick_reply_enable']))
 				{
-					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', log(FORUM_FLAG_QUICK_REPLY, 2));
+					enable_bitfield_column_flag(FORUMS_TABLE, 'forum_flags', round(log(FORUM_FLAG_QUICK_REPLY, 2)));
 				}
 			}
 		}
