@@ -62,6 +62,11 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected $path;
 
+	/*
+	 * @var int dir_depth
+	 */
+	protected $dir_depth;
+
 	/**
 	 * Constructor
 	 */
@@ -85,6 +90,7 @@ class local implements adapter_interface, stream_interface
 
 		$this->path = $options['path'];
 		$this->root_path = $this->phpbb_root_path . $options['path'];
+		$this->dir_depth = (int) $options['depth'];
 	}
 
 	/**
@@ -101,7 +107,7 @@ class local implements adapter_interface, stream_interface
 
 		try
 		{
-			$this->filesystem->dump_file($this->root_path . $path, $content);
+			$this->filesystem->dump_file($this->root_path . $this->get_subfolder($path) . $path, $content);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -119,7 +125,7 @@ class local implements adapter_interface, stream_interface
 			throw new exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
-		$content = @file_get_contents($this->root_path . $path);
+		$content = @file_get_contents($this->root_path . $this->get_subfolder($path) . $path);
 
 		if ($content === false)
 		{
@@ -134,7 +140,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function exists($path)
 	{
-		return $this->filesystem->exists($this->root_path . $path);
+		return $this->filesystem->exists($this->root_path . $this->get_subfolder($path) . $path);
 	}
 
 	/**
@@ -144,12 +150,14 @@ class local implements adapter_interface, stream_interface
 	{
 		try
 		{
-			$this->filesystem->remove($this->root_path . $path);
+			$this->filesystem->remove($this->root_path . $this->get_subfolder($path) . $path);
 		}
 		catch (filesystem_exception $e)
 		{
 			throw new exception('STORAGE_CANNOT_DELETE', $path, array(), $e);
 		}
+
+		$this->remove_empty_dirs($path);
 	}
 
 	/**
@@ -161,12 +169,14 @@ class local implements adapter_interface, stream_interface
 
 		try
 		{
-			$this->filesystem->rename($this->root_path . $path_orig, $this->root_path . $path_dest, false);
+			$this->filesystem->rename($this->root_path . $this->get_subfolder($path) . $path_orig, $this->root_path . $this->get_subfolder($path) . $path_dest, false);
 		}
 		catch (filesystem_exception $e)
 		{
 			throw new exception('STORAGE_CANNOT_RENAME', $path_orig, array(), $e);
 		}
+
+		$this->remove_empty_dirs($path_orig);
 	}
 
 	/**
@@ -178,7 +188,7 @@ class local implements adapter_interface, stream_interface
 
 		try
 		{
-			$this->filesystem->copy($this->root_path . $path_orig, $this->root_path . $path_dest, false);
+			$this->filesystem->copy($this->root_path . $this->get_subfolder($path) . $path_orig, $this->root_path . $this->get_subfolder($path) . $path_dest, false);
 		}
 		catch (filesystem_exception $e)
 		{
@@ -212,7 +222,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function ensure_directory_exists($path)
 	{
-		$path = dirname($this->root_path . $path);
+		$path = dirname($this->root_path . $this->get_subfolder($path) . $path);
 		$path = filesystem_helper::make_path_relative($path, $this->root_path);
 
 		if (!$this->exists($path))
@@ -222,11 +232,40 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
+	 * Removes the directory tree ascending until it finds a non empty directory.
+	 *
+	 * @param string	$path	The file path
+	 */
+	protected function remove_empty_dirs($path)
+	{
+		$path = dirname($this->root_path . $this->get_subfolder($path) . $path);
+		$path = filesystem_helper::make_path_relative($path, $this->root_path);
+
+		do
+		{
+			$parts = explode(DIRECTORY_SEPARATOR, $path);
+			$parts = array_slice($parts, 0, -1);
+			$path = implode(DIRECTORY_SEPARATOR, $parts);
+		}
+		while (@rmdir($this->root_path . $path));
+	}
+
+	protected function get_subfolder($path)
+	{
+		$hash = md5($path);
+
+		$parts = str_split($hash, 2);
+		$parts = array_slice($parts, 0, $this->dir_depth);
+
+		return implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function read_stream($path)
 	{
-		$stream = @fopen($this->root_path . $path, 'rb');
+		$stream = @fopen($this->root_path . $this->get_subfolder($path) . $path, 'rb');
 
 		if (!$stream)
 		{
@@ -241,12 +280,14 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function write_stream($path, $resource)
 	{
+		$this->ensure_directory_exists($path);
+
 		if ($this->exists($path))
 		{
 			throw new exception('STORAGE_FILE_EXISTS', $path);
 		}
 
-		$stream = @fopen($this->root_path . $path, 'w+b');
+		$stream = @fopen($this->root_path . $this->get_subfolder($path) . $path, 'w+b');
 
 		if (!$stream)
 		{
@@ -271,7 +312,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_size($path)
 	{
-		$size = filesize($this->root_path . $path);
+		$size = filesize($this->root_path . $this->get_subfolder($path) . $path);
 
 		if ($size === null)
 		{
@@ -290,7 +331,7 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function file_mimetype($path)
 	{
-		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $path)];
+		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $this->get_subfolder($path) . $path)];
 	}
 
 	/**
@@ -302,12 +343,12 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected function image_dimensions($path)
 	{
-		$size = $this->imagesize->getImageSize($this->root_path . $path);
+		$size = $this->imagesize->getImageSize($this->root_path . $this->get_subfolder($path) . $path);
 
 		// For not supported types like swf
 		if ($size === false)
 		{
-			$imsize = getimagesize($this->root_path . $path);
+			$imsize = getimagesize($this->root_path . $this->get_subfolder($path) . $path);
 			$size = ['width' => $imsize[0], 'height' => $imsize[1]];
 		}
 
