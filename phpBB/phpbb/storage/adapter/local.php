@@ -257,7 +257,7 @@ class local implements adapter_interface, stream_interface
 		$parts = str_split($hash, 2);
 		$parts = array_slice($parts, 0, $this->dir_depth);
 
-		return implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
+		return (!empty($parts)) ? implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR : '';
 	}
 
 	/**
