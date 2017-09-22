@@ -18,6 +18,7 @@ services:
         class: phpbb\feed\helper
         arguments:
             - '@config'
+            - '@path_helper'
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'

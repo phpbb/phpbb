@@ -21,6 +21,9 @@ class helper
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\path_helper */
+	protected $path_helper;
+
 	/** @var \phpbb\user */
 	protected $user;
 
@@ -33,14 +36,16 @@ class helper
 	/**
 	 * Constructor
 	 *
-	 * @param	\phpbb\config\config	$config		Config object
-	 * @param	\phpbb\user		$user		User object
-	 * @param	string	$phpbb_root_path	Root path
-	 * @param	string	$phpEx				PHP file extension
+	 * @param	\phpbb\config\config	$config				Config object
+	 * @param	\phpbb\path_helper		$path_helper 		Path helper object
+	 * @param	\phpbb\user				$user				User object
+	 * @param	string					$phpbb_root_path	Root path
+	 * @param	string					$phpEx				PHP file extension
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\config\config $config, \phpbb\path_helper $path_helper, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->config = $config;
+		$this->path_helper = $path_helper;
 		$this->user = $user;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
@@ -113,7 +118,7 @@ class helper
 		$content = str_replace('<br />', '<br />' . "\n", $content);
 
 		// Convert smiley Relative paths to Absolute path, Windows style
-		$content = str_replace($this->phpbb_root_path . $this->config['smilies_path'], $this->get_board_url() . '/' . $this->config['smilies_path'], $content);
+		$content = str_replace($this->path_helper->get_web_root_path() . $this->config['smilies_path'], $this->get_board_url() . '/' . $this->config['smilies_path'], $content);
 
 		// Remove "Select all" link and mouse events
 		$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' . $this->user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
@@ -152,7 +157,7 @@ class helper
 			$content .= implode('<br />', $post_attachments);
 
 			// Convert attachments' relative path to absolute path
-			$content = str_replace($this->phpbb_root_path . 'download/file.' . $this->phpEx, $this->get_board_url() . '/download/file.' . $this->phpEx, $content);
+			$content = str_replace($this->path_helper->get_web_root_path() . 'download/file.' . $this->phpEx, $this->get_board_url() . '/download/file.' . $this->phpEx, $content);
 		}
 
 		// Remove Comments from inline attachments [ia]

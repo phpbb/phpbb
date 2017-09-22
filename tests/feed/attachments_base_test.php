@@ -31,13 +31,22 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 
 		$this->filesystem = new \phpbb\filesystem();
 		$config = new \phpbb\config\config(array());
+		$path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			new \phpbb\filesystem\filesystem(),
+			$this->getMock('\phpbb\request\request'),
+			$phpbb_root_path,
+			'php'
+		);
 		$user = new \phpbb\user(
 			new \phpbb\language\language(
 				new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)
 			),
 			'\phpbb\datetime'
 		);
-		$feed_helper = new \phpbb\feed\helper($config, $user, $phpbb_root_path, $phpEx);
+		$feed_helper = new \phpbb\feed\helper($config, $path_helper, $user, $phpbb_root_path, $phpEx);
 		$db = $this->new_dbal();
 		$cache = new \phpbb_mock_cache();
 		$auth = new \phpbb\auth\auth();
