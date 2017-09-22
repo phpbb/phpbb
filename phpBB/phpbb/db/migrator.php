@@ -757,7 +757,27 @@ class migrator
 
 				$condition = $parameters[0];
 
-				if (!$condition)
+				// We need at least two elements because we access
+				// two elements at the top of this method.
+				if (is_array($condition) && count($condition) >= 2)
+				{
+					try
+					{
+						if (!$this->run_step($condition))
+						{
+							return false;
+						}
+					}
+					catch (\phpbb\db\migration\exception $_)
+					{
+						if (!$condition)
+						{
+							// Fall back to old behaviour
+							return false;
+						}
+					}
+				}
+				else if (!$condition)
 				{
 					return false;
 				}
