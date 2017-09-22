@@ -23,7 +23,9 @@ class contact_admin_acp_module extends \phpbb\db\migration\migration
 				'ACP_BOARD_CONFIGURATION',
 				array(
 					'module_basename'	=> 'acp_contact',
-					'modes'				=> array('contact'),
+					'module_langname'	=> 'ACP_CONTACT_SETTINGS',
+					'module_mode'		=> 'contact',
+					'module_auth'		=> 'acl_a_board',
 				),
 			)),
 		);
