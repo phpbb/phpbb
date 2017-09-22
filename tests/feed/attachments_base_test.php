@@ -35,7 +35,7 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
+			$this->filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			'php'
@@ -46,7 +46,7 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 			),
 			'\phpbb\datetime'
 		);
-		$feed_helper = new \phpbb\feed\helper($config, $path_helper, $user, $phpbb_root_path, $phpEx);
+		$feed_helper = new \phpbb\feed\helper($config, $path_helper, $user);
 		$db = $this->new_dbal();
 		$cache = new \phpbb_mock_cache();
 		$auth = new \phpbb\auth\auth();

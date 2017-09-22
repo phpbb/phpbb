@@ -27,28 +27,18 @@ class helper
 	/** @var \phpbb\user */
 	protected $user;
 
-	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $phpEx;
-
 	/**
 	 * Constructor
 	 *
-	 * @param	\phpbb\config\config	$config				Config object
-	 * @param	\phpbb\path_helper		$path_helper 		Path helper object
-	 * @param	\phpbb\user				$user				User object
-	 * @param	string					$phpbb_root_path	Root path
-	 * @param	string					$phpEx				PHP file extension
+	 * @param	\phpbb\config\config	$config			Config object
+	 * @param	\phpbb\path_helper		$path_helper 	Path helper object
+	 * @param	\phpbb\user				$user			User object
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\path_helper $path_helper, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\config\config $config, \phpbb\path_helper $path_helper, \phpbb\user $user)
 	{
 		$this->config = $config;
 		$this->path_helper = $path_helper;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
 	}
 
 	/**
@@ -110,7 +100,7 @@ class helper
 		}
 
 		// Prepare some bbcodes for better parsing
-		$content	= preg_replace("#\[quote(=&quot;.*?&quot;)?:$uid\]\s*(.*?)\s*\[/quote:$uid\]#si", "[quote$1:$uid]<br />$2<br />[/quote:$uid]", $content);
+		$content = preg_replace("#\[quote(=&quot;.*?&quot;)?:$uid\]\s*(.*?)\s*\[/quote:$uid\]#si", "[quote$1:$uid]<br />$2<br />[/quote:$uid]", $content);
 
 		$content = generate_text_for_display($content, $uid, $bitfield, $options);
 
@@ -157,7 +147,7 @@ class helper
 			$content .= implode('<br />', $post_attachments);
 
 			// Convert attachments' relative path to absolute path
-			$content = str_replace($this->path_helper->get_web_root_path() . 'download/file.' . $this->phpEx, $this->get_board_url() . '/download/file.' . $this->phpEx, $content);
+			$content = str_replace($this->path_helper->get_web_root_path() . 'download/file.' . $this->path_helper->get_php_ext(), $this->get_board_url() . '/download/file.' . $this->path_helper->get_php_ext(), $content);
 		}
 
 		// Remove Comments from inline attachments [ia]
