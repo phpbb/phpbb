@@ -766,15 +766,6 @@
 	}
 }
 
-@media (max-width: 992px) {
-	.row .pagination {
-		text-align: left;
-		float: left;
-		margin-top: 4px;
-		margin-bottom: 4px;
-	}
-}
-
 /* Responsive *CP navigation
 ---------------------------------------- */
 @media (max-width: 900px) {
@@ -823,6 +814,15 @@
 	.navigation a,
 	.rtl .navigation a {
 		background: #b2c2cf;
+	}
+}
+
+@media (max-width: 992px) {
+	.row .pagination {
+		text-align: left;
+		float: left;
+		margin-top: 4px;
+		margin-bottom: 4px;
 	}
 }
 
