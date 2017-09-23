@@ -273,6 +273,11 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->BBCodes->addCustom($bbcode['usage'], $bbcode['template']);
 		}
+		if (isset($configurator->tags['QUOTE']))
+		{
+			// Remove the nesting limit and let other services remove quotes at parsing time
+			$configurator->tags['QUOTE']->nestingLimit = PHP_INT_MAX;
+		}
 
 		// Modify the template to disable images/flash depending on user's settings
 		foreach (array('FLASH', 'IMG') as $name)
@@ -323,6 +328,9 @@ class factory implements \phpbb\textformatter\cache_interface
 			// Only parse emoticons at the beginning of the text or if they're preceded by any
 			// one of: a new line, a space, a dot, or a right square bracket
 			$configurator->Emoticons->notAfter = '[^\\n .\\]]';
+
+			// Ignore emoticons that are immediately followed by a "word" character
+			$configurator->Emoticons->notBefore = '\\w';
 		}
 
 		// Load the censored words
@@ -382,7 +390,18 @@ class factory implements \phpbb\textformatter\cache_interface
 			unset($configurator->tags['censor:tag']);
 		}
 
-		$objects  = $configurator->finalize();
+		$objects = $configurator->finalize();
+
+		/**
+		* Access the objects returned by finalize() before they are saved to cache
+		*
+		* @event core.text_formatter_s9e_configure_finalize
+		* @var array objects Array containing a "parser" object, a "renderer" object and optionally a "js" string
+		* @since 3.2.2-RC1
+		*/
+		$vars = array('objects');
+		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_finalize', compact($vars)));
+
 		$parser   = $objects['parser'];
 		$renderer = $objects['renderer'];
 
@@ -518,7 +537,9 @@ class factory implements \phpbb\textformatter\cache_interface
 	protected function extract_templates($template)
 	{
 		// Capture the template fragments
-		preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END .*? -->#s', $template, $matches, PREG_SET_ORDER);
+		// Allow either phpBB template or the Twig syntax
+		preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END .*? -->#s', $template, $matches, PREG_SET_ORDER) ?:
+			preg_match_all('#{% for (.*?) in .*? %}(.*?){% endfor %}#s', $template, $matches, PREG_SET_ORDER);
 
 		$fragments = array();
 		foreach ($matches as $match)

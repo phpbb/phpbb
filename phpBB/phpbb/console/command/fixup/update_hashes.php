@@ -101,9 +101,9 @@ class update_hashes extends \phpbb\console\command\command
 		{
 			$new_hash = $this->passwords_manager->hash($row['user_password'], array($this->default_type));
 
-			$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_password = "' . $this->db->sql_escape($new_hash) . '"
-					WHERE user_id = ' . (int) $row['user_id'];
+			$sql = 'UPDATE ' . USERS_TABLE . "
+					SET user_password = '" . $this->db->sql_escape($new_hash) . "'
+					WHERE user_id = " . (int) $row['user_id'];
 			$this->db->sql_query($sql);
 			$progress_bar->advance();
 		}

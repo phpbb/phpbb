@@ -498,6 +498,13 @@ acp_styles_list_before
 * Since: 3.1.7-RC1
 * Purpose: Add content before list of styles
 
+acp_users_mode_add
+===
+* Locations:
+    + adm/style/acp_users.html
+* Since: 3.2.2-RC1
+* Purpose: Add extra modes to the ACP user page
+
 acp_users_profile_before
 ===
 * Locations:
@@ -1482,6 +1489,20 @@ overall_header_stylesheets_after
 * Since: 3.1.0-RC3
 * Purpose: Add asset calls after stylesheets within the `</head>` tag.
 Note that INCLUDECSS will not work with this event.
+
+posting_attach_body_attach_row_controls_append
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content after attachment control elements 
+
+posting_attach_body_attach_row_controls_prepend
+===
+* Locations:
+    + styles/prosilver/template/posting_attach_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content before attachment control elements 
 
 posting_editor_add_panel_tab
 ===
@@ -2670,6 +2691,13 @@ viewtopic_topic_title_after
     + styles/prosilver/template/viewtopic_body.html
 * Since: 3.1.7-RC1
 * Purpose: Add content directly after the topic title link on the View topic screen (outside of the h2 HTML tag)
+
+viewtopic_topic_title_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content directly before the topic title link on the View topic screen (outside of the h2 HTML tag)
 
 viewtopic_topic_title_append
 ===

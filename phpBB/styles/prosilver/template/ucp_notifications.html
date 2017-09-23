@@ -31,7 +31,7 @@
 								<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
 							</td>
 							<!-- BEGIN notification_methods -->
-								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_methods.METHOD}"<!-- IF notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --> /></td>
+								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_types.notification_methods.METHOD}"<!-- IF notification_types.notification_methods.AVAILABLE and notification_types.notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --><!-- IF not notification_types.notification_methods.AVAILABLE --> disabled="disabled"<!-- ENDIF --> /></td>
 							<!-- END notification_methods -->
 						</tr>
 					<!-- ENDIF -->

@@ -91,9 +91,18 @@ class session
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
 		}
 
-		// current directory within the phpBB root (for example: adm)
-		$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-		$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+		if (substr($root_path, 0, 2) === './' && strpos($root_path, '..') === false)
+		{
+			$root_dirs = explode('/', str_replace('\\', '/', rtrim($root_path, '/')));
+			$page_dirs = explode('/', str_replace('\\', '/', '.'));
+		}
+		else
+		{
+			// current directory within the phpBB root (for example: adm)
+			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+		}
+
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);
