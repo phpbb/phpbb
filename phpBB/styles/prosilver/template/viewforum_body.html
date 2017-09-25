@@ -165,7 +165,7 @@
 								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
 							</a>
 						<!-- ENDIF -->
-						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.U_VIEW_TOPIC --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><!-- ELSE -->{topicrow.TOPIC_TITLE}<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
 								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
@@ -224,7 +224,7 @@
 				<dd class="views">{topicrow.VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 				<dd class="lastpost">
 					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-						<!-- IF not S_IS_BOT -->
+						<!-- IF not S_IS_BOT and topicrow.U_LAST_POST -->
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 								<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
 							</a>
