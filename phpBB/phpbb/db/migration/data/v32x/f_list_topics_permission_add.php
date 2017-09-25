@@ -28,11 +28,4 @@ class f_list_topics_permission_add extends \phpbb\db\migration\migration
 			array('permission.add', array('f_list_topics', false)),
 		);
 	}
-
-	public function revert_data()
-	{
-		return array(
-			array('permission.remove', array('f_list_topics', false)),
-		);
-	}
 }
