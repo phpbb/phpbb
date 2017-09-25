@@ -54,13 +54,16 @@ class text_reparser extends \phpbb\db\migration\container_aware_migration
 		/** @var manager $reparser_manager */
 		$reparser_manager = $this->container->get('text_reparser.manager');
 
-		/** @var reparser_interface[] $reparsers */
-		$reparsers = $this->container->get('text_reparser_collection');
-
-		// Initialize all reparsers
-		foreach ($reparsers as $name => $reparser)
+		if (!is_array($resume_data))
 		{
-			$reparser_manager->update_resume_data($name, 1, $reparser->get_max_id(), 100);
+			/** @var reparser_interface[] $reparsers */
+			$reparsers = $this->container->get('text_reparser_collection');
+
+			// Initialize all reparsers
+			foreach ($reparsers as $name => $reparser)
+			{
+				$reparser_manager->update_resume_data($name, 1, $reparser->get_max_id(), 100);
+			}
 		}
 
 		// Sometimes a cron job is too much
