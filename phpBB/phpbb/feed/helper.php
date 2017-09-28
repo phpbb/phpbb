@@ -13,41 +13,52 @@
 
 namespace phpbb\feed;
 
+use phpbb\config\config;
+use phpbb\path_helper;
+use phpbb\textformatter\s9e\renderer;
+use phpbb\user;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /**
  * Class with some helpful functions used in feeds
  */
 class helper
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\path_helper */
+	/** @var ContainerInterface */
+	protected $container;
+
+	/** @var path_helper */
 	protected $path_helper;
 
-	/** @var \phpbb\textformatter\s9e\renderer */
+	/** @var renderer */
 	protected $renderer;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
 	/**
 	 * Constructor
 	 *
-	 * @param	\phpbb\config\config				$config			Config object
-	 * @param	\phpbb\path_helper					$path_helper 	Path helper object
-	 * @param	\phpbb\textformatter\s9e\renderer	$renderer		TextFormatter renderer object
-	 * @param	\phpbb\user							$user			User object
+	 * @param	config				$config			Config object
+	 * @param	ContainerInterface	$container		Service container object
+	 * @param	path_helper			$path_helper 	Path helper object
+	 * @param	renderer			$renderer		TextFormatter renderer object
+	 * @param	user				$user			User object
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\path_helper $path_helper, \phpbb\textformatter\s9e\renderer $renderer, \phpbb\user $user)
+	public function __construct(config $config, ContainerInterface $container, path_helper $path_helper, renderer $renderer, user $user)
 	{
 		$this->config = $config;
+		$this->container = $container;
 		$this->path_helper = $path_helper;
 		$this->renderer = $renderer;
 		$this->user = $user;
 	}
 
 	/**
-	 * Run links through append_sid(), prepend generate_board_url() and remove session id
+	 * Returns the board url (and caches it in the function)
 	 */
 	public function get_board_url()
 	{
@@ -105,7 +116,7 @@ class helper
 		}
 
 		// Setup our own quote_helper to remove all attributes from quotes
-		$this->renderer->configure_quote_helper(new feed_quote_helper($this->user, $this->path_helper->get_phpbb_root_path(), $this->path_helper->get_php_ext()));
+		$this->renderer->configure_quote_helper($this->container->get('feed.quote_helper'));
 
 		$this->renderer->set_smilies_path($this->get_board_url() . '/' . $this->config['smilies_path']);
 

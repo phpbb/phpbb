@@ -16,7 +16,7 @@ namespace phpbb\feed;
 /**
  * Modified quote_helper for feeds (basically just removing all attributes)
  */
-class feed_quote_helper extends \phpbb\textformatter\s9e\quote_helper
+class quote_helper extends \phpbb\textformatter\s9e\quote_helper
 {
 	/**
 	 * {@inheritdoc}
@@ -27,7 +27,8 @@ class feed_quote_helper extends \phpbb\textformatter\s9e\quote_helper
 		return \s9e\TextFormatter\Utils::replaceAttributes(
 			$xml,
 			'QUOTE',
-			function () {
+			function ()
+			{
 				return [];
 			}
 		);
