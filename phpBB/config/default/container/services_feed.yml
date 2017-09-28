@@ -19,9 +19,8 @@ services:
         arguments:
             - '@config'
             - '@path_helper'
+            - '@text_formatter.renderer'
             - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
 
     feed.forum:
         class: phpbb\feed\forum

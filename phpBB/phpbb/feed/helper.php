@@ -24,20 +24,25 @@ class helper
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
 
+	/** @var \phpbb\textformatter\s9e\renderer */
+	protected $renderer;
+
 	/** @var \phpbb\user */
 	protected $user;
 
 	/**
 	 * Constructor
 	 *
-	 * @param	\phpbb\config\config	$config			Config object
-	 * @param	\phpbb\path_helper		$path_helper 	Path helper object
-	 * @param	\phpbb\user				$user			User object
+	 * @param	\phpbb\config\config				$config			Config object
+	 * @param	\phpbb\path_helper					$path_helper 	Path helper object
+	 * @param	\phpbb\textformatter\s9e\renderer	$renderer		TextFormatter renderer object
+	 * @param	\phpbb\user							$user			User object
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\path_helper $path_helper, \phpbb\user $user)
+	public function __construct(\phpbb\config\config $config, \phpbb\path_helper $path_helper, \phpbb\textformatter\s9e\renderer $renderer, \phpbb\user $user)
 	{
 		$this->config = $config;
 		$this->path_helper = $path_helper;
+		$this->renderer = $renderer;
 		$this->user = $user;
 	}
 
@@ -99,16 +104,12 @@ class helper
 			return '';
 		}
 
-		// Prepare some bbcodes for better parsing
-		$content = preg_replace("#\[quote(=&quot;.*?&quot;)?:$uid\]\s*(.*?)\s*\[/quote:$uid\]#si", "[quote$1:$uid]<br />$2<br />[/quote:$uid]", $content);
+		// Setup our own quote_helper to remove all attributes from quotes
+		$this->renderer->configure_quote_helper(new feed_quote_helper($this->user, $this->path_helper->get_phpbb_root_path(), $this->path_helper->get_php_ext()));
+
+		$this->renderer->set_smilies_path($this->get_board_url() . '/' . $this->config['smilies_path']);
 
 		$content = generate_text_for_display($content, $uid, $bitfield, $options);
-
-		// Add newlines
-		$content = str_replace('<br />', '<br />' . "\n", $content);
-
-		// Convert smiley Relative paths to Absolute path, Windows style
-		$content = str_replace($this->path_helper->get_web_root_path() . $this->config['smilies_path'], $this->get_board_url() . '/' . $this->config['smilies_path'], $content);
 
 		// Remove "Select all" link and mouse events
 		$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' . $this->user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
