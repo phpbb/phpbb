@@ -85,7 +85,7 @@ class reparser extends \phpbb\cron\task\base
 
 		if ($this->resume_data === null)
 		{
-			$this->reparser_manager->get_resume_data($this->reparser_name);
+			$this->resume_data = $this->reparser_manager->get_resume_data($this->reparser_name);
 		}
 	}
 
@@ -96,7 +96,7 @@ class reparser extends \phpbb\cron\task\base
 	{
 		if ($this->resume_data === null)
 		{
-			$this->reparser_manager->get_resume_data($this->reparser_name);
+			$this->resume_data = $this->reparser_manager->get_resume_data($this->reparser_name);
 		}
 
 		if (!isset($this->resume_data['range-max']) || $this->resume_data['range-max'] >= $this->resume_data['range-min'])
