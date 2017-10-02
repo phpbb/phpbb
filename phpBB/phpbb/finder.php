@@ -13,13 +13,14 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * The finder provides a simple way to locate files in the core and a set of extensions
 */
 class finder
 {
 	protected $extensions;
-	protected $filesystem;
 	protected $phpbb_root_path;
 	protected $cache;
 	protected $php_ext;
@@ -48,16 +49,14 @@ class finder
 	/**
 	* Creates a new finder instance with its dependencies
 	*
-	* @param \phpbb\filesystem\filesystem_interface $filesystem Filesystem instance
 	* @param string $phpbb_root_path Path to the phpbb root directory
 	* @param \phpbb\cache\service $cache A cache instance or null
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
 	*                           _ext_finder
 	*/
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path = '', \phpbb\cache\service $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
+	public function __construct($phpbb_root_path = '', \phpbb\cache\service $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
 	{
-		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
 		$this->php_ext = $php_ext;
@@ -244,7 +243,7 @@ class finder
 	*/
 	protected function sanitise_directory($directory)
 	{
-		$directory = $this->filesystem->clean_path($directory);
+		$directory = filesystem_helper::clean_path($directory);
 		$dir_len = strlen($directory);
 
 		if ($dir_len > 1 && $directory[$dir_len - 1] === '/')

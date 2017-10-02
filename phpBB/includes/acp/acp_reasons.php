@@ -103,7 +103,7 @@ class acp_reasons
 						}
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						// New reason?
 						if ($action == 'add')
@@ -171,7 +171,7 @@ class acp_reasons
 					'L_TITLE'		=> $user->lang['REASON_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$reason_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
-					'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR_MSG'		=> (count($error)) ? implode('<br />', $error) : '',
 
 					'REASON_TITLE'			=> $reason_row['reason_title'],
 					'REASON_DESCRIPTION'	=> $reason_row['reason_description'],
@@ -182,7 +182,7 @@ class acp_reasons
 					'S_AVAILABLE_TITLES'	=> implode($user->lang['COMMA_SEPARATOR'], array_map('htmlspecialchars', array_keys($user->lang['report_reasons']['TITLE']))),
 					'S_EDIT_REASON'			=> true,
 					'S_TRANSLATED'			=> $translated,
-					'S_ERROR'				=> (sizeof($error)) ? true : false,
+					'S_ERROR'				=> (count($error)) ? true : false,
 					)
 				);
 

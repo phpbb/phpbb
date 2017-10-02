@@ -17,6 +17,7 @@ use phpbb\extension\di\extension_base;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
 * Container core extension
@@ -25,8 +26,7 @@ class extension extends extension_base
 {
 	protected function load_services(ContainerBuilder $container)
 	{
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$loader = new YamlFileLoader($container, new FileLocator($filesystem->realpath($this->ext_path)));
+		$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($this->ext_path)));
 		$loader->load('environment.yml');
 	}
 }

@@ -1,0 +1,34 @@
+{
+  "name": "phpbb",
+  "version": "3.3.0-dev",
+  "description": "phpBB Forum Software application",
+  "main": " ",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phpbb/phpbb.git"
+  },
+  "keywords": [
+    "phpBB",
+    "phpbb",
+    "forum",
+    "php",
+    "software",
+    "community"
+  ],
+  "author": "",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://tracker.phpbb.com"
+  },
+  "homepage": "https://www.phpbb.com",
+  "devDependencies": {
+    "stylelint": "8.0.0",
+    "stylelint-order": "0.3.0"
+  }
+}

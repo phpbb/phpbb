@@ -32,9 +32,9 @@
 
 	<fieldset class="submit-buttons">
 		<!-- IF not S_REPORT_CLOSED -->
-			<input class="button1" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
+			<input class="button1 button button-form" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
 		<!-- ENDIF -->
-		<input class="button2" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
+		<input class="button1 button button-form-bold" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
 		<input type="hidden" name="report_id_list[]" value="{REPORT_ID}" />
 		{S_FORM_TOKEN}
 	</fieldset>
@@ -80,8 +80,8 @@
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
 			<p class="post-notice unapproved">
-				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
-				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
+				<input class="button1 button button-form-bold" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
+				<input class="button1 button button-form" type="submit" value="{L_APPROVE}" name="action[approve]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 				{S_FORM_TOKEN}
@@ -91,8 +91,8 @@
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
 			<p class="post-notice deleted">
-				<!-- IF S_CAN_DELETE_POST --><input class="button2" type="submit" value="{L_DELETE}" name="action[delete]" /> &nbsp;<!-- ENDIF -->
-				<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
+				<!-- IF S_CAN_DELETE_POST --><input class="button1 button button-form-bold" type="submit" value="{L_DELETE}" name="action[delete]" /> &nbsp;<!-- ENDIF -->
+				<input class="button1 button button-form" type="submit" value="{L_RESTORE}" name="action[restore]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="deleted_posts" /><!-- ENDIF -->
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 				{S_FORM_TOKEN}
@@ -155,10 +155,10 @@
 			<fieldset>
 			<dl>
 				<dt><label>{L_CHANGE_POSTER}{L_COLON}</label></dt>
-				<!-- IF S_USER_SELECT --><dd><select name="u">{S_USER_SELECT}</select> <input type="submit" class="button2" name="action[chgposter_ip]" value="{L_CONFIRM}" /></dd><!-- ENDIF -->
+				<!-- IF S_USER_SELECT --><dd><select name="u">{S_USER_SELECT}</select> <input type="submit" class="button1 button button-form-bold" name="action[chgposter_ip]" value="{L_CONFIRM}" /></dd><!-- ENDIF -->
 				<dd style="margin-top:3px;">
 					<input class="inputbox autowidth" type="text" name="username" value="" />
-					<input type="submit" class="button2" name="action[chgposter]" value="{L_CONFIRM}" />
+					<input type="submit" class="button1 button button-form-bold" name="action[chgposter]" value="{L_CONFIRM}" />
 					<br />
 					<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span>
 				</dd>
@@ -179,7 +179,7 @@
 				<dd><select name="action">
 					<!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF -->
 					<!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF -->
-					</select> <input class="button2" type="submit" value="{L_SUBMIT}" />
+					</select> <input class="button1 button button-form-bold" type="submit" value="{L_SUBMIT}" />
 				</dd>
 			</dl>
 			{S_FORM_TOKEN}
@@ -224,8 +224,8 @@
 
 				<!-- IF S_CLEAR_ALLOWED -->
 					<fieldset class="submit-buttons">
-						<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />&nbsp;
-						<input class="button2" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
+						<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />&nbsp;
+						<input class="button1 button button-form-bold" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
 					</fieldset>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
@@ -238,8 +238,8 @@
 			</fieldset>
 
 			<fieldset class="submit-buttons">
-				<input class="button1" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;
-				<input class="button2" type="reset" value="{L_RESET}" />
+				<input class="button1 button button-form" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;
+				<input class="button1 button button-form-bold" type="reset" value="{L_RESET}" />
 				{S_FORM_TOKEN}
 			</fieldset>
 			</form>

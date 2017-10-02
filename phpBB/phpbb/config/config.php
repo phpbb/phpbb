@@ -148,6 +148,25 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	}
 
 	/**
+	* Checks configuration option's value only if the new_value matches the
+	* current configuration value and the configuration value does exist.Called
+	* only after set_atomic has been called.
+	*
+	* @param  string $key       The configuration option's name
+	* @param  string $new_value New configuration value
+	* @throws \phpbb\exception\http_exception when config value is set and not equal to new_value.
+	* @return bool              True if the value was changed, false otherwise.
+	*/
+	public function ensure_lock($key, $new_value)
+	{
+		if (isset($this->config[$key]) && $this->config[$key] == $new_value)
+		{
+			return true;
+		}
+		throw new \phpbb\exception\http_exception(500, 'Failure while aqcuiring locks.');
+	}
+
+	/**
 	* Increments an integer configuration value.
 	*
 	* @param string $key       The configuration option's name

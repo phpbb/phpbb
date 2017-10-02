@@ -87,7 +87,7 @@ class resync
 	 */
 	public function resync($type, $ids)
 	{
-		if (empty($type) || !is_array($ids) || !sizeof($ids) || !in_array($type, array('post', 'topic', 'message')))
+		if (empty($type) || !is_array($ids) || !count($ids) || !in_array($type, array('post', 'topic', 'message')))
 		{
 			return;
 		}
@@ -112,7 +112,7 @@ class resync
 		// Now only unset those ids remaining
 		$ids = array_diff($ids, $remaining_ids);
 
-		if (sizeof($ids))
+		if (count($ids))
 		{
 			$sql = 'UPDATE ' . $this->resync_table . '
 				SET ' . $type . '_attachment = 0

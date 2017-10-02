@@ -332,9 +332,9 @@ class acp_search
 								$forum_ids[] = $row['forum_id'];
 							}
 							$db->sql_freeresult($result);
-							$row_count += sizeof($ids);
+							$row_count += count($ids);
 
-							if (sizeof($ids))
+							if (count($ids))
 							{
 								$this->search->index_remove($ids, $posters, $forum_ids);
 							}
@@ -474,8 +474,8 @@ class acp_search
 			$statistics = array();
 			foreach ($data as $statistic => $value)
 			{
-				$n = sizeof($statistics);
-				if ($n && sizeof($statistics[$n - 1]) < 3)
+				$n = count($statistics);
+				if ($n && count($statistics[$n - 1]) < 3)
 				{
 					$statistics[$n - 1] += array('statistic_2' => $statistic, 'value_2' => $value);
 				}
@@ -492,7 +492,7 @@ class acp_search
 				'S_ACTIVE'			=> ($type == $config['search_type']) ? true : false,
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('search_type' => $type)),
 				'S_INDEXED'			=> (bool) $search->index_created(),
-				'S_STATS'			=> (bool) sizeof($statistics))
+				'S_STATS'			=> (bool) count($statistics))
 			);
 
 			foreach ($statistics as $statistic)

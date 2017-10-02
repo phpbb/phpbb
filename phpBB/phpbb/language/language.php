@@ -312,7 +312,7 @@ class language
 			// Replace key with language entry and simply pass along...
 			return vsprintf($lang, $args);
 		}
-		else if (sizeof($lang) == 0)
+		else if (count($lang) == 0)
 		{
 			// If the language entry is an empty array, we just return the language key
 			return $key;
@@ -322,7 +322,7 @@ class language
 		$key_found = false;
 
 		// We now get the first number passed and will select the key based upon this number
-		for ($i = 0, $num_args = sizeof($args); $i < $num_args; $i++)
+		for ($i = 0, $num_args = count($args); $i < $num_args; $i++)
 		{
 			if (is_int($args[$i]) || is_float($args[$i]))
 			{

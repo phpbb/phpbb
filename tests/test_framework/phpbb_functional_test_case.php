@@ -259,7 +259,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem\filesystem(),
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,
@@ -425,7 +424,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
 		// Wait for extension to be fully enabled
-		while (sizeof($meta_refresh))
+		while (count($meta_refresh))
 		{
 			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
@@ -621,11 +620,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
@@ -663,17 +662,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$cache = new phpbb_mock_null_cache;
 
 		$cache_driver = new \phpbb\cache\driver\dummy();
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
 			->method('get')
@@ -987,7 +986,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->assertEquals(
 			1,
-			sizeof($result),
+			count($result),
 			$message ?: 'Failed asserting that exactly one checkbox with name' .
 				" $name exists in crawler scope."
 		);

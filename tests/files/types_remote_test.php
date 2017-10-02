@@ -47,7 +47,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 		$config = new \phpbb\config\config(array());
 		$this->config = $config;
 		$this->config->set('remote_upload_verify', 0);
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->createMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
@@ -102,7 +102,7 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 	 */
 	public function test_get_max_file_size($max_file_size, $link, $expected = array('URL_NOT_FOUND'))
 	{
-		$php_ini = $this->getMock('\bantu\IniGetWrapper\IniGetWrapper', array('getString'));
+		$php_ini = $this->createMock('\bantu\IniGetWrapper\IniGetWrapper', array('getString'));
 		$php_ini->expects($this->any())
 			->method('getString')
 			->willReturn($max_file_size);

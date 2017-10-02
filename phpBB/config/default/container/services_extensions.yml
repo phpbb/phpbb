@@ -1,0 +1,47 @@
+services:
+    ext.manager:
+        class: phpbb\extension\manager
+        arguments:
+            - '@service_container'
+            - '@dbal.conn'
+            - '@config'
+            - '%tables.ext%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@cache'
+
+    ext.composer.installer:
+        class: phpbb\composer\installer
+        arguments:
+            - '%core.root_path%'
+            - '@filesystem'
+            - '@request'
+            - '@config'
+
+    ext.composer.manager:
+        class: phpbb\composer\extension_manager
+        arguments:
+            - '@ext.composer.installer'
+            - '@cache.driver'
+            - '@ext.manager'
+            - '@filesystem'
+            - phpbb-extension
+            - EXTENSIONS_
+            - '%core.root_path%'
+            - '@config'
+
+    style.composer.manager:
+        class: phpbb\composer\manager
+        arguments:
+            - '@ext.composer.installer'
+            - '@cache.driver'
+            - phpbb-style
+            - STYLES_
+
+    lang.composer.manager:
+        class: phpbb\composer\manager
+        arguments:
+            - '@ext.composer.installer'
+            - '@cache.driver'
+            - phpbb-language
+            - LANGUAGES_

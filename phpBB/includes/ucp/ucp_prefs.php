@@ -96,7 +96,7 @@ class ucp_prefs
 						$error[] = 'FORM_INVALID';
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$sql_ary = array(
 							'user_allow_pm'			=> $data['allowpm'],
@@ -188,7 +188,7 @@ class ucp_prefs
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
 					'S_NOTIFY_IM'		=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
@@ -277,7 +277,7 @@ class ucp_prefs
 						$error[] = 'FORM_INVALID';
 					}
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$user->optionset('viewimg', $data['images']);
 						$user->optionset('viewflash', $data['flash']);
@@ -412,7 +412,7 @@ class ucp_prefs
 				extract($phpbb_dispatcher->trigger_event('core.ucp_prefs_view_after', compact($vars)));
 
 				$template->assign_vars(array(
-					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_IMAGES'			=> $data['images'],
 					'S_FLASH'			=> $data['flash'],

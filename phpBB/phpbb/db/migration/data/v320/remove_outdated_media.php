@@ -15,10 +15,17 @@ namespace phpbb\db\migration\data\v320;
 
 class remove_outdated_media extends \phpbb\db\migration\migration
 {
+	// Following constants were deprecated in 3.2
+	// and moved from constants.php to compatibility_globals.php,
+	// thus define them as class constants
+	const ATTACHMENT_CATEGORY_WM = 2;
+	const ATTACHMENT_CATEGORY_RM = 3;
+	const ATTACHMENT_CATEGORY_QUICKTIME = 6;
+
 	protected $cat_id = array(
-			ATTACHMENT_CATEGORY_WM,
-			ATTACHMENT_CATEGORY_RM,
-			ATTACHMENT_CATEGORY_QUICKTIME,
+			self::ATTACHMENT_CATEGORY_WM,
+			self::ATTACHMENT_CATEGORY_RM,
+			self::ATTACHMENT_CATEGORY_QUICKTIME,
 		);
 
 	static public function depends_on()

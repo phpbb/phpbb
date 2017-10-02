@@ -117,7 +117,7 @@ class php_exporter
 		}
 		ksort($this->events);
 
-		return sizeof($this->events);
+		return count($this->events);
 	}
 
 	/**
@@ -199,7 +199,7 @@ class php_exporter
 		if (strpos($content, "dispatcher->trigger_event('") || strpos($content, "dispatcher->dispatch('"))
 		{
 			$this->set_content(explode("\n", $content));
-			for ($i = 0, $num_lines = sizeof($this->file_lines); $i < $num_lines; $i++)
+			for ($i = 0, $num_lines = count($this->file_lines); $i < $num_lines; $i++)
 			{
 				$event_line = false;
 				$found_trigger_event = strpos($this->file_lines[$i], "dispatcher->trigger_event('");
@@ -397,7 +397,7 @@ class php_exporter
 		if (isset($match[1]))
 		{
 			$vars_array = explode("', '", $match[1]);
-			if ($throw_multiline && sizeof($vars_array) > 6)
+			if ($throw_multiline && count($vars_array) > 6)
 			{
 				throw new \LogicException('Should use multiple lines for $vars definition '
 					. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 2);
@@ -460,7 +460,7 @@ class php_exporter
 				if (strpos($var_line, '* @var ') === 0)
 				{
 					$doc_line = explode(' ', $var_line, 5);
-					if (sizeof($doc_line) !== 5)
+					if (count($doc_line) !== 5)
 					{
 						throw new \LogicException("Found invalid line '{$this->file_lines[$this->current_event_line - $current_doc_line]}' "
 						. "for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 1);
@@ -707,9 +707,9 @@ class php_exporter
 	{
 		$vars_array = array_unique($vars_array);
 		$vars_docblock = array_unique($vars_docblock);
-		$sizeof_vars_array = sizeof($vars_array);
+		$sizeof_vars_array = count($vars_array);
 
-		if ($sizeof_vars_array !== sizeof($vars_docblock) || $sizeof_vars_array !== sizeof(array_intersect($vars_array, $vars_docblock)))
+		if ($sizeof_vars_array !== count($vars_docblock) || $sizeof_vars_array !== count(array_intersect($vars_array, $vars_docblock)))
 		{
 			throw new \LogicException("\$vars array does not match the list of '@var' tags for event "
 				. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'");

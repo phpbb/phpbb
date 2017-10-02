@@ -55,7 +55,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_height', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_width', '20');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_path', 'images/avatars/upload');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_salt', 'phpbb_avatar');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact', 'contact@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact_name', '');
@@ -279,9 +278,17 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.2.2-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.0-a1-dev');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_repositories', '[]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_packagist', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_json_file', 'composer-ext.json');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_vendor_dir', 'vendor-ext/');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_enable_on_install', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_purge_on_remove', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\provider', 'phpbb\storage\provider\local');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\avatar\config\path', 'images/avatars/upload');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);
@@ -400,6 +407,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_reasons', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_roles', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_search', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_server', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_storage', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_styles', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_switchperm', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_uauth', 1);
@@ -515,7 +523,7 @@ INSERT INTO phpbb_ranks (rank_title, rank_min, rank_special, rank_image) VALUES 
 # -- Roles data
 
 # Standard Admin (a_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 1, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm', 'a_jabber', 'a_phpinfo', 'a_server', 'a_backup', 'a_styles', 'a_clearlogs', 'a_modules', 'a_language', 'a_email', 'a_bots', 'a_search', 'a_aauth', 'a_roles');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 1, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm', 'a_jabber', 'a_phpinfo', 'a_server', 'a_backup', 'a_styles', 'a_clearlogs', 'a_modules', 'a_language', 'a_email', 'a_bots', 'a_search', 'a_storage', 'a_aauth', 'a_roles');
 
 # Forum admin (a_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 2, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'a_%' AND auth_option IN ('a_', 'a_authgroups', 'a_authusers', 'a_fauth', 'a_forum', 'a_forumadd', 'a_forumdel', 'a_mauth', 'a_prune', 'a_uauth', 'a_viewauth', 'a_viewlogs');

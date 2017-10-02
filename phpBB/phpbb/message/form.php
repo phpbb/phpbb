@@ -139,7 +139,7 @@ abstract class form
 			$this->errors[] = 'FORM_INVALID';
 		}
 
-		if (!sizeof($this->errors))
+		if (!count($this->errors))
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_emailtime = ' . time() . '
@@ -169,7 +169,7 @@ abstract class form
 		add_form_key('memberlist_email');
 
 		$template->assign_vars(array(
-			'ERROR_MESSAGE'		=> (sizeof($this->errors)) ? implode('<br />', $this->errors) : '',
+			'ERROR_MESSAGE'		=> (count($this->errors)) ? implode('<br />', $this->errors) : '',
 		));
 	}
 }

@@ -19,7 +19,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		             ->disableOriginalConstructor()
 		             ->getMock();
 
-		$cache = $this->getMock('phpbb_mock_cache');
+		$cache = $this->createMock('phpbb_mock_cache');
 		$cache->expects($this->once())
 		      ->method('get')
 		      ->with('_foo_parser')
@@ -172,7 +172,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 	public function test_setup_event()
 	{
 		$container = $this->get_test_case_helpers()->set_s9e_services();
-		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$dispatcher
 			->expects($this->once())
 			->method('trigger_event')
@@ -202,7 +202,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 	public function test_parse_event()
 	{
 		$container = $this->get_test_case_helpers()->set_s9e_services();
-		$dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$dispatcher
 			->expects($this->any())
 			->method('trigger_event')

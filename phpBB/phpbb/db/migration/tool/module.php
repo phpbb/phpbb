@@ -469,7 +469,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		$parent_id = $parent_id ?: 0;
 
 		// If automatic adding is in action, convert array back to string to simplify things
-		if (is_array($data) && sizeof($data) == 1)
+		if (is_array($data) && count($data) == 1)
 		{
 			$data = $data['module_langname'];
 		}
@@ -482,7 +482,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			// Search for the parent module_langname
 			$ids = array_keys($this->module_categories, $parent_id);
 
-			switch (sizeof($ids))
+			switch (count($ids))
 			{
 				// No parent with the given module_langname exist
 				case 0:

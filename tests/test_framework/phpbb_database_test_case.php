@@ -58,7 +58,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 		$setup_extensions = static::setup_extensions();
 
-		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
+		$finder = new \phpbb\finder($phpbb_root_path, null, $phpEx);
 		$finder->core_path('phpbb/db/migration/data/');
 		if (!empty($setup_extensions))
 		{
@@ -229,7 +229,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
 		// but one array_diff is not enough!
-		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
+		if (count(array_diff($one, $two)) || count(array_diff($two, $one)))
 		{
 			// get a nice error message
 			$this->assertEquals($one, $two);

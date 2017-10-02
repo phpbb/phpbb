@@ -51,7 +51,7 @@ function check_table_flash_bbcodes($table_name, $id_field, $content_field, $uid_
 
 	$ids = get_table_flash_bbcode_pkids($table_name, $id_field, $content_field, $uid_field, $bitfield_field);
 
-	$size = sizeof($ids);
+	$size = count($ids);
 	if ($size)
 	{
 		echo "Found $size potentially dangerous flash bbcodes.\n";

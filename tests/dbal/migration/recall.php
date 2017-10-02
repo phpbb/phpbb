@@ -21,7 +21,7 @@ class phpbb_dbal_migration_recall extends \phpbb\db\migration\migration
 	function update_data()
 	{
 		return array(
-			array('custom', array(array(&$this, 'test_call'))),
+			array('custom', array(array($this, 'test_call'))),
 		);
 	}
 

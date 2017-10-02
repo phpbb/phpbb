@@ -121,7 +121,7 @@ class filespec
 	 */
 	public function set_upload_ary($upload_ary)
 	{
-		if (!isset($upload_ary) || !sizeof($upload_ary))
+		if (!isset($upload_ary) || !count($upload_ary))
 		{
 			return $this;
 		}
@@ -403,7 +403,7 @@ class filespec
 	 */
 	public function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		if (sizeof($this->error))
+		if (count($this->error))
 		{
 			return false;
 		}
@@ -478,7 +478,7 @@ class filespec
 			// Remove temporary filename
 			@unlink($this->filename);
 
-			if (sizeof($this->error))
+			if (count($this->error))
 			{
 				return false;
 			}
