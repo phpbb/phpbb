@@ -72,7 +72,8 @@ ul.topiclist.two-columns dt .list-inner {
 ul.topiclist dd {
 	border-left: 1px solid transparent;
 	box-sizing: border-box;
-	padding: 4px 0;
+	padding: 4px 0 99999px 0;
+	margin-bottom: -99995px;
 }
 
 ul.topiclist dfn {
