@@ -253,6 +253,20 @@ class environment extends \Twig_Environment
 		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
 		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
 
+		/**
+		 * Allow changing the template output stream after assets are injected
+		 *
+		 * @event core.twig_environment_inject_assets_after
+		 * @var	string	output				Rendered template output stream
+		 * @var	string	placeholder_salt	Unique placeholder salt
+		 * @since 3.2.2-RC1
+		 */
+		if ($this->phpbb_dispatcher)
+		{
+			$vars = array('output', 'placeholder_salt');
+			extract($this->phpbb_dispatcher->trigger_event('core.twig_environment_inject_assets_after', compact($vars)));
+		}
+
 		return $output;
 	}
 
