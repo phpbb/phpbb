@@ -1360,7 +1360,7 @@ class acp_styles
 		$bitfield = new bitfield();
 		for ($i = 0; $i < strlen($default_bitfield); $i++)
 		{
-			if($default_bitfield[$i] == '1')
+			if ($default_bitfield[$i] == '1')
 			{
 				$bitfield->set($i);
 			}
