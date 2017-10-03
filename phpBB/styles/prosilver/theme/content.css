@@ -18,7 +18,7 @@ ul.topiclist dl {
 }
 
 ul.topiclist li.row dl {
-	padding: 2px 0;
+	margin: 2px 0;
 }
 
 ul.topiclist dt, ul.topiclist dd {
