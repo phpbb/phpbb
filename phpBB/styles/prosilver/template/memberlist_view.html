@@ -23,7 +23,7 @@
 			{L_USERNAME}{L_COLON}
 		</dt>
 		<dd>
-			<!-- IF USER_COLOR --><span style="color: {USER_COLOR}; font-weight: bold;"><!-- ELSE --><span><!-- ENDIF -->{USERNAME}</span> <!-- IF S_ONLINE -->  <i class="icon fa-circle fa-fw icon-md online" aria-hidden="true"></i><span class="sr-only">{L_ONLINE}</span><!-- ENDIF -->
+			<!-- IF USER_COLOR --><span style="color: {USER_COLOR}; font-weight: bold;"><!-- ELSE --><span><!-- ENDIF -->{USERNAME}</span> <!-- IF S_ONLINE -->  <i class="icon fa-circle fa-fw icon-md online" aria-hidden="true" title="{L_ONLINE}"></i><span class="sr-only">{L_ONLINE}</span><!-- ENDIF -->
 			<!-- IF U_EDIT_SELF --> [ <a href="{U_EDIT_SELF}">{L_EDIT_PROFILE}</a> ]<!-- ENDIF -->
 			<!-- IF U_USER_ADMIN --> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]<!-- ENDIF -->
 			<!-- IF U_USER_BAN --> [ <a href="{U_USER_BAN}">{L_USER_BAN}</a> ]<!-- ENDIF -->
