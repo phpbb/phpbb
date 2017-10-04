@@ -29,5 +29,21 @@ class phpbb_event_dispatcher_test extends phpbb_test_case
         $result = $dispatcher->trigger_event('core.test_event', compact($vars));
 
         $this->assertSame(array('foo' => 'foo2', 'bar' => 'bar2'), $result);
+
+        // Test migrating events
+		$dispatcher->addListener('core.foo_br', function(\phpbb\event\data $event) {
+			$event['pi'] = '3.14159';
+		});
+		$dispatcher->addListener('core.foo_bar', function(\phpbb\event\data $event) {
+			$event['pi'] = '3.1';
+		});
+
+
+		$pi = '3';
+
+		$vars = array('pi');
+		$result = $dispatcher->trigger_event(['core.foo_bar', 'core.foo_br'], compact($vars));
+
+		$this->assertSame(array('pi' => '3.14159'), $result);
     }
 }
