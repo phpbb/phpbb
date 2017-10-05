@@ -648,7 +648,7 @@ class fulltext_sphinx
 		$this->sphinx->SetFilter('deleted', array(0));
 
 		$this->sphinx->SetLimits($start, (int) $per_page, SPHINX_MAX_MATCHES);
-		$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
@@ -656,7 +656,7 @@ class fulltext_sphinx
 		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 		{
 			usleep(SPHINX_CONNECT_WAIT_TIME);
-			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 		}
 
 		if ($this->sphinx->GetLastError())
@@ -679,7 +679,7 @@ class fulltext_sphinx
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
 			$this->sphinx->SetLimits((int) $start, (int) $per_page, SPHINX_MAX_MATCHES);
-			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 			// Could be connection to localhost:9312 failed (errno=111,
 			// msg=Connection refused) during rotate, retry if so
@@ -687,7 +687,7 @@ class fulltext_sphinx
 			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 			{
 				usleep(SPHINX_CONNECT_WAIT_TIME);
-				$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 			}
 		}
 
