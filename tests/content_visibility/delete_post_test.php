@@ -11,11 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_content.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 require_once dirname(__FILE__) . '/../mock/search.php';
 
 class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
@@ -292,12 +289,14 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 	{
 		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
-		$config['search_type'] = 'phpbb_mock_search';
+		$config = new \phpbb\config\config(array(
+			'num_posts' => 3,
+			'num_topics' => 1,
+			'search_type' => 'phpbb_mock_search',
+		));
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
-		$phpbb_config = new \phpbb\config\config(array('num_posts' => 3, 'num_topics' => 1));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		set_config_count(null, null, null, $phpbb_config);
 
 		// Create auth mock
 		$auth = $this->getMock('\phpbb\auth\auth');
@@ -307,13 +306,18 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 			->will($this->returnValueMap(array(
 				array('m_approve', 1, true),
 			)));
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$attachment_delete = new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\filesystem\filesystem(), new \phpbb\attachment\resync($db), $phpbb_root_path);
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
-		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $phpbb_config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+		// Works as a workaround for tests
+		$phpbb_container->set('attachment.manager', $attachment_delete);
 
 		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
 

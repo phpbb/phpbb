@@ -1,0 +1,235 @@
+services:
+    cron.manager:
+        class: phpbb\cron\manager
+        arguments:
+            - '@cron.task_collection'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    cron.lock_db:
+        class: phpbb\lock\db
+        arguments:
+            - cron_lock
+            - '@config'
+            - '@dbal.conn'
+
+# ----- Cron tasks -----
+    cron.task_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: cron.task }
+
+    cron.task.core.prune_all_forums:
+        class: phpbb\cron\task\core\prune_all_forums
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '@dbal.conn'
+        calls:
+            - [set_name, [cron.task.core.prune_all_forums]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.prune_forum:
+        class: phpbb\cron\task\core\prune_forum
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '@dbal.conn'
+        calls:
+            - [set_name, [cron.task.core.prune_forum]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.prune_shadow_topics:
+        class: phpbb\cron\task\core\prune_shadow_topics
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '@dbal.conn'
+            - '@log'
+            - '@user'
+        calls:
+            - [set_name, [cron.task.core.prune_shadow_topics]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.prune_notifications:
+        class: phpbb\cron\task\core\prune_notifications
+        arguments:
+            - '@config'
+            - '@notification_manager'
+        calls:
+            - [set_name, [cron.task.core.prune_notifications]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.queue:
+        class: phpbb\cron\task\core\queue
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+            - '%core.cache_dir%'
+        calls:
+            - [set_name, [cron.task.core.queue]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.tidy_cache:
+        class: phpbb\cron\task\core\tidy_cache
+        arguments:
+            - '@config'
+            - '@cache.driver'
+        calls:
+            - [set_name, [cron.task.core.tidy_cache]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.tidy_database:
+        class: phpbb\cron\task\core\tidy_database
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+        calls:
+            - [set_name, [cron.task.core.tidy_database]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.tidy_plupload:
+        class: phpbb\cron\task\core\tidy_plupload
+        arguments:
+            - '%core.root_path%'
+            - '@config'
+            - '@log'
+            - '@user'
+        calls:
+            - [set_name, [cron.task.core.tidy_plupload]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.tidy_search:
+        class: phpbb\cron\task\core\tidy_search
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@user'
+            - '@dispatcher'
+        calls:
+            - [set_name, [cron.task.core.tidy_search]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.tidy_sessions:
+        class: phpbb\cron\task\core\tidy_sessions
+        arguments:
+            - '@config'
+            - '@user'
+        calls:
+            - [set_name, [cron.task.core.tidy_sessions]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.tidy_warnings:
+        class: phpbb\cron\task\core\tidy_warnings
+        arguments:
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@config'
+        calls:
+            - [set_name, [cron.task.core.tidy_warnings]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.pm_text:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        calls:
+            - [set_name, [cron.task.text_reparser.pm_text]]
+            - [set_reparser, [text_reparser.pm_text]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.poll_option:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        calls:
+            - [set_name, [cron.task.text_reparser.poll_option]]
+            - [set_reparser, [text_reparser.poll_option]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.poll_title:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        calls:
+            - [set_name, [cron.task.text_reparser.poll_title]]
+            - [set_reparser, [text_reparser.poll_title]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.post_text:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        calls:
+            - [set_name, [cron.task.text_reparser.post_text]]
+            - [set_reparser, [text_reparser.post_text]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.text_reparser.user_signature:
+        class: phpbb\cron\task\text_reparser\reparser
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        calls:
+            - [set_name, [cron.task.text_reparser.user_signature]]
+            - [set_reparser, [text_reparser.user_signature]]
+        tags:
+            - { name: cron.task }
+
+    cron.task.core.update_hashes:
+        class: phpbb\cron\task\core\update_hashes
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@passwords.update.lock'
+            - '@passwords.manager'
+            - '@passwords.driver_collection'
+            - '%passwords.algorithms%'
+        calls:
+            - [set_name, [cron.task.core.update_hashes]]
+        tags:
+            - { name: cron.task }

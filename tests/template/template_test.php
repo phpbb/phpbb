@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/template_test_case.php';
 
 class phpbb_template_template_test extends phpbb_template_template_test_case
@@ -130,6 +129,34 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"loop\nloop\nloop\nloop\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
 			),
 			array(
+				'loop_twig.html',
+				array(),
+				array(),
+				array(),
+				"noloop\nnoloop",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array('test_loop' => array(array())),
+				array(),
+				"loop\nloop",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array())),
+				array(),
+				"loop\nloop\nloop\nloop",
+			),
+			array(
+				'loop_twig.html',
+				array(),
+				array('test_loop' => array(array(), array()), 'test_loop.block' => array(array()), 'block' => array(array(), array())),
+				array(),
+				"loop\nloop\nloop\nloop\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
+			),
+			array(
 				'loop_vars.html',
 				array(),
 				array('test_loop' => array(array('VARIABLE' => 'x'))),
@@ -151,6 +178,27 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner",
 			),
 			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'))),
+				array(),
+				"first\n0 - a\nx - b\nset\nlast",
+			),
+			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
+				array(),
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast",
+			),
+			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array(),
+				"first\n0 - a\nx - b\nset\n1 - a\ny - b\nset\nlast\n0 - c\n1 - c\nlast inner",
+			),
+			array(
 				'loop_advanced.html',
 				array(),
 				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array())),
@@ -158,7 +206,21 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
 			),
 			array(
+				'loop_advanced_twig.html',
+				array(),
+				array('test_loop' => array(array(), array(), array(), array(), array(), array(), array())),
+				array(),
+				"101234561\nx\n101234561\nx\n101234561\nx\n1234561\nx\n1\nx\n101\nx\n234\nx\n10\nx\n561\nx\n561",
+			),
+			array(
 				'loop_nested2.html',
+				array(),
+				array('outer' => array(array(), array()), 'outer.middle' => array(array(), array())),
+				array(),
+				"o0o1m01m11",
+			),
+			array(
+				'loop_nested2_twig.html',
 				array(),
 				array('outer' => array(array(), array()), 'outer.middle' => array(array(), array())),
 				array(),
@@ -244,6 +306,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				'',
 			),
 			array(
+				'loop_vars_twig.html',
+				array(),
+				array('test_loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'test_loop.inner' => array(array(), array())),
+				array('test_loop'),
+				'',
+			),
+			array(
 				'include_define_variable.html',
 				array('VARIABLE' => 'variable.html'),
 				array(),
@@ -275,6 +344,15 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"noloop\nnoloop",
 			),
 			array(
+				// Just like a regular loop but the name begins
+				// with an underscore
+				'loop_underscore_twig.html',
+				array(),
+				array(),
+				array(),
+				"noloop\nnoloop",
+			),
+			array(
 				'lang.html',
 				array(),
 				array(),
@@ -286,11 +364,18 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				array(),
-				"Value'\n1 O'Clock\nValue\'\n1 O\'Clock",
+				"Value'\n1 O'Clock\nValue\\x27\n1\\x20O\\x27Clock",
 				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
 			),
 			array(
 				'loop_nested_multilevel_ref.html',
+				array(),
+				array(),
+				array(),
+				"top-level content",
+			),
+			array(
+				'loop_nested_multilevel_ref_twig.html',
 				array(),
 				array(),
 				array(),
@@ -304,7 +389,21 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
 			),
 			array(
+				'loop_nested_multilevel_ref_twig.html',
+				array(),
+				array('outer' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'outer.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content\nouter x\nouter y\ninner z\nfirst row\n\ninner zz",
+			),
+			array(
 				'loop_nested_deep_multilevel_ref.html',
+				array(),
+				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
+				array(),
+				"top-level content\nouter\nmiddle\ninner z\nfirst row of 2 in inner\n\ninner zz",
+			),
+			array(
+				'loop_nested_deep_multilevel_ref_twig.html',
 				array(),
 				array('outer' => array(array()), 'outer.middle' => array(array()), 'outer.middle.inner' => array(array('VARIABLE' => 'z'), array('VARIABLE' => 'zz'))),
 				array(),
@@ -318,6 +417,13 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
 			),
 			array(
+				'loop_size_twig.html',
+				array(),
+				array('test_loop' => array(array()), 'empty_loop' => array()),
+				array(),
+				"nonexistent = 0\n! nonexistent\n\nempty = 0\n! empty\nloop\n\nin loop",
+			),
+			array(
 				'loop_include.html',
 				array(),
 				array('test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1'))),
@@ -325,7 +431,25 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				"barbarbar1bar1",
 			),
 			array(
+				'loop_include_twig.html',
+				array(),
+				array('test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1'))),
+				array(),
+				"barbarbar1bar1",
+			),
+			array(
 				'loop_nested_include.html',
+				array(),
+				array(
+					'test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1')),
+					'test_loop.inner' => array(array('myinner' => 'works')),
+				),
+				array(),
+				"[bar|[bar|]][bar1|[bar1|[bar1|works]]]",
+				array(),
+			),
+			array(
+				'loop_nested_include_twig.html',
 				array(),
 				array(
 					'test_loop' => array(array('foo' => 'bar'), array('foo' => 'bar1')),
@@ -343,8 +467,15 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				// Not entirely sure what should be outputted but the current output of "a" is most certainly wrong
 				"a\nb\nc\nd",
+			),*/
+			array(
+				'loop_reuse_twig.html',
+				array(),
+				array('one' => array(array('VAR' => 'a'), array('VAR' => 'b')), 'one.one' => array(array('VAR' => 'c'), array('VAR' => 'd'))),
+				array(),
+				// Not entirely sure what should be outputted but the current output of "a" is most certainly wrong
+				"a\nb\nc\nd",
 			),
-			*/
 			array(
 				'twig.html',
 				array('VARIABLE' => 'FOObar',),
@@ -358,6 +489,27 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				'inner_value',
+			),
+			array(
+				'loop_expressions.html',
+				array(),
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
+			),
+			array(
+				'loop_expressions_twig.html',
+				array(),
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
+			),
+			array(
+				'loop_expressions_twig2.html',
+				array('loop' => array(array(),array(),array(),array(),array(),array()),),
+				array(),
+				array(),
+				'yesnononoyesnoyesnonoyesnono',
 			),
 		);
 	}
@@ -406,7 +558,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 
 		$this->template->assign_display('test', 'VARIABLE', false);
 
-		$this->assertEquals("pass\npass\npass\n<!-- DUMMY var -->", $this->display('container'), "Testing assign_display($file)");
+		$this->assertEquals("pass\npass\npass\n<!-- DUMMY var -->", $this->display('container'), "Testing assign_display(\$file)");
 	}
 
 	public function test_append_var_without_assign_var()
@@ -443,6 +595,37 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		}
 
 		$this->assertEquals($expecting, $this->display('append_var'));
+	}
+
+	public function test_retrieve_data()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', false);
+
+		// @todo Change this
+		$this->template->assign_vars(array('ONE' => true, 'TWO' => 'two', 'THREE' => 3));
+		$this->template->assign_block_vars('outer', array('POSITION' => 'O1'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O1M1'));
+		$this->template->assign_block_vars('outer', array('POSITION' => 'O2'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O2M1'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O2M2'));
+		$this->template->assign_block_vars('outer', array('POSITION' => 'O3'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O3M1'));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O3M2', 'ONE' => true, 'TWO' => 'two', 'THREE' => 3));
+		$this->template->assign_block_vars('outer.middle', array('POSITION' => 'O3M3'));
+
+		$expect = 'outer - 0middle - 0outer - 1middle - 0middle - 1outer - 2middle - 0middle - 1middle - 2';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->assertEquals(true, $this->template->retrieve_var('ONE'), 'Retrieve a single value from the template');
+		$this->assertEquals(null, $this->template->retrieve_var('FOUR'), 'Retrieve a non_existent value from the template');
+		$this->assertEquals(array('TWO' => 'two', 'THREE' => 3, 'FOUR' => null), $this->template->retrieve_vars(array('TWO','THREE', 'FOUR')), 'Retrieve several variables from the template');
+
+		$this->assertEquals(array('POSITION' => 'O3', 'SIZE' => null), $this->template->retrieve_block_vars('outer', array('POSITION', 'SIZE')), 'Retrieve vars from a block in the template');
+		$this->assertEquals(array('POSITION' => 'O2M1'), $this->template->retrieve_block_vars('outer[1].middle[0]', array('POSITION')), 'Retrieve single var from a nested indexed block in the template');
+		$this->assertEquals(array('S_ROW_NUM' => 2), $this->template->retrieve_block_vars('outer.middle', array('S_ROW_NUM')), 'Retrieve automatic var from a block in the template');
+		$this->assertEquals(array('POSITION' => 'O3M2', 'ONE' => true, 'TWO' => 'two', 'THREE' => 3), $this->template->retrieve_block_vars('outer[2].middle[1]', array()), 'Retrieve all vars from a block in the template');
 	}
 
 	public function test_php()
@@ -767,6 +950,55 @@ EOT
 		$this->assertEquals(false, $this->template->find_key_index('outer.wrong', true), 'Wrong middle block name');
 		$this->assertEquals(false, $this->template->find_key_index('wrong.middle', false), 'Wrong outer block name');
 	}
+
+	public function test_delete_alter_block_array()
+	{
+		$this->template->set_filenames(array('test' => 'loop_nested.html'));
+
+		$this->template->assign_var('TEST_MORE', true);
+
+		// @todo Change this
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'zero'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'one'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '1A'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'two'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '2A'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '2B'));
+		$this->template->assign_block_vars('outer', array('VARIABLE' => 'three'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3A'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3B'));
+		$this->template->assign_block_vars('outer.middle', array('VARIABLE' => '3C'));
+
+		$expect = 'outer - 0 - zero[outer|4]outer - 1 - one[outer|4]middle - 0 - 1A[middle|1]outer - 2 - two[outer|4]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 3 - three[outer|4]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Ensuring template is built correctly before modification');
+
+		$this->template->alter_block_array('outer', array(), false, 'delete');
+
+		$expect = 'outer - 0 - one[outer|3]middle - 0 - 1A[middle|1]outer - 1 - two[outer|3]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 2 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting at the beginning of outer loop');
+
+		$this->template->alter_block_array('outer[0].middle', array(), true, 'delete');
+
+		$expect = 'outer - 0 - one[outer|3]outer - 1 - two[outer|3]middle - 0 - 2A[middle|2]middle - 1 - 2B[middle|2]outer - 2 - three[outer|3]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting at the end of first middle loop, delete complete loop');
+
+		$this->template->alter_block_array('outer', array(), 1, 'delete');
+
+		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|2]middle - 0 - 3A[middle|3]middle - 1 - 3B[middle|3]middle - 2 - 3C[middle|3]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index at top level');
+
+		$this->template->alter_block_array('outer.middle', array(), 1, 'delete');
+
+		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|2]middle - 0 - 3A[middle|2]middle - 1 - 3C[middle|2]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index at middle level');
+
+		$this->template->alter_block_array('outer', array(), 4, 'delete');
+
+		$expect = 'outer - 0 - one[outer|2]outer - 1 - three[outer|2]middle - 0 - 3A[middle|2]middle - 1 - 3C[middle|2]';
+		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Deleting by index out of bounds, ignored');
+	}
+
+
 	public function assign_block_vars_array_data()
 	{
 		return array(

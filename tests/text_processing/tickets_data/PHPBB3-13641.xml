@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_bbcodes">
+		<column>bbcode_id</column>
+		<column>bbcode_tag</column>
+		<column>bbcode_helpline</column>
+		<column>display_on_posting</column>
+		<column>bbcode_match</column>
+		<column>bbcode_tpl</column>
+		<column>first_pass_match</column>
+		<column>first_pass_replace</column>
+		<column>second_pass_match</column>
+		<column>second_pass_replace</column>
+
+		<row>
+			<value>13</value>
+			<value>c</value>
+			<value></value>
+			<value>1</value>
+			<value>[c]{TEXT}[/c]</value>
+			<value><![CDATA[<code>{TEXT}</code>]]></value>
+			<value><![CDATA[!\[c\](.*?)\[/c\]!ies]]></value>
+			<value><![CDATA['[c:$uid]'.str_replace(array("\r\n", '\"', '\'', '(', ')'), array("\n", '"', '&#39;', '&#40;', '&#41;'), trim('${1}')).'[/c:$uid]']]></value>
+			<value><![CDATA[!\[c:$uid\](.*?)\[/c:$uid\]!s]]></value>
+			<value><![CDATA[<code>${1}</code>]]></value>
+		</row>
+	</table>
+</dataset>

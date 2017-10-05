@@ -21,14 +21,26 @@ class file extends \phpbb\cache\driver\base
 	var $var_expires = array();
 
 	/**
+	 * @var	\phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* Set cache path
 	*
 	* @param string $cache_dir Define the path to the cache directory (default: $phpbb_root_path . 'cache/')
 	*/
 	function __construct($cache_dir = null)
 	{
-		global $phpbb_root_path;
-		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_root_path . 'cache/';
+		global $phpbb_container;
+
+		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_container->getParameter('core.cache_dir');
+		$this->filesystem = new \phpbb\filesystem\filesystem();
+
+		if (!is_dir($this->cache_dir))
+		{
+			@mkdir($this->cache_dir, 0777, true);
+		}
 	}
 
 	/**
@@ -63,14 +75,8 @@ class file extends \phpbb\cache\driver\base
 
 		if (!$this->_write('data_global'))
 		{
-			if (!function_exists('phpbb_is_writable'))
-			{
-				global $phpbb_root_path;
-				include($phpbb_root_path . 'includes/functions.' . $phpEx);
-			}
-
 			// Now, this occurred how often? ... phew, just tell the user then...
-			if (!phpbb_is_writable($this->cache_dir))
+			if (!$this->filesystem->is_writable($this->cache_dir))
 			{
 				// We need to use die() here, because else we may encounter an infinite loop (the message handler calls $cache->unload())
 				die('Fatal: ' . $this->cache_dir . ' is NOT writable.');
@@ -89,7 +95,7 @@ class file extends \phpbb\cache\driver\base
 	*/
 	function tidy()
 	{
-		global $phpEx;
+		global $config, $phpEx;
 
 		$dir = @opendir($this->cache_dir);
 
@@ -143,7 +149,7 @@ class file extends \phpbb\cache\driver\base
 			}
 		}
 
-		set_config('cache_last_gc', time(), true);
+		$config->set('cache_last_gc', time(), false);
 	}
 
 	/**
@@ -306,7 +312,7 @@ class file extends \phpbb\cache\driver\base
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 
-		$query_id = sizeof($this->sql_rowset);
+		$query_id = md5($query);
 		$this->sql_rowset[$query_id] = array();
 		$this->sql_row_pointer[$query_id] = 0;
 
@@ -316,7 +322,7 @@ class file extends \phpbb\cache\driver\base
 		}
 		$db->sql_freeresult($query_result);
 
-		if ($this->_write('sql_' . md5($query), $this->sql_rowset[$query_id], $ttl + time(), $query))
+		if ($this->_write('sql_' . $query_id, $this->sql_rowset[$query_id], $ttl + time(), $query))
 		{
 			return $query_id;
 		}
@@ -570,16 +576,17 @@ class file extends \phpbb\cache\driver\base
 
 			if (function_exists('opcache_invalidate'))
 			{
-				@opcache_invalidate($file);
+				@opcache_invalidate($this->cache_file);
 			}
 
-			if (!function_exists('phpbb_chmod'))
+			try
 			{
-				global $phpbb_root_path;
-				include($phpbb_root_path . 'includes/functions.' . $phpEx);
+				$this->filesystem->phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
 			}
-
-			phpbb_chmod($file, CHMOD_READ | CHMOD_WRITE);
+			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			{
+				// Do nothing
+			}
 
 			$return_value = true;
 		}

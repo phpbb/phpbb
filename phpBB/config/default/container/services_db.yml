@@ -1,0 +1,71 @@
+services:
+    dbal.conn:
+        class: phpbb\db\driver\factory
+        arguments:
+            - '@service_container'
+
+    dbal.conn.driver:
+        synthetic: true
+
+# ----- DB Tools -----
+    dbal.tools.factory:
+        class: phpbb\db\tools\factory
+
+    dbal.tools:
+        class: phpbb\db\tools\tools_interface
+        factory: ['@dbal.tools.factory', get]
+        arguments:
+            - '@dbal.conn.driver'
+
+# ----- DB Extractor -----
+    dbal.extractor.factory:
+        class: phpbb\db\extractor\factory
+        arguments:
+            - '@dbal.conn.driver'
+            - '@service_container'
+
+    dbal.extractor:
+        class: phpbb\db\extractor\extractor_interface
+        factory: ['@dbal.extractor.factory', get]
+
+# ----- DB Extractors for different drivers -----
+# Service MUST NOT be shared for all the handlers to work correctly.
+    dbal.extractor.extractors.mssql_extractor:
+        class: phpbb\db\extractor\mssql_extractor
+        shared: false
+        arguments:
+            - '%core.root_path%'
+            - '@request'
+            - '@dbal.conn.driver'
+
+    dbal.extractor.extractors.mysql_extractor:
+        class: phpbb\db\extractor\mysql_extractor
+        shared: false
+        arguments:
+            - '%core.root_path%'
+            - '@request'
+            - '@dbal.conn.driver'
+
+    dbal.extractor.extractors.oracle_extractor:
+        class: phpbb\db\extractor\oracle_extractor
+        shared: false
+        arguments:
+            - '%core.root_path%'
+            - '@request'
+            - '@dbal.conn.driver'
+
+    dbal.extractor.extractors.postgres_extractor:
+        class: phpbb\db\extractor\postgres_extractor
+        shared: false
+        arguments:
+            - '%core.root_path%'
+            - '@request'
+            - '@dbal.conn.driver'
+
+    dbal.extractor.extractors.sqlite3_extractor:
+        class: phpbb\db\extractor\sqlite3_extractor
+        shared: false
+        arguments:
+            - '%core.root_path%'
+            - '@request'
+            - '@dbal.conn.driver'

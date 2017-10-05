@@ -38,7 +38,6 @@ class acp_logs_info
 		return array(
 			'filename'	=> 'acp_logs',
 			'title'		=> 'ACP_LOGGING',
-			'version'	=> '1.0.0',
 			'modes'		=> $modes,
 		);
 	}

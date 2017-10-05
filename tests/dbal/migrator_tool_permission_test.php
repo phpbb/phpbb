@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 {
 	public $group_ids = array(
@@ -34,7 +32,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		parent::setup();
 
 		$db = $this->db = $this->new_dbal();
-		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\null(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
+		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
 		$this->auth = new \phpbb\auth\auth();
 
 		$this->tool = new \phpbb\db\migration\tool\permission($this->db, $this->cache, $this->auth, $phpbb_root_path, $phpEx);

@@ -29,16 +29,16 @@ class ucp_remind
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template, $phpbb_container, $phpbb_dispatcher;
+		global $config, $phpbb_root_path, $phpEx, $request;
+		global $db, $user, $template, $phpbb_container, $phpbb_dispatcher;
 
 		if (!$config['allow_password_reset'])
 		{
 			trigger_error($user->lang('UCP_PASSWORD_RESET_DISABLED', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'));
 		}
 
-		$username	= request_var('username', '', true);
-		$email		= strtolower(request_var('email', ''));
+		$username	= $request->variable('username', '', true);
+		$email		= strtolower($request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		add_form_key('ucp_remind');
@@ -106,6 +106,7 @@ class ucp_remind
 
 			if (!$auth2->acl_get('u_chgpasswd'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_PASSWORD_REMINDER');
 			}
 
@@ -119,6 +120,7 @@ class ucp_remind
 			$user_actkey = gen_rand_string(mt_rand(6, 10));
 
 			// Instantiate passwords manager
+			/* @var $manager \phpbb\passwords\manager */
 			$passwords_manager = $phpbb_container->get('passwords.manager');
 
 			$sql = 'UPDATE ' . USERS_TABLE . "

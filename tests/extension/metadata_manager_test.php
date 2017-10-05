@@ -36,33 +36,48 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->cache = new phpbb_mock_cache();
 		$this->config = new \phpbb\config\config(array(
 			'version'		=> '3.1.0',
 		));
 		$this->db = $this->new_dbal();
-		$this->db_tools = new \phpbb\db\tools($this->db);
+		$factory = new \phpbb\db\tools\factory();
+		$this->db_tools = $factory->get($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = 'php';
-		$this->user = new \phpbb\user('\phpbb\datetime');
+
+		$this->cache =  new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->db, $this->phpbb_root_path, $this->phpEx);
+
 		$this->table_prefix = 'phpbb_';
 
-		$this->template = new \phpbb\template\twig\twig(
-			new \phpbb\path_helper(
-				new \phpbb\symfony_request(
-					new phpbb_mock_request()
-				),
-				new \phpbb\filesystem(),
-				$this->getMock('\phpbb\request\request'),
-				$this->phpbb_root_path,
-				$this->phpEx
-			),
-			$this->config,
-			$this->user,
-			new \phpbb\template\context()
-		);
-
 		$container = new phpbb_mock_container_builder();
+		$cache_path = $this->phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_path_helper = new \phpbb\path_helper(
+			new \phpbb\symfony_request(
+				new phpbb_mock_request()
+			),
+			$filesystem,
+			$this->getMock('\phpbb\request\request'),
+			$this->phpbb_root_path,
+			$this->phpEx
+		);
+		$twig = new \phpbb\template\twig\environment(
+			$this->config,
+			$filesystem,
+			$phpbb_path_helper,
+			$cache_path,
+			null,
+			$loader,
+			new \phpbb\event\dispatcher($container),
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
+		);
 
 		$this->migrator = new \phpbb\db\migrator(
 			$container,
@@ -82,13 +97,22 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new \phpbb\filesystem(),
-			$this->user,
+			new \phpbb\filesystem\filesystem(),
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->phpEx,
 			$this->cache
 		);
+
+		global $phpbb_root_path;
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $this->phpEx);
+		$lang_loader->set_extension_manager($this->extension_manager);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
+
+		$this->template = new phpbb\template\twig\twig($phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 	}
 
 	// Should fail from missing composer.json
@@ -104,7 +128,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
 		}
 	}
 
@@ -121,7 +146,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->fail($e);
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->fail($message);
 		}
 
 		$json = json_decode(file_get_contents($this->phpbb_root_path . 'ext/vendor2/foo/composer.json'), true);
@@ -151,9 +177,10 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$manager->validate($field_name);
 			$this->fail('Exception not triggered');
 		}
-		catch(\phpbb\extension\exception $e)
+		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', $field_name));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', $field_name));
 		}
 	}
 
@@ -167,7 +194,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'authors'));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', 'authors'));
 		}
 
 		$manager->merge_metadata(array(
@@ -183,7 +211,8 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_NOT_SET', 'author name'));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_NOT_SET', 'author name'));
 		}
 	}
 
@@ -214,9 +243,10 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$manager->validate($field_name);
 			$this->fail('Exception not triggered');
 		}
-		catch(\phpbb\extension\exception $e)
+		catch (\phpbb\extension\exception $e)
 		{
-			$this->assertEquals((string) $e, $this->user->lang('META_FIELD_INVALID', $field_name));
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('META_FIELD_INVALID', $field_name));
 		}
 	}
 
@@ -238,9 +268,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		{
 			$this->assertEquals(true, $manager->validate('enable'));
 		}
-		catch(\phpbb\extension\exception $e)
+		catch (\phpbb\extension\exception $e)
 		{
-			$this->fail($e);
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 		}
 	}
 
@@ -333,11 +363,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		return new phpbb_mock_metadata_manager(
 			$ext_name,
-			$this->config,
-			$this->extension_manager,
-			$this->template,
-			$this->user,
-			$this->phpbb_root_path
+			$this->extension_manager->get_extension_path($ext_name, true)
 		);
 	}
 }

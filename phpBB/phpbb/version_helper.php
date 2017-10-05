@@ -13,6 +13,8 @@
 
 namespace phpbb;
 
+use phpbb\exception\version_check_exception;
+
 /**
  * Class to handle version checking and comparison
  */
@@ -58,9 +60,6 @@ class version_helper
 	/** @var \phpbb\file_downloader */
 	protected $file_downloader;
 
-	/** @var \phpbb\user */
-	protected $user;
-
 	protected $version_schema = array(
 		'stable' => array(
 			'current'		=> 'version',
@@ -84,14 +83,12 @@ class version_helper
 	 * @param \phpbb\cache\service $cache
 	 * @param \phpbb\config\config $config
 	 * @param \phpbb\file_downloader $file_downloader
-	 * @param \phpbb\user $user
 	 */
-	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\file_downloader $file_downloader, \phpbb\user $user)
+	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\file_downloader $file_downloader)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->file_downloader = $file_downloader;
-		$this->user = $user;
 
 		if (defined('PHPBB_QA'))
 		{
@@ -192,7 +189,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return string
-	* @throws \RuntimeException
+	* @throws version_check_exception
 	*/
 	public function get_latest_on_current_branch($force_update = false, $force_cache = false)
 	{
@@ -329,7 +326,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return array
-	* @throws \RuntimeException
+	* @throws version_check_exception
 	*/
 	public function get_suggested_updates($force_update = false, $force_cache = false)
 	{
@@ -350,7 +347,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return array Version info
-	* @throws \RuntimeException
+	* @throws version_check_exception
 	*/
 	public function get_versions_matching_stability($force_update = false, $force_cache = false)
 	{
@@ -370,7 +367,7 @@ class version_helper
 	* @param bool $force_update Ignores cached data. Defaults to false.
 	* @param bool $force_cache Force the use of the cache. Override $force_update.
 	* @return array Version info, includes stable and unstable data
-	* @throws \RuntimeException
+	* @throws version_check_exception
 	*/
 	public function get_versions($force_update = false, $force_cache = false)
 	{
@@ -380,23 +377,16 @@ class version_helper
 
 		if ($info === false && $force_cache)
 		{
-			throw new \RuntimeException($this->user->lang('VERSIONCHECK_FAIL'));
+			throw new version_check_exception('VERSIONCHECK_FAIL');
 		}
 		else if ($info === false || $force_update)
 		{
-			try {
-				$info = $this->file_downloader->get($this->host, $this->path, $this->file, $this->use_ssl ? 443 : 80);
-			}
-			catch (\phpbb\exception\runtime_exception $exception)
-			{
-				$prepare_parameters = array_merge(array($exception->getMessage()), $exception->get_parameters());
-				throw new \RuntimeException(call_user_func_array(array($this->user, 'lang'), $prepare_parameters));
-			}
+			$info = $this->file_downloader->get($this->host, $this->path, $this->file, $this->use_ssl ? 443 : 80);
 			$error_string = $this->file_downloader->get_error_string();
 
 			if (!empty($error_string))
 			{
-				throw new \RuntimeException($error_string);
+				throw new version_check_exception($error_string);
 			}
 
 			$info = json_decode($info, true);
@@ -413,9 +403,7 @@ class version_helper
 
 			if (empty($info['stable']) && empty($info['unstable']))
 			{
-				$this->user->add_lang('acp/common');
-
-				throw new \RuntimeException($this->user->lang('VERSIONCHECK_FAIL'));
+				throw new version_check_exception('VERSIONCHECK_FAIL');
 			}
 
 			$info['stable'] = (empty($info['stable'])) ? array() : $info['stable'];
@@ -436,6 +424,7 @@ class version_helper
 	 *		and cleaned by this method
 	 *
 	 * @return array Versions info array
+	 * @throws version_check_exception
 	 */
 	public function validate_versions($versions_info)
 	{
@@ -483,7 +472,7 @@ class version_helper
 					if (!isset($this->version_schema[$stability_type][$key]))
 					{
 						unset($version_data[$key]);
-						throw new \RuntimeException($this->user->lang('VERSIONCHECK_INVALID_ENTRY'));
+						throw new version_check_exception('VERSIONCHECK_INVALID_ENTRY');
 					}
 
 					switch ($this->version_schema[$stability_type][$key])
@@ -496,20 +485,20 @@ class version_helper
 							if (!empty($value) && !preg_match('#^' . get_preg_expression('url') . '$#iu', $value) &&
 								!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $value))
 							{
-								throw new \RuntimeException($this->user->lang('VERSIONCHECK_INVALID_URL'));
+								throw new version_check_exception('VERSIONCHECK_INVALID_URL');
 							}
 						break;
 
 						case 'version':
 							if (!empty($value) && !preg_match(get_preg_expression('semantic_version'), $value))
 							{
-								throw new \RuntimeException($this->user->lang('VERSIONCHECK_INVALID_VERSION'));
+								throw new version_check_exception('VERSIONCHECK_INVALID_VERSION');
 							}
 						break;
 
 						default:
 							// Shouldn't be possible to trigger this
-							throw new \RuntimeException($this->user->lang('VERSIONCHECK_INVALID_ENTRY'));
+							throw new version_check_exception('VERSIONCHECK_INVALID_ENTRY');
 					}
 				}
 			}

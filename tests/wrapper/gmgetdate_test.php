@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_wrapper_gmgetdate_test extends phpbb_test_case
 {
 	public static function phpbb_gmgetdate_data()

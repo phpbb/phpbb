@@ -30,9 +30,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$this->backupStaticAttributesBlacklist += array(
-			'phpbb_functional_feed_test' => array('init_values'),
-		);
+		$this->backupStaticAttributesBlacklist['phpbb_functional_feed_test'] = array('init_values');
+
+		$this->purge_cache();
 	}
 
 	public function test_setup_config_before_state()
@@ -61,66 +61,64 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form->setValues($values);
 
 		$crawler = self::submit($form);
-		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
+		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 
 		// Special config (Guest can't see attachments)
 		$this->add_lang('acp/permissions');
 
 		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&sid={$this->sid}&icat=16&mode=setting_group_global&group_id[0]=1");
-		$this->assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
+		self::assertContains($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
 		$form['setting[1][0][u_download]']->select(-1);
 
 		$crawler = self::submit($form);
-		$this->assertContainsLang('AUTH_UPDATED', $crawler->filter('.successbox')->text());
+		self::assertContainsLang('AUTH_UPDATED', $crawler->filter('.successbox')->text());
 	}
 
 	public function test_dump_board_state()
 	{
-		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/forums', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_new', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_active', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 
 		$this->login();
 
-		$crawler = self::request('GET', 'feed.php?mode=forums', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/forums', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=overall', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_new', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_new', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'feed.php?mode=topics_active', array(), false);
+		$crawler = self::request('GET', 'app.php/feed/topics_active', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
-
-
 	}
 
 	public function test_setup_forums()
@@ -138,7 +136,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		$this->load_ids(array(
 			'forums' => array(
@@ -155,7 +153,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
 		// 'Feeds #news' will be used for feed.php?mode=news
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
@@ -166,9 +164,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 
-		// 'Feeds #exclude' will not be displayed on feed.php?mode=forums
+		// 'Feeds #exclude' will not be displayed on app.php/feed/forums
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #exclude',
@@ -177,7 +175,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('update')->form(array(
 			'forum_perm_from'	=> 2,
 		));
-		$crawler = self::submit($form);
+		self::submit($form);
 	}
 
 	public function test_setup_config_after_forums()
@@ -201,7 +199,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form['feed_exclude_id']->select(array($this->data['forums']['Feeds #exclude']));
 
 		$crawler = self::submit($form);
-		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
+		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 	}
 
 	public function test_feeds_empty()
@@ -272,6 +270,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					'id' => $this->data['forums']['Feeds #exclude'],
 					'contents_lang' => array('NO_FEED'),
 					'invalid' => true,
+					'response_code' => 404,
 				),
 			),
 			't' => array(
@@ -279,6 +278,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					'id' => $this->data['topics']['Feeds #exclude - Topic #1'],
 					'contents_lang' => array('NO_FEED'),
 					'invalid' => true,
+					'response_code' => 404,
 				),
 			),
 			'overall' => array(
@@ -331,7 +331,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post = $this->create_topic($this->data['forums']['Feeds #news'], 'Feeds #news - Topic #2', 'This is a test topic posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Feeds #news - Topic #2', $crawler->filter('html')->text());
+		self::assertContains('Feeds #news - Topic #2', $crawler->filter('html')->text());
 		$this->data['topics']['Feeds #news - Topic #2'] = (int) $post['topic_id'];
 		$this->data['posts']['Feeds #news - Topic #2'] = (int) $this->get_parameter_from_link($crawler->filter('.post')->selectLink($this->lang('POST', '', ''))->link()->getUri(), 'p');
 
@@ -339,7 +339,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post2 = $this->create_post($this->data['forums']['Feeds #news'], $post['topic_id'], 'Re: Feeds #news - Topic #2', 'This is a test post posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Feeds #news - Topic #2', $crawler->filter('html')->text());
+		self::assertContains('Re: Feeds #news - Topic #2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Feeds #news - Topic #2'] = (int) $post2['post_id'];
 	}
 
@@ -495,7 +495,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post2 = $this->create_post($this->data['forums']['Feeds #1'], $post['topic_id'], 'Re: Feeds #1 - Topic #2', 'This is a test post posted by the testing framework.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Feeds #1 - Topic #2', $crawler->filter('html')->text());
+		self::assertContains('Re: Feeds #1 - Topic #2', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Feeds #1 - Topic #2'] = (int) $post2['post_id'];
 	}
 
@@ -516,14 +516,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->add_lang('posting');
 
 		$crawler = self::request('GET', "posting.php?mode=delete&f={$this->data['forums']['Feeds #1']}&p={$this->data['posts']['Re: Feeds #1 - Topic #2']}&sid={$this->sid}");
-		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+		self::assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();
 		$crawler = self::submit($form);
-		$this->assertContainsLang('POST_DELETED', $crawler->text());
+		self::assertContainsLang('POST_DELETED', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Feeds #1 - Topic #2']}&sid={$this->sid}");
-		$this->assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		self::assertContains($this->lang('POST_DISPLAY', '', ''), $crawler->text());
 	}
 
 	public function test_feeds_softdeleted_post_admin()
@@ -615,15 +615,15 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		$this->add_lang('posting');
 		$crawler = $this->get_quickmod_page($this->data['topics']['Feeds #1 - Topic #2'], 'DELETE_TOPIC');
-		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
+		self::assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$this->add_lang('mcp');
 		$form = $crawler->selectButton('Yes')->form();
 		$crawler = self::submit($form);
-		$this->assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
+		self::assertContainsLang('TOPIC_DELETED_SUCCESS', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Feeds #1 - Topic #2']}&sid={$this->sid}");
-		$this->assertContains('Feeds #1 - Topic #2', $crawler->filter('h2')->text());
+		self::assertContains('Feeds #1 - Topic #2', $crawler->filter('h2')->text());
 	}
 
 	public function test_feeds_softdeleted_topic_admin()
@@ -716,8 +716,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			't' => array(
 				array(
 					'id' => $this->data['topics']['Feeds #1 - Topic #2'],
-					'contents_lang' => array('SORRY_AUTH_READ'),
+					'contents_lang' => array('SORRY_AUTH_READ_TOPIC'),
 					'invalid' => true,
+					'response_code' => 403,
 				),
 			),
 			'overall' => array(
@@ -758,10 +759,10 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 		// Test creating a reply
 		$this->login('disapprove_user');
-		$post2 = $this->create_post($this->data['forums']['Feeds #1.1'], $post['topic_id'], 'Re: Feeds #1.1 - Topic #2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
+		$this->create_post($this->data['forums']['Feeds #1.1'], $post['topic_id'], 'Re: Feeds #1.1 - Topic #2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Feeds #1.1 - Topic #2']}&sid={$this->sid}");
-		$this->assertNotContains('Re: Feeds #1.1 - Topic #2', $crawler->filter('html')->text());
+		self::assertNotContains('Re: Feeds #1.1 - Topic #2', $crawler->filter('html')->text());
 	}
 
 	public function test_feeds_unapproved_post_admin()
@@ -853,7 +854,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['topics']['Feeds #1 - Topic #3'] = (int) $post['topic_id'];
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Feeds #1.1']}&sid={$this->sid}");
 
-		$this->assertNotContains('Feeds #1.1 - Topic #3', $crawler->filter('html')->text());
+		self::assertNotContains('Feeds #1.1 - Topic #3', $crawler->filter('html')->text());
 
 		$this->logout();
 		$this->set_flood_interval(15);
@@ -869,10 +870,10 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 
-		$values["config[flood_interval]"] = $flood_interval;
+		$values['config[flood_interval]'] = $flood_interval;
 		$form->setValues($values);
 		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
+		self::assertGreaterThan(0, $crawler->filter('.successbox')->count());
 
 		$this->logout();
 	}
@@ -964,8 +965,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			't' => array(
 				array(
 					'id' => $this->data['topics']['Feeds #1.1 - Topic #3'],
-					'contents_lang' => array('SORRY_AUTH_READ'),
+					'contents_lang' => array('SORRY_AUTH_READ_TOPIC'),
 					'invalid' => true,
+					'response_code' => 403,
 				),
 			),
 			'overall' => array(
@@ -1004,7 +1006,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post = $this->create_topic($this->data['forums']['Feeds #1'], 'Feeds #1 - Topic #3', 'This is a test topic posted by the testing framework. [attachment=0]Attachment #0[/attachment]', array('upload_files' => 1));
 		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Feeds #1 - Topic #3', $crawler->filter('html')->text());
+		self::assertContains('Feeds #1 - Topic #3', $crawler->filter('html')->text());
 		$this->data['topics']['Feeds #1 - Topic #3'] = (int) $post['topic_id'];
 	}
 
@@ -1222,7 +1224,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$post2 = $this->create_post($this->data['forums']['Feeds #1'], $this->data['topics']['Feeds #1 - Topic #3'], 'Re: Feeds #1 - Topic #3-1', 'This is a test post posted by the testing framework. [attachment=0]Attachment #0[/attachment]');
 		$crawler = self::request('GET', "viewtopic.php?t={$post2['topic_id']}&sid={$this->sid}");
 
-		$this->assertContains('Re: Feeds #1 - Topic #3-1', $crawler->filter('html')->text());
+		self::assertContains('Re: Feeds #1 - Topic #3-1', $crawler->filter('html')->text());
 		$this->data['posts']['Re: Feeds #1 - Topic #3-1'] = (int) $post2['post_id'];
 	}
 
@@ -1322,9 +1324,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		{
 			foreach ($feeds as $feed_data)
 			{
-				if ($mode === 'f' || $mode === 't')
+				if ($mode === 'f')
 				{
-					$params = "?{$mode}={$feed_data['id']}";
+					$params = "/forum/{$feed_data['id']}";
+					$this->assert_feed($params, $feed_data);
+				}
+				else if ($mode === 't')
+				{
+					$params = "/topic/{$feed_data['id']}";
 					$this->assert_feed($params, $feed_data);
 				}
 				else
@@ -1348,10 +1355,10 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 						case 'news':
 							break;
 						default:
-							$this->fail('Unsupported feed mode: ' . $mode);
+							self::fail('Unsupported feed mode: ' . $mode);
 					}
 
-					$params = "?mode={$mode}";
+					$params = "/{$mode}";
 					$this->assert_feed($params, $feed_data);
 				}
 			}
@@ -1360,19 +1367,19 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	protected function assert_feed($params, $data)
 	{
-		$crawler = self::request('GET', 'feed.php' . $params, array(), false);
+		$crawler = self::request('GET', 'app.php/feed' . $params, array(), false);
 
 		if (empty($data['invalid']))
 		{
 			self::assert_response_xml();
-			$this->assertEquals($data['nb_entries'], $crawler->filter('entry')->count(), "Tested feed : 'feed.php{$params}'");
+			self::assertEquals($data['nb_entries'], $crawler->filter('entry')->count(), "Tested feed : 'app.php/feed{$params}'");
 
 			if (!empty($data['xpath']))
 			{
 
 				foreach($data['xpath'] as $xpath => $count_expected)
 				{
-					$this->assertCount($count_expected, $crawler->filterXPath($xpath), "Tested feed : 'feed.php{$params}', Search for {$xpath}");
+					self::assertCount($count_expected, $crawler->filterXPath($xpath), "Tested feed : 'app.php/feed{$params}', Search for {$xpath}");
 				}
 			}
 
@@ -1381,7 +1388,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				foreach($data['contents'] as $entry_id => $string)
 				{
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
-					$this->assertContains($string, $content, "Tested feed : 'feed.php{$params}'");
+					self::assertContains($string, $content, "Tested feed : 'app.php/feed{$params}'");
 				}
 			}
 
@@ -1390,7 +1397,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				foreach($data['contents_lang'] as $entry_id => $string)
 				{
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
-					$this->assertContainsLang($string, $content, "Tested feed : 'feed.php{$params}'");
+					self::assertContainsLang($string, $content, "Tested feed : 'app.php/feed{$params}'");
 				}
 			}
 
@@ -1398,21 +1405,21 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			{
 				foreach($data['attachments'] as $entry_id => $attachments)
 				{
+					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
 					foreach ($attachments as $i => $attachment)
 					{
-						$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
 						$url = self::$root_url . "download/file.php?id={$attachment['id']}";
 						$string = "Attachment #{$i}";
 
 						if ($attachment['displayed'])
 						{
-							$this->assertContains($url, $content, "Tested feed : 'feed.php{$params}'");
-							$this->assertNotContains($string, $content, "Tested feed : 'feed.php{$params}'");
+							self::assertContains($url, $content, "Tested feed : 'app.php/feed{$params}'");
+							self::assertNotContains($string, $content, "Tested feed : 'app.php/feed{$params}'");
 						}
 						else
 						{
-							$this->assertContains($string, $content, "Tested feed : 'feed.php{$params}'");
-							$this->assertNotContains($url, $content, "Tested feed : 'feed.php{$params}'");
+							self::assertContains($string, $content, "Tested feed : 'app.php/feed{$params}'");
+							self::assertNotContains($url, $content, "Tested feed : 'app.php/feed{$params}'");
 						}
 					}
 				}
@@ -1420,14 +1427,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		}
 		else
 		{
-			self::assert_response_html();
+			self::assert_response_html($data['response_code'] ?: 202);
 
 			if (!empty($data['contents_lang']))
 			{
+				$content = $crawler->filter('html')->text();
 				foreach($data['contents_lang'] as $string)
 				{
-					$content = $crawler->filter('html')->text();
-					$this->assertContainsLang($string, $content, "Tested feed : 'feed.php{$params}'");
+					self::assertContainsLang($string, $content, "Tested feed : 'app.php/feed{$params}'");
 				}
 			}
 		}
@@ -1445,7 +1452,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				if (in_array($row['forum_name'], $data['forums']))
+				if (in_array($row['forum_name'], $data['forums'], false))
 				{
 					$this->data['forums'][$row['forum_name']] = (int) $row['forum_id'];
 				}
@@ -1461,7 +1468,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				if (in_array($row['topic_title'], $data['topics']))
+				if (in_array($row['topic_title'], $data['topics'], false))
 				{
 					$this->data['topics'][$row['topic_title']] = (int) $row['topic_id'];
 				}
@@ -1478,7 +1485,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				if (in_array($row['post_subject'], $data['posts']))
+				if (in_array($row['post_subject'], $data['posts'], false))
 				{
 					$this->data['posts'][$row['post_subject']] = (int) $row['post_id'];
 					$post_ids[] = (int) $row['post_id'];

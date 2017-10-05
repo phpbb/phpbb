@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<!-- IF META -->{META}<!-- ENDIF -->
+	<title>{PAGE_TITLE}</title>
+
+	<link href="{T_TEMPLATE_PATH}/admin.css" rel="stylesheet" type="text/css" media="screen" />
+</head>
+
+<body class="{S_CONTENT_DIRECTION} nojs">
+<div id="wrap">
+	<div id="page-header">
+		<h1>{L_INSTALL_PANEL}</h1>
+		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
+		<!-- IF S_LANG_SELECT -->
+		<form method="post" action="#" id="language_selector">
+			<fieldset class="nobg">
+				<label for="language">{L_SELECT_LANG}{L_COLON}</label>
+				<select  id="language" name="language">
+					<!-- BEGIN language_select_item -->
+					<option value="{language_select_item.VALUE}"<!-- IF language_select_item.SELECTED --> selected="selected"<!-- ENDIF -->>{language_select_item.NAME}</option>
+					<!-- END language_select_item -->
+				</select>
+				<input class="button1" type="submit" id="change_lang" name="change_lang" value="{L_CHANGE}" />
+			</fieldset>
+		</form>
+		<!-- ENDIF -->
+	</div>
+
+	<div id="page-body">
+		<div id="tabs">
+			<ul>
+				<!-- BEGIN t_block1 -->
+				<li class="tab<!-- IF t_block1.S_SELECTED --> activetab<!-- ENDIF -->"><a href="{t_block1.U_TITLE}">{t_block1.L_TITLE}</a></li>
+				<!-- END t_block1 -->
+			</ul>
+		</div>
+
+		<div id="acp">
+			<div id="content">
+				<div id="menu">
+					<div class="menu-block no-header">
+						<ul>
+							<!-- BEGIN l_block1 -->
+							<li<!-- IF l_block1.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.U_TITLE}"><span>{l_block1.L_TITLE}</span></a></li>
+							<!-- END l_block1 -->
+							<!-- BEGIN l_block2 -->
+							<li<!-- IF l_block2.S_SELECTED --> id="activemenu"<!-- ENDIF -->><span<!-- IF l_block2.S_COMPLETE --> class="completed"<!-- ENDIF --> id="installer-stage-{l_block2.STAGE_NAME}">{l_block2.L_TITLE}</span></li>
+							<!-- END l_block2 -->
+						</ul>
+					</div>
+				</div>
+
+				<div id="main" class="install-body">
+					<div class="main">

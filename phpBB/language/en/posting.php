@@ -182,8 +182,10 @@ $lang = array_merge($lang, array(
 	'NO_POLL_TITLE'				=> 'You have to enter a poll title.',
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified.',
+	'NO_TEMP_DIR'				=> 'Temporary folder could not be found or is not writable.',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded.',
+	'PHP_UPLOAD_STOPPED'		=> 'A PHP extension has stopped the file upload.',
 	'PHP_SIZE_NA'				=> 'The attachment’s file size is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
 	'PHP_SIZE_OVERRUN'			=> 'The attachment’s file size is too large, the maximum upload size is %1$d %2$s.<br />Please note this is set in php.ini and cannot be overridden.',
 	'PLACE_INLINE'				=> 'Place inline',
@@ -239,9 +241,9 @@ $lang = array_merge($lang, array(
 	'SMILIES'					=> 'Smilies',
 	'SMILIES_ARE_OFF'			=> 'Smilies are <em>OFF</em>',
 	'SMILIES_ARE_ON'			=> 'Smilies are <em>ON</em>',
-	'STICKY_ANNOUNCE_TIME_LIMIT'=> 'Sticky/Announcement time limit',
+	'STICKY_ANNOUNCE_TIME_LIMIT'=> 'Sticky/Announcement/Global time limit',
 	'STICK_TOPIC_FOR'			=> 'Stick topic for',
-	'STICK_TOPIC_FOR_EXPLAIN'	=> 'Enter 0 for a never ending Sticky/Announcement. Please note that this number is relative to the date of the post.',
+	'STICK_TOPIC_FOR_EXPLAIN'	=> 'Enter 0 for a never ending Sticky/Announcement/Global. Please note that this number is relative to the date of the post.',
 	'STYLES_TIP'				=> 'Tip: Styles can be applied quickly to selected text.',
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',

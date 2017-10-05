@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_poll_options">
+		<column>poll_option_id</column>
+		<column>topic_id</column>
+		<column>poll_option_text</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>This row should be [b]ignored[/b]</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>This row should be [b:abcd1234]ignored[/b:abcd1234]</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value>[b:abcd1234]Bold[/b:abcd1234]</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>2</value>
+			<value><![CDATA[<!-- s:) --><img src="{SMILIES_PATH}/icon_e_smile.gif" alt=":)" title="Smile" /><!-- s:) -->]]></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>2</value>
+			<value><![CDATA[<!-- m --><a class="postlink" href="http://example.org">http://example.org</a><!-- m -->]]></value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>11</value>
+			<value>[b:abcd1234]Bold[/b:abcd1234] :) http://example.org</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>12</value>
+			<value><![CDATA[[b]Not bold[/b] <!-- s:) --><img src="{SMILIES_PATH}/icon_e_smile.gif" alt=":)" title="Smile" /><!-- s:) --> http://example.org]]></value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>13</value>
+			<value><![CDATA[[b]Not bold[/b] :) <!-- m --><a class="postlink" href="http://example.org">http://example.org</a><!-- m -->]]></value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>123</value>
+			<value>This row should be [b]ignored[/b]</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>123</value>
+			<value>This row should be [b:abcd1234]ignored[/b:abcd1234]</value>
+		</row>
+	</table>
+	<table name="phpbb_posts">
+		<column>post_id</column>
+		<column>enable_bbcode</column>
+		<column>enable_smilies</column>
+		<column>enable_magic_url</column>
+		<column>post_text</column>
+		<column>bbcode_uid</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>abcd1234</value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value>abcd1234</value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>0</value>
+			<value>1</value>
+			<value>0</value>
+			<value></value>
+			<value>abcd1234</value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>0</value>
+			<value>0</value>
+			<value>1</value>
+			<value></value>
+			<value>abcd1234</value>
+		</row>
+	</table>
+	<table name="phpbb_topics">
+		<column>topic_id</column>
+		<column>topic_first_post_id</column>
+		<column>poll_title</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>This row should be [b]ignored[/b]</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>This row should be [b]ignored[/b]</value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>11</value>
+			<value>BBCode</value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>12</value>
+			<value>Smilies</value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>13</value>
+			<value>Magic URLs</value>
+		</row>
+		<row>
+			<value>123</value>
+			<value>1</value>
+			<value>This row should be [b]ignored[/b]</value>
+		</row>
+	</table>
+</dataset>

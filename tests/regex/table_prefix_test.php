@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_regex_table_prefix_test extends phpbb_test_case
 {
 	public function table_prefix_test_data()

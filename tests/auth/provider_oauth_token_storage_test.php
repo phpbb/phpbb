@@ -22,6 +22,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	protected $session_id;
 	protected $token_storage;
 	protected $token_storage_table;
+	protected $state_table;
 	protected $user;
 
 	protected function setup()
@@ -31,9 +32,12 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		global $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->service_name = 'auth.provider.oauth.service.testing';
 		$this->token_storage_table = 'phpbb_oauth_tokens';
+		$this->state_table = 'phpbb_oauth_states';
 
 		// Give the user a session_id that we will remember
 		$this->session_id = '12345';
@@ -42,7 +46,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		// Set the user id to anonymous
 		$this->user->data['user_id'] = ANONYMOUS;
 
-		$this->token_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table);
+		$this->token_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
 	}
 
 	public function getDataSet()
@@ -96,7 +100,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table);
+		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
 		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
@@ -127,7 +131,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user,  $this->token_storage_table);
+		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user,  $this->token_storage_table, $this->state_table);
 		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 

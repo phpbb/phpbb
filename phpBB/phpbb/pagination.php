@@ -284,7 +284,7 @@ class pagination
 	*/
 	public function get_on_page($per_page, $start)
 	{
-		return floor($start / $per_page) + 1;
+		return floor((int) $start / (int) $per_page) + 1;
 	}
 
 	/**

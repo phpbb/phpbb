@@ -392,7 +392,7 @@ class php_exporter
 	public function get_vars_from_single_line_array($line, $throw_multiline = true)
 	{
 		$match = array();
-		preg_match('#^\$vars = array\(\'([a-zA-Z0-9_\' ,]+)\'\);$#', $line, $match);
+		preg_match('#^\$vars = (?:\[|array\()\'([a-zA-Z0-9_\' ,]+)\'[\)\]];$#', $line, $match);
 
 		if (isset($match[1]))
 		{

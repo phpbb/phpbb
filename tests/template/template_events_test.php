@@ -138,16 +138,40 @@ Zeta test event in all',
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
 			dirname(__FILE__) . "/datasets/$dataset/"
 		);
+
+		$filesystem = new \phpbb\filesystem\filesystem();
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			new \phpbb\filesystem\filesystem(),
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $user, new \phpbb\template\context, $this->extension_manager);
+
+		$container = new phpbb_mock_container_builder();
+		$cache_path = $phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$twig = new \phpbb\template\twig\environment(
+			$config,
+			$filesystem,
+			$path_helper,
+			$cache_path,
+			$this->extension_manager,
+			$loader,
+			new \phpbb\event\dispatcher($container),
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
+		);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
+
 		$this->template->set_custom_style(((!empty($style_names)) ? $style_names : 'silver'), array($this->template_path));
 	}
 }

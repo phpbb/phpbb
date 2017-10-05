@@ -11,9 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
-
 class phpbb_auth_provider_db_test extends phpbb_database_test_case
 {
 	public function getDataSet()
@@ -38,8 +35,10 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			'ip_login_limit_use_forwarded' 	=> 0,
 			'max_login_attempts' 			=> 0,
 			));
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
 		$request = $this->getMock('\phpbb\request\request');
-		$user = new \phpbb\user('\phpbb\datetime');
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $driver_helper),

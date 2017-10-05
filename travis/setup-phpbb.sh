@@ -13,8 +13,9 @@ set -x
 
 DB=$1
 TRAVIS_PHP_VERSION=$2
+NOTESTS=$3
 
-if [ "$TRAVIS_PHP_VERSION" == "5.3.3" -a "$DB" == "mysqli" ]
+if [ "$NOTESTS" == '1' ]
 then
 	travis/setup-exiftool.sh
 	travis/setup-unbuffer.sh
@@ -25,22 +26,16 @@ then
 	travis/setup-mariadb.sh
 fi
 
-if [ "$TRAVIS_PHP_VERSION" != "hhvm" ]
+if [ "$NOTESTS" != '1' -a "$TRAVIS_PHP_VERSION" != "hhvm" ]
 then
 	travis/setup-php-extensions.sh
 fi
 
-if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.19', '>=');"` == "1" ]
+if [ "$NOTESTS" != '1' ]
 then
 	travis/setup-webserver.sh
-	travis/install-phpbb-test-dependencies.sh
 fi
 
 cd phpBB
-if [ `php -r "echo (int) version_compare(PHP_VERSION, '5.3.4', '<');"` == "1" ]
-then
-	php ../composer.phar config disable-tls true
-fi
 php ../composer.phar install --dev --no-interaction
-
 cd ..

@@ -46,10 +46,12 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$request = new phpbb_mock_request(array(), array(), array(), $this->server);
 		$symfony_request = new \phpbb\symfony_request($request);
 
-		$phpbb_filesystem = new \phpbb\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
 		// Set no user and trick a bit to circumvent errors
-		$user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->lang = true;
 		$user->browser				= $this->server['HTTP_USER_AGENT'];
 		$user->referer				= '';

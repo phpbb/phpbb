@@ -23,6 +23,10 @@ To be able to run an installation from the repo (and not from a pre-built packag
 3. Read our [Coding guidelines](https://wiki.phpbb.com/Coding_guidelines) and [Git Contribution Guidelines](http://wiki.phpbb.com/Git)
 4. Send us a pull request
 
+## VAGRANT
+
+Read our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use Vagrant to develop and contribute to phpBB.
+
 ## AUTOMATED TESTING
 
 We have unit and functional tests in order to prevent regressions. You can view the bamboo continuous integration [here](http://bamboo.phpbb.com) or check our travis builds below:

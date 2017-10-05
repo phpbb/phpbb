@@ -19,7 +19,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup();
 
-$start = request_var('start', 0);
+$start = $request->variable('start', 0);
 $num_items = 1000;
 
 echo '<br />Updating user email hashes' . "\n";

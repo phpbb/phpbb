@@ -1,0 +1,51 @@
+installer:
+    admin:
+        name: admin
+        password: adminadmin
+        email: admin@example.org
+
+    board:
+        lang: en
+        name: phpBB Dev Board
+        description: My phpBB development board
+
+    database:
+        dbms: mysqli
+        dbhost: 127.0.0.1
+        dbport: ~
+        dbuser: homestead
+        dbpasswd: secret
+        dbname: phpbb
+        table_prefix: phpbb_
+#    database:
+#        dbms: postgres
+#        dbhost: 127.0.0.1
+#        dbport: 5432
+#        dbuser: homestead
+#        dbpasswd: secret
+#        dbname: phpbb
+#        table_prefix: phpbb_
+#    database:
+#        dbms: sqlite3
+#        dbhost: /tmp/phpbb.sqlite3
+#        dbport: ~
+#        dbuser: ~
+#        dbpasswd: ~
+#        dbname: phpbb
+#        table_prefix: phpbb_
+
+    email:
+        enabled: false
+        smtp_delivery : ~
+        smtp_host: ~
+        smtp_auth: ~
+        smtp_user: ~
+        smtp_pass: ~
+
+    server:
+        cookie_secure: false
+        server_protocol: http://
+        force_server_vars: false
+        server_name: 192.168.10.10
+        server_port: 80
+        script_path: /

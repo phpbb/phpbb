@@ -35,12 +35,12 @@ class mcp_logs
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx, $phpbb_container, $phpbb_log;
+		global $auth, $db, $user, $template, $request;
+		global $config, $phpbb_container, $phpbb_log;
 
 		$user->add_lang('acp/common');
 
-		$action = request_var('action', array('' => ''));
+		$action = $request->variable('action', array('' => ''));
 
 		if (is_array($action))
 		{
@@ -48,23 +48,24 @@ class mcp_logs
 		}
 		else
 		{
-			$action = request_var('action', '');
+			$action = $request->variable('action', '');
 		}
 
 		// Set up general vars
-		$start		= request_var('start', 0);
+		$start		= $request->variable('start', 0);
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
-		$marked		= request_var('mark', array(0));
+		$marked		= $request->variable('mark', array(0));
 
 		// Sort keys
-		$sort_days	= request_var('st', 0);
-		$sort_key	= request_var('sk', 't');
-		$sort_dir	= request_var('sd', 'd');
+		$sort_days	= $request->variable('st', 0);
+		$sort_key	= $request->variable('sk', 't');
+		$sort_dir	= $request->variable('sd', 'd');
 
 		$this->tpl_name = 'mcp_logs';
 		$this->page_title = 'MCP_LOGS';
 
+		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
 
 		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
@@ -78,10 +79,11 @@ class mcp_logs
 			break;
 
 			case 'forum_logs':
-				$forum_id = request_var('f', 0);
+				$forum_id = $request->variable('f', 0);
 
 				if (!in_array($forum_id, $forum_list))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NOT_AUTHORISED');
 				}
 
@@ -89,7 +91,7 @@ class mcp_logs
 			break;
 
 			case 'topic_logs':
-				$topic_id = request_var('t', 0);
+				$topic_id = $request->variable('t', 0);
 
 				$sql = 'SELECT forum_id
 					FROM ' . TOPICS_TABLE . '
@@ -100,6 +102,7 @@ class mcp_logs
 
 				if (!in_array($forum_id, $forum_list))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NOT_AUTHORISED');
 				}
 
@@ -123,7 +126,7 @@ class mcp_logs
 				}
 				else if ($deleteall)
 				{
-					$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+					$keywords = $request->variable('keywords', '', true);
 
 					$conditions = array(
 						'forum_id'	=> array('IN' => $forum_list),
@@ -157,7 +160,7 @@ class mcp_logs
 					'sd'		=> $sort_dir,
 					'i'			=> $id,
 					'mode'		=> $mode,
-					'action'	=> request_var('action', array('' => ''))))
+					'action'	=> $request->variable('action', array('' => ''))))
 				);
 			}
 		}
@@ -174,7 +177,7 @@ class mcp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords = $request->variable('keywords', '', true);
 		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		// Grab log data
@@ -204,7 +207,7 @@ class mcp_logs
 		{
 			$data = array();
 
-			$checks = array('viewtopic', 'viewforum');
+			$checks = array('viewpost', 'viewtopic', 'viewforum');
 			foreach ($checks as $check)
 			{
 				if (isset($row[$check]) && $row[$check])

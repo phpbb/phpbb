@@ -27,7 +27,10 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', { id: 'loading_indicator' });
+		$loadingIndicator = $('<div />', { 
+			id: 'loading_indicator', 
+			class: 'loading_indicator', 
+		});
 		$loadingIndicator.appendTo('#page-footer');
 	}
 
@@ -176,7 +179,7 @@ phpbb.alert.close = function($alert, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
 	$confirmDiv.find('.alert_text').html(msg);
-	fadedark = fadedark || true;
+	fadedark = fadedark !== 'undefined' ? fadedark : true;
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
@@ -191,9 +194,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
 		var confirmed = this.name === 'confirm';
 
-		if (confirmed) {
-			callback(true);
-		}
+		callback(confirmed);
 		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
 		phpbb.alert.close($confirmDiv, fadedark || !confirmed);
 
@@ -965,12 +966,6 @@ phpbb.addAjaxCallback('toggle_link', function() {
 	$anchor.each(function() {
 		var $this = $(this);
 
-		// Toggle link text
-		toggleText = $this.attr('data-toggle-text');
-		$this.attr('data-toggle-text', $this.text());
-		$this.attr('title', $.trim(toggleText));
-		$this.text(toggleText);
-
 		// Toggle link url
 		toggleUrl = $this.attr('data-toggle-url');
 		$this.attr('data-toggle-url', $this.attr('href'));
@@ -978,8 +973,14 @@ phpbb.addAjaxCallback('toggle_link', function() {
 
 		// Toggle class of link parent
 		toggleClass = $this.attr('data-toggle-class');
-		$this.attr('data-toggle-class', $this.parent().attr('class'));
-		$this.parent().attr('class', toggleClass);
+		$this.attr('data-toggle-class', $this.children().attr('class'));
+		$this.children('.icon').attr('class', toggleClass);
+
+		// Toggle link text
+		toggleText = $this.attr('data-toggle-text');
+		$this.attr('data-toggle-text', $this.children('span').text());
+		$this.attr('title', $.trim(toggleText));
+		$this.children('span').text(toggleText);
 	});
 });
 

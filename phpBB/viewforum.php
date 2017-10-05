@@ -25,18 +25,19 @@ $user->session_begin();
 $auth->acl($user->data);
 
 // Start initial var setup
-$forum_id	= request_var('f', 0);
-$mark_read	= request_var('mark', '');
-$start		= request_var('start', 0);
+$forum_id	= $request->variable('f', 0);
+$mark_read	= $request->variable('mark', '');
+$start		= $request->variable('start', 0);
 
 $default_sort_days	= (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0;
 $default_sort_key	= (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't';
 $default_sort_dir	= (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd';
 
-$sort_days	= request_var('st', $default_sort_days);
-$sort_key	= request_var('sk', $default_sort_key);
-$sort_dir	= request_var('sd', $default_sort_dir);
+$sort_days	= $request->variable('st', $default_sort_days);
+$sort_key	= $request->variable('sk', $default_sort_key);
+$sort_dir	= $request->variable('sd', $default_sort_dir);
 
+/* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
 // Check if the user has actually sent a forum ID with his/her request
@@ -90,6 +91,7 @@ if (!$auth->acl_gets('f_list', 'f_read', $forum_id) || ($forum_data['forum_type'
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('SORRY_AUTH_READ');
 	}
 
@@ -191,10 +193,10 @@ if (!$auth->acl_get('f_read', $forum_id))
 // Handle marking posts
 if ($mark_read == 'topics')
 {
-	$token = request_var('hash', '');
+	$token = $request->variable('hash', '');
 	if (check_link_hash($token, 'global'))
 	{
-		markread('topics', array($forum_id), false, request_var('mark_time', 0));
+		markread('topics', array($forum_id), false, $request->variable('mark_time', 0));
 	}
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
@@ -219,6 +221,7 @@ if ($mark_read == 'topics')
 // Do the forum Prune thang - cron type job ...
 if (!$config['use_system_cron'])
 {
+	/* @var $cron \phpbb\cron\manager */
 	$cron = $phpbb_container->get('cron.manager');
 
 	$task = $cron->find_task('cron.task.core.prune_forum');
@@ -989,6 +992,16 @@ if (sizeof($topic_list))
 		unset($rowset[$topic_id]);
 	}
 }
+
+/**
+* This event is to perform additional actions on viewforum page
+*
+* @event core.viewforum_generate_page_after
+* @var	array	forum_data	Array with the forum data
+* @since 3.2.2-RC1
+*/
+$vars = array('forum_data');
+extract($phpbb_dispatcher->trigger_event('core.viewforum_generate_page_after', compact($vars)));
 
 // This is rather a fudge but it's the best I can think of without requiring information
 // on all topics (as we do in 2.0.x). It looks for unread or new topics, if it doesn't find

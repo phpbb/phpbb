@@ -128,6 +128,22 @@ interface template
 	public function append_var($varname, $varval);
 
 	/**
+	* Retrieve multiple template values
+	*
+	* @param array $vararray An array with variable names
+	* @return array A hash of variable name => value pairs (value is null if not set)
+	*/
+	public function retrieve_vars(array $vararray);
+
+	/**
+	* Retreive a single scalar value from a single key.
+	*
+	* @param string $varname Variable name
+	* @return mixed Variable value, or null if not set
+	*/
+	public function retrieve_var($varname);
+
+	/**
 	* Assign key variable pairs from an array to a specified block
 	* @param string $blockname Name of block to assign $vararray to
 	* @param array $vararray A hash of variable name => value pairs
@@ -142,6 +158,14 @@ interface template
 	* @return \phpbb\template\template $this
 	*/
 	public function assign_block_vars_array($blockname, array $block_vars_array);
+
+	/**
+	* Retrieve variable values from an specified block
+	* @param string $blockname Name of block to retrieve $vararray from
+	* @param array $vararray An array with variable names, empty array gets all vars
+	* @return array A hash of variable name => value pairs (value is null if not set)
+	*/
+	public function retrieve_block_vars($blockname, array $vararray);
 
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
@@ -160,10 +184,11 @@ interface template
 	* If key is false the position is set to 0
 	* If key is true the position is set to the last entry
 	*
-	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
+	* @param	string	$mode		Mode to execute (valid modes are 'insert', 'change' and 'delete')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero).
 	*	If change, the current block gets merged with the vararray (resulting in new \key/value pairs be added and existing keys be replaced by the new \value).
+	*	If delete, the vararray is ignored, and the block at the given position (counting from zero) is removed.
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)

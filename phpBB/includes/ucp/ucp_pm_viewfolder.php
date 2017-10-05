@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_folder($id, $mode, $folder_id, $folder)
 {
-	global $user, $template, $auth, $db, $cache;
+	global $user, $template, $auth, $db, $cache, $request;
 	global $phpbb_root_path, $config, $phpEx;
 
 	$submit_export = (isset($_POST['submit_export'])) ? true : false;
@@ -40,9 +40,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$icons = $cache->obtain_icons();
 
 		$color_rows = array('marked', 'replied');
-
-		// only show the friend/foe color rows if the module is enabled
-		$zebra_enabled = false;
 
 		$_module = new p_master();
 		$_module->list_modules('ucp');
@@ -196,9 +193,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 	}
 	else
 	{
-		$export_type = request_var('export_option', '');
-		$enclosure = request_var('enclosure', '');
-		$delimiter = request_var('delimiter', '');
+		$export_type = $request->variable('export_option', '');
+		$enclosure = $request->variable('enclosure', '');
+		$delimiter = $request->variable('delimiter', '');
 
 		if ($export_type == 'CSV' && ($delimiter === '' || $enclosure === ''))
 		{
@@ -397,15 +394,16 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $config, $auth, $phpbb_container, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+	global $user, $db, $template, $config, $auth, $phpbb_container, $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
 
-	$start = request_var('start', 0);
+	$start = $request->variable('start', 0);
 
 	// Additional vars later, pm ordering is mostly different from post ordering. :/
-	$sort_days	= request_var('st', 0);
-	$sort_key	= request_var('sk', 't');
-	$sort_dir	= request_var('sd', 'd');
+	$sort_days	= $request->variable('st', 0);
+	$sort_key	= $request->variable('sk', 't');
+	$sort_dir	= $request->variable('sd', 'd');
 
+	/* @var $pagination \phpbb\pagination */
 	$pagination = $phpbb_container->get('pagination');
 
 	// PM ordering options

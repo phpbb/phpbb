@@ -11,6 +11,9 @@
 *
 */
 
+use phpbb\exception\exception_interface;
+use phpbb\exception\version_check_exception;
+
 /**
 * @ignore
 */
@@ -28,7 +31,6 @@ class acp_extensions
 	private $config;
 	private $template;
 	private $user;
-	private $cache;
 	private $log;
 	private $request;
 	private $phpbb_dispatcher;
@@ -37,12 +39,11 @@ class acp_extensions
 	function main()
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpEx, $phpbb_log, $cache, $phpbb_dispatcher;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher;
 
 		$this->config = $config;
 		$this->template = $template;
 		$this->user = $user;
-		$this->cache = $cache;
 		$this->request = $request;
 		$this->log = $phpbb_log;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
@@ -96,15 +97,16 @@ class acp_extensions
 		// If they've specified an extension, let's load the metadata manager and validate it.
 		if ($ext_name)
 		{
-			$md_manager = $this->ext_manager->create_extension_metadata_manager($ext_name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($ext_name);
 
 			try
 			{
 				$md_manager->get_metadata('all');
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (exception_interface $e)
 			{
-				trigger_error($e, E_USER_WARNING);
+				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+				trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -159,9 +161,10 @@ class acp_extensions
 				{
 					$md_manager->validate_enable();
 				}
-				catch (\phpbb\extension\exception $e)
+				catch (exception_interface $e)
 				{
-					trigger_error($e . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$extension = $this->ext_manager->get_extension($ext_name);
@@ -189,9 +192,10 @@ class acp_extensions
 				{
 					$md_manager->validate_enable();
 				}
-				catch (\phpbb\extension\exception $e)
+				catch (exception_interface $e)
 				{
-					trigger_error($e . adm_back_link($this->u_action), E_USER_WARNING);
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$extension = $this->ext_manager->get_extension($ext_name);
@@ -323,26 +327,36 @@ class acp_extensions
 
 			case 'details':
 				// Output it to the template
-				$md_manager->output_template_data();
+				$meta = $md_manager->get_metadata('all');
+				$this->output_metadata_to_template($meta);
 
-				try
+				if (isset($meta['extra']['version-check']))
 				{
-					$updates_available = $this->version_check($md_manager, $this->request->variable('versioncheck_force', false));
+					try
+					{
+						$updates_available = $this->ext_manager->version_check($md_manager, $this->request->variable('versioncheck_force', false), false, $this->config['extension_force_unstable'] ? 'unstable' : null);
 
-					$this->template->assign_vars(array(
-						'S_UP_TO_DATE'		=> empty($updates_available),
-						'S_VERSIONCHECK'	=> true,
-						'UP_TO_DATE_MSG'	=> $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-					));
+						$this->template->assign_vars(array(
+							'S_UP_TO_DATE' => empty($updates_available),
+							'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
+						));
 
-					$this->template->assign_block_vars('updates_available', $updates_available);
+						$this->template->assign_block_vars('updates_available', $updates_available);
+					}
+					catch (exception_interface $e)
+					{
+						$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+
+						$this->template->assign_vars(array(
+							'S_VERSIONCHECK_FAIL' => true,
+							'VERSIONCHECK_FAIL_REASON' => ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
+						));
+					}
+					$this->template->assign_var('S_VERSIONCHECK', true);
 				}
-				catch (\RuntimeException $e)
+				else
 				{
-					$this->template->assign_vars(array(
-						'S_VERSIONCHECK_STATUS'			=> $e->getCode(),
-						'VERSIONCHECK_FAIL_REASON'		=> ($e->getMessage() !== $this->user->lang('VERSIONCHECK_FAIL')) ? $e->getMessage() : '',
-					));
+					$this->template->assign_var('S_VERSIONCHECK', false);
 				}
 
 				$this->template->assign_vars(array(
@@ -387,7 +401,7 @@ class acp_extensions
 
 		foreach ($this->ext_manager->all_enabled() as $name => $location)
 		{
-			$md_manager = $this->ext_manager->create_extension_metadata_manager($name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($name);
 
 			try
 			{
@@ -397,17 +411,32 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$force_update = $this->request->variable('versioncheck_force', false);
-				$updates = $this->version_check($md_manager, $force_update, !$force_update);
+				if (isset($meta['extra']['version-check']))
+				{
+					try
+					{
+						$force_update = $this->request->variable('versioncheck_force', false);
+						$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
 
-				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+						$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+						$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+						$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+					}
+					catch (exception_interface $e)
+					{
+						// Ignore exceptions due to the version check
+					}
+				}
+				else
+				{
+					$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (exception_interface $e)
 			{
+				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
 				));
 			}
@@ -443,7 +472,7 @@ class acp_extensions
 
 		foreach ($this->ext_manager->all_disabled() as $name => $location)
 		{
-			$md_manager = $this->ext_manager->create_extension_metadata_manager($name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($name);
 
 			try
 			{
@@ -453,23 +482,35 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$force_update = $this->request->variable('versioncheck_force', false);
-				$updates = $this->version_check($md_manager, $force_update, !$force_update);
+				if (isset($meta['extra']['version-check']))
+				{
+					$force_update = $this->request->variable('versioncheck_force', false);
+					$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
 
-				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+					$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+					$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+				}
+				else
+				{
+					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
 			}
-			catch (\phpbb\extension\exception $e)
+			catch (version_check_exception $e)
 			{
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+			}
+			catch (exception_interface $e)
+			{
+				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
 				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
+					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
 				));
 			}
 			catch (\RuntimeException $e)
 			{
-				$disabeld_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
@@ -502,7 +543,7 @@ class acp_extensions
 
 		foreach ($uninstalled as $name => $location)
 		{
-			$md_manager = $this->ext_manager->create_extension_metadata_manager($name, $this->template);
+			$md_manager = $this->ext_manager->create_extension_metadata_manager($name);
 
 			try
 			{
@@ -512,23 +553,31 @@ class acp_extensions
 					'META_VERSION' => $meta['version'],
 				);
 
-				$force_update = $this->request->variable('versioncheck_force', false);
-				$updates = $this->version_check($md_manager, $force_update, !$force_update);
+				if (isset($meta['extra']['version-check']))
+				{
+					$force_update = $this->request->variable('versioncheck_force', false);
+					$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
 
-				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-				$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+					$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+					$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+				}
+				else
+				{
+					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
 			}
-			catch (\phpbb\extension\exception $e)
-			{
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $e),
-					'S_VERSIONCHECK'		=> false,
-				));
-			}
-			catch (\RuntimeException $e)
+			catch (version_check_exception $e)
 			{
 				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+			}
+			catch (exception_interface $e)
+			{
+				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+				$this->template->assign_block_vars('disabled', array(
+					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+					'S_VERSIONCHECK'		=> false,
+				));
 			}
 		}
 
@@ -566,38 +615,47 @@ class acp_extensions
 	}
 
 	/**
-	* Check the version and return the available updates.
-	*
-	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
-	* @param bool $force_update Ignores cached data. Defaults to false.
-	* @param bool $force_cache Force the use of the cache. Override $force_update.
-	* @return array
-	* @throws RuntimeException
-	*/
-	protected function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false)
-	{
-		$meta = $md_manager->get_metadata('all');
-
-		if (!isset($meta['extra']['version-check']))
-		{
-			throw new \RuntimeException($this->user->lang('NO_VERSIONCHECK'), 1);
-		}
-
-		$version_check = $meta['extra']['version-check'];
-
-		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new \phpbb\file_downloader(), $this->user);
-		$version_helper->set_current_version($meta['version']);
-		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename'], isset($version_check['ssl']) ? $version_check['ssl'] : false);
-		$version_helper->force_stability($this->config['extension_force_unstable'] ? 'unstable' : null);
-
-		return $version_helper->get_ext_update_on_branch($force_update, $force_cache);
-	}
-
-	/**
 	* Sort helper for the table containing the metadata about the extensions.
 	*/
 	protected function sort_extension_meta_data_table($val1, $val2)
 	{
 		return strnatcasecmp($val1['META_DISPLAY_NAME'], $val2['META_DISPLAY_NAME']);
+	}
+
+	/**
+	* Outputs extension metadata into the template
+	*
+	* @param array $metadata Array with all metadata for the extension
+	* @return null
+	*/
+	public function output_metadata_to_template($metadata)
+	{
+		$this->template->assign_vars(array(
+			'META_NAME'			=> $metadata['name'],
+			'META_TYPE'			=> $metadata['type'],
+			'META_DESCRIPTION'	=> (isset($metadata['description'])) ? $metadata['description'] : '',
+			'META_HOMEPAGE'		=> (isset($metadata['homepage'])) ? $metadata['homepage'] : '',
+			'META_VERSION'		=> $metadata['version'],
+			'META_TIME'			=> (isset($metadata['time'])) ? $metadata['time'] : '',
+			'META_LICENSE'		=> $metadata['license'],
+
+			'META_REQUIRE_PHP'		=> (isset($metadata['require']['php'])) ? $metadata['require']['php'] : '',
+			'META_REQUIRE_PHP_FAIL'	=> (isset($metadata['require']['php'])) ? false : true,
+
+			'META_REQUIRE_PHPBB'		=> (isset($metadata['extra']['soft-require']['phpbb/phpbb'])) ? $metadata['extra']['soft-require']['phpbb/phpbb'] : '',
+			'META_REQUIRE_PHPBB_FAIL'	=> (isset($metadata['extra']['soft-require']['phpbb/phpbb'])) ? false : true,
+
+			'META_DISPLAY_NAME'	=> (isset($metadata['extra']['display-name'])) ? $metadata['extra']['display-name'] : '',
+		));
+
+		foreach ($metadata['authors'] as $author)
+		{
+			$this->template->assign_block_vars('meta_authors', array(
+				'AUTHOR_NAME'		=> $author['name'],
+				'AUTHOR_EMAIL'		=> (isset($author['email'])) ? $author['email'] : '',
+				'AUTHOR_HOMEPAGE'	=> (isset($author['homepage'])) ? $author['homepage'] : '',
+				'AUTHOR_ROLE'		=> (isset($author['role'])) ? $author['role'] : '',
+			));
+		}
 	}
 }

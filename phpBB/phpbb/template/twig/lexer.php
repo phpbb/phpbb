@@ -15,8 +15,21 @@ namespace phpbb\template\twig;
 
 class lexer extends \Twig_Lexer
 {
+	public function set_environment(\Twig_Environment $env)
+	{
+		$this->env = $env;
+	}
+
 	public function tokenize($code, $filename = null)
 	{
+		// Handle \Twig_Source format input
+		if ($code instanceof \Twig_Source)
+		{
+			$source = $code;
+			$code = $source->getCode();
+			$filename = $source->getName();
+		}
+
 		// Our phpBB tags
 		// Commented out tokens are handled separately from the main replace
 		$phpbb_tags = array(
@@ -112,15 +125,16 @@ class lexer extends \Twig_Lexer
 		// Appends any filters after lang()
 		$code = preg_replace('#{L_([a-zA-Z0-9_\.]+)(\|[^}]+?)?}#', '{{ lang(\'$1\')$2 }}', $code);
 
-		// Replace all of our escaped language variables, {LA_VARNAME}, with Twig style, {{ lang('NAME')|addslashes }}
-		// Appends any filters after lang(), but before addslashes
-		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)(\|[^}]+?)?}#', '{{ lang(\'$1\')$2|addslashes }}', $code);
+		// Replace all of our escaped language variables, {LA_VARNAME}, with Twig style, {{ lang('NAME')|escape('js') }}
+		// Appends any filters after lang(), but before escape('js')
+		$code = preg_replace('#{LA_([a-zA-Z0-9_\.]+)(\|[^}]+?)?}#', '{{ lang(\'$1\')$2|escape(\'js\') }}', $code);
 
 		// Replace all of our variables, {VARNAME}, with Twig style, {{ VARNAME }}
 		// Appends any filters
 		$code = preg_replace('#{([a-zA-Z0-9_\.]+)(\|[^}]+?)?}#', '{{ $1$2 }}', $code);
 
-		return parent::tokenize($code, $filename);
+		// Tokenize \Twig_Source instance
+		return parent::tokenize(new \Twig_Source($code, $filename));
 	}
 
 	/**

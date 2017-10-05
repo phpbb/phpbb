@@ -36,9 +36,25 @@ class pm extends \phpbb\notification\type\base
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	public static $notification_option = array(
+	static public $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_PM',
 	);
+
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	public function set_config(\phpbb\config\config $config)
+	{
+		$this->config = $config;
+	}
+
+	public function set_user_loader(\phpbb\user_loader $user_loader)
+	{
+		$this->user_loader = $user_loader;
+	}
 
 	/**
 	* Is available
@@ -53,7 +69,7 @@ class pm extends \phpbb\notification\type\base
 	*
 	* @param array $pm The data from the private message
 	*/
-	public static function get_item_id($pm)
+	static public function get_item_id($pm)
 	{
 		return (int) $pm['msg_id'];
 	}
@@ -63,7 +79,7 @@ class pm extends \phpbb\notification\type\base
 	*
 	* @param array $pm The data from the pm
 	*/
-	public static function get_item_parent_id($pm)
+	static public function get_item_parent_id($pm)
 	{
 		// No parent
 		return 0;
@@ -112,7 +128,7 @@ class pm extends \phpbb\notification\type\base
 	{
 		$username = $this->user_loader->get_username($this->get_data('from_user_id'), 'no_profile');
 
-		return $this->user->lang('NOTIFICATION_PM', $username);
+		return $this->language->lang('NOTIFICATION_PM', $username);
 	}
 
 	/**
@@ -122,7 +138,7 @@ class pm extends \phpbb\notification\type\base
 	*/
 	public function get_reference()
 	{
-		return $this->user->lang(
+		return $this->language->lang(
 			'NOTIFICATION_REFERENCE',
 			$this->get_data('message_subject')
 		);
@@ -176,13 +192,7 @@ class pm extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Function for preparing the data for insertion in an SQL query
-	* (The service handles insertion)
-	*
-	* @param array $pm Data from submit_post
-	* @param array $pre_create_data Data from pre_create_insert_array()
-	*
-	* @return array Array of data ready to be inserted into the database
+	* {@inheritdoc}
 	*/
 	public function create_insert_array($pm, $pre_create_data = array())
 	{
@@ -190,6 +200,6 @@ class pm extends \phpbb\notification\type\base
 
 		$this->set_data('message_subject', $pm['message_subject']);
 
-		return parent::create_insert_array($pm, $pre_create_data);
+		parent::create_insert_array($pm, $pre_create_data);
 	}
 }

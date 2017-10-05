@@ -42,6 +42,11 @@ if (isset($_GET['avatar']))
 	$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 	extract($phpbb_config_php_file->get_all());
 
+	if (!defined('PHPBB_ENVIRONMENT'))
+	{
+		@define('PHPBB_ENVIRONMENT', 'production');
+	}
+
 	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 	{
 		exit;
@@ -56,40 +61,45 @@ if (isset($_GET['avatar']))
 	$phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 	$phpbb_class_loader_ext->register();
 
-	phpbb_load_extensions_autoloaders($phpbb_root_path);
-
 	// Set up container
-	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_config_php_file, $phpbb_root_path, $phpEx);
-	$phpbb_container = $phpbb_container_builder->get_container();
+	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+	$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 
 	$phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
 	$phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 	// set up caching
+	/* @var $cache \phpbb\cache\service */
 	$cache = $phpbb_container->get('cache');
 
+	/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
 	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+
+	/* @var $request \phpbb\request\request_interface */
 	$request	= $phpbb_container->get('request');
+
+	/* @var $db \phpbb\db\driver\driver_interface */
 	$db			= $phpbb_container->get('dbal.conn');
+
+	/* @var $phpbb_log \phpbb\log\log_interface */
 	$phpbb_log	= $phpbb_container->get('log');
 
 	unset($dbpasswd);
 
-	request_var('', 0, false, false, $request);
-
+	/* @var $config \phpbb\config\config */
 	$config = $phpbb_container->get('config');
-	set_config(null, null, null, $config);
-	set_config_count(null, null, null, $config);
 
 	// load extensions
+	/* @var $phpbb_extension_manager \phpbb\extension\manager */
 	$phpbb_extension_manager = $phpbb_container->get('ext.manager');
 
 	// worst-case default
 	$browser = strtolower($request->header('User-Agent', 'msie 6.0'));
 
+	/* @var $phpbb_avatar_manager \phpbb\avatar\manager */
 	$phpbb_avatar_manager = $phpbb_container->get('avatar.manager');
 
-	$filename = request_var('avatar', '');
+	$filename = $request->variable('avatar', '');
 	$avatar_group = false;
 	$exit = false;
 
@@ -140,9 +150,9 @@ if (isset($_GET['avatar']))
 include($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_download' . '.' . $phpEx);
 
-$attach_id = request_var('id', 0);
-$mode = request_var('mode', '');
-$thumbnail = request_var('t', false);
+$attach_id = $request->variable('id', 0);
+$mode = $request->variable('mode', '');
+$thumbnail = $request->variable('t', false);
 
 // Start session management, do not update session page.
 $user->session_begin(false);

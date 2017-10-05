@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_get_formatted_filesize_test extends phpbb_test_case
 {
 	public function get_formatted_filesize_test_data()

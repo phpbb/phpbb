@@ -28,4 +28,9 @@ class phpbb_feed_attachments_mock_feed extends \phpbb\feed\attachments_base
 
 		return true;
 	}
+
+	public function adjust_item(&$item_row, &$row)
+	{
+		return array();
+	}
 }

@@ -26,7 +26,7 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	});
 
 	// Mark subforums read
-	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read');
+	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read').children('.icon.icon-red').removeClass('icon-red').addClass('icon-blue');
 
 	// Mark topics read if we are watching a category and showing active topics
 	if ($('#active_topics').length) {
@@ -87,7 +87,7 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 	});
 
 	// Remove link to first unread post
-	$('a').has('span.icon_topic_newest').remove();
+	$('a.unread').has('.icon-red').remove();
 
 	// Update mark topics read links
 	if (updateTopicLinks) {

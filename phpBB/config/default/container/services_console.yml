@@ -1,0 +1,294 @@
+services:
+    console.exception_subscriber:
+        class: phpbb\console\exception_subscriber
+        arguments:
+            - '@language'
+            - '%debug.exceptions%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    console.command_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: console.command }
+
+    console.command.cache.purge:
+        class: phpbb\console\command\cache\purge
+        arguments:
+            - '@user'
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@auth'
+            - '@log'
+            - '@config'
+        tags:
+            - { name: console.command }
+
+    console.command.config.delete:
+        class: phpbb\console\command\config\delete
+        arguments:
+            - '@user'
+            - '@config'
+        tags:
+            - { name: console.command }
+
+    console.command.config.increment:
+        class: phpbb\console\command\config\increment
+        arguments:
+            - '@user'
+            - '@config'
+        tags:
+            - { name: console.command }
+
+    console.command.config.get:
+        class: phpbb\console\command\config\get
+        arguments:
+            - '@user'
+            - '@config'
+        tags:
+            - { name: console.command }
+
+    console.command.config.set:
+        class: phpbb\console\command\config\set
+        arguments:
+            - '@user'
+            - '@config'
+        tags:
+            - { name: console.command }
+
+    console.command.config.set_atomic:
+        class: phpbb\console\command\config\set_atomic
+        arguments:
+            - '@user'
+            - '@config'
+        tags:
+            - { name: console.command }
+
+    console.command.cron.list:
+        class: phpbb\console\command\cron\cron_list
+        arguments:
+            - '@user'
+            - '@cron.manager'
+        tags:
+            - { name: console.command }
+
+    console.command.cron.run:
+        class: phpbb\console\command\cron\run
+        arguments:
+            - '@user'
+            - '@cron.manager'
+            - '@cron.lock_db'
+        tags:
+            - { name: console.command }
+
+    console.command.db.list:
+        class: phpbb\console\command\db\list_command
+        arguments:
+            - '@user'
+            - '@migrator'
+            - '@ext.manager'
+            - '@config'
+            - '@cache'
+        tags:
+            - { name: console.command }
+
+    console.command.db.migrate:
+        class: phpbb\console\command\db\migrate
+        arguments:
+            - '@user'
+            - '@language'
+            - '@migrator'
+            - '@ext.manager'
+            - '@config'
+            - '@cache'
+            - '@log'
+            - '@filesystem'
+            - '%core.root_path%'
+        tags:
+            - { name: console.command }
+
+    console.command.db.revert:
+        class: phpbb\console\command\db\revert
+        parent: console.command.db.migrate
+        tags:
+            - { name: console.command }
+
+    console.command.dev.migration_tips:
+        class: phpbb\console\command\dev\migration_tips
+        arguments:
+            - '@user'
+            - '@ext.manager'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.disable:
+        class: phpbb\console\command\extension\disable
+        arguments:
+            - '@user'
+            - '@ext.manager'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.enable:
+        class: phpbb\console\command\extension\enable
+        arguments:
+            - '@user'
+            - '@ext.manager'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.purge:
+        class: phpbb\console\command\extension\purge
+        arguments:
+            - '@user'
+            - '@ext.manager'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.extension.show:
+        class: phpbb\console\command\extension\show
+        arguments:
+            - '@user'
+            - '@ext.manager'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.fixup.recalculate_email_hash:
+        class: phpbb\console\command\fixup\recalculate_email_hash
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+        tags:
+            - { name: console.command }
+
+    console.command.fixup.update_hashes:
+        class: phpbb\console\command\fixup\update_hashes
+        arguments:
+            - '@config'
+            - '@user'
+            - '@dbal.conn'
+            - '@passwords.manager'
+            - '@passwords.driver_collection'
+            - '%passwords.algorithms%'
+        tags:
+            - { name: console.command }
+
+    console.command.fixup.fix_left_right_ids:
+        class: phpbb\console\command\fixup\fix_left_right_ids
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@cache.driver'
+        tags:
+            - { name: console.command }
+
+    console.command.reparser.list:
+        class: phpbb\console\command\reparser\list_all
+        arguments:
+            - '@user'
+            - '@text_reparser_collection'
+        tags:
+            - { name: console.command }
+
+    console.command.reparser.reparse:
+        class: phpbb\console\command\reparser\reparse
+        arguments:
+            - '@user'
+            - '@text_reparser.lock'
+            - '@text_reparser.manager'
+            - '@text_reparser_collection'
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.delete:
+        class: phpbb\console\command\thumbnail\delete
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '%core.root_path%'
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.generate:
+        class: phpbb\console\command\thumbnail\generate
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@cache'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
+
+    console.command.thumbnail.recreate:
+        class: phpbb\console\command\thumbnail\recreate
+        arguments:
+            - '@user'
+        tags:
+            - { name: console.command }
+
+    console.command.update.check:
+        class: phpbb\console\command\update\check
+        arguments:
+            - '@user'
+            - '@config'
+            - '@service_container'
+            - '@language'
+        tags:
+            - { name: console.command }
+
+    console.command.user.activate:
+        class: phpbb\console\command\user\activate
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@user_loader'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
+
+    console.command.user.add:
+        class: phpbb\console\command\user\add
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@language'
+            - '@passwords.manager'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
+
+    console.command.user.delete:
+        class: phpbb\console\command\user\delete
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@language'
+            - '@log'
+            - '@user_loader'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
+
+    console.command.user.reclean:
+        class: phpbb\console\command\user\reclean
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@language'
+        tags:
+            - { name: console.command }

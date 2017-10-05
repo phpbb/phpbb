@@ -56,7 +56,6 @@ class compress
 			// Clean up path, add closing / if not present
 			$src_path = ($src_path && substr($src_path, -1) != '/') ? $src_path . '/' : $src_path;
 
-			$filelist = array();
 			$filelist = filelist("$phpbb_root_path$src", '', '*');
 			krsort($filelist);
 
@@ -184,7 +183,7 @@ class compress
 }
 
 /**
-* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux,
+* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier MÃ¼ller, LoÃ¯c Chapeaux,
 * Marc Delisle, http://www.phpmyadmin.net/
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
@@ -204,11 +203,19 @@ class compress_zip extends compress
 	var $datasec_len = 0;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* Constructor
 	*/
 	function compress_zip($mode, $file)
 	{
+		global $phpbb_filesystem;
+
 		$this->fp = @fopen($file, $mode . 'b');
+		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
 
 		if (!$this->fp)
 		{
@@ -286,7 +293,15 @@ class compress_zip extends compress
 									{
 										trigger_error("Could not create directory $folder");
 									}
-									phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+									try
+									{
+										$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+									}
+									catch (\phpbb\filesystem\exception\filesystem_exception $e)
+									{
+										// Do nothing
+									}
 								}
 							}
 						}
@@ -315,7 +330,15 @@ class compress_zip extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+								try
+								{
+									$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+								}
+								catch (\phpbb\filesystem\exception\filesystem_exception $e)
+								{
+									// Do nothing
+								}
 							}
 						}
 					}
@@ -539,10 +562,17 @@ class compress_tar extends compress
 	var $wrote = false;
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* Constructor
 	*/
 	function compress_tar($mode, $file, $type = '')
 	{
+		global $phpbb_filesystem;
+
 		$type = (!$type) ? $file : $type;
 		$this->isgz = preg_match('#(\.tar\.gz|\.tgz)$#', $type);
 		$this->isbz = preg_match('#\.tar\.bz2$#', $type);
@@ -551,6 +581,8 @@ class compress_tar extends compress
 		$this->file = &$file;
 		$this->type = &$type;
 		$this->open();
+
+		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
 	}
 
 	/**
@@ -601,7 +633,15 @@ class compress_tar extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+								try
+								{
+									$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+								}
+								catch (\phpbb\filesystem\exception\filesystem_exception $e)
+								{
+									// Do nothing
+								}
 							}
 						}
 					}
@@ -628,7 +668,15 @@ class compress_tar extends compress
 							{
 								trigger_error("Could not create directory $folder");
 							}
-							phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+
+							try
+							{
+								$this->filesystem->phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
+							}
+							catch (\phpbb\filesystem\exception\filesystem_exception $e)
+							{
+								// Do nothing
+							}
 						}
 					}
 
@@ -637,7 +685,15 @@ class compress_tar extends compress
 					{
 						trigger_error("Couldn't create file $filename");
 					}
-					phpbb_chmod($target_filename, CHMOD_READ);
+
+					try
+					{
+						$this->filesystem->phpbb_chmod($target_filename, CHMOD_READ);
+					}
+					catch (\phpbb\filesystem\exception\filesystem_exception $e)
+					{
+						// Do nothing
+					}
 
 					// Grab the file contents
 					fwrite($fp, ($filesize) ? $fzread($this->fp, ($filesize + 511) &~ 511) : '', $filesize);

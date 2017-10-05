@@ -15,6 +15,12 @@ require_once dirname(__FILE__) . '/template_test_case_with_tree.php';
 
 class phpbb_template_template_includecss_test extends phpbb_template_template_test_case_with_tree
 {
+	/** @var \phpbb\path_helper */
+	protected $phpbb_path_helper;
+
+	/** @var string */
+	protected $parent_template_path;
+
 	protected function setup_engine(array $new_config = array())
 	{
 		global $phpbb_root_path, $phpEx, $user;
@@ -22,11 +28,13 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
+		$filesystem = new \phpbb\filesystem\filesystem();
+
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -34,11 +42,33 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
+		$container = new phpbb_mock_container_builder();
+		$cache_path = $phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$twig = new \phpbb\template\twig\environment(
+			$config,
+			$filesystem,
+			$this->phpbb_path_helper,
+			$cache_path,
+			null,
+			$loader,
+			new \phpbb\event\dispatcher($container),
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
+		);
 		$this->template = new phpbb\template\twig\twig(
 			$this->phpbb_path_helper,
 			$config,
-			$user,
-			new phpbb\template\context(),
+			$context,
+			$twig,
+			$cache_path,
+			$this->user,
+			array(new \phpbb\template\twig\extension($context, $this->user)),
 			new phpbb_mock_extension_manager(
 				dirname(__FILE__) . '/',
 				array(
@@ -50,6 +80,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 				)
 			)
 		);
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 

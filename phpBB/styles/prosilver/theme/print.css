@@ -19,14 +19,14 @@ a:link		{ color: #000000; text-decoration: none; }
 a:visited	{ color: #000000; text-decoration: none; }
 a:active	{ color: #000000; text-decoration: none; }
 
-img, .noprint, #sub-header, #sub-footer, .navbar, .box1, .divider, .signature { display: none; }
+img, .noprint, .navbar, .box1, .divider, .signature { display: none; }
 /* Display smilies (Bug #47265) */
 .content img {
 	display: inline;
 }
 
 /* Container for the main body */
-#wrap {
+.wrap {
 	margin: 0 2em;
 }
 
@@ -137,3 +137,12 @@ div.spacer { clear: both; }
 .skip_link { display: none; }
 
 .codebox p { display: none; }
+
+/* stylelint-disable declaration-property-unit-whitelist */
+.emoji {
+	min-height: 18px;
+	min-width: 18px;
+	height: 1em;
+	width: 1em;
+}
+/* stylelint-enable declaration-property-unit-whitelist */

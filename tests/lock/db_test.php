@@ -11,8 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
-
 class phpbb_lock_db_test extends phpbb_database_test_case
 {
 	private $db;
@@ -30,7 +28,6 @@ class phpbb_lock_db_test extends phpbb_database_test_case
 
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config(array('rand_seed' => '', 'rand_seed_last_update' => '0'));
-		set_config(null, null, null, $this->config);
 		$this->lock = new \phpbb\lock\db('test_lock', $this->config, $this->db);
 	}
 

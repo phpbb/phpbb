@@ -15,6 +15,7 @@ namespace phpbb\console\command\fixup;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class fix_left_right_ids extends \phpbb\console\command\command
 {
@@ -67,6 +68,8 @@ class fix_left_right_ids extends \phpbb\console\command\command
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		// Fix Left/Right IDs for the modules table
 		$result = $this->db->sql_query('SELECT DISTINCT(module_class) FROM ' . MODULES_TABLE);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -83,7 +86,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 
 		$this->cache->purge();
 
-		$output->writeln('<info>' . $this->user->lang('CLI_FIXUP_FIX_LEFT_RIGHT_IDS_SUCCESS') . '</info>');
+		$io->success($this->user->lang('CLI_FIXUP_FIX_LEFT_RIGHT_IDS_SUCCESS'));
 	}
 
 	/**

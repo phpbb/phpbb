@@ -13,12 +13,50 @@
 
 namespace phpbb\notification\method;
 
+use phpbb\notification\type\type_interface;
+
 /**
 * Abstract notification method handling email and jabber notifications
 * using the phpBB messenger.
 */
 abstract class messenger_base extends \phpbb\notification\method\base
 {
+	/** @var \phpbb\user_loader */
+	protected $user_loader;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
+
+	/**
+	 * Notification Method Board Constructor
+	 *
+	 * @param \phpbb\user_loader $user_loader
+	 * @param string $phpbb_root_path
+	 * @param string $php_ext
+	 */
+	public function __construct(\phpbb\user_loader $user_loader, $phpbb_root_path, $php_ext)
+	{
+		$this->user_loader = $user_loader;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
+	}
+
+	/**
+	* Is this method available for the user?
+	* This is checked on the notifications options
+	*
+	* @param type_interface $notification_type	An optional instance of a notification type. This method returns false
+	*											only if the type is provided and if it doesn't provide an email template.
+	* @return bool
+	*/
+	public function is_available(type_interface $notification_type = null)
+	{
+		return $notification_type === null || $notification_type->get_email_template() !== false;
+	}
+
 	/**
 	* Notify using phpBB messenger
 	*
@@ -57,9 +95,9 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
 		}
 		$messenger = new \messenger();
-		$board_url = generate_board_url();
 
 		// Time to go through the queue and send emails
+		/** @var \phpbb\notification\type\type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
 			if ($notification->get_email_template() === false)

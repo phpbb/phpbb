@@ -24,9 +24,9 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_front_view($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path;
 	global $template, $db, $user, $auth, $module;
-	global $phpbb_dispatcher;
+	global $phpbb_dispatcher, $request;
 
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
@@ -35,7 +35,7 @@ function mcp_front_view($id, $mode, $action)
 		$post_list = array();
 		$forum_names = array();
 
-		$forum_id = request_var('f', 0);
+		$forum_id = $request->variable('f', 0);
 
 		$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
 

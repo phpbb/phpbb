@@ -7,9 +7,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 {
@@ -25,19 +23,19 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $cache, $config, $db, $phpbb_dispatcher, $phpbb_container;
+		global $cache, $config, $db, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path;
 
 		$db = $this->db = $this->new_dbal();
 		$config = new \phpbb\config\config(array(
 			'load_online_time'	=> 5,
 			'search_type'		=> '\phpbb\search\fulltext_mysql',
 		));
-		set_config(false, false, false, $config);
-		set_config_count(false, false, false, $config);
 		$cache = new phpbb_mock_null_cache();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+		// Works as a workaround for tests
+		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\filesystem\filesystem(), new \phpbb\attachment\resync($db), $phpbb_root_path));
 		$phpbb_container->set(
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()

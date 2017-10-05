@@ -33,8 +33,6 @@ class messenger
 	/** @var \phpbb\template\template */
 	protected $template;
 
-	var $eol = "\n";
-
 	/**
 	* Constructor
 	*/
@@ -44,10 +42,6 @@ class messenger
 
 		$this->use_queue = (!$config['email_package_size']) ? false : $use_queue;
 		$this->subject = '';
-
-		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
-		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
-		$this->eol = (!$this->eol) ? "\n" : $this->eol;
 	}
 
 	/**
@@ -212,7 +206,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '', $template_dir_prefix = '')
 	{
-		global $config, $phpbb_root_path, $phpEx, $user, $phpbb_extension_manager;
+		global $config, $phpbb_root_path, $user;
 
 		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
@@ -409,7 +403,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config, $request;
+		global $user, $config, $request, $phpbb_log;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -419,7 +413,6 @@ class messenger
 
 		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'));
 
-		$message = '';
 		switch ($type)
 		{
 			case 'EMAIL':
@@ -432,7 +425,7 @@ class messenger
 		}
 
 		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '</em><br /><br />' . $msg . '<br />';
-		add_log('critical', 'LOG_ERROR_' . $type, $message);
+		$phpbb_log->add('critical', $user->data['user_id'], $user->ip, 'LOG_ERROR_' . $type, false, array($message));
 	}
 
 	/**
@@ -523,7 +516,7 @@ class messenger
 	*/
 	function msg_email()
 	{
-		global $config, $user;
+		global $config;
 
 		if (empty($config['email_enable']))
 		{
@@ -561,7 +554,7 @@ class messenger
 			$this->from = $board_contact;
 		}
 
-		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
+		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : PHP_EOL;
 
 		// Build to, cc and bcc strings
 		$to = $cc = $bcc = '';
@@ -593,7 +586,7 @@ class messenger
 			}
 			else
 			{
-				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $this->eol, $err_msg);
+				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, PHP_EOL, $err_msg);
 			}
 
 			if (!$result)
@@ -621,7 +614,7 @@ class messenger
 	*/
 	function msg_jabber()
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $user, $phpbb_root_path, $phpEx;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
@@ -693,14 +686,37 @@ class messenger
 	*/
 	protected function setup_template()
 	{
-		global $config, $phpbb_path_helper, $user, $phpbb_extension_manager;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		if ($this->template instanceof \phpbb\template\template)
 		{
 			return;
 		}
 
-		$this->template = new \phpbb\template\twig\twig($phpbb_path_helper, $config, $user, new \phpbb\template\context(), $phpbb_extension_manager);
+		$template_environment = new \phpbb\template\twig\environment(
+			$phpbb_container->get('config'),
+			$phpbb_container->get('filesystem'),
+			$phpbb_container->get('path_helper'),
+			$phpbb_container->getParameter('core.template.cache_path'),
+			$phpbb_container->get('ext.manager'),
+			new \phpbb\template\twig\loader(
+				$phpbb_container->get('filesystem')
+			),
+			$phpbb_dispatcher,
+			array()
+		);
+		$template_environment->setLexer($phpbb_container->get('template.twig.lexer'));
+
+		$this->template = new \phpbb\template\twig\twig(
+			$phpbb_container->get('path_helper'),
+			$phpbb_container->get('config'),
+			new \phpbb\template\context(),
+			$template_environment,
+			$phpbb_container->getParameter('core.template.cache_path'),
+			$phpbb_container->get('user'),
+			$phpbb_container->get('template.twig.extensions.collection'),
+			$phpbb_container->get('ext.manager')
+		);
 	}
 
 	/**
@@ -726,18 +742,20 @@ class queue
 	var $eol = "\n";
 
 	/**
+	 * @var \phpbb\filesystem\filesystem_interface
+	 */
+	protected $filesystem;
+
+	/**
 	* constructor
 	*/
 	function queue()
 	{
-		global $phpEx, $phpbb_root_path;
+		global $phpEx, $phpbb_root_path, $phpbb_filesystem, $phpbb_container;
 
 		$this->data = array();
-		$this->cache_file = "{$phpbb_root_path}cache/queue.$phpEx";
-
-		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
-		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
-		$this->eol = (!$this->eol) ? "\n" : $this->eol;
+		$this->cache_file = $phpbb_container->getParameter('core.cache_dir') . "queue.$phpEx";
+		$this->filesystem = $phpbb_filesystem;
 	}
 
 	/**
@@ -764,7 +782,7 @@ class queue
 	*/
 	function process()
 	{
-		global $db, $config, $phpEx, $phpbb_root_path, $user;
+		global $config, $phpEx, $phpbb_root_path, $user;
 
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -775,14 +793,14 @@ class queue
 		{
 			if (!$have_cache_file)
 			{
-				set_config('last_queue_run', time(), true);
+				$config->set('last_queue_run', time(), false);
 			}
 
 			$lock->release();
 			return;
 		}
 
-		set_config('last_queue_run', time(), true);
+		$config->set('last_queue_run', time(), false);
 
 		include($this->cache_file);
 
@@ -870,7 +888,7 @@ class queue
 						}
 						else
 						{
-							$result = phpbb_mail($to, $subject, $msg, $headers, $this->eol, $err_msg);
+							$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
 						}
 
 						if (!$result)
@@ -928,7 +946,14 @@ class queue
 					@opcache_invalidate($this->cache_file);
 				}
 
-				phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+				try
+				{
+					$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					// Do nothing
+				}
 			}
 		}
 
@@ -975,7 +1000,14 @@ class queue
 				@opcache_invalidate($this->cache_file);
 			}
 
-			phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+			try
+			{
+				$this->filesystem->phpbb_chmod($this->cache_file, CHMOD_READ | CHMOD_WRITE);
+			}
+			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			{
+				// Do nothing
+			}
 
 			$this->data = array();
 		}
@@ -1314,8 +1346,6 @@ class smtp_class
 	{
 		global $user;
 
-		$err_msg = '';
-
 		// Here we try to determine the *real* hostname (reverse DNS entry preferrably)
 		$local_host = $user->host;
 
@@ -1350,7 +1380,7 @@ class smtp_class
 			$this->server_send("QUIT");
 			fclose($this->socket);
 
-			$result = $this->pop_before_smtp($hostname, $username, $password);
+			$this->pop_before_smtp($hostname, $username, $password);
 			$username = $password = $default_auth_method = '';
 
 			// We need to close the previous session, else the server is not

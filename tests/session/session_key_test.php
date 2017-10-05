@@ -11,7 +11,6 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
 
 class phpbb_session_login_keys_test extends phpbb_session_test_case

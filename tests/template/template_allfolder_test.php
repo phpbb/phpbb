@@ -28,13 +28,18 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
-		$this->user = new \phpbb\user('\phpbb\datetime');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$this->user = $user;
+
+		$filesystem = new \phpbb\filesystem\filesystem();
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem(),
+			$filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -51,9 +56,30 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 			)
 		);
 
+		$container = new phpbb_mock_container_builder();
+		$cache_path = $phpbb_root_path . 'cache/twig';
+		$context = new \phpbb\template\context();
+		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$twig = new \phpbb\template\twig\environment(
+			$config,
+			$filesystem,
+			$path_helper,
+			$cache_path,
+			$this->extension_manager,
+			$loader,
+			new \phpbb\event\dispatcher($container),
+			array(
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			)
+		);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
+		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
+
 		$this->template_path = $this->test_path . '/templates';
 		$this->ext_template_path = 'tests/extension/ext/vendor4/bar/styles/all/template';
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $this->user, new \phpbb\template\context(), $this->extension_manager);
 		$this->template->set_custom_style('all', array($this->template_path, $this->ext_template_path));
 	}
 }

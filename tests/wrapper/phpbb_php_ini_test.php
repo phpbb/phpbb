@@ -12,10 +12,10 @@
 */
 
 require_once dirname(__FILE__) . '/phpbb_php_ini_fake.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 {
+	/** @var \phpbb_php_ini_fake php_ini */
 	protected $php_ini;
 
 	public function setUp()
@@ -25,44 +25,44 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 
 	public function test_get_string()
 	{
-		$this->assertSame(false, $this->php_ini->get_string(false));
-		$this->assertSame('phpbb', $this->php_ini->get_string(' phpbb '));
+		$this->assertSame('', $this->php_ini->getString(false));
+		$this->assertSame('phpbb', $this->php_ini->getString(' phpbb '));
 	}
 
 	public function test_get_bool()
 	{
-		$this->assertSame(true, $this->php_ini->get_bool('ON'));
-		$this->assertSame(true, $this->php_ini->get_bool('on'));
-		$this->assertSame(true, $this->php_ini->get_bool('1'));
+		$this->assertSame(true, $this->php_ini->getBool('ON'));
+		$this->assertSame(true, $this->php_ini->getBool('on'));
+		$this->assertSame(true, $this->php_ini->getBool('1'));
 
-		$this->assertSame(false, $this->php_ini->get_bool('OFF'));
-		$this->assertSame(false, $this->php_ini->get_bool('off'));
-		$this->assertSame(false, $this->php_ini->get_bool('0'));
-		$this->assertSame(false, $this->php_ini->get_bool(''));
+		$this->assertSame(false, $this->php_ini->getBool('OFF'));
+		$this->assertSame(false, $this->php_ini->getBool('off'));
+		$this->assertSame(false, $this->php_ini->getBool('0'));
+		$this->assertSame(false, $this->php_ini->getBool(''));
 	}
 
 	public function test_get_int()
 	{
-		$this->assertSame(1234, $this->php_ini->get_int('1234'));
-		$this->assertSame(-12345, $this->php_ini->get_int('-12345'));
-		$this->assertSame(false, $this->php_ini->get_int('phpBB'));
+		$this->assertSame(1234, $this->php_ini->getNumeric('1234'));
+		$this->assertSame(-12345, $this->php_ini->getNumeric('-12345'));
+		$this->assertSame(null, $this->php_ini->getNumeric('phpBB'));
 	}
 
 	public function test_get_float()
 	{
-		$this->assertSame(1234.0, $this->php_ini->get_float('1234'));
-		$this->assertSame(-12345.0, $this->php_ini->get_float('-12345'));
-		$this->assertSame(false, $this->php_ini->get_float('phpBB'));
+		$this->assertSame(1234.0, $this->php_ini->getNumeric('1234.0'));
+		$this->assertSame(-12345.0, $this->php_ini->getNumeric('-12345.0'));
+		$this->assertSame(null, $this->php_ini->getNumeric('phpBB'));
 	}
 
 	public function test_get_bytes_invalid()
 	{
-		$this->assertSame(false, $this->php_ini->get_bytes(false));
-		$this->assertSame(false, $this->php_ini->get_bytes('phpBB'));
-		$this->assertSame(false, $this->php_ini->get_bytes('k'));
-		$this->assertSame(false, $this->php_ini->get_bytes('-k'));
-		$this->assertSame(false, $this->php_ini->get_bytes('M'));
-		$this->assertSame(false, $this->php_ini->get_bytes('-M'));
+		$this->assertSame(null, $this->php_ini->getBytes(false));
+		$this->assertSame(null, $this->php_ini->getBytes('phpBB'));
+		$this->assertSame(null, $this->php_ini->getBytes('k'));
+		$this->assertSame(null, $this->php_ini->getBytes('-k'));
+		$this->assertSame(null, $this->php_ini->getBytes('M'));
+		$this->assertSame(null, $this->php_ini->getBytes('-M'));
 	}
 
 	/**
@@ -70,7 +70,7 @@ class phpbb_wrapper_phpbb_php_ini_test extends phpbb_test_case
 	*/
 	public function test_get_bytes($expected, $value)
 	{
-		$actual = $this->php_ini->get_bytes($value);
+		$actual = $this->php_ini->getBytes($value);
 
 		$this->assertTrue(is_float($actual) || is_int($actual));
 		$this->assertEquals($expected, $actual);

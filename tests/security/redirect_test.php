@@ -13,7 +13,6 @@
 
 require_once dirname(__FILE__) . '/base.php';
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_security_redirect_test extends phpbb_security_test_base
 {
@@ -67,7 +66,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
-				new \phpbb\filesystem(),
+				new \phpbb\filesystem\filesystem(),
 				$this->getMock('\phpbb\request\request'),
 				$this->phpbb_root_path,
 				'php'

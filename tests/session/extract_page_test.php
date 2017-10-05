@@ -12,7 +12,6 @@
 */
 
 require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions.php';
 
 class phpbb_session_extract_page_test extends phpbb_session_test_case
 {
@@ -137,6 +136,22 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 					'forum' => 0,
 				),
 			),
+			array(
+				'./community',
+				'/app.php',
+				'',
+				'/',
+				'/kb',
+				array(
+					'page_name' => 'app.php/kb',
+					'page_dir' => '..',
+					'query_string' => '',
+					'script_path' => '/',
+					'root_script_path' => '/community/',
+					'page' => '../app.php/kb',
+					'forum' => 0,
+				),
+			),
 		);
 	}
 
@@ -145,7 +160,7 @@ class phpbb_session_extract_page_test extends phpbb_session_test_case
 	{
 		global $symfony_request, $request, $phpbb_filesystem;
 
-		$phpbb_filesystem = new \phpbb\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
 		$server['HTTP_HOST']			= 'localhost';
 		$server['SERVER_NAME']			= 'localhost';

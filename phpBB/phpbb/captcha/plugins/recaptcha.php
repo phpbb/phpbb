@@ -18,12 +18,6 @@ class recaptcha extends captcha_abstract
 	var $recaptcha_server = 'http://www.google.com/recaptcha/api';
 	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api'; // class constants :(
 
-	// We are opening a socket to port 80 of this host and send
-	// the POST request asking for verification to the path specified here.
-	var $recaptcha_verify_server = 'www.google.com';
-	var $recaptcha_verify_path = '/recaptcha/api/verify';
-
-	var $challenge;
 	var $response;
 
 	/**
@@ -37,12 +31,11 @@ class recaptcha extends captcha_abstract
 
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $user, $request;
 
 		$user->add_lang('captcha_recaptcha');
 		parent::init($type);
-		$this->challenge = request_var('recaptcha_challenge_field', '');
-		$this->response = request_var('recaptcha_response_field', '');
+		$this->response = $request->variable('g-recaptcha-response', '');
 	}
 
 	public function is_available()
@@ -75,7 +68,7 @@ class recaptcha extends captcha_abstract
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user;
+		global $config, $template, $user, $phpbb_log, $request;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -87,21 +80,21 @@ class recaptcha extends captcha_abstract
 		$form_key = 'acp_captcha';
 		add_form_key($form_key);
 
-		$submit = request_var('submit', '');
+		$submit = $request->variable('submit', '');
 
 		if ($submit && check_form_key($form_key))
 		{
 			$captcha_vars = array_keys($captcha_vars);
 			foreach ($captcha_vars as $captcha_var)
 			{
-				$value = request_var($captcha_var, '');
+				$value = $request->variable($captcha_var, '');
 				if ($value)
 				{
-					set_config($captcha_var, $value);
+					$config->set($captcha_var, $value);
 				}
 			}
 
-			add_log('admin', 'LOG_CONFIG_VISUAL');
+			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)
@@ -112,7 +105,7 @@ class recaptcha extends captcha_abstract
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
+				$var = (isset($_REQUEST[$captcha_var])) ? $request->variable($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
 				$template->assign_var($template_var, $var);
 			}
 
@@ -151,7 +144,6 @@ class recaptcha extends captcha_abstract
 			$template->assign_vars(array(
 				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
 				'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
-				'RECAPTCHA_ERRORGET'		=> '',
 				'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 				'S_CONFIRM_CODE'			=> true,
 				'S_TYPE'					=> $this->type,
@@ -202,106 +194,25 @@ class recaptcha extends captcha_abstract
 		}
 	}
 
-// Code from here on is based on recaptchalib.php
-/*
- * This is a PHP library that handles calling reCAPTCHA.
- *	- Documentation and latest version
- *		  http://recaptcha.net/plugins/php/
- *	- Get a reCAPTCHA API Key
- *		  http://recaptcha.net/api/getkey
- *	- Discussion group
- *		  http://groups.google.com/group/recaptcha
- *
- * Copyright (c) 2007 reCAPTCHA -- http://recaptcha.net
- * AUTHORS:
- *   Mike Crawford
- *   Ben Maurer
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-	/**
-	* Submits an HTTP POST to a reCAPTCHA server
-	* @param string $host
-	* @param string $path
-	* @param array $data
-	* @param int port
-	* @return array response
-	*/
-	function _recaptcha_http_post($host, $path, $data, $port = 80)
-	{
-		$req = $this->_recaptcha_qsencode ($data);
-
-		$http_request  = "POST $path HTTP/1.0\r\n";
-		$http_request .= "Host: $host\r\n";
-		$http_request .= "Content-Type: application/x-www-form-urlencoded;\r\n";
-		$http_request .= "Content-Length: " . strlen($req) . "\r\n";
-		$http_request .= "User-Agent: reCAPTCHA/PHP/phpBB\r\n";
-		$http_request .= "\r\n";
-		$http_request .= $req;
-
-		$response = '';
-		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
-		{
-			trigger_error('RECAPTCHA_SOCKET_ERROR', E_USER_ERROR);
-		}
-
-		fwrite($fs, $http_request);
-
-		while (!feof($fs))
-		{
-			// One TCP-IP packet
-			$response .= fgets($fs, 1160);
-		}
-		fclose($fs);
-		$response = explode("\r\n\r\n", $response, 2);
-
-		return $response;
-	}
-
 	/**
 	* Calls an HTTP POST function to verify if the user's guess was correct
-	* @param array $extra_params an array of extra variables to post to the server
-	* @return ReCaptchaResponse
+	*
+	* @return bool|string Returns false on success or error string on failure.
 	*/
-	function recaptcha_check_answer($extra_params = array())
+	function recaptcha_check_answer()
 	{
 		global $config, $user;
 
 		//discard spam submissions
-		if ($this->challenge == null || strlen($this->challenge) == 0 || $this->response == null || strlen($this->response) == 0)
+		if ($this->response == null || strlen($this->response) == 0)
 		{
 			return $user->lang['RECAPTCHA_INCORRECT'];
 		}
 
-		$response = $this->_recaptcha_http_post($this->recaptcha_verify_server, $this->recaptcha_verify_path,
-			array(
-				'privatekey'	=> $config['recaptcha_privkey'],
-				'remoteip'		=> $user->ip,
-				'challenge'		=> $this->challenge,
-				'response'		=> $this->response
-			) + $extra_params
-		);
+		$recaptcha = new \ReCaptcha\ReCaptcha($config['recaptcha_privkey']);
+		$result = $recaptcha->verify($this->response, $user->ip);
 
-		$answers = explode("\n", $response[1]);
-
-		if (trim($answers[0]) === 'true')
+		if ($result->isSuccess())
 		{
 			$this->solved = true;
 			return false;
@@ -310,23 +221,5 @@ class recaptcha extends captcha_abstract
 		{
 			return $user->lang['RECAPTCHA_INCORRECT'];
 		}
-	}
-
-	/**
-	* Encodes the given data into a query string format
-	* @param $data - array of string elements to be encoded
-	* @return string - encoded request
-	*/
-	function _recaptcha_qsencode($data)
-	{
-		$req = '';
-		foreach ($data as $key => $value)
-		{
-			$req .= $key . '=' . urlencode(stripslashes($value)) . '&';
-		}
-
-		// Cut the last '&'
-		$req = substr($req, 0, strlen($req) - 1);
-		return $req;
 	}
 }

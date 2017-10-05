@@ -39,11 +39,24 @@
 		</div>
 		<dl class="permissions-simple">
 			<dt style="width: 20%"><label for="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">{L_ROLE}{L_COLON}</label></dt>
-			<!-- IF p_mask.f_mask.S_ROLE_OPTIONS -->
-				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 20%"><select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" onchange="set_role_settings(this.options[selectedIndex].value, 'advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); init_colours('{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')">{p_mask.f_mask.S_ROLE_OPTIONS}</select></dd>
-			<!-- ELSE -->
+			{% if p_mask.f_mask.role_options %}
+				<dd style="margin-{S_CONTENT_FLOW_BEGIN}{L_COLON} 20%">
+					<div class="dropdown-container dropdown-button-control roles-options" data-alt-text="{LA_ROLE_DESCRIPTION}">
+						<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]">{p_mask.f_mask.S_ROLE_OPTIONS}</select>
+						<span title="Roles" class="button icon-button tools-icon dropdown-trigger dropdown-select">{L_NO_ROLE_ASSIGNED}</span>
+						<div class="dropdown hidden">
+							<ul class="dropdown-contents" id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" >
+								{% for role in p_mask.f_mask.role_options %}
+									<li data-id="{{ role.ID }}" data-target-id="advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" data-title="{{ role.TITLE }}"{% if role.SELECTED == true %} data-selected="{{ role.SELECTED }}"{% endif %}>{{ role.ROLE_NAME }}</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<input type="hidden" data-name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]"{% if p_mask.f_mask.S_ROLE_ID %}value="{{ p_mask.f_mask.S_ROLE_ID }}"{% endif %} />
+					</div>
+				</dd>
+			{% else %}
 				<dd>{L_NO_ROLE_AVAILABLE}</dd>
-			<!-- ENDIF -->
+			{% endif %}
 		</dl>
 	<!-- ENDIF -->
 
