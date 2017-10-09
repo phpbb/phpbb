@@ -23,6 +23,16 @@ class loader extends \Twig_Loader_Filesystem
 	protected $safe_directories = array();
 
 	/**
+	 * Constructor
+	 *
+	 * @param string|array	$paths
+	 */
+	public function __construct($paths = array())
+	{
+		parent::__construct($paths, __DIR__);
+	}
+
+	/**
 	* Set safe directories
 	*
 	* @param array $directories Array of directories that are safe (empty to clear)
