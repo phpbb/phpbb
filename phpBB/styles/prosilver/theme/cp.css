@@ -353,47 +353,6 @@ ol.def-rules li {
 	padding: 5px;
 }
 
-/* Responsive *CP navigation
----------------------------------------- */
-
-@media only screen and (max-width: 900px), only screen and (max-device-width: 900px) {
-	.nojs .tabs a span,
-	.nojs .minitabs a span {
-		letter-spacing: -0.5px;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		max-width: 40px;
-	}
-
-	.cp-menu,
-	.navigation,
-	.cp-main {
-		float: none;
-		width: auto;
-		margin: 0;
-	}
-
-	.navigation {
-		max-width: 320px;
-		margin: 0 auto;
-		padding: 0;
-	}
-
-	.navigation a {
-		background-image: none;
-	}
-
-	.navigation li:first-child a {
-		border-top-left-radius: 5px;
-		border-top-right-radius: 5px;
-	}
-
-	.navigation li:last-child a {
-		border-bottom-right-radius: 5px;
-		border-bottom-left-radius: 5px;
-	}
-}
-
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
 /* stylelint-enable declaration-property-unit-whitelist */
