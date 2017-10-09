@@ -29,7 +29,7 @@ class loader extends \Twig_Loader_Filesystem
 	 */
 	public function __construct($paths = array())
 	{
-		parent::__construct($paths, filesystem_helper::realpath(dirname(__FILE__)));
+		parent::__construct($paths, __DIR__);
 	}
 
 	/**
