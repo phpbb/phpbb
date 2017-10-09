@@ -2018,11 +2018,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	* @var	array	post_row			Template block array of the post
 	* @var	array	topic_data			Array with topic data
 	* @var	array	user_cache			Array with cached user data
+	* @var	array	post_edit_list		Array with post edited list
 	* @since 3.1.0-a1
 	* @changed 3.1.0-a3 Added vars start, current_row_number, end, attachments
 	* @changed 3.1.0-b3 Added topic_data array, total_posts
 	* @changed 3.1.0-RC3 Added poster_id
-	* @changed 3.2.2-RC1 Added user_cache
+	* @changed 3.2.2-RC1 Added user_cache and post_edit_list
 	*/
 	$vars = array(
 		'start',
@@ -2037,6 +2038,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'post_row',
 		'topic_data',
 		'user_cache',
+		'post_edit_list',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_row', compact($vars)));
 
