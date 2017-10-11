@@ -146,9 +146,10 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $config, $user, $request;
+		global $config, $user, $request, $symfony_request;
 		$user = new phpbb_mock_user();
 		$request = new phpbb_mock_request();
+		$symfony_request = new \phpbb\symfony_request($request);
 	}
 
 	/**

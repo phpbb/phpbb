@@ -1632,7 +1632,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 */
 function generate_board_url($without_script_path = false)
 {
-	global $config, $user, $request;
+	global $config, $user, $request, $symfony_request;
 
 	$server_name = $user->host;
 
@@ -1649,7 +1649,8 @@ function generate_board_url($without_script_path = false)
 	}
 	else
 	{
-		$server_port = $request->server('SERVER_PORT', 0);
+		$server_port = (int) $symfony_request->getPort();
+
 		$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
 
 		if (!empty($forwarded_proto) && $forwarded_proto === 'https')
