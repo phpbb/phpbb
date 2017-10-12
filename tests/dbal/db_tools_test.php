@@ -344,9 +344,10 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			'sql_table_drop',
 		), array(&$this->db));
 
-		// pretend all tables exist
-		$db_tools->expects($this->any())->method('sql_table_exists')
-			->will($this->returnValue(true));
+		$db_tools->expects($this->exactly(3))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table !== 'non_existing_table') ? true : false;
+			}));
 
 		// drop tables
 		$db_tools->expects($this->exactly(2))->method('sql_table_drop');
@@ -359,6 +360,121 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			'drop_tables' => array(
 				'dropped_table_1',
 				'dropped_table_2',
+				'non_existing_table',
+			),
+		));
+	}
+
+	public function test_perform_schema_changes_change_columns()
+	{
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
+			'sql_column_exists',
+			'sql_column_add',
+			'sql_column_change',
+		), array(&$this->db));
+
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
+		$db_tools->expects($this->any())->method('sql_column_exists')
+			->will($this->returnCallback(function($table, $column) {
+				return ($column === 'existing_column') ? true : false;
+			}));
+
+		// change columns
+		$db_tools->expects($this->exactly(1))->method('sql_column_change')
+			->with($this->equalTo('existing_table'), $this->equalTo('existing_column'), 'change_data', true);
+		$db_tools->expects($this->exactly(1))->method('sql_column_add')
+			->with($this->equalTo('existing_table'), $this->equalTo('non_existing_column'), 'add_data', true);
+
+		$db_tools->perform_schema_changes(array(
+			'change_columns' => array(
+				'existing_table' => array(
+					'existing_column'		=> 'change_data',
+					'non_existing_column'	=> 'add_data',
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'existing_column'		=> 'change_data',
+					'non_existing_column'	=> 'add_data',
+				),
+			),
+		));
+	}
+
+	public function test_perform_schema_changes_add_columns()
+	{
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
+			'sql_column_exists',
+			'sql_column_add',
+		), array(&$this->db));
+
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
+		$db_tools->expects($this->any())->method('sql_column_exists')
+			->will($this->returnCallback(function($table, $column) {
+				return ($column === 'existing_column') ? true : false;
+			}));
+
+		// add columns
+		$db_tools->expects($this->exactly(1))->method('sql_column_add')
+			->with($this->equalTo('existing_table'), $this->equalTo('non_existing_column'), 'data', true);
+
+		$db_tools->perform_schema_changes(array(
+			'add_columns' => array(
+				'existing_table' => array(
+					'existing_column'		=> 'data',
+					'non_existing_column'	=> 'data',
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'existing_column'		=> 'data',
+					'non_existing_column'	=> 'data',
+				),
+			),
+		));
+	}
+
+	public function test_perform_schema_changes_drop_keys()
+	{
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
+			'sql_index_exists',
+			'sql_index_drop',
+		), array(&$this->db));
+
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
+		$db_tools->expects($this->any())->method('sql_index_exists')
+			->will($this->returnCallback(function($table, $index_name) {
+				return ($index_name === 'existing_index') ? true : false;
+			}));
+
+		// drop indexes
+		$db_tools->expects($this->exactly(1))->method('sql_index_drop')
+			->with($this->equalTo('existing_table'), $this->equalTo('existing_index'));
+
+		$db_tools->perform_schema_changes(array(
+			'drop_keys' => array(
+				'existing_table' => array(
+					'existing_index',
+					'non_existing_index',
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'existing_index',
+					'non_existing_index',
+				),
 			),
 		));
 	}
@@ -366,21 +482,26 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	public function test_perform_schema_changes_drop_columns()
 	{
 		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
 			'sql_column_exists',
 			'sql_column_remove',
 		), array(&$this->db));
 
-		// pretend all columns exist
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
 		$db_tools->expects($this->any())->method('sql_column_exists')
-			->will($this->returnValue(true));
-		$db_tools->expects($this->any())->method('sql_column_exists')
-			->will($this->returnValue(true));
+			->will($this->returnCallback(function($table, $column) {
+				return ($column !== 'non_existing_column') ? true : false;
+			}));
 
 		// drop columns
 		$db_tools->expects($this->exactly(2))->method('sql_column_remove');
-		$db_tools->expects($this->at(1))->method('sql_column_remove')
+		$db_tools->expects($this->at(2))->method('sql_column_remove')
 			->with($this->equalTo('existing_table'), $this->equalTo('dropped_column_1'));
-		$db_tools->expects($this->at(3))->method('sql_column_remove')
+		$db_tools->expects($this->at(4))->method('sql_column_remove')
 			->with($this->equalTo('existing_table'), $this->equalTo('dropped_column_2'));
 
 		$db_tools->perform_schema_changes(array(
@@ -388,6 +509,117 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 				'existing_table' => array(
 					'dropped_column_1',
 					'dropped_column_2',
+					'non_existing_column',
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'dropped_column_1',
+					'dropped_column_2',
+				),
+			),
+		));
+	}
+
+	public function test_perform_schema_changes_add_primary_keys()
+	{
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
+			'sql_create_primary_key',
+		), array(&$this->db));
+
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
+		// add primary keys
+		$db_tools->expects($this->exactly(1))->method('sql_create_primary_key')
+			->with($this->equalTo('existing_table'), $this->equalTo(array('column_1', 'column_2')), true);
+
+		$db_tools->perform_schema_changes(array(
+			'add_primary_keys' => array(
+				'existing_table' => array(
+					'column_1',
+					'column_2',
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'column_1',
+					'column_2',
+				),
+			),
+		));
+	}
+
+	public function test_perform_schema_changes_add_unique_index()
+	{
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
+			'sql_unique_index_exists',
+			'sql_create_unique_index',
+		), array(&$this->db));
+
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
+		$db_tools->expects($this->any())->method('sql_unique_index_exists')
+			->will($this->returnCallback(function($table, $index_name) {
+				return ($index_name === 'existing_unique_index') ? true : false;
+			}));
+
+		$columns = array('column_1', 'column_2');
+		$db_tools->expects($this->exactly(1))->method('sql_create_unique_index')
+			->with($this->equalTo('existing_table'), $this->equalTo('non_existing_unique_index'), $this->equalTo($columns));
+
+		$db_tools->perform_schema_changes(array(
+			'add_unique_index' => array(
+				'existing_table' => array(
+					'existing_unique_index'		=> $columns,
+					'non_existing_unique_index'	=> $columns,
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'existing_unique_index'		=> $columns,
+					'non_existing_unique_index'	=> $columns,
+				),
+			),
+		));
+	}
+
+	public function test_perform_schema_changes_add_index()
+	{
+		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(
+			'sql_table_exists',
+			'sql_index_exists',
+			'sql_create_index',
+		), array(&$this->db));
+
+		$db_tools->expects($this->exactly(2))->method('sql_table_exists')
+			->will($this->returnCallback(function($table) {
+				return ($table === 'existing_table') ? true : false;
+			}));
+
+		$db_tools->expects($this->any())->method('sql_index_exists')
+			->will($this->returnCallback(function($table, $index_name) {
+				return ($index_name === 'existing_index') ? true : false;
+			}));
+
+		$columns = array('column_1', 'column_2');
+		$db_tools->expects($this->exactly(1))->method('sql_create_index')
+			->with($this->equalTo('existing_table'), $this->equalTo('non_existing_index'), $this->equalTo($columns));
+
+		$db_tools->perform_schema_changes(array(
+			'add_index' => array(
+				'existing_table' => array(
+					'existing_index'		=> $columns,
+					'non_existing_index'	=> $columns,
+				),
+				// these will should not be executed as the table does not exist
+				'non_existing_table' => array(
+					'existing_index'		=> $columns,
+					'non_existing_index'	=> $columns,
 				),
 			),
 		));
