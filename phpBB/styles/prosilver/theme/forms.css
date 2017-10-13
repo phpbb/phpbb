@@ -101,13 +101,13 @@ fieldset.fields1 dt {
 	width: 165px;
 }
 
-fieldset.fields2 dd,
-fieldset.fields1 dd {
+fieldset.fields2 dd {
 	border-left-width: 0;
 	margin-left: 176px;
 }
 
 fieldset.fields1 dd {
+	border-left-width: 0;
 	margin-left: 165px;
 }
 
