@@ -1485,12 +1485,14 @@ class acp_users
 					* Validate profile data in ACP before submitting to the database
 					*
 					* @event core.acp_users_profile_validate
-					* @var	bool	submit		Flag indicating if submit button has been pressed
 					* @var	array	data		Array with user profile data
+					* @var	int		user_id		The user id
+					* @var	array	user_row	Array with the full user data
 					* @var	array	error		Array with the form errors
 					* @since 3.1.4-RC1
+					* @changed 3.1.12-RC1		Removed submit, added user_id, user_row
 					*/
-					$vars = array('submit', 'data', 'error');
+					$vars = array('data', 'user_id', 'user_row', 'error');
 					extract($phpbb_dispatcher->trigger_event('core.acp_users_profile_validate', compact($vars)));
 
 					if (!count($error))
