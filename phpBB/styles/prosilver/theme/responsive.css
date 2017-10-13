@@ -769,7 +769,7 @@
 @media (max-width: 900px) {
 	.nojs .tabs a span,
 	.nojs .minitabs a span {
-		letter-spacing: -0.5px;
+		letter-spacing: -0.03em;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		max-width: 40px;
