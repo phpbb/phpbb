@@ -2757,6 +2757,14 @@ fieldset.permissions .permissions-switch {
 
 /* Classes for additional tasks
 ---------------------------------------- */
+.current-ext {
+	color: #228822;
+}
+
+.outdated-ext {
+	color: #BC2A4D;
+}
+
 .phpinfo {
 	overflow: auto;
 	width: 99%;

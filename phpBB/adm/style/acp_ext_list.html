@@ -51,7 +51,8 @@
 			<td><strong title="{enabled.NAME}">{enabled.META_DISPLAY_NAME}</strong><!-- EVENT acp_ext_list_enabled_name_after --></td>
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
-				<strong <!-- IF enabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{enabled.META_VERSION}</strong>
+				<strong class="<!-- IF enabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{enabled.META_VERSION}</strong>
+				<!-- IF not enabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
 				<!-- ELSE -->
 				{enabled.META_VERSION}
 				<!-- ENDIF -->
@@ -76,7 +77,8 @@
 			<td><strong title="{disabled.NAME}">{disabled.META_DISPLAY_NAME}</strong><!-- EVENT acp_ext_list_disabled_name_after --></td>
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
-				<strong <!-- IF disabled.S_UP_TO_DATE -->style="color: #228822;"<!-- ELSE -->style="color: #BC2A4D;"<!-- ENDIF -->>{disabled.META_VERSION}</strong>
+				<strong class="<!-- IF disabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{disabled.META_VERSION}</strong>
+				<!-- IF not disabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
 				<!-- ELSE -->
 				{disabled.META_VERSION}
 				<!-- ENDIF -->
