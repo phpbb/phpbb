@@ -4,20 +4,18 @@
 
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-disable declaration-property-unit-blacklist */
 
 /* General form styles
 ---------------------------------------- */
 fieldset {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.1em;
+	font-size: 11px;
 	border-width: 0;
 }
 
 input {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1em;
+	font-size: 11px;
 	font-weight: normal;
 	vertical-align: middle;
 	padding: 0 3px;
@@ -25,7 +23,7 @@ input {
 
 select {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1em;
+	font-size: 11px;
 	font-weight: normal;
 	vertical-align: middle;
 	border: 1px solid transparent;
@@ -38,18 +36,18 @@ select:focus {
 }
 
 option {
-	padding-right: 1em;
+	padding-right: 11px;
 }
 
 select optgroup option {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	padding-right: 1em;
+	padding-right: 11px;
 }
 
 textarea {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1em;
-	line-height: 1.4em;
+	font-size: 11px;
+	line-height: 18px;
 	width: 60%;
 	padding: 2px;
 }
@@ -86,16 +84,6 @@ fieldset dd {
 	margin-left: 41%;
 }
 
-/* Specific layout 1 */
-fieldset.fields1 dt {
-	border-right-width: 0;
-	width: 15em;
-}
-
-fieldset.fields1 dd {
-	border-left-width: 0;
-	margin-left: 15em;
-}
 
 fieldset.fields1 div {
 	margin-bottom: 3px;
@@ -106,15 +94,21 @@ fieldset.fields1 .live-search div {
 	margin-bottom: 0;
 }
 
-/* Specific layout 2 */
-fieldset.fields2 dt {
+/* Specific layouts */
+fieldset.fields2 dt,
+fieldset.fields1 dt {
 	border-right-width: 0;
-	width: 15em;
+	width: 165px;
 }
 
 fieldset.fields2 dd {
 	border-left-width: 0;
-	margin-left: 16em;
+	margin-left: 176px;
+}
+
+fieldset.fields1 dd {
+	border-left-width: 0;
+	margin-left: 165px;
 }
 
 /* Form elements */
@@ -191,7 +185,7 @@ fieldset.display-options a {
 }
 
 .dropdown fieldset.display-options {
-	font-size: 1em;
+	font-size: 11px;
 	margin: 0;
 	padding: 0;
 }
@@ -210,10 +204,10 @@ fieldset.display-options a {
 
 /* Display actions for ucp and mcp pages */
 fieldset.display-actions {
-	line-height: 2em;
+	line-height: 22px;
 	text-align: right;
 	white-space: nowrap;
-	padding-right: 1em;
+	padding-right: 11px;
 }
 
 fieldset.display-actions label {
@@ -221,8 +215,9 @@ fieldset.display-actions label {
 	padding-right: 2px;
 }
 
+/* Not used anywhere */
 fieldset.sort-options {
-	line-height: 2em;
+	line-height: 22px;
 }
 
 /* MCP forum selection */
@@ -267,7 +262,7 @@ fieldset.submit-buttons input {
 
 .message-box textarea {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 1.2em;
+	font-size: 13px;
 	outline: 3px dashed transparent;
 	outline-offset: -4px;
 	width: 450px;
@@ -414,5 +409,3 @@ input.search {
 
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-whitelist */
-/* stylelint-enable declaration-property-unit-blacklist */

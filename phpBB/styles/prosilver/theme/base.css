@@ -15,15 +15,15 @@
 }
 */
 
-/* Define your base font-size here; most elements will inherit this. */
-
+/*
+ * 1. Define your base font-size here (16px), most elements will inherit this.
+ * 2. 24px (This is now our magic number; all subsequent margin-bottoms and
+ *    line-heights want to be a multiple of this number in order to maintain
+ *    vertical rhythm.)
+*/
 html {
-	font-size: 16px; /* Assuming 16px... */
-
-	/* 24px (This is now our magic number; all subsequent margin-bottoms and
-	line-heights want to be a multiple of this number in order to maintain
-	vertical rhythm.) */
-	line-height: 1.5;
+	font-size: 16px; /* [1] */
+	line-height: 1.5; /* [2] */
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 

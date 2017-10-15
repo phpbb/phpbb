@@ -3,8 +3,6 @@
 /* -------------------------------------------------------------- */
 
 /* stylelint-disable selector-max-compound-selectors */
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-disable declaration-property-unit-blacklist */
 
 /* Lots still TODO here! */
 
@@ -15,7 +13,8 @@
 }
 
 body {
-	font: 11pt Verdana, Arial, Helvetica, sans-serif;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
 	color: #000000;
 }
 
@@ -50,7 +49,7 @@ img,
 
 /* Container for the main body */
 .wrap {
-	margin: 0 2em;
+	margin: 0 30px;
 }
 
 p {
@@ -82,25 +81,29 @@ h3 a {
 }
 
 h1 {
-	font-size: 20pt;
+	font-size: 26px;
 }
 
 h2 {
-	font-size: 16pt;
-	margin-top: 1em;
+	font-size: 21px;
+	margin-top: 20px;
 }
 
 h3 {
-	font-size: 14pt;
-	margin-top: 1em;
+	font-size: 18px;
+	margin-top: 20px;
 }
 
 .content {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11pt;
-	line-height: 14pt;
+	font-size: 14px;
+	line-height: 18px;
 	overflow: hidden;
-	margin-bottom: 1em;
+	margin-bottom: 14px;
+}
+
+.postbody .content {
+	font-size: 14px;
 }
 
 /* CSS2 Print tip from: http://www.alistapart.com/articles/goingtoprint/ */
@@ -109,11 +112,9 @@ h3 {
 .postbody a:hover,
 .postbody a:active {
 	font-size: 100%;
-	text-decoration: underline;
 	background: none;
 	color: #666666;
-	margin: -0.1em -0.2em;
-	padding: 0.1em 0.2em;
+	padding: 2px 4px;
 }
 
 html > body .postbody a:link:after,
@@ -132,7 +133,6 @@ hr {
 .author {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 75%;
-	margin-bottom: 0.6em;
 }
 
 .date {
@@ -153,9 +153,10 @@ html > body .postbody .author a:visited:after,
 html > body .postquote .quote-by a:link:after,
 html > body .postquote .quote-by a:visited:after,
 html > body .postbody h1 a:link:after,
-html > body .postbody h2 a:link:after {
+html > body .postbody h2 a:link:after,
+.post-buttons a:after {
 	text-decoration: none;
-	content: "";
+	content: "" !important;
 }
 
 /* Poster profile */
@@ -171,11 +172,11 @@ html > body .postbody h2 a:link:after {
 .postquote,
 blockquote {
 	font-size: 85%;
-	line-height: 1.5em;
+	line-height: 18px;
 	border: 1px #999999 solid;
 	position: relative;
-	margin: 1em 18% 1em 4%;
-	padding: 0.5em;
+	margin: 12px 154px 12px 34px;
+	padding: 6px;
 }
 
 .postquote img {
@@ -200,7 +201,7 @@ blockquote cite {
 /* List */
 ol,
 ul {
-	margin-left: 15pt;
+	margin-left: 20px;
 }
 
 /* Misc page elements */
@@ -217,12 +218,13 @@ ul {
 	display: none;
 }
 
+/* stylelint-disable declaration-property-unit-whitelist */
 .emoji {
 	width: 1em;
 	min-width: 18px;
 	height: 1em;
 	min-height: 18px;
 }
-/* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable declaration-property-unit-whitelist */
-/* stylelint-enable declaration-property-unit-blacklist */
+
+/* stylelint-enable selector-max-compound-selectors */

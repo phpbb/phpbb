@@ -3,8 +3,6 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-whitelist */
-/* stylelint-disable declaration-property-unit-blacklist */
 
 @media (max-width: 320px) {
 	select,
@@ -230,7 +228,7 @@
 
 	.site-description h1,
 	.site-description p {
-		line-height: 1.2em;
+		line-height: 24px;
 		text-align: inherit;
 		text-overflow: ellipsis;
 		float: none;
@@ -258,8 +256,8 @@
 	/* Forums and topicslists
 	---------------------------------------------------------------- */
 	li.header dt {
-		font-size: 1.2em;
-		line-height: 1em;
+		font-size: 12px;
+		line-height: 12px;
 		text-align: center;
 		text-transform: none;
 		padding-bottom: 4px;
@@ -591,12 +589,12 @@
 	/* Misc stuff
 	---------------------------------------------------------------- */
 	h2 {
-		margin-top: 0.5em;
+		margin-top: 12px;
 	}
 
 	p {
 		overflow: hidden;
-		margin-bottom: 0.5em;
+		margin-bottom: 8px;
 	}
 
 	p.rightside {
@@ -771,7 +769,7 @@
 @media (max-width: 900px) {
 	.nojs .tabs a span,
 	.nojs .minitabs a span {
-		letter-spacing: -0.5px;
+		letter-spacing: -0.03em;
 		text-overflow: ellipsis;
 		overflow: hidden;
 		max-width: 40px;
@@ -834,5 +832,3 @@
 
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-whitelist */
-/* stylelint-enable declaration-property-unit-blacklist */

@@ -3,7 +3,6 @@
 /* -------------------------------------------------------------- */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-whitelist */
 
 /**
 * common.css
@@ -196,8 +195,9 @@
 	text-align: right;
 }
 
+/* Not used anywhere maybe deprecated? */
 .rtl table.table1 thead .autocol {
-	padding-right: 1em;
+	padding-right: 10px;
 	padding-left: 0;
 }
 
@@ -293,6 +293,11 @@
 .pagination li.page-jump {
 	margin-right: 0;
 	margin-left: 5px;
+}
+
+.rtl .topic-poster {
+	float: right;
+	padding-left: 6px;
 }
 
 /* Action Bar styles
@@ -513,7 +518,7 @@ li.breadcrumbs span:first-child > a {
 ---------------------------------------- */
 .rtl .content ul,
 .rtl .content ol {
-	margin-right: 3em;
+	margin-right: 40px;
 	margin-left: 0;
 }
 
@@ -535,12 +540,12 @@ li.breadcrumbs span:first-child > a {
 
 /* Quote block */
 .rtl blockquote {
-	margin: 0.5em 25px 0 1px;
+	margin: 5px 25px 0 1px;
 }
 
 /* Nested quotes */
 .rtl blockquote blockquote {
-	margin: 0.5em 15px 0 1px;
+	margin: 5px 15px 0 1px;
 }
 
 /* Username/source of quoter */
@@ -697,7 +702,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .cp-main .panel ol {
-	margin-right: 2em;
+	margin-right: 22px;
 	margin-left: 0;
 }
 
@@ -820,7 +825,7 @@ li.breadcrumbs span:first-child > a {
 
 .rtl option {
 	padding-right: 0;
-	padding-left: 1em;
+	padding-left: 11px;
 }
 
 .rtl label {
@@ -849,7 +854,7 @@ li.breadcrumbs span:first-child > a {
 .rtl fieldset.fields1 dd {
 	border-right-width: 0;
 	border-left-width: 1px;
-	margin-right: 15em;
+	margin-right: 165px;
 	margin-left: 0;
 }
 
@@ -862,7 +867,7 @@ li.breadcrumbs span:first-child > a {
 .rtl fieldset.fields2 dd {
 	border-right-width: 0;
 	border-left-width: 1px;
-	margin-right: 16em;
+	margin-right: 176px;
 	margin-left: 0;
 }
 
@@ -902,7 +907,7 @@ li.breadcrumbs span:first-child > a {
 .rtl fieldset.display-actions {
 	text-align: left;
 	padding-right: 0;
-	padding-left: 1em;
+	padding-left: 11px;
 }
 
 .rtl fieldset.display-actions label {
@@ -985,4 +990,3 @@ li.breadcrumbs span:first-child > a {
 }
 
 /* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-whitelist */
