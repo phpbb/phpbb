@@ -813,16 +813,22 @@ class acp_users
 						break;
 
 						default:
+							$u_action = $this->u_action;
+
 							/**
 							* Run custom quicktool code
 							*
 							* @event core.acp_users_overview_run_quicktool
-							* @var	array	user_row	Current user data
 							* @var	string	action		Quick tool that should be run
+							* @var	array	user_row	Current user data
+							* @var	string	u_action	The u_action link
 							* @since 3.1.0-a1
+							* @changed 3.2.2-RC1 Added u_action
 							*/
-							$vars = array('action', 'user_row');
+							$vars = array('action', 'user_row', 'u_action');
 							extract($phpbb_dispatcher->trigger_event('core.acp_users_overview_run_quicktool', compact($vars)));
+
+							unset($u_action);
 						break;
 					}
 
