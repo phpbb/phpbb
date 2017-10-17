@@ -4050,11 +4050,6 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 	if ($driver)
 	{
 		$html = $driver->get_custom_html($user, $row, $alt);
-		if (!empty($html))
-		{
-			return $html;
-		}
-
 		$avatar_data = $driver->get_data($row);
 	}
 	else
@@ -4062,7 +4057,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 		$avatar_data['src'] = '';
 	}
 
-	if (!empty($avatar_data['src']))
+	if (empty($html) && !empty($avatar_data['src']))
 	{
 		if ($lazy)
 		{
