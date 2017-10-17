@@ -290,7 +290,7 @@
 	direction: ltr;
 }
 
-.pagination li.page-jump {
+.rtl .pagination li.page-jump {
 	margin-right: 0;
 	margin-left: 5px;
 }
@@ -344,7 +344,7 @@
 	unicode-bidi: embed;
 }
 
-li.breadcrumbs span:first-child > a {
+.rtl li.breadcrumbs span:first-child > a {
 	padding-left: 0;
 }
 
@@ -711,7 +711,7 @@ li.breadcrumbs span:first-child > a {
 	margin-left: 0;
 }
 
-.tabs-container h2 {
+.rtl .tabs-container h2 {
 	float: right;
 }
 
@@ -949,7 +949,7 @@ li.breadcrumbs span:first-child > a {
 }
 
 .rtl .button-search,
-.button-search-end {
+.rtl .button-search-end {
 	float: right;
 }
 
