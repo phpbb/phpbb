@@ -329,6 +329,17 @@
 	<fieldset class="tabulated">
 	<legend>{L_TITLE}</legend>
 
+	<div class="pagination top-pagination">
+	<!-- IF .pagination or TOTAL_FILES -->
+		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+	</div>
+
 	<table class="table1 zebra-table fixed-width-table">
 	<thead>
 	<tr>
@@ -359,7 +370,16 @@
 	</tbody>
 	</table>
 
-	<br />
+	<!-- IF TOTAL_FILES -->
+	<div class="pagination">
+		{L_NUMBER_FILES}{L_COLON} {TOTAL_FILES} &bull; {L_TOTAL_SIZE}{L_COLON} {TOTAL_SIZE}
+		<!-- IF .pagination -->
+			&bull; <!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			&bull; {PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
 
 	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
@@ -440,7 +460,7 @@
 		<input class="button2" type="submit" name="submit" value="{L_DELETE_MARKED}" /><br />
 		<p class="small">
 			<a href="#" onclick="marklist('attachments', 'delete', true); return false;">{L_MARK_ALL}</a> &bull;
-			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>		
+			<a href="#" onclick="marklist('attachments', 'delete', false); return false;">{L_UNMARK_ALL}</a>
 		</p>
 	</fieldset>
 <!-- ENDIF -->
