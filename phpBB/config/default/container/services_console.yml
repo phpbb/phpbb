@@ -251,6 +251,56 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.style.activate:
+        class: phpbb\console\command\style\activate
+        arguments:
+            - '@user'
+            - '@style.manager'
+            - '@language'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.style.deactivate:
+        class: phpbb\console\command\style\deactivate
+        arguments:
+            - '@user'
+            - '@style.manager'
+            - '@language'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.style.install:
+        class: phpbb\console\command\style\install
+        arguments:
+            - '@user'
+            - '@style.manager'
+            - '@language'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.style.show:
+        class: phpbb\console\command\style\show
+        arguments:
+            - '@user'
+            - '@style.manager'
+            - '@language'
+            - '@log'
+        tags:
+            - { name: console.command }
+
+    console.command.style.uninstall:
+        class: phpbb\console\command\style\uninstall
+        arguments:
+            - '@user'
+            - '@style.manager'
+            - '@language'
+            - '@log'
+        tags:
+            - { name: console.command }
+
     console.command.thumbnail.delete:
         class: phpbb\console\command\thumbnail\delete
         arguments:

@@ -144,6 +144,18 @@ services:
             - '@php_ini'
             - '@mimetype.guesser'
 
+    style.manager:
+        class: phpbb\style\manager
+        arguments:
+            - '@cache'
+            - '@config'
+            - '@service_container'
+            - '@dbal.conn'
+            - '@filesystem'
+            - '%tables.styles%'
+            - '%tables.users%'
+            - '%core.root_path%'
+
     upload_imagesize:
         class: FastImageSize\FastImageSize
 

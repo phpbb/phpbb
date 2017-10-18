@@ -142,6 +142,21 @@ $lang = array_merge($lang, array(
 	'CLI_REPARSER_REPARSE_REPARSING_START'	=> 'Reparsing %s...',
 	'CLI_REPARSER_REPARSE_SUCCESS'			=> 'Reparsing ended with success',
 
+	// Style
+	'CLI_DESCRIPTION_STYLE_ACTIVATE'	=> 'Activate style.',
+	'CLI_DESCRIPTION_STYLE_DEACTIVATE'	=> 'Deactivate style.',
+	'CLI_DESCRIPTION_STYLE_INSTALL'		=> 'Install style.',
+	'CLI_DESCRIPTION_STYLE_UNINSTALL'	=> 'Uninstall style.',
+	'CLI_DESCRIPTION_LIST_STYLES'		=> 'Lists all styles in the database and on the filesystem.',
+	'CLI_STYLE_PATH'					=> 'Directory of the style.',
+	'CLI_STYLE_ACTIVATE_FAILURE'		=> 'Could not activate style %s',
+	'CLI_STYLE_ACTIVATE_SUCCESS'		=> 'Successfully activated style %s',
+	'CLI_STYLE_DEACTIVATE_FAILURE'		=> 'Could not deactivate style %s',
+	'CLI_STYLE_DEACTIVATE_SUCCESS'		=> 'Successfully deactivated style %s',
+	'CLI_STYLES_ACTIVATED'				=> 'Activated',
+	'CLI_STYLES_AVAILABLE'				=> 'Available',
+	'CLI_STYLES_DEACTIVATED'			=> 'Deactivated',
+
 	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
 	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.
 	'CLI_THUMBNAIL_DELETED'		=> '%1$s (%2$s) deleted.',
