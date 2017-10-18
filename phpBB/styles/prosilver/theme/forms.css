@@ -326,6 +326,7 @@ input[type="number"] {
 
 input[type="search"] {
 	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
 	-webkit-appearance: textfield;
 }
 

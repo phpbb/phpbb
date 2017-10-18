@@ -450,6 +450,7 @@ a.header-avatar span:after {
 	width: 0;
 	height: 0;
 	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	transform: rotate(360deg);
 }
 
 .dropdown-up .pointer,
