@@ -1023,6 +1023,8 @@ input.disabled {
 	background-color: #000000;
 }
 
+/* stylelint-disable at-rule-no-vendor-prefix */
+
 @-webkit-keyframes colors {
 	0% {
 		stroke: #4285f4;
@@ -1044,6 +1046,9 @@ input.disabled {
 		stroke: #4285f4;
 	}
 }
+
+/* stylelint-enable at-rule-no-vendor-prefix */
+
 
 @keyframes colors {
 	0% {

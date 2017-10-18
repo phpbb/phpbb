@@ -1061,6 +1061,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 /* stylelint-enable no-unknown-animations */
 
+/* stylelint-disable at-rule-no-vendor-prefix */
 @-webkit-keyframes rotator {
 	0% {
 		-webkit-transform: rotate(0deg);
@@ -1120,6 +1121,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 		stroke-dashoffset: 187;
 	}
 }
+/* stylelint-enable at-rule-no-vendor-prefix */
 
 
 /* Miscellaneous styles
