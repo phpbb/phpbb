@@ -1349,7 +1349,6 @@ ul.linklist:after,
 	opacity: 0.8;
 	position: relative;
 	top: 3px;
-	display: inline-block;
 	float: right;
 	margin-left: 3px;
 	padding: 4px 6px;
