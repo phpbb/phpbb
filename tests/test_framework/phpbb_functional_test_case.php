@@ -571,6 +571,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
 
+		// Prevent new user to have an invalid style
+		$config['default_style'] = 1;
+
 		// Required by user_add
 		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
 		$db = $this->get_db();
