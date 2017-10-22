@@ -526,7 +526,7 @@ class filespec
 				}
 
 				// Make sure the dimensions match a valid image
-				if (empty($this->width) || empty($this->height))
+				if (!isset($this->width) || !isset($this->height))
 				{
 					$this->error[] = $this->language->lang('ATTACHED_IMAGE_NOT_IMAGE');
 				}
