@@ -106,7 +106,7 @@
 			<!-- IF S_CAN_VOTE -->
 				<dl style="border-top: none;" class="poll_vote">
 					<dt>&nbsp;</dt>
-					<dd class="resultbar"><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="button1 button button-form" /></dd>
+					<dd class="resultbar"><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="button1" /></dd>
 				</dl>
 			<!-- ENDIF -->
 
@@ -158,7 +158,7 @@
 			<!-- EVENT viewtopic_body_postrow_rank_after -->
 
 		<!-- IF postrow.POSTER_POSTS != '' --><dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> <!-- IF postrow.U_SEARCH !== '' --><a href="{postrow.U_SEARCH}"><!-- ENDIF -->{postrow.POSTER_POSTS}<!-- IF postrow.U_SEARCH !== '' --></a><!-- ENDIF --></dd><!-- ENDIF -->
-		<!-- IF postrow.POSTER_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED|date("D,d M Y")}</dd><!-- ENDIF -->
 		<!-- IF postrow.POSTER_WARNINGS --><dd class="profile-warnings"><strong>{L_WARNINGS}{L_COLON}</strong> {postrow.POSTER_WARNINGS}</dd><!-- ENDIF -->
 
 		<!-- IF postrow.S_PROFILE_FIELD1 -->
@@ -298,8 +298,8 @@
 				<p class="post-notice unapproved">
 					<span><i class="icon fa-question icon-red fa-fw" aria-hidden="true"></i></span>
 					<strong>{L_POST_UNAPPROVED_ACTION}</strong>
-					<input class="button1 button button-form-bold" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
-					<input class="button1 button button-form" type="submit" value="{L_APPROVE}" name="action[approve]" />
+					<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
+					<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
 					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
 					{S_FORM_TOKEN}
 				</p>
@@ -309,9 +309,9 @@
 				<p class="post-notice deleted">
 					<strong>{L_POST_DELETED_ACTION}</strong>
 					<!-- IF postrow.S_DELETE_PERMANENT -->
-						<input class="button1 button button-form-bold" type="submit" value="{L_DELETE}" name="action[delete]" />
+						<input class="button2" type="submit" value="{L_DELETE}" name="action[delete]" />
 					<!-- ENDIF -->
-					<input class="button1 button button-form" type="submit" value="{L_RESTORE}" name="action[restore]" />
+					<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
 					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
 					{S_FORM_TOKEN}
 				</p>
