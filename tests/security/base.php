@@ -46,7 +46,7 @@ abstract class phpbb_security_test_base extends phpbb_test_case
 		$request = new phpbb_mock_request(array(), array(), array(), $this->server);
 		$symfony_request = new \phpbb\symfony_request($request);
 
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem('');
 
 		// Set no user and trick a bit to circumvent errors
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);

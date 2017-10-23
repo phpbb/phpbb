@@ -28,7 +28,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(

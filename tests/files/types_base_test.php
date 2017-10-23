@@ -41,7 +41,7 @@ class phpbb_files_types_base_test extends phpbb_test_case
 
 		$this->request = $this->createMock('\phpbb\request\request');
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 

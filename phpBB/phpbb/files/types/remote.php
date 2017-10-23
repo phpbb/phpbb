@@ -17,6 +17,7 @@ use bantu\IniGetWrapper\IniGetWrapper;
 use phpbb\config\config;
 use phpbb\files\factory;
 use phpbb\files\filespec;
+use phpbb\filesystem\filesystem;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 
@@ -27,6 +28,15 @@ class remote extends base
 
 	/** @var factory Files factory */
 	protected $factory;
+
+	/** @var filesystem Filesystem */
+	protected $filesystem;
+
+	/** @var language */
+	protected $language;
+
+	/** @var IniGetWrapper */
+	protected $php_ini;
 
 	/** @var request_interface */
 	protected $request;
@@ -39,15 +49,17 @@ class remote extends base
 	 *
 	 * @param config $config phpBB config
 	 * @param factory $factory Files factory
+	 * @param filesystem $filesystem Filesystem
 	 * @param language $language Language class
 	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request object
 	 * @param string $phpbb_root_path phpBB root path
 	 */
-	public function __construct(config $config, factory $factory, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
+	public function __construct(config $config, factory $factory, filesystem $filesystem, language $language, IniGetWrapper $php_ini, request_interface $request, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->factory = $factory;
+		$this->filesystem = $filesystem;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
 		$this->request = $request;
@@ -139,7 +151,7 @@ class remote extends base
 
 		$data = $response->getBody();
 
-		$filename = tempnam(sys_get_temp_dir(), unique_id() . '-');
+		$filename = tempnam($this->filesystem->get_temp_dir(), unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{

@@ -80,7 +80,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
@@ -126,7 +126,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		global $phpbb_filesystem;
 
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem('');
 	}
 
 	protected function tearDown()

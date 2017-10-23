@@ -215,7 +215,7 @@ class compress_zip extends compress
 		global $phpbb_filesystem;
 
 		$this->fp = @fopen($file, $mode . 'b');
-		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
+		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem('');
 
 		if (!$this->fp)
 		{
@@ -582,7 +582,7 @@ class compress_tar extends compress
 		$this->type = &$type;
 		$this->open();
 
-		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem();
+		$this->filesystem = ($phpbb_filesystem instanceof \phpbb\filesystem\filesystem_interface) ? $phpbb_filesystem : new \phpbb\filesystem\filesystem('');
 	}
 
 	/**

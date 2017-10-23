@@ -21,6 +21,10 @@ use phpbb\db\extractor\exception\extractor_not_initialized_exception;
  */
 abstract class base_extractor implements extractor_interface
 {
+	/**
+	 * @var    \phpbb\filesystem\filesystem
+	 */
+	protected $filesystem;
 
 	/**
 	 * @var    \phpbb\request\request_interface
@@ -83,8 +87,9 @@ abstract class base_extractor implements extractor_interface
 	 * @param \phpbb\request\request_interface $request
 	 * @param \phpbb\db\driver\driver_interface $db
 	 */
-	public function __construct(\phpbb\request\request_interface $request, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\filesystem\filesystem $filesystem, \phpbb\request\request_interface $request, \phpbb\db\driver\driver_interface $db)
 	{
+		$this->filesystem 		= $filesystem;
 		$this->request			= $request;
 		$this->db				= $db;
 		$this->fp				= null;
@@ -158,7 +163,7 @@ abstract class base_extractor implements extractor_interface
 
 		if ($store === true)
 		{
-			$file = sys_get_temp_dir() . '/' . $filename . $ext;
+			$file = $this->filesystem->get_temp_dir() . '/' . $filename . $ext;
 
 			$this->fp = $open($file, 'w');
 

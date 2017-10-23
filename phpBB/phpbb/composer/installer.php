@@ -402,7 +402,7 @@ class installer
 	 */
 	public function check_requirements()
 	{
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 
 		return $filesystem->is_writable([
 			$this->root_path . $this->composer_filename,

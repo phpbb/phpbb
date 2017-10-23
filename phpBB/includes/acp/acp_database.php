@@ -21,8 +21,9 @@ if (!defined('IN_PHPBB'))
 
 class acp_database
 {
-	var $db_tools;
-	var $u_action;
+	protected $db_tools;
+	protected $filesystem;
+	public $u_action;
 
 	function main($id, $mode)
 	{
@@ -30,6 +31,7 @@ class acp_database
 		global $phpbb_root_path, $phpbb_container, $phpbb_log, $table_prefix;
 
 		$this->db_tools = $phpbb_container->get('dbal.tools');
+		$this->filesystem = $phpbb_container->get('filesystem');
 		$storage = $phpbb_container->get('storage.backup');
 
 		$user->add_lang('acp/database');
@@ -172,7 +174,9 @@ class acp_database
 								$file = $filename . $ext;
 
 								// Copy to storage using streams
-								$fp = fopen(sys_get_temp_dir() . '/' . $file, 'rb');
+								$temp_dir = $this->filesystem->get_temp_dir();
+
+								$fp = fopen($temp_dir . '/' . $file, 'rb');
 
 								if ($fp === false)
 								{
@@ -184,7 +188,7 @@ class acp_database
 								fclose($fp);
 
 								// Remove file from tmp
-								@unlink(sys_get_temp_dir() . '/' . $file);
+								@unlink($temp_dir . '/' . $file);
 
 								// Save to database
 								$sql = "INSERT INTO " . $table_prefix . "backups (filename)
@@ -343,7 +347,7 @@ class acp_database
 							}
 
 							// Copy file to temp folder to decompress it
-							$temp_file_name = sys_get_temp_dir() . '/' . $file_name;
+							$temp_file_name = $this->filesystem->get_temp_dir() . '/' . $file_name;
 
 							try
 							{

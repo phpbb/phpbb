@@ -22,7 +22,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(

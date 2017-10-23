@@ -31,7 +31,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 	}
 
 	public function realpath_resolve_absolute_without_symlinks_data()
@@ -55,7 +55,7 @@ class phpbb_filesystem_realpath_test extends phpbb_test_case
 			return array();
 		}
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 		$relative_path = $filesystem->make_path_relative(__DIR__, getcwd());
 
 		return array(

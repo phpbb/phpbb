@@ -75,7 +75,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->mimetype_guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 

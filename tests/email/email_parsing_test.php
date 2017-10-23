@@ -36,7 +36,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$symfony_request = new \phpbb\symfony_request(
 			$request
 		);
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
 			$request,

@@ -88,7 +88,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$this->symfony_request = new \phpbb\symfony_request(
 			$this->request
 		);
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 		$this->phpbb_path_helper = new \phpbb\path_helper(
 			$this->symfony_request,
 			$this->request,

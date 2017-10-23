@@ -354,7 +354,7 @@ class phpbb_database_test_connection_manager
 
 			$queries = file_get_contents($filename);
 
-			$db_helper = new \phpbb\install\helper\database(new \phpbb\filesystem\filesystem(), $phpbb_root_path);
+			$db_helper = new \phpbb\install\helper\database(new \phpbb\filesystem\filesystem(''), $phpbb_root_path);
 			$sql = $db_helper->remove_comments($queries);
 			$sql = $db_helper->split_sql_file($sql, $this->dbms['DELIM']);
 

@@ -85,7 +85,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $this->config, $this->db, $phpbb_root_path, $phpEx);
 		$this->request = $this->createMock('\phpbb\request\request');
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 		$guessers = array(

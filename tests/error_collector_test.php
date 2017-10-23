@@ -19,7 +19,7 @@ class phpbb_error_collector_test extends phpbb_test_case
 
 		global $phpbb_filesystem;
 
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem('');
 	}
 
 	public function test_collection()

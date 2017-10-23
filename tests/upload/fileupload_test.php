@@ -53,7 +53,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$this->request = $this->createMock('\phpbb\request\request');
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$guessers = array(
 			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),

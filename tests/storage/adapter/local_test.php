@@ -21,7 +21,7 @@
 	{
 		parent::setUp();
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
 
 		$this->adapter = new \phpbb\storage\adapter\local($filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);

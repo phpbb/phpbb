@@ -20,7 +20,7 @@ class phpbb_filesystem_is_absolute_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->filesystem = new \phpbb\filesystem\filesystem('');
 	}
 
 	static public function is_absolute_data()

@@ -35,7 +35,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			->method('get')
 			->will($this->returnArgument(0));
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 		$adapter = new \phpbb\storage\adapter\local($filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
 		$adapter->configure(['path' => 'images/avatars/upload']);
 		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');

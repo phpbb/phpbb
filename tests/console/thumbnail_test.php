@@ -68,7 +68,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		$this->application->add(new delete($this->user, $this->db, $this->phpbb_root_path));
 		$this->application->add(new recreate($this->user));
 
-		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_filesystem = new \phpbb\filesystem\filesystem('');
 
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
 		copy(dirname(__FILE__) . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');

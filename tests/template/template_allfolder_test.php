@@ -33,7 +33,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
 
-		$filesystem = new \phpbb\filesystem\filesystem();
+		$filesystem = new \phpbb\filesystem\filesystem('');
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
