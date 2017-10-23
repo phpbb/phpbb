@@ -143,6 +143,20 @@ function activateSubPanel(p, panels) {
 	}
 }
 
+$('.smiley-add').click(function(e) {
+	'use strict';
+	// Insert smileys to text.
+	var a = $(this).attr('data-smiley-text');
+	insert_text(a, true);
+});
+
+$('#more-smilies').click(function(e) {
+    'use strict';
+    // View more smileys.
+    var a = $(this).attr('href');
+    popupSmileys(a);
+});
+
 function selectCode(a) {
 	'use strict';
 

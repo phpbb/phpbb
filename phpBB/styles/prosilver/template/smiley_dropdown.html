@@ -1,0 +1,23 @@
+<div id="smiley-dropdown" class="dropdown dropdown-extended smiley-dropdown">
+	<div class="pointer"><div class="pointer-inner"></div></div>
+	<div class="dropdown-contents smiley-wrap">
+		<ul class="smiley-list" role="menu">
+			<!-- EVENT posting_editor_smilies_before -->
+			<!-- IF S_SMILIES_ALLOWED and .smiley -->
+				<!-- BEGIN smiley -->
+	            <li class="smiley-list-item">
+	                <a class="smiley-add" data-smiley-text="{smiley.A_SMILEY_CODE}"><img class="smiley-image" src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+	            </li>
+	            <!-- END smiley -->
+	        <!-- ENDIF -->
+			<!-- EVENT posting_editor_smilies_after -->
+		</ul>
+
+		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED -->
+			<div class="footer">
+                <a  href="{U_MORE_SMILIES}"><span>{L_MORE_SMILIES}</span></a>
+            </div>
+        <!-- ENDIF -->
+	</div>
+</div>
+

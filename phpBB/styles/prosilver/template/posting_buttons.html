@@ -105,6 +105,14 @@
 	<button type="button" class="button button-icon-only bbcode-color" name="bbpalette" id="bbpalette" value="{L_FONT_COLOR}" onclick="change_palette();" title="{L_BBCODE_S_HELP}">
 		<i class="icon fa-tint fa-fw" aria-hidden="true"></i>
 	</button>
+	<!-- IF S_SMILIES_ALLOWED -->
+	<div class="dropdown-container dropdown-button-control smiley-container">
+		<span title="{L_SMILEYS}" class="button button-secondary dropdown-trigger dropdown-select">
+			<i class="icon fa-smile-o fa-fw"></i>
+		</span>
+		<!-- INCLUDE smiley_dropdown.html -->
+	</div>
+	<!-- ENDIF -->
 	<select name="addbbcode20" class="bbcode-size" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{L_BBCODE_F_HELP}">
 		<option value="50">{L_FONT_TINY}</option>
 		<option value="85">{L_FONT_SMALL}</option>
