@@ -26,7 +26,7 @@ then
 	psql -c 'create database phpbb_tests;' -U postgres
 fi
 
-if [ "$TRAVIS_PHP_VERSION" == "5.4" -a "$DB" == "mysqli" ]
+if [ "$TRAVIS_PHP_VERSION" == "5.6" -a "$DB" == "mysqli" ]
 then
 	mysql -e 'SET GLOBAL storage_engine=MyISAM;'
 fi

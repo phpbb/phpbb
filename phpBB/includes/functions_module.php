@@ -243,7 +243,7 @@ class p_master
 				}
 			}
 
-			$depth = sizeof($this->module_cache['parents'][$row['module_id']]);
+			$depth = count($this->module_cache['parents'][$row['module_id']]);
 
 			// We need to prefix the functions to not create a naming conflict
 
@@ -279,7 +279,7 @@ class p_master
 				'parent'	=> (int) $row['parent_id'],
 				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
 
-				'is_duplicate'	=> ($row['module_basename'] && sizeof($names[$row['module_basename'] . '_' . $row['module_mode']]) > 1) ? true : false,
+				'is_duplicate'	=> ($row['module_basename'] && count($names[$row['module_basename'] . '_' . $row['module_mode']]) > 1) ? true : false,
 
 				'name'		=> (string) $row['module_basename'],
 				'mode'		=> (string) $row['module_mode'],
@@ -431,7 +431,7 @@ class p_master
 		extract($phpbb_dispatcher->trigger_event('core.module_auth', compact($vars)));
 
 		$tokens = $match[0];
-		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
+		for ($i = 0, $size = count($tokens); $i < $size; $i++)
 		{
 			$token = &$tokens[$i];
 
@@ -932,6 +932,14 @@ class p_master
 					'S_SELECTED'	=> (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id) ? true : false,
 					'U_TITLE'		=> $u_title
 				);
+
+				if (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id)
+				{
+					$template->assign_block_vars('navlinks', array(
+						'FORUM_NAME'	=> $item_ary['lang'],
+						'U_VIEW_FORUM'	=> $u_title,
+					));
+				}
 
 				$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
 			}

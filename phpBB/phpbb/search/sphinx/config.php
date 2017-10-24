@@ -46,7 +46,7 @@ class config
 	*/
 	function get_section_by_name($name)
 	{
-		for ($i = 0, $size = sizeof($this->sections); $i < $size; $i++)
+		for ($i = 0, $size = count($this->sections); $i < $size; $i++)
 		{
 			// Make sure this is really a section object and not a comment
 			if (($this->sections[$i] instanceof \phpbb\search\sphinx\config_section) && $this->sections[$i]->get_name() == $name)
@@ -67,7 +67,7 @@ class config
 	function add_section($name)
 	{
 		$this->sections[] = new \phpbb\search\sphinx\config_section($name, '');
-		return $this->sections[sizeof($this->sections) - 1];
+		return $this->sections[count($this->sections) - 1];
 	}
 
 	/**

@@ -107,7 +107,7 @@ class auth_admin extends \phpbb\auth\auth
 		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), array(''));
 
 		// If forum_ids is false and the scope is local we actually want to have all forums within the array
-		if ($scope == 'local' && !sizeof($forum_ids))
+		if ($scope == 'local' && !count($forum_ids))
 		{
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE;
@@ -177,9 +177,9 @@ class auth_admin extends \phpbb\auth\auth
 		// Now, we need to fill the gaps with $acl_fill. ;)
 
 		// Now switch back to keys
-		if (sizeof($compare_options))
+		if (count($compare_options))
 		{
-			$compare_options = array_combine($compare_options, array_fill(1, sizeof($compare_options), $acl_fill));
+			$compare_options = array_combine($compare_options, array_fill(1, count($compare_options), $acl_fill));
 		}
 
 		// Defining the user-function here to save some memory
@@ -189,7 +189,7 @@ class auth_admin extends \phpbb\auth\auth
 		};
 
 		// Actually fill the gaps
-		if (sizeof($hold_ary))
+		if (count($hold_ary))
 		{
 			foreach ($hold_ary as $ug_id => $row)
 			{
@@ -356,7 +356,7 @@ class auth_admin extends \phpbb\auth\auth
 		// Build js roles array (role data assignments)
 		$s_role_js_array = '';
 
-		if (sizeof($roles))
+		if (count($roles))
 		{
 			$s_role_js_array = array();
 
@@ -422,7 +422,7 @@ class auth_admin extends \phpbb\auth\auth
 		// If we only have one forum id to display or being in local mode and more than one user/group to display,
 		// we switch the complete interface to group by user/usergroup instead of grouping by forum
 		// To achieve this, we need to switch the array a bit
-		if (sizeof($forum_ids) == 1 || ($local && sizeof($ug_names_ary) > 1))
+		if (count($forum_ids) == 1 || ($local && count($ug_names_ary) > 1))
 		{
 			$hold_ary_temp = $hold_ary;
 			$hold_ary = array();
@@ -453,9 +453,9 @@ class auth_admin extends \phpbb\auth\auth
 
 					'S_LOCAL'		=> ($local) ? true : false,
 					'S_GLOBAL'		=> (!$local) ? true : false,
-					'S_NUM_CATS'	=> sizeof($categories),
+					'S_NUM_CATS'	=> count($categories),
 					'S_VIEW'		=> ($mode == 'view') ? true : false,
-					'S_NUM_OBJECTS'	=> sizeof($content_array),
+					'S_NUM_OBJECTS'	=> count($content_array),
 					'S_USER_MODE'	=> ($user_mode == 'user') ? true : false,
 					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
 				);
@@ -546,15 +546,15 @@ class auth_admin extends \phpbb\auth\auth
 					'NAME'			=> $ug_name,
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
-					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && sizeof($user_groups_default[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_default[$ug_id]) : '',
-					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && sizeof($user_groups_custom[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_custom[$ug_id]) : '',
+					'USER_GROUPS_DEFAULT'	=> ($user_mode == 'user' && isset($user_groups_default[$ug_id]) && count($user_groups_default[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_default[$ug_id]) : '',
+					'USER_GROUPS_CUSTOM'	=> ($user_mode == 'user' && isset($user_groups_custom[$ug_id]) && count($user_groups_custom[$ug_id])) ? implode($user->lang['COMMA_SEPARATOR'], $user_groups_custom[$ug_id]) : '',
 					'L_ACL_TYPE'			=> $l_acl_type,
 
 					'S_LOCAL'		=> ($local) ? true : false,
 					'S_GLOBAL'		=> (!$local) ? true : false,
-					'S_NUM_CATS'	=> sizeof($categories),
+					'S_NUM_CATS'	=> count($categories),
 					'S_VIEW'		=> ($mode == 'view') ? true : false,
-					'S_NUM_OBJECTS'	=> sizeof($content_array),
+					'S_NUM_OBJECTS'	=> count($content_array),
 					'S_USER_MODE'	=> ($user_mode == 'user') ? true : false,
 					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
 				);
@@ -637,7 +637,7 @@ class auth_admin extends \phpbb\auth\auth
 		global $db, $template, $user, $phpbb_root_path, $phpEx;
 		global $phpbb_container;
 
-		if (!sizeof($hold_ary))
+		if (!count($hold_ary))
 		{
 			return;
 		}
@@ -669,7 +669,7 @@ class auth_admin extends \phpbb\auth\auth
 				'FORUM_ID'			=> $forum_id)
 			);
 
-			if (isset($auth_ary['users']) && sizeof($auth_ary['users']))
+			if (isset($auth_ary['users']) && count($auth_ary['users']))
 			{
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
@@ -688,7 +688,7 @@ class auth_admin extends \phpbb\auth\auth
 				$db->sql_freeresult($result);
 			}
 
-			if (isset($auth_ary['groups']) && sizeof($auth_ary['groups']))
+			if (isset($auth_ary['groups']) && count($auth_ary['groups']))
 			{
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE . '
@@ -890,7 +890,7 @@ class auth_admin extends \phpbb\auth\auth
 		}
 		$db->sql_freeresult($result);
 
-		if (sizeof($role_ids))
+		if (count($role_ids))
 		{
 			$sql = "DELETE FROM $table
 				WHERE $forum_sql
@@ -1000,7 +1000,7 @@ class auth_admin extends \phpbb\auth\auth
 		}
 
 		// If no data is there, we set the any-flag to ACL_NEVER...
-		if (!sizeof($sql_ary))
+		if (!count($sql_ary))
 		{
 			$sql_ary[] = array(
 				'role_id'			=> (int) $role_id,
@@ -1083,7 +1083,7 @@ class auth_admin extends \phpbb\auth\auth
 			$db->sql_freeresult($result);
 
 			// Get role data for resetting data
-			if (sizeof($cur_role_auth))
+			if (count($cur_role_auth))
 			{
 				$sql = 'SELECT ao.auth_option, rd.role_id, rd.auth_setting
 					FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_ROLES_DATA_TABLE . ' rd

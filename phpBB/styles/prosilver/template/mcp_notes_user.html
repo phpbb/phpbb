@@ -42,8 +42,8 @@
 </div>
 
 <fieldset class="submit-buttons">
-	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
-	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1" />
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button1 button button-form-bold" />&nbsp;
+	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1 button button-form" />
 	{S_FORM_TOKEN}
 </fieldset>
 
@@ -51,7 +51,7 @@
 	<div class="inner">
 
 	<div class="action-bar bar-top">
-		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button1 button button-form-bold" name="filter" value="{L_SEARCH}" />
 		<div class="pagination">
 			{TOTAL_REPORTS}
 			<!-- IF .pagination -->
@@ -108,8 +108,8 @@
 
 <!-- IF S_CLEAR_ALLOWED -->
 <fieldset class="display-actions">
-	<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
-	&nbsp;<input class="button1" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
+	<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
+	&nbsp;<input class="button1 button button-form" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
 </fieldset>
 
 <fieldset class="display-actions">

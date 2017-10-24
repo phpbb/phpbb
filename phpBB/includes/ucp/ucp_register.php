@@ -167,7 +167,7 @@ class ucp_register
 				unset($now);
 
 				$template->assign_vars(array(
-					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
+					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
@@ -185,7 +185,7 @@ class ucp_register
 			else
 			{
 				$template->assign_vars(array(
-					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
+					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -297,7 +297,7 @@ class ucp_register
 			// validate custom profile fields
 			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
 
-			if (!sizeof($error))
+			if (!count($error))
 			{
 				if ($data['new_password'] != $data['password_confirm'])
 				{
@@ -318,7 +318,7 @@ class ucp_register
 			$vars = array('submit', 'data', 'cp_data', 'error');
 			extract($phpbb_dispatcher->trigger_event('core.ucp_register_data_after', compact($vars)));
 
-			if (!sizeof($error))
+			if (!count($error))
 			{
 				$server_url = generate_board_url();
 
@@ -532,7 +532,7 @@ class ucp_register
 		phpbb_timezone_select($template, $user, $data['tz'], true);
 
 		$template->assign_vars(array(
-			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
+			'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
 			'PASSWORD_CONFIRM'	=> $data['password_confirm'],

@@ -40,7 +40,7 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 	public function test_manager_finds_all_ready_tasks()
 	{
 		$tasks = $this->manager->find_all_ready_tasks();
-		$this->assertEquals(3, sizeof($tasks));
+		$this->assertEquals(3, count($tasks));
 	}
 
 	public function test_manager_finds_one_ready_task()
@@ -75,6 +75,32 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		return new \phpbb\cron\manager($tasks, $phpbb_root_path, $phpEx);
+		$mock_config = new \phpbb\config\config(array(
+			'force_server_vars' => false,
+			'enable_mod_rewrite' => '',
+		));
+
+		$mock_router = $this->getMockBuilder('\phpbb\routing\router')
+			->setMethods(array('setContext', 'generate'))
+			->disableOriginalConstructor()
+			->getMock();
+		$mock_router->method('setContext')
+			->willReturn(true);
+		$mock_router->method('generate')
+			->willReturn('foobar');
+
+		$request = new \phpbb\request\request();
+		$request->enable_super_globals();
+
+		$routing_helper = new \phpbb\routing\helper(
+			$mock_config,
+			$mock_router,
+			new \phpbb\symfony_request($request),
+			$request,
+			$phpbb_root_path,
+			$phpEx
+		);
+
+		return new \phpbb\cron\manager($tasks, $routing_helper, $phpbb_root_path, $phpEx);
 	}
 }

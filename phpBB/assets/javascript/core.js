@@ -27,11 +27,7 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', { 
-			id: 'loading_indicator', 
-			class: 'loading_indicator', 
-		});
-		$loadingIndicator.appendTo('#page-footer');
+		$loadingIndicator = $('#loading_indicator');
 	}
 
 	if (!$loadingIndicator.is(':visible')) {

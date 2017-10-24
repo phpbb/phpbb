@@ -1,28 +1,35 @@
-/* --------------------------------------------------------------
+/* -------------------------------------------------------------- /*
 	$Icons
--------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
 
 /* Global module setup
---------------------------------*/
+---------------------------------------- */
 
 /* Renamed version of .fa class for agnostic useage of icon fonts.
  * Just change the name of the font after the 14/1 to the name of
  * the font you wish to use.
  */
-.icon, .button .icon, blockquote cite:before, .uncited:before {
+.icon,
+.button .icon,
+blockquote cite:before,
+.uncited:before {
+	font-family: FontAwesome;
+	font-size: 14px;
+	font-weight: normal;
+	font-style: normal;
+	font-variant: normal;
+	line-height: 1;
 	display: inline-block;
-  	font-weight: normal;
-  	font-style: normal;
-  	font-variant: normal;
-  	font-family: FontAwesome;
-  	font-size: 14px;
-  	line-height: 1;
-  	text-rendering: auto; /* optimizelegibility throws things off #1094 */
-  	-webkit-font-smoothing: antialiased;
-  	-moz-osx-font-smoothing: grayscale;
+	/* stylelint-disable order/declaration-block-properties-specified-order */
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	/* stylelint-enable order/declaration-block-properties-specified-order */
+	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
-.icon:before { padding-right: 2px; }
+.icon:before {
+	padding-right: 2px;
+}
 
 .button .icon:before {
 	padding-right: 0;
@@ -48,49 +55,50 @@
 
 /* icon modifiers */
 .icon-tiny {
-	width: 12px;
-	transform: scale(0.65, 0.75);
-	vertical-align: text-bottom;
 	font-size: 16px;
-}
-
-.arrow-left .icon {
-	float: left;
-}
-
-.arrow-left:hover .icon {
-	margin-left: -5px;
-	margin-right: 5px;
+	vertical-align: text-bottom;
+	width: 12px;
+	-webkit-transform: scale(0.65, 0.75);
+	transform: scale(0.65, 0.75);
 }
 
 .arrow-right .icon {
 	float: right;
 }
 
+.arrow-left:hover .icon {
+	margin-right: 5px;
+	margin-left: -5px;
+}
+
+.arrow-left .icon {
+	float: left;
+}
+
 .arrow-right:hover .icon {
-	margin-left: 5px;
 	margin-right: -5px;
+	margin-left: 5px;
 }
 
 .post-buttons .dropdown-contents .icon {
-    float: right;
-    margin-left: 5px;
+	float: right;
+	margin-left: 5px;
 }
 
 .alert_close .icon:before {
+	border-radius: 50%;
+	display: block;
+	width: 11px;
+	height: 12px;
 	padding: 0;
-    border-radius: 50%;
-    width: 11px;
-    display: block;
-    line-height: .9;
-    height: 12px;
 }
 
-blockquote cite:before, .uncited:before {
-	content: '\f10d'; /* Font Awesome quote-left */
+blockquote cite:before,
+.uncited:before {
+	content: "\f10d"; /* Font Awesome quote-left */
 }
 
-.rtl blockquote cite:before, .rtl .uncited:before {
-	content: '\f10e'; /* Font Awesome quote-right */
+.rtl blockquote cite:before,
+.rtl .uncited:before {
+	content: "\f10e"; /* Font Awesome quote-right */
 }
-

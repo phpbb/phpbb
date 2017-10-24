@@ -252,7 +252,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	*/
 	public function test_configure_events()
 	{
-		$this->dispatcher = $this->getMock('phpbb\\event\\dispatcher_interface');
+		$this->dispatcher = $this->createMock('phpbb\\event\\dispatcher_interface');
 		$this->dispatcher
 			->expects($this->at(0))
 			->method('trigger_event')

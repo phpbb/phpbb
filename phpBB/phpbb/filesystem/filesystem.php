@@ -13,6 +13,7 @@
 
 namespace phpbb\filesystem;
 
+use Symfony\Component\Filesystem\Exception\IOException;
 use phpbb\filesystem\exception\filesystem_exception;
 
 /**
@@ -60,7 +61,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->chgrp($files, $group, $recursive);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -146,7 +147,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->chown($files, $user, $recursive);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -162,26 +163,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function clean_path($path)
 	{
-		$exploded = explode('/', $path);
-		$filtered = array();
-		foreach ($exploded as $part)
-		{
-			if ($part === '.' && !empty($filtered))
-			{
-				continue;
-			}
-
-			if ($part === '..' && !empty($filtered) && $filtered[sizeof($filtered) - 1] !== '.' && $filtered[sizeof($filtered) - 1] !== '..')
-			{
-				array_pop($filtered);
-			}
-			else
-			{
-				$filtered[] = $part;
-			}
-		}
-		$path = implode('/', $filtered);
-		return $path;
+		return helper::clean_path($path);
 	}
 
 	/**
@@ -193,7 +175,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->copy($origin_file, $target_file, $override);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			throw new filesystem_exception('CANNOT_COPY_FILES', '', array(), $e);
 		}
@@ -208,7 +190,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->dumpFile($filename, $content);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			throw new filesystem_exception('CANNOT_DUMP_FILE', $filename, array(), $e);
 		}
@@ -227,7 +209,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function is_absolute_path($path)
 	{
-		return (isset($path[0]) && $path[0] === '/' || preg_match('#^[a-z]:[/\\\]#i', $path)) ? true : false;
+		return helper::is_absolute_path($path);
 	}
 
 	/**
@@ -305,7 +287,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function make_path_relative($end_path, $start_path)
 	{
-		return $this->symfony_filesystem->makePathRelative($end_path, $start_path);
+		return helper::make_path_relative($end_path, $start_path);
 	}
 
 	/**
@@ -317,7 +299,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->mirror($origin_dir, $target_dir, $iterator, $options);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
@@ -335,7 +317,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->mkdir($dirs, $mode);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
@@ -486,27 +468,7 @@ class filesystem implements filesystem_interface
 	 */
 	public function realpath($path)
 	{
-		if (!function_exists('realpath'))
-		{
-			return $this->phpbb_own_realpath($path);
-		}
-
-		$realpath = realpath($path);
-
-		// Strangely there are provider not disabling realpath but returning strange values. :o
-		// We at least try to cope with them.
-		if ((!$this->is_absolute_path($path) && $realpath === $path) || $realpath === false)
-		{
-			return $this->phpbb_own_realpath($path);
-		}
-
-		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-		if (substr($realpath, -1) === DIRECTORY_SEPARATOR)
-		{
-			$realpath = substr($realpath, 0, -1);
-		}
-
-		return $realpath;
+		return helper::realpath($path);
 	}
 
 	/**
@@ -518,7 +480,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->remove($files);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -538,7 +500,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->rename($origin, $target, $overwrite);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			$msg = $e->getMessage();
 			$filename = substr($msg, strpos($msg, '"'), strrpos($msg, '"'));
@@ -556,7 +518,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->symlink($origin_dir, $target_dir, $copy_on_windows);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			throw new filesystem_exception('CANNOT_CREATE_SYMLINK', $origin_dir, array(), $e);
 		}
@@ -571,7 +533,7 @@ class filesystem implements filesystem_interface
 		{
 			$this->symfony_filesystem->touch($files, $time, $access_time);
 		}
-		catch (\Symfony\Component\Filesystem\Exception\IOException $e)
+		catch (IOException $e)
 		{
 			// Try to recover filename
 			// By the time this is written that is at the end of the message
@@ -639,6 +601,8 @@ class filesystem implements filesystem_interface
 	/**
 	 * Try to resolve real path when PHP's realpath failes to do so
 	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+	 *
 	 * @param string	$path
 	 * @return bool|string
 	 */
@@ -671,7 +635,7 @@ class filesystem implements filesystem_interface
 				else if (function_exists('debug_backtrace'))
 				{
 					$call_stack = debug_backtrace(0);
-					$this->working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[sizeof($call_stack) - 1]['file']));
+					$this->working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[count($call_stack) - 1]['file']));
 				}
 				else
 				{
@@ -683,7 +647,7 @@ class filesystem implements filesystem_interface
 					//$dir_parts = explode(DIRECTORY_SEPARATOR, __DIR__);
 					//$namespace_parts = explode('\\', trim(__NAMESPACE__, '\\'));
 
-					//$namespace_part_count = sizeof($namespace_parts);
+					//$namespace_part_count = count($namespace_parts);
 
 					// Check if we still loading from root
 					//if (array_slice($dir_parts, -$namespace_part_count) === $namespace_parts)
@@ -764,6 +728,8 @@ class filesystem implements filesystem_interface
 	/**
 	 * Try to resolve symlinks in path
 	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+	 *
 	 * @param string	$path			The path to resolve
 	 * @param string	$prefix			The path prefix (on windows the drive letter)
 	 * @param bool 		$absolute		Whether or not the path is absolute
@@ -774,143 +740,6 @@ class filesystem implements filesystem_interface
 	 */
 	protected function resolve_path($path, $prefix = '', $absolute = false, $return_array = false)
 	{
-		if ($return_array)
-		{
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-		}
-
-		trim ($path, '/');
-		$path_parts = explode('/', $path);
-		$resolved = array();
-		$resolved_path = $prefix;
-		$file_found = false;
-
-		foreach ($path_parts as $path_part)
-		{
-			if ($file_found)
-			{
-				return false;
-			}
-
-			if (empty($path_part) || ($path_part === '.' && ($absolute || !empty($resolved))))
-			{
-				continue;
-			}
-			else if ($absolute && $path_part === '..')
-			{
-				if (empty($resolved))
-				{
-					// No directories above root
-					return false;
-				}
-
-				array_pop($resolved);
-				$resolved_path = false;
-			}
-			else if ($path_part === '..' && !empty($resolved) && !in_array($resolved[sizeof($resolved) - 1], array('.', '..')))
-			{
-				array_pop($resolved);
-				$resolved_path = false;
-			}
-			else
-			{
-				if ($resolved_path === false)
-				{
-					if (empty($resolved))
-					{
-						$resolved_path = ($absolute) ? $prefix . '/' . $path_part : $path_part;
-					}
-					else
-					{
-						$tmp_array = $resolved;
-						if ($absolute)
-						{
-							array_unshift($tmp_array, $prefix);
-						}
-
-						$resolved_path = implode('/', $tmp_array);
-					}
-				}
-
-				$current_path = $resolved_path . '/' . $path_part;
-
-				// Resolve symlinks
-				if (is_link($current_path))
-				{
-					if (!function_exists('readlink'))
-					{
-						return false;
-					}
-
-					$link = readlink($current_path);
-
-					// Is link has an absolute path in it?
-					if ($this->is_absolute_path($link))
-					{
-						if (defined('PHP_WINDOWS_VERSION_MAJOR'))
-						{
-							$prefix = $link[0] . ':';
-							$link = substr($link, 2);
-						}
-						else
-						{
-							$prefix = '';
-						}
-
-						$resolved = $this->resolve_path($link, $prefix, true, true);
-						$absolute = true;
-					}
-					else
-					{
-						$resolved = $this->resolve_path($resolved_path . '/' . $link, $prefix, $absolute, true);
-					}
-
-					if (!$resolved)
-					{
-						return false;
-					}
-
-					$resolved_path = false;
-				}
-				else if (is_dir($current_path . '/'))
-				{
-					$resolved[] = $path_part;
-					$resolved_path = $current_path;
-				}
-				else if (is_file($current_path))
-				{
-					$resolved[] = $path_part;
-					$resolved_path = $current_path;
-					$file_found = true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-
-		// If at the end of the path there were a .. or .
-		// we need to build the path again.
-		// Only doing this when a string is expected in return
-		if ($resolved_path === false && $return_array === false)
-		{
-			if (empty($resolved))
-			{
-				$resolved_path = ($absolute) ? $prefix . '/' : './';
-			}
-			else
-			{
-				$tmp_array = $resolved;
-				if ($absolute)
-				{
-					array_unshift($tmp_array, $prefix);
-				}
-
-				$resolved_path = implode('/', $tmp_array);
-			}
-		}
-
-		return ($return_array) ? $resolved : $resolved_path;
+		return helper::resolve_path($path, $prefix, $absolute, $return_array);
 	}
 }

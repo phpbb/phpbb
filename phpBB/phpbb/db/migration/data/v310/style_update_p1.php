@@ -133,7 +133,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		}
 
 		// Remove old entries from styles table
-		if (!sizeof($valid_styles))
+		if (!count($valid_styles))
 		{
 			// No valid styles: remove everything and add prosilver
 			$this->sql_query('DELETE FROM ' . STYLES_TABLE);

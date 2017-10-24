@@ -90,7 +90,7 @@ class acp_forums
 
 					$errors = $this->delete_forum($forum_id, $action_posts, $action_subforums, $posts_to_id, $subforums_to_id);
 
-					if (sizeof($errors))
+					if (count($errors))
 					{
 						break;
 					}
@@ -198,7 +198,7 @@ class acp_forums
 
 					$errors = $this->update_forum_data($forum_data);
 
-					if (!sizeof($errors))
+					if (!count($errors))
 					{
 						$forum_perm_from = $request->variable('forum_perm_from', 0);
 						$cache->destroy('sql', FORUMS_TABLE);
@@ -622,7 +622,7 @@ class acp_forums
 
 				$template_data = array(
 					'S_EDIT_FORUM'		=> true,
-					'S_ERROR'			=> (sizeof($errors)) ? true : false,
+					'S_ERROR'			=> (count($errors)) ? true : false,
 					'S_PARENT_ID'		=> $this->parent_id,
 					'S_FORUM_PARENT_ID'	=> $forum_data['parent_id'],
 					'S_ADD_ACTION'		=> ($action == 'add') ? true : false,
@@ -632,7 +632,7 @@ class acp_forums
 
 					'L_COPY_PERMISSIONS_EXPLAIN'	=> $user->lang['COPY_PERMISSIONS_' . strtoupper($action) . '_EXPLAIN'],
 					'L_TITLE'						=> $user->lang[$this->page_title],
-					'ERROR_MSG'						=> (sizeof($errors)) ? implode('<br />', $errors) : '',
+					'ERROR_MSG'						=> (count($errors)) ? implode('<br />', $errors) : '',
 
 					'FORUM_NAME'				=> $forum_data['forum_name'],
 					'FORUM_DATA_LINK'			=> $forum_data['forum_link'],
@@ -772,8 +772,8 @@ class acp_forums
 					'S_FORUM_LINK'			=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 					'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
 					'S_FORUMS_LIST'			=> $forums_list,
-					'S_ERROR'				=> (sizeof($errors)) ? true : false,
-					'ERROR_MSG'				=> (sizeof($errors)) ? implode('<br />', $errors) : '')
+					'S_ERROR'				=> (count($errors)) ? true : false,
+					'ERROR_MSG'				=> (count($errors)) ? implode('<br />', $errors) : '')
 				);
 
 				return;
@@ -924,7 +924,7 @@ class acp_forums
 		unset($rowset);
 
 		$template->assign_vars(array(
-			'ERROR_MSG'		=> (sizeof($errors)) ? implode('<br />', $errors) : '',
+			'ERROR_MSG'		=> (count($errors)) ? implode('<br />', $errors) : '',
 			'NAVIGATION'	=> $navigation,
 			'FORUM_BOX'		=> $forum_box,
 			'U_SEL_ACTION'	=> $this->u_action,
@@ -1053,7 +1053,7 @@ class acp_forums
 		// What are we going to do tonight Brain? The same thing we do everynight,
 		// try to take over the world ... or decide whether to continue update
 		// and if so, whether it's a new forum/cat/link or an existing one
-		if (sizeof($errors))
+		if (count($errors))
 		{
 			return $errors;
 		}
@@ -1217,12 +1217,12 @@ class acp_forums
 							$errors = array_merge($errors, $this->delete_forum_content($_row['forum_id']));
 						}
 
-						if (sizeof($errors))
+						if (count($errors))
 						{
 							return $errors;
 						}
 
-						if (sizeof($forum_ids))
+						if (count($forum_ids))
 						{
 							$sql = 'DELETE FROM ' . FORUMS_TABLE . '
 								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
@@ -1252,7 +1252,7 @@ class acp_forums
 								$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
 								$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-									SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
+									SET allowed_forums = '" . ((count($allowed_forums)) ? serialize($allowed_forums) : '') . "'
 									WHERE group_id = {$_row['group_id']}";
 								$db->sql_query($sql);
 							}
@@ -1321,7 +1321,7 @@ class acp_forums
 				$forum_data_sql['forum_last_poster_colour'] = '';
 			}
 
-			if (sizeof($errors))
+			if (count($errors))
 			{
 				return $errors;
 			}
@@ -1338,7 +1338,7 @@ class acp_forums
 				}
 			}
 
-			if (sizeof($errors))
+			if (count($errors))
 			{
 				return $errors;
 			}
@@ -1433,10 +1433,10 @@ class acp_forums
 
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
 		$from_data = $moved_forums[0];
-		$diff = sizeof($moved_forums) * 2;
+		$diff = count($moved_forums) * 2;
 
 		$moved_ids = array();
-		for ($i = 0, $size = sizeof($moved_forums); $i < $size; ++$i)
+		for ($i = 0, $size = count($moved_forums); $i < $size; ++$i)
 		{
 			$moved_ids[] = $moved_forums[$i]['forum_id'];
 		}
@@ -1612,7 +1612,7 @@ class acp_forums
 			}
 		}
 
-		if (sizeof($errors))
+		if (count($errors))
 		{
 			return $errors;
 		}
@@ -1628,12 +1628,12 @@ class acp_forums
 				$errors = array_merge($errors, $this->delete_forum_content($row['forum_id']));
 			}
 
-			if (sizeof($errors))
+			if (count($errors))
 			{
 				return $errors;
 			}
 
-			$diff = sizeof($forum_ids) * 2;
+			$diff = count($forum_ids) * 2;
 
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
@@ -1706,7 +1706,7 @@ class acp_forums
 				}
 			}
 
-			if (sizeof($errors))
+			if (count($errors))
 			{
 				return $errors;
 			}
@@ -1754,7 +1754,7 @@ class acp_forums
 			$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
 			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
-				SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
+				SET allowed_forums = '" . ((count($allowed_forums)) ? serialize($allowed_forums) : '') . "'
 				WHERE group_id = {$row['group_id']}";
 			$db->sql_query($sql);
 		}
@@ -1927,9 +1927,9 @@ class acp_forums
 						}
 						$db->sql_freeresult($result);
 
-						if (sizeof($ids))
+						if (count($ids))
 						{
-							$start += sizeof($ids);
+							$start += count($ids);
 
 							foreach ($tables as $table)
 							{
@@ -1937,7 +1937,7 @@ class acp_forums
 							}
 						}
 					}
-					while (sizeof($ids) == $batch_size);
+					while (count($ids) == $batch_size);
 				}
 				unset($ids);
 
@@ -1978,7 +1978,7 @@ class acp_forums
 		}
 
 		// Adjust users post counts
-		if (sizeof($post_counts))
+		if (count($post_counts))
 		{
 			foreach ($post_counts as $poster_id => $substract)
 			{
@@ -2062,7 +2062,7 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		if (!sizeof($target))
+		if (!count($target))
 		{
 			// The forum is already on top or bottom
 			return false;

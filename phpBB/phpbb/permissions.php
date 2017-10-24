@@ -348,6 +348,7 @@ class permissions
 		'a_roles'		=> array('lang' => 'ACL_A_ROLES', 'cat' => 'permissions'),
 		'a_switchperm'	=> array('lang' => 'ACL_A_SWITCHPERM', 'cat' => 'permissions'),
 
+		'a_storage'		=> array('lang' => 'ACL_A_STORAGE', 'cat' => 'misc'),
 		'a_styles'		=> array('lang' => 'ACL_A_STYLES', 'cat' => 'misc'),
 		'a_extensions'	=> array('lang' => 'ACL_A_EXTENSIONS', 'cat' => 'misc'),
 		'a_viewlogs'	=> array('lang' => 'ACL_A_VIEWLOGS', 'cat' => 'misc'),

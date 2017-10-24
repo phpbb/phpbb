@@ -28,17 +28,8 @@ class remote extends base
 	/** @var factory Files factory */
 	protected $factory;
 
-	/** @var language */
-	protected $language;
-
-	/** @var IniGetWrapper */
-	protected $php_ini;
-
 	/** @var request_interface */
 	protected $request;
-
-	/** @var \phpbb\files\upload */
-	protected $upload;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;

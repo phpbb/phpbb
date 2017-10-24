@@ -37,6 +37,13 @@ class phpbb_functional_controllers_compatibility_test extends phpbb_functional_t
 		$this->assert301('feed.php?t=1', 'app.php/feed/topic/1');
 	}
 
+	public function test_cron_compatibility()
+	{
+		$this->assert301('cron.php?cron_type=foo', 'app.php/cron/foo');
+		$this->assert301('cron.php?cron_type=foo&bar=foobar', 'app.php/cron/foo?bar=foobar');
+		$this->assert301('cron.php?cron_type=foo&bar=foobar&who=me', 'app.php/cron/foo?bar=foobar&who=me');
+	}
+
 	protected function assert301($from, $to)
 	{
 		self::$client->followRedirects(false);
@@ -44,6 +51,7 @@ class phpbb_functional_controllers_compatibility_test extends phpbb_functional_t
 
 		// Fix sid issues
 		$location = self::$client->getResponse()->getHeader('Location');
+		$location = str_replace('&amp;', '&', $location);
 		$location = preg_replace('#sid=[^&]+(&(amp;)?)?#', '', $location);
 		if (substr($location, -1) === '?')
 		{

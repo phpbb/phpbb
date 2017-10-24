@@ -30,22 +30,28 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		// Mock phpbb_container
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container->expects($this->any())
 			->method('get')
 			->will($this->returnArgument(0));
 
 		$filesystem = new \phpbb\filesystem\filesystem();
+		$adapter = new \phpbb\storage\adapter\local($filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
+		$adapter->configure(['path' => 'images/avatars/upload']);
+		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
+		$adapter_factory_mock->expects($this->any())
+			->method('get')
+			->willReturn($adapter);
+		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
 
 		// Prepare dependencies for avatar manager and driver
 		$this->config = new \phpbb\config\config(array());
-		$cache = $this->getMock('\phpbb\cache\driver\driver_interface');
+		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$path_helper =  new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
-			$this->getMock('\phpbb\request\request'),
+			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
 		);
@@ -62,12 +68,17 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$dispatcher = new phpbb_mock_event_dispatcher();
 
 		// $this->avatar_foobar will be needed later on
-		$this->avatar_foobar = $this->getMock('\phpbb\avatar\driver\foobar', array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));
+		$this->avatar_foobar = $this->getMockBuilder('\phpbb\avatar\driver\foobar')
+			->setMethods(array('get_name'))
+			->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
+			->getMock();
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
 		// barfoo driver can't be mocked with constructor arguments
-		$this->avatar_barfoo = $this->getMock('\phpbb\avatar\driver\barfoo', array('get_name', 'get_config_name'));
+		$this->avatar_barfoo = $this->getMockBuilder('\phpbb\avatar\driver\barfoo')
+			->setMethods(array('get_name', 'get_config_name'))
+			->getMock();
 		$this->avatar_barfoo->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.barfoo'));
@@ -78,15 +89,23 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 		$files_factory = new \phpbb\files\factory($phpbb_container);
 
+		$php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
+
 		foreach ($this->avatar_drivers() as $driver)
 		{
 			if ($driver !== 'upload')
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache));
+				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
+					->setMethods(array('get_name'))
+					->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
+					->getMock();
 			}
 			else
 			{
-				$cur_avatar = $this->getMock('\phpbb\avatar\driver\\' . $driver, array('get_name'), array($this->config, $phpbb_root_path, $phpEx, $filesystem, $path_helper, $dispatcher, $files_factory, $cache));
+				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
+				->setMethods(array('get_name'))
+				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $dispatcher, $files_factory, $php_ini))
+				->getMock();
 			}
 			$cur_avatar->expects($this->any())
 				->method('get_name')
@@ -288,10 +307,10 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$user = $this->getMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime')
-		);
+		$user = $this->getMockBuilder('\phpbb\user')
+			->setMethods(array())
+			->setConstructorArgs(array(new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)), '\phpbb\datetime'))
+			->getMock();
 		$lang_array = array(
 			array('FOOBAR_OFF', 'foobar_off'),
 			array('FOOBAR_EXPLAIN', 'FOOBAR_EXPLAIN %s'),
