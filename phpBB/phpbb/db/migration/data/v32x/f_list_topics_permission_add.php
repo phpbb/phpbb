@@ -25,7 +25,7 @@ class f_list_topics_permission_add extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('permission.add', array('f_list_topics', false)),
+			array('permission.add', array('f_list_topics', false, 'f_read')),
 		);
 	}
 }
