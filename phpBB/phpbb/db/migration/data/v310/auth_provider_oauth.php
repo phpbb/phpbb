@@ -69,7 +69,9 @@ class auth_provider_oauth extends \phpbb\db\migration\migration
 				'UCP_PROFILE',
 				array(
 					'module_basename'	=> 'ucp_auth_link',
-					'modes'				=> array('auth_link'),
+					'module_langname'	=> 'UCP_AUTH_LINK_MANAGE',
+					'module_mode'		=> 'auth_link',
+					'module_auth'		=> 'authmethod_oauth',
 				),
 			)),
 		);

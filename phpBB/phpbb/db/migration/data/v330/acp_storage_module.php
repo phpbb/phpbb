@@ -23,7 +23,9 @@ class acp_storage_module extends \phpbb\db\migration\migration
 				'ACP_SERVER_CONFIGURATION',
 				array(
 					'module_basename'	=> 'acp_storage',
-					'modes'				=> array('settings'),
+					'module_langname'	=> 'ACP_STORAGE_SETTINGS',
+					'module_mode'		=> 'settings',
+					'module_auth'		=> 'acl_a_storage',
 				),
 			)),
 		);

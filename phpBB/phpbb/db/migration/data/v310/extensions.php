@@ -66,7 +66,9 @@ class extensions extends \phpbb\db\migration\migration
 				'ACP_EXTENSION_MANAGEMENT',
 				array(
 					'module_basename'	=> 'acp_extensions',
-					'modes'				=> array('main'),
+					'module_langname'	=> 'ACP_EXTENSIONS',
+					'module_mode'		=> 'main',
+					'module_auth'		=> 'acl_a_extensions',
 				),
 			)),
 			array('permission.add', array('a_extensions', true, 'a_styles')),
