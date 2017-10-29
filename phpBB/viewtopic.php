@@ -263,6 +263,10 @@ if (!$topic_data)
 
 $forum_id = (int) $topic_data['forum_id'];
 
+// If the request is missing the f parameter, the forum id in the user session data is 0 at the moment.
+// Let's fix that now so that the user can't hide from the forum's Who Is Online list.
+$user->page['forum'] = $forum_id;
+
 // Now we know the forum_id and can check the permissions
 if ($topic_data['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $forum_id))
 {
