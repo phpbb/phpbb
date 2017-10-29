@@ -274,7 +274,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				// Offset that will be returned from the function
 				'expected_returned'	=> 0,
 				// view_log parameters (see includes/functions_admin.php for docblock)
-				// $log is ommited!
+				// $log is omitted!
 				'mod', 5, 0, 12, 45,
 			),
 			*/

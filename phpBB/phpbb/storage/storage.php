@@ -89,7 +89,7 @@ class storage
 	 *
 	 * @param string	$path	The file to read
 	 *
-	 * @throws \phpbb\storage\exception\exception		When the file dont exists
+	 * @throws \phpbb\storage\exception\exception	When the file doesn't exist
 	 * 													When cannot read file contents
 	 *
 	 * @return string	Returns file contents

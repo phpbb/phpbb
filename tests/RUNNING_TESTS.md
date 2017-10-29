@@ -52,7 +52,7 @@ By default all tests requiring a database connection will use sqlite. If you
 do not have sqlite installed the tests will be skipped. If you wish to run the
 tests on a different database you have to create a test_config.php file within
 your tests directory following the same format as phpBB's config.php. Testing
-makes use of a seperate database defined in this config file and before running
+makes use of a separate database defined in this config file and before running
 the tests each time this database is deleted. An example for mysqli can be
 found below. More information on configuration options can be found on the
 wiki (see below).

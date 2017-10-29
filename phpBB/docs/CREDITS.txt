@@ -79,10 +79,10 @@ prosilver by subBlue Design, Tom Beddard, (c) 2004 phpBB Limited
 
 phpBB contains code from the following applications:
 
-LGPL licenced:
+LGPL licensed:
 Smarty (c) 2001, 2002 by ispi of Lincoln, Inc, http://smarty.php.net/
 
-GPL licenced:
+GPL licensed:
 phpMyAdmin (c) 2001, 2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/
 Jabber Class (c) 2006 Flyspray.org, http://www.flyspray.org/
 Chora (c) 2000-2006, The Horde Project. http://horde.org/chora/
@@ -96,6 +96,6 @@ Pear (c) 2001-2004 PHP Group, http://pear.php.net
 
 Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
 
-MIT licenced:
+MIT licensed:
 Symfony2 (c) 2004-2011 Fabien Potencier, https://symfony.com/
 Cookie Consent (c) 2015 Silktide Ltd, https://cookieconsent.insites.com

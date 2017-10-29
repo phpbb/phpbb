@@ -150,7 +150,7 @@ class fulltext_mysql extends \phpbb\search\base
 	/**
 	* Checks for correct MySQL version and stores min/max word length in the config
 	*
-	* @return string|bool Language key of the error/incompatiblity occurred
+	* @return string|bool Language key of the error/incompatibility occurred
 	*/
 	public function init()
 	{
