@@ -133,6 +133,24 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 	}
 
+	// Should fail from missing composer.json
+	public function test_bar2()
+	{
+		$ext_name = 'vendor3/bar';
+
+		$manager = $this->get_metadata_manager($ext_name);
+
+		try
+		{
+			$manager->validate();
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
+		}
+	}
+
 	// Should be the same as a direct json_decode of the composer.json file
 	public function test_foo()
 	{
@@ -156,6 +174,43 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->assertEquals($metadata, $json);
 	}
 
+	// Should validate as correct
+	public function test_foo2()
+	{
+		$ext_name = 'vendor2/foo';
+
+		$manager = $this->get_metadata_manager($ext_name);
+
+		try
+		{
+			$valid = $manager->validate();
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->fail($message);
+		}
+
+		$this->assertEquals($valid, true);
+	}
+
+	// Should not validate as the extension name is malformed (not the right vendor/extension format)
+	public function test_validate_enable()
+	{
+		$manager = $this->get_metadata_manager('validator');
+
+		try
+		{
+			$manager->validate_enable();
+			$this->fail('Exception not triggered');
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('EXTENSION_DIR_INVALID'));
+		}
+	}
+
 	public function validator_non_existing_data()
 	{
 		return array(
@@ -172,6 +227,12 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	public function test_validator_non_existing($field_name)
 	{
 		$manager = $this->get_metadata_manager('validator');
+
+		// Set any data so that the manager believes the file loaded successfully
+		$manager->set_metadata(array(
+			'void'		=> 'void',
+		));
+
 		try
 		{
 			$manager->validate($field_name);

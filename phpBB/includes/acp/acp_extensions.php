@@ -101,7 +101,7 @@ class acp_extensions
 
 			try
 			{
-				$md_manager->get_metadata('all');
+				$md_manager->validate();
 			}
 			catch (exception_interface $e)
 			{
@@ -330,33 +330,32 @@ class acp_extensions
 				$meta = $md_manager->get_metadata('all');
 				$this->output_metadata_to_template($meta);
 
-				if (isset($meta['extra']['version-check']))
+				try
 				{
-					try
+					$updates_available = $this->ext_manager->version_check($md_manager, $this->request->variable('versioncheck_force', false), false, $this->config['extension_force_unstable'] ? 'unstable' : null);
+
+					$this->template->assign_vars(array(
+						'S_VERSIONCHECK' => true,
+						'S_UP_TO_DATE' => empty($updates_available),
+						'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
+					));
+
+					$this->template->assign_block_vars('updates_available', $updates_available);
+				}
+				catch (exception_interface $e)
+				{
+					if ($e->getMessage() === 'NO_VERSIONCHECK')
 					{
-						$updates_available = $this->ext_manager->version_check($md_manager, $this->request->variable('versioncheck_force', false), false, $this->config['extension_force_unstable'] ? 'unstable' : null);
-
-						$this->template->assign_vars(array(
-							'S_UP_TO_DATE' => empty($updates_available),
-							'UP_TO_DATE_MSG' => $this->user->lang(empty($updates_available) ? 'UP_TO_DATE' : 'NOT_UP_TO_DATE', $md_manager->get_metadata('display-name')),
-						));
-
-						$this->template->assign_block_vars('updates_available', $updates_available);
+						$this->template->assign_var('S_VERSIONCHECK', false);
 					}
-					catch (exception_interface $e)
+					else
 					{
 						$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-
 						$this->template->assign_vars(array(
 							'S_VERSIONCHECK_FAIL' => true,
 							'VERSIONCHECK_FAIL_REASON' => ($e->getMessage() !== 'VERSIONCHECK_FAIL') ? $message : '',
 						));
 					}
-					$this->template->assign_var('S_VERSIONCHECK', true);
-				}
-				else
-				{
-					$this->template->assign_var('S_VERSIONCHECK', false);
 				}
 
 				$this->template->assign_vars(array(
@@ -405,40 +404,36 @@ class acp_extensions
 
 			try
 			{
-				$meta = $md_manager->get_metadata('all');
 				$enabled_extension_meta_data[$name] = array(
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
-					'META_VERSION' => $meta['version'],
+					'META_VERSION' => $md_manager->get_metadata('version'),
 				);
 
-				if (isset($meta['extra']['version-check']))
-				{
-					try
-					{
-						$force_update = $this->request->variable('versioncheck_force', false);
-						$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
 
-						$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-						$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-						$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
-					}
-					catch (exception_interface $e)
-					{
-						// Ignore exceptions due to the version check
-					}
-				}
-				else
-				{
-					$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
-				}
+				$enabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$enabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
+			}
+			catch (version_check_exception $e)
+			{
+				$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
-					'S_VERSIONCHECK'		=> false,
-				));
+				if ($e->getMessage() === 'NO_VERSIONCHECK')
+				{
+					$enabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
+				else
+				{
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					$this->template->assign_block_vars('disabled', array(
+						'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+						'S_VERSIONCHECK'		=> false,
+					));
+				}
 			}
 			catch (\RuntimeException $e)
 			{
@@ -476,25 +471,17 @@ class acp_extensions
 
 			try
 			{
-				$meta = $md_manager->get_metadata('all');
 				$disabled_extension_meta_data[$name] = array(
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
-					'META_VERSION' => $meta['version'],
+					'META_VERSION' => $md_manager->get_metadata('version'),
 				);
 
-				if (isset($meta['extra']['version-check']))
-				{
-					$force_update = $this->request->variable('versioncheck_force', false);
-					$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
 
-					$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-					$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
-				}
-				else
-				{
-					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
-				}
+				$disabled_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$disabled_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
 			catch (version_check_exception $e)
 			{
@@ -502,11 +489,18 @@ class acp_extensions
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
-					'S_VERSIONCHECK'		=> false,
-				));
+				if ($e->getMessage() === 'NO_VERSIONCHECK')
+				{
+					$disabled_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
+				else
+				{
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					$this->template->assign_block_vars('disabled', array(
+						'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+						'S_VERSIONCHECK'		=> false,
+					));
+				}
 			}
 			catch (\RuntimeException $e)
 			{
@@ -547,25 +541,17 @@ class acp_extensions
 
 			try
 			{
-				$meta = $md_manager->get_metadata('all');
 				$available_extension_meta_data[$name] = array(
 					'META_DISPLAY_NAME' => $md_manager->get_metadata('display-name'),
-					'META_VERSION' => $meta['version'],
+					'META_VERSION' => $md_manager->get_metadata('version'),
 				);
 
-				if (isset($meta['extra']['version-check']))
-				{
-					$force_update = $this->request->variable('versioncheck_force', false);
-					$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
+				$force_update = $this->request->variable('versioncheck_force', false);
+				$updates = $this->ext_manager->version_check($md_manager, $force_update, !$force_update);
 
-					$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
-					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
-					$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
-				}
-				else
-				{
-					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
-				}
+				$available_extension_meta_data[$name]['S_UP_TO_DATE'] = empty($updates);
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = true;
+				$available_extension_meta_data[$name]['U_VERSIONCHECK_FORCE'] = $this->u_action . '&amp;action=details&amp;versioncheck_force=1&amp;ext_name=' . urlencode($md_manager->get_metadata('name'));
 			}
 			catch (version_check_exception $e)
 			{
@@ -573,11 +559,22 @@ class acp_extensions
 			}
 			catch (exception_interface $e)
 			{
-				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
-					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
-					'S_VERSIONCHECK'		=> false,
-				));
+				if ($e->getMessage() === 'NO_VERSIONCHECK')
+				{
+					$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
+				}
+				else
+				{
+					$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+					$this->template->assign_block_vars('disabled', array(
+						'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
+						'S_VERSIONCHECK'		=> false,
+					));
+				}
+			}
+			catch (\RuntimeException $e)
+			{
+				$available_extension_meta_data[$name]['S_VERSIONCHECK'] = false;
 			}
 		}
 
