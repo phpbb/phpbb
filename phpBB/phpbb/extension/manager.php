@@ -95,6 +95,15 @@ class manager
 
 		foreach ($extensions as $extension)
 		{
+			if ($extension['ext_active'] && !$this->is_available($extension['ext_name']))
+			{
+				$extension['ext_active'] = false;
+				$extension['ext_state'] = serialize(true);
+				$sql = 'UPDATE ' . $this->extension_table . '
+					SET ' . $this->db->sql_build_array('UPDATE', $extension) . "
+					WHERE ext_name = '" . $this->db->sql_escape($extension['ext_name']) . "'";
+				$this->db->sql_query($sql);
+			}
 			$extension['ext_path'] = $this->get_extension_path($extension['ext_name']);
 			$this->extensions[$extension['ext_name']] = $extension;
 		}
@@ -103,7 +112,7 @@ class manager
 
 		if ($this->cache)
 		{
-			$this->cache->put($this->cache_name, $this->extensions);
+			$this->cache->put($this->cache_name, $this->extensions, 600);
 		}
 	}
 
@@ -258,12 +267,13 @@ class manager
 	* process the event.
 	*
 	* @param string $name The extension's name
+	* @param bool $reenable must be true for an auto-disabled extension to complete the disable process
 	* @return bool False if disabling is finished, true otherwise
 	*/
-	public function disable_step($name)
+	public function disable_step($name, $reenable = false)
 	{
-		// ignore extensions that are not enabled
-		if (!$this->is_enabled($name))
+		// ignore extensions that are not enabled unless we are reenabling
+		if (!$this->is_enabled($name) && !$reenable)
 		{
 			return false;
 		}
@@ -609,6 +619,19 @@ class manager
 	public function is_purged($name)
 	{
 		return $this->is_available($name) && !$this->is_configured($name);
+	}
+
+	/**
+	* Check to see if a given extension is incomplete
+	*
+	* An extension is incomplete if disabled and the enable or disable processes have not completed
+	*
+	* @param string $name Extension name to check
+	* @return bool Depending on whether or not the extension is purged
+	*/
+	public function is_incomplete($name)
+	{
+		return $this->is_disabled($name) && unserialize($this->extensions[$name]['ext_state']);
 	}
 
 	/**
