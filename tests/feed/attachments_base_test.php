@@ -35,7 +35,6 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$this->filesystem,
 			$this->getMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			'php'
