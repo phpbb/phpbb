@@ -161,7 +161,22 @@ $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 $topics_count = $phpbb_content_visibility->get_count('forum_topics', $forum_data, $forum_id);
 $start = $pagination->validate_start($start, $config['topics_per_page'], $topics_count);
 
-page_header($forum_data['forum_name'] . ($start ? ' - ' . $user->lang('PAGE_TITLE_NUMBER', $pagination->get_on_page($config['topics_per_page'], $start)) : ''), true, $forum_id);
+$page_title = $forum_data['forum_name'] . ($start ? ' - ' . $user->lang('PAGE_TITLE_NUMBER', $pagination->get_on_page($config['topics_per_page'], $start)) : '');
+
+/**
+* You can use this event to modify the page title of the viewforum page
+*
+* @event core.viewforum_modify_page_title
+* @var	string	page_title		Title of the viewforum page
+* @var	array	forum_data		Array with forum data
+* @var	int		forum_id		The forum ID
+* @var	int		start			Start offset used to calculate the page
+* @since 3.2.2-RC1
+*/
+$vars = array('page_title', 'forum_data', 'forum_id', 'start');
+extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_page_title', compact($vars)));
+
+page_header($page_title, true, $forum_id);
 
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html')
