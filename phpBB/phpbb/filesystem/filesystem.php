@@ -773,7 +773,7 @@ class filesystem implements filesystem_interface
 
 				if (!is_dir($tmp_dir))
 				{
-						$this->filesystem->mkdir($tmp_dir, 0777);
+						$this->mkdir($tmp_dir, 0777);
 				}
 			}
 
