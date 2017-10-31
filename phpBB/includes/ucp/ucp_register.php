@@ -528,10 +528,7 @@ class ucp_register
 			break;
 		}
 
-		// Assign template vars for timezone select
-		phpbb_timezone_select($template, $user, $data['tz'], true);
-
-		$template->assign_vars(array(
+		$template_vars = array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
@@ -552,7 +549,37 @@ class ucp_register
 
 			'COOKIE_NAME'		=> $config['cookie_name'],
 			'COOKIE_PATH'		=> $config['cookie_path'],
-		));
+		);
+
+		$tpl_name = 'ucp_register';
+		$page_title = 'UCP_REGISTRATION';
+
+		/**
+		* Modify template data on the registration page
+		*
+		* @event core.ucp_register_modify_template_data
+		* @var	array	template_vars		Array with template data
+		* @var	array	data				Array with user data
+		* @var	array	error				Array with errors
+		* @var	array	s_hidden_fields		Array hidden form fields
+		* @var	string	tpl_name			Template name
+		* @var	string	page_title			Page title
+		* @since 3.2.2-RC1
+		*/
+		$vars = array(
+			'template_vars',
+			'data',
+			'error',
+			's_hidden_fields',
+			'tpl_name',
+			'page_title',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.ucp_register_modify_template_data', compact($vars)));
+
+		// Assign template vars for timezone select
+		phpbb_timezone_select($template, $user, $data['tz'], true);
+
+		$template->assign_vars($template_vars);
 
 		//
 		$user->profile_fields = array();
@@ -561,8 +588,8 @@ class ucp_register
 		$cp->generate_profile_fields('register', $user->get_iso_lang_id());
 
 		//
-		$this->tpl_name = 'ucp_register';
-		$this->page_title = 'UCP_REGISTRATION';
+		$this->tpl_name = $tpl_name;
+		$this->page_title = $page_title;
 	}
 
 	/**
