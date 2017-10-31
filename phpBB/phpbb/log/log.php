@@ -933,6 +933,20 @@ class log implements \phpbb\log\log_interface
 				$forum_auth['f_read'][$row['topic_id']] = $row['forum_id'];
 			}
 
+			/**
+			 * Allow modifying SQL query after topic data is retrieved (inside loop).
+			 *
+			 * @event core.phpbb_log_get_topic_auth_sql_after
+			 * @var	array	forum_auth	Forum permissions
+			 * @var	array	row			One row of data from SQL query
+			 * @since 3.2.2-RC1
+			 */
+			$vars = array(
+				'forum_auth',
+				'row',
+			);
+			extract($this->dispatcher->trigger_event('core.phpbb_log_get_topic_auth_sql_after', compact($vars)));
+
 			if ($this->auth->acl_gets('a_', 'm_', $row['forum_id']))
 			{
 				$forum_auth['m_'][$row['topic_id']] = $row['forum_id'];
