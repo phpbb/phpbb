@@ -278,6 +278,7 @@ else
 	* @var	array	extensions			Array with file extensions data
 	* @var	string	mode				Download mode
 	* @var	bool	thumbnail			Flag indicating if the file is a thumbnail
+	* @var	string	redirect			Do a redirection instead of reading the file
 	* @since 3.1.6-RC1
 	* @changed 3.1.7-RC1	Fixing wrong name of a variable (replacing "extension" by "extensions")
 	* @changed 3.3.0-a1		Add redirect variable
@@ -314,7 +315,8 @@ else
 		{
 			redirect($redirect, false, true);
 		}
-		else {
+		else
+		{
 			send_file_to_browser($attachment, $display_cat);
 		}
 

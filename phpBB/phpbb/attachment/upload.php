@@ -203,6 +203,15 @@ class upload
 		// Only then perform additional image checks.
 		$this->file->move_file($this->storage, false, !$is_image);
 
+		if (count($this->file->error))
+		{
+			$this->file->remove($this->storage);
+			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
+			$this->file_data['post_attach'] = false;
+
+			return $this->file_data;
+		}
+
 		return $this->file_data;
 	}
 

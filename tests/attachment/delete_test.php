@@ -55,7 +55,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->filesystem->expects($this->any())
 			->method('exists')
 			->willReturn(true);
-		$adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), $phpbb_root_path);
+		$adapter = new \phpbb\storage\adapter\local($this->filesystem, new \FastImageSize\FastImageSize(), new \phpbb\mimetype\guesser(array(new \phpbb\mimetype\extension_guesser)), $phpbb_root_path);
 		$adapter->configure(['path' => 'files']);
 		$adapter_factory_mock = $this->createMock('\phpbb\storage\adapter_factory');
 		$adapter_factory_mock->expects($this->any())
