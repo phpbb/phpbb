@@ -18,9 +18,10 @@ services:
         class: phpbb\feed\helper
         arguments:
             - '@config'
+            - '@service_container'
+            - '@path_helper'
+            - '@text_formatter.renderer'
             - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
 
     feed.forum:
         class: phpbb\feed\forum
@@ -77,6 +78,10 @@ services:
             - '@content.visibility'
             - '@dispatcher'
             - '%core.php_ext%'
+
+    feed.quote_helper:
+        class: phpbb\feed\quote_helper
+        parent: text_formatter.s9e.quote_helper
 
     feed.topic:
         class: phpbb\feed\topic
