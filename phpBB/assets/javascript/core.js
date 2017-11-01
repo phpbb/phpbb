@@ -175,7 +175,7 @@ phpbb.alert.close = function($alert, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
 	$confirmDiv.find('.alert_text').html(msg);
-	fadedark = fadedark !== 'undefined' ? fadedark : true;
+	fadedark = typeof fadedark !== 'undefined' ? fadedark : true;
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
