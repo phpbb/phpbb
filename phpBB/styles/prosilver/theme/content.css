@@ -737,7 +737,6 @@ fieldset.polls dd div {
 .postprofile {
 	border: 1px solid transparent;
 	border-width: 0 0 0 1px;
-	display: inline;
 	float: right;
 	width: 22%;
 	min-height: 80px;
