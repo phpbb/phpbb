@@ -455,7 +455,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Get parent module id
 	*
 	* @param string|int $parent_id The parent module_id|module_langname
-	* @param int|string|array $data The module_id, module_langname for existance checking or module data array for adding
+	* @param int|string|array $data The module_id, module_langname for existence checking or module data array for adding
 	* @param bool $throw_exception The flag indicating if exception should be thrown on error
 	* @return mixed The int parent module_id or false
 	* @throws \phpbb\db\migration\exception
@@ -513,7 +513,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 					}
 					else if (!empty($data) && !is_array($data))
 					{
-						// The module_langname is set, checking for the module existance
+						// The module_langname is set, checking for the module existence
 						// As more than 1 parents were found already, there's no way for null parent_id here
 						$sql = 'SELECT m2.module_id as module_parent_id
 							FROM ' . $this->modules_table . ' m1, ' . $this->modules_table . " m2
