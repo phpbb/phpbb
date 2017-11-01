@@ -74,8 +74,8 @@ ul.topiclist dd {
 }
 
 ul.topiclist li.row dd {
-	padding: 4px 0 999px 0;
 	margin-bottom: -995px;
+	padding: 4px 0 999px;
 }
 
 ul.topiclist dfn {
