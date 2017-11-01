@@ -267,6 +267,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	* @var 	array	user_info	User data of the sender
 	* @since 3.1.0-a1
 	* @changed 3.1.6-RC1		Added user_info into event
+	* @changed 3.2.2-RC1		Deprecated
+	* @deprecated 4.0.0			Event name is misspelled and is replaced with new event with correct name
 	*/
 	$vars = array(
 		'id',
@@ -280,6 +282,34 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'user_info',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_messsage', compact($vars)));
+
+	/**
+	 * Modify pm and sender data before it is assigned to the template
+	 *
+	 * @event core.ucp_pm_view_message
+	 * @var	mixed	id			Active module category (can be int or string)
+	 * @var	string	mode		Active module
+	 * @var	int		folder_id	ID of the folder the message is in
+	 * @var	int		msg_id		ID of the private message
+	 * @var	array	folder		Array with data of user's message folders
+	 * @var	array	message_row	Array with message data
+	 * @var	array	cp_row		Array with senders custom profile field data
+	 * @var	array	msg_data	Template array with message data
+	 * @var array	user_info	User data of the sender
+	 * @since 3.2.2-RC1
+	 */
+	$vars = array(
+		'id',
+		'mode',
+		'folder_id',
+		'msg_id',
+		'folder',
+		'message_row',
+		'cp_row',
+		'msg_data',
+		'user_info',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_view_message', compact($vars)));
 
 	$template->assign_vars($msg_data);
 
