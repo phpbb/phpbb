@@ -22,7 +22,7 @@ ul.topiclist dl {
 }
 
 ul.topiclist li.row dl {
-	padding: 2px 0;
+	margin: 2px 0;
 }
 
 ul.topiclist dt,
@@ -71,6 +71,11 @@ ul.topiclist dd {
 	border-left: 1px solid transparent;
 	box-sizing: border-box;
 	padding: 4px 0;
+}
+
+ul.topiclist li.row dd {
+	padding: 4px 0 999px 0;
+	margin-bottom: -995px;
 }
 
 ul.topiclist dfn {
