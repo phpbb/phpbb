@@ -945,11 +945,11 @@ class fulltext_sphinx
 		<span class="error">' . $this->user->lang['FULLTEXT_SPHINX_CONFIGURE']. '</span>
 		<dl>
 			<dt><label for="fulltext_sphinx_data_path">' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_DATA_PATH_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_data_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . $this->config['fulltext_sphinx_data_path'] . '" /></dd>
+			<dd><input id="fulltext_sphinx_data_path" class="always-ltr" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . $this->config['fulltext_sphinx_data_path'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_host">' . $this->user->lang['FULLTEXT_SPHINX_HOST'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_HOST_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_sphinx_host" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . $this->config['fulltext_sphinx_host'] . '" /></dd>
+			<dd><input id="fulltext_sphinx_host" class="always-ltr" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . $this->config['fulltext_sphinx_host'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_port">' . $this->user->lang['FULLTEXT_SPHINX_PORT'] . $this->user->lang['COLON'] . '</label><br /><span>' . $this->user->lang['FULLTEXT_SPHINX_PORT_EXPLAIN'] . '</span></dt>

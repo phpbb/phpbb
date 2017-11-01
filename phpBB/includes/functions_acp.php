@@ -265,8 +265,17 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 			// ignored for other input types.
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
-
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new_ary[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
+			
+			if (isset($tpl_type[3]))
+			{
+				$class = $tpl_type[3];
+			} 
+			elseif ($tpl_type[0] == 'url' || $tpl_type[0] == 'email')
+			{
+				$class = 'always-ltr';
+			} 
+			
+			$tpl = '<input id="' . $key . '"' . ((isset($class)) ? ' class="' . $class . '"' : '') .' type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new_ary[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
 		break;
 
 		case 'color':
@@ -307,8 +316,13 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		case 'textarea':
 			$rows = (int) $tpl_type[1];
 			$cols = (int) $tpl_type[2];
-
-			$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new_ary[$config_key] . '</textarea>';
+			
+			if (isset($tpl_type[3]))
+			{
+				$class = $tpl_type[3];
+			}
+			
+			$tpl = '<textarea id="' . $key . '"'. ((isset($class)) ? ' class="' . $class . '"' : '') .' name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new_ary[$config_key] . '</textarea>';
 		break;
 
 		case 'radio':

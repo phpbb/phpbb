@@ -108,7 +108,7 @@ class local extends \phpbb\avatar\driver\driver
 	public function prepare_form_acp($user)
 	{
 		return array(
-			'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+			'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255:always-ltr', 'explain' => true),
 		);
 	}
 
