@@ -129,6 +129,10 @@ hr {
 	display: none;
 }
 
+.always-ltr {
+	direction:ltr;
+}
+
 @media only screen and (max-width: 800px), only screen and (max-device-width: 800px)
 {
 	body {
