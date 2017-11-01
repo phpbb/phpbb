@@ -196,13 +196,13 @@ class php_exporter
 		$content = file_get_contents($this->path . $this->current_file);
 		$num_events_found = 0;
 
-		if (strpos($content, "dispatcher->trigger_event('") || strpos($content, "dispatcher->dispatch('"))
+		if (strpos($content, 'dispatcher->trigger_event(') || strpos($content, 'dispatcher->dispatch('))
 		{
 			$this->set_content(explode("\n", $content));
 			for ($i = 0, $num_lines = count($this->file_lines); $i < $num_lines; $i++)
 			{
 				$event_line = false;
-				$found_trigger_event = strpos($this->file_lines[$i], "dispatcher->trigger_event('");
+				$found_trigger_event = strpos($this->file_lines[$i], 'dispatcher->trigger_event(');
 				$arguments = array();
 				if ($found_trigger_event !== false)
 				{
@@ -216,7 +216,7 @@ class php_exporter
 				}
 				else
 				{
-					$found_dispatch = strpos($this->file_lines[$i], "dispatcher->dispatch('");
+					$found_dispatch = strpos($this->file_lines[$i], 'dispatcher->dispatch(');
 					if ($found_dispatch !== false)
 					{
 						$event_line = $i;
@@ -316,17 +316,17 @@ class php_exporter
 
 		if ($is_dispatch)
 		{
-			$regex = '#\$([a-z](?:[a-z0-9_]|->)*)';
-			$regex .= '->dispatch\(';
-			$regex .= '\'' . $this->preg_match_event_name() . '\'';
-			$regex .= '\);#';
+			$regex = '#\$[a-z](?:[a-z0-9_]|->)*';
+			$regex .= '->dispatch\((\[)?';
+			$regex .= '\'' . $this->preg_match_event_name() . '(?(1)\', \'(?2))+\'';
+			$regex .= '(?(1)\])\);#';
 		}
 		else
 		{
-			$regex = '#extract\(\$([a-z](?:[a-z0-9_]|->)*)';
-			$regex .= '->trigger_event\(';
-			$regex .= '\'' . $this->preg_match_event_name() . '\'';
-			$regex .= ', compact\(\$vars\)\)\);#';
+			$regex = '#extract\(\$[a-z](?:[a-z0-9_]|->)*';
+			$regex .= '->trigger_event\((\[)?';
+			$regex .= '\'' . $this->preg_match_event_name() . '(?(1)\', \'(?2))+\'';
+			$regex .= '(?(1)\]), compact\(\$vars\)\)\);#';
 		}
 
 		$match = array();
@@ -359,7 +359,7 @@ class php_exporter
 	public function get_vars_from_array()
 	{
 		$line = ltrim($this->file_lines[$this->current_event_line - 1], "\t");
-		if ($line === ');')
+		if ($line === ');' || $line === '];')
 		{
 			$vars_array = $this->get_vars_from_multi_line_array();
 		}
@@ -370,7 +370,7 @@ class php_exporter
 
 		foreach ($vars_array as $var)
 		{
-			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
+			if (!preg_match('#^[a-z_][a-z0-9_]*$#i', $var))
 			{
 				throw new \LogicException("Found invalid var '{$var}' in array for event '{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 3);
 			}
@@ -392,11 +392,11 @@ class php_exporter
 	public function get_vars_from_single_line_array($line, $throw_multiline = true)
 	{
 		$match = array();
-		preg_match('#^\$vars = (?:\[|array\()\'([a-zA-Z0-9_\' ,]+)\'[\)\]];$#', $line, $match);
+		preg_match('#^\$vars = (?:(\[)|array\()\'([a-z0-9_\' ,]+)\'(?(1)\]|\));$#i', $line, $match);
 
-		if (isset($match[1]))
+		if (isset($match[2]))
 		{
-			$vars_array = explode("', '", $match[1]);
+			$vars_array = explode("', '", $match[2]);
 			if ($throw_multiline && count($vars_array) > 6)
 			{
 				throw new \LogicException('Should use multiple lines for $vars definition '
@@ -420,7 +420,7 @@ class php_exporter
 	{
 		$current_vars_line = 2;
 		$var_lines = array();
-		while (ltrim($this->file_lines[$this->current_event_line - $current_vars_line], "\t") !== '$vars = array(')
+		while (!in_array(ltrim($this->file_lines[$this->current_event_line - $current_vars_line], "\t"), ['$vars = array(', '$vars = [']))
 		{
 			$var_lines[] = substr(trim($this->file_lines[$this->current_event_line - $current_vars_line]), 0, -1);
 
@@ -485,7 +485,7 @@ class php_exporter
 
 		foreach ($doc_vars as $var)
 		{
-			if (!preg_match('#^([a-zA-Z_][a-zA-Z0-9_]*)$#', $var))
+			if (!preg_match('#^[a-z_][a-z0-9_]*$#i', $var))
 			{
 				throw new \LogicException("Found invalid @var '{$var}' in docblock for event "
 					. "'{$this->current_event}' in file '{$this->current_file}:{$this->current_event_line}'", 4);
