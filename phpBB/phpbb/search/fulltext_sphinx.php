@@ -304,7 +304,7 @@ class fulltext_sphinx
 				array('sql_attr_string',			'post_subject'),
 			),
 			'source source_phpbb_' . $this->id . '_delta : source_phpbb_' . $this->id . '_main' => array(
-				array('sql_query_pre',				''),
+				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_range',			''),
 				array('sql_range_step',				''),
 				array('sql_query',					'SELECT
@@ -324,6 +324,7 @@ class fulltext_sphinx
 					WHERE
 						p.topic_id = t.topic_id
 						AND p.post_id >=  ( SELECT max_doc_id FROM ' . SPHINX_TABLE . ' WHERE counter_id=1 )'),
+				array('sql_query_post_index',		''),
 			),
 			'index index_phpbb_' . $this->id . '_main' => array(
 				array('path',						$this->config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_main'),
