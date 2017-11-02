@@ -97,13 +97,15 @@ th a:hover {
 .headerbar,
 .forumbg {
 	background-color: #13a4ec;
-	background-image: linear-gradient(to bottom, #80d5ff 0%, #0077b3 2px, #13a4ec 92px, #13a4ec 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#80d5ff), color-stop(0.1%, #0077b3), color-stop(30%, #13a4ec), to(#13a4ec));
+	background-image: linear-gradient(to bottom, #80d5ff 0%, #0077b3 0.1%, #13a4ec 30%, #13a4ec 100%);
 	background-repeat: repeat-x;
 }
 
 .forabg {
 	background-color: #0077b3;
-	background-image: linear-gradient(to bottom, #80d5ff 0%, #13a4ec 2px, #0077b3 92px, #0077b3 100%);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#80d5ff), color-stop(0.1%, #13a4ec), color-stop(30%, #0077b3), to(#0077b3));
+	background-image: linear-gradient(to bottom, #80d5ff 0%, #13a4ec 0.1%, #0077b3 30%, #0077b3 100%);
 	background-repeat: repeat-x;
 }
 
