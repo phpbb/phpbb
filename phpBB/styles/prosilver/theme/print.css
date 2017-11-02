@@ -209,6 +209,8 @@ ul {
 	clear: both;
 }
 
+code { display: block; }
+
 /* Accessibility tweaks: Mozilla.org */
 .skip_link {
 	display: none;
