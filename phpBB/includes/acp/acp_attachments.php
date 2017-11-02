@@ -922,6 +922,9 @@ class acp_attachments
 
 			case 'orphan':
 
+				/* @var $pagination \phpbb\pagination */
+				$pagination = $this->phpbb_container->get('pagination');
+
 				if ($submit)
 				{
 					$delete_files = (isset($_POST['delete'])) ? array_keys($request->variable('delete', array('' => 0))) : array();
@@ -1064,13 +1067,29 @@ class acp_attachments
 					'S_ORPHAN'		=> true)
 				);
 
+				$attachments_per_page = (int) $config['topics_per_page'];
+
+				// Get total number or orphans older than 3 hours
+				$sql = 'SELECT COUNT(attach_id) as num_files, SUM(filesize) as total_size
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 1
+						AND filetime < ' . (time() - 3*60*60);
+				$result = $this->db->sql_query($sql);
+				$row = $this->db->sql_fetchrow($result);
+				$num_files = (int) $row['num_files'];
+				$total_size = (int) $row['total_size'];
+				$this->db->sql_freeresult($result);
+
+				$start = $request->variable('start', 0);
+				$start = $pagination->validate_start($start, $attachments_per_page, $num_files);
+
 				// Just get the files with is_orphan set and older than 3 hours
 				$sql = 'SELECT *
 					FROM ' . ATTACHMENTS_TABLE . '
 					WHERE is_orphan = 1
 						AND filetime < ' . (time() - 3*60*60) . '
 					ORDER BY filetime DESC';
-				$result = $db->sql_query($sql);
+				$result = $db->sql_query_limit($sql, $attachments_per_page, $start);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -1085,6 +1104,20 @@ class acp_attachments
 					);
 				}
 				$db->sql_freeresult($result);
+
+				$pagination->generate_template_pagination(
+					$this->u_action,
+					'pagination',
+					'start',
+					$num_files,
+					$attachments_per_page,
+					$start
+				);
+
+				$template->assign_vars(array(
+					'TOTAL_FILES'		=> $num_files,
+					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
+				));
 
 			break;
 
