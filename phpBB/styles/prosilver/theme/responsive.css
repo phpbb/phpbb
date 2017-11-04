@@ -420,6 +420,7 @@
 	textarea,
 	dd textarea,
 	.message-box textarea {
+		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
 		width: 100%;
 	}

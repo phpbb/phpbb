@@ -16,9 +16,9 @@
 	padding: 2px 8px;
 	cursor: pointer;
 	touch-action: manipulation;
+	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
-	-webkit-user-select: none;
 	user-select: none;
 }
 

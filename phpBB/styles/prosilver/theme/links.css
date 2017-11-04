@@ -45,6 +45,7 @@ th a:hover {
 	top: 50%;
 	right: 0;
 	display: none;
+	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 	margin-top: -20px;
 }

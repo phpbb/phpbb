@@ -450,6 +450,7 @@ a.header-avatar span:after {
 	width: 0;
 	height: 0;
 	-webkit-transform: rotate(360deg); /* better anti-aliasing in webkit */
+	transform: rotate(360deg);
 }
 
 .dropdown-up .pointer,
@@ -1046,25 +1047,61 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .spinner {
+	-webkit-animation: rotator 1s linear infinite;
 	animation: rotator 1s linear infinite;
 }
 
 /* stylelint-disable no-unknown-animations */
 .spinner-path {
+	-webkit-transform-origin: center;
 	transform-origin: center;
+	-webkit-animation: dash 1s ease-in-out infinite, colors 4s ease-in-out infinite;
 	animation: dash 1s ease-in-out infinite, colors 4s ease-in-out infinite;
 	stroke-dasharray: 187;
 	stroke-dashoffset: 0;
 }
 /* stylelint-enable no-unknown-animations */
 
-@keyframes rotator {
+/* stylelint-disable at-rule-no-vendor-prefix */
+@-webkit-keyframes rotator {
 	0% {
+		-webkit-transform: rotate(0deg);
 		transform: rotate(0deg);
 	}
 
 	100% {
+		-webkit-transform: rotate(270deg);
 		transform: rotate(270deg);
+	}
+}
+
+@keyframes rotator {
+	0% {
+		-webkit-transform: rotate(0deg);
+		transform: rotate(0deg);
+	}
+
+	100% {
+		-webkit-transform: rotate(270deg);
+		transform: rotate(270deg);
+	}
+}
+
+@-webkit-keyframes dash {
+	0% {
+		stroke-dashoffset: 187;
+	}
+
+	50% {
+		-webkit-transform: rotate(135deg);
+		transform: rotate(135deg);
+		stroke-dashoffset: 46.75;
+	}
+
+	100% {
+		-webkit-transform: rotate(450deg);
+		transform: rotate(450deg);
+		stroke-dashoffset: 187;
 	}
 }
 
@@ -1074,15 +1111,18 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	}
 
 	50% {
+		-webkit-transform: rotate(135deg);
 		transform: rotate(135deg);
 		stroke-dashoffset: 46.75;
 	}
 
 	100% {
+		-webkit-transform: rotate(450deg);
 		transform: rotate(450deg);
 		stroke-dashoffset: 187;
 	}
 }
+/* stylelint-enable at-rule-no-vendor-prefix */
 
 
 /* Miscellaneous styles
