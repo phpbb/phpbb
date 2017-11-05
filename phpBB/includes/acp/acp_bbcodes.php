@@ -553,10 +553,10 @@ class acp_bbcodes
 		}
 
 		// Lowercase tags
-		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+=?).*/i', '$1', $bbcode_match);
-		$bbcode_search = preg_replace('/.*?\[([a-z0-9_-]+)=?.*/i', '$1', $bbcode_match);
+		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+).*/i', '$1', $bbcode_match);
+		$bbcode_search = preg_replace('/.*?\[([a-z0-9_-]+).*/i', '$1', $bbcode_match);
 
-		if (!preg_match('/^[a-zA-Z0-9_-]+=?$/', $bbcode_tag))
+		if (!preg_match('/^[a-zA-Z0-9_-]+$/', $bbcode_tag))
 		{
 			global $user;
 			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
