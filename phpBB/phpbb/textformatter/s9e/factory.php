@@ -271,7 +271,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		// Add default BBCodes
 		foreach ($this->get_default_bbcodes($configurator) as $bbcode)
 		{
-			$configurator->BBCodes->addCustom($bbcode['usage'], $bbcode['template']);
+			$configurator->BBCodes->addCustom($bbcode['usage'], new UnsafeTemplate($bbcode['template']));
 		}
 		if (isset($configurator->tags['QUOTE']))
 		{
