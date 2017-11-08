@@ -561,7 +561,7 @@ class ucp_register
 		* @var	array	template_vars		Array with template data
 		* @var	array	data				Array with user data
 		* @var	array	error				Array with errors
-		* @var	array	s_hidden_fields		Array hidden form fields
+		* @var	string	s_hidden_fields		HTML with hidden form field elements
 		* @var	string	tpl_name			Template name
 		* @var	string	page_title			Page title
 		* @since 3.2.2-RC1
