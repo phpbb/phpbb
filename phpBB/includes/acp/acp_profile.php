@@ -738,6 +738,32 @@ class acp_profile
 			break;
 		}
 
+		$tpl_name = $this->tpl_name;
+		$page_title = $this->page_title;
+		$u_action = $this->u_action;
+
+		/**
+		* Event to handle actions on the ACP profile fields page
+		*
+		* @event core.acp_profile_action
+		* @var	string	action		Action that is being performed
+		* @var	string	tpl_name	Template file to load
+		* @var	string	page_title	Page title
+		* @var	string	u_action	The URL we are at, read only
+		* @since 3.2.2-RC1
+		*/
+		$vars = array(
+			'action',
+			'tpl_name',
+			'page_title',
+			'u_action',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.acp_profile_action', compact($vars)));
+
+		$this->tpl_name = $tpl_name;
+		$this->page_title = $page_title;
+		unset($u_action);
+
 		$sql = 'SELECT *
 			FROM ' . PROFILE_FIELDS_TABLE . '
 			ORDER BY field_order';
