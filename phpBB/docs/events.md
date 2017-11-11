@@ -953,6 +953,20 @@ mcp_topic_options_before
 * Since: 3.1.6-RC1
 * Purpose: Add some options (field, checkbox, ...) before the subject field when split a subject
 
+mcp_topic_postrow_attachments_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.2-RC1
+* Purpose: Show additional content after attachments in mcp topic review
+
+mcp_topic_postrow_attachments_before
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.2.2-RC1
+* Purpose: Show additional content before attachments in mcp topic review
+
 mcp_topic_postrow_post_details_after
 ===
 * Locations:
