@@ -280,7 +280,7 @@ class mcp_queue
 				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
 
-				$template->assign_vars(array(
+				$post_data = array(
 					'S_MCP_QUEUE'			=> true,
 					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
@@ -324,7 +324,33 @@ class mcp_queue
 					'S_FIRST_POST'			=> ($post_info['topic_first_post_id'] == $post_id),
 
 					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
-				));
+				);
+
+				/**
+				* Alter post awaiting approval template before it is rendered
+				*
+				* @event core.mcp_queue_approve_details_template
+				* @var	int		post_id		Post ID
+				* @var	int		topic_id	Topic ID
+				* @var	array	topic_info	Topic data
+				* @var	array	post_info	Post data
+				* @var	string	message		Post message
+				* @var	string	post_url	Post URL
+				* @var	string	topic_url	Topic URL
+				* @since 3.2.2-RC1
+				*/
+				$vars = array(
+					'post_id',
+					'topic_id',
+					'topic_info',
+					'post_info',
+					'message',
+					'post_url',
+					'topic_url',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.mcp_queue_approve_details_template', compact($vars)));
+
+				$template->assign_vars($post_data);
 
 			break;
 
