@@ -187,6 +187,7 @@ class ajax_iohandler extends iohandler_base
 			$tpl_ary['KEY'] = $input_name;
 			$tpl_ary['S_EXPLAIN'] = false;
 			$tpl_ary['DISABLED'] = isset($input_options['disabled']) ? $input_options['disabled'] : false;
+			$tpl_ary['IS_SECONDARY'] = isset($input_options['is_secondary']) ? $input_options['is_secondary'] : false;
 
 			if (isset($input_options['default']))
 			{
@@ -216,6 +217,11 @@ class ajax_iohandler extends iohandler_base
 
 			$block_name = ($input_options['type'] === 'submit') ? 'submit_buttons' : 'options';
 			$this->template->assign_block_vars($block_name, $tpl_ary);
+		}
+
+		if (isset($form['database_update_submit']) && !$form['database_update_submit']['disabled'])
+		{
+			$this->template->assign_var('FORM_TITLE', $this->language->lang('UPDATE_CONTINUE_UPDATE_PROCESS'));
 		}
 
 		$this->template->assign_var('S_NOT_ONLY_BUTTON_FORM', $not_button_form);
