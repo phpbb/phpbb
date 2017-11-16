@@ -1355,18 +1355,18 @@ class acp_styles
 		}
 
 		// Hardcoded template bitfield to add for new templates
+		$default_bitfield = '1111111111111';
+
 		$bitfield = new bitfield();
-		$bitfield->set(0);
-		$bitfield->set(1);
-		$bitfield->set(2);
-		$bitfield->set(3);
-		$bitfield->set(4);
-		$bitfield->set(8);
-		$bitfield->set(9);
-		$bitfield->set(11);
-		$bitfield->set(12);
-		$value = $bitfield->get_base64();
-		return $value;
+		for ($i = 0; $i < strlen($default_bitfield); $i++)
+		{
+			if ($default_bitfield[$i] == '1')
+			{
+				$bitfield->set($i);
+			}
+		}
+
+		return $bitfield->get_base64();
 	}
 
 }
