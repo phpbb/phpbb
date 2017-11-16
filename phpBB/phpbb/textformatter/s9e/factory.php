@@ -78,7 +78,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		'b'     => '[B]{TEXT}[/B]',
 		'code'  => '[CODE lang={IDENTIFIER;optional}]{TEXT}[/CODE]',
 		'color' => '[COLOR={COLOR}]{TEXT}[/COLOR]',
-		'email' => '[EMAIL={EMAIL;useContent} subject={TEXT;optional;postFilter=rawurlencode} body={TEXT;optional;postFilter=rawurlencode}]{TEXT}[/EMAIL]',
+		'email' => '[EMAIL={EMAIL;useContent} subject={TEXT1;optional;postFilter=rawurlencode} body={TEXT2;optional;postFilter=rawurlencode}]{TEXT}[/EMAIL]',
 		'flash' => '[FLASH={NUMBER1},{NUMBER2} width={NUMBER1;postFilter=#flashwidth} height={NUMBER2;postFilter=#flashheight} url={URL;useContent} /]',
 		'i'     => '[I]{TEXT}[/I]',
 		'img'   => '[IMG src={IMAGEURL;useContent}]',

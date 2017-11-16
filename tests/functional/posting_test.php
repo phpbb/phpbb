@@ -235,7 +235,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		));
 		$crawler = self::submit($form);
 		$this->assertContains(
-			'<span style="font-weight: bold">My signature</span>',
+			'<strong class="text-strong">My signature</strong>',
 			$crawler->filter('#preview .signature')->html()
 		);
 	}
