@@ -273,8 +273,9 @@ class module implements \phpbb\db\migration\tool\tool_interface
 						AND parent_id = " . (int) $parent . "
 						AND module_langname = '" . $this->db->sql_escape($before_langname) . "'"
 						. (($before_mode) ? " AND module_mode = '" . $this->db->sql_escape($before_mode) . "'" : '');
-					$this->db->sql_query($sql);
+					$result = $this->db->sql_query($sql);
 					$to_left = (int) $this->db->sql_fetchfield('left_id');
+					$this->db->sql_freeresult($result);
 
 					$sql = 'UPDATE ' . $this->modules_table . "
 					SET left_id = left_id + 2, right_id = right_id + 2
@@ -309,8 +310,9 @@ class module implements \phpbb\db\migration\tool\tool_interface
 						AND parent_id = " . (int) $parent . "
 						AND module_langname = '" . $this->db->sql_escape($after_langname) . "'"
 						. (($after_mode) ? " AND module_mode = '" . $this->db->sql_escape($after_mode) . "'" : '');
-					$this->db->sql_query($sql);
+					$result = $this->db->sql_query($sql);
 					$to_right = (int) $this->db->sql_fetchfield('right_id');
+					$this->db->sql_freeresult($result);
 
 					$sql = 'UPDATE ' . $this->modules_table . "
 					SET left_id = left_id + 2, right_id = right_id + 2
