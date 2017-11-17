@@ -156,6 +156,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 					'module_langname'	=> 'ACP_FEED_SETTINGS',
 					'module_mode'		=> 'feed',
 					'module_auth'		=> 'acl_a_board',
+					'after'				=> array('signature', 'ACP_SIGNATURE_SETTINGS'),
 				),
 			)),
 			array('module.add', array(
@@ -167,6 +168,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 					'module_mode'		=> 'warnings',
 					'module_auth'		=> 'acl_a_user',
 					'module_display'	=> false,
+					'after'				=> array('feedback', 'ACP_USER_FEEDBACK'),
 				),
 			)),
 			array('module.add', array(
@@ -187,6 +189,7 @@ class release_3_0_6_rc1 extends \phpbb\db\migration\migration
 					'module_langname'	=> 'ACP_FORUM_PERMISSIONS_COPY',
 					'module_mode'		=> 'setting_forum_copy',
 					'module_auth'		=> 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth',
+					'after'				=> array('setting_forum_local', 'ACP_FORUM_PERMISSIONS'),
 				),
 			)),
 			array('module.add', array(
