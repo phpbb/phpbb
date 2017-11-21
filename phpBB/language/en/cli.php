@@ -81,7 +81,7 @@ $lang = array_merge($lang, array(
 
 	'CLI_FIXUP_FIX_LEFT_RIGHT_IDS_SUCCESS'		=> 'Successfully repaired the tree structure of the forums and modules.',
 	'CLI_FIXUP_RECALCULATE_EMAIL_HASH_SUCCESS'	=> 'Successfully recalculated all email hashes.',
-	'CLI_FIXUP_UPDATE_HASH_BCRYPT_SUCCESS'		=> 'Successfully updated outdated password hashes to bcrypt.'
+	'CLI_FIXUP_UPDATE_HASH_BCRYPT_SUCCESS'		=> 'Successfully updated outdated password hashes to bcrypt.',
 ));
 
 // Additional help for commands.
