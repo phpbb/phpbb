@@ -28,6 +28,8 @@ phpBB Developers:        bantu (Andreas Fischer)
                          CHItA (Máté Bartus)
                          Derky (Derk Ruitenbeek)
                          Elsensee (Oliver Schramm)
+                         Hanakin (Michael Miday)
+                         MichaelC (Michael Cullum)
                          Nicofuma (Tristan Darricau)
 
 For a list of phpBB Team members, please see:
