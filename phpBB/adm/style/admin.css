@@ -525,7 +525,6 @@ li {
 	padding: 0;
 	border-right: 1px solid #CCCFD3;
 	position: relative;
-	z-index: 1;
 }
 
 .rtl #menu {
@@ -1891,7 +1890,6 @@ li.pagination ul {
 	color: #000;
 	text-align: center;
 	border: 1px solid #AAA;
-	opacity: .95;
 }
 
 .tooltip span.top {
