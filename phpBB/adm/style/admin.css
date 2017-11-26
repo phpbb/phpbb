@@ -539,7 +539,6 @@ li {
 	font-size: 1em;
 	border-right: 1px solid #cccfd3;
 	position: relative;
-	z-index: 1;
 	float: left;
 	width: 200px;
 	padding: 0;
@@ -2142,7 +2141,6 @@ li .pagnation li span,
 	text-align: center;
 	border: 1px solid #aaaaaa;
 	color: #000000;
-	opacity: 0.95;
 	width: 200px;
 }
 
