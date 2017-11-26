@@ -15,5 +15,13 @@
 			<value></value>
 			<value>abcd1234</value>
 		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>1</value>
+			<value>1</value>
+			<value><![CDATA[<r><IMG src="img.png"><s>[IMG]</s>img.png<e>[/IMG]</e></IMG></r>]]></value>
+			<value></value>
+		</row>
 	</table>
 </dataset>
