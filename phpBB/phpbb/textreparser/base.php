@@ -153,8 +153,8 @@ abstract class base implements reparser_interface
 		{
 			// Look for the closing tag inside of a e element, in an element of the same name, e.g.
 			// <e>[/url]</e></URL>
-			$match = '<e>[/' . $bbcode . ']</e></' . strtoupper($bbcode) . '>';
-			if (strpos($record['text'], $match) !== false)
+			$match = '<e>[/' . $bbcode . ']</e></' . $bbcode . '>';
+			if (stripos($record['text'], $match) !== false)
 			{
 				return true;
 			}
