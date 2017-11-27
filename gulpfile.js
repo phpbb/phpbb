@@ -65,7 +65,7 @@ gulp.task('minify', () => {
 });
 
 gulp.task('watch', () => {
-	gulp.watch('phpBB/styles/prosilver/theme/*.css', ['minify']);
+	gulp.watch(['phpBB/styles/prosilver/theme/*.css', '!phpBB/styles/prosilver/theme/*.min.*'], ['minify']);
 });
 
 gulp.task('default', ['css', 'watch']);
