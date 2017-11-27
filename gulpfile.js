@@ -46,7 +46,7 @@ gulp.task('clean', () => {
 
 gulp.task('minify', () => {
 	const css = gulp
-	.src(build.css + '/bidi.css')
+	.src(build.css + '/stylesheet.css')
 	.pipe(sourcemaps.init())
 	.pipe(
 		postcss([
