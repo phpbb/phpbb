@@ -209,13 +209,13 @@ class ucp_register
 			*
 			* @event core.ucp_register_agreement
 			* @var	string	tpl_name			Template file
-			* @var	array	template_data		Array with data assigned to the template, read only
+			* @var	array	template_vars		Array with data assigned to the template, read only
 			* @var	array	lang_row			Array with available languages, read only
 			* @var	array	s_hidden_fields		Array with hidden form elements, read only
 			* @since 3.1.6-RC1
 			* @changed 3.2.2-RC1 Added tpl_name, template_data, lang_row, s_hidden_fields
 			*/
-			$vars = array('tpl_name', 'template_data', 'lang_row', 's_hidden_fields');
+			$vars = array('tpl_name', 'template_vars', 'lang_row', 's_hidden_fields');
 			extract($phpbb_dispatcher->trigger_event('core.ucp_register_agreement', compact($vars)));
 
 			unset($lang_row);
