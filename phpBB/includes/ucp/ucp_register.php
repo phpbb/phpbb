@@ -552,7 +552,6 @@ class ucp_register
 		);
 
 		$tpl_name = 'ucp_register';
-		$page_title = 'UCP_REGISTRATION';
 
 		/**
 		* Modify template data on the registration page
@@ -563,7 +562,6 @@ class ucp_register
 		* @var	array	error				Array with errors
 		* @var	string	s_hidden_fields		HTML with hidden form field elements
 		* @var	string	tpl_name			Template name
-		* @var	string	page_title			Page title
 		* @since 3.2.2-RC1
 		*/
 		$vars = array(
@@ -572,7 +570,6 @@ class ucp_register
 			'error',
 			's_hidden_fields',
 			'tpl_name',
-			'page_title',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_register_modify_template_data', compact($vars)));
 
@@ -589,7 +586,6 @@ class ucp_register
 
 		//
 		$this->tpl_name = $tpl_name;
-		$this->page_title = $page_title;
 	}
 
 	/**
