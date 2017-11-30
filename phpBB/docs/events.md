@@ -433,6 +433,13 @@ acp_prune_forums_prepend
 * Since: 3.1.7-RC1
 * Purpose: Add content before the forum select form label
 
+acp_prune_forums_settings_append
+===
+* Locations:
+    + adm/style/acp_prune_forums.html
+* Since: 3.2.2-RC1
+* Purpose: Add content after the prune settings
+
 acp_prune_users_find_username_append
 ===
 * Locations:
