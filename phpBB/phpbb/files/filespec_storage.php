@@ -111,7 +111,7 @@ class filespec_storage
 	 */
 	public function set_upload_ary($upload_ary)
 	{
-		if (!isset($upload_ary) || !sizeof($upload_ary))
+		if (!isset($upload_ary) || !count($upload_ary))
 		{
 			return $this;
 		}
@@ -389,7 +389,7 @@ class filespec_storage
 	 */
 	public function move_file($storage, $overwrite = false, $skip_image_check = false)
 	{
-		if (sizeof($this->error))
+		if (count($this->error))
 		{
 			return false;
 		}
@@ -460,7 +460,7 @@ class filespec_storage
 		// Remove temporary filename
 		@unlink($this->filename);
 
-		if (sizeof($this->error))
+		if (count($this->error))
 		{
 			return false;
 		}
