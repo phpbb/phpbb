@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/template_test_case.php';
+require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_template_events_test extends phpbb_template_template_test_case
 {
@@ -134,9 +134,9 @@ Zeta test event in all',
 		$defaults = $this->config_defaults();
 		$config = new \phpbb\config\config(array_merge($defaults, $new_config));
 
-		$this->template_path = dirname(__FILE__) . "/datasets/$dataset/styles/silver/template";
+		$this->template_path = __DIR__ . "/datasets/$dataset/styles/silver/template";
 		$this->extension_manager = new phpbb_mock_filesystem_extension_manager(
-			dirname(__FILE__) . "/datasets/$dataset/"
+			__DIR__ . "/datasets/$dataset/"
 		);
 
 		$filesystem = new \phpbb\filesystem\filesystem();

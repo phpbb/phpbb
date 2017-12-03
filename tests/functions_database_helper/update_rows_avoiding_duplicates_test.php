@@ -11,13 +11,13 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_database_helper.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_database_helper.php';
 
 class phpbb_update_rows_avoiding_duplicates_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/bookmarks_duplicates.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/bookmarks_duplicates.xml');
 	}
 
 	public static function fixture_data()

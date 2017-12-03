@@ -13,8 +13,8 @@
 
 namespace phpbb\mimetype;
 
-require_once dirname(__FILE__) . '/null_guesser.php';
-require_once dirname(__FILE__) . '/incorrect_guesser.php';
+require_once __DIR__ . '/null_guesser.php';
+require_once __DIR__ . '/incorrect_guesser.php';
 
 function function_exists($name)
 {
@@ -45,7 +45,7 @@ class guesser_test extends \phpbb_test_case
 		$this->guesser_no_fileinfo = new \phpbb\mimetype\guesser(array($guessers[2]));
 
 		$this->guesser = new \phpbb\mimetype\guesser($guessers);
-		$this->path = dirname(__FILE__);
+		$this->path = __DIR__;
 		$this->jpg_file = $this->path . '/fixtures/jpg';
 		$this->phpbb_root_path = $phpbb_root_path;
 	}

@@ -15,9 +15,9 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\update\check;
 
-require_once dirname(__FILE__) . '/../../../phpBB/includes/functions_admin.php';
-require_once dirname(__FILE__) . '/../../../phpBB/includes/functions.php';
-require_once dirname(__FILE__) . '/../../../phpBB/includes/utf/utf_tools.php';
+require_once __DIR__ . '/../../../phpBB/includes/functions_admin.php';
+require_once __DIR__ . '/../../../phpBB/includes/functions.php';
+require_once __DIR__ . '/../../../phpBB/includes/utf/utf_tools.php';
 
 /**
 * @slow

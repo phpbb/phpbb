@@ -11,8 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
-require_once dirname(__FILE__) . '/validate_data_helper.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_user.php';
+require_once __DIR__ . '/validate_data_helper.php';
 
 class phpbb_functions_validate_with_method_test extends phpbb_test_case
 {

@@ -385,7 +385,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			new phpbb\filesystem(),
 			$user,
 			self::$config['table_prefix'] . 'ext',
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			$phpEx,
 			$this->get_cache_driver()
 		);

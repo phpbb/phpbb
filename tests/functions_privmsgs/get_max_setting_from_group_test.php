@@ -11,13 +11,13 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_privmsgs.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_privmsgs.php';
 
 class phpbb_functions_privmsgs_get_max_setting_from_group_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/get_max_setting_from_group.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/get_max_setting_from_group.xml');
 	}
 
 	/** @var \phpbb\db\driver\driver_interface */

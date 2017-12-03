@@ -15,7 +15,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\cache\purge;
 
-require_once dirname(__FILE__) . '/../../../phpBB/includes/functions_admin.php';
+require_once __DIR__ . '/../../../phpBB/includes/functions_admin.php';
 
 class phpbb_console_command_cache_purge_test extends phpbb_test_case
 {
@@ -27,7 +27,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 
 	public function __construct()
 	{
-		$this->cache_dir = dirname(__FILE__) . '/tmp/cache/';
+		$this->cache_dir = __DIR__ . '/tmp/cache/';
 	}
 
 	protected function setUp()

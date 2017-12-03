@@ -34,7 +34,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -126,7 +126,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -137,10 +137,10 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 		);
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator($this->filesystem, dirname(__FILE__) . '/')
+			new \phpbb\routing\file_locator($this->filesystem, __DIR__ . '/')
 		);
-		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(dirname(__FILE__) . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, dirname(__FILE__) . '/', 'php');
+		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(__DIR__ . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
+		$this->router = new phpbb_mock_router($container, $resources_locator, $loader, __DIR__ . '/', 'php');
 
 		// Set correct current phpBB root path
 		$this->root_path = $this->get_phpbb_root_path();

@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../template_test_case.php';
+require_once __DIR__ . '/../template_test_case.php';
 
 class phpbb_template_subdir_includephp_from_subdir_test extends phpbb_template_template_test_case
 {

@@ -11,8 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/bbcode.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/message_parser.php';
+require_once __DIR__ . '/../../phpBB/includes/bbcode.php';
+require_once __DIR__ . '/../../phpBB/includes/message_parser.php';
 
 class phpbb_url_bbcode_test extends phpbb_test_case
 {

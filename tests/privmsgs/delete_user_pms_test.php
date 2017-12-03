@@ -11,13 +11,13 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_privmsgs.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_privmsgs.php';
 
 class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/delete_user_pms.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/delete_user_pms.xml');
 	}
 
 	static public function delete_user_pms_data()

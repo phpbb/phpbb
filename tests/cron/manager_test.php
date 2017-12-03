@@ -11,12 +11,12 @@
 *
 */
 
-require_once dirname(__FILE__) . '/includes/cron/task/core/dummy_task.php';
-require_once dirname(__FILE__) . '/includes/cron/task/core/second_dummy_task.php';
-require_once dirname(__FILE__) . '/ext/testext/cron/dummy_task.php';
-require_once dirname(__FILE__) . '/tasks/simple_ready.php';
-require_once dirname(__FILE__) . '/tasks/simple_not_runnable.php';
-require_once dirname(__FILE__) . '/tasks/simple_should_not_run.php';
+require_once __DIR__ . '/includes/cron/task/core/dummy_task.php';
+require_once __DIR__ . '/includes/cron/task/core/second_dummy_task.php';
+require_once __DIR__ . '/ext/testext/cron/dummy_task.php';
+require_once __DIR__ . '/tasks/simple_ready.php';
+require_once __DIR__ . '/tasks/simple_not_runnable.php';
+require_once __DIR__ . '/tasks/simple_should_not_run.php';
 
 class phpbb_cron_manager_test extends \phpbb_test_case
 {

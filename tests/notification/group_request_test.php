@@ -11,13 +11,13 @@
 *
 */
 
-require_once dirname(__FILE__) . '/base.php';
+require_once __DIR__ . '/base.php';
 
 class phpbb_notification_group_request_test extends phpbb_tests_notification_base
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/group_request.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/group_request.xml');
 	}
 
 	protected function get_notification_types()

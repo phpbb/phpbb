@@ -115,7 +115,7 @@ class phpbb_test_case_helpers
 		{
 			$config = array_merge($config, array(
 				'dbms'		=> 'phpbb\db\driver\sqlite3',
-				'dbhost'	=> dirname(__FILE__) . '/../phpbb_unit_tests.sqlite3', // filename
+				'dbhost'	=> __DIR__ . '/../phpbb_unit_tests.sqlite3', // filename
 				'dbport'	=> '',
 				'dbname'	=> '',
 				'dbuser'	=> '',
@@ -130,7 +130,7 @@ class phpbb_test_case_helpers
 		}
 		else
 		{
-			$test_config = dirname(__FILE__) . '/../test_config.php';
+			$test_config = __DIR__ . '/../test_config.php';
 		}
 
 		$config_php_file = new \phpbb\config_php_file('', '');

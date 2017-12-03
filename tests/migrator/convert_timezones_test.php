@@ -24,7 +24,7 @@ class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 		// user_dst doesn't exist anymore, must re-add it to test this
 		$db_tools->sql_column_add('phpbb_users', 'user_dst', array('BOOL', 1));
 
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/convert_timezones.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/convert_timezones.xml');
 	}
 
 	public function revert_schema()

@@ -17,11 +17,11 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 	{
 		if ((version_compare(PHP_VERSION, '5.3.7', '<')))
 		{
-			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user_533.xml');
+			return $this->createXMLDataSet(__DIR__.'/fixtures/user_533.xml');
 		}
 		else
 		{
-			return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/user.xml');
+			return $this->createXMLDataSet(__DIR__.'/fixtures/user.xml');
 		}
 	}
 

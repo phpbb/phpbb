@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/base.php';
+require_once __DIR__ . '/base.php';
 
 class phpbb_notification_test extends phpbb_tests_notification_base
 {
@@ -19,7 +19,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/notification.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/notification.xml');
 	}
 
 	public function test_get_notification_type_id()

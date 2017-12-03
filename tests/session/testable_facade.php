@@ -11,8 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/testable_factory.php';
-require_once dirname(__FILE__) . '/../../phpBB/phpbb/session.php';
+require_once __DIR__ . '/testable_factory.php';
+require_once __DIR__ . '/../../phpBB/phpbb/session.php';
 
 /**
  * This class exists to expose session.php's functions in a more testable way.

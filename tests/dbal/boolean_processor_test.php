@@ -15,7 +15,7 @@ class phpbb_boolean_processor_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/boolean_processor.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/boolean_processor.xml');
 	}
 
 	public function test_single_not_like()

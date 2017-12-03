@@ -15,7 +15,7 @@ class phpbb_dbal_write_sequence_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/three_users.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/three_users.xml');
 	}
 
 	static public function write_sequence_data()

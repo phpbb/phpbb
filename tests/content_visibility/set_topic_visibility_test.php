@@ -11,14 +11,14 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_posting.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_admin.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_posting.php';
 
 class phpbb_content_visibility_set_topic_visibility_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/set_topic_visibility.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/set_topic_visibility.xml');
 	}
 
 	public function set_topic_visibility_data()
