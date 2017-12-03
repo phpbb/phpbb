@@ -527,6 +527,9 @@ class ucp_register
 			break;
 		}
 
+		// Assign template vars for timezone select
+		phpbb_timezone_select($template, $user, $data['tz'], true);
+
 		$template_vars = array(
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
@@ -548,7 +551,6 @@ class ucp_register
 			'COOKIE_PATH'		=> $config['cookie_path'],
 		);
 
-		$tz = $data['tz'];
 		$tpl_name = 'ucp_register';
 
 		/**
@@ -559,7 +561,6 @@ class ucp_register
 		* @var	array	data				Array with user data, read only
 		* @var	array	error				Array with errors
 		* @var	array	s_hidden_fields		Array with hidden field elements
-		* @var	string	tz					The selected timezone
 		* @var	string	tpl_name			Template name
 		* @since 3.2.2-RC1
 		*/
@@ -568,13 +569,9 @@ class ucp_register
 			'data',
 			'error',
 			's_hidden_fields',
-			'tz',
 			'tpl_name',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.ucp_register_modify_template_data', compact($vars)));
-
-		// Assign template vars for timezone select
-		phpbb_timezone_select($template, $user, $tz, true);
 
 		$template_vars = array_merge($template_vars, array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
