@@ -20,8 +20,8 @@
 //
 die("Please read the first lines of this script for instructions on how to enable it");
 
-$code_dir = realpath(__DIR__ . '/../');
-$test_dir = realpath(__DIR__ . '/../../tests/');
+$code_dir = __DIR__ . '/../';
+$test_dir = __DIR__ . '/../../tests/';
 $iterator = new \AppendIterator();
 $iterator->append(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($code_dir)));
 $iterator->append(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($test_dir)));

@@ -20,10 +20,10 @@
 //
 die("Please read the first lines of this script for instructions on how to enable it");
 
-$namespace_dir = realpath(__DIR__ . '/../phpbb/');
-$code_dir = realpath(__DIR__ . '/../');
-$test_dir = realpath(__DIR__ . '/../../tests/');
-$config_dir = realpath(__DIR__ . '/../config/');
+$namespace_dir = __DIR__ . '/../phpbb/';
+$code_dir = __DIR__ . '/../';
+$test_dir = __DIR__ . '/../../tests/';
+$config_dir = __DIR__ . '/../config/';
 
 function map_class_name($old_class_name, $code_dir)
 {
@@ -191,4 +191,3 @@ foreach ($iterator as $file)
 		file_put_contents($file->getPathname(), $code);
 	}
 }
-
