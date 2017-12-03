@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/template_test_case.php';
+require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_includephp_test extends phpbb_template_template_test_case
 {
@@ -40,7 +40,7 @@ class phpbb_template_includephp_test extends phpbb_template_template_test_case
 		global $phpbb_root_path;
 
 		$filesystem = new \phpbb\filesystem\filesystem();
-		$path_to_php = str_replace('\\', '/', dirname(__FILE__)) . '/templates/_dummy_include.php.inc';
+		$path_to_php = str_replace('\\', '/', __DIR__) . '/templates/_dummy_include.php.inc';
 		$this->assertTrue($filesystem->is_absolute_path($path_to_php));
 		$template_text = "Path is absolute.\n<!-- INCLUDEPHP $path_to_php -->";
 

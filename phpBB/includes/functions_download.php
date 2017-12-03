@@ -242,7 +242,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 			// X-Sendfile - http://blog.lighttpd.net/articles/2006/07/02/x-sendfile
 			// Lighttpd's X-Sendfile does not support range requests as of 1.4.26
 			// and always requires an absolute path.
-			header('X-Sendfile: ' . dirname(__FILE__) . "/../$upload_dir/{$attachment['physical_filename']}");
+			header('X-Sendfile: ' . __DIR__ . "/../$upload_dir/{$attachment['physical_filename']}");
 			exit;
 		}
 

@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/template_test_case_with_tree.php';
+require_once __DIR__ . '/template_test_case_with_tree.php';
 
 class phpbb_template_template_includecss_test extends phpbb_template_template_test_case_with_tree
 {
@@ -70,7 +70,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$this->user,
 			array(new \phpbb\template\twig\extension($context, $twig, $this->user)),
 			new phpbb_mock_extension_manager(
-				dirname(__FILE__) . '/',
+				__DIR__ . '/',
 				array(
 					'include/css' => array(
 						'ext_name' => 'include/css',

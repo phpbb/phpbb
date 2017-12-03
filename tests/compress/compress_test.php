@@ -11,8 +11,8 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_admin.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_compress.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_admin.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_compress.php';
 
 class phpbb_compress_test extends phpbb_test_case
 {
@@ -40,7 +40,7 @@ class phpbb_compress_test extends phpbb_test_case
 		global $phpbb_root_path;
 		$phpbb_root_path = '';
 
-		$this->path = dirname(__FILE__) . '/fixtures/';
+		$this->path = __DIR__ . '/fixtures/';
 	}
 
 	protected function check_extensions($extensions)
@@ -56,7 +56,7 @@ class phpbb_compress_test extends phpbb_test_case
 
 	protected function tearDown(): void
 	{
-		foreach (array(dirname(__FILE__) . self::EXTRACT_DIR, dirname(__FILE__) . self::ARCHIVE_DIR) as $dir)
+		foreach (array(__DIR__ . self::EXTRACT_DIR, __DIR__ . self::ARCHIVE_DIR) as $dir)
 		{
 			$this->clear_dir($dir);
 		}
@@ -110,7 +110,7 @@ class phpbb_compress_test extends phpbb_test_case
 
 		foreach ($filelist as $filename)
 		{
-			$path = dirname(__FILE__) . self::EXTRACT_DIR . $filename;
+			$path = __DIR__ . self::EXTRACT_DIR . $filename;
 			$this->assertTrue(file_exists($path));
 
 			// Check the file's contents is correct
@@ -155,7 +155,7 @@ class phpbb_compress_test extends phpbb_test_case
 	{
 		$this->check_extensions($extensions);
 
-		$tar = dirname(__FILE__) . self::ARCHIVE_DIR . $filename;
+		$tar = __DIR__ . self::ARCHIVE_DIR . $filename;
 		$compress = new compress_tar('w', $tar);
 		$this->archive_files($compress);
 		$compress->close();
@@ -174,7 +174,7 @@ class phpbb_compress_test extends phpbb_test_case
 	{
 		$this->check_extensions(array('zlib'));
 
-		$zip =  dirname(__FILE__) . self::ARCHIVE_DIR . 'archive.zip';
+		$zip =  __DIR__ . self::ARCHIVE_DIR . 'archive.zip';
 		$compress = new compress_zip('w', $zip);
 		$this->archive_files($compress);
 		$compress->close();

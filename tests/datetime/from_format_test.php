@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../mock/lang.php';
+require_once __DIR__ . '/../mock/lang.php';
 
 class phpbb_datetime_from_format_test extends phpbb_test_case
 {

@@ -11,13 +11,13 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../test_framework/phpbb_session_test_case.php';
+require_once __DIR__ . '/../test_framework/phpbb_session_test_case.php';
 
 class phpbb_session_create_test extends phpbb_session_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/sessions_full.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/sessions_full.xml');
 	}
 
 	static function bot($bot_agent, $user_id, $bot_ip)

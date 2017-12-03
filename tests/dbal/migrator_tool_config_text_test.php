@@ -15,7 +15,7 @@ class phpbb_dbal_migrator_tool_config_text_test extends phpbb_database_test_case
 {
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator_config_text.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator_config_text.xml');
 	}
 
 	protected function setUp(): void

@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_user.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_user.php';
 
 class phpbb_functions_validate_hex_colour_test extends phpbb_test_case
 {

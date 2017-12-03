@@ -11,7 +11,7 @@
  *
  */
 
-require_once dirname(__FILE__) . '/cache_memory.php';
+require_once __DIR__ . '/cache_memory.php';
 
 class phpbb_cache_memory_test extends phpbb_database_test_case
 {
@@ -20,7 +20,7 @@ class phpbb_cache_memory_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/cache_memory.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/cache_memory.xml');
 	}
 
 	protected function setUp(): void

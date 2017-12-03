@@ -11,12 +11,12 @@
 *
 */
 
-require_once dirname(__FILE__) . '/ext/vendor2/foo/acp/a_info.php';
-require_once dirname(__FILE__) . '/ext/vendor2/foo/mcp/a_info.php';
-require_once dirname(__FILE__) . '/ext/vendor2/foo/acp/fail_info.php';
-require_once dirname(__FILE__) . '/ext/vendor2/bar/acp/a_info.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/acp/acp_modules.php';
-require_once dirname(__FILE__) . '/../../phpBB/includes/functions_module.php';
+require_once __DIR__ . '/ext/vendor2/foo/acp/a_info.php';
+require_once __DIR__ . '/ext/vendor2/foo/mcp/a_info.php';
+require_once __DIR__ . '/ext/vendor2/foo/acp/fail_info.php';
+require_once __DIR__ . '/ext/vendor2/bar/acp/a_info.php';
+require_once __DIR__ . '/../../phpBB/includes/acp/acp_modules.php';
+require_once __DIR__ . '/../../phpBB/includes/functions_module.php';
 
 class phpbb_extension_modules_test extends phpbb_test_case
 {
@@ -29,7 +29,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		global $phpbb_extension_manager;
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',
@@ -49,7 +49,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			$this->createMock('\phpbb\db\driver\driver_interface'),
 			$this->extension_manager,
 			MODULES_TABLE,
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			'php'
 		);
 	}
@@ -61,7 +61,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 //		$this->markTestIncomplete('Modules no speak namespace! Going to get rid of db modules altogether and fix this test after.');
 
 		// Correctly set the root path for this test to this directory, so the classes can be found
-		$phpbb_root_path = dirname(__FILE__) . '/';
+		$phpbb_root_path = __DIR__ . '/';
 
 		// Find acp module info files
 		$acp_modules = $this->module_manager->get_module_infos('acp');
@@ -193,7 +193,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 		global $phpbb_extension_manager, $phpbb_dispatcher;
 
 		$phpbb_extension_manager = $this->extension_manager = new phpbb_mock_extension_manager(
-			dirname(__FILE__) . '/',
+			__DIR__ . '/',
 			array(
 				'vendor2/foo' => array(
 					'ext_name' => 'vendor2/foo',

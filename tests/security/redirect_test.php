@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/base.php';
+require_once __DIR__ . '/base.php';
 
 
 class phpbb_security_redirect_test extends phpbb_security_test_base

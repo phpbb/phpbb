@@ -18,7 +18,7 @@
 * If you overwrite the original schema files please make sure you save the file with UNIX linefeeds.
 */
 
-$schema_path = dirname(__FILE__) . '/../install/schemas/';
+$schema_path = __DIR__ . '/../install/schemas/';
 $supported_dbms = array(
 	'mssql',
 	'mysql_41',
@@ -34,7 +34,7 @@ if (!is_writable($schema_path))
 }
 
 define('IN_PHPBB', true);
-$phpbb_root_path = dirname(__FILE__) . '/../';
+$phpbb_root_path = __DIR__ . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 include($phpbb_root_path . 'vendor/autoload.php');

@@ -11,19 +11,19 @@
 *
 */
 
-require_once dirname(__FILE__) . '/migration/dummy.php';
-require_once dirname(__FILE__) . '/migration/unfulfillable.php';
-require_once dirname(__FILE__) . '/migration/if.php';
-require_once dirname(__FILE__) . '/migration/recall.php';
-require_once dirname(__FILE__) . '/migration/if_params.php';
-require_once dirname(__FILE__) . '/migration/recall_params.php';
-require_once dirname(__FILE__) . '/migration/revert.php';
-require_once dirname(__FILE__) . '/migration/revert_with_dependency.php';
-require_once dirname(__FILE__) . '/migration/revert_table.php';
-require_once dirname(__FILE__) . '/migration/revert_table_with_dependency.php';
-require_once dirname(__FILE__) . '/migration/fail.php';
-require_once dirname(__FILE__) . '/migration/installed.php';
-require_once dirname(__FILE__) . '/migration/schema.php';
+require_once __DIR__ . '/migration/dummy.php';
+require_once __DIR__ . '/migration/unfulfillable.php';
+require_once __DIR__ . '/migration/if.php';
+require_once __DIR__ . '/migration/recall.php';
+require_once __DIR__ . '/migration/if_params.php';
+require_once __DIR__ . '/migration/recall_params.php';
+require_once __DIR__ . '/migration/revert.php';
+require_once __DIR__ . '/migration/revert_with_dependency.php';
+require_once __DIR__ . '/migration/revert_table.php';
+require_once __DIR__ . '/migration/revert_table_with_dependency.php';
+require_once __DIR__ . '/migration/fail.php';
+require_once __DIR__ . '/migration/installed.php';
+require_once __DIR__ . '/migration/schema.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -41,7 +41,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__).'/fixtures/migrator.xml');
+		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator.xml');
 	}
 
 	protected function setUp(): void
@@ -66,7 +66,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->db,
 			$this->db_tools,
 			'phpbb_migrations',
-			dirname(__FILE__) . '/../../phpBB/',
+			__DIR__ . '/../../phpBB/',
 			'php',
 			'phpbb_',
 			$tools,
@@ -81,7 +81,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->config,
 			new phpbb\filesystem\filesystem(),
 			'phpbb_ext',
-			dirname(__FILE__) . '/../../phpBB/',
+			__DIR__ . '/../../phpBB/',
 			'php',
 			null
 		);

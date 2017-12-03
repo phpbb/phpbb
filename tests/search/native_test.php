@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/../test_framework/phpbb_search_test_case.php';
+require_once __DIR__ . '/../test_framework/phpbb_search_test_case.php';
 
 class phpbb_search_native_test extends phpbb_search_test_case
 {
@@ -20,7 +20,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/posts.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/posts.xml');
 	}
 
 	protected function setUp(): void

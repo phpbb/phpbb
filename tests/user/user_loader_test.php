@@ -18,7 +18,7 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(dirname(__FILE__) . '/fixtures/user_loader.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/user_loader.xml');
 	}
 
 	protected function setUp(): void
