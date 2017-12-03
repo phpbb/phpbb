@@ -1,3 +1,4 @@
+
 <?php
 /**
 *
@@ -3494,12 +3495,12 @@ function phpbb_filter_root_path($errfile)
 	{
 		if ($phpbb_filesystem)
 		{
-			$root_path = $phpbb_filesystem-> realpath(__DIR__ . '/../');
+			$root_path = $phpbb_filesystem->realpath(__DIR__ . '/../');
 		}
 		else
 		{
 			$filesystem = new \phpbb\filesystem\filesystem();
-			$root_path = $filesystem-> realpath(__DIR__ . '/../');
+			$root_path = $filesystem->realpath(__DIR__ . '/../');
 		}
 	}
 
