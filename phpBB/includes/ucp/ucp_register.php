@@ -213,7 +213,7 @@ class ucp_register
 			* @var	array	lang_row			Array with available languages, read only
 			* @var	array	s_hidden_fields		Array with hidden form elements, read only
 			* @since 3.1.6-RC1
-			* @changed 3.2.2-RC1 Added tpl_name, template_data, lang_row, s_hidden_fields
+			* @changed 3.2.2-RC1 Added tpl_name, template_vars, lang_row, s_hidden_fields
 			*/
 			$vars = array('tpl_name', 'template_vars', 'lang_row', 's_hidden_fields');
 			extract($phpbb_dispatcher->trigger_event('core.ucp_register_agreement', compact($vars)));
