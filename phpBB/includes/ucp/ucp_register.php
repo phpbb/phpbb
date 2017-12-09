@@ -229,6 +229,7 @@ class ucp_register
 			*
 			* @event core.ucp_register_agreement
 			* @since 3.1.6-RC1
+			* @deprecated Replaced by core.ucp_register_agreement_modify_template_data
 			*/
 			$phpbb_dispatcher->dispatch('core.ucp_register_agreement');
 
