@@ -198,7 +198,29 @@ class ucp_register
 					)
 				);
 			}
+
+			$tpl_name = 'ucp_agreement';
+
+			/**
+			* Allows to modify the agreements.
+			*
+			* @event core.ucp_register_agreement_modify_template_data
+			* @var	string	tpl_name			Template file
+			* @var	array	template_vars		Array with data about to be assigned to the template
+			* @var	array	s_hidden_fields		Array with hidden form elements
+			* @var	array	lang_row			Array with available languages, read only
+			* @since 3.2.2-RC1
+			*/
+			$vars = array('tpl_name', 'template_vars', 's_hidden_fields', 'lang_row');
+			extract($phpbb_dispatcher->trigger_event('core.ucp_register_agreement_modify_template_data', compact($vars)));
+
 			unset($lang_row);
+
+			$template_vars = array_merge($template_vars, array(
+				'S_HIDDEN_FIELDS' => build_hidden_fields($s_hidden_fields),
+			));
+
+			$template->assign_vars($template_vars);
 
 			/**
 			* Allows to modify the agreements.
@@ -210,7 +232,7 @@ class ucp_register
 			*/
 			$phpbb_dispatcher->dispatch('core.ucp_register_agreement');
 
-			$this->tpl_name = 'ucp_agreement';
+			$this->tpl_name = $tpl_name;
 			return;
 		}
 
