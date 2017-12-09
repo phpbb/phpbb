@@ -932,6 +932,26 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				/**
+				* Modify the row of a post result before the post_text is trimmed
+				*
+				* @event core.search_modify_post_row
+				* @var	string	hilit					String to highlight
+				* @var	array	row						Array with the post data
+				* @var	string	u_hilit					Highlight string to be injected into URL
+				* @var	string	view					Search results view mode
+				* @var	array	zebra					Array with zebra data for the current user
+				* @since 3.2.2-RC1
+				*/
+				$vars = array(
+					'hilit',
+					'row',
+					'u_hilit',
+					'view',
+					'zebra',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.search_modify_post_row', compact($vars)));
+
 				// We pre-process some variables here for later usage
 				$row['post_text'] = censor_text($row['post_text']);
 
