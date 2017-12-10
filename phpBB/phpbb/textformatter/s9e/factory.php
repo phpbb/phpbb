@@ -266,7 +266,8 @@ class factory implements \phpbb\textformatter\cache_interface
 			->addParameterByName('logger')
 			->addParameterByName('max_img_height')
 			->addParameterByName('max_img_width')
-			->markAsSafeAsURL();
+			->markAsSafeAsURL()
+			->setJS('UrlFilter.filter');
 
 		// Add default BBCodes
 		foreach ($this->get_default_bbcodes($configurator) as $bbcode)
@@ -355,8 +356,6 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->registeredVars['max_img_width'] = 0;
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
-		$configurator->Emoji->omitImageSize();
-		$configurator->Emoji->useSVG();
 		$tag = $configurator->Emoji->getTag();
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
