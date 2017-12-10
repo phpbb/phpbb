@@ -166,7 +166,7 @@ class ucp_register
 					->format($user->lang['DATE_FORMAT'], true);
 				unset($now);
 
-				$template->assign_vars(array(
+				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
@@ -180,11 +180,11 @@ class ucp_register
 
 					'COOKIE_NAME'		=> $config['cookie_name'],
 					'COOKIE_PATH'		=> $config['cookie_path'],
-				));
+				);
 			}
 			else
 			{
-				$template->assign_vars(array(
+				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
@@ -195,7 +195,6 @@ class ucp_register
 
 					'COOKIE_NAME'		=> $config['cookie_name'],
 					'COOKIE_PATH'		=> $config['cookie_path'],
-					)
 				);
 			}
 
