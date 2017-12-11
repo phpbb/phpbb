@@ -444,7 +444,7 @@ class acp_board
 						'legend1'				=> 'GENERAL_SETTINGS',
 						'email_enable'			=> array('lang' => 'ENABLE_EMAIL',			'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
 						'board_email_form'		=> array('lang' => 'BOARD_EMAIL_FORM',		'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
-						'email_function_name'	=> array('lang' => 'EMAIL_FUNCTION_NAME',	'validate' => 'string',	'type' => 'text:20:50', 'explain' => true),
+						'email_envelope_sender'	=> array('lang' => 'EMAIL_ENVELOPE_SENDER',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'email_package_size'	=> array('lang' => 'EMAIL_PACKAGE_SIZE',	'validate' => 'int:0',	'type' => 'number:0:99999', 'explain' => true),
 						'board_contact'			=> array('lang' => 'CONTACT_EMAIL',			'validate' => 'email',	'type' => 'email:25:100', 'explain' => true),
 						'board_contact_name'	=> array('lang' => 'CONTACT_EMAIL_NAME',	'validate' => 'string',	'type' => 'text:25:50', 'explain' => true),
@@ -531,13 +531,6 @@ class acp_board
 			}
 
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
-
-			if ($config_name == 'email_function_name')
-			{
-				$this->new_config['email_function_name'] = trim(str_replace(array('(', ')'), array('', ''), $this->new_config['email_function_name']));
-				$this->new_config['email_function_name'] = (empty($this->new_config['email_function_name']) || !function_exists($this->new_config['email_function_name'])) ? 'mail' : $this->new_config['email_function_name'];
-				$config_value = $this->new_config['email_function_name'];
-			}
 
 			if ($submit)
 			{
