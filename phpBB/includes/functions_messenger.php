@@ -1839,7 +1839,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
 	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
 	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
-	$additional_parameters = $config['email_envelope_sender'] ? '-f' . $config['board_email'] : '';
+	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
 	$collector->uninstall();

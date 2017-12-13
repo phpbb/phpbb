@@ -13,7 +13,7 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-class email_envelope_sender extends \phpbb\db\migration\migration
+class email_force_sender extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
@@ -24,13 +24,13 @@ class email_envelope_sender extends \phpbb\db\migration\migration
 
 	public function effectively_installed()
 	{
-		return isset($this->config['email_envelope_sender']);
+		return isset($this->config['email_force_sender']);
 	}
 
 	public function update_data()
 	{
 		return array(
-			array('config.add', array('email_envelope_sender', '0')),
+			array('config.add', array('email_force_sender', '0')),
 			array('config.remove', array('email_function_name')),
 		);
 	}
