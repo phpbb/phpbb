@@ -567,6 +567,7 @@ blockquote .codebox {
 /* Attachments
 ---------------------------------------- */
 .attachbox {
+	font-size: 13px;
 	border: 1px dashed transparent;
 	float: left;
 	clear: left;
