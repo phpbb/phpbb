@@ -42,7 +42,11 @@
 								</a>
 							-->
 						<!-- ENDIF -->
-						<!-- IF forumrow.FORUM_IMAGE --><span class="forum-image">{forumrow.FORUM_IMAGE}</span><!-- ENDIF -->
+						<!-- IF forumrow.FORUM_IMAGE -->
+							<!-- EVENT forumlist_body_forum_image_before -->
+							<span class="forum-image"><!-- EVENT forumlist_body_forum_image_prepend -->{forumrow.FORUM_IMAGE}<!-- EVENT forumlist_body_forum_image_append --></span>
+							<!-- EVENT forumlist_body_forum_image_after -->
+						<!-- ENDIF -->
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a>
 						<!-- IF forumrow.FORUM_DESC --><br />{forumrow.FORUM_DESC}<!-- ENDIF -->
 						<!-- IF forumrow.MODERATORS -->

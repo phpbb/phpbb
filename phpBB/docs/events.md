@@ -673,6 +673,33 @@ forumlist_body_category_header_row_prepend
 * Since: 3.1.5-RC1
 * Purpose: Add content before the header row of the category on the forum list.
 
+forumlist_body_forum_image_after
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content after the forum image on the forum list.
+
+forumlist_body_forum_image_append
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content at the start of the forum image on the forum list.
+
+forumlist_body_forum_image_before
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content before the forum image on the forum list.
+
+forumlist_body_forum_image_prepend
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.2.2-RC1
+* Purpose: Add content at the end of the forum image on the forum list.
+
 forumlist_body_forum_row_after
 ===
 * Locations:
