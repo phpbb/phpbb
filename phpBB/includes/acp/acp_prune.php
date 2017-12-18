@@ -183,7 +183,7 @@ class acp_prune
 				 * Use this event to pass data from the prune form to the confirmation screen
 				 *
 				 * @event core.prune_forums_settings_confirm
-				 * @var int[]	hidden_fields	The IDs of the topics to be deleted
+				 * @var array	hidden_fields	Hidden fields that are passed through the confirm screen
 				 * @since 3.2.2-RC1
 				 */
 				$vars = array('hidden_fields');
