@@ -166,7 +166,6 @@ class ucp_register
 					->format($user->lang['DATE_FORMAT'], true);
 				unset($now);
 
-
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
@@ -185,7 +184,6 @@ class ucp_register
 			}
 			else
 			{
-
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
