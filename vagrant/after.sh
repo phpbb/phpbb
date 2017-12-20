@@ -43,4 +43,8 @@ sed -i '/^.*PHPBB_DISPLAY_LOAD_TIME.*$/s/^\/\/[[:blank:]]*//' ${PHPBB_CONFIG}
 # Update the PHP memory limits (enough to allow phpunit tests to run)
 sed -i "s/memory_limit = .*/memory_limit = 1024M/" /etc/php/7.1/fpm/php.ini
 
+# Make routes work in vagrant (https://tracker.phpbb.com/browse/PHPBB3-15400)
+sed -i '/^.*try_files.*$/s/index/app/' /etc/nginx/sites-enabled/phpbb.app
+nginx -s reload
+
 echo "Your board is ready at http://192.168.10.10/"
