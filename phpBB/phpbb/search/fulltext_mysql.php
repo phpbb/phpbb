@@ -591,6 +591,7 @@ class fulltext_mysql extends \phpbb\search\base
 			WHERE MATCH ($sql_match) AGAINST ('" . $this->db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
+		$this->db->sql_return_on_error(true);
 		$result = $this->db->sql_query_limit($sql, $this->config['search_block_size'], $start);
 
 		while ($row = $this->db->sql_fetchrow($result))
@@ -602,7 +603,7 @@ class fulltext_mysql extends \phpbb\search\base
 		$id_ary = array_unique($id_ary);
 
 		// if the total result count is not cached yet, retrieve it from the db
-		if (!$result_count)
+		if (!$result_count && count($id_ary))
 		{
 			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
 			$result = $this->db->sql_query($sql_found_rows);
@@ -1004,6 +1005,11 @@ class fulltext_mysql extends \phpbb\search\base
 			}
 		}
 
+		if (!isset($this->stats['post_text']))
+		{
+			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT post_text (post_text)');
+		}
+
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
@@ -1039,6 +1045,11 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter[] = 'DROP INDEX post_content';
 		}
 
+		if (isset($this->stats['post_text']))
+		{
+			$alter[] = 'DROP INDEX post_text';
+		}
+
 		if (sizeof($alter))
 		{
 			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
@@ -1059,7 +1070,7 @@ class fulltext_mysql extends \phpbb\search\base
 			$this->get_stats();
 		}
 
-		return isset($this->stats['post_subject']) && isset($this->stats['post_content']);
+		return isset($this->stats['post_subject']) && isset($this->stats['post_content']) && isset($this->stats['post_text']);
 	}
 
 	/**
@@ -1102,6 +1113,10 @@ class fulltext_mysql extends \phpbb\search\base
 				if ($row['Key_name'] == 'post_subject')
 				{
 					$this->stats['post_subject'] = $row;
+				}
+				else if ($row['Key_name'] == 'post_text')
+				{
+					$this->stats['post_text'] = $row;
 				}
 				else if ($row['Key_name'] == 'post_content')
 				{
