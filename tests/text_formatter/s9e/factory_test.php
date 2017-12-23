@@ -248,6 +248,22 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 	}
 
 	/**
+	* @testdox Accepts unsafe default BBCodes
+	*/
+	public function test_unsafe_default_bbcodes()
+	{
+		$fixture   = __DIR__ . '/fixtures/unsafe_default_bbcodes.xml';
+		$style_dir = __DIR__ . '/fixtures/styles/';
+		$container = $this->get_test_case_helpers()->set_s9e_services(null, $fixture, $style_dir);
+		$parser    = $container->get('text_formatter.parser');
+		$renderer  = $container->get('text_formatter.renderer');
+
+		$original = '[b]alert(1)[/b]';
+		$expected = '<script>alert(1)</script>';
+		$this->assertSame($expected, $renderer->render($parser->parse($original)));
+	}
+
+	/**
 	* @testdox get_configurator() triggers events before and after configuration
 	*/
 	public function test_configure_events()
