@@ -15,9 +15,13 @@ init:
   - REG ADD "HKEY_CURRENT_USER\Software\Microsoft\Command Processor" /v DelayedExpansion /t REG_DWORD /d 1 /f
 
 before_test:
+  - ps: Set-Service wuauserv -StartupType Manual
   - sqlcmd -S "(local)\SQL2014" -Q "Use [master]; CREATE DATABASE [phpbb_test]"
   - SET PATH=C:\Program Files\OpenSSL;C:\tools\php;%PATH%
-  - cinst -y php -version 5.6.17 --allow-empty-checksums
+  - ps: Set-Service wuauserv -StartupType Manual
+  - ps: cinst -y php --version ((choco search php --exact --all-versions -r | select-string -pattern 7.1 | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
+  - ps: Get-ChildItem -Path "c:\tools\php71" -Recurse |
+          Move-Item -destination "c:\tools\php"
   - cd c:\tools\php
   - ps: cat php.ini-production | %{$_ -replace "memory_limit = 128M","memory_limit = 1024M"} | Out-File -Encoding "Default" php.ini
   - echo date.timezone="UTC" >> php.ini
@@ -29,11 +33,18 @@ before_test:
   - echo extension=php_gd2.dll >> php.ini
   - echo extension=php_tidy.dll >> php.ini
   - echo extension=php_fileinfo.dll >> php.ini
-  - php -r "readfile('https://dl.dropboxusercontent.com/u/7129062/sqlsrv_unofficial_3.0.2.2.zip');" > sqlsrv.zip
-  - unzip sqlsrv.zip
-  - copy sqlsrv_unofficial_3.0.2.2\x64\*.dll ext
-  - echo extension=php_sqlsrv_56_nts.dll >> php.ini
-  - echo extension=php_pdo_sqlsrv_56_nts.dll >> php.ini
+  - ps: |
+      cd c:\tools\php\ext
+      $DLLVersion = "4.1.6.1"
+      appveyor DownloadFile http://windows.php.net/downloads/pecl/releases/sqlsrv/$($:DLLVersion)/php_sqlsrv-$($DLLVersion)-7.1-nts-vc14-x64.zip
+      7z x -y php_sqlsrv-$($DLLVersion)-7.1-nts-vc14-x64.zip > $null
+      appveyor-retry appveyor DownloadFile http://windows.php.net/downloads/pecl/releases/pdo_sqlsrv/$($DLLVersion)/php_pdo_sqlsrv-$($DLLVersion)-7.1-nts-vc14-x64.zip
+      7z x -y php_pdo_sqlsrv-$($DLLVersion)-7.1-nts-vc14-x64.zip > $null
+      Remove-Item c:\tools\php\* -include .zip
+      cd c:\tools\php
+      Add-Content php.ini "`nextension=php_sqlsrv.dll"
+      Add-Content php.ini "`nextension=php_pdo_sqlsrv.dll"
+      Add-Content php.ini "`n"
   - cd c:\projects\phpbb\phpBB
   - php ..\composer.phar install
   - cd c:\projects\phpbb\tests
