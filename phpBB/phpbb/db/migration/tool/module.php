@@ -391,7 +391,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			$parent_sql = '';
 			if ($parent !== false)
 			{
-				$parents = (array)$this->get_parent_module_id($parent, $module);
+				$parents = (array) $this->get_parent_module_id($parent, $module);
 				$parent_sql = 'AND ' . $this->db->sql_in_set('parent_id', $parents);
 			}
 
