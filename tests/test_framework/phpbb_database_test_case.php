@@ -145,6 +145,53 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	public function createXMLDataSet($path)
 	{
 		$this->fixture_xml_data = parent::createXMLDataSet($path);
+		if (strpos($this->get_database_config()['dbms'], 'mssql') !== false)
+		{
+			$newXmlData = new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
+			$db = $this->new_dbal();
+			foreach ($this->fixture_xml_data as $key => $value)
+			{
+				$sql = "SELECT COLUMN_NAME AS identity_column
+					FROM INFORMATION_SCHEMA.COLUMNS
+					WHERE COLUMNPROPERTY(object_id(TABLE_SCHEMA + '.' + TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1
+						AND TABLE_NAME = '$key'
+					ORDER BY TABLE_NAME";
+				$result = $db->sql_query($sql);
+				$identity_columns = $db->sql_fetchrowset($result);
+				$has_default_identity = false;
+				foreach ($identity_columns as $column)
+				{
+					if ($column['identity_column'] === 'mssqlindex')
+					{
+						$has_default_identity = true;
+						break;
+					}
+				}
+
+				if ($has_default_identity)
+				{
+					/** @var \PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData $tableMetaData */
+					$tableMetaData = $value->getTableMetaData();
+					$columns = $tableMetaData->getColumns();
+					$columns[] = 'mssqlindex';
+					$newMetaData = new PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData($key, $columns, $tableMetaData->getPrimaryKeys());
+					$newTable = new PHPUnit_Extensions_Database_DataSet_DefaultTable($newMetaData);
+					for ($i = 0; $i < $value->getRowCount(); $i++)
+					{
+						$dataRow = $value->getRow($i);
+						$dataRow['mssqlindex'] = $i + 1;
+						$newTable->addRow($dataRow);
+					}
+					$newXmlData->addTable($newTable);
+				}
+				else
+				{
+					$newXmlData->addTable($value);
+				}
+			}
+
+			$this->fixture_xml_data = $newXmlData;
+		}
 		return $this->fixture_xml_data;
 	}
 
