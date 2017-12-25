@@ -533,7 +533,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
 
-			$diff = ' + ' . ($row[$this->column_right_id] - (int) $item[$this->column_left_id] + 1);
+			$diff = ' + ' . ((int) $row[$this->column_right_id] - (int) $item[$this->column_left_id] + 1);
 		}
 
 		$sql = 'UPDATE ' . $this->table_name . '
