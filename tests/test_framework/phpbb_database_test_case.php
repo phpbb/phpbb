@@ -151,6 +151,11 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 			$db = $this->new_dbal();
 			foreach ($this->fixture_xml_data as $key => $value)
 			{
+				/** @var \PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData $tableMetaData */
+				$tableMetaData = $value->getTableMetaData();
+				$columns = $tableMetaData->getColumns();
+				$primaryKeys = $tableMetaData->getPrimaryKeys();
+
 				$sql = "SELECT COLUMN_NAME AS identity_column
 					FROM INFORMATION_SCHEMA.COLUMNS
 					WHERE COLUMNPROPERTY(object_id(TABLE_SCHEMA + '.' + TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1
@@ -159,8 +164,15 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				$result = $db->sql_query($sql);
 				$identity_columns = $db->sql_fetchrowset($result);
 				$has_default_identity = false;
+				$add_primary_keys = false;
 				foreach ($identity_columns as $column)
 				{
+					if (in_array($column['identity_column'], $columns) && !in_array($column['identity_column'], $primaryKeys))
+					{
+						$primaryKeys[] = $column['identity_column'];
+						$add_primary_keys = true;
+					}
+
 					if ($column['identity_column'] === 'mssqlindex')
 					{
 						$has_default_identity = true;
@@ -168,18 +180,22 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 					}
 				}
 
-				if ($has_default_identity)
+				if ($has_default_identity || $add_primary_keys)
 				{
-					/** @var \PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData $tableMetaData */
-					$tableMetaData = $value->getTableMetaData();
-					$columns = $tableMetaData->getColumns();
-					$columns[] = 'mssqlindex';
-					$newMetaData = new PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData($key, $columns, $tableMetaData->getPrimaryKeys());
+					if ($has_default_identity)
+					{
+						$columns[] = 'mssqlindex';
+					}
+
+					$newMetaData = new PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData($key, $columns, $primaryKeys);
 					$newTable = new PHPUnit_Extensions_Database_DataSet_DefaultTable($newMetaData);
 					for ($i = 0; $i < $value->getRowCount(); $i++)
 					{
 						$dataRow = $value->getRow($i);
-						$dataRow['mssqlindex'] = $i + 1;
+						if ($has_default_identity)
+						{
+							$dataRow['mssqlindex'] = $i + 1;
+						}
 						$newTable->addRow($dataRow);
 					}
 					$newXmlData->addTable($newTable);

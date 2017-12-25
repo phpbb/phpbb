@@ -706,7 +706,8 @@ class mssql extends tools
 			FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
 				JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu ON tc.CONSTRAINT_NAME = ccu.Constraint_name
 			WHERE tc.TABLE_NAME = '{$table_name}'
-				AND tc.CONSTRAINT_TYPE = 'Primary Key'";
+				AND tc.CONSTRAINT_TYPE = 'Primary Key'
+				AND ccu.COLUMN_NAME = '{$column_name}'";
 
 		$result = $this->db->sql_query($sql);
 

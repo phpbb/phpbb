@@ -108,7 +108,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 		$types = array('notification.type.quote', 'notification.type.bookmark', 'notification.type.post', 'test');
 		foreach ($types as $id => $type)
 		{
-			$this->db->sql_query('INSERT INTO phpbb_notification_types ' .
+			$this->getConnection()->createQueryTable('insertNotification', 'INSERT INTO phpbb_notification_types ' .
 				$this->db->sql_build_array('INSERT', array(
 					'notification_type_id'		=> ($id + 1),
 					'notification_type_name'	=> $type,
