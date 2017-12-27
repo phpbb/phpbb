@@ -2330,6 +2330,16 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		$topic_list = array_unique($topic_list);
 	}
 
+	/**
+	 * Perform additional actions before topic deletion via pruning
+	 *
+	 * @event core.prune_delete_before
+	 * @var int[]	topic_list		The IDs of the topics to be deleted
+	 * @since 3.2.2-RC1
+	 */
+	$vars = array('topic_list');
+	extract($phpbb_dispatcher->trigger_event('core.prune_delete_before', compact($vars)));
+
 	return delete_topics('topic_id', $topic_list, $auto_sync, false);
 }
 

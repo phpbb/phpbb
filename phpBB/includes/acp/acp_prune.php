@@ -55,7 +55,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $phpbb_log, $request;
+		global $db, $user, $auth, $template, $phpbb_log, $request, $phpbb_dispatcher;
 
 		$all_forums = $request->variable('all_forums', 0);
 		$forum_id = $request->variable('f', array(0));
@@ -165,7 +165,7 @@ class acp_prune
 			}
 			else
 			{
-				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields(array(
+				$hidden_fields = array(
 					'i'				=> $id,
 					'mode'			=> $mode,
 					'submit'		=> 1,
@@ -177,7 +177,19 @@ class acp_prune
 					'prune_old_polls'	=> $request->variable('prune_old_polls', 0),
 					'prune_announce'	=> $request->variable('prune_announce', 0),
 					'prune_sticky'		=> $request->variable('prune_sticky', 0),
-				)));
+				);
+
+				/**
+				 * Use this event to pass data from the prune form to the confirmation screen
+				 *
+				 * @event core.prune_forums_settings_confirm
+				 * @var array	hidden_fields	Hidden fields that are passed through the confirm screen
+				 * @since 3.2.2-RC1
+				 */
+				$vars = array('hidden_fields');
+				extract($phpbb_dispatcher->trigger_event('core.prune_forums_settings_confirm', compact($vars)));
+
+				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields($hidden_fields));
 			}
 		}
 
@@ -217,13 +229,25 @@ class acp_prune
 
 			$l_selected_forums = (count($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
 
-			$template->assign_vars(array(
+			$template_data = array(
 				'L_SELECTED_FORUMS'		=> $user->lang[$l_selected_forums],
 				'U_ACTION'				=> $this->u_action,
 				'U_BACK'				=> $this->u_action,
 				'FORUM_LIST'			=> $forum_list,
-				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 			);
+
+			/**
+			 * Event to add/modify prune forums settings template data
+			 *
+			 * @event core.prune_forums_settings_template_data
+			 * @var array	template_data	Array with form template data
+			 * @since 3.2.2-RC1
+			 */
+			$vars = array('template_data');
+			extract($phpbb_dispatcher->trigger_event('core.prune_forums_settings_template_data', compact($vars)));
+
+			$template->assign_vars($template_data);
 		}
 	}
 
