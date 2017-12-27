@@ -272,8 +272,8 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	* Use this event to modify the values to be inserted when a user is added
 	*
 	* @event core.user_add_modify_data
-	* @var array	user_row			Array of user details submited to user_add
-	* @var array	cp_data				Array of Custom profile fields submited to user_add
+	* @var array	user_row			Array of user details submitted to user_add
+	* @var array	cp_data				Array of Custom profile fields submitted to user_add
 	* @var array	sql_ary				Array of data to be inserted when a user is added
 	* @var array	notifications_data	Array of notification data to be inserted when a user is added
 	* @since 3.1.0-a1
@@ -376,6 +376,19 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 		);
 	}
 
+	/**
+	* Modify the notifications data to be inserted in the database when a user is added
+	*
+	* @event core.user_add_modify_notifications_data
+	* @var array	user_row			Array of user details submitted to user_add
+	* @var array	cp_data				Array of Custom profile fields submitted to user_add
+	* @var array	sql_ary				Array of data to be inserted when a user is added
+	* @var array	notifications_data	Array of notification data to be inserted when a user is added
+	* @since 3.2.2-RC1
+	*/
+	$vars = array('user_row', 'cp_data', 'sql_ary', 'notifications_data');
+	extract($phpbb_dispatcher->trigger_event('core.user_add_modify_notifications_data', compact($vars)));
+
 	// Subscribe user to notifications if necessary
 	if (!empty($notifications_data))
 	{
@@ -388,12 +401,12 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 	}
 
 	/**
-	* Event that returns user id, user detals and user CPF of newly registared user
+	* Event that returns user id, user details and user CPF of newly registered user
 	*
 	* @event core.user_add_after
-	* @var int		user_id			User id of newly registared user
-	* @var array	user_row		Array of user details submited to user_add
-	* @var array	cp_data			Array of Custom profile fields submited to user_add
+	* @var int		user_id			User id of newly registered user
+	* @var array	user_row		Array of user details submitted to user_add
+	* @var array	cp_data			Array of Custom profile fields submitted to user_add
 	* @since 3.1.0-b5
 	*/
 	$vars = array('user_id', 'user_row', 'cp_data');
