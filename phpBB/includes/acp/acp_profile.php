@@ -762,7 +762,8 @@ class acp_profile
 				continue;
 			}
 			$profile_field = $this->type_collection[$row['field_type']];
-			$template->assign_block_vars('fields', array(
+
+			$field_block = array(
 				'FIELD_IDENT'		=> $row['field_ident'],
 				'FIELD_TYPE'		=> $profile_field->get_name(),
 
@@ -774,8 +775,26 @@ class acp_profile
 				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
 				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
 
-				'S_NEED_EDIT'				=> $s_need_edit)
+				'S_NEED_EDIT'				=> $s_need_edit,
 			);
+
+			/**
+			* Event to modify profile field data before it is assigned to the template
+			*
+			* @event core.acp_profile_modify_profile_row
+			* @var	array	row				Array with data for the current profile field
+			* @var	array	field_block		Template data that is being assigned to the 'fields' block
+			* @var	object	profile_field	A profile field instance, implements \phpbb\profilefields\type\type_base
+			* @since 3.2.2-RC1
+			*/
+			$vars = array(
+				'row',
+				'field_block',
+				'profile_field',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.acp_profile_modify_profile_row', compact($vars)));
+
+			$template->assign_block_vars('fields', $field_block);
 		}
 		$db->sql_freeresult($result);
 
