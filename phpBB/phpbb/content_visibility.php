@@ -154,7 +154,7 @@ class content_visibility
 		* @var	string		mode				Either "topic" or "post"
 		* @var	int			forum_id			Forum id of the current item
 		* @var	array		data				Array of item information
-		* @since 3.1.12-RC1
+		* @since 3.2.2-RC1
 		*/
 		$vars = array(
 			'is_visible',
@@ -238,7 +238,7 @@ class content_visibility
 		$where_sql = '';
 
 		$approve_forums = array_keys($this->auth->acl_getf('m_approve', true));
-		if ($forum_ids && $approve_forums)
+		if (!empty($forum_ids) && !empty($approve_forums))
 		{
 			$approve_forums = array_intersect($forum_ids, $approve_forums);
 			$forum_ids = array_diff($forum_ids, $approve_forums);
@@ -311,7 +311,7 @@ class content_visibility
 		* @var	array		exclude_forum_ids					Array of forum ids the current user doesn't have access to
 		* @var	string		table_alias							Table alias to prefix in SQL queries
 		* @var	array		approve_forums						Array of forums where the user has m_approve permissions
-		* @var	string		visibility_sql_overwrite	If a string, forces the function to return visibility_sql_overwrite after executing the event
+		* @var	string		visibility_sql_overwrite			If not empty, forces the function to return visibility_sql_overwrite after executing the event
 		* @since 3.1.3-RC1
 		*/
 		$vars = array(
@@ -461,6 +461,7 @@ class content_visibility
 		 * @var			bool		is_latest		Are we changing the topic's latest post?
 		 * @var			array		data			The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
@@ -646,6 +647,7 @@ class content_visibility
 		 * @var			bool		is_latest		Are we changing the topic's latest post?
 		 * @var			array		data			The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
@@ -732,6 +734,7 @@ class content_visibility
 		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
 		 * @var			array		data				The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
@@ -781,6 +784,7 @@ class content_visibility
 		 * @var			bool		force_update_all	Force an update on all posts within the topic, regardless of their current approval state.
 		 * @var			array		data				The data array for this action.
 		 * @since 3.1.10-RC1
+		 * @changed 3.2.2-RC1 Use time instead of non-existent timestamp
 		 */
 		$vars = array(
 			'visibility',
