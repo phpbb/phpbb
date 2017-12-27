@@ -695,6 +695,7 @@ forumlist_body_forum_image_before
 * Purpose: Add content before the forum image on the forum list.
 
 forumlist_body_forum_image_prepend
+===
 * Locations:
     + styles/prosilver/template/forumlist_body.html
 * Since: 3.2.2-RC1
