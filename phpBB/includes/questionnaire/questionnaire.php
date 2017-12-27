@@ -337,7 +337,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			'edit_time' => true,
 			'email_check_mx' => true,
 			'email_enable' => true,
-			'email_function_name' => true,
+			'email_force_sender' => true,
 			'email_package_size' => true,
 			'enable_confirm' => true,
 			'enable_pm_icons' => true,
