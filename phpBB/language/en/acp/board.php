@@ -552,7 +552,7 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
 
-	'ADMIN_EMAIL'					=> 'Return email address',
+	'ADMIN_EMAIL'					=> 'From email address',
 	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the from address on all emails, the technical contact email address. It will always be used as the <samp>Sender</samp> address in emails.',
 	'BOARD_EMAIL_FORM'				=> 'Users send email via board',
 	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users email address users are able to send emails via the board.',
@@ -563,7 +563,7 @@ $lang = array_merge($lang, array(
 	'CONTACT_EMAIL_NAME'			=> 'Contact name',
 	'CONTACT_EMAIL_NAME_EXPLAIN'	=> 'This is the contact name that e-mail recipients will see. If you don’t want to have a contact name, leave this field empty.',
 	'EMAIL_FORCE_SENDER'			=> 'Force from email address',
-	'EMAIL_FORCE_SENDER_EXPLAIN'	=> 'Force from email address to return email. This might be needed for a correct return address when sending mails on some hosts.<br><em><strong>Warning:</strong> Requires the user that the webserver runs as to be added as trusted user to the sendmail configuration.</em>',
+	'EMAIL_FORCE_SENDER_EXPLAIN'	=> 'This will set the <samp>Return-Path</samp> to the from email address instead of using the local user and hostname of the server. This setting does not apply when using SMTP.<br><em><strong>Warning:</strong> Requires the user that the webserver runs as to be added as trusted user to the sendmail configuration.</em>',
 	'EMAIL_PACKAGE_SIZE'			=> 'Email package size',
 	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of maximum emails sent out in one package. This setting is applied to the internal message queue; set this value to 0 if you have problems with non-delivered notification emails.',
 	'EMAIL_SIG'						=> 'Email signature',
