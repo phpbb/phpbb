@@ -538,7 +538,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['topic_visibility'] != ITEM_APPROVED && !$auth->acl_get('m_approve', $row['forum_id']))
+		if (!$phpbb_content_visibility->is_visible('topic', $row['forum_id'], $row))
 		{
 			// Do not display announcements that are waiting for approval or soft deleted.
 			continue;
