@@ -26,6 +26,11 @@ services:
     text_formatter.utils:
         alias: text_formatter.s9e.utils
 
+    text_formatter.s9e.bbcode_merger:
+        class: phpbb\textformatter\s9e\bbcode_merger
+        arguments:
+            - '@text_formatter.s9e.factory'
+
     text_formatter.s9e.factory:
         class: phpbb\textformatter\s9e\factory
         arguments:
