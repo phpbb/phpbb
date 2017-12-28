@@ -334,6 +334,7 @@ class mcp_queue
 				* @var	int		topic_id	Topic ID
 				* @var	array	topic_info	Topic data
 				* @var	array	post_info	Post data
+				* @var array	post_data	Post template data
 				* @var	string	message		Post message
 				* @var	string	post_url	Post URL
 				* @var	string	topic_url	Topic URL
@@ -344,6 +345,7 @@ class mcp_queue
 					'topic_id',
 					'topic_info',
 					'post_info',
+					'post_data',
 					'message',
 					'post_url',
 					'topic_url',
