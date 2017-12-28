@@ -36,7 +36,10 @@ class release_3_0_8_rc1 extends \phpbb\db\migration\migration
 				'ACP_MESSAGES',
 				array(
 					'module_basename'	=> 'acp_board',
-					'modes'				=> array('post'),
+					'module_langname'	=> 'ACP_POST_SETTINGS',
+					'module_mode'		=> 'post',
+					'module_auth'		=> 'acl_a_board',
+					'after'				=> array('message', 'ACP_MESSAGE_SETTINGS'),
 				),
 			)),
 			array('config.add', array('load_unreads_search', 1)),

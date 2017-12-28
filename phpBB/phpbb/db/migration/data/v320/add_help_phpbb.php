@@ -41,7 +41,9 @@ class add_help_phpbb extends \phpbb\db\migration\migration
 				'ACP_SERVER_CONFIGURATION',
 				array(
 					'module_basename'	=> 'acp_help_phpbb',
-					'modes'				=> array('help_phpbb'),
+					'module_langname'	=> 'ACP_HELP_PHPBB',
+					'module_mode'		=> 'help_phpbb',
+					'module_auth'		=> 'acl_a_server',
 				),
 			)),
 		);
