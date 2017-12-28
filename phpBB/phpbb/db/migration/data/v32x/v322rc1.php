@@ -13,26 +13,28 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-class v321 extends \phpbb\db\migration\migration
+class v322rc1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return phpbb_version_compare($this->config['version'], '3.2.1', '>=');
+		return phpbb_version_compare($this->config['version'], '3.2.2-RC1', '>=');
 	}
 
 	static public function depends_on()
 	{
 		return array(
-			'\phpbb\db\migration\data\v31x\v3111',
-			'\phpbb\db\migration\data\v32x\v321rc1',
+			'\phpbb\db\migration\data\v32x\fix_user_styles',
+			'\phpbb\db\migration\data\v32x\update_prosilver_bitfield',
+			'\phpbb\db\migration\data\v32x\email_force_sender',
+			'\phpbb\db\migration\data\v32x\f_list_topics_permission_add',
+			'\phpbb\db\migration\data\v32x\merge_duplicate_bbcodes',
 		);
-
 	}
 
 	public function update_data()
 	{
 		return array(
-			array('config.update', array('version', '3.2.1')),
+			array('config.update', array('version', '3.2.2-RC1')),
 		);
 	}
 }
