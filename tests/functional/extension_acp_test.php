@@ -133,7 +133,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		for ($i = 0; $i < $crawler->filter('dl')->count(); $i++)
 		{
-			$text = $crawler->filter('dl')->eq($i)->text();
+			$text = trim($crawler->filter('dl')->eq($i)->text());
 
 			$match = false;
 
