@@ -462,10 +462,6 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		// Index name has > 30 chars - that should not be possible.
 		$too_long_index_name = str_repeat('i', 31);
 		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $too_long_index_name));
-		if (strpos($this->tools->sql_layer, 'mssql') === false)
-		{
-			$this->setExpectedTriggerError(E_USER_ERROR);
-		}
 		$this->tools->sql_create_index('prefix_table_name', $too_long_index_name, array('c_timestamp'));
 	}
 }

@@ -34,11 +34,6 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 	{
 		global $auth, $db, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
 
-		if (strtolower(substr(PHP_OS, 0, 5)) !== 'linux')
-		{
-			$this->markTestSkipped('Unable to test console feature on OS other than Linux.');
-		}
-
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', new phpbb_mock_cache());
