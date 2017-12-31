@@ -249,7 +249,7 @@ function validate_website($url)
 	{
 		return '';
 	}
-	else if (!preg_match('#^[a-z0-9]+://#i', $url) && strlen($url) > 0)
+	else if (!preg_match('#^http[s]?://#i', $url) && strlen($url) > 0)
 	{
 		return 'http://' . $url;
 	}
