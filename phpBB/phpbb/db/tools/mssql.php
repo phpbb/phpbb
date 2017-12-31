@@ -545,10 +545,7 @@ class mssql extends tools
 	{
 		$statements = array();
 
-		if ($this->mssql_is_sql_server_2000())
-		{
-			$this->check_index_name_length($table_name, $index_name);
-		}
+		$this->check_index_name_length($table_name, $index_name);
 
 		// remove index length
 		$column = preg_replace('#:.*$#', '', $column);
@@ -556,6 +553,21 @@ class mssql extends tools
 		$statements[] = 'CREATE INDEX [' . $index_name . '] ON [' . $table_name . ']([' . implode('], [', $column) . '])';
 
 		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_max_index_name_length()
+	{
+		if ($this->mssql_is_sql_server_2000())
+		{
+			return parent::get_max_index_name_length();
+		}
+		else
+		{
+			return 128;
+		}
 	}
 
 	/**
