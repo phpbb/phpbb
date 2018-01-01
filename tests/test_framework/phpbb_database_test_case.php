@@ -142,9 +142,17 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		$manager->database_synchronisation($table_column_map);
 	}
 
+	/**
+	 * Create xml data set for insertion into database
+	 *
+	 * @param string $path Path to fixture XML
+	 * @return PHPUnit_Extensions_Database_DataSet_DefaultDataSet|PHPUnit_Extensions_Database_DataSet_XmlDataSet
+	 */
 	public function createXMLDataSet($path)
 	{
 		$this->fixture_xml_data = parent::createXMLDataSet($path);
+
+		// Extend XML data set on MSSQL
 		if (strpos($this->get_database_config()['dbms'], 'mssql') !== false)
 		{
 			$newXmlData = new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
@@ -165,6 +173,11 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 				$identity_columns = $db->sql_fetchrowset($result);
 				$has_default_identity = false;
 				$add_primary_keys = false;
+
+				// Iterate over identity columns to check for missing primary
+				// keys in data set and special identity column 'mssqlindex'
+				// that might have been added when no default identity column
+				// exists in the current table.
 				foreach ($identity_columns as $column)
 				{
 					if (in_array($column['identity_column'], $columns) && !in_array($column['identity_column'], $primaryKeys))
@@ -182,6 +195,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 
 				if ($has_default_identity || $add_primary_keys)
 				{
+					// Add default identity column to columns list
 					if ($has_default_identity)
 					{
 						$columns[] = 'mssqlindex';
