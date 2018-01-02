@@ -279,6 +279,16 @@ function reset_role(id) {
 	}
 
 	t.options[0].selected = true;
+
+	(function($)// Avoid conflicts with other libraries
+	{
+		var parent = $(t).parent();
+		parent.find("span[title=Roles]")[0].innerText = no_role_assigned;
+
+		// Find proper role value
+		var roleInput = parent.find('input[name^=role][data-name]');
+		roleInput.val(0);
+	})(jQuery); // Avoid conflicts with other libraries
 }
 
 /**
