@@ -339,7 +339,7 @@ class manager
 			}
 		}
 
-		if (!sizeof($notify_users))
+		if (!count($notify_users))
 		{
 			return;
 		}

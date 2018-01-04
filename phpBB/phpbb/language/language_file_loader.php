@@ -127,7 +127,7 @@ class language_file_loader
 			// the first directory from the path (that should be the language directory)
 			$path_diff_parts = explode('/', $path_diff);
 
-			if (sizeof($path_diff_parts) > 1)
+			if (count($path_diff_parts) > 1)
 			{
 				array_shift($path_diff_parts);
 				$component = implode('/', $path_diff_parts) . '/';

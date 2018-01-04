@@ -489,12 +489,12 @@ foreach ($lang_references as $lang_var => $filenames)
 
 	$html_data .= '<b>' . $lang_var . '</b><ul>';
 
-	if (sizeof($filenames) != 1)
+	if (count($filenames) != 1)
 	{
 		fwrite($common_fp, (($entry['common']) ? ",\n" : '') . "\t'$var' => '" . $lang[$var] . "'");
 		$entry['common'] = true;
 	}
-	else if (sizeof($filenames) == 1)
+	else if (count($filenames) == 1)
 	{
 		// Merge logical - hardcoded
 		$fname = (preg_match('#^(' . implode('|', $merge) . ')#', $filenames[0], $match)) ? $match[0] . '.php' : str_replace($ext, 'php', $filenames[0]);

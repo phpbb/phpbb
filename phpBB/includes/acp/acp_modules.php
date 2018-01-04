@@ -249,7 +249,7 @@ class acp_modules
 							trigger_error($msg . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 						}
 
-						if (!sizeof($errors))
+						if (!count($errors))
 						{
 							$module_manager->remove_cache_file($this->module_class);
 
@@ -364,7 +364,7 @@ class acp_modules
 						trigger_error($msg . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
-					if (!sizeof($errors))
+					if (!count($errors))
 					{
 						$module_manager->remove_cache_file($this->module_class);
 
@@ -430,7 +430,7 @@ class acp_modules
 					array_change_key_case($module_data, CASE_UPPER))
 				);
 
-				if (sizeof($errors))
+				if (count($errors))
 				{
 					$template->assign_vars(array(
 						'S_ERROR'	=> true,
@@ -444,7 +444,7 @@ class acp_modules
 		}
 
 		// Default management page
-		if (sizeof($errors))
+		if (count($errors))
 		{
 			if ($request->is_ajax())
 			{

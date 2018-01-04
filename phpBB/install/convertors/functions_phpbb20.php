@@ -1071,7 +1071,7 @@ function phpbb_convert_authentication($mode)
 				}
 			}
 
-			if (sizeof($forum_ids))
+			if (count($forum_ids))
 			{
 				// Now make sure the user is able to read these forums
 				$hold_ary = $auth->acl_group_raw_data(false, 'f_list', $forum_ids);
@@ -1267,7 +1267,7 @@ function phpbb_prepare_message($message)
 	// parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	$message_parser->parse($enable_bbcode, $enable_magic_url, $enable_smilies);
 
-	if (sizeof($message_parser->warn_msg))
+	if (count($message_parser->warn_msg))
 	{
 		$msg_id = isset($convert->row['post_id']) ? $convert->row['post_id'] : $convert->row['privmsgs_id'];
 		$convert->p_master->error('<span style="color:red">' . $user->lang['POST_ID'] . ': ' . $msg_id . ' ' . $user->lang['CONV_ERROR_MESSAGE_PARSER'] . ': <br /><br />' . implode('<br />', $message_parser->warn_msg), __LINE__, __FILE__, true);
@@ -1495,7 +1495,7 @@ function phpbb_attachment_forum_perms($forum_permissions)
 		$forum_ids[] = (int) $forum_id;
 	}
 
-	if (sizeof($forum_ids))
+	if (count($forum_ids))
 	{
 		return attachment_forum_perms($forum_ids);
 	}
@@ -1860,7 +1860,7 @@ function phpbb_check_username_collisions()
 	$db->sql_freeresult($result);
 
 	// there was at least one collision, the admin will have to solve it before conversion can continue
-	if (sizeof($colliding_names))
+	if (count($colliding_names))
 	{
 		$sql = 'SELECT user_id, username_clean
 			FROM ' . USERCONV_TABLE . '

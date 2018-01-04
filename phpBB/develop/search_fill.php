@@ -89,7 +89,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$rowset = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 
-	$post_rows = sizeof($rowset);
+	$post_rows = count($rowset);
 	
 	if( $post_rows )
 	{

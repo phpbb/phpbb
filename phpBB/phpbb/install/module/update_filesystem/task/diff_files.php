@@ -145,7 +145,7 @@ class diff_files extends task_base
 				{
 					$file_contents[] = file_get_contents($file_to_diff);
 
-					if ($file_contents[sizeof($file_contents) - 1] === false)
+					if ($file_contents[count($file_contents) - 1] === false)
 					{
 						$this->iohandler->add_error_message(array('FILE_DIFFER_ERROR_FILE_CANNOT_BE_READ', $files_to_diff));
 						unset($file_contents);

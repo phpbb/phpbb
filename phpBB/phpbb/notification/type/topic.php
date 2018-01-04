@@ -261,7 +261,7 @@ class topic extends \phpbb\notification\type\base
 	*/
 	public function pre_create_insert_array($post, $notify_users)
 	{
-		if (!sizeof($notify_users) || !$this->inherit_read_status)
+		if (!count($notify_users) || !$this->inherit_read_status)
 		{
 			return array();
 		}

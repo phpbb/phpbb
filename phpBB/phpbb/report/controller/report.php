@@ -141,7 +141,7 @@ class report
 		// Handle request
 		try
 		{
-			if (!empty($submit) && sizeof($error) === 0)
+			if (!empty($submit) && count($error) === 0)
 			{
 				$this->report_handler->add_report(
 					(int) $id,
@@ -273,7 +273,7 @@ class report
 		}
 
 		$this->template->assign_vars(array(
-			'ERROR'				=> (sizeof($error) > 0) ? implode('<br />', $error) : '',
+			'ERROR'				=> (count($error) > 0) ? implode('<br />', $error) : '',
 			'S_REPORT_POST'		=> ($mode === 'pm') ? false : true,
 			'REPORT_TEXT'		=> $report_text,
 			'S_HIDDEN_FIELDS'	=> (!empty($s_hidden_fields)) ? $s_hidden_fields : null,
@@ -302,7 +302,7 @@ class report
 			$error[] = $visual_confirmation_response;
 		}
 
-		if (sizeof($error) === 0)
+		if (count($error) === 0)
 		{
 			$captcha->reset();
 		}

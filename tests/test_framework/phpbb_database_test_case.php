@@ -229,7 +229,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
 		// but one array_diff is not enough!
-		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
+		if (count(array_diff($one, $two)) || count(array_diff($two, $one)))
 		{
 			// get a nice error message
 			$this->assertEquals($one, $two);

@@ -15,7 +15,7 @@ class phpbb_mock_sql_insert_buffer extends \phpbb\db\sql_insert_buffer
 {
 	public function flush()
 	{
-		return (sizeof($this->buffer)) ? true : false;
+		return (count($this->buffer)) ? true : false;
 	}
 
 	public function get_buffer()

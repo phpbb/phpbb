@@ -317,7 +317,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 			$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
 
 			// Wait for extension to be fully enabled
-			while (sizeof($meta_refresh))
+			while (count($meta_refresh))
 			{
 				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
 				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));

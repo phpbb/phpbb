@@ -185,7 +185,7 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-if (sizeof($remove_auth_options))
+if (count($remove_auth_options))
 {
 	$db->sql_query('DELETE FROM ' . ACL_USERS_TABLE . ' WHERE auth_option_id IN (' . implode(', ', $remove_auth_options) . ')');
 	$db->sql_query('DELETE FROM ' . ACL_GROUPS_TABLE . ' WHERE auth_option_id IN (' . implode(', ', $remove_auth_options) . ')');
@@ -199,7 +199,7 @@ $prefixes = array('f_', 'a_', 'm_', 'u_');
 foreach ($prefixes as $prefix)
 {
 	$var = $prefix . 'permissions';
-	if (sizeof(${$var}))
+	if (count(${$var}))
 	{
 		foreach (${$var} as $auth_option => $l_ary)
 		{

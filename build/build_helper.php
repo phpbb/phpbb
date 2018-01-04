@@ -39,8 +39,8 @@ class build_package
 		$this->verbose = $verbose;
 
 		// Get last two entries
-		$_latest = $this->versions[sizeof($this->versions) - 1];
-		$_before = $this->versions[sizeof($this->versions) - 2];
+		$_latest = $this->versions[count($this->versions) - 1];
+		$_before = $this->versions[count($this->versions) - 2];
 
 		$this->locations = array(
 			'new_version'	=> dirname(dirname(__FILE__)) . '/phpBB/',

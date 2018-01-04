@@ -256,7 +256,7 @@ class colour_manager
 		if (is_array($resource))
 		{
 			$results = array();
-			for ($i = 0, $size = sizeof($resource); $i < $size; ++$i)
+			for ($i = 0, $size = count($resource); $i < $size; ++$i)
 			{
 				$results = array_merge($results, $this->mono_range($resource[$i], $count, $include_original));
 			}

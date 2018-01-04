@@ -706,7 +706,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	{
 		$acquired_new_lock = $this->acquire_lock();
 
-		$diff = sizeof($subset_items) * 2;
+		$diff = count($subset_items) * 2;
 		$sql_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items);
 		$sql_not_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items, true);
 
@@ -746,7 +746,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	*/
 	protected function prepare_adding_subset(array $subset_items, array $new_parent)
 	{
-		$diff = sizeof($subset_items) * 2;
+		$diff = count($subset_items) * 2;
 		$sql_not_subset_items = $this->db->sql_in_set($this->column_item_id, $subset_items, true);
 
 		$set_left_id = $this->db->sql_case($this->column_left_id . ' > ' . (int) $new_parent[$this->column_right_id], $this->column_left_id . ' + ' . $diff, $this->column_left_id);

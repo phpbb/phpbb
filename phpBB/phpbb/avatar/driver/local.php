@@ -64,7 +64,7 @@ class local extends \phpbb\avatar\driver\driver
 
 			$table_cols = isset($row['avatar_gallery_cols']) ? $row['avatar_gallery_cols'] : 4;
 			$row_count = $col_count = $avatar_pos = 0;
-			$avatar_count = sizeof($avatar_list[$category]);
+			$avatar_count = count($avatar_list[$category]);
 
 			reset($avatar_list[$category]);
 
