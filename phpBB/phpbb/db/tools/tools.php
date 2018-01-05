@@ -1561,7 +1561,8 @@ class tools implements tools_interface
 	 */
 	protected function check_index_name_length($table_name, $index_name, $throw_error = true)
 	{
-		if (strlen($index_name) > 30)
+		$max_index_name_length = $this->get_max_index_name_length();
+		if (strlen($index_name) > $max_index_name_length)
 		{
 			// Try removing the table prefix if it's at the beginning
 			$table_prefix = substr(CONFIG_TABLE, 0, -6); // strlen(config)
@@ -1582,11 +1583,21 @@ class tools implements tools_interface
 
 			if ($throw_error)
 			{
-				trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is 30 characters.", E_USER_ERROR);
+				trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is $max_index_name_length characters.", E_USER_ERROR);
 			}
 		}
 
 		return $index_name;
+	}
+
+	/**
+	 * Get maximum index name length. Might vary depending on db type
+	 *
+	 * @return int Maximum index name length
+	 */
+	protected function get_max_index_name_length()
+	{
+		return 30;
 	}
 
 	/**

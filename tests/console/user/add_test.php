@@ -14,12 +14,15 @@
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\user\add;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 require_once dirname(__FILE__) . '/base.php';
 
 class phpbb_console_user_add_test extends phpbb_console_user_base
 {
-	public function get_command_tester()
+	public function get_command_tester($question_answers = [])
 	{
 		$application = new Application();
 		$application->add(new add(
@@ -34,7 +37,42 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 
 		$command = $application->find('user:add');
 		$this->command_name = $command->getName();
-		$this->question = $command->getHelper('question');
+
+		if (!empty($question_answers))
+		{
+			$ask = function(InputInterface $input, OutputInterface $output, Question $question) use ($question_answers)
+			{
+				$text = $question->getQuestion();
+
+				// handle a question
+				foreach ($question_answers as $expected_question => $answer)
+				{
+					if (strpos($text, $expected_question) !== false)
+					{
+						$response = $answer;
+					}
+				}
+
+				if (!isset($response))
+				{
+					throw new \RuntimeException('Was asked for input on an unhandled question: ' . $text);
+				}
+
+				$output->writeln(print_r($response, true));
+				return $response;
+			};
+			$helper = $this->getMock('\Symfony\Component\Console\Helper\QuestionHelper', array('ask'));
+			$helper->expects($this->any())
+				->method('ask')
+				->will($this->returnCallback($ask));
+			$this->question = $helper;
+			$command->getHelperSet()->set($helper, 'question');
+		}
+		else
+		{
+			$this->question = $command->getHelper('question');
+		}
+
 		return new CommandTester($command);
 	}
 
@@ -57,7 +95,11 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 
 	public function test_add_dialog()
 	{
-		$command_tester = $this->get_command_tester();
+		$command_tester = $this->get_command_tester([
+			'USERNAME'		=> 'bar',
+			'PASSWORD'		=> 'password',
+			'EMAIL_ADDRESS'	=> 'bar@test.com',
+		]);
 
 		$this->assertEquals(2, $this->get_user_id('Admin'));
 
