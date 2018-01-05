@@ -26,7 +26,7 @@ then
 	travis/setup-mariadb.sh
 fi
 
-if [ "$NOTESTS" != '1' -a "$TRAVIS_PHP_VERSION" != "hhvm" ]
+if [ "$NOTESTS" != '1' ]
 then
 	travis/setup-php-extensions.sh
 fi
