@@ -498,7 +498,7 @@ class fulltext_postgres extends \phpbb\search\base
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_keywords_main_query_before', compact($vars)));
 
-		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
+		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id, ' . $sort_by_sql[$sort_key];
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
 
