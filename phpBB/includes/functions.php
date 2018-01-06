@@ -554,6 +554,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	global $request, $phpbb_container, $phpbb_dispatcher;
 
 	$post_time = ($post_time === 0 || $post_time > time()) ? time() : (int) $post_time;
+	$user_id = ($user_id === 0) ? $user->data['user_id']  : (int) $user_id;
 
 	$should_markread = true;
 
