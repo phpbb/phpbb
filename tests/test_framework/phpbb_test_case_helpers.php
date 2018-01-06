@@ -95,7 +95,12 @@ class phpbb_test_case_helpers
 			break;
 		}
 		$this->expectedTriggerError = true;
-		$this->test_case->setExpectedException($exceptionName, (string) $message, $errno);
+		$this->test_case->expectException($exceptionName);
+		$this->test_case->expectExceptionCode($errno);
+		if ($message)
+		{
+			$this->test_case->expectExceptionMessage((string) $message);
+		}
 	}
 
 	public function makedirs($path)
