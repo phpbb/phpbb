@@ -108,6 +108,7 @@ abstract class type_string_common extends type_base
 			return null;
 		}
 
+		$field_value = make_clickable($field_value);
 		$field_value = censor_text($field_value);
 		$field_value = bbcode_nl2br($field_value);
 		return $field_value;

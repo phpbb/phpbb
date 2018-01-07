@@ -82,8 +82,6 @@ class type_url extends type_string
 			return null;
 		}
 
-		$field_value = make_clickable($field_value);
-
 		return parent::get_profile_value($field_value, $field_data);
 	}
 }

@@ -273,8 +273,8 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 			array(
 				'http://foobar.com',
 				array('field_show_novalue' => false),
-				'http://foobar.com',
-				'Field should output the given value but not make it clickable',
+				'<!-- l --><a class="postlink-local" href="http://foobar.com">foobar.com</a><!-- l -->',
+				'Field should output the given value and make it clickable',
 			),
 			array(
 				'javascript://foobar.com',
