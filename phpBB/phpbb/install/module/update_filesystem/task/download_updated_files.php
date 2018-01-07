@@ -86,7 +86,8 @@ class download_updated_files extends task_base
 		{
 			$file_update_info = $this->installer_config->get('update_files', array());
 
-			if (count($file_update_info) > 0)
+			// Display download box only if the archive won't be empty
+			if (!empty($file_update_info) && !(isset($file_update_info['delete']) && count($file_update_info) == 1))
 			{
 				// Render download box
 				$this->iohandler->add_download_link(
@@ -101,12 +102,12 @@ class download_updated_files extends task_base
 				'update_recheck_files_submit'	=> array(
 					'label'			=> 'UPDATE_RECHECK_UPDATE_FILES',
 					'type'			=> 'submit',
-					'is_secondary'	=> count($file_update_info) < 1,
+					'is_secondary'	=> empty($file_update_info),
 				),
 				'database_update_submit'	=> array(
 					'label'		=> 'UPDATE_CONTINUE_UPDATE_PROCESS',
 					'type'		=> 'submit',
-					'disabled'	=> count($file_update_info) > 0,
+					'disabled'	=> !empty($file_update_info),
 				),
 			));
 
