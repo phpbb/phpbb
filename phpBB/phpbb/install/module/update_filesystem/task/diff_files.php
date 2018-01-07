@@ -208,7 +208,7 @@ class diff_files extends task_base
 
 				foreach ($update_files as $type => $files)
 				{
-					if (empty($files))
+					if (count($files) < 1)
 					{
 						unset($update_files[$type]);
 					}
@@ -226,7 +226,7 @@ class diff_files extends task_base
 
 		foreach ($update_files as $type => $files)
 		{
-			if (empty($files))
+			if (count($files) < 1)
 			{
 				unset($update_files[$type]);
 			}

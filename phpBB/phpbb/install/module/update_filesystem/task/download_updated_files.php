@@ -101,12 +101,12 @@ class download_updated_files extends task_base
 				'update_recheck_files_submit'	=> array(
 					'label'			=> 'UPDATE_RECHECK_UPDATE_FILES',
 					'type'			=> 'submit',
-					'is_secondary'	=> empty($file_update_info),
+					'is_secondary'	=> count($file_update_info) < 1,
 				),
 				'database_update_submit'	=> array(
 					'label'		=> 'UPDATE_CONTINUE_UPDATE_PROCESS',
 					'type'		=> 'submit',
-					'disabled'	=> !empty($file_update_info),
+					'disabled'	=> count($file_update_info) > 0,
 				),
 			));
 
