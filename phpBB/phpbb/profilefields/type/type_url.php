@@ -64,11 +64,26 @@ class type_url extends type_string
 			return false;
 		}
 
-		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $field_value))
+		if (!preg_match('#^' . get_preg_expression('url_http') . '$#iu', $field_value))
 		{
 			return $this->user->lang('FIELD_INVALID_URL', $this->get_field_name($field_data['lang_name']));
 		}
 
 		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_profile_value($field_value, $field_data)
+	{
+		if (!preg_match('#^' . get_preg_expression('url_http') . '$#iu', $field_value))
+		{
+			return null;
+		}
+
+		$field_value = make_clickable($field_value);
+
+		return parent::get_profile_value($field_value, $field_data);
 	}
 }
