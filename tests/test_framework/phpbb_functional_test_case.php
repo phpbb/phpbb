@@ -425,7 +425,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
 		// Wait for extension to be fully enabled
-		while (sizeof($meta_refresh))
+		while (count($meta_refresh))
 		{
 			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
@@ -509,7 +509,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		else
 		{
 			$db->sql_multi_insert(STYLES_TABLE, array(array(
-				'style_id' => $style_id,
 				'style_name' => $style_path,
 				'style_copyright' => '',
 				'style_active' => 1,
@@ -990,7 +989,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->assertEquals(
 			1,
-			sizeof($result),
+			count($result),
 			$message ?: 'Failed asserting that exactly one checkbox with name' .
 				" $name exists in crawler scope."
 		);

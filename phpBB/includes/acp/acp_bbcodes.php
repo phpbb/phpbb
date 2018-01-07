@@ -253,7 +253,7 @@ class acp_bbcodes
 
 						if ($row)
 						{
-							$bbcode_id = $row['max_bbcode_id'] + 1;
+							$bbcode_id = (int) $row['max_bbcode_id'] + 1;
 
 							// Make sure it is greater than the core bbcode ids...
 							if ($bbcode_id <= NUM_CORE_BBCODES)
@@ -494,7 +494,7 @@ class acp_bbcodes
 				// Pad backreference numbers from tokens
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
 				{
-					$repad = $pad + sizeof(array_unique($repad[0]));
+					$repad = $pad + count(array_unique($repad[0]));
 					$replace = preg_replace_callback('/(?<!\\\\)\$([0-9]+)/', function ($match) use ($pad) {
 						return '${' . ($match[1] + $pad) . '}';
 					}, $replace);

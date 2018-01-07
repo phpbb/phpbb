@@ -632,7 +632,7 @@ class migrator
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
 	{
-		if (sizeof($steps) === 0)
+		if (count($steps) === 0)
 		{
 			return true;
 		}
@@ -659,7 +659,7 @@ class migrator
 			// Result will be null or true if everything completed correctly
 			// Stop after each update step, to let the updater control the script runtime
 			$result = $this->run_step($steps[$step], $last_result, $revert);
-			if (($result !== null && $result !== true) || $step + 1 < sizeof($steps))
+			if (($result !== null && $result !== true) || $step + 1 < count($steps))
 			{
 				return array(
 					'result'	=> $result,

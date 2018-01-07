@@ -33,7 +33,7 @@ echo "Now all three package types (patch, files, release) are built as well as t
 
 // Go trough all versions making a diff if we even have old versions
 // For phpBB 3.0.x we might choose a different update method, rendering the things below useless...
-if (sizeof($package->old_packages))
+if (count($package->old_packages))
 {
 	chdir($package->locations['old_versions']);
 
@@ -76,7 +76,7 @@ if (sizeof($package->old_packages))
 			// Create Directories along the way?
 			$file = explode('/', $file);
 			// Remove filename portion
-			$file[sizeof($file)-1] = '';
+			$file[count($file)-1] = '';
 
 			chdir($dest_filename_dir);
 			foreach ($file as $entry)
@@ -169,7 +169,7 @@ if (sizeof($package->old_packages))
 			// Create Directories along the way?
 			$file = explode('/', $file);
 			// Remove filename portion
-			$file[sizeof($file)-1] = '';
+			$file[count($file)-1] = '';
 
 			chdir($dest_filename_dir . '/install/update/old');
 			foreach ($file as $entry)
@@ -214,7 +214,7 @@ if (sizeof($package->old_packages))
 			// Create Directories along the way?
 			$file = explode('/', $file);
 			// Remove filename portion
-			$file[sizeof($file)-1] = '';
+			$file[count($file)-1] = '';
 
 			chdir($dest_filename_dir . '/install/update/new');
 			foreach ($file as $entry)
@@ -321,7 +321,7 @@ $update_info = array(
 	\'version\'	=> array(\'from\' => \'' . str_replace('_to_', '', $package->old_packages[$_package_name]) . '\', \'to\' => \'' . $package->get('new_version_number') . '\'),
 ';
 
-		if (sizeof($file_contents['all']))
+		if (count($file_contents['all']))
 		{
 			$index_contents .= "\t'files'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['all']) . "',\n\t),\n";
 		}
@@ -330,7 +330,7 @@ $update_info = array(
 			$index_contents .= "\t'files'		=> array(),\n";
 		}
 
-		if (sizeof($file_contents['binary']))
+		if (count($file_contents['binary']))
 		{
 			$index_contents .= "\t'binary'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['binary']) . "',\n\t),\n";
 		}
@@ -339,7 +339,7 @@ $update_info = array(
 			$index_contents .= "\t'binary'		=> array(),\n";
 		}
 
-		if (sizeof($file_contents['deleted']))
+		if (count($file_contents['deleted']))
 		{
 			$index_contents .= "\t'deleted'		=> array(\n\t\t'" . implode("',\n\t\t'", $file_contents['deleted']) . "',\n\t),\n";
 		}
@@ -380,7 +380,7 @@ $compress_programs = array(
 	'zip'		=> 'zip -r'
 );
 
-if (sizeof($package->old_packages))
+if (count($package->old_packages))
 {
 	// Build Patch Files
 	chdir($package->get('patch_directory'));

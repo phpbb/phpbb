@@ -142,9 +142,86 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 		$manager->database_synchronisation($table_column_map);
 	}
 
+	/**
+	 * Create xml data set for insertion into database
+	 *
+	 * @param string $path Path to fixture XML
+	 * @return PHPUnit_Extensions_Database_DataSet_DefaultDataSet|PHPUnit_Extensions_Database_DataSet_XmlDataSet
+	 */
 	public function createXMLDataSet($path)
 	{
 		$this->fixture_xml_data = parent::createXMLDataSet($path);
+
+		// Extend XML data set on MSSQL
+		if (strpos($this->get_database_config()['dbms'], 'mssql') !== false)
+		{
+			$newXmlData = new PHPUnit_Extensions_Database_DataSet_DefaultDataSet();
+			$db = $this->new_dbal();
+			foreach ($this->fixture_xml_data as $key => $value)
+			{
+				/** @var \PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData $tableMetaData */
+				$tableMetaData = $value->getTableMetaData();
+				$columns = $tableMetaData->getColumns();
+				$primaryKeys = $tableMetaData->getPrimaryKeys();
+
+				$sql = "SELECT COLUMN_NAME AS identity_column
+					FROM INFORMATION_SCHEMA.COLUMNS
+					WHERE COLUMNPROPERTY(object_id(TABLE_SCHEMA + '.' + TABLE_NAME), COLUMN_NAME, 'IsIdentity') = 1
+						AND TABLE_NAME = '$key'
+					ORDER BY TABLE_NAME";
+				$result = $db->sql_query($sql);
+				$identity_columns = $db->sql_fetchrowset($result);
+				$has_default_identity = false;
+				$add_primary_keys = false;
+
+				// Iterate over identity columns to check for missing primary
+				// keys in data set and special identity column 'mssqlindex'
+				// that might have been added when no default identity column
+				// exists in the current table.
+				foreach ($identity_columns as $column)
+				{
+					if (in_array($column['identity_column'], $columns) && !in_array($column['identity_column'], $primaryKeys))
+					{
+						$primaryKeys[] = $column['identity_column'];
+						$add_primary_keys = true;
+					}
+
+					if ($column['identity_column'] === 'mssqlindex')
+					{
+						$has_default_identity = true;
+						break;
+					}
+				}
+
+				if ($has_default_identity || $add_primary_keys)
+				{
+					// Add default identity column to columns list
+					if ($has_default_identity)
+					{
+						$columns[] = 'mssqlindex';
+					}
+
+					$newMetaData = new PHPUnit_Extensions_Database_DataSet_DefaultTableMetaData($key, $columns, $primaryKeys);
+					$newTable = new PHPUnit_Extensions_Database_DataSet_DefaultTable($newMetaData);
+					for ($i = 0; $i < $value->getRowCount(); $i++)
+					{
+						$dataRow = $value->getRow($i);
+						if ($has_default_identity)
+						{
+							$dataRow['mssqlindex'] = $i + 1;
+						}
+						$newTable->addRow($dataRow);
+					}
+					$newXmlData->addTable($newTable);
+				}
+				else
+				{
+					$newXmlData->addTable($value);
+				}
+			}
+
+			$this->fixture_xml_data = $newXmlData;
+		}
 		return $this->fixture_xml_data;
 	}
 
@@ -229,7 +306,7 @@ abstract class phpbb_database_test_case extends PHPUnit_Extensions_Database_Test
 	{
 		// http://stackoverflow.com/questions/3838288/phpunit-assert-two-arrays-are-equal-but-order-of-elements-not-important
 		// but one array_diff is not enough!
-		if (sizeof(array_diff($one, $two)) || sizeof(array_diff($two, $one)))
+		if (count(array_diff($one, $two)) || count(array_diff($two, $one)))
 		{
 			// get a nice error message
 			$this->assertEquals($one, $two);

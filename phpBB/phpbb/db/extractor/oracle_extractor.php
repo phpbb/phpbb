@@ -82,7 +82,7 @@ class oracle_extractor extends base_extractor
 		}
 		$this->db->sql_freeresult($result);
 
-		if (sizeof($primary_key))
+		if (count($primary_key))
 		{
 			$rows[] = "  CONSTRAINT {$constraint_name} PRIMARY KEY (" . implode(', ', $primary_key) . ')';
 		}
@@ -103,7 +103,7 @@ class oracle_extractor extends base_extractor
 		}
 		$this->db->sql_freeresult($result);
 
-		if (sizeof($unique))
+		if (count($unique))
 		{
 			$rows[] = "  CONSTRAINT {$constraint_name} UNIQUE (" . implode(', ', $unique) . ')';
 		}

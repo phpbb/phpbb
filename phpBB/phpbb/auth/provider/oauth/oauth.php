@@ -635,7 +635,7 @@ class oauth extends \phpbb\auth\provider\base
 
 		$oauth_user_ids = array();
 
-		if ($rows !== false && sizeof($rows))
+		if ($rows !== false && count($rows))
 		{
 			foreach ($rows as $row)
 			{

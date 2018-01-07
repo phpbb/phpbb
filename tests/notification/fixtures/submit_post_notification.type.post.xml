@@ -21,6 +21,7 @@
 		</row>
 	</table>
 	<table name="phpbb_notifications">
+		<column>notification_id</column>
 		<column>notification_type_id</column>
 		<column>user_id</column>
 		<column>item_id</column>
@@ -29,6 +30,7 @@
 		<column>notification_data</column>
 		<row>
 			<value>1</value>
+			<value>1</value>
 			<value>5</value>
 			<value>1</value>
 			<value>1</value>
@@ -36,6 +38,7 @@
 			<value></value>
 		</row>
 		<row>
+			<value>2</value>
 			<value>1</value>
 			<value>8</value>
 			<value>1</value>

@@ -60,24 +60,30 @@
 	<table name="phpbb_user_group">
 		<column>user_id</column>
 		<column>group_id</column>
+		<column>group_leader</column>
 		<row>
 			<value>1</value>
 			<value>1</value>
+			<value>2</value>
 		</row>
 		<row>
 			<value>2</value>
 			<value>1</value>
+			<value>2</value>
 		</row>
 		<row>
 			<value>3</value>
 			<value>1</value>
+			<value>2</value>
 		</row>
 		<row>
 			<value>4</value>
 			<value>2</value>
+			<value>2</value>
 		</row>
 		<row>
 			<value>5</value>
+			<value>2</value>
 			<value>2</value>
 		</row>
 	</table>

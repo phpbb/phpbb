@@ -72,8 +72,8 @@ class auth
 
 		// Verify bitstring length with options provided...
 		$renew = false;
-		$global_length = sizeof($this->acl_options['global']);
-		$local_length = sizeof($this->acl_options['local']);
+		$global_length = count($this->acl_options['global']);
+		$local_length = count($this->acl_options['local']);
 
 		// Specify comparing length (bitstring is padded to 31 bits)
 		$global_length = ($global_length % 31) ? ($global_length - ($global_length % 31) + 31) : $global_length;
@@ -236,7 +236,7 @@ class auth
 				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE;
 
-				if (sizeof($this->acl))
+				if (count($this->acl))
 				{
 					$sql .= ' WHERE ' . $db->sql_in_set('forum_id', array_keys($this->acl), true);
 				}
@@ -278,7 +278,7 @@ class auth
 		}
 
 		// If we get forum_ids not having this permission, we need to fill the remaining parts
-		if ($negate && sizeof($this->acl_forum_ids))
+		if ($negate && count($this->acl_forum_ids))
 		{
 			foreach ($this->acl_forum_ids as $f)
 			{
@@ -455,7 +455,7 @@ class auth
 	{
 		$hold_str = '';
 
-		if (sizeof($hold_ary))
+		if (count($hold_ary))
 		{
 			ksort($hold_ary);
 

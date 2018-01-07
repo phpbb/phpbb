@@ -334,7 +334,7 @@ class content_visibility
 			AND ' . $table_alias . $mode . '_visibility = ' . ITEM_APPROVED . ')';
 
 		// If user has moderator permissions, add everything in the moderated forums
-		if (sizeof($approve_forums))
+		if (count($approve_forums))
 		{
 			$where_sqls[] = $this->db->sql_in_set($table_alias . 'forum_id', $approve_forums);
 		}
@@ -584,7 +584,7 @@ class content_visibility
 				$sql_ary[$recipient_field] = " + $count_increase";
 			}
 
-			if (sizeof($sql_ary))
+			if (count($sql_ary))
 			{
 				$forum_sql = array();
 

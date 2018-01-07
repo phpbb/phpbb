@@ -268,7 +268,7 @@ class mcp_ban
 		{
 			$post_info = phpbb_get_post_data($post_id, 'm_ban');
 
-			if (sizeof($post_info) && !empty($post_info[$post_id]))
+			if (count($post_info) && !empty($post_info[$post_id]))
 			{
 				switch ($mode)
 				{
