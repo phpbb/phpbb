@@ -7,15 +7,15 @@ services:
 
 environment:
   matrix:
-  - db: mssql
-    db_version: sql2012sp1
-    php: 7.0
-  - db: mssql
-    db_version: sql2014
-    php: 7.0
-  - db: mssql
-    db_version: sql2016
-    php: 7.0
+#  - db: mssql
+#    db_version: sql2012sp1
+#    php: 7.0
+#  - db: mssql
+#    db_version: sql2014
+#    php: 7.0
+#  - db: mssql
+#    db_version: sql2016
+#    php: 7.0
   - db: mssql
     db_version: sql2017
     php: 7.1
