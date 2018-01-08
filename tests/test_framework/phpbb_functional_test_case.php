@@ -918,7 +918,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		if ($status_code != self::$client->getResponse()->getStatus() &&
 			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatus()))
 		{
-			self::fail('Encountered unexpected server error:\n' . self::$client->getResponse()->getContent());
+			self::fail("Encountered unexpected server error:\n" . self::$client->getResponse()->getContent());
 		}
 		self::assertEquals($status_code, self::$client->getResponse()->getStatus(), 'HTTP status code does not match');
 	}

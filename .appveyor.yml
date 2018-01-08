@@ -7,18 +7,18 @@ services:
 
 environment:
   matrix:
-#  - db: mssql
-#    db_version: sql2012sp1
-#    php: 7.0
-#  - db: mssql
-#    db_version: sql2014
-#    php: 7.0
-#  - db: mssql
-#    db_version: sql2016
-#    php: 7.0
   - db: mssql
-    db_version: sql2017
-    php: 7.1
+    db_version: sql2012sp1
+    php: 7.0
+  - db: mssql
+    db_version: sql2014
+    php: 7.0
+  - db: mssql
+    db_version: sql2016
+    php: 7.0
+#  - db: mssql
+#    db_version: sql2017
+#    php: 7.1
 #  - db: mariadb
 #    php: 7.1
 #  - db: mysqli
@@ -114,6 +114,10 @@ before_test:
       # Install PhantomJS
       cinst -y phantomjs
       Start-Process "phantomjs" "--webdriver=8910" | Out-Null
+  - ps: |
+      cd c:\projects\phpbb\phpBB
+      (Get-Content c:\projects\phpbb\phpBB\web.config).replace("<configuration>", "<configuration>`n`t<system.web>`n`t`t<customErrors mode=`"Off`"/>`n`t</system.web>") | Set-Content c:\projects\phpbb\phpBB\web.config
+      (Get-Content c:\projects\phpbb\phpBB\web.config).replace("`t</system.webServer>", "`t`t<httpErrors errorMode=`"Detailed`" />`n`t</system.webServer>") | Set-Content c:\projects\phpbb\phpBB\web.config
   - cd c:\projects\phpbb\phpBB
   - php ..\composer.phar install
   - choco install -y urlrewrite
