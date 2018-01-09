@@ -15,7 +15,7 @@ environment:
     php: 7.0
   - db: mssql
     db_version: sql2016
-    php: 7.0
+    php: 7.1
 #  - db: mssql
 #    db_version: sql2017
 #    php: 7.1
