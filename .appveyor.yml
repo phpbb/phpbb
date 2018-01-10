@@ -15,7 +15,7 @@ environment:
     php: 7.0
   - db: mssql
     db_version: sql2016
-    php: 7.1
+    php: 7.1.12
 #  - db: mssql
 #    db_version: sql2017
 #    php: 7.1
@@ -43,7 +43,7 @@ before_test:
       Get-ChildItem -Path "c:\tools\php$($env:php -replace '[.]','')" -Recurse |
           Move-Item -destination "c:\tools\php"
       cd c:\tools\php
-      cat php.ini-production | %{$_ -replace "memory_limit = 128M","memory_limit = 1024M"} | Out-File -Encoding "Default" php.ini
+      cat php.ini-development | %{$_ -replace "memory_limit = 128M","memory_limit = 1024M"} | Out-File -Encoding "Default" php.ini
       Add-Content php.ini "`n date.timezone=UTC"
       Add-Content php.ini "`n display_errors=On"
       Add-Content php.ini "`n extension_dir=ext"
