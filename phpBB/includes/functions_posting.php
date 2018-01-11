@@ -727,10 +727,11 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		// We display the posted attachments within the desired order.
 		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
 
+		$attachrow_template_vars = [];
+
 		foreach ($attachment_data as $count => $attach_row)
 		{
 			$hidden = '';
-			$attachrow_template_vars = array();
 			$attach_row['real_filename'] = utf8_basename($attach_row['real_filename']);
 
 			foreach ($attach_row as $key => $value)
