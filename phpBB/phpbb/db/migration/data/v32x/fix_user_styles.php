@@ -33,13 +33,17 @@ class fix_user_styles extends \phpbb\db\migration\migration
 	public function styles_fix()
 	{
 		$default_style = (int) $this->config['default_style'];
+		$enabled_styles = array();
 
 		// Get enabled styles
 		$sql = 'SELECT style_id
 			FROM ' . STYLES_TABLE . '
 			WHERE style_active = 1';
 		$result = $this->db->sql_query($sql);
-		$enabled_styles = $result->fetch_array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$enabled_styles[] = (int) $row['style_id'];
+		}
 		$this->db->sql_freeresult($result);
 
 		// Set the default style to users who have an invalid style
