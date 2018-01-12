@@ -2099,7 +2099,7 @@ class acp_users
 
 				if ($request->is_set_post('preview'))
 				{
-					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_bitfield);
+					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_flags);
 				}
 
 				/** @var \phpbb\controller\helper $controller_helper */
