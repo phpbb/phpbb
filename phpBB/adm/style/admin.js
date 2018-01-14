@@ -1,17 +1,16 @@
 /**
-* phpBB3 ACP functions
+* PhpBB3 ACP functions
 */
 
 /**
 * Parse document block
 */
-function parse_document(container)
-{
+function parse_document(container) {
 	/**
 	* Navigation
 	*/
-	container.find('#menu').each(function() {
-		var menu = $(this),
+	container.find('#menu').each(function () {
+		let menu = $(this),
 			blocks = menu.children('.menu-block');
 
 		if (!blocks.length) {
@@ -19,8 +18,8 @@ function parse_document(container)
 		}
 
 		// Set onclick event
-		blocks.children('a.header').click(function() {
-			var parent = $(this).parent();
+		blocks.children('a.header').click(function () {
+			const parent = $(this).parent();
 			if (!parent.hasClass('active')) {
 				parent.siblings().removeClass('active');
 			}
@@ -39,8 +38,8 @@ function parse_document(container)
 	/**
 	* Responsive tables
 	*/
-	container.find('table').not('.not-responsive').each(function() {
-		var $this = $(this),
+	container.find('table').not('.not-responsive').each(function () {
+		let $this = $(this),
 			th = $this.find('thead > tr > th'),
 			columns = th.length,
 			headers = [],
@@ -48,15 +47,15 @@ function parse_document(container)
 			i, headersLength;
 
 		// Find columns
-		$this.find('colgroup:first').children().each(function(i) {
-			var column = $(this);
+		$this.find('colgroup:first').children().each(function (i) {
+			const column = $(this);
 			$this.find('td:nth-child(' + (i + 1) + ')').addClass(column.prop('className'));
 		});
 
 		// Styles table
 		if ($this.hasClass('styles')) {
-			$this.find('td:first-child[style]').each(function() {
-				var style = $(this).attr('style');
+			$this.find('td:first-child[style]').each(function () {
+				const style = $(this).attr('style');
 				if (style.length) {
 					$(this).parent('tr').attr('style', style.toLowerCase().replace('padding', 'margin')).addClass('responsive-style-row');
 				}
@@ -64,21 +63,22 @@ function parse_document(container)
 		}
 
 		// Find each header
-		if (!$this.data('no-responsive-header'))
-		{
-			th.each(function(column) {
-				var cell = $(this),
+		if (!$this.data('no-responsive-header'))		{
+			th.each(function (column) {
+				let cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
 					dfn = cell.attr('data-dfn'),
 					text = dfn ? dfn : $.trim(cell.text());
 
-				if (text == '&nbsp;') text = '';
+				if (text == '&nbsp;') {
+					text = '';
+				}
 				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
 
-				for (i=0; i<colspan; i++) {
+				for (i = 0; i < colspan; i++) {
 					headers.push(text);
 				}
-				totalHeaders ++;
+				totalHeaders++;
 
 				if (dfn && !column) {
 					$this.addClass('show-header');
@@ -96,8 +96,8 @@ function parse_document(container)
 			return;
 		}
 
-		$this.find('tbody > tr').each(function() {
-			var row = $(this),
+		$this.find('tbody > tr').each(function () {
+			let row = $(this),
 				cells = row.children('td'),
 				column = 0;
 
@@ -106,8 +106,8 @@ function parse_document(container)
 				return;
 			}
 
-			cells.each(function() {
-				var cell = $(this),
+			cells.each(function () {
+				let cell = $(this),
 					colspan = parseInt(cell.attr('colspan')),
 					text = $.trim(cell.text());
 
@@ -119,8 +119,7 @@ function parse_document(container)
 					if (headers[column] != '') {
 						cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
 					}
-				}
-				else {
+				}				else {
 					cell.addClass('empty');
 				}
 
@@ -136,10 +135,9 @@ function parse_document(container)
 	/**
 	* Hide empty responsive tables
 	*/
-	container.find('table.responsive > tbody').each(function() {
-		var items = $(this).children('tr');
-		if (items.length == 0)
-		{
+	container.find('table.responsive > tbody').each(function () {
+		const items = $(this).children('tr');
+		if (items.length == 0)		{
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
 	});
@@ -147,19 +145,18 @@ function parse_document(container)
 	/**
 	* Fieldsets with empty <span>
 	*/
-	container.find('fieldset dt > span:last-child').each(function() {
-		var $this = $(this);
+	container.find('fieldset dt > span:last-child').each(function () {
+		const $this = $(this);
 		if ($this.html() == '&nbsp;') {
 			$this.addClass('responsive-hide');
 		}
-
 	});
 
 	/**
 	* Responsive tabs
 	*/
-	container.find('#tabs').not('[data-skip-responsive]').each(function() {
-		var $this = $(this),
+	container.find('#tabs').not('[data-skip-responsive]').each(function () {
+		let $this = $(this),
 			$body = $('body'),
 			ul = $this.children(),
 			tabs = ul.children().not('[data-skip-responsive]'),
@@ -170,13 +167,13 @@ function parse_document(container)
 			lastWidth = false,
 			responsive = false;
 
-		links.each(function() {
-			var link = $(this);
+		links.each(function () {
+			const link = $(this);
 			maxHeight = Math.max(maxHeight, Math.max(link.outerHeight(true), link.parent().outerHeight(true)));
-		})
+		});
 
 		function check() {
-			var width = $body.width(),
+			let width = $body.width(),
 				height = $this.height();
 
 			if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
@@ -200,20 +197,24 @@ function parse_document(container)
 			item.show();
 			menu.html('');
 
-			var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
+			let availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
 				total = availableTabs.length,
 				i, tab;
 
-			for (i = total - 1; i >= 0; i --) {
+			for (i = total - 1; i >= 0; i--) {
 				tab = availableTabs.eq(i);
 				menu.prepend(tab.clone(true).removeClass('tab'));
 				tab.hide();
 				if ($this.height() <= maxHeight) {
-					menu.find('a').click(function() { check(true); });
+					menu.find('a').click(() => {
+						check(true);
+					});
 					return;
 				}
 			}
-			menu.find('a').click(function() { check(true); });
+			menu.find('a').click(() => {
+				check(true);
+			});
 		}
 
 		phpbb.registerDropdown(item.find('a.responsive-tab-link'), item.find('.dropdown'), {visibleClass: 'activetab', verticalDirection: 'down'});
@@ -226,23 +227,23 @@ function parse_document(container)
 /**
 * Run onload functions
 */
-(function($) {
-	$(document).ready(function() {
+(function ($) {
+	$(document).ready(() => {
 		// Swap .nojs and .hasjs
 		$('body.nojs').toggleClass('nojs hasjs');
 
 		// Focus forms
-		$('form[data-focus]:first').each(function() {
+		$('form[data-focus]:first').each(function () {
 			$('#' + this.getAttribute('data-focus')).focus();
 		});
 
 		parse_document($('body'));
 
 		$('#questionnaire-form').css('display', 'none');
-		var $triggerConfiglist = $('#trigger-configlist');
+		const $triggerConfiglist = $('#trigger-configlist');
 
 		$triggerConfiglist.on('click', function () {
-			var $configlist = $('#configlist');
+			const $configlist = $('#configlist');
 			$configlist.closest('.send-stats-data-row').toggleClass('send-stats-data-hidden');
 			$configlist.closest('.send-stats-row').find('.send-stats-data-row:first-child').toggleClass('send-stats-data-only-row');
 			$(this).find('i').toggleClass('fa-angle-down fa-angle-up');
