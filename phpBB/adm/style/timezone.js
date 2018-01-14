@@ -10,8 +10,8 @@
 	});
 
 	$(document).ready(
-	phpbb.timezoneEnableDateSelection
-);
+		phpbb.timezoneEnableDateSelection
+	);
 })(jQuery); // Avoid conflicts with other libraries
 
 /* eslint-disable camelcase, no-unused-vars */
