@@ -1,6 +1,6 @@
 /* global phpbb jQuery, document, window, navigator, text_name, help_line, form_name, bbtags, opener */
 
-/* eslint-disable camelcase, no-unused-vars */
+/* eslint-disable camelcase, no-unused-vars, no-prototype-builtins */
 
 /**
 * BbCode control by subBlue design [ www.subBlue.com ]
@@ -57,11 +57,11 @@ function initInsertions() {
 * Bbstyle
 */
 function bbstyle(bbnumber) {
-	if (bbnumber !== -1) {
-		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber + 1]);
-	} else {
+	if (bbnumber === -1) {
 		insert_text('[*]');
 		document.forms[form_name].elements[text_name].focus();
+	} else {
+		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber + 1]);
 	}
 }
 
@@ -105,9 +105,7 @@ function bbfontstyle(bbopen, bbclose) {
 	if (!isNaN(textarea.selectionStart)) {
 		textarea.selectionStart = new_pos;
 		textarea.selectionEnd = new_pos;
-	}
-	// IE
-	else if (document.selection) {
+	} else if (document.selection) { // IE
 		const range = textarea.createTextRange();
 		range.move('character', new_pos);
 		range.select();
@@ -123,10 +121,10 @@ function bbfontstyle(bbopen, bbclose) {
 function insert_text(text, spaces, popup) {
 	let textarea;
 
-	if (!popup) {
-		textarea = document.forms[form_name].elements[text_name];
-	} else {
+	if (popup) {
 		textarea = opener.document.forms[form_name].elements[text_name];
+	} else {
+		textarea = document.forms[form_name].elements[text_name];
 	}
 
 	if (spaces) {
@@ -204,10 +202,10 @@ function addquote(post_id, username, l_wrote, attributes) {
 		if (divarea.innerHTML) {
 			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
 			theSelection = theSelection.replace(/<br\/>/ig, '\n');
-			theSelection = theSelection.replace(/&lt\;/ig, '<');
-			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');
-			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
+			theSelection = theSelection.replace(/&lt;/ig, '<');
+			theSelection = theSelection.replace(/&gt;/ig, '>');
+			theSelection = theSelection.replace(/&amp;/ig, '&');
+			theSelection = theSelection.replace(/&nbsp;/ig, ' ');
 		} else if (document.all) {
 			theSelection = divarea.innerText;
 		} else if (divarea.textContent) {
@@ -222,7 +220,7 @@ function addquote(post_id, username, l_wrote, attributes) {
 			attributes.author = username;
 			insert_text(generateQuote(theSelection, attributes));
 		} else {
-			insert_text(username + ' ' + l_wrote + ':' + '\n');
+			insert_text(username + ' ' + l_wrote + ':\n');
 			const lines = split_lines(theSelection);
 			for (i = 0; i < lines.length; i++) {
 				insert_text('> ' + lines[i] + '\n');
@@ -280,15 +278,16 @@ function formatAttributeValue(str) {
 		// Return as-is if it contains none of: space, ' " \ or ]
 		return str;
 	}
-	let singleQuoted = '\'' + str.replace(/[\\']/g, '\\$&') + '\'',
-		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
+
+	const singleQuoted = '\'' + str.replace(/[\\']/g, '\\$&') + '\'';
+	const doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
 
 	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
 }
 
 function split_lines(text) {
 	const lines = text.split('\n');
-	const splitLines = new Array();
+	const splitLines = [];
 	let j = 0;
 	let i;
 
@@ -298,7 +297,7 @@ function split_lines(text) {
 			j++;
 		} else {
 			let line = lines[i];
-			var splitAt;
+			let splitAt;
 			do {
 				splitAt = line.indexOf(' ', 80);
 
@@ -350,7 +349,7 @@ function storeCaret(textEl) {
 /**
 * Caret Position object
 */
-function caretPosition() {
+function CaretPosition() {
 	const start = null;
 	const end = null;
 }
@@ -359,15 +358,13 @@ function caretPosition() {
 * Get the caret position in an textarea
 */
 function getCaretPosition(txtarea) {
-	const caretPos = new caretPosition();
+	const caretPos = new CaretPosition();
 
 	// Simple Gecko/Opera way
 	if (txtarea.selectionStart || txtarea.selectionStart === 0) {
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
-	}
-	// Dirty and slow IE way
-	else if (document.selection) {
+	} else if (document.selection) { // Dirty and slow IE way
 		// Get current selection
 		const range = document.selection.createRange();
 
@@ -397,7 +394,8 @@ function getCaretPosition(txtarea) {
 */
 (function ($) {
 	$(document).ready(() => {
-		let doc, textarea;
+		let doc;
+		const textarea = doc.forms[form_name].elements[text_name];
 
 		// Find textarea, make sure browser supports necessary functions
 		if (document.forms[form_name]) {
@@ -410,14 +408,12 @@ function getCaretPosition(txtarea) {
 			return;
 		}
 
-		textarea = doc.forms[form_name].elements[text_name];
-
 		phpbb.applyCodeEditor(textarea);
-		if ($('#attach-panel').length) {
+		if ($('#attach-panel').length !== 0) {
 			phpbb.showDragNDrop(textarea);
 		}
 
-		$('textarea').on('keydown', function (e) {
+		$('textarea').on('keydown', e => {
 			if (e.which === 13 && (e.metaKey || e.ctrlKey)) {
 				$(this).closest('form').find(':submit').click();
 			}
@@ -425,4 +421,4 @@ function getCaretPosition(txtarea) {
 	});
 })(jQuery);
 
-/* eslint-enable camelcase, no-unused-vars */
+/* eslint-enable camelcase, no-unused-vars,no-prototype-builtins */
