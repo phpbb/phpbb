@@ -1,6 +1,6 @@
 /* global phpbb, document, settings, role_options, marklist, id, active_pmask, active_option, active_fmask, active_cat */
 
-/* eslint-disable camelcase, no-unused-vars, no-global-assign */
+/* eslint-disable camelcase, no-unused-vars, no-global-assign, max-params */
 
 /**
 * Hide and show all checkboxes
@@ -14,9 +14,7 @@ function display_checkboxes(status) {
 	// Show
 	if (status) {
 		display = 'inline';
-	}
-	// Hide
-	else {
+	} else {
 		display = 'none';
 	}
 
@@ -204,7 +202,7 @@ function swap_options(pmask, fmask, cat, adv, view) {
 	}
 
 	// Set active tab
-	old_tab.className = old_tab.className.replace(/\ activetab/g, '');
+	old_tab.className = old_tab.className.replace(/ activetab/g, '');
 	new_tab.className += ' activetab';
 
 	if (id === active_option && adv !== true) {
@@ -299,8 +297,10 @@ function set_role_settings(role_id, target_id) {
 	mark_options(target_id, 'u');
 
 	for (const r in settings) {
-		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
+		if (settings[r]) {
+			mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
+		}
 	}
 }
 
-/* eslint-enable camelcase, no-unused-vars, no-global-assign */
+/* eslint-enable camelcase, no-unused-vars, no-global-assign, max-params */
