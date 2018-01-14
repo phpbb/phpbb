@@ -1,4 +1,4 @@
-/* global phpbb, jQuery, document, set_role_settings */
+/* global phpbb, jQuery, document, set_role_settings, init_colours */
 
 /* eslint-disable camelcase, no-unused-vars */
 
@@ -19,16 +19,16 @@ phpBB Development Team:
 
 	const tooltips = [];
 
-/**
- * Enable tooltip replacements for selects
- * @param {string} id ID tag of select
- * @param {string} headline Text that should appear on top of tooltip
- * @param {string} [subId] Sub ID that should only be using tooltips (optional)
-*/
+	/**
+	 * Enable tooltip replacements for selects
+	 * @param {string} id ID tag of select
+	 * @param {string} headline Text that should appear on top of tooltip
+	 * @param {string} [subId] Sub ID that should only be using tooltips (optional)
+	*/
 	phpbb.enableTooltipsSelect = function (id, headline, subId) {
-		let $links, hold;
+		let $links;
 
-		hold = $('<span />', {
+		const hold = $('<span />', {
 			id:	'_tooltip_container',
 			css: {
 				position: 'absolute'
@@ -37,10 +37,10 @@ phpBB Development Team:
 
 		$('body').append(hold);
 
-		if (!id) {
-			$links = $('.roles-options li');
-		} else {
+		if (id) {
 			$links = $('.roles-options li', '#' + id);
+		} else {
+			$links = $('.roles-options li');
 		}
 
 		$links.each(function () {
@@ -56,22 +56,20 @@ phpBB Development Team:
 		});
 	};
 
-/**
- * Prepare elements to replace
- *
- * @param {jQuery} $element Element to prepare for tooltips
- * @param {string} headText Text heading to display
-*/
+	/**
+	 * Prepare elements to replace
+	 *
+	 * @param {jQuery} $element Element to prepare for tooltips
+	 * @param {string} headText Text heading to display
+	*/
 	phpbb.prepareTooltips = function ($element, headText) {
-		let $tooltip, text, $desc, $title;
-
-		text = $element.attr('data-title');
+		const text = $element.attr('data-title');
 
 		if (text === null || text.length === 0) {
 			return;
 		}
 
-		$title = $('<span />', {
+		const $title = $('<span />', {
 			class: 'top',
 			css: {
 				display:	'block'
@@ -79,7 +77,7 @@ phpBB Development Team:
 		})
 		.append(document.createTextNode(headText));
 
-		$desc = $('<span />', {
+		const $desc = $('<span />', {
 			class: 'bottom',
 			html: text,
 			css: {
@@ -87,7 +85,7 @@ phpBB Development Team:
 			}
 		});
 
-		$tooltip = $('<span />', {
+		const $tooltip = $('<span />', {
 			class: 'tooltip',
 			css: {
 				display: 'block'
@@ -101,20 +99,20 @@ phpBB Development Team:
 		$element.on('mouseout', phpbb.hideTooltip);
 	};
 
-/**
- * Show tooltip
- *
- * @param {object} $element Element passed by .on()
-*/
+	/**
+	 * Show tooltip
+	 *
+	 * @param {object} $element Element passed by .on()
+	*/
 	phpbb.showTooltip = function ($element) {
 		const $this = $($element.target);
 		$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
 		phpbb.positionTooltip($this);
 	};
 
-/**
- * Hide tooltip
-*/
+	/**
+	 * Hide tooltip
+	*/
 	phpbb.hideTooltip = function () {
 		const d = document.getElementById('_tooltip_container');
 		if (d.childNodes.length > 0) {
@@ -122,16 +120,14 @@ phpBB Development Team:
 		}
 	};
 
-/**
- * Correct positioning of tooltip container
- *
- * @param {jQuery} $element Tooltip element that should be positioned
-*/
+	/**
+	 * Correct positioning of tooltip container
+	 *
+	 * @param {jQuery} $element Tooltip element that should be positioned
+	*/
 	phpbb.positionTooltip = function ($element) {
-		let offset;
-
 		$element = $element.parent();
-		offset = $element.offset();
+		const offset = $element.offset();
 
 		$('#_tooltip_container').css({
 			top: offset.top + 30,
@@ -139,16 +135,16 @@ phpBB Development Team:
 		});
 	};
 
-/**
- * Prepare roles drop down select
- */
+	/**
+	 * Prepare roles drop down select
+	 */
 	phpbb.prepareRolesDropdown = function () {
 		const $options = $('.roles-options li');
 
-	// Display span and hide select
+		// Display span and hide select
 		$('.roles-options > span').css('display', 'block');
 		$('.roles-options > select').hide();
-		$('.roles-options > input[type=hidden]').each(function () {
+		$('.roles-options > input[type=hidden]').each(() => {
 			const $this = $(this);
 
 			if ($this.attr('data-name') && !$this.attr('name')) {
@@ -156,13 +152,13 @@ phpBB Development Team:
 			}
 		});
 
-	// Prepare highlighting of select options and settings update
-		$options.each(function () {
+		// Prepare highlighting of select options and settings update
+		$options.each(() => {
 			const $this = $(this);
 			const $rolesOptions = $this.closest('.roles-options');
 			const $span = $rolesOptions.children('span');
 
-		// Correctly show selected option
+			// Correctly show selected option
 			if (typeof $this.attr('data-selected') !== 'undefined') {
 				$rolesOptions
 				.children('span')
@@ -170,12 +166,12 @@ phpBB Development Team:
 				.attr('data-default', $this.text())
 				.attr('data-default-val', $this.attr('data-id'));
 
-			// Save default text of drop down if there is no default set yet
+				// Save default text of drop down if there is no default set yet
 				if (typeof $span.attr('data-default') === 'undefined') {
 					$span.attr('data-default', $span.text());
 				}
 
-			// Prepare resetting drop down on form reset
+				// Prepare resetting drop down on form reset
 				$this.closest('form').on('reset', () => {
 					$span.text($span.attr('data-default'));
 					$rolesOptions.children('input[type=hidden]')
@@ -183,52 +179,51 @@ phpBB Development Team:
 				});
 			}
 
-			$this.on('mouseover', function () {
+			$this.on('mouseover', () => {
 				const $this = $(this);
 				$options.removeClass('roles-highlight');
 				$this.addClass('roles-highlight');
-			}).on('click', function () {
+			}).on('click', () => {
 				const $this = $(this);
 				const $rolesOptions = $this.closest('.roles-options');
 
-			// Update settings
+				// Update settings
 				set_role_settings($this.attr('data-id'), $this.attr('data-target-id'));
 				init_colours($this.attr('data-target-id').replace('advanced', ''));
 
-			// Set selected setting
+				// Set selected setting
 				$rolesOptions.children('span')
 				.text($this.text());
 				$rolesOptions.children('input[type=hidden]')
 				.val($this.attr('data-id'));
 
-			// Trigger hiding of selection options
+				// Trigger hiding of selection options
 				$('body').trigger('click');
 			});
 		});
 	};
 
-// Run onload functions for RolesDropdown and tooltips
-	$(() => {
+	// Run onload functions for RolesDropdown and tooltips
+
 	// Enable tooltips
-		phpbb.enableTooltipsSelect('set-permissions', $('#set-permissions').attr('data-role-description'), 'role');
+	phpbb.enableTooltipsSelect('set-permissions', $('#set-permissions').attr('data-role-description'), 'role');
 
 	// Prepare dropdown
-		phpbb.prepareRolesDropdown();
+	phpbb.prepareRolesDropdown();
 
 	// Reset role drop-down on modifying permissions in advanced tab
-		$('div.permissions-switch > a').on('click', () => {
-			$.each($('input[type=radio][name^="setting["]'), function () {
-				const $this = $(this);
-				$this.on('click', () => {
-					let $rolesOptions = $this.closest('fieldset.permissions').find('.roles-options'),
-						rolesSelect = $rolesOptions.find('select > option')[0];
+	$('div.permissions-switch > a').on('click', () => {
+		$.each($('input[type=radio][name^="setting["]'), () => {
+			const $this = $(this);
+			$this.on('click', () => {
+				const $rolesOptions = $this.closest('fieldset.permissions').find('.roles-options');
+				const rolesSelect = $rolesOptions.find('select > option')[0];
 
 				// Set selected setting
-					$rolesOptions.children('span')
-					.text(rolesSelect.text);
-					$rolesOptions.children('input[type=hidden]')
-					.val(rolesSelect.value);
-				});
+				$rolesOptions.children('span')
+				.text(rolesSelect.text);
+				$rolesOptions.children('input[type=hidden]')
+				.val(rolesSelect.value);
 			});
 		});
 	});
