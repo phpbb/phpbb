@@ -3,20 +3,20 @@
 * status = true (show boxes), false (hide boxes)
 */
 function display_checkboxes(status) {
-	var form = document.getElementById('set-permissions');
-	var cb = document.getElementsByTagName('input');
-	var display;
+	const form = document.getElementById('set-permissions');
+	const cb = document.getElementsByTagName('input');
+	let display;
 
-	//show
+	// Show
 	if (status) {
 		display = 'inline';
 	}
-	//hide
+	// Hide
 	else {
 		display = 'none';
 	}
 
-	for (var i = 0; i < cb.length; i++ ) {
+	for (let i = 0; i < cb.length; i++) {
 		if (cb[i].className === 'permissions-checkbox') {
 			cb[i].style.display = display;
 		}
@@ -29,10 +29,10 @@ function display_checkboxes(status) {
 * value = 0 (hidden) till 10 (fully visible)
 */
 function set_opacity(e, value) {
-	e.style.opacity = value/10;
+	e.style.opacity = value / 10;
 
-	//IE opacity currently turned off, because of its astronomical stupidity
-	//e.style.filter = 'alpha(opacity=' + value*10 + ')';
+	// IE opacity currently turned off, because of its astronomical stupidity
+	// e.style.filter = 'alpha(opacity=' + value*10 + ')';
 }
 
 /**
@@ -40,8 +40,8 @@ function set_opacity(e, value) {
 * block_id = id of the element that needs to be toggled
 */
 function toggle_opacity(block_id) {
-	var cb = document.getElementById('checkbox' + block_id);
-	var fs = document.getElementById('perm' + block_id);
+	const cb = document.getElementById('checkbox' + block_id);
+	const fs = document.getElementById('perm' + block_id);
 
 	if (cb.checked) {
 		set_opacity(fs, 5);
@@ -56,25 +56,25 @@ function toggle_opacity(block_id) {
 * except_id = id of the element not to hide
 */
 function reset_opacity(status, except_id) {
-	var perm = document.getElementById('set-permissions');
-	var fs = perm.getElementsByTagName('fieldset');
-	var opacity = 5;
+	const perm = document.getElementById('set-permissions');
+	const fs = perm.getElementsByTagName('fieldset');
+	let opacity = 5;
 
 	if (status) {
 		opacity = 10;
 	}
 
-	for (var i = 0; i < fs.length; i++ ) {
+	for (let i = 0; i < fs.length; i++) {
 		if (fs[i].className !== 'quick') {
 			set_opacity(fs[i], opacity);
 		}
 	}
 
-	if (typeof(except_id) !== 'undefined') {
+	if (typeof (except_id) !== 'undefined') {
 		set_opacity(document.getElementById('perm' + except_id), 10);
 	}
 
-	//reset checkboxes too
+	// Reset checkboxes too
 	marklist('set-permissions', 'inherit', !status);
 }
 
@@ -84,18 +84,18 @@ function reset_opacity(status, except_id) {
 * rb = array of radiobuttons
 */
 function get_radio_status(index, rb) {
-	for (var i = index; i < rb.length; i = i + 3 ) {
+	for (let i = index; i < rb.length; i += 3) {
 		if (rb[i].checked !== true) {
 			if (i > index) {
-				//at least one is true, but not all (custom)
+				// At least one is true, but not all (custom)
 				return 2;
 			}
-			//first one is not true
+			// First one is not true
 			return 0;
 		}
 	}
 
-	// all radiobuttons true
+	// All radiobuttons true
 	return 1;
 }
 
@@ -106,18 +106,18 @@ function get_radio_status(index, rb) {
 * quick = If no calculation needed, this contains the colour
 */
 function set_colours(id, init, quick) {
-	var table = document.getElementById('table' + id);
-	var tab = document.getElementById('tab' + id);
+	const table = document.getElementById('table' + id);
+	const tab = document.getElementById('tab' + id);
 
-	if (typeof(quick) !== 'undefined') {
+	if (typeof (quick) !== 'undefined') {
 		tab.className = 'permissions-preset-' + quick + ' activetab';
 		return;
 	}
 
-	var rb = table.getElementsByTagName('input');
-	var colour = 'custom';
+	const rb = table.getElementsByTagName('input');
+	let colour = 'custom';
 
-	var status = get_radio_status(0, rb);
+	let status = get_radio_status(0, rb);
 
 	if (status === 1) {
 		colour = 'yes';
@@ -149,17 +149,17 @@ function set_colours(id, init, quick) {
 * block_id = block that is opened
 */
 function init_colours(block_id) {
-	var block = document.getElementById('advanced' + block_id);
-	var panels = block.getElementsByTagName('div');
-	var tab = document.getElementById('tab' + id);
+	const block = document.getElementById('advanced' + block_id);
+	const panels = block.getElementsByTagName('div');
+	const tab = document.getElementById('tab' + id);
 
-	for (var i = 0; i < panels.length; i++) {
+	for (let i = 0; i < panels.length; i++) {
 		if (panels[i].className === 'permissions-panel') {
 			set_colours(panels[i].id.replace(/options/, ''), true);
 		}
 	}
 
-	tab.className = tab.className + ' activetab';
+	tab.className += ' activetab';
 }
 
 /**
@@ -172,9 +172,9 @@ function swap_options(pmask, fmask, cat, adv, view) {
 	id = pmask + fmask + cat;
 	active_option = active_pmask + active_fmask + active_cat;
 
-	var	old_tab = document.getElementById('tab' + active_option);
-	var new_tab = document.getElementById('tab' + id);
-	var adv_block = document.getElementById('advanced' + pmask + fmask);
+	const	old_tab = document.getElementById('tab' + active_option);
+	const new_tab = document.getElementById('tab' + id);
+	const adv_block = document.getElementById('advanced' + pmask + fmask);
 
 	if (adv_block.style.display === 'block' && adv === true) {
 		phpbb.toggleDisplay('advanced' + pmask + fmask, -1);
@@ -183,25 +183,25 @@ function swap_options(pmask, fmask, cat, adv, view) {
 		return;
 	}
 
-	// no need to set anything if we are clicking on the same tab again
+	// No need to set anything if we are clicking on the same tab again
 	if (new_tab === old_tab && !adv) {
 		return;
 	}
 
-	// init colours
+	// Init colours
 	if (adv && (pmask + fmask) !== (active_pmask + active_fmask)) {
 		init_colours(pmask + fmask);
 		display_checkboxes(true);
 		reset_opacity(1);
 	} else if (adv) {
-		//Checkbox might have been clicked, but we need full visibility
+		// Checkbox might have been clicked, but we need full visibility
 		display_checkboxes(true);
 		reset_opacity(1);
 	}
 
-	// set active tab
+	// Set active tab
 	old_tab.className = old_tab.className.replace(/\ activetab/g, '');
-	new_tab.className = new_tab.className + ' activetab';
+	new_tab.className += ' activetab';
 
 	if (id === active_option && adv !== true) {
 		return;
@@ -209,7 +209,7 @@ function swap_options(pmask, fmask, cat, adv, view) {
 
 	phpbb.toggleDisplay('options' + active_option, -1);
 
-	//hiding and showing the checkbox
+	// Hiding and showing the checkbox
 	if (document.getElementById('checkbox' + active_pmask + active_fmask)) {
 		phpbb.toggleDisplay('checkbox' + pmask + fmask, -1);
 
@@ -237,32 +237,32 @@ function swap_options(pmask, fmask, cat, adv, view) {
 * id = table ID container, s = status ['y'/'u'/'n']
 */
 function mark_options(id, s) {
-	var t = document.getElementById(id);
+	const t = document.getElementById(id);
 
 	if (!t) {
 		return;
 	}
 
-	var rb = t.getElementsByTagName('input');
+	const rb = t.getElementsByTagName('input');
 
-	for (var r = 0; r < rb.length; r++) {
-		if (rb[r].id.substr(rb[r].id.length-1) === s) {
+	for (let r = 0; r < rb.length; r++) {
+		if (rb[r].id.substr(rb[r].id.length - 1) === s) {
 			rb[r].checked = true;
 		}
 	}
 }
 
 function mark_one_option(id, field_name, s) {
-	var t = document.getElementById(id);
+	const t = document.getElementById(id);
 
 	if (!t) {
 		return;
 	}
 
-	var rb = t.getElementsByTagName('input');
+	const rb = t.getElementsByTagName('input');
 
-	for (var r = 0; r < rb.length; r++) {
-		if (rb[r].id.substr(rb[r].id.length-field_name.length-3, field_name.length) === field_name && rb[r].id.substr(rb[r].id.length-1) === s) {
+	for (let r = 0; r < rb.length; r++) {
+		if (rb[r].id.substr(rb[r].id.length - field_name.length - 3, field_name.length) === field_name && rb[r].id.substr(rb[r].id.length - 1) === s) {
 			rb[r].checked = true;
 		}
 	}
@@ -272,7 +272,7 @@ function mark_one_option(id, field_name, s) {
 * Reset role dropdown field to Select role... if an option gets changed
 */
 function reset_role(id) {
-	var t = document.getElementById(id);
+	const t = document.getElementById(id);
 
 	if (!t) {
 		return;
@@ -294,7 +294,7 @@ function set_role_settings(role_id, target_id) {
 	// Mark all options to no (unset) first...
 	mark_options(target_id, 'u');
 
-	for (var r in settings) {
+	for (const r in settings) {
 		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
 	}
 }

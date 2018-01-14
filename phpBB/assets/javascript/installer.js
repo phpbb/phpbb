@@ -2,21 +2,21 @@
  * Installer's AJAX frontend handler
  */
 
-(function($) { // Avoid conflicts with other libraries
+(function ($) { // Avoid conflicts with other libraries
 	'use strict';
 
 	// Installer variables
-	var pollTimer = null;
-	var nextReadPosition = 0;
-	var progressBarTriggered = false;
-	var progressTimer = null;
-	var currentProgress = 0;
-	var refreshRequested = false;
-	var transmissionOver = false;
-	var statusCount = 0;
+	let pollTimer = null;
+	let nextReadPosition = 0;
+	let progressBarTriggered = false;
+	let progressTimer = null;
+	let currentProgress = 0;
+	let refreshRequested = false;
+	let transmissionOver = false;
+	let statusCount = 0;
 
 	// Template related variables
-	var $contentWrapper = $('.install-body').find('.main');
+	const $contentWrapper = $('.install-body').find('.main');
 
 	// Intercept form submits
 	interceptFormSubmit($('#install_install'));
@@ -42,12 +42,13 @@
 	 */
 	function addMessage(type, messages) {
 		// Get message containers
-		var $errorContainer = $('#error-container');
-		var $warningContainer = $('#warning-container');
-		var $logContainer = $('#log-container');
+		const $errorContainer = $('#error-container');
+		const $warningContainer = $('#warning-container');
+		const $logContainer = $('#log-container');
 
-		var $title, $description, $msgElement, arraySize = messages.length;
-		for (var i = 0; i < arraySize; i++) {
+		let $title, $description, $msgElement,
+			arraySize = messages.length;
+		for (let i = 0; i < arraySize; i++) {
 			$msgElement = $('<div />');
 			$title = $('<strong />');
 			$title.text(messages[i].title);
@@ -84,12 +85,11 @@
 	/**
 	 * Render a download box
 	 */
-	function addDownloadBox(downloadArray)
-	{
-		var $downloadContainer = $('#download-wrapper');
-		var $downloadBox, $title, $content, $link;
+	function addDownloadBox(downloadArray)	{
+		const $downloadContainer = $('#download-wrapper');
+		let $downloadBox, $title, $content, $link;
 
-		for (var i = 0; i < downloadArray.length; i++) {
+		for (let i = 0; i < downloadArray.length; i++) {
 			$downloadBox = $('<div />');
 			$downloadBox.addClass('download-box');
 
@@ -116,9 +116,8 @@
 	/**
 	 * Render update files' status
 	 */
-	function addUpdateFileStatus(fileStatus)
-	{
-		var $statusContainer = $('#file-status-wrapper');
+	function addUpdateFileStatus(fileStatus)	{
+		const $statusContainer = $('#file-status-wrapper');
 		$statusContainer.html(fileStatus);
 	}
 
@@ -128,9 +127,9 @@
 	 * @param formHtml
 	 */
 	function addForm(formHtml) {
-		var $formContainer = $('#form-wrapper');
+		const $formContainer = $('#form-wrapper');
 		$formContainer.html(formHtml);
-		var $form = $('#install_install');
+		const $form = $('#install_install');
 		interceptFormSubmit($form);
 	}
 
@@ -140,14 +139,14 @@
 	 * @param navObj
 	 */
 	function updateNavbarStatus(navObj) {
-		var navID, $stage, $stageListItem, $active;
+		let navID, $stage, $stageListItem, $active;
 		$active = $('#activemenu');
 
 		if (navObj.hasOwnProperty('finished')) {
 			// This should be an Array
-			var navItems = navObj.finished;
+			const navItems = navObj.finished;
 
-			for (var i = 0; i < navItems.length; i++) {
+			for (let i = 0; i < navItems.length; i++) {
 				navID = 'installer-stage-' + navItems[i];
 				$stage = $('#' + navID);
 				$stageListItem = $stage.parent();
@@ -179,12 +178,12 @@
 	 * @param progressObject
 	 */
 	function setProgress(progressObject) {
-		var $statusText, $progressBar, $progressText, $progressFiller, $progressFillerText;
+		let $statusText, $progressBar, $progressText, $progressFiller, $progressFillerText;
 
 		if (progressObject.task_name.length) {
 			if (!progressBarTriggered) {
 				// Create progress bar
-				var $progressBarWrapper = $('#progress-bar-container');
+				const $progressBarWrapper = $('#progress-bar-container');
 
 				// Create progress bar elements
 				$progressBar = $('<div />');
@@ -234,9 +233,9 @@
 
 	// Set cookies
 	function setCookies(cookies) {
-		var cookie;
+		let cookie;
 
-		for (var i = 0; i < cookies.length; i++) {
+		for (let i = 0; i < cookies.length; i++) {
 			// Set cookie name and value
 			cookie = encodeURIComponent(cookies[i].name) + '=' + encodeURIComponent(cookies[i].value);
 			// Set path
@@ -250,7 +249,7 @@
 		if (use_ajax) {
 			resetPolling();
 
-			var xhReq = createXhrObject();
+			const xhReq = createXhrObject();
 			xhReq.open('GET', url, true);
 			xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 			xhReq.send();
@@ -268,7 +267,7 @@
 	 */
 	function parseMessage(messageJSON) {
 		$('#loading_indicator').css('display', 'none');
-		var responseObject;
+		let responseObject;
 
 		try {
 			responseObject = JSON.parse(messageJSON);
@@ -371,9 +370,9 @@
 	 * Queries the installer's status
 	 */
 	function queryInstallerStatus() {
-		var url = $(location).attr('pathname');
-		var lookUp = 'install/app.php';
-		var position = url.indexOf(lookUp);
+		let url = $(location).attr('pathname');
+		let lookUp = 'install/app.php';
+		let position = url.indexOf(lookUp);
 
 		if (position === -1) {
 			lookUp = 'install';
@@ -385,7 +384,7 @@
 		}
 
 		url = url.substring(0, position) + lookUp + '/installer/status';
-		$.getJSON(url, function(data) {
+		$.getJSON(url, data => {
 			processTimeoutResponse(data.status);
 		});
 	}
@@ -396,9 +395,9 @@
 	 * @param xhReq   XHR object
 	 */
 	function pollContent(xhReq) {
-		var messages = xhReq.responseText;
-		var msgSeparator = '}\n\n';
-		var unprocessed, messageEndIndex, endOfMessageIndex, message;
+		const messages = xhReq.responseText;
+		const msgSeparator = '}\n\n';
+		let unprocessed, messageEndIndex, endOfMessageIndex, message;
 
 		do {
 			unprocessed = messages.substring(nextReadPosition);
@@ -416,7 +415,7 @@
 			$('#loading_indicator').css('display', 'none');
 			resetPolling();
 
-			var timeoutDetected = !transmissionOver;
+			const timeoutDetected = !transmissionOver;
 
 			if (refreshRequested) {
 				refreshRequested = false;
@@ -444,7 +443,7 @@
 			return;
 		}
 
-		var $progressBar = $('#progress-bar');
+		const $progressBar = $('#progress-bar');
 
 		currentProgress++;
 		$progressFillerText.css('width', $progressBar.width());
@@ -459,14 +458,14 @@
 	 * @param progressLimit
 	 */
 	function incrementProgressBar(progressLimit) {
-		var $progressFiller = $('#progress-bar-filler');
-		var $progressFillerText = $('#progress-bar-filler-text');
-		var $progressText = $('#progress-bar-text');
-		var progressStart = $progressFiller.width() / $progressFiller.offsetParent().width() * 100;
+		const $progressFiller = $('#progress-bar-filler');
+		const $progressFillerText = $('#progress-bar-filler-text');
+		const $progressText = $('#progress-bar-text');
+		const progressStart = $progressFiller.width() / $progressFiller.offsetParent().width() * 100;
 		currentProgress = Math.floor(progressStart);
 
 		clearInterval(progressTimer);
-		progressTimer = setInterval(function() {
+		progressTimer = setInterval(() => {
 			incrementFiller($progressText, $progressFiller, $progressFillerText, progressLimit);
 		}, 10);
 	}
@@ -487,7 +486,7 @@
 	function startPolling(xhReq) {
 		resetPolling();
 		transmissionOver = false;
-		pollTimer = setInterval(function () {
+		pollTimer = setInterval(() => {
 			pollContent(xhReq);
 		}, 250);
 	}
@@ -498,7 +497,7 @@
 	function doRefresh() {
 		resetPolling();
 
-		var xhReq = createXhrObject();
+		const xhReq = createXhrObject();
 		xhReq.open('GET', $(location).attr('pathname'), true);
 		xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 		xhReq.send();
@@ -515,47 +514,47 @@
 		// Clear content
 		$contentWrapper.html('');
 
-		var $header = $('<div />');
+		const $header = $('<div />');
 		$header.attr('id', 'header-container');
 		$contentWrapper.append($header);
 
-		var $description = $('<div />');
+		const $description = $('<div />');
 		$description.attr('id', 'description-container');
 		$contentWrapper.append($description);
 
-		var $errorContainer = $('<div />');
+		const $errorContainer = $('<div />');
 		$errorContainer.attr('id', 'error-container');
 		$contentWrapper.append($errorContainer);
 
-		var $warningContainer = $('<div />');
+		const $warningContainer = $('<div />');
 		$warningContainer.attr('id', 'warning-container');
 		$contentWrapper.append($warningContainer);
 
-		var $progressContainer = $('<div />');
+		const $progressContainer = $('<div />');
 		$progressContainer.attr('id', 'progress-bar-container');
 		$contentWrapper.append($progressContainer);
 
-		var $logContainer = $('<div />');
+		const $logContainer = $('<div />');
 		$logContainer.attr('id', 'log-container');
 		$contentWrapper.append($logContainer);
 
-		var $installerContentWrapper = $('<div />');
+		const $installerContentWrapper = $('<div />');
 		$installerContentWrapper.attr('id', 'content-container');
 		$contentWrapper.append($installerContentWrapper);
 
-		var $installerDownloadWrapper = $('<div />');
+		const $installerDownloadWrapper = $('<div />');
 		$installerDownloadWrapper.attr('id', 'download-wrapper');
 		$installerContentWrapper.append($installerDownloadWrapper);
 
-		var $updaterFileStatusWrapper = $('<div />');
+		const $updaterFileStatusWrapper = $('<div />');
 		$updaterFileStatusWrapper.attr('id', 'file-status-wrapper');
 		$installerContentWrapper.append($updaterFileStatusWrapper);
 
-		var $formWrapper = $('<div />');
+		const $formWrapper = $('<div />');
 		$formWrapper.attr('id', 'form-wrapper');
 		$installerContentWrapper.append($formWrapper);
 
-		var $spinner = $('<div />');
+		const $spinner = $('<div />');
 		$spinner.attr('id', 'loading_indicator');
 		$spinner.html('&nbsp;');
 		$contentWrapper.append($spinner);
@@ -565,7 +564,7 @@
 	function submitForm($form, $submitBtn) {
 		$form.css('display', 'none');
 
-		var xhReq = createXhrObject();
+		const xhReq = createXhrObject();
 		xhReq.open('POST', $form.attr('action'), true);
 		xhReq.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 		xhReq.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -590,7 +589,7 @@
 	 * @returns {*}
 	 */
 	function getFormFields($form, $submitBtn) {
-		var formData = $form.serialize();
+		let formData = $form.serialize();
 		formData += ((formData.length) ? '&' : '') + encodeURIComponent($submitBtn.attr('name')) + '=';
 		formData += encodeURIComponent($submitBtn.attr('value'));
 
