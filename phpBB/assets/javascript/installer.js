@@ -1,6 +1,6 @@
-/* global jQuery, window, document, location, installLang */
+/* global jQuery, window, document, location, installLang, XMLHttpRequest */
 
-/* eslint-disable camelcase, no-unused-vars */
+/* eslint-disable camelcase, no-unused-vars, no-prototype-builtins */
 
 /**
  * Installer's AJAX frontend handler
@@ -50,8 +50,11 @@
 		const $warningContainer = $('#warning-container');
 		const $logContainer = $('#log-container');
 
-		let $title, $description, $msgElement,
-			arraySize = messages.length;
+		let $title;
+		let $description;
+		let $msgElement;
+		const arraySize = messages.length;
+
 		for (let i = 0; i < arraySize; i++) {
 			$msgElement = $('<div />');
 			$title = $('<strong />');
@@ -82,6 +85,8 @@
 					$msgElement.addClass('successbox');
 					$errorContainer.prepend($msgElement);
 					break;
+				default:
+					// Do nothing.
 			}
 		}
 	}
@@ -91,7 +96,10 @@
 	 */
 	function addDownloadBox(downloadArray)	{
 		const $downloadContainer = $('#download-wrapper');
-		let $downloadBox, $title, $content, $link;
+		let $downloadBox;
+		let $title;
+		let $content;
+		let $link;
 
 		for (let i = 0; i < downloadArray.length; i++) {
 			$downloadBox = $('<div />');
@@ -143,8 +151,10 @@
 	 * @param navObj
 	 */
 	function updateNavbarStatus(navObj) {
-		let navID, $stage, $stageListItem, $active;
-		$active = $('#activemenu');
+		let navID;
+		let $stage;
+		let $stageListItem;
+		const $active = $('#activemenu');
 
 		if (navObj.hasOwnProperty('finished')) {
 			// This should be an Array
@@ -155,7 +165,7 @@
 				$stage = $('#' + navID);
 				$stageListItem = $stage.parent();
 
-				if ($active.length && $active.is($stageListItem)) {
+				if ($active.length !== 0 && $active.is($stageListItem)) {
 					$active.removeAttr('id');
 				}
 
@@ -168,7 +178,7 @@
 			$stage = $('#' + navID);
 			$stageListItem = $stage.parent();
 
-			if ($active.length && !$active.is($stageListItem)) {
+			if ($active.length !== 0 && !$active.is($stageListItem)) {
 				$active.removeAttr('id');
 			}
 
@@ -182,9 +192,13 @@
 	 * @param progressObject
 	 */
 	function setProgress(progressObject) {
-		let $statusText, $progressBar, $progressText, $progressFiller, $progressFillerText;
+		let $statusText;
+		let $progressBar;
+		let $progressText;
+		let $progressFiller;
+		let $progressFillerText;
 
-		if (progressObject.task_name.length) {
+		if (progressObject.task_name.length !== 0) {
 			if (!progressBarTriggered) {
 				// Create progress bar
 				const $progressBarWrapper = $('#progress-bar-container');
@@ -396,7 +410,10 @@
 	function pollContent(xhReq) {
 		const messages = xhReq.responseText;
 		const msgSeparator = '}\n\n';
-		let unprocessed, messageEndIndex, endOfMessageIndex, message;
+		let unprocessed;
+		let messageEndIndex;
+		let endOfMessageIndex;
+		let message;
 
 		do {
 			unprocessed = messages.substring(nextReadPosition);
@@ -601,7 +618,7 @@
 	 * @param $form
 	 */
 	function interceptFormSubmit($form) {
-		if (!$form.length) {
+		if ($form.length === 0) {
 			return;
 		}
 
@@ -612,4 +629,4 @@
 	}
 })(jQuery); // Avoid conflicts with other libraries
 
-/* eslint-enable camelcase, no-unused-vars */
+/* eslint-enable camelcase, no-unused-vars, no-prototype-builtins */
