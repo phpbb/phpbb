@@ -5,8 +5,8 @@
 (function ($) {  // Avoid conflicts with other libraries
 	'use strict';
 
-// This callback will mark all forum icons read
-	phpbb.addAjaxCallback('mark_forums_read', function (res) {
+	// This callback will mark all forum icons read
+	phpbb.addAjaxCallback('mark_forums_read', res => {
 		const readTitle = res.NO_UNREAD_POSTS;
 		const unreadTitle = res.UNREAD_POSTS;
 		const iconsArray = {
@@ -15,7 +15,7 @@
 			forum_unread_locked: 'forum_read_locked'
 		};
 
-		$('li.row').find('dl[class*="forum_unread"]').each(function () {
+		$('li.row').find('dl[class*="forum_unread"]').each(() => {
 			const $this = $(this);
 
 			$.each(iconsArray, (unreadClass, readClass) => {
@@ -26,26 +26,26 @@
 			$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
 		});
 
-	// Mark subforums read
+		// Mark subforums read
 		$('a.subforum[class*="unread"]').removeClass('unread').addClass('read').children('.icon.icon-red').removeClass('icon-red').addClass('icon-blue');
 
-	// Mark topics read if we are watching a category and showing active topics
+		// Mark topics read if we are watching a category and showing active topics
 		if ($('#active_topics').length !== 0) {
 			phpbb.ajaxCallbacks.mark_topics_read.call(this, res, false);
 		}
 
-	// Update mark forums read links
+		// Update mark forums read links
 		$('[data-ajax="mark_forums_read"]').attr('href', res.U_MARK_FORUMS);
 
 		phpbb.closeDarkenWrapper(3000);
 	});
 
-/**
-* This callback will mark all topic icons read
-*
-* @param {bool} [update_topic_links=true] Whether "Mark topics read" links
-* 	should be updated. Defaults to true.
-*/
+	/**
+	* This callback will mark all topic icons read
+	*
+	* @param {bool} [update_topic_links=true] Whether "Mark topics read" links
+	* 	should be updated. Defaults to true.
+	*/
 	phpbb.addAjaxCallback('mark_topics_read', (res, updateTopicLinks) => {
 		const readTitle = res.NO_UNREAD_POSTS;
 		const unreadTitle = res.UNREAD_POSTS;
@@ -65,7 +65,7 @@
 
 		$.each(iconsArray, (unreadClass, readClass) => {
 			$.each(iconsState, (key, value) => {
-			// Only topics can be hot
+				// Only topics can be hot
 				if ((value === '_hot' || value === '_hot_mine') && unreadClass !== 'topic_unread') {
 					return true;
 				}
@@ -76,7 +76,7 @@
 
 		const unreadClassSelectors = '.' + classNames.join(',.');
 
-		$('li.row').find(unreadClassSelectors).each(function () {
+		$('li.row').find(unreadClassSelectors).each(() => {
 			const $this = $(this);
 			$.each(classMap, (unreadClass, readClass) => {
 				if ($this.hasClass(unreadClass)) {
@@ -86,10 +86,10 @@
 			$this.children('dt[title="' + unreadTitle + '"]').attr('title', readTitle);
 		});
 
-	// Remove link to first unread post
+		// Remove link to first unread post
 		$('a.unread').has('.icon-red').remove();
 
-	// Update mark topics read links
+		// Update mark topics read links
 		if (updateTopicLinks) {
 			$('[data-ajax="mark_topics_read"]').attr('href', res.U_MARK_TOPICS);
 		}
@@ -97,7 +97,7 @@
 		phpbb.closeDarkenWrapper(3000);
 	});
 
-// This callback will mark all notifications read
+	// This callback will mark all notifications read
 	phpbb.addAjaxCallback('notification.mark_all_read', res => {
 		if (typeof res.success !== 'undefined') {
 			phpbb.markNotifications($('[data-notification-unread="true"]'), 0);
@@ -105,47 +105,48 @@
 		}
 	});
 
-// This callback will mark a notification read
-	phpbb.addAjaxCallback('notification.mark_read', function (res) {
+	// This callback will mark a notification read
+	phpbb.addAjaxCallback('notification.mark_read', res => {
 		if (typeof res.success !== 'undefined') {
 			const unreadCount = Number($('#notification-button strong').html()) - 1;
 			phpbb.markNotifications($(this).parent('[data-notification-unread="true"]'), unreadCount);
 		}
 	});
 
-/**
- * Mark notification popup rows as read.
- *
- * @param {jQuery} $popup jQuery object(s) to mark read.
- * @param {int} unreadCount The new unread notifications count.
- */
+	/**
+	 * Mark notification popup rows as read.
+	 *
+	 * @param {jQuery} $popup jQuery object(s) to mark read.
+	 * @param {int} unreadCount The new unread notifications count.
+	 */
 	phpbb.markNotifications = function ($popup, unreadCount) {
-	// Remove the unread status.
+		// Remove the unread status.
 		$popup.removeClass('bg2');
 		$popup.find('a.mark_read').remove();
 
-	// Update the notification link to the real URL.
-		$popup.each(function () {
+		// Update the notification link to the real URL.
+		$popup.each(() => {
 			const link = $(this).find('a');
 			link.attr('href', link.attr('data-real-url'));
 		});
 
-	// Update the unread count.
+		// Update the unread count.
 		$('strong', '#notification-button').html(unreadCount);
-	// Remove the Mark all read link and hide notification count if there are no unread notifications.
+
+		// Remove the Mark all read link and hide notification count if there are no unread notifications.
 		if (!unreadCount) {
 			$('#mark_all_notifications').remove();
 			$('#notification-button > strong').addClass('hidden');
 		}
 
-	// Update page title
+		// Update page title
 		const $title = $('title');
 		const originalTitle = $title.text().replace(/(\((\d+)\))/, '');
 		$title.text((unreadCount ? '(' + unreadCount + ')' : '') + originalTitle);
 	};
 
-// This callback finds the post from the delete link, and removes it.
-	phpbb.addAjaxCallback('post_delete', function () {
+	// This callback finds the post from the delete link, and removes it.
+	phpbb.addAjaxCallback('post_delete', () => {
 		const $this = $(this);
 		let postId;
 
@@ -157,33 +158,33 @@
 				post.nextAll('.bg2').removeClass('bg2').addClass('bg1');
 				posts1.removeClass('bg1').addClass('bg2');
 			}
-			post.fadeOut(function () {
+			post.fadeOut(() => {
 				$(this).remove();
 			});
 		}
 	});
 
-// This callback removes the approve / disapprove div or link.
-	phpbb.addAjaxCallback('post_visibility', function (res) {
+	// This callback removes the approve / disapprove div or link.
+	phpbb.addAjaxCallback('post_visibility', res => {
 		const remove = (res.visible) ? $(this) : $(this).parents('.post');
-		$(remove).css('pointer-events', 'none').fadeOut(function () {
+		$(remove).css('pointer-events', 'none').fadeOut(() => {
 			$(this).remove();
 		});
 
 		if (res.visible) {
-		// Remove the "Deleted by" message from the post on restoring.
-			remove.parents('.post').find('.post_deleted_msg').css('pointer-events', 'none').fadeOut(function () {
+			// Remove the "Deleted by" message from the post on restoring.
+			remove.parents('.post').find('.post_deleted_msg').css('pointer-events', 'none').fadeOut(() => {
 				$(this).remove();
 			});
 		}
 	});
 
-// This removes the parent row of the link or form that fired the callback.
-	phpbb.addAjaxCallback('row_delete', function () {
+	// This removes the parent row of the link or form that fired the callback.
+	phpbb.addAjaxCallback('row_delete', () => {
 		$(this).parents('tr').remove();
 	});
 
-// This handles friend / foe additions removals.
+	// This handles friend / foe additions removals.
 	phpbb.addAjaxCallback('zebra', res => {
 		let zebra;
 
@@ -194,9 +195,9 @@
 		}
 	});
 
-/**
- * This callback updates the poll results after voting.
- */
+	/**
+	 * This callback updates the poll results after voting.
+	 */
 	phpbb.addAjaxCallback('vote_poll', res => {
 		if (typeof res.success !== 'undefined') {
 			const poll = $('.topic_poll');
@@ -204,7 +205,7 @@
 			const resultsVisible = poll.find('dl:first-child .resultbar').is(':visible');
 			let mostVotes = 0;
 
-		// Set min-height to prevent the page from jumping when the content changes
+			// Set min-height to prevent the page from jumping when the content changes
 			const updatePanelHeight = function (height) {
 				height = (typeof height === 'undefined') ? panel.find('.inner').outerHeight() : height;
 				panel.css('min-height', height);
@@ -226,17 +227,17 @@
 			}
 
 			// Get the votes count of the highest poll option
-			poll.find('[data-poll-option-id]').each(function () {
+			poll.find('[data-poll-option-id]').each(() => {
 				const option = $(this);
 				const optionId = option.attr('data-poll-option-id');
 				mostVotes = (res.vote_counts[optionId] >= mostVotes) ? res.vote_counts[optionId] : mostVotes;
 			});
 
-		// Update the total votes count
+			// Update the total votes count
 			poll.find('.poll_total_vote_cnt').html(res.total_votes);
 
-		// Update each option
-			poll.find('[data-poll-option-id]').each(function () {
+			// Update each option
+			poll.find('[data-poll-option-id]').each(() => {
 				const $this = $(this);
 				const optionId = $this.attr('data-poll-option-id');
 				const voted = (typeof res.user_votes[optionId] !== 'undefined');
@@ -252,7 +253,7 @@
 				$this.toggleClass('voted', voted);
 				$this.toggleClass('most-votes', mostVoted);
 
-			// Update the bars
+				// Update the bars
 				const bar = $this.find('.resultbar div');
 				const barTimeLapse = (res.can_vote) ? 500 : 1500;
 				const newBarClass = (percent === 100) ? 'pollbar5' : 'pollbar' + (Math.floor(percent / 20) + 1);
@@ -272,7 +273,7 @@
 				poll.find('.polls').delay(400).fadeIn(500);
 			}
 
-		// Display "Your vote has been cast." message. Disappears after 5 seconds.
+			// Display "Your vote has been cast." message. Disappears after 5 seconds.
 			const confirmationDelay = (res.can_vote) ? 300 : 900;
 			const resizePanel = function (time) {
 				const panelHeight = panel.height();
@@ -286,7 +287,7 @@
 				}
 			};
 
-			poll.find('.vote-submitted').delay(confirmationDelay).slideDown(200, function () {
+			poll.find('.vote-submitted').delay(confirmationDelay).slideDown(200, () => {
 				if (resultsVisible) {
 					updatePanelHeight();
 				}
@@ -296,18 +297,18 @@
 				});
 			});
 
-		// Remove the gap resulting from removing options
+			// Remove the gap resulting from removing options
 			setTimeout(() => {
 				resizePanel(500);
 			}, 1500);
 		}
 	});
 
-/**
- * Show poll results when clicking View results link.
- */
-	$('.poll_view_results a').click(function (e) {
-	// Do not follow the link
+	/**
+	 * Show poll results when clicking View results link.
+	 */
+	$('.poll_view_results a').click(e => {
+		// Do not follow the link
 		e.preventDefault();
 
 		const $poll = $(this).parents('.topic_poll');
@@ -316,7 +317,7 @@
 		$poll.find('.poll_view_results').hide(500);
 	});
 
-	$('[data-ajax]').each(function () {
+	$('[data-ajax]').each(() => {
 		const $this = $(this);
 		const ajax = $this.attr('data-ajax');
 		let filter = $this.attr('data-filter');
@@ -334,21 +335,21 @@
 		}
 	});
 
-/**
- * This simply appends #preview to the action of the
- * QR action when you click the Full Editor & Preview button
- */
+	/**
+	 * This simply appends #preview to the action of the
+	 * QR action when you click the Full Editor & Preview button
+	 */
 	$('#qr_full_editor').click(() => {
 		$('#qr_postform').attr('action', (i, val) => {
 			return val + '#preview';
 		});
 	});
 
-/**
- * Make the display post links to use JS
- */
-	$('.display_post').click(function (e) {
-	// Do not follow the link
+	/**
+	 * Make the display post links to use JS
+	 */
+	$('.display_post').click(e => {
+		// Do not follow the link
 		e.preventDefault();
 
 		const postId = $(this).attr('data-post-id');
@@ -357,34 +358,32 @@
 		$('#post_hidden' + postId).hide();
 	});
 
-/**
-* Toggle the member search panel in memberlist.php.
-*
-* If user returns to search page after viewing results the search panel is automatically displayed.
-* In any case the link will toggle the display status of the search panel and link text will be
-* appropriately changed based on the status of the search panel.
-*/
-	$('#member_search').click(function () {
+	/**
+	* Toggle the member search panel in memberlist.php.
+	*
+	* If user returns to search page after viewing results the search panel is automatically displayed.
+	* In any case the link will toggle the display status of the search panel and link text will be
+	* appropriately changed based on the status of the search panel.
+	*/
+	$('#member_search').click(() => {
 		const $memberlistSearch = $('#memberlist_search');
 
 		$memberlistSearch.slideToggle('fast');
 		phpbb.ajaxCallbacks.alt_text.call(this);
 
-	// Focus on the username textbox if it's available and displayed
+		// Focus on the username textbox if it's available and displayed
 		if ($memberlistSearch.is(':visible')) {
 			$('#username').focus();
 		}
 		return false;
 	});
 
-/**
-* Automatically resize textarea
-*/
-	$(() => {
-		const $textarea = $('textarea:not(#message-box textarea, .no-auto-resize)');
-		phpbb.resizeTextArea($textarea, {minHeight: 75, maxHeight: 250});
-		phpbb.resizeTextArea($('textarea', '#message-box'));
-	});
+	/**
+	* Automatically resize textarea
+	*/
+	const $textarea = $('textarea:not(#message-box textarea, .no-auto-resize)');
+	phpbb.resizeTextArea($textarea, {minHeight: 75, maxHeight: 250});
+	phpbb.resizeTextArea($('textarea', '#message-box'));
 })(jQuery); // Avoid conflicts with other libraries
 
 /* eslint-enable camelcase, no-unused-vars */
