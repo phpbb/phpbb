@@ -10,16 +10,16 @@
 		const $dark = $('#darkenwrapper');
 		let $loadingIndicator;
 
-		$form.on('submit', function (event) {
-			let $this = $(this),
-				currentTime = Math.floor(new Date().getTime() / 1000),
-				statsTime = parseInt($this.find('input[name=help_send_statistics_time]').val(), 10);
+		$form.on('submit', event => {
+			const $this = $(this);
+			const currentTime = Math.floor(new Date().getTime() / 1000);
+			const statsTime = parseInt($this.find('input[name=help_send_statistics_time]').val(), 10);
 
 			event.preventDefault();
 			$this.unbind('submit');
 
-		// Skip ajax request if form is submitted too early or send stats
-		// checkbox is not checked
+			// Skip ajax request if form is submitted too early or send stats
+			// checkbox is not checked
 			if (!$this.find('input[name=help_send_statistics]').is(':checked') ||
 			statsTime > currentTime) {
 				$form.find('input[type=submit]').click();
@@ -29,9 +29,9 @@
 				return;
 			}
 
-		/**
-		 * Handler for AJAX errors
-		 */
+			/**
+			 * Handler for AJAX errors
+			 */
 			function errorHandler(jqXHR, textStatus, errorThrown) {
 				if (typeof console !== 'undefined' && console.log) {
 					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
@@ -43,28 +43,28 @@
 					errorText = errorThrown;
 				} else {
 					errorText = $dark.attr('data-ajax-error-text-' + textStatus);
-					if (typeof errorText !== 'string' || !errorText.length) {
+					if (typeof errorText !== 'string' || errorText.length === 0) {
 						errorText = $dark.attr('data-ajax-error-text');
 					}
 				}
 				phpbb.alert($dark.attr('data-ajax-error-title'), errorText);
 			}
 
-		/**
-		 * This is a private function used to handle the callbacks, refreshes
-		 * and alert. It calls the callback, refreshes the page if necessary, and
-		 * displays an alert to the user and removes it after an amount of time.
-		 *
-		 * It cannot be called from outside this function, and is purely here to
-		 * avoid repetition of code.
-		 *
-		 * @param {object} res The object sent back by the server.
-		 */
+			/**
+			 * This is a private function used to handle the callbacks, refreshes
+			 * and alert. It calls the callback, refreshes the page if necessary, and
+			 * displays an alert to the user and removes it after an amount of time.
+			 *
+			 * It cannot be called from outside this function, and is purely here to
+			 * avoid repetition of code.
+			 *
+			 * @param {object} res The object sent back by the server.
+			 */
 			function returnHandler(res) {
 				phpbb.clearLoadingTimeout();
 
-			// If a confirmation is not required, display an alert and call the
-			// callbacks.
+				// If a confirmation is not required, display an alert and call the
+				// callbacks.
 				$dark.fadeOut(phpbb.alertTime);
 
 				if ($loadingIndicator) {
@@ -78,7 +78,7 @@
 				});
 				$sendStatisticsSuccess.appendTo('p.submit-buttons');
 
-			// Finish actual form submission
+				// Finish actual form submission
 				$form.find('input[type=submit]').click();
 			}
 
@@ -99,81 +99,81 @@
 		});
 	};
 
-/**
- * The following callbacks are for reording items. row_down
- * is triggered when an item is moved down, and row_up is triggered when
- * an item is moved up. It moves the row up or down, and deactivates /
- * activates any up / down icons that require it (the ones at the top or bottom).
- */
-	phpbb.addAjaxCallback('row_down', function (res) {
+	/**
+	 * The following callbacks are for reording items. row_down
+	 * is triggered when an item is moved down, and row_up is triggered when
+	 * an item is moved up. It moves the row up or down, and deactivates /
+	 * activates any up / down icons that require it (the ones at the top or bottom).
+	 */
+	phpbb.addAjaxCallback('row_down', res => {
 		if (typeof res.success === 'undefined' || !res.success) {
 			return;
 		}
 
-		let $firstTr = $(this).parents('tr'),
-			$secondTr = $firstTr.next();
+		const $firstTr = $(this).parents('tr');
+		const $secondTr = $firstTr.next();
 
 		$firstTr.insertAfter($secondTr);
 	});
 
-	phpbb.addAjaxCallback('row_up', function (res) {
+	phpbb.addAjaxCallback('row_up', res => {
 		if (typeof res.success === 'undefined' || !res.success) {
 			return;
 		}
 
-		let $secondTr = $(this).parents('tr'),
-			$firstTr = $secondTr.prev();
+		const $secondTr = $(this).parents('tr');
+		const $firstTr = $secondTr.prev();
 
 		$secondTr.insertBefore($firstTr);
 	});
 
-/**
- * This callback replaces activate links with deactivate links and vice versa.
- * It does this by replacing the text, and replacing all instances of "activate"
- * in the href with "deactivate", and vice versa.
- */
-	phpbb.addAjaxCallback('activate_deactivate', function (res) {
-		let $this = $(this),
-			newHref = $this.attr('href');
+	/**
+	 * This callback replaces activate links with deactivate links and vice versa.
+	 * It does this by replacing the text, and replacing all instances of "activate"
+	 * in the href with "deactivate", and vice versa.
+	 */
+	phpbb.addAjaxCallback('activate_deactivate', res => {
+		const $this = $(this);
+		let newHref = $this.attr('href');
 
 		$this.text(res.text);
 
-		if (newHref.indexOf('deactivate') !== -1) {
-			newHref = newHref.replace('deactivate', 'activate');
-		} else {
+		if (newHref.indexOf('deactivate') === -1) {
 			newHref = newHref.replace('activate', 'deactivate');
+		} else {
+			newHref = newHref.replace('deactivate', 'activate');
 		}
 
 		$this.attr('href', newHref);
 	});
 
-/**
- * The removes the parent row of the link or form that triggered the callback,
- * and is good for stuff like the removal of forums.
- */
-	phpbb.addAjaxCallback('row_delete', function (res) {
+	/**
+	 * The removes the parent row of the link or form that triggered the callback,
+	 * and is good for stuff like the removal of forums.
+	 */
+	phpbb.addAjaxCallback('row_delete', res => {
 		if (res.SUCCESS !== false) {
 			$(this).parents('tr').remove();
 		}
 	});
 
-/**
- * Handler for submitting permissions form in chunks
- * This call will submit permissions forms in chunks of 5 fieldsets.
- */
+	/**
+	 * Handler for submitting permissions form in chunks
+	 * This call will submit permissions forms in chunks of 5 fieldsets.
+	 */
 	function submitPermissions() {
-		let $form = $('form#set-permissions'),
-			fieldsetList = $form.find('fieldset[id^=perm]'),
-			formDataSets = [],
-			dataSetIndex = 0,
-			$submitAllButton = $form.find('input[type=submit][name^=action]')[0],
-			$submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
+		let $form = $('form#set-permissions');
+		let fieldsetList = $form.find('fieldset[id^=perm]');
+		const formDataSets = [];
+		let dataSetIndex = 0;
+		const $submitAllButton = $form.find('input[type=submit][name^=action]')[0];
+		const $submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
 
-	// Set proper start values for handling refresh of page
-		let permissionSubmitSize = 0,
-			permissionRequestCount = 0,
-			forumIds = [],
-			permissionSubmitFailed = false;
+		// Set proper start values for handling refresh of page
+		let permissionSubmitSize = 0;
+		let permissionRequestCount = 0;
+		const forumIds = [];
+		let permissionSubmitFailed = false;
 
 		if ($submitAllButton !== $submitButton) {
 			fieldsetList = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id);
@@ -188,7 +188,7 @@
 				formDataSets[dataSetIndex] += '&' + $fieldset.find('select:visible, input:not([data-name])').serialize();
 			}
 
-		// Find proper role value
+			// Find proper role value
 			const roleInput = $fieldset.find('input[name^=role][data-name]');
 			if (roleInput.val()) {
 				formDataSets[dataSetIndex] += '&' + roleInput.attr('name') + '=' + roleInput.val();
@@ -200,18 +200,18 @@
 
 		permissionSubmitSize = formDataSets.length;
 
-	// Add each forum ID to forum ID list to preserve selected forums
+		// Add each forum ID to forum ID list to preserve selected forums
 		$.each($form.find('input[type=hidden][name^=forum_id]'), (key, value) => {
 			if (value.name.match(/^forum_id\[([0-9]+)\]$/)) {
 				forumIds.push(value.value);
 			}
 		});
 
-	/**
-	 * Handler for submitted permissions form chunk
-	 *
-	 * @param {object} res Object returned by AJAX call
-	 */
+		/**
+		 * Handler for submitted permissions form chunk
+		 *
+		 * @param {object} res Object returned by AJAX call
+		 */
 		function handlePermissionReturn(res) {
 			permissionRequestCount++;
 			const $dark = $('#darkenwrapper');
@@ -220,14 +220,14 @@
 				phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 				permissionSubmitFailed = true;
 			} else if (!permissionSubmitFailed && res.S_USER_NOTICE) {
-			// Display success message at the end of submitting the form
+				// Display success message at the end of submitting the form
 				if (permissionRequestCount >= permissionSubmitSize) {
 					const $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 					const $alertBoxLink = $alert.find('p.alert_text > a');
 
-				// Create form to submit instead of normal "Back to previous page" link
+					// Create form to submit instead of normal "Back to previous page" link
 					if ($alertBoxLink) {
-					// Remove forum_id[] from URL
+						// Remove forum_id[] from URL
 						$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/g, ''));
 						let previousPageForm = '<form action="' + $alertBoxLink.attr('href') + '" method="post">';
 						$.each(forumIds, (key, value) => {
@@ -243,14 +243,14 @@
 						});
 					}
 
-				// Do not allow closing alert
+					// Do not allow closing alert
 					$dark.off('click');
 					$alert.find('.alert_close').hide();
 
 					if (typeof res.REFRESH_DATA !== 'undefined') {
 						setTimeout(() => {
-						// Create forum to submit using POST. This will prevent
-						// exceeding the maximum length of URLs
+							// Create forum to submit using POST. This will prevent
+							// exceeding the maximum length of URLs
 							let form = '<form action="' + res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/g, '') + '" method="post">';
 							$.each(forumIds, (key, value) => {
 								form += '<input type="text" name="forum_id[]" value="' + value + '" />';
@@ -259,15 +259,15 @@
 							$form = $(form);
 							$('body').append($form);
 
-						// Hide the alert even if we refresh the page, in case the user
-						// presses the back button.
+							// Hide the alert even if we refresh the page, in case the user
+							// presses the back button.
 							$dark.fadeOut(phpbb.alertTime, () => {
 								if (typeof $alert !== 'undefined') {
 									$alert.hide();
 								}
 							});
 
-						// Submit form
+							// Submit form
 							$form.submit();
 						}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 					}
@@ -275,7 +275,7 @@
 			}
 		}
 
-	// Create AJAX request for each form data set
+		// Create AJAX request for each form data set
 		$.each(formDataSets, (key, formData) => {
 			$.ajax({
 				url: $form.action,
@@ -291,12 +291,12 @@
 		});
 	}
 
-	$('[data-ajax]').each(function () {
-		let $this = $(this),
-			ajax = $this.attr('data-ajax');
+	$('[data-ajax]').each(() => {
+		const $this = $(this);
+		const ajax = $this.attr('data-ajax');
 
 		if (ajax !== 'false') {
-			const fn = (ajax !== 'true') ? ajax : null;
+			const fn = (ajax === 'true') ? null : ajax;
 			phpbb.ajaxify({
 				selector: this,
 				refresh: $this.attr('data-refresh') !== undefined,
@@ -305,28 +305,26 @@
 		}
 	});
 
-/**
-* Automatically resize textarea
-*/
-	$(() => {
-		phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), {minHeight: 75});
+	/**
+	* Automatically resize textarea
+	*/
+	phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), {minHeight: 75});
 
-		const $setPermissionsForm = $('form#set-permissions');
-		if ($setPermissionsForm.length) {
-			$setPermissionsForm.on('submit', e => {
-				submitPermissions();
-				e.preventDefault();
-			});
-			$setPermissionsForm.find('input[type=submit]').click(function () {
-				$('input[type=submit]', $(this).parents($('form#set-permissions'))).removeAttr('data-clicked');
-				$(this).attr('data-clicked', true);
-			});
-		}
+	const $setPermissionsForm = $('form#set-permissions');
+	if ($setPermissionsForm.length !== 0) {
+		$setPermissionsForm.on('submit', e => {
+			submitPermissions();
+			e.preventDefault();
+		});
+		$setPermissionsForm.find('input[type=submit]').click(function () {
+			$('input[type=submit]', $(this).parents($('form#set-permissions'))).removeAttr('data-clicked');
+			$(this).attr('data-clicked', true);
+		});
+	}
 
-		if ($('#acp_help_phpbb')) {
-			phpbb.prepareSendStats();
-		}
-	});
+	if ($('#acp_help_phpbb')) {
+		phpbb.prepareSendStats();
+	}
 })(jQuery); // Avoid conflicts with other libraries
 
 /* eslint-enable camelcase, no-unused-vars */
