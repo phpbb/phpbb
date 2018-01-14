@@ -1,4 +1,4 @@
-/* global jQuery, window, document, location, installLang, XMLHttpRequest */
+/* global installLang */
 
 /* eslint-disable camelcase, no-unused-vars, no-prototype-builtins */
 

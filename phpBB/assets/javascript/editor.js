@@ -1,4 +1,4 @@
-/* global phpbb jQuery, document, window, navigator, text_name, help_line, form_name, bbtags, opener */
+/* global phpbb, text_name, help_line, form_name, bbtags */
 
 /* eslint-disable camelcase, no-unused-vars, no-prototype-builtins */
 

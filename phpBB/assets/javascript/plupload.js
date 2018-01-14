@@ -1,4 +1,4 @@
-/* global phpbb, jQuery, plupload, attachInline, activateSubPanel */
+/* global phpbb, plupload, attachInline, activateSubPanel */
 
 /* eslint-disable camelcase, no-unused-vars, no-prototype-builtins */
 

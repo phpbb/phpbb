@@ -1,4 +1,4 @@
-/* global phpbb, jQuery, document, set_role_settings, init_colours */
+/* global phpbb, set_role_settings, init_colours */
 
 /* eslint-disable camelcase, no-unused-vars */
 

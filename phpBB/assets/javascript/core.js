@@ -1,4 +1,4 @@
-/* global jQuery, document, window, history, bbfontstyle */
+/* global bbfontstyle */
 
 /* eslint-disable camelcase, no-unused-vars, max-depth */
 

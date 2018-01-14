@@ -1,4 +1,4 @@
-/* global phpbb, document, settings, role_options, marklist, id, active_pmask, active_option, active_fmask, active_cat */
+/* global phpbb, settings, role_options, marklist, id, active_pmask, active_option, active_fmask, active_cat */
 
 /* eslint-disable camelcase, no-unused-vars, no-global-assign, max-params */
 

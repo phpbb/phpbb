@@ -1,4 +1,4 @@
-/* global phpbb, jQuery, window, document, opener */
+/* global phpbb */
 
 /* eslint-disable complexity, camelcase, no-unused-vars */
 

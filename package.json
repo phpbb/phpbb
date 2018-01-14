@@ -10,12 +10,9 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "xo": {
-        "overrides": [
-            {
-                "files": "phpbb/**/*.js",
-                "browser": true,
-                "jquery": true
-            }
+        "env": [
+            "browser",
+            "jquery"
         ]
     },
     "repository": {

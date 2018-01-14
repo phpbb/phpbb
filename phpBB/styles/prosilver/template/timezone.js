@@ -1,4 +1,4 @@
-/* global phpbb, jQuery */
+/* global phpbb */
 
 (function ($) { // Avoid conflicts with other libraries
 	'use strict';
