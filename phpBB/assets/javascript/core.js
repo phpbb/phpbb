@@ -1,6 +1,6 @@
-/* global jQuery, document, bbfontstyle */
+/* global jQuery, document, window, history, bbfontstyle */
 
-/* eslint-disable camelcase, no-unused-vars */
+/* eslint-disable camelcase, no-unused-vars, max-depth */
 
 const phpbb = {};
 phpbb.alertTime = 100;
@@ -8,7 +8,7 @@ phpbb.alertTime = 100;
 (function ($) {  // Avoid conflicts with other libraries
 	'use strict';
 
-// Define a couple constants for keydown functions.
+	// Define a couple constants for keydown functions.
 	const keymap = {
 		TAB: 9,
 		ENTER: 13,
@@ -21,11 +21,11 @@ phpbb.alertTime = 100;
 
 	phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
 
-/**
- * Display a loading screen
- *
- * @returns {object} Returns loadingIndicator.
- */
+	/**
+	 * Display a loading screen
+	 *
+	 * @returns {object} Returns loadingIndicator.
+	 */
 	phpbb.loadingIndicator = function () {
 		if (!$loadingIndicator) {
 			$loadingIndicator = $('#loading_indicator');
@@ -33,7 +33,7 @@ phpbb.alertTime = 100;
 
 		if (!$loadingIndicator.is(':visible')) {
 			$loadingIndicator.fadeIn(phpbb.alertTime);
-		// Wait 60 seconds and display an error if nothing has been returned by then.
+			// Wait 60 seconds and display an error if nothing has been returned by then.
 			phpbb.clearLoadingTimeout();
 			phpbbAlertTimer = setTimeout(() => {
 				phpbb.showTimeoutMessage();
@@ -43,9 +43,9 @@ phpbb.alertTime = 100;
 		return $loadingIndicator;
 	};
 
-/**
- * Show timeout message
- */
+	/**
+	 * Show timeout message
+	 */
 	phpbb.showTimeoutMessage = function () {
 		const $alert = $('#phpbb_alert');
 
@@ -54,9 +54,9 @@ phpbb.alertTime = 100;
 		}
 	};
 
-/**
- * Clear loading alert timeout
-*/
+	/**
+	 * Clear loading alert timeout
+	*/
 	phpbb.clearLoadingTimeout = function () {
 		if (phpbbAlertTimer !== null) {
 			clearTimeout(phpbbAlertTimer);
@@ -64,27 +64,27 @@ phpbb.alertTime = 100;
 		}
 	};
 
-/**
-* Close popup alert after a specified delay
-*
-* @param {int} delay Delay in ms until darkenwrapper's click event is triggered
-*/
+	/**
+	* Close popup alert after a specified delay
+	*
+	* @param {int} delay Delay in ms until darkenwrapper's click event is triggered
+	*/
 	phpbb.closeDarkenWrapper = function (delay) {
 		phpbbAlertTimer = setTimeout(() => {
 			$('#darkenwrapper').trigger('click');
 		}, delay);
 	};
 
-/**
- * Display a simple alert similar to JSs native alert().
- *
- * You can only call one alert or confirm box at any one time.
- *
- * @param {string} title Title of the message, eg "Information" (HTML).
- * @param {string} msg Message to display (HTML).
- *
- * @returns {object} Returns the div created.
- */
+	/**
+	 * Display a simple alert similar to JSs native alert().
+	 *
+	 * You can only call one alert or confirm box at any one time.
+	 *
+	 * @param {string} title Title of the message, eg "Information" (HTML).
+	 * @param {string} msg Message to display (HTML).
+	 *
+	 * @returns {object} Returns the div created.
+	 */
 	phpbb.alert = function (title, msg) {
 		const $alert = $('#phpbb_alert');
 		$alert.find('.alert_title').html(title);
@@ -102,11 +102,11 @@ phpbb.alertTime = 100;
 		return $alert;
 	};
 
-/**
-* Handler for opening an alert box.
-*
-* @param {jQuery} $alert jQuery object.
-*/
+	/**
+	* Handler for opening an alert box.
+	*
+	* @param {jQuery} $alert jQuery object.
+	*/
 	phpbb.alert.open = function ($alert) {
 		if (!$dark.is(':visible')) {
 			$dark.fadeIn(phpbb.alertTime);
@@ -142,12 +142,12 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
-* Handler for closing an alert box.
-*
-* @param {jQuery} $alert jQuery object.
-* @param {bool} fadedark Whether to remove dark background.
-*/
+	/**
+	* Handler for closing an alert box.
+	*
+	* @param {jQuery} $alert jQuery object.
+	* @param {bool} fadedark Whether to remove dark background.
+	*/
 	phpbb.alert.close = function ($alert, fadedark) {
 		const $fade = (fadedark) ? $dark : $alert;
 
@@ -159,23 +159,23 @@ phpbb.alertTime = 100;
 		$(document).off('keydown.phpbb.alert');
 	};
 
-/**
- * Display a simple yes / no box to the user.
- *
- * You can only call one alert or confirm box at any one time.
- *
- * @param {string} msg Message to display (HTML).
- * @param {function} callback Callback. Bool param, whether the user pressed
- *     yes or no (or whatever their language is).
- * @param {bool} fadedark Remove the dark background when done? Defaults
- *     to yes.
- *
- * @returns {object} Returns the div created.
- */
+	/**
+	 * Display a simple yes / no box to the user.
+	 *
+	 * You can only call one alert or confirm box at any one time.
+	 *
+	 * @param {string} msg Message to display (HTML).
+	 * @param {function} callback Callback. Bool param, whether the user pressed
+	 *     yes or no (or whatever their language is).
+	 * @param {bool} fadedark Remove the dark background when done? Defaults
+	 *     to yes.
+	 *
+	 * @returns {object} Returns the div created.
+	 */
 	phpbb.confirm = function (msg, callback, fadedark) {
 		const $confirmDiv = $('#phpbb_confirm');
 		$confirmDiv.find('.alert_text').html(msg);
-		fadedark = typeof fadedark !== 'undefined' ? fadedark : true;
+		fadedark = typeof fadedark === 'undefined' ? true : fadedark;
 
 		$(document).on('keydown.phpbb.alert', e => {
 			if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
@@ -203,15 +203,16 @@ phpbb.alertTime = 100;
 		return $confirmDiv;
 	};
 
-/**
- * Turn a querystring into an array.
- *
- * @argument {string} string The querystring to parse.
- * @returns {object} The object created.
- */
+	/**
+	 * Turn a querystring into an array.
+	 *
+	 * @argument {string} string The querystring to parse.
+	 * @returns {object} The object created.
+	 */
 	phpbb.parseQuerystring = function (string) {
-		let params = {},
-			i, split;
+		const params = {};
+		let i;
+		let split;
 
 		string = string.split('&');
 		for (i = 0; i < string.length; i++) {
@@ -221,27 +222,27 @@ phpbb.alertTime = 100;
 		return params;
 	};
 
-/**
- * Makes a link use AJAX instead of loading an entire page.
- *
- * This function will work for links (both standard links and links which
- * invoke confirm_box) and forms. It will be called automatically for links
- * and forms with the data-ajax attribute set, and will call the necessary
- * callback.
- *
- * For more info, view the following page on the phpBB wiki:
- * http://wiki.phpbb.com/JavaScript_Function.phpbb.ajaxify
- *
- * @param {object} options Options.
- */
+	/**
+	 * Makes a link use AJAX instead of loading an entire page.
+	 *
+	 * This function will work for links (both standard links and links which
+	 * invoke confirm_box) and forms. It will be called automatically for links
+	 * and forms with the data-ajax attribute set, and will call the necessary
+	 * callback.
+	 *
+	 * For more info, view the following page on the phpBB wiki:
+	 * http://wiki.phpbb.com/JavaScript_Function.phpbb.ajaxify
+	 *
+	 * @param {object} options Options.
+	 */
 	phpbb.ajaxify = function (options) {
-		let $elements = $(options.selector),
-			refresh = options.refresh,
-			callback = options.callback,
-			overlay = (typeof options.overlay !== 'undefined') ? options.overlay : true,
-			isForm = $elements.is('form'),
-			isText = $elements.is('input[type="text"], textarea'),
-			eventName;
+		const $elements = $(options.selector);
+		let refresh = options.refresh;
+		const callback = options.callback;
+		const overlay = (typeof options.overlay === 'undefined') ? true : options.overlay;
+		const isForm = $elements.is('form');
+		const isText = $elements.is('input[type="text"], textarea');
+		let eventName;
 
 		if (isForm) {
 			eventName = 'submit';
@@ -252,76 +253,84 @@ phpbb.alertTime = 100;
 		}
 
 		$elements.on(eventName, function (event) {
-			let action, method, data, submit,
-				that = this,
-				$this = $(this);
+			let action;
+			let method;
+			let data;
+			let submit;
+			const that = this;
+			const $this = $(this);
 
 			if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false') {
 				return;
 			}
 
-		/**
-		 * Handler for AJAX errors
-		 */
+			/**
+			 * Handler for AJAX errors
+			 */
 			function errorHandler(jqXHR, textStatus, errorThrown) {
+				let responseText;
+				let errorText = false;
+
 				if (typeof console !== 'undefined' && console.log) {
 					console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
 				}
+
 				phpbb.clearLoadingTimeout();
-				let responseText,
-					errorText = false;
+
 				try {
 					responseText = JSON.parse(jqXHR.responseText);
 					responseText = responseText.message;
-				} catch (e) {}
+				} catch (err) {}
+
 				if (typeof responseText === 'string' && responseText.length > 0) {
 					errorText = responseText;
 				} else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
 					errorText = errorThrown;
 				} else {
 					errorText = $dark.attr('data-ajax-error-text-' + textStatus);
-					if (typeof errorText !== 'string' || !errorText.length) {
+					if (typeof errorText !== 'string' || errorText.length === 0) {
 						errorText = $dark.attr('data-ajax-error-text');
 					}
 				}
+
 				phpbb.alert($dark.attr('data-ajax-error-title'), errorText);
 			}
 
-		/**
-		 * This is a private function used to handle the callbacks, refreshes
-		 * and alert. It calls the callback, refreshes the page if necessary, and
-		 * displays an alert to the user and removes it after an amount of time.
-		 *
-		 * It cannot be called from outside this function, and is purely here to
-		 * avoid repetition of code.
-		 *
-		 * @param {object} res The object sent back by the server.
-		 */
+			/**
+			 * This is a private function used to handle the callbacks, refreshes
+			 * and alert. It calls the callback, refreshes the page if necessary, and
+			 * displays an alert to the user and removes it after an amount of time.
+			 *
+			 * It cannot be called from outside this function, and is purely here to
+			 * avoid repetition of code.
+			 *
+			 * @param {object} res The object sent back by the server.
+			 */
 			function returnHandler(res) {
 				let alert;
 
 				phpbb.clearLoadingTimeout();
 
-			// Is a confirmation required?
+				// Is a confirmation required?
 				if (typeof res.S_CONFIRM_ACTION === 'undefined') {
-				// If a confirmation is not required, display an alert and call the
-				// callbacks.
-					if (typeof res.MESSAGE_TITLE !== 'undefined') {
-						alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-					} else {
+					// If a confirmation is not required, display an alert and call the
+					// callbacks.
+					if (typeof res.MESSAGE_TITLE === 'undefined') {
 						$dark.fadeOut(phpbb.alertTime);
 
 						if ($loadingIndicator) {
 							$loadingIndicator.fadeOut(phpbb.alertTime);
 						}
+					} else {
+						alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
 					}
 
 					if (typeof phpbb.ajaxCallbacks[callback] === 'function') {
 						phpbb.ajaxCallbacks[callback].call(that, res);
 					}
 
-				// If the server says to refresh the page, check whether the page should
-				// be refreshed and refresh page after specified time if required.
+					// If the server says to refresh the page, check whether the page should
+					// be refreshed and refresh page after specified time if required.
 					if (res.REFRESH_DATA) {
 						if (typeof refresh === 'function') {
 							refresh = refresh(res.REFRESH_DATA.url);
@@ -334,8 +343,8 @@ phpbb.alertTime = 100;
 								window.location = res.REFRESH_DATA.url;
 							}
 
-						// Hide the alert even if we refresh the page, in case the user
-						// presses the back button.
+							// Hide the alert even if we refresh the page, in case the user
+							// presses the back button.
 							$dark.fadeOut(phpbb.alertTime, () => {
 								if (typeof alert !== 'undefined') {
 									alert.hide();
@@ -344,7 +353,7 @@ phpbb.alertTime = 100;
 						}, res.REFRESH_DATA.time * 1000); // Server specifies time in seconds
 					}
 				} else {
-				// If confirmation is required, display a dialog to the user.
+					// If confirmation is required, display a dialog to the user.
 					phpbb.confirm(res.MESSAGE_BODY, del => {
 						if (!del) {
 							return;
@@ -363,8 +372,8 @@ phpbb.alertTime = 100;
 				}
 			}
 
-		// If the element is a form, POST must be used and some extra data must
-		// be taken from the form.
+			// If the element is a form, POST must be used and some extra data must
+			// be taken from the form.
 			const runFilter = (typeof options.filter === 'function');
 			data = {};
 
@@ -413,8 +422,8 @@ phpbb.alertTime = 100;
 				});
 			};
 
-		// If filter function returns false, cancel the AJAX functionality,
-		// and return true (meaning that the HTTP request will be sent normally).
+			// If filter function returns false, cancel the AJAX functionality,
+			// and return true (meaning that the HTTP request will be sent normally).
 			if (runFilter && !options.filter.call(this, data, event, sendRequest)) {
 				return;
 			}
@@ -427,7 +436,7 @@ phpbb.alertTime = 100;
 			$elements.find('input:submit').click(function () {
 				const $this = $(this);
 
-			// Remove data-clicked attribute from any submit button of form
+				// Remove data-clicked attribute from any submit button of form
 				$this.parents('form:first').find('input:submit[data-clicked]').removeAttr('data-clicked');
 
 				$this.attr('data-clicked', 'true');
@@ -445,12 +454,12 @@ phpbb.alertTime = 100;
 		container: []
 	};
 
-/**
- * Get cached search data.
- *
- * @param {string} id Search ID.
- * @returns {bool|object} Cached data object. Returns false if no data exists.
- */
+	/**
+	 * Get cached search data.
+	 *
+	 * @param {string} id Search ID.
+	 * @returns {bool|object} Cached data object. Returns false if no data exists.
+	 */
 	phpbb.search.cache.get = function (id) {
 		if (this.data[id]) {
 			return this.data[id];
@@ -458,13 +467,13 @@ phpbb.alertTime = 100;
 		return false;
 	};
 
-/**
- * Set search cache data value.
- *
- * @param {string} id		Search ID.
- * @param {string} key		Data key.
- * @param {string} value	Data value.
- */
+	/**
+	 * Set search cache data value.
+	 *
+	 * @param {string} id		Search ID.
+	 * @param {string} key		Data key.
+	 * @param {string} value	Data value.
+	 */
 	phpbb.search.cache.set = function (id, key, value) {
 		if (!this.data[id]) {
 			this.data[id] = {results: []};
@@ -472,37 +481,37 @@ phpbb.alertTime = 100;
 		this.data[id][key] = value;
 	};
 
-/**
- * Cache search result.
- *
- * @param {string} id		Search ID.
- * @param {string} keyword	Keyword.
- * @param {Array} results	Search results.
- */
+	/**
+	 * Cache search result.
+	 *
+	 * @param {string} id		Search ID.
+	 * @param {string} keyword	Keyword.
+	 * @param {Array} results	Search results.
+	 */
 	phpbb.search.cache.setResults = function (id, keyword, results) {
 		this.data[id].results[keyword] = results;
 	};
 
-/**
- * Trim spaces from keyword and lower its case.
- *
- * @param {string} keyword Search keyword to clean.
- * @returns {string} Cleaned string.
- */
+	/**
+	 * Trim spaces from keyword and lower its case.
+	 *
+	 * @param {string} keyword Search keyword to clean.
+	 * @returns {string} Cleaned string.
+	 */
 	phpbb.search.cleanKeyword = function (keyword) {
 		return $.trim(keyword).toLowerCase();
 	};
 
-/**
- * Get clean version of search keyword. If textarea supports several keywords
- * (one per line), it fetches the current keyword based on the caret position.
- *
- * @param {jQuery} $input	Search input|textarea.
- * @param {string} keyword	Input|textarea value.
- * @param {bool} multiline	Whether textarea supports multiple search keywords.
- *
- * @returns string Clean string.
- */
+	/**
+	 * Get clean version of search keyword. If textarea supports several keywords
+	 * (one per line), it fetches the current keyword based on the caret position.
+	 *
+	 * @param {jQuery} $input	Search input|textarea.
+	 * @param {string} keyword	Input|textarea value.
+	 * @param {bool} multiline	Whether textarea supports multiple search keywords.
+	 *
+	 * @returns string Clean string.
+	 */
 	phpbb.search.getKeyword = function ($input, keyword, multiline) {
 		if (multiline) {
 			const line = phpbb.search.getKeywordLine($input);
@@ -511,45 +520,47 @@ phpbb.alertTime = 100;
 		return phpbb.search.cleanKeyword(keyword);
 	};
 
-/**
- * Get the textarea line number on which the keyword resides - for textareas
- * that support multiple keywords (one per line).
- *
- * @param {jQuery} $textarea Search textarea.
- * @returns {int} The line number.
- */
+	/**
+	 * Get the textarea line number on which the keyword resides - for textareas
+	 * that support multiple keywords (one per line).
+	 *
+	 * @param {jQuery} $textarea Search textarea.
+	 * @returns {int} The line number.
+	 */
 	phpbb.search.getKeywordLine = function ($textarea) {
 		const selectionStart = $textarea.get(0).selectionStart;
 		return $textarea.val().substr(0, selectionStart).split('\n').length - 1;
 	};
 
-/**
- * Set the value on the input|textarea. If textarea supports multiple
- * keywords, only the active keyword is replaced.
- *
- * @param {jQuery} $input	Search input|textarea.
- * @param {string} value	Value to set.
- * @param {bool} multiline	Whether textarea supports multiple search keywords.
- */
+	/**
+	 * Set the value on the input|textarea. If textarea supports multiple
+	 * keywords, only the active keyword is replaced.
+	 *
+	 * @param {jQuery} $input	Search input|textarea.
+	 * @param {string} value	Value to set.
+	 * @param {bool} multiline	Whether textarea supports multiple search keywords.
+	 */
 	phpbb.search.setValue = function ($input, value, multiline) {
 		if (multiline) {
-			let line = phpbb.search.getKeywordLine($input),
-				lines = $input.val().split('\n');
+			const line = phpbb.search.getKeywordLine($input);
+			const lines = $input.val().split('\n');
+
 			lines[line] = value;
 			value = lines.join('\n');
 		}
+
 		$input.val(value);
 	};
 
-/**
- * Sets the onclick event to set the value on the input|textarea to the
- * selected search result.
- *
- * @param {jQuery} $input		Search input|textarea.
- * @param {object} value		Result object.
- * @param {jQuery} $row			Result element.
- * @param {jQuery} $container	jQuery object for the search container.
- */
+	/**
+	 * Sets the onclick event to set the value on the input|textarea to the
+	 * selected search result.
+	 *
+	 * @param {jQuery} $input		Search input|textarea.
+	 * @param {object} value		Result object.
+	 * @param {jQuery} $row			Result element.
+	 * @param {jQuery} $container	jQuery object for the search container.
+	 */
 	phpbb.search.setValueOnClick = function ($input, value, $row, $container) {
 		$row.click(() => {
 			phpbb.search.setValue($input, value.result, $input.attr('data-multiline'));
@@ -557,26 +568,27 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
- * Runs before the AJAX search request is sent and determines whether
- * there is a need to contact the server. If there are cached results
- * already, those are displayed instead. Executes the AJAX request function
- * itself due to the need to use a timeout to limit the number of requests.
- *
- * @param {Array} data				Data to be sent to the server.
- * @param {object} event			Onkeyup event object.
- * @param {function} sendRequest	Function to execute AJAX request.
- *
- * @returns {bool} Returns false.
- */
+	/**
+	 * Runs before the AJAX search request is sent and determines whether
+	 * there is a need to contact the server. If there are cached results
+	 * already, those are displayed instead. Executes the AJAX request function
+	 * itself due to the need to use a timeout to limit the number of requests.
+	 *
+	 * @param {Array} data				Data to be sent to the server.
+	 * @param {object} event			Onkeyup event object.
+	 * @param {function} sendRequest	Function to execute AJAX request.
+	 *
+	 * @returns {bool} Returns false.
+	 */
 	phpbb.search.filter = function (data, event, sendRequest) {
-		let $this = $(this),
-			dataName = ($this.attr('data-name') !== undefined) ? $this.attr('data-name') : $this.attr('name'),
-			minLength = parseInt($this.attr('data-min-length'), 10),
-			searchID = $this.attr('data-results'),
-			keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline')),
-			cache = phpbb.search.cache.get(searchID),
-			proceed = true;
+		const $this = $(this);
+		const dataName = ($this.attr('data-name') === undefined) ? $this.attr('name') : $this.attr('data-name');
+		const minLength = parseInt($this.attr('data-min-length'), 10);
+		const searchID = $this.attr('data-results');
+		const keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline'));
+		const cache = phpbb.search.cache.get(searchID);
+		let proceed = true;
+
 		data[dataName] = keyword;
 
 		if (cache.timeout) {
@@ -584,15 +596,15 @@ phpbb.alertTime = 100;
 		}
 
 		const timeout = setTimeout(function () {
-		// Check min length and existence of cache.
+			// Check min length and existence of cache.
 			if (minLength > keyword.length) {
 				proceed = false;
 			} else if (cache.lastSearch) {
-			// Has the keyword actually changed?
+				// Has the keyword actually changed?
 				if (cache.lastSearch === keyword) {
 					proceed = false;
 				} else {
-				// Do we already have results for this?
+					// Do we already have results for this?
 					if (cache.results[keyword]) {
 						const response = {
 							keyword,
@@ -602,8 +614,8 @@ phpbb.alertTime = 100;
 						proceed = false;
 					}
 
-				// If the previous search didn't yield results and the string only had characters added to it,
-				// then we won't bother sending a request.
+					// If the previous search didn't yield results and the string only had characters added to it,
+					// then we won't bother sending a request.
 					if (keyword.indexOf(cache.lastSearch) === 0 && cache.results[cache.lastSearch].length === 0) {
 						phpbb.search.cache.set(searchID, 'lastSearch', keyword);
 						phpbb.search.cache.setResults(searchID, keyword, []);
@@ -621,21 +633,21 @@ phpbb.alertTime = 100;
 		return false;
 	};
 
-/**
- * Handle search result response.
- *
- * @param {object} res			Data received from server.
- * @param {jQuery} $input		Search input|textarea.
- * @param {bool} fromCache		Whether the results are from the cache.
- * @param {function} callback	Optional callback to run when assigning each search result.
- */
+	/**
+	 * Handle search result response.
+	 *
+	 * @param {object} res			Data received from server.
+	 * @param {jQuery} $input		Search input|textarea.
+	 * @param {bool} fromCache		Whether the results are from the cache.
+	 * @param {function} callback	Optional callback to run when assigning each search result.
+	 */
 	phpbb.search.handleResponse = function (res, $input, fromCache, callback) {
 		if (typeof res !== 'object') {
 			return;
 		}
 
-		let searchID = $input.attr('data-results'),
-			$container = $(searchID);
+		const searchID = $input.attr('data-results');
+		const $container = $(searchID);
 
 		if (this.cache.get(searchID).callback) {
 			callback = this.cache.get(searchID).callback;
@@ -651,26 +663,26 @@ phpbb.alertTime = 100;
 		this.showResults(res.results, $input, $container, callback);
 	};
 
-/**
- * Show search results.
- *
- * @param {Array} results		Search results.
- * @param {jQuery} $input		Search input|textarea.
- * @param {jQuery} $container	Search results container element.
- * @param {function} callback	Optional callback to run when assigning each search result.
- */
+	/**
+	 * Show search results.
+	 *
+	 * @param {Array} results		Search results.
+	 * @param {jQuery} $input		Search input|textarea.
+	 * @param {jQuery} $container	Search results container element.
+	 * @param {function} callback	Optional callback to run when assigning each search result.
+	 */
 	phpbb.search.showResults = function (results, $input, $container, callback) {
 		const $resultContainer = $('.search-results', $container);
 		this.clearResults($resultContainer);
 
-		if (!results.length) {
+		if (results.length === 0) {
 			$container.hide();
 			return;
 		}
 
-		let searchID = $container.attr('id'),
-			tpl,
-			row;
+		const searchID = $container.attr('id');
+		let tpl;
+		let row;
 
 		if (!this.tpl[searchID]) {
 			tpl = $('.search-result-tpl', $container);
@@ -691,11 +703,11 @@ phpbb.alertTime = 100;
 		$container.show();
 	};
 
-/**
- * Clear search results.
- *
- * @param {jQuery} $container Search results container.
- */
+	/**
+	 * Clear search results.
+	 *
+	 * @param {jQuery} $container Search results container.
+	 */
 	phpbb.search.clearResults = function ($container) {
 		$container.children(':not(.search-result-tpl)').remove();
 	};
@@ -710,25 +722,25 @@ phpbb.alertTime = 100;
 
 	phpbb.history = {};
 
-/**
-* Check whether a method in the native history object is supported.
-*
-* @param {string} fn Method name.
-* @returns {bool} Returns true if the method is supported.
-*/
+	/**
+	* Check whether a method in the native history object is supported.
+	*
+	* @param {string} fn Method name.
+	* @returns {bool} Returns true if the method is supported.
+	*/
 	phpbb.history.isSupported = function (fn) {
 		return !(typeof history === 'undefined' || typeof history[fn] === 'undefined');
 	};
 
-/**
-* Wrapper for the pushState and replaceState methods of the
-* native history object.
-*
-* @param {string} mode		Mode. Either push or replace.
-* @param {string} url		New URL.
-* @param {string} [title]	Optional page title.
-* @param {object} [obj]		Optional state object.
-*/
+	/**
+	* Wrapper for the pushState and replaceState methods of the
+	* native history object.
+	*
+	* @param {string} mode		Mode. Either push or replace.
+	* @param {string} url		New URL.
+	* @param {string} [title]	Optional page title.
+	* @param {object} [obj]		Optional state object.
+	*/
 	phpbb.history.alterUrl = function (mode, url, title, obj) {
 		const fn = mode + 'State';
 
@@ -745,34 +757,34 @@ phpbb.alertTime = 100;
 		history[fn](obj, title, url);
 	};
 
-/**
-* Wrapper for the native history.replaceState method.
-*
-* @param {string} url		New URL.
-* @param {string} [title]	Optional page title.
-* @param {object} [obj]		Optional state object.
-*/
+	/**
+	* Wrapper for the native history.replaceState method.
+	*
+	* @param {string} url		New URL.
+	* @param {string} [title]	Optional page title.
+	* @param {object} [obj]		Optional state object.
+	*/
 	phpbb.history.replaceUrl = function (url, title, obj) {
 		phpbb.history.alterUrl('replace', url, title, obj);
 	};
 
-/**
-* Wrapper for the native history.pushState method.
-*
-* @param {string} url		New URL.
-* @param {string} [title]	Optional page title.
-* @param {object} [obj]		Optional state object.
-*/
+	/**
+	* Wrapper for the native history.pushState method.
+	*
+	* @param {string} url		New URL.
+	* @param {string} [title]	Optional page title.
+	* @param {object} [obj]		Optional state object.
+	*/
 	phpbb.history.pushUrl = function (url, title, obj) {
 		phpbb.history.alterUrl('push', url, title, obj);
 	};
 
-/**
-* Hide the optgroups that are not the selected timezone
-*
-* @param {bool} keepSelection Shall we keep the value selected, or shall the
-* 	user be forced to repick one.
-*/
+	/**
+	* Hide the optgroups that are not the selected timezone
+	*
+	* @param {bool} keepSelection Shall we keep the value selected, or shall the
+	* 	user be forced to repick one.
+	*/
 	phpbb.timezoneSwitchDate = function (keepSelection) {
 		const $timezoneCopy = $('#timezone_copy');
 		const $timezone = $('#timezone');
@@ -780,16 +792,16 @@ phpbb.alertTime = 100;
 		const $tzSelectDateSuggest = $('#tz_select_date_suggest');
 
 		if ($timezoneCopy.length === 0) {
-		// We make a backup of the original dropdown, so we can remove optgroups
-		// instead of setting display to none, because IE and chrome will not
-		// hide options inside of optgroups and selects via css
+			// We make a backup of the original dropdown, so we can remove optgroups
+			// instead of setting display to none, because IE and chrome will not
+			// hide options inside of optgroups and selects via css
 			$timezone.clone()
 			.attr('id', 'timezone_copy')
 			.css('display', 'none')
 			.attr('name', 'tz_copy')
 			.insertAfter('#timezone');
 		} else {
-		// Copy the content of our backup, so we can remove all unneeded options
+			// Copy the content of our backup, so we can remove all unneeded options
 			$timezone.html($timezoneCopy.html());
 		}
 
@@ -806,7 +818,7 @@ phpbb.alertTime = 100;
 		const $tzOptions = $timezone.children('optgroup[data-tz-value="' + $tzDate.val() + '"]').children('option');
 
 		if ($tzOptions.length === 1) {
-		// If there is only one timezone for the selected date, we just select that automatically.
+			// If there is only one timezone for the selected date, we just select that automatically.
 			$tzOptions.prop('selected', true);
 			keepSelection = true;
 		}
@@ -819,20 +831,20 @@ phpbb.alertTime = 100;
 		}
 	};
 
-/**
-* Display the date/time select
-*/
+	/**
+	* Display the date/time select
+	*/
 	phpbb.timezoneEnableDateSelection = function () {
 		$('#tz_select_date').css('display', 'block');
 	};
 
-/**
-* Preselect a date/time or suggest one, if it is not picked.
-*
-* @param {bool} forceSelector Shall we select the suggestion?
-*/
+	/**
+	* Preselect a date/time or suggest one, if it is not picked.
+	*
+	* @param {bool} forceSelector Shall we select the suggestion?
+	*/
 	phpbb.timezonePreselectSelect = function (forceSelector) {
-	// The offset returned here is in minutes and negated.
+		// The offset returned here is in minutes and negated.
 		let offset = (new Date()).getTimezoneOffset();
 		let sign = '-';
 
@@ -868,8 +880,8 @@ phpbb.alertTime = 100;
 
 			if (option.value.substring(0, prefixLength) === prefix) {
 				if ($('#tz_date').val() !== option.value && !forceSelector) {
-				// We do not select the option for the user, but notify him,
-				// that we would suggest a different setting.
+					// We do not select the option for the user, but notify him,
+					// that we would suggest a different setting.
 					phpbb.timezoneSwitchDate(true);
 					$tzSelectDateSuggest.css('display', 'inline');
 				} else {
@@ -884,7 +896,7 @@ phpbb.alertTime = 100;
 				$tzSelectDateSuggest.attr('value', suggestion.replace('%s', option.innerHTML.substring(0, 9)));
 				$tzSelectDateSuggest.attr('data-suggested-tz', option.innerHTML);
 
-			// Found the suggestion, there cannot be more, so return from here.
+				// Found the suggestion, there cannot be more, so return from here.
 				return;
 			}
 		}
@@ -892,14 +904,14 @@ phpbb.alertTime = 100;
 
 	phpbb.ajaxCallbacks = {};
 
-/**
- * Adds an AJAX callback to be used by phpbb.ajaxify.
- *
- * See the phpbb.ajaxify comments for information on stuff like parameters.
- *
- * @param {string} id The name of the callback.
- * @param {function} callback The callback to be called.
- */
+	/**
+	 * Adds an AJAX callback to be used by phpbb.ajaxify.
+	 *
+	 * See the phpbb.ajaxify comments for information on stuff like parameters.
+	 *
+	 * @param {string} id The name of the callback.
+	 * @param {function} callback The callback to be called.
+	 */
 	phpbb.addAjaxCallback = function (id, callback) {
 		if (typeof callback === 'function') {
 			phpbb.ajaxCallbacks[id] = callback;
@@ -907,30 +919,30 @@ phpbb.alertTime = 100;
 		return this;
 	};
 
-/**
- * This callback handles live member searches.
- */
+	/**
+	 * This callback handles live member searches.
+	 */
 	phpbb.addAjaxCallback('member_search', function (res) {
 		phpbb.search.handleResponse(res, $(this), false, phpbb.getFunctionByName('phpbb.search.setValueOnClick'));
 	});
 
-/**
- * This callback alternates text - it replaces the current text with the text in
- * the alt-text data attribute, and replaces the text in the attribute with the
- * current text so that the process can be repeated.
- */
+	/**
+	 * This callback alternates text - it replaces the current text with the text in
+	 * the alt-text data attribute, and replaces the text in the attribute with the
+	 * current text so that the process can be repeated.
+	 */
 	phpbb.addAjaxCallback('alt_text', function () {
-		let $anchor,
-			updateAll = $(this).data('update-all'),
-			altText;
+		let $anchor;
+		const updateAll = $(this).data('update-all');
+		let altText;
 
-		if (updateAll !== undefined && updateAll.length) {
+		if (updateAll !== undefined && updateAll.length !== 0) {
 			$anchor = $(updateAll);
 		} else {
 			$anchor = $(this);
 		}
 
-		$anchor.each(function () {
+		$anchor.each(() => {
 			const $this = $(this);
 			altText = $this.attr('data-alt-text');
 			$this.attr('data-alt-text', $this.text());
@@ -939,42 +951,42 @@ phpbb.alertTime = 100;
 		});
 	});
 
-/**
- * This callback is based on the alt_text callback.
- *
- * It replaces the current text with the text in the alt-text data attribute,
- * and replaces the text in the attribute with the current text so that the
- * process can be repeated.
- * Additionally it replaces the class of the link's parent
- * and changes the link itself.
- */
+	/**
+	 * This callback is based on the alt_text callback.
+	 *
+	 * It replaces the current text with the text in the alt-text data attribute,
+	 * and replaces the text in the attribute with the current text so that the
+	 * process can be repeated.
+	 * Additionally it replaces the class of the link's parent
+	 * and changes the link itself.
+	 */
 	phpbb.addAjaxCallback('toggle_link', function () {
-		let $anchor,
-			updateAll = $(this).data('update-all'),
-			toggleText,
-			toggleUrl,
-			toggleClass;
+		let $anchor;
+		const updateAll = $(this).data('update-all');
+		let toggleText;
+		let toggleUrl;
+		let toggleClass;
 
-		if (updateAll !== undefined && updateAll.length) {
+		if (updateAll !== undefined && updateAll.length !== 0) {
 			$anchor = $(updateAll);
 		} else {
 			$anchor = $(this);
 		}
 
-		$anchor.each(function () {
+		$anchor.each(() => {
 			const $this = $(this);
 
-		// Toggle link url
+			// Toggle link url
 			toggleUrl = $this.attr('data-toggle-url');
 			$this.attr('data-toggle-url', $this.attr('href'));
 			$this.attr('href', toggleUrl);
 
-		// Toggle class of link parent
+			// Toggle class of link parent
 			toggleClass = $this.attr('data-toggle-class');
 			$this.attr('data-toggle-class', $this.children().attr('class'));
 			$this.children('.icon').attr('class', toggleClass);
 
-		// Toggle link text
+			// Toggle link text
 			toggleText = $this.attr('data-toggle-text');
 			$this.attr('data-toggle-text', $this.children('span').text());
 			$this.attr('title', $.trim(toggleText));
@@ -982,30 +994,30 @@ phpbb.alertTime = 100;
 		});
 	});
 
-/**
-* Automatically resize textarea
-*
-* This function automatically resizes textarea elements when user
-* types text.
-*
-* @param {jQuery} $items jQuery object(s) to resize
-* @param {object} [options] Optional parameter that adjusts default
-* 	configuration. See configuration variable
-*
-* Optional parameters:
-*	minWindowHeight {number} Minimum browser window height when textareas are resized. Default = 500
-*	minHeight {number} Minimum height of textarea. Default = 200
-*	maxHeight {number} Maximum height of textarea. Default = 500
-*	heightDiff {number} Minimum difference between window and textarea height. Default = 200
-*	resizeCallback {function} Function to call after resizing textarea
-*	resetCallback {function} Function to call when resize has been canceled
+	/**
+	* Automatically resize textarea
+	*
+	* This function automatically resizes textarea elements when user
+	* types text.
+	*
+	* @param {jQuery} $items jQuery object(s) to resize
+	* @param {object} [options] Optional parameter that adjusts default
+	* 	configuration. See configuration variable
+	*
+	* Optional parameters:
+	*	minWindowHeight {number} Minimum browser window height when textareas are resized. Default = 500
+	*	minHeight {number} Minimum height of textarea. Default = 200
+	*	maxHeight {number} Maximum height of textarea. Default = 500
+	*	heightDiff {number} Minimum difference between window and textarea height. Default = 200
+	*	resizeCallback {function} Function to call after resizing textarea
+	*	resetCallback {function} Function to call when resize has been canceled
 
-*		Callback function format: function(item) {}
-*			this points to DOM object
-*			item is a jQuery object, same as this
-*/
+	*		Callback function format: function(item) {}
+	*			this points to DOM object
+	*			item is a jQuery object, same as this
+	*/
 	phpbb.resizeTextArea = function ($items, options) {
-	// Configuration
+		// Configuration
 		let configuration = {
 			minWindowHeight: 500,
 			minHeight: 200,
@@ -1034,6 +1046,7 @@ phpbb.alertTime = 100;
 		}
 
 		function autoResize(item) {
+			const $item = $(item);
 			function setHeight(height) {
 				height += parseInt($item.css('height'), 10) - $item.innerHeight();
 				$item
@@ -1049,13 +1062,13 @@ phpbb.alertTime = 100;
 				return;
 			}
 
-			var maxHeight = Math.min(
+			const maxHeight = Math.min(
 				Math.max(windowHeight - configuration.heightDiff, configuration.minHeight),
 				configuration.maxHeight
-			),
-				$item = $(item),
-				height = parseInt($item.innerHeight(), 10),
-				scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
+			);
+
+			const height = parseInt($item.innerHeight(), 10);
+			const scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
 			if (height < 0) {
 				return;
@@ -1069,13 +1082,13 @@ phpbb.alertTime = 100;
 		}
 
 		$items.on('focus change keyup', function () {
-			$(this).each(function () {
+			$(this).each(() => {
 				autoResize(this);
 			});
 		}).change();
 
 		$(window).resize(() => {
-			$items.each(function () {
+			$items.each(() => {
 				if ($(this).hasClass('auto-resized')) {
 					autoResize(this);
 				}
@@ -1083,28 +1096,28 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
-* Check if cursor in textarea is currently inside a bbcode tag
-*
-* @param {object} textarea Textarea DOM object
-* @param {Array} startTags List of start tags to look for
-*		For example, Array('[code]', '[code=')
-* @param {Array} endTags List of end tags to look for
-*		For example, Array('[/code]')
-*
-* @returns {boolean} True if cursor is in bbcode tag
-*/
+	/**
+	* Check if cursor in textarea is currently inside a bbcode tag
+	*
+	* @param {object} textarea Textarea DOM object
+	* @param {Array} startTags List of start tags to look for
+	*		For example, Array('[code]', '[code=')
+	* @param {Array} endTags List of end tags to look for
+	*		For example, Array('[/code]')
+	*
+	* @returns {boolean} True if cursor is in bbcode tag
+	*/
 	phpbb.inBBCodeTag = function (textarea, startTags, endTags) {
-		let start = textarea.selectionStart,
-			lastEnd = -1,
-			lastStart = -1,
-			i, index, value;
+		const start = textarea.selectionStart;
+		let lastEnd = -1;
+		let lastStart = -1;
+		let i;
+		let index;
+		const value = textarea.value.toLowerCase();
 
 		if (typeof start !== 'number') {
 			return false;
 		}
-
-		value = textarea.value.toLowerCase();
 
 		for (i = 0; i < startTags.length; i++) {
 			const tagLength = startTags[i].length;
@@ -1113,6 +1126,7 @@ phpbb.alertTime = 100;
 				lastStart = Math.max(lastStart, index);
 			}
 		}
+
 		if (lastStart === -1) {
 			return false;
 		}
@@ -1127,23 +1141,23 @@ phpbb.alertTime = 100;
 		return (lastEnd < lastStart);
 	};
 
-/**
-* Adjust textarea to manage code bbcode
-*
-* This function allows to use tab characters when typing code
-* and keeps indentation of previous line of code when adding new
-* line while typing code.
-*
-* Editor's functionality is changed only when cursor is between
-* [code] and [/code] bbcode tags.
-*
-* @param {object} textarea Textarea DOM object to apply editor to
-*/
+	/**
+	* Adjust textarea to manage code bbcode
+	*
+	* This function allows to use tab characters when typing code
+	* and keeps indentation of previous line of code when adding new
+	* line while typing code.
+	*
+	* Editor's functionality is changed only when cursor is between
+	* [code] and [/code] bbcode tags.
+	*
+	* @param {object} textarea Textarea DOM object to apply editor to
+	*/
 	phpbb.applyCodeEditor = function (textarea) {
-	// List of allowed start and end bbcode code tags, in lower case
-		let startTags = ['[code]', '[code='],
-			startTagsEnd = ']',
-			endTags = ['[/code]'];
+		// List of allowed start and end bbcode code tags, in lower case
+		const startTags = ['[code]', '[code='];
+		const startTagsEnd = ']';
+		const endTags = ['[/code]'];
 
 		if (!textarea || typeof textarea.selectionStart !== 'number') {
 			return;
@@ -1157,18 +1171,18 @@ phpbb.alertTime = 100;
 			return phpbb.inBBCodeTag(textarea, startTags, endTags);
 		}
 
-	/**
-	* Get line of text before cursor
-	*
-	* @param {boolean} stripCodeStart If true, only part of line
-	*		after [code] tag will be returned.
-	*
-	* @returns {string} Line of text
-	*/
+		/**
+		* Get line of text before cursor
+		*
+		* @param {boolean} stripCodeStart If true, only part of line
+		*		after [code] tag will be returned.
+		*
+		* @returns {string} Line of text
+		*/
 		function getLastLine(stripCodeStart) {
-			let start = textarea.selectionStart,
-				value = textarea.value,
-				index = value.lastIndexOf('\n', start - 1);
+			const start = textarea.selectionStart;
+			let value = textarea.value;
+			let index = value.lastIndexOf('\n', start - 1);
 
 			value = value.substring(index + 1, start);
 
@@ -1193,24 +1207,25 @@ phpbb.alertTime = 100;
 			return value;
 		}
 
-	/**
-	* Append text at cursor position
-	*
-	* @param {string} text Text to append
-	*/
+		/**
+		* Append text at cursor position
+		*
+		* @param {string} text Text to append
+		*/
 		function appendText(text) {
-			let start = textarea.selectionStart,
-				end = textarea.selectionEnd,
-				value = textarea.value;
+			const start = textarea.selectionStart;
+			const end = textarea.selectionEnd;
+			const value = textarea.value;
 
 			textarea.value = value.substr(0, start) + text + value.substr(end);
-			textarea.selectionStart = textarea.selectionEnd = start + text.length;
+			textarea.selectionStart = start + text.length;
+			textarea.selectionEnd = start + text.length;
 		}
 
 		$(textarea).data('code-editor', true).on('keydown', event => {
 			const key = event.keyCode || event.which;
 
-		// Intercept tabs
+			// Intercept tabs
 			if (key === keymap.TAB	&&
 			!event.ctrlKey		&&
 			!event.shiftKey		&&
@@ -1223,11 +1238,11 @@ phpbb.alertTime = 100;
 				}
 			}
 
-		// Intercept new line characters
+			// Intercept new line characters
 			if (key === keymap.ENTER) {
 				if (inTag()) {
-					let lastLine = getLastLine(true),
-						code = String(/^\s*/g.exec(lastLine));
+					const lastLine = getLastLine(true);
+					const code = String(/^\s*/g.exec(lastLine));
 
 					if (code.length > 0) {
 						appendText('\n' + code);
@@ -1238,14 +1253,14 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
- * Show drag and drop animation when textarea is present
- *
- * This function will enable the drag and drop animation for a specified
- * textarea.
- *
- * @param {HTMLElement} textarea Textarea DOM object to apply editor to
- */
+	/**
+	 * Show drag and drop animation when textarea is present
+	 *
+	 * This function will enable the drag and drop animation for a specified
+	 * textarea.
+	 *
+	 * @param {HTMLElement} textarea Textarea DOM object to apply editor to
+	 */
 	phpbb.showDragNDrop = function (textarea) {
 		if (!textarea) {
 			return;
@@ -1263,35 +1278,35 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
-* List of classes that toggle dropdown menu,
-* list of classes that contain visible dropdown menu
-*
-* Add your own classes to strings with comma (probably you
-* will never need to do that)
-*/
+	/**
+	* List of classes that toggle dropdown menu,
+	* list of classes that contain visible dropdown menu
+	*
+	* Add your own classes to strings with comma (probably you
+	* will never need to do that)
+	*/
 	phpbb.dropdownHandles = '.dropdown-container.dropdown-visible .dropdown-toggle';
 	phpbb.dropdownVisibleContainers = '.dropdown-container.dropdown-visible';
 
-/**
-* Dropdown toggle event handler
-* This handler is used by phpBB.registerDropdown() and other functions
-*/
+	/**
+	* Dropdown toggle event handler
+	* This handler is used by phpBB.registerDropdown() and other functions
+	*/
 	phpbb.toggleDropdown = function () {
-		let $this = $(this),
-			options = $this.data('dropdown-options'),
-			parent = options.parent,
-			visible = parent.hasClass('dropdown-visible'),
-			direction;
+		const $this = $(this);
+		const options = $this.data('dropdown-options');
+		const parent = options.parent;
+		const visible = parent.hasClass('dropdown-visible');
+		let direction;
 
 		if (!visible) {
-		// Hide other dropdown menus
+			// Hide other dropdown menus
 			$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
 
-		// Figure out direction of dropdown
+			// Figure out direction of dropdown
 			direction = options.direction;
-			let verticalDirection = options.verticalDirection,
-				offset = $this.offset();
+			let verticalDirection = options.verticalDirection;
+			const offset = $this.offset();
 
 			if (direction === 'auto') {
 				if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
@@ -1300,15 +1315,17 @@ phpbb.alertTime = 100;
 					direction = 'left';
 				}
 			}
+
 			parent.toggleClass(options.leftClass, direction === 'left')
 			.toggleClass(options.rightClass, direction === 'right');
 
 			if (verticalDirection === 'auto') {
-				let height = $(window).height(),
-					top = offset.top - $(window).scrollTop();
+				const height = $(window).height();
+				const top = offset.top - $(window).scrollTop();
 
 				verticalDirection = (top < height * 0.7) ? 'down' : 'up';
 			}
+
 			parent.toggleClass(options.upClass, verticalDirection === 'up')
 			.toggleClass(options.downClass, verticalDirection === 'down');
 		}
@@ -1317,12 +1334,12 @@ phpbb.alertTime = 100;
 		parent.toggleClass(options.visibleClass, !visible)
 		.toggleClass('dropdown-visible', !visible);
 
-	// Check dimensions when showing dropdown
-	// !visible because variable shows state of dropdown before it was toggled
+		// Check dimensions when showing dropdown
+		// !visible because variable shows state of dropdown before it was toggled
 		if (!visible) {
 			const windowWidth = $(window).width();
 
-			options.dropdown.find('.dropdown-contents').each(function () {
+			options.dropdown.find('.dropdown-contents').each(() => {
 				const $this = $(this);
 
 				$this.css({
@@ -1331,8 +1348,8 @@ phpbb.alertTime = 100;
 					maxWidth: (windowWidth - 4) + 'px'
 				});
 
-				let offset = $this.offset().left,
-					width = $this.outerWidth(true);
+				const offset = $this.offset().left;
+				const width = $this.outerWidth(true);
 
 				if (offset < 2) {
 					$this.css('left', (2 - offset) + 'px');
@@ -1340,20 +1357,21 @@ phpbb.alertTime = 100;
 					$this.css('margin-left', (windowWidth - offset - width - 2) + 'px');
 				}
 
-			// Check whether the vertical scrollbar is present.
+				// Check whether the vertical scrollbar is present.
 				$this.toggleClass('dropdown-nonscroll', this.scrollHeight === $this.innerHeight());
 			});
+
 			const freeSpace = parent.offset().left - 4;
 
 			if (direction === 'left') {
 				options.dropdown.css('margin-left', '-' + freeSpace + 'px');
 
-			// Try to position the notification dropdown correctly in RTL-responsive mode
+				// Try to position the notification dropdown correctly in RTL-responsive mode
 				if (options.dropdown.hasClass('dropdown-extended')) {
-					let contentWidth,
-						fullFreeSpace = freeSpace + parent.outerWidth();
+					let contentWidth;
+					const fullFreeSpace = freeSpace + parent.outerWidth();
 
-					options.dropdown.find('.dropdown-contents').each(function () {
+					options.dropdown.find('.dropdown-contents').each(() => {
 						contentWidth = parseInt($(this).outerWidth(), 10);
 						$(this).css({marginLeft: 0, left: 0});
 					});
@@ -1369,33 +1387,33 @@ phpbb.alertTime = 100;
 			}
 		}
 
-	// Prevent event propagation
+		// Prevent event propagation
 		if (arguments.length > 0) {
 			try {
 				const e = arguments[0];
 				e.preventDefault();
 				e.stopPropagation();
-			} catch (error) { }
+			} catch (err) { }
 		}
 		return false;
 	};
 
-/**
-* Toggle dropdown submenu
-*/
+	/**
+	* Toggle dropdown submenu
+	*/
 	phpbb.toggleSubmenu = function (e) {
 		$(this).siblings('.dropdown-submenu').toggle();
 		e.preventDefault();
 	};
 
-/**
-* Register dropdown menu
-* Shows/hides dropdown, decides which side to open to
-*
-* @param {jQuery} toggle Link that toggles dropdown.
-* @param {jQuery} dropdown Dropdown menu.
-* @param {Object} options List of options. Optional.
-*/
+	/**
+	* Register dropdown menu
+	* Shows/hides dropdown, decides which side to open to
+	*
+	* @param {jQuery} toggle Link that toggles dropdown.
+	* @param {jQuery} dropdown Dropdown menu.
+	* @param {Object} options List of options. Optional.
+	*/
 	phpbb.registerDropdown = function (toggle, dropdown, options) {
 		let ops = {
 			parent: toggle.parent(), // Parent item to add classes to
@@ -1421,18 +1439,20 @@ phpbb.alertTime = 100;
 		$('.dropdown-toggle-submenu', ops.parent).click(phpbb.toggleSubmenu);
 	};
 
-/**
-* Get the HTML for a color palette table.
-*
-* @param {string} dir Palette direction - either v or h
-* @param {int} width Palette cell width.
-* @param {int} height Palette cell height.
-*/
+	/**
+	* Get the HTML for a color palette table.
+	*
+	* @param {string} dir Palette direction - either v or h
+	* @param {int} width Palette cell width.
+	* @param {int} height Palette cell height.
+	*/
 	phpbb.colorPalette = function (dir, width, height) {
-		let r, g, b,
-			numberList = new Array(6),
-			color = '',
-			html = '';
+		let r;
+		let g;
+		let b;
+		const numberList = new Array(6);
+		let color = '';
+		let html = '';
 
 		numberList[0] = '00';
 		numberList[1] = '40';
@@ -1474,28 +1494,28 @@ phpbb.alertTime = 100;
 		return html;
 	};
 
-/**
-* Register a color palette.
-*
-* @param {jQuery} el jQuery object for the palette container.
-*/
+	/**
+	* Register a color palette.
+	*
+	* @param {jQuery} el jQuery object for the palette container.
+	*/
 	phpbb.registerPalette = function (el) {
-		let	orientation	= el.attr('data-orientation'),
-			height		= el.attr('data-height'),
-			width		= el.attr('data-width'),
-			target		= el.attr('data-target'),
-			bbcode		= el.attr('data-bbcode');
+		const orientation = el.attr('data-orientation');
+		const height = el.attr('data-height');
+		const width = el.attr('data-width');
+		const target = el.attr('data-target');
+		const bbcode = el.attr('data-bbcode');
 
-	// Insert the palette HTML into the container.
+		// Insert the palette HTML into the container.
 		el.html(phpbb.colorPalette(orientation, width, height));
 
-	// Add toggle control.
+		// Add toggle control.
 		$('#color_palette_toggle').click(e => {
 			el.toggle();
 			e.preventDefault();
 		});
 
-	// Attach event handler when a palette cell is clicked.
+		// Attach event handler when a palette cell is clicked.
 		$(el).on('click', 'a', function (e) {
 			const color = $(this).attr('data-color');
 
@@ -1508,15 +1528,15 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
-* Set display of page element
-*
-* @param {string} id The ID of the element to change
-* @param {int} action Set to 0 if element display should be toggled, -1 for
-*			hiding the element, and 1 for showing it.
-* @param {string} type Display type that should be used, e.g. inline, block or
-*			other CSS "display" types
-*/
+	/**
+	* Set display of page element
+	*
+	* @param {string} id The ID of the element to change
+	* @param {int} action Set to 0 if element display should be toggled, -1 for
+	*			hiding the element, and 1 for showing it.
+	* @param {string} type Display type that should be used, e.g. inline, block or
+	*			other CSS "display" types
+	*/
 	phpbb.toggleDisplay = function (id, action, type) {
 		if (!type) {
 			type = 'block';
@@ -1531,19 +1551,20 @@ phpbb.alertTime = 100;
 		$element.css('display', ((action === 1) ? type : 'none'));
 	};
 
-/**
-* Toggle additional settings based on the selected
-* option of select element.
-*
-* @param {jQuery} el jQuery select element object.
-*/
+	/**
+	* Toggle additional settings based on the selected
+	* option of select element.
+	*
+	* @param {jQuery} el jQuery select element object.
+	*/
 	phpbb.toggleSelectSettings = function (el) {
-		el.children().each(function () {
-			let $this = $(this),
-				$setting = $($this.data('toggle-setting'));
+		el.children().each(() => {
+			const $this = $(this);
+			const $setting = $($this.data('toggle-setting'));
+
 			$setting.toggle($this.is(':selected'));
 
-		// Disable any input elements that are not visible right now
+			// Disable any input elements that are not visible right now
 			if ($this.is(':selected')) {
 				$($this.data('toggle-setting') + ' input').prop('disabled', false);
 			} else {
@@ -1552,17 +1573,17 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
-* Get function from name.
-* Based on http://stackoverflow.com/a/359910
-*
-* @param {string} functionName Function to get.
-* @returns function
-*/
+	/**
+	* Get function from name.
+	* Based on http://stackoverflow.com/a/359910
+	*
+	* @param {string} functionName Function to get.
+	* @returns function
+	*/
 	phpbb.getFunctionByName = function (functionName) {
-		let namespaces = functionName.split('.'),
-			func = namespaces.pop(),
-			context = window;
+		const namespaces = functionName.split('.');
+		const func = namespaces.pop();
+		let context = window;
 
 		for (let i = 0; i < namespaces.length; i++) {
 			context = context[namespaces[i]];
@@ -1570,45 +1591,48 @@ phpbb.alertTime = 100;
 		return context[func];
 	};
 
-/**
-* Register page dropdowns.
-*/
+	/**
+	* Register page dropdowns.
+	*/
 	phpbb.registerPageDropdowns = function () {
 		const $body = $('body');
 
-		$body.find('.dropdown-container').each(function () {
-			let $this = $(this),
-				$trigger = $this.find('.dropdown-trigger:first'),
-				$contents = $this.find('.dropdown'),
-				options = {
-					direction: 'auto',
-					verticalDirection: 'auto'
-				},
-				data;
+		$body.find('.dropdown-container').each(() => {
+			const $this = $(this);
+			let $trigger = $this.find('.dropdown-trigger:first');
+			let $contents = $this.find('.dropdown');
+			const options = {
+				direction: 'auto',
+				verticalDirection: 'auto'
+			};
+			let data;
 
-			if (!$trigger.length) {
+			if ($trigger.length === 0) {
 				data = $this.attr('data-dropdown-trigger');
 				$trigger = data ? $this.children(data) : $this.children('a:first');
 			}
 
-			if (!$contents.length) {
+			if ($contents.length === 0) {
 				data = $this.attr('data-dropdown-contents');
 				$contents = data ? $this.children(data) : $this.children('div:first');
 			}
 
-			if (!$trigger.length || !$contents.length) {
+			if ($trigger.length === 0 || $contents.length === 0) {
 				return;
 			}
 
 			if ($this.hasClass('dropdown-up')) {
 				options.verticalDirection = 'up';
 			}
+
 			if ($this.hasClass('dropdown-down')) {
 				options.verticalDirection = 'down';
 			}
+
 			if ($this.hasClass('dropdown-left')) {
 				options.direction = 'left';
 			}
+
 			if ($this.hasClass('dropdown-right')) {
 				options.direction = 'right';
 			}
@@ -1616,7 +1640,7 @@ phpbb.alertTime = 100;
 			phpbb.registerDropdown($trigger, $contents, options);
 		});
 
-	// Hide active dropdowns when click event happens outside
+		// Hide active dropdowns when click event happens outside
 		$body.click(e => {
 			const $parents = $(e.target).parents();
 			if (!$parents.is(phpbb.dropdownVisibleContainers)) {
@@ -1625,11 +1649,11 @@ phpbb.alertTime = 100;
 		});
 	};
 
-/**
- * Handle avatars to be lazy loaded.
- */
-	phpbb.lazyLoadAvatars = function loadAvatars() {
-		$('.avatar[data-src]').each(function () {
+	/**
+	 * Handle avatars to be lazy loaded.
+	 */
+	phpbb.lazyLoadAvatars = function () {
+		$('.avatar[data-src]').each(() => {
 			const $avatar = $(this);
 
 			$avatar
@@ -1640,34 +1664,33 @@ phpbb.alertTime = 100;
 
 	$(window).load(phpbb.lazyLoadAvatars);
 
-/**
-* Apply code editor to all textarea elements with data-bbcode attribute
-*/
-	$(() => {
-		$('textarea[data-bbcode]').each(function () {
-			phpbb.applyCodeEditor(this);
-		});
+	/**
+	* Apply code editor to all textarea elements with data-bbcode attribute
+	*/
+	$('textarea[data-bbcode]').each(() => {
+		phpbb.applyCodeEditor(this);
+	});
 
-		phpbb.registerPageDropdowns();
+	phpbb.registerPageDropdowns();
 
-		$('#color_palette_placeholder').each(function () {
-			phpbb.registerPalette($(this));
-		});
+	$('#color_palette_placeholder').each(() => {
+		phpbb.registerPalette($(this));
+	});
 
 	// Update browser history URL to point to specific post in viewtopic.php
 	// when using view=unread#unread link.
-		phpbb.history.replaceUrl($('#unread[data-url]').data('url'));
+	phpbb.history.replaceUrl($('#unread[data-url]').data('url'));
 
 	// Hide settings that are not selected via select element.
-		$('select[data-togglable-settings]').each(function () {
-			const $this = $(this);
+	$('select[data-togglable-settings]').each(() => {
+		const $this = $(this);
 
-			$this.change(() => {
-				phpbb.toggleSelectSettings($this);
-			});
+		$this.change(() => {
 			phpbb.toggleSelectSettings($this);
 		});
+
+		phpbb.toggleSelectSettings($this);
 	});
 })(jQuery); // Avoid conflicts with other libraries
 
-/* eslint-enable camelcase, no-unused-vars */
+/* eslint-enable camelcase, no-unused-vars, max-depth */
