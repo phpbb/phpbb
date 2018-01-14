@@ -3,7 +3,6 @@
 const del = require('del');
 const gulp = require('gulp');
 const autoprefixer = require('gulp-autoprefixer');
-const sass = require('gulp-sass');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
 const cssnano = require('gulp-cssnano');
@@ -11,13 +10,11 @@ const postcss = require('gulp-postcss');
 const stylefmt = require('gulp-stylefmt');
 const sorting = require('postcss-sorting');
 const atimport = require('postcss-import');
-const torem = require('postcss-pxtorem');
 const sortOrder = require('./.postcss-sorting.json');
-const pkg = require('./package.json');
 
 // Config
 const build = {
-	css: './phpBB/styles/prosilver/theme/',
+	css: './phpBB/styles/prosilver/theme/'
 };
 
 const AUTOPREFIXER_BROWSERS = [
