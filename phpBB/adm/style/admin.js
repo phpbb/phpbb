@@ -1,3 +1,7 @@
+/* global phpbb, jQuery, $, window, document */
+
+/* eslint-disable camelcase, no-unused-vars */
+
 /**
 * PhpBB3 ACP functions
 */
@@ -9,16 +13,16 @@ function parse_document(container) {
 	/**
 	* Navigation
 	*/
-	container.find('#menu').each(function () {
-		let menu = $(this),
-			blocks = menu.children('.menu-block');
+	container.find('#menu').each(() => {
+		const menu = $(this);
+		const blocks = menu.children('.menu-block');
 
-		if (!blocks.length) {
+		if (blocks.length === 0) {
 			return;
 		}
 
 		// Set onclick event
-		blocks.children('a.header').click(function () {
+		blocks.children('a.header').click(() => {
 			const parent = $(this).parent();
 			if (!parent.hasClass('active')) {
 				parent.siblings().removeClass('active');
@@ -30,7 +34,7 @@ function parse_document(container) {
 		menu.find('#activemenu').parents('.menu-block').addClass('active');
 
 		// Check if there is active menu
-		if (!blocks.filter('.active').length) {
+		if (blocks.filter('.active').length === 0) {
 			blocks.filter(':first').addClass('active');
 		}
 	});
@@ -38,25 +42,25 @@ function parse_document(container) {
 	/**
 	* Responsive tables
 	*/
-	container.find('table').not('.not-responsive').each(function () {
-		let $this = $(this),
-			th = $this.find('thead > tr > th'),
-			columns = th.length,
-			headers = [],
-			totalHeaders = 0,
-			i, headersLength;
+	container.find('table').not('.not-responsive').each(() => {
+		const $this = $(this);
+		const th = $this.find('thead > tr > th');
+		const headers = [];
+		let totalHeaders = 0;
+		let i;
+		let headersLength = 0;
 
 		// Find columns
-		$this.find('colgroup:first').children().each(function (i) {
+		$this.find('colgroup:first').children().each(i => {
 			const column = $(this);
 			$this.find('td:nth-child(' + (i + 1) + ')').addClass(column.prop('className'));
 		});
 
 		// Styles table
 		if ($this.hasClass('styles')) {
-			$this.find('td:first-child[style]').each(function () {
+			$this.find('td:first-child[style]').each(() => {
 				const style = $(this).attr('style');
-				if (style.length) {
+				if (style.length !== 0) {
 					$(this).parent('tr').attr('style', style.toLowerCase().replace('padding', 'margin')).addClass('responsive-style-row');
 				}
 			});
@@ -64,13 +68,13 @@ function parse_document(container) {
 
 		// Find each header
 		if (!$this.data('no-responsive-header'))		{
-			th.each(function (column) {
-				let cell = $(this),
-					colspan = parseInt(cell.attr('colspan')),
-					dfn = cell.attr('data-dfn'),
-					text = dfn ? dfn : $.trim(cell.text());
+			th.each(column => {
+				const cell = $(this);
+				let colspan = parseInt(cell.attr('colspan'), 0);
+				const dfn = cell.attr('data-dfn');
+				let text = dfn ? dfn : $.trim(cell.text());
 
-				if (text == '&nbsp;') {
+				if (text === '&nbsp;') {
 					text = '';
 				}
 				colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
@@ -96,30 +100,30 @@ function parse_document(container) {
 			return;
 		}
 
-		$this.find('tbody > tr').each(function () {
-			let row = $(this),
-				cells = row.children('td'),
-				column = 0;
+		$this.find('tbody > tr').each(() => {
+			const row = $(this);
+			const cells = row.children('td');
+			let column = 0;
 
-			if (cells.length == 1) {
+			if (cells.length === 1) {
 				row.addClass('big-column');
 				return;
 			}
 
-			cells.each(function () {
-				let cell = $(this),
-					colspan = parseInt(cell.attr('colspan')),
-					text = $.trim(cell.text());
+			cells.each(() => {
+				const cell = $(this);
+				let colspan = parseInt(cell.attr('colspan'), 0);
+				const text = $.trim(cell.text());
 
 				if (headersLength <= column) {
 					return;
 				}
 
-				if ((text.length && text !== '-') || cell.children().length) {
-					if (headers[column] != '') {
+				if ((text.length !== 0 && text !== '-') || cell.children().length !== 0) {
+					if (headers[column] !== '') {
 						cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
 					}
-				}				else {
+				} else {
 					cell.addClass('empty');
 				}
 
@@ -135,9 +139,9 @@ function parse_document(container) {
 	/**
 	* Hide empty responsive tables
 	*/
-	container.find('table.responsive > tbody').each(function () {
+	container.find('table.responsive > tbody').each(() => {
 		const items = $(this).children('tr');
-		if (items.length == 0)		{
+		if (items.length === 0)		{
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
 	});
@@ -145,9 +149,9 @@ function parse_document(container) {
 	/**
 	* Fieldsets with empty <span>
 	*/
-	container.find('fieldset dt > span:last-child').each(function () {
+	container.find('fieldset dt > span:last-child').each(() => {
 		const $this = $(this);
-		if ($this.html() == '&nbsp;') {
+		if ($this.html() === '&nbsp;') {
 			$this.addClass('responsive-hide');
 		}
 	});
@@ -155,28 +159,28 @@ function parse_document(container) {
 	/**
 	* Responsive tabs
 	*/
-	container.find('#tabs').not('[data-skip-responsive]').each(function () {
-		let $this = $(this),
-			$body = $('body'),
-			ul = $this.children(),
-			tabs = ul.children().not('[data-skip-responsive]'),
-			links = tabs.children('a'),
-			item = ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
-			menu = item.find('.dropdown-contents'),
-			maxHeight = 0,
-			lastWidth = false,
-			responsive = false;
+	container.find('#tabs').not('[data-skip-responsive]').each(() => {
+		const $this = $(this);
+		const $body = $('body');
+		const ul = $this.children();
+		const tabs = ul.children().not('[data-skip-responsive]');
+		const links = tabs.children('a');
+		const item = ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab');
+		const menu = item.find('.dropdown-contents');
+		let maxHeight = 0;
+		let lastWidth = false;
+		let responsive = false;
 
-		links.each(function () {
+		links.each(() => {
 			const link = $(this);
 			maxHeight = Math.max(maxHeight, Math.max(link.outerHeight(true), link.parent().outerHeight(true)));
 		});
 
 		function check() {
-			let width = $body.width(),
-				height = $this.height();
+			const width = $body.width();
+			let height = $this.height();
 
-			if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
+			if (arguments.length === 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
 				return;
 			}
 
@@ -197,9 +201,10 @@ function parse_document(container) {
 			item.show();
 			menu.html('');
 
-			let availableTabs = tabs.filter(':not(.activetab, .responsive-tab)'),
-				total = availableTabs.length,
-				i, tab;
+			const availableTabs = tabs.filter(':not(.activetab, .responsive-tab)');
+			const total = availableTabs.length;
+			let i;
+			let tab;
 
 			for (i = total - 1; i >= 0; i--) {
 				tab = availableTabs.eq(i);
@@ -233,7 +238,7 @@ function parse_document(container) {
 		$('body.nojs').toggleClass('nojs hasjs');
 
 		// Focus forms
-		$('form[data-focus]:first').each(function () {
+		$('form[data-focus]:first').each(() => {
 			$('#' + this.getAttribute('data-focus')).focus();
 		});
 
@@ -242,7 +247,7 @@ function parse_document(container) {
 		$('#questionnaire-form').css('display', 'none');
 		const $triggerConfiglist = $('#trigger-configlist');
 
-		$triggerConfiglist.on('click', function () {
+		$triggerConfiglist.on('click', () => {
 			const $configlist = $('#configlist');
 			$configlist.closest('.send-stats-data-row').toggleClass('send-stats-data-hidden');
 			$configlist.closest('.send-stats-row').find('.send-stats-data-row:first-child').toggleClass('send-stats-data-only-row');
@@ -252,3 +257,5 @@ function parse_document(container) {
 		$('#configlist').closest('.send-stats-data-row').addClass('send-stats-data-hidden');
 	});
 })(jQuery);
+
+/* eslint-disable camelcase, no-unused-vars */
