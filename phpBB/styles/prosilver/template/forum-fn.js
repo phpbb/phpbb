@@ -1,4 +1,6 @@
-/* global phpbb */
+/* global phpbb, jQuery, $, window, document, opener */
+
+/* eslint-disable complexity, camelcase, no-unused-vars */
 
 /**
 * phpBB3 forum functions
@@ -34,10 +36,10 @@ function popup(url, width, height, name) {
 function pageJump(item) {
 	'use strict';
 
-	var page = parseInt(item.val(), 10),
-		perPage = item.attr('data-per-page'),
-		baseUrl = item.attr('data-base-url'),
-		startName = item.attr('data-start-name');
+	const page = parseInt(item.val(), 10);
+	const perPage = item.attr('data-per-page');
+	const baseUrl = item.attr('data-base-url');
+	const startName = item.attr('data-start-name');
 
 	if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
 		if (baseUrl.indexOf('?') === -1) {
@@ -55,8 +57,8 @@ function pageJump(item) {
 function marklist(id, name, state) {
 	'use strict';
 
-	jQuery('#' + id + ' input[type=checkbox][name]').each(function() {
-		var $this = jQuery(this);
+	jQuery('#' + id + ' input[type=checkbox][name]').each(function () {
+		const $this = jQuery(this);
 		if ($this.attr('name').substr(0, name.length) === name && !$this.prop('disabled')) {
 			$this.prop('checked', state);
 		}
@@ -78,37 +80,36 @@ function viewableArea(e, itself) {
 		e = e.parentNode;
 	}
 
-	if (!e.vaHeight) {
+	if (e.vaHeight) {
+		// Restore viewable area height to the default
+		e.style.height = e.vaHeight + 'px';
+		e.style.overflow = 'auto';
+		e.style.maxHeight = e.vaMaxHeight;
+		e.vaHeight = false;
+	} else {
 		// Store viewable area height before changing style to auto
 		e.vaHeight = e.offsetHeight;
 		e.vaMaxHeight = e.style.maxHeight;
 		e.style.height = 'auto';
 		e.style.maxHeight = 'none';
 		e.style.overflow = 'visible';
-	} else {
-		// Restore viewable area height to the default
-		e.style.height = e.vaHeight + 'px';
-		e.style.overflow = 'auto';
-		e.style.maxHeight = e.vaMaxHeight;
-		e.vaHeight = false;
 	}
 }
 
 /**
 * Alternate display of subPanels
 */
-jQuery(function($) {
+jQuery($ => {
 	'use strict';
 
-	$('.sub-panels').each(function() {
+	$('.sub-panels').each(function () {
+		const $childNodes = $('a[data-subpanel]', this);
+		const panels = $childNodes.map(function () {
+			return this.getAttribute('data-subpanel');
+		});
+		const showPanel = this.getAttribute('data-show-panel');
 
-		var $childNodes = $('a[data-subpanel]', this),
-			panels = $childNodes.map(function () {
-				return this.getAttribute('data-subpanel');
-			}),
-			showPanel = this.getAttribute('data-show-panel');
-
-		if (panels.length) {
+		if (panels.length !== 0) {
 			activateSubPanel(showPanel, panels);
 			$childNodes.click(function () {
 				activateSubPanel(this.getAttribute('data-subpanel'), panels);
@@ -124,7 +125,8 @@ jQuery(function($) {
 function activateSubPanel(p, panels) {
 	'use strict';
 
-	var i, showPanel;
+	let i;
+	let showPanel;
 
 	if (typeof p === 'string') {
 		showPanel = p;
@@ -132,7 +134,7 @@ function activateSubPanel(p, panels) {
 	$('input[name="show_panel"]').val(showPanel);
 
 	if (typeof panels === 'undefined') {
-		panels = jQuery('.sub-panels a[data-subpanel]').map(function() {
+		panels = jQuery('.sub-panels a[data-subpanel]').map(function () {
 			return this.getAttribute('data-subpanel');
 		});
 	}
@@ -147,29 +149,28 @@ function selectCode(a) {
 	'use strict';
 
 	// Get ID of code block
-	var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
-	var s, r;
+	const e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
+	let s;
+	let r;
 
 	// Not IE and IE9+
 	if (window.getSelection) {
 		s = window.getSelection();
 		// Safari and Chrome
 		if (s.setBaseAndExtent) {
-			var l = (e.innerText.length > 1) ? e.innerText.length - 1 : 1;
+			const l = (e.innerText.length > 1) ? e.innerText.length - 1 : 1;
 			try {
 				s.setBaseAndExtent(e, 0, e, l);
-			} catch (error) {
+			} catch (err) {
 				r = document.createRange();
 				r.selectNodeContents(e);
 				s.removeAllRanges();
 				s.addRange(r);
 			}
-		}
-		// Firefox and Opera
-		else {
-			// workaround for bug # 42885
+		} else { // Firefox and Opera
+			// Workaround for bug # 42885
 			if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) === '<BR>') {
-				e.innerHTML = e.innerHTML + '&nbsp;';
+				e.innerHTML += '&nbsp;';
 			}
 
 			r = document.createRange();
@@ -177,25 +178,21 @@ function selectCode(a) {
 			s.removeAllRanges();
 			s.addRange(r);
 		}
-	}
-	// Some older browsers
-	else if (document.getSelection) {
+	} else if (document.getSelection) { // Some older browsers
 		s = document.getSelection();
 		r = document.createRange();
 		r.selectNodeContents(e);
 		s.removeAllRanges();
 		s.addRange(r);
-	}
-	// IE
-	else if (document.selection) {
+	} else if (document.selection) { // IE
 		r = document.body.createTextRange();
 		r.moveToElementText(e);
 		r.select();
 	}
 }
 
-var inAutocomplete = false;
-var lastKeyEntered = '';
+let inAutocomplete = false;
+let lastKeyEntered = '';
 
 /**
 * Check event key
@@ -229,11 +226,11 @@ function phpbbCheckKey(event) {
 /**
 * Apply onkeypress event for forcing default submit button on ENTER key press
 */
-jQuery(function($) {
+jQuery($ => {
 	'use strict';
 
 	$('form input[type=text], form input[type=password]').on('keypress', function (e) {
-		var defaultButton = $(this).parents('form').find('input[type=submit].default-submit-action');
+		const defaultButton = $(this).parents('form').find('input[type=submit].default-submit-action');
 
 		if (!defaultButton || defaultButton.length <= 0) {
 			return true;
@@ -258,12 +255,12 @@ jQuery(function($) {
 function insertUser(formId, value) {
 	'use strict';
 
-	var $form = jQuery(formId),
-		formName = $form.attr('data-form-name'),
-		fieldName = $form.attr('data-field-name'),
-		item = opener.document.forms[formName][fieldName];
+	const $form = jQuery(formId);
+	const formName = $form.attr('data-form-name');
+	const fieldName = $form.attr('data-field-name');
+	const item = opener.document.forms[formName][fieldName];
 
-	if (item.value.length && item.type === 'textarea') {
+	if (item.value.length !== 0 && item.type === 'textarea') {
 		value = item.value + '\n' + value;
 	}
 
@@ -273,7 +270,7 @@ function insertUser(formId, value) {
 function insert_marked_users(formId, users) {
 	'use strict';
 
-	for (var i = 0; i < users.length; i++) {
+	for (let i = 0; i < users.length; i++) {
 		if (users[i].checked) {
 			insertUser(formId, users[i].value);
 		}
@@ -295,36 +292,36 @@ function insert_single_user(formId, user) {
 function parseDocument($container) {
 	'use strict';
 
-	var test = document.createElement('div'),
-		oldBrowser = (typeof test.style.borderRadius === 'undefined'),
-		$body = $('body');
+	const test = document.createElement('div');
+	const oldBrowser = (typeof test.style.borderRadius === 'undefined');
+	const $body = $('body');
 
 	/**
 	* Reset avatar dimensions when changing URL or EMAIL
 	*/
-	$container.find('input[data-reset-on-edit]').on('keyup', function() {
+	$container.find('input[data-reset-on-edit]').on('keyup', function () {
 		$(this.getAttribute('data-reset-on-edit')).val('');
 	});
 
 	/**
 	* Pagination
 	*/
-	$container.find('.pagination .page-jump-form :button').click(function() {
-		var $input = $(this).siblings('input.inputbox');
+	$container.find('.pagination .page-jump-form :button').click(function () {
+		const $input = $(this).siblings('input.inputbox');
 		pageJump($input);
 	});
 
-	$container.find('.pagination .page-jump-form input.inputbox').on('keypress', function(event) {
+	$container.find('.pagination .page-jump-form input.inputbox').on('keypress', function (event) {
 		if (event.which === 13 || event.keyCode === 13) {
 			event.preventDefault();
 			pageJump($(this));
 		}
 	});
 
-	$container.find('.pagination .dropdown-trigger').click(function() {
-		var $dropdownContainer = $(this).parent();
+	$container.find('.pagination .dropdown-trigger').click(function () {
+		const $dropdownContainer = $(this).parent();
 		// Wait a little bit to make sure the dropdown has activated
-		setTimeout(function() {
+		setTimeout(() => {
 			if ($dropdownContainer.hasClass('dropdown-visible')) {
 				$dropdownContainer.find('input.inputbox').focus();
 			}
@@ -345,29 +342,28 @@ function parseDocument($container) {
 	/**
 	* Resize navigation (breadcrumbs) block to keep all links on same line
 	*/
-	$container.find('.navlinks').each(function() {
-		var $this = $(this),
-			$left = $this.children().not('.rightside'),
-			$right = $this.children('.rightside');
+	$container.find('.navlinks').each(function () {
+		const $this = $(this);
+		const $left = $this.children().not('.rightside');
+		const $right = $this.children('.rightside');
 
-		if ($left.length !== 1 || !$right.length) {
+		if ($left.length !== 1 || $right.length === 0) {
 			return;
 		}
 
 		function resize() {
-			var width = 0,
-				diff = $left.outerWidth(true) - $left.width(),
-				minWidth = Math.max($this.width() / 3, 240),
-				maxWidth;
+			let width = 0;
+			const diff = $left.outerWidth(true) - $left.width();
+			const minWidth = Math.max($this.width() / 3, 240);
 
-			$right.each(function() {
-				var $this = $(this);
+			$right.each(function () {
+				const $this = $(this);
 				if ($this.is(':visible')) {
 					width += $this.outerWidth(true);
 				}
 			});
 
-			maxWidth = $this.width() - width - diff;
+			const maxWidth = $this.width() - width - diff;
 			$left.css('max-width', Math.floor(Math.max(maxWidth, minWidth)) + 'px');
 		}
 
@@ -378,26 +374,26 @@ function parseDocument($container) {
 	/**
 	* Makes breadcrumbs responsive
 	*/
-	$container.find('.breadcrumbs:not([data-skip-responsive])').each(function() {
-		var $this = $(this),
-			$links = $this.find('.crumb'),
-			length = $links.length,
-			classes = ['wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny'],
-			classesLength = classes.length,
-			maxHeight = 0,
-			lastWidth = false,
-			wrapped = false;
+	$container.find('.breadcrumbs:not([data-skip-responsive])').each(function () {
+		const $this = $(this);
+		const $links = $this.find('.crumb');
+		const length = $links.length;
+		const classes = ['wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny'];
+		const classesLength = classes.length;
+		let maxHeight = 0;
+		let lastWidth = false;
+		let wrapped = false;
 
 		// Set tooltips
-		$this.find('a').each(function() {
-			var $link = $(this);
+		$this.find('a').each(function () {
+			const $link = $(this);
 			$link.attr('title', $link.text());
 		});
 
 		// Function that checks breadcrumbs
 		function check() {
-			var height = $this.height(),
-				width;
+			const height = $this.height();
+			let width;
 
 			// Test max-width set in code for .navlinks above
 			width = parseInt($this.css('max-width'), 10);
@@ -406,7 +402,7 @@ function parseDocument($container) {
 			}
 
 			maxHeight = parseInt($this.css('line-height'), 10);
-			$links.each(function() {
+			$links.each(function () {
 				if ($(this).height() > 0) {
 					maxHeight = Math.max(maxHeight, $(this).outerHeight(true));
 				}
@@ -432,8 +428,8 @@ function parseDocument($container) {
 				return;
 			}
 
-			for (var i = 0; i < classesLength; i++) {
-				for (var j = length - 1; j >= 0; j--) {
+			for (let i = 0; i < classesLength; i++) {
+				for (let j = length - 1; j >= 0; j--) {
 					$links.eq(j).addClass('wrapped ' + classes[i]);
 					if ($this.height() <= maxHeight) {
 						return;
@@ -450,19 +446,19 @@ function parseDocument($container) {
 	/**
 	* Responsive link lists
 	*/
-	var selector = '.linklist:not(.navlinks, [data-skip-responsive]),' +
+	const selector = '.linklist:not(.navlinks, [data-skip-responsive]),' +
 		'.postbody .post-buttons:not([data-skip-responsive])';
-	$container.find(selector).each(function() {
-		var $this = $(this),
-			filterSkip = '.breadcrumbs, [data-skip-responsive]',
-			filterLast = '.edit-icon, .quote-icon, [data-last-responsive]',
-			$linksAll = $this.children(),
-			$linksNotSkip = $linksAll.not(filterSkip), // All items that can potentially be hidden
-			$linksFirst = $linksNotSkip.not(filterLast), // The items that will be hidden first
-			$linksLast = $linksNotSkip.filter(filterLast), // The items that will be hidden last
-			persistent = $this.attr('id') === 'nav-main', // Does this list already have a menu (such as quick-links)?
-			html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>',
-			slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occurred.
+	$container.find(selector).each(function () {
+		const $this = $(this);
+		const filterSkip = '.breadcrumbs, [data-skip-responsive]';
+		const filterLast = '.edit-icon, .quote-icon, [data-last-responsive]';
+		const $linksAll = $this.children();
+		const $linksNotSkip = $linksAll.not(filterSkip); // All items that can potentially be hidden
+		const $linksFirst = $linksNotSkip.not(filterLast); // The items that will be hidden first
+		const $linksLast = $linksNotSkip.filter(filterLast); // The items that will be hidden last
+		const persistent = $this.attr('id') === 'nav-main'; // Does this list already have a menu (such as quick-links)?
+		const html = '<li class="responsive-menu hidden"><a href="javascript:void(0);" class="js-responsive-menu-link responsive-menu-link"><i class="icon fa-bars fa-fw" aria-hidden="true"></i></a><div class="dropdown"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>';
+		const slack = 3; // Vertical slack space (in pixels). Determines how sensitive the script is in determining whether a line-break has occurred.
 
 		// Add a hidden drop-down menu to each links list (except those that already have one)
 		if (!persistent) {
@@ -475,19 +471,19 @@ function parseDocument($container) {
 		}
 
 		// Set some object references and initial states
-		var $menu = $this.children('.responsive-menu'),
-			$menuContents = $menu.find('.dropdown-contents'),
-			persistentContent = $menuContents.find('li:not(.separator)').length,
-			lastWidth = false,
-			compact = false,
-			responsive1 = false,
-			responsive2 = false,
-			copied1 = false,
-			copied2 = false,
-			maxHeight = 0;
+		const $menu = $this.children('.responsive-menu');
+		const $menuContents = $menu.find('.dropdown-contents');
+		const persistentContent = $menuContents.find('li:not(.separator)').length;
+		let lastWidth = false;
+		let compact = false;
+		let responsive1 = false;
+		let responsive2 = false;
+		let copied1 = false;
+		let copied2 = false;
+		let maxHeight = 0;
 
 		// Find the tallest element in the list (we assume that all elements are roughly the same height)
-		$linksAll.each(function() {
+		$linksAll.each(function () {
 			if (!$(this).height()) {
 				return;
 			}
@@ -495,12 +491,11 @@ function parseDocument($container) {
 		});
 		if (maxHeight < 1) {
 			return; // Shouldn't be possible, but just in case, abort
-		} else {
-			maxHeight = maxHeight + slack;
 		}
+		maxHeight += slack;
 
 		function check() {
-			var width = $body.width();
+			const width = $body.width();
 			// We can't make it any smaller than this, so just skip
 			if (responsive2 && compact && (width <= lastWidth)) {
 				return;
@@ -511,7 +506,8 @@ function parseDocument($container) {
 			if (responsive1 || responsive2) {
 				$linksNotSkip.removeClass('hidden');
 				$menuContents.children('.clone').addClass('hidden');
-				responsive1 = responsive2 = false;
+				responsive1 = false;
+				responsive2 = false;
 			}
 			if (compact) {
 				$this.removeClass('compact');
@@ -546,7 +542,7 @@ function parseDocument($container) {
 			}
 			// Copy the list items to the dropdown
 			if (!copied1) {
-				var $clones1 = $linksFirst.clone();
+				const $clones1 = $linksFirst.clone();
 				$menuContents.prepend($clones1.addClass('clone clone-first').removeClass('leftside rightside'));
 
 				if ($this.hasClass('post-buttons')) {
@@ -577,7 +573,7 @@ function parseDocument($container) {
 			}
 
 			// STEP 4: Last responsive set - compact
-			if (!$linksLast.length) {
+			if ($linksLast.length === 0) {
 				return; // No other links to hide, can't do more
 			}
 			if (compact) {
@@ -586,7 +582,7 @@ function parseDocument($container) {
 			}
 			// Copy the list items to the dropdown
 			if (!copied2) {
-				var $clones2 = $linksLast.clone();
+				const $clones2 = $linksLast.clone();
 				$menuContents.prepend($clones2.addClass('clone clone-last').removeClass('leftside rightside'));
 				copied2 = true;
 			}
@@ -611,8 +607,8 @@ function parseDocument($container) {
 		}
 
 		// If there are any images in the links list, run the check again after they have loaded
-		$linksAll.find('img').each(function() {
-			$(this).load(function() {
+		$linksAll.find('img').each(function () {
+			$(this).load(() => {
 				check();
 			});
 		});
@@ -640,13 +636,13 @@ function parseDocument($container) {
 	* To add that functionality to .topiclist list simply add
 	* responsive-show-all to list of classes
 	*/
-	$container.find('.topiclist.responsive-show-all > li > dl').each(function() {
-		var $this = $(this),
-			$block = $this.find('dt .responsive-show:last-child'),
-			first = true;
+	$container.find('.topiclist.responsive-show-all > li > dl').each(function () {
+		const $this = $(this);
+		let $block = $this.find('dt .responsive-show:last-child');
+		let first = true;
 
 		// Create block that is visible only on mobile devices
-		if (!$block.length) {
+		if ($block.length === 0) {
 			$this.find('dt > .list-inner').append('<div class="responsive-show" style="display:none;" />');
 			$block = $this.find('dt .responsive-show:last-child');
 		} else {
@@ -654,10 +650,10 @@ function parseDocument($container) {
 		}
 
 		// Copy contents of each column
-		$this.find('dd').not('.mark').each(function() {
-			var column = $(this),
-				$children = column.children(),
-				html = column.html();
+		$this.find('dd').not('.mark').each(function () {
+			const column = $(this);
+			const $children = column.children();
+			let html = column.html();
 
 			if ($children.length === 1 && $children.text() === column.text()) {
 				html = $children.html();
@@ -676,13 +672,13 @@ function parseDocument($container) {
 	* To add that functionality to .topiclist list simply add
 	* responsive-show-columns to list of classes
 	*/
-	$container.find('.topiclist.responsive-show-columns').each(function() {
-		var $list = $(this),
-			headers = [],
-			headersLength = 0;
+	$container.find('.topiclist.responsive-show-columns').each(function () {
+		const $list = $(this);
+		const headers = [];
+		let headersLength = 0;
 
 		// Find all headers, get contents
-		$list.prev('.topiclist').find('li.header dd').not('.mark').each(function() {
+		$list.prev('.topiclist').find('li.header dd').not('.mark').each(function () {
 			headers.push($(this).text());
 			headersLength++;
 		});
@@ -692,13 +688,13 @@ function parseDocument($container) {
 		}
 
 		// Parse each row
-		$list.find('dl').each(function() {
-			var $this = $(this),
-				$block = $this.find('dt .responsive-show:last-child'),
-				first = true;
+		$list.find('dl').each(function () {
+			const $this = $(this);
+			let $block = $this.find('dt .responsive-show:last-child');
+			let first = true;
 
 			// Create block that is visible only on mobile devices
-			if (!$block.length) {
+			if ($block.length === 0) {
 				$this.find('dt > .list-inner').append('<div class="responsive-show" style="display:none;" />');
 				$block = $this.find('dt .responsive-show:last-child');
 			} else {
@@ -706,10 +702,10 @@ function parseDocument($container) {
 			}
 
 			// Copy contents of each column
-			$this.find('dd').not('.mark').each(function(i) {
-				var column = $(this),
-					children = column.children(),
-					html = column.html();
+			$this.find('dd').not('.mark').each(function (i) {
+				const column = $(this);
+				const children = column.children();
+				let html = column.html();
 
 				if (children.length === 1 && children.text() === column.text()) {
 					html = children.html();
@@ -730,19 +726,19 @@ function parseDocument($container) {
 	/**
 	* Responsive tables
 	*/
-	$container.find('table.table1').not('.not-responsive').each(function() {
-		var $this = $(this),
-			$th = $this.find('thead > tr > th'),
-			headers = [],
-			totalHeaders = 0,
-			i, headersLength;
+	$container.find('table.table1').not('.not-responsive').each(function () {
+		const $this = $(this);
+		const $th = $this.find('thead > tr > th');
+		const headers = [];
+		let totalHeaders = 0;
+		let i;
 
 		// Find each header
-		$th.each(function(column) {
-			var cell = $(this),
-				colspan = parseInt(cell.attr('colspan'), 10),
-				dfn = cell.attr('data-dfn'),
-				text = dfn ? dfn : cell.text();
+		$th.each(function (column) {
+			const cell = $(this);
+			let colspan = parseInt(cell.attr('colspan'), 10);
+			const dfn = cell.attr('data-dfn');
+			const text = dfn ? dfn : cell.text();
 
 			colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
 
@@ -756,7 +752,7 @@ function parseDocument($container) {
 			}
 		});
 
-		headersLength = headers.length;
+		const headersLength = headers.length;
 
 		// Add header text to each cell as <dfn>
 		$this.addClass('responsive');
@@ -766,26 +762,26 @@ function parseDocument($container) {
 			return;
 		}
 
-		$this.find('tbody > tr').each(function() {
-			var row = $(this),
-				cells = row.children('td'),
-				column = 0;
+		$this.find('tbody > tr').each(function () {
+			const row = $(this);
+			const cells = row.children('td');
+			let column = 0;
 
 			if (cells.length === 1) {
 				row.addClass('big-column');
 				return;
 			}
 
-			cells.each(function() {
-				var cell = $(this),
-					colspan = parseInt(cell.attr('colspan'), 10),
-					text = $.trim(cell.text());
+			cells.each(function () {
+				const cell = $(this);
+				let colspan = parseInt(cell.attr('colspan'), 10);
+				const text = $.trim(cell.text());
 
 				if (headersLength <= column) {
 					return;
 				}
 
-				if ((text.length && text !== '-') || cell.children().length) {
+				if ((text.length !== 0 && text !== '-') || cell.children().length !== 0) {
 					cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
 				} else {
 					cell.addClass('empty');
@@ -800,9 +796,9 @@ function parseDocument($container) {
 	/**
 	* Hide empty responsive tables
 	*/
-	$container.find('table.responsive > tbody').not('.responsive-skip-empty').each(function() {
-		var $items = $(this).children('tr');
-		if (!$items.length) {
+	$container.find('table.responsive > tbody').not('.responsive-skip-empty').each(function () {
+		const $items = $(this).children('tr');
+		if ($items.length === 0) {
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
 	});
@@ -810,27 +806,27 @@ function parseDocument($container) {
 	/**
 	* Responsive tabs
 	*/
-	$container.find('#tabs, #minitabs').not('[data-skip-responsive]').each(function() {
-		var $this = $(this),
-			$ul = $this.children(),
-			$tabs = $ul.children().not('[data-skip-responsive]'),
-			$links = $tabs.children('a'),
-			$item = $ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab'),
-			$menu = $item.find('.dropdown-contents'),
-			maxHeight = 0,
-			lastWidth = false,
-			responsive = false;
+	$container.find('#tabs, #minitabs').not('[data-skip-responsive]').each(function () {
+		const $this = $(this);
+		const $ul = $this.children();
+		const $tabs = $ul.children().not('[data-skip-responsive]');
+		const $links = $tabs.children('a');
+		const $item = $ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner" /></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab');
+		const $menu = $item.find('.dropdown-contents');
+		let maxHeight = 0;
+		let lastWidth = false;
+		let responsive = false;
 
-		$links.each(function() {
-			var $this = $(this);
+		$links.each(function () {
+			const $this = $(this);
 			maxHeight = Math.max(maxHeight, Math.max($this.outerHeight(true), $this.parent().outerHeight(true)));
 		});
 
 		function check() {
-			var width = $body.width(),
-				height = $this.height();
+			const width = $body.width();
+			let height = $this.height();
 
-			if (!arguments.length && (!responsive || width <= lastWidth) && height <= maxHeight) {
+			if (arguments.length === 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
 				return;
 			}
 
@@ -850,27 +846,28 @@ function parseDocument($container) {
 			$item.show();
 			$menu.html('');
 
-			var $availableTabs = $tabs.filter(':not(.activetab, .responsive-tab)'),
-				total = $availableTabs.length,
-				i, $tab;
+			const $availableTabs = $tabs.filter(':not(.activetab, .responsive-tab)');
+			const total = $availableTabs.length;
+			let i;
+			let $tab;
 
 			for (i = total - 1; i >= 0; i--) {
 				$tab = $availableTabs.eq(i);
 				$menu.prepend($tab.clone(true).removeClass('tab'));
 				$tab.hide();
 				if ($this.height() <= maxHeight) {
-					$menu.find('a').click(function() {
+					$menu.find('a').click(() => {
 						check(true);
 					});
 					return;
 				}
 			}
-			$menu.find('a').click(function() {
+			$menu.find('a').click(() => {
 				check(true);
 			});
 		}
 
-		var $tabLink = $item.find('a.responsive-tab-link');
+		const $tabLink = $item.find('a.responsive-tab-link');
 		phpbb.registerDropdown($tabLink, $item.find('.dropdown'), {
 			visibleClass: 'activetab'
 		});
@@ -882,8 +879,8 @@ function parseDocument($container) {
 	/**
 	 * Hide UCP/MCP navigation if there is only 1 item
 	 */
-	$container.find('#navigation').each(function() {
-		var $items = $(this).children('ol, ul').children('li');
+	$container.find('#navigation').each(function () {
+		const $items = $(this).children('ol, ul').children('li');
 		if ($items.length === 1) {
 			$(this).addClass('responsive-hide');
 		}
@@ -892,11 +889,11 @@ function parseDocument($container) {
 	/**
 	* Replace responsive text
 	*/
-	$container.find('[data-responsive-text]').each(function() {
-		var $this = $(this),
-			fullText = $this.text(),
-			responsiveText = $this.attr('data-responsive-text'),
-			responsive = false;
+	$container.find('[data-responsive-text]').each(function () {
+		const $this = $(this);
+		const fullText = $this.text();
+		const responsiveText = $this.attr('data-responsive-text');
+		let responsive = false;
 
 		function check() {
 			if ($(window).width() > 700) {
@@ -922,7 +919,7 @@ function parseDocument($container) {
 /**
 * Run onload functions
 */
-jQuery(function($) {
+(function ($) {
 	'use strict';
 
 	// Swap .nojs and .hasjs
@@ -931,9 +928,11 @@ jQuery(function($) {
 	$('#phpbb.hastouch').removeClass('notouch');
 
 	// Focus forms
-	$('form[data-focus]:first').each(function() {
+	$('form[data-focus]:first').each(function () {
 		$('#' + this.getAttribute('data-focus')).focus();
 	});
 
 	parseDocument($('body'));
-});
+})(jQuery);
+
+/* eslint-enable complexity, camelcase, no-unused-vars */
