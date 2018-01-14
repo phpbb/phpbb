@@ -1,4 +1,6 @@
-/* global phpbb, plupload, attachInline */
+/* global phpbb, jQuery, plupload, attachInline, activateSubPanel */
+
+/* eslint-disable camelcase, no-unused-vars */
 
 plupload.addI18n(phpbb.plupload.i18n);
 phpbb.plupload.ids = [];
@@ -650,3 +652,5 @@ phpbb.plupload.ids = [];
 		phpbb.plupload.enableUploader();
 	});
 })(jQuery); // Avoid conflicts with other libraries
+
+/* eslint-enable camelcase, no-unused-vars */

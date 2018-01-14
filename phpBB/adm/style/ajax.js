@@ -1,4 +1,6 @@
-/* global phpbb */
+/* global phpbb, jQuery */
+
+/* eslint-disable camelcase, no-unused-vars */
 
 (function ($) {  // Avoid conflicts with other libraries
 	'use strict';
@@ -326,3 +328,5 @@
 		}
 	});
 })(jQuery); // Avoid conflicts with other libraries
+
+/* eslint-enable camelcase, no-unused-vars */

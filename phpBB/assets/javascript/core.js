@@ -1,4 +1,6 @@
-/* global bbfontstyle */
+/* global jQuery, document, bbfontstyle */
+
+/* eslint-disable camelcase, no-unused-vars */
 
 const phpbb = {};
 phpbb.alertTime = 100;
@@ -1667,3 +1669,5 @@ phpbb.alertTime = 100;
 		});
 	});
 })(jQuery); // Avoid conflicts with other libraries
+
+/* eslint-enable camelcase, no-unused-vars */

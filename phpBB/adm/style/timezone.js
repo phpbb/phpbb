@@ -1,3 +1,7 @@
+/* global phpbb, jQuery, document */
+
+/* eslint-disable camelcase, no-unused-vars */
+
 (function ($) { // Avoid conflicts with other libraries
 	'use strict';
 
@@ -9,3 +13,5 @@
 	phpbb.timezoneEnableDateSelection
 );
 })(jQuery); // Avoid conflicts with other libraries
+
+/* eslint-disable camelcase, no-unused-vars */

@@ -1,3 +1,7 @@
+/* global phpbb, jQuery, document, set_role_settings */
+
+/* eslint-disable camelcase, no-unused-vars */
+
 /*
 Javascript for Bubble Tooltips by Alessandro Fulciniti
 - http://pro.html.it - http://web-graphics.com
@@ -229,3 +233,5 @@ phpBB Development Team:
 		});
 	});
 })(jQuery); // Avoid conflicts with other libraries
+
+/* eslint-disable camelcase, no-unused-vars */

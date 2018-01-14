@@ -1,3 +1,7 @@
+/* global jQuery, window, document, location, installLang */
+
+/* eslint-disable camelcase, no-unused-vars */
+
 /**
  * Installer's AJAX frontend handler
  */
@@ -272,12 +276,7 @@
 		try {
 			responseObject = JSON.parse(messageJSON);
 		} catch (err) {
-			if (window.console) {
-				console.log('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
-			} else {
-				alert('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
-			}
-
+			console.log('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
 			resetPolling();
 			return;
 		}
@@ -612,3 +611,5 @@
 		});
 	}
 })(jQuery); // Avoid conflicts with other libraries
+
+/* eslint-enable camelcase, no-unused-vars */

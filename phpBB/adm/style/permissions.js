@@ -1,3 +1,7 @@
+/* global phpbb, document, settings, role_options, marklist, id, active_pmask, active_option, active_fmask, active_cat */
+
+/* eslint-disable camelcase, no-unused-vars, no-global-assign */
+
 /**
 * Hide and show all checkboxes
 * status = true (show boxes), false (hide boxes)
@@ -298,3 +302,5 @@ function set_role_settings(role_id, target_id) {
 		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
 	}
 }
+
+/* eslint-enable camelcase, no-unused-vars, no-global-assign */

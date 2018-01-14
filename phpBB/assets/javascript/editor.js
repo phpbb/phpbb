@@ -1,3 +1,7 @@
+/* global phpbb jQuery, document, window, navigator, text_name, help_line, form_name, bbtags, opener */
+
+/* eslint-disable camelcase, no-unused-vars */
+
 /**
 * BbCode control by subBlue design [ www.subBlue.com ]
 * Includes unixsafe colour palette selector by SHS`
@@ -421,3 +425,4 @@ function getCaretPosition(txtarea) {
 	});
 })(jQuery);
 
+/* eslint-enable camelcase, no-unused-vars */
