@@ -1,6 +1,6 @@
 /* global phpbb, jQuery, plupload, attachInline, activateSubPanel */
 
-/* eslint-disable camelcase, no-unused-vars */
+/* eslint-disable camelcase, no-unused-vars, no-prototype-builtins */
 
 plupload.addI18n(phpbb.plupload.i18n);
 phpbb.plupload.ids = [];
@@ -8,35 +8,35 @@ phpbb.plupload.ids = [];
 (function ($) {  // Avoid conflicts with other libraries
 	'use strict';
 
-/**
- * Set up the uploader.
- */
+	/**
+	 * Set up the uploader.
+	 */
 	phpbb.plupload.initialize = function () {
-	// Initialize the Plupload uploader.
+		// Initialize the Plupload uploader.
 		phpbb.plupload.uploader.init();
 
-	// Set attachment data.
+		// Set attachment data.
 		phpbb.plupload.setData(phpbb.plupload.data);
 		phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 
-	// Only execute if Plupload initialized successfully.
+		// Only execute if Plupload initialized successfully.
 		phpbb.plupload.uploader.bind('Init', () => {
 			phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0];
 			phpbb.plupload.rowTpl = $('#attach-row-tpl')[0].outerHTML;
 
-		// Hide the basic upload panel and remove the attach row template.
+			// Hide the basic upload panel and remove the attach row template.
 			$('#attach-row-tpl, #attach-panel-basic').remove();
-		// Show multi-file upload options.
+			// Show multi-file upload options.
 			$('#attach-panel-multi').show();
 		});
 
 		phpbb.plupload.uploader.bind('PostInit', () => {
-		// Point out the drag-and-drop zone if it's supported.
+			// Point out the drag-and-drop zone if it's supported.
 			if (phpbb.plupload.uploader.features.dragdrop) {
 				$('#drag-n-drop-message').show();
 			}
 
-		// Ensure "Add files" button position is correctly calculated.
+			// Ensure "Add files" button position is correctly calculated.
 			if ($('#attach-panel-multi').is(':visible')) {
 				phpbb.plupload.uploader.refresh();
 			}
@@ -46,10 +46,10 @@ phpbb.plupload.ids = [];
 		});
 	};
 
-/**
- * Unsets all elements in the object uploader.settings.multipart_params whose keys
- * begin with 'attachment_data['
- */
+	/**
+	 * Unsets all elements in the object uploader.settings.multipart_params whose keys
+	 * begin with 'attachment_data['
+	 */
 	phpbb.plupload.clearParams = function () {
 		const obj = phpbb.plupload.uploader.settings.multipart_params;
 		for (const key in obj) {
@@ -61,22 +61,22 @@ phpbb.plupload.ids = [];
 		}
 	};
 
-/**
- * Update uploader.settings.multipart_params object with new data.
- *
- * @param {object} obj
- */
+	/**
+	 * Update uploader.settings.multipart_params object with new data.
+	 *
+	 * @param {object} obj
+	 */
 	phpbb.plupload.updateMultipartParams = function (obj) {
 		const settings = phpbb.plupload.uploader.settings;
 		settings.multipart_params = $.extend(settings.multipart_params, obj);
 	};
 
-/**
- * Convert the array of attachment objects into an object that PHP would expect as POST data.
- *
- * @returns {object} An object in the form 'attachment_data[i][key]': value as
- * 	expected by the server
- */
+	/**
+	 * Convert the array of attachment objects into an object that PHP would expect as POST data.
+	 *
+	 * @returns {object} An object in the form 'attachment_data[i][key]': value as
+	 * 	expected by the server
+	 */
 	phpbb.plupload.getSerializedData = function () {
 		const obj = {};
 		for (let i = 0; i < phpbb.plupload.data.length; i++) {
@@ -92,27 +92,28 @@ phpbb.plupload.ids = [];
 		return obj;
 	};
 
-/**
- * Get the index from the phpbb.plupload.data array where the given
- * attachment id appears.
- *
- * @param {int} attachId The attachment id of the file.
- * @returns {bool|int} Index of the file if exists, otherwise false.
- */
+	/**
+	 * Get the index from the phpbb.plupload.data array where the given
+	 * attachment id appears.
+	 *
+	 * @param {int} attachId The attachment id of the file.
+	 * @returns {bool|int} Index of the file if exists, otherwise false.
+	 */
 	phpbb.plupload.getIndex = function (attachId) {
 		const index = $.inArray(Number(attachId), phpbb.plupload.ids);
-		return (index !== -1) ? index : false;
+		return (index === -1) ? false : index;
 	};
 
-/**
- * Set the data in phpbb.plupload.data and phpbb.plupload.ids arrays.
- *
- * @param {Array} data	Array containing the new data to use. In the form of
- * array(index => object(property: value). Requires attach_id to be one of the object properties.
- */
+	/**
+	 * Set the data in phpbb.plupload.data and phpbb.plupload.ids arrays.
+	 *
+	 * @param {Array} data	Array containing the new data to use. In the form of
+	 * array(index => object(property: value). Requires attach_id to be one of the object properties.
+	 */
 	phpbb.plupload.setData = function (data) {
-	// Make sure that the array keys are reset.
-		phpbb.plupload.ids = phpbb.plupload.data = [];
+		// Make sure that the array keys are reset.
+		phpbb.plupload.ids = [];
+		phpbb.plupload.data = [];
 		phpbb.plupload.data = data;
 
 		for (let i = 0; i < data.length; i++) {
@@ -120,14 +121,14 @@ phpbb.plupload.ids = [];
 		}
 	};
 
-/**
- * Update the attachment data in the HTML and the phpbb & phpbb.plupload objects.
- *
- * @param {Array} data			Array containing the new data to use.
- * @param {string} action		The action that required the update. Used to update the inline attachment bbcodes.
- * @param {int} index			The index from phpbb.plupload_ids that was affected by the action.
- * @param {Array} downloadUrl	Optional array of download urls to update.
- */
+	/**
+	 * Update the attachment data in the HTML and the phpbb & phpbb.plupload objects.
+	 *
+	 * @param {Array} data			Array containing the new data to use.
+	 * @param {string} action		The action that required the update. Used to update the inline attachment bbcodes.
+	 * @param {int} index			The index from phpbb.plupload_ids that was affected by the action.
+	 * @param {Array} downloadUrl	Optional array of download urls to update.
+	 */
 	phpbb.plupload.update = function (data, action, index, downloadUrl) {
 		phpbb.plupload.updateBbcode(action, index);
 		phpbb.plupload.setData(data);
@@ -136,25 +137,25 @@ phpbb.plupload.ids = [];
 		phpbb.plupload.updateMultipartParams(phpbb.plupload.getSerializedData());
 	};
 
-/**
- * Update the relevant elements and hidden data for all attachments.
- *
- * @param {Array} downloadUrl Optional array of download urls to update.
- */
+	/**
+	 * Update the relevant elements and hidden data for all attachments.
+	 *
+	 * @param {Array} downloadUrl Optional array of download urls to update.
+	 */
 	phpbb.plupload.updateRows = function (downloadUrl) {
 		for (let i = 0; i < phpbb.plupload.ids.length; i++) {
 			phpbb.plupload.updateRow(i, downloadUrl);
 		}
 	};
 
-/**
- * Insert a row for a new attachment. This expects an HTML snippet in the HTML
- * using the id "attach-row-tpl" to be present. This snippet is cloned and the
- * data for the file inserted into it. The row is then appended or prepended to
- * #file-list based on the attach_order setting.
- *
- * @param {object} file Plupload file object for the new attachment.
- */
+	/**
+	 * Insert a row for a new attachment. This expects an HTML snippet in the HTML
+	 * using the id "attach-row-tpl" to be present. This snippet is cloned and the
+	 * data for the file inserted into it. The row is then appended or prepended to
+	 * #file-list based on the attach_order setting.
+	 *
+	 * @param {object} file Plupload file object for the new attachment.
+	 */
 	phpbb.plupload.insertRow = function (file) {
 		const row = $(phpbb.plupload.rowTpl);
 
@@ -169,20 +170,20 @@ phpbb.plupload.ids = [];
 		}
 	};
 
-/**
- * Update the relevant elements and hidden data for an attachment.
- *
- * @param {int} index The index from phpbb.plupload.ids of the attachment to edit.
- * @param {Array} downloadUrl Optional array of download urls to update.
- */
+	/**
+	 * Update the relevant elements and hidden data for an attachment.
+	 *
+	 * @param {int} index The index from phpbb.plupload.ids of the attachment to edit.
+	 * @param {Array} downloadUrl Optional array of download urls to update.
+	 */
 	phpbb.plupload.updateRow = function (index, downloadUrl) {
-		let attach = phpbb.plupload.data[index],
-			row = $('[data-attach-id="' + attach.attach_id + '"]');
+		const attach = phpbb.plupload.data[index];
+		const row = $('[data-attach-id="' + attach.attach_id + '"]');
 
-	// Add the link to the file
+		// Add the link to the file
 		if (typeof downloadUrl !== 'undefined' && typeof downloadUrl[index] !== 'undefined') {
-			let url = downloadUrl[index].replace('&amp;', '&'),
-				link = $('<a></a>');
+			const url = downloadUrl[index].replace('&amp;', '&');
+			const link = $('<a></a>');
 
 			link.attr('href', url).html(attach.real_filename);
 			row.find('.file-name').html(link);
@@ -192,13 +193,13 @@ phpbb.plupload.ids = [];
 		phpbb.plupload.updateHiddenData(row, attach, index);
 	};
 
-/**
- * Update hidden input data for an attachment.
- *
- * @param {object} row		jQuery object for the attachment row.
- * @param {object} attach	Attachment data object from phpbb.plupload.data
- * @param {int} index		Attachment index from phpbb.plupload.ids
- */
+	/**
+	 * Update hidden input data for an attachment.
+	 *
+	 * @param {object} row		jQuery object for the attachment row.
+	 * @param {object} attach	Attachment data object from phpbb.plupload.data
+	 * @param {int} index		Attachment index from phpbb.plupload.ids
+	 */
 	phpbb.plupload.updateHiddenData = function (row, attach, index) {
 		row.find('input[type="hidden"]').remove();
 
@@ -215,17 +216,17 @@ phpbb.plupload.ids = [];
 		}
 	};
 
-/**
- * Deleting a file removes it from the queue and fires an AJAX event to the
- * server to tell it to remove the temporary attachment. The server
- * responds with the updated attachment data list so that any future
- * uploads can maintain state with the server
- *
- * @param {object} row		jQuery object for the attachment row.
- * @param {int} attachId	Attachment id of the file to be removed.
- */
+	/**
+	 * Deleting a file removes it from the queue and fires an AJAX event to the
+	 * server to tell it to remove the temporary attachment. The server
+	 * responds with the updated attachment data list so that any future
+	 * uploads can maintain state with the server
+	 *
+	 * @param {object} row		jQuery object for the attachment row.
+	 * @param {int} attachId	Attachment id of the file to be removed.
+	 */
 	phpbb.plupload.deleteFile = function (row, attachId) {
-	// If there's no attach id, then the file hasn't been uploaded. Simply delete the row.
+		// If there's no attach id, then the file hasn't been uploaded. Simply delete the row.
 		if (typeof attachId === 'undefined') {
 			const file = phpbb.plupload.uploader.getFile(row.attr('id'));
 			phpbb.plupload.uploader.removeFile(file);
@@ -242,6 +243,7 @@ phpbb.plupload.ids = [];
 		if (index === false) {
 			return;
 		}
+
 		const fields = {};
 		fields['delete_file[' + index + ']'] = 1;
 
@@ -254,16 +256,16 @@ phpbb.plupload.ids = [];
 				return;
 			}
 
-		// Trigger_error() was called which likely means a permission error was encountered.
+			// Trigger_error() was called which likely means a permission error was encountered.
 			if (typeof response.title !== 'undefined') {
 				phpbb.plupload.uploader.trigger('Error', {message: response.message});
-			// We will have to assume that the deletion failed. So leave the file status as uploaded.
+				// We will have to assume that the deletion failed. So leave the file status as uploaded.
 				row.find('.file-status').toggleClass('file-uploaded');
 
 				return;
 			}
 			phpbb.plupload.update(response, 'removal', index);
-		// Check if the user can upload files now if he had reached the max files limit.
+			// Check if the user can upload files now if he had reached the max files limit.
 			phpbb.plupload.handleMaxFilesReached();
 
 			if (row.attr('id')) {
@@ -272,7 +274,7 @@ phpbb.plupload.ids = [];
 			}
 			row.slideUp(100, () => {
 				row.remove();
-			// Hide the file list if it's empty now.
+				// Hide the file list if it's empty now.
 				phpbb.plupload.hideEmptyList();
 			});
 			phpbb.plupload.uploader.trigger('FilesRemoved');
@@ -283,34 +285,34 @@ phpbb.plupload.ids = [];
 			data: $.extend(fields, phpbb.plupload.getSerializedData()),
 			headers: phpbb.plupload.config.headers
 		})
-	.always(always)
-	.done(done);
+		.always(always)
+		.done(done);
 	};
 
-/**
- * Check the attachment list and hide its container if it's empty.
- */
+	/**
+	 * Check the attachment list and hide its container if it's empty.
+	 */
 	phpbb.plupload.hideEmptyList = function () {
-		if (!$('#file-list').children().length) {
+		if ($('#file-list').children().length === 0) {
 			$('#file-list-container').slideUp(100);
 		}
 	};
 
-/**
- * Update the indices used in inline attachment bbcodes. This ensures that the
- * bbcodes correspond to the correct file after a file is added or removed.
- * This should be called before the phpbb.plupload,data and phpbb.plupload.ids
- * arrays are updated, otherwise it will not work correctly.
- *
- * @param {string} action	The action that occurred -- either "addition" or "removal"
- * @param {int} index		The index of the attachment from phpbb.plupload.ids that was affected.
- */
+	/**
+	 * Update the indices used in inline attachment bbcodes. This ensures that the
+	 * bbcodes correspond to the correct file after a file is added or removed.
+	 * This should be called before the phpbb.plupload,data and phpbb.plupload.ids
+	 * arrays are updated, otherwise it will not work correctly.
+	 *
+	 * @param {string} action	The action that occurred -- either "addition" or "removal"
+	 * @param {int} index		The index of the attachment from phpbb.plupload.ids that was affected.
+	 */
 	phpbb.plupload.updateBbcode = function (action, index) {
-		let	textarea = $('#message', phpbb.plupload.form),
-			text = textarea.val(),
-			removal = (action === 'removal');
+		const	textarea = $('#message', phpbb.plupload.form);
+		let text = textarea.val();
+		const removal = (action === 'removal');
 
-	// Return if the bbcode isn't used at all.
+		// Return if the bbcode isn't used at all.
 		if (text.indexOf('[attachment=') === -1) {
 			return;
 		}
@@ -318,7 +320,7 @@ phpbb.plupload.ids = [];
 		function runUpdate(i) {
 			const regex = new RegExp('\\[attachment=' + i + '\\](.*?)\\[\\/attachment\\]', 'g');
 			text = text.replace(regex, (_, fileName) => {
-			// Remove the bbcode if the file was removed.
+				// Remove the bbcode if the file was removed.
 				if (removal && index === i) {
 					return '';
 				}
@@ -327,8 +329,8 @@ phpbb.plupload.ids = [];
 			});
 		}
 
-	// Loop forwards when removing and backwards when adding ensures we don't
-	// corrupt the bbcode index.
+		// Loop forwards when removing and backwards when adding ensures we don't
+		// corrupt the bbcode index.
 		let i;
 		if (removal) {
 			for (i = index; i < phpbb.plupload.ids.length; i++) {
@@ -343,14 +345,14 @@ phpbb.plupload.ids = [];
 		textarea.val(text);
 	};
 
-/**
- * Get Plupload file objects based on their upload status.
- *
- * @param {int} status Plupload status - plupload.DONE, plupload.FAILED,
- * plupload.QUEUED, plupload.STARTED, plupload.STOPPED
- *
- * @returns {Array} The Plupload file objects matching the status.
- */
+	/**
+	 * Get Plupload file objects based on their upload status.
+	 *
+	 * @param {int} status Plupload status - plupload.DONE, plupload.FAILED,
+	 * plupload.QUEUED, plupload.STARTED, plupload.STOPPED
+	 *
+	 * @returns {Array} The Plupload file objects matching the status.
+	 */
 	phpbb.plupload.getFilesByStatus = function (status) {
 		const files = [];
 
@@ -362,55 +364,55 @@ phpbb.plupload.ids = [];
 		return files;
 	};
 
-/**
- * Check whether the user has reached the maximun number of files that he's allowed
- * to upload. If so, disables the uploader and marks the queued files as failed. Otherwise
- * makes sure that the uploader is enabled.
- *
- * @returns {bool} True if the limit has been reached. False if otherwise.
- */
+	/**
+	 * Check whether the user has reached the maximun number of files that he's allowed
+	 * to upload. If so, disables the uploader and marks the queued files as failed. Otherwise
+	 * makes sure that the uploader is enabled.
+	 *
+	 * @returns {bool} True if the limit has been reached. False if otherwise.
+	 */
 	phpbb.plupload.handleMaxFilesReached = function () {
-	// If there is no limit, the user is an admin or moderator.
+		// If there is no limit, the user is an admin or moderator.
 		if (!phpbb.plupload.maxFiles) {
 			return false;
 		}
 
 		if (phpbb.plupload.maxFiles <= phpbb.plupload.ids.length) {
-		// Fail the rest of the queue.
+			// Fail the rest of the queue.
 			phpbb.plupload.markQueuedFailed(phpbb.plupload.lang.TOO_MANY_ATTACHMENTS);
-		// Disable the uploader.
+			// Disable the uploader.
 			phpbb.plupload.disableUploader();
 			phpbb.plupload.uploader.trigger('Error', {message: phpbb.plupload.lang.TOO_MANY_ATTACHMENTS});
 
 			return true;
 		} else if (phpbb.plupload.maxFiles > phpbb.plupload.ids.length) {
-		// Enable the uploader if the user is under the limit
+			// Enable the uploader if the user is under the limit
 			phpbb.plupload.enableUploader();
 		}
 		return false;
 	};
 
-/**
- * Disable the uploader
- */
+	/**
+	 * Disable the uploader
+	 */
 	phpbb.plupload.disableUploader = function () {
 		$('#add_files').addClass('disabled');
 		phpbb.plupload.uploader.disableBrowse();
 	};
 
-/**
- * Enable the uploader
- */
+	/**
+	 * Enable the uploader
+	 */
 	phpbb.plupload.enableUploader = function () {
 		$('#add_files').removeClass('disabled');
 		phpbb.plupload.uploader.disableBrowse(false);
 	};
 
-/**
- * Mark all queued files as failed.
- *
- * @param {string} error Error message to present to the user.
- */
+	/**
+	 * Mark all queued files as failed.
+	 *
+	 * @param {string} error Error message to present to the user.
+	 */
 	phpbb.plupload.markQueuedFailed = function (error) {
 		const files = phpbb.plupload.getFilesByStatus(plupload.QUEUED);
 
@@ -420,12 +422,12 @@ phpbb.plupload.ids = [];
 		});
 	};
 
-/**
- * Marks a file as failed and sets the error message for it.
- *
- * @param {object} file		Plupload file object that failed.
- * @param {string} error	Error message to present to the user.
- */
+	/**
+	 * Marks a file as failed and sets the error message for it.
+	 *
+	 * @param {object} file		Plupload file object that failed.
+	 * @param {string} error	Error message to present to the user.
+	 */
 	phpbb.plupload.fileError = function (file, error) {
 		file.status = plupload.FAILED;
 		file.error = error;
@@ -437,51 +439,51 @@ phpbb.plupload.ids = [];
 		});
 	};
 
-/**
- * Set up the Plupload object and get some basic data.
- */
+	/**
+	 * Set up the Plupload object and get some basic data.
+	 */
 	phpbb.plupload.uploader = new plupload.Uploader(phpbb.plupload.config);
 	phpbb.plupload.initialize();
 
 	const $fileList = $('#file-list');
 
-/**
- * Insert inline attachment bbcode.
- */
-	$fileList.on('click', '.file-inline-bbcode', function (e) {
-		let attachId = $(this).parents('.attach-row').attr('data-attach-id'),
-			index = phpbb.plupload.getIndex(attachId);
+	/**
+	 * Insert inline attachment bbcode.
+	 */
+	$fileList.on('click', '.file-inline-bbcode', e => {
+		const attachId = $(this).parents('.attach-row').attr('data-attach-id');
+		const index = phpbb.plupload.getIndex(attachId);
 
 		attachInline(index, phpbb.plupload.data[index].real_filename);
 		e.preventDefault();
 	});
 
-/**
- * Delete a file.
- */
-	$fileList.on('click', '.file-delete', function (e) {
-		let row = $(this).parents('.attach-row'),
-			attachId = row.attr('data-attach-id');
+	/**
+	 * Delete a file.
+	 */
+	$fileList.on('click', '.file-delete', e => {
+		const row = $(this).parents('.attach-row');
+		const attachId = row.attr('data-attach-id');
 
 		phpbb.plupload.deleteFile(row, attachId);
 		e.preventDefault();
 	});
 
-/**
- * Display the error message for a particular file when the error icon is clicked.
- */
-	$fileList.on('click', '.file-error', function (e) {
+	/**
+	 * Display the error message for a particular file when the error icon is clicked.
+	 */
+	$fileList.on('click', '.file-error', e => {
 		phpbb.alert($(this).attr('data-error-title'), $(this).attr('data-error-message'));
 		e.preventDefault();
 	});
 
-/**
- * Fires when an error occurs.
- */
+	/**
+	 * Fires when an error occurs.
+	 */
 	phpbb.plupload.uploader.bind('Error', (up, error) => {
 		error.file.name = plupload.xmlEncode(error.file.name);
 
-	// The error message that Plupload provides for these is vague, so we'll be more specific.
+		// The error message that Plupload provides for these is vague, so we'll be more specific.
 		if (error.code === plupload.FILE_EXTENSION_ERROR) {
 			error.message = plupload.translate('Invalid file extension:') + ' ' + error.file.name;
 		} else if (error.code === plupload.FILE_SIZE_ERROR) {
@@ -490,14 +492,14 @@ phpbb.plupload.ids = [];
 		phpbb.alert(phpbb.plupload.lang.ERROR, error.message);
 	});
 
-/**
- * Fires before a given file is about to be uploaded. This allows us to
- * send the real filename along with the chunk. This is necessary because
- * for some reason the filename is set to 'blob' whenever a file is chunked
- *
- * @param {object} up	The plupload.Uploader object
- * @param {object} file	The plupload.File object that is about to be uploaded
- */
+	/**
+	 * Fires before a given file is about to be uploaded. This allows us to
+	 * send the real filename along with the chunk. This is necessary because
+	 * for some reason the filename is set to 'blob' whenever a file is chunked
+	 *
+	 * @param {object} up	The plupload.Uploader object
+	 * @param {object} file	The plupload.File object that is about to be uploaded
+	 */
 	phpbb.plupload.uploader.bind('BeforeUpload', (up, file) => {
 		if (phpbb.plupload.handleMaxFilesReached()) {
 			return;
@@ -506,16 +508,16 @@ phpbb.plupload.ids = [];
 		phpbb.plupload.updateMultipartParams({real_filename: file.name});
 	});
 
-/**
- * Fired when a single chunk of any given file is uploaded. This parses the
- * response from the server and checks for an error. If an error occurs it
- * is reported to the user and the upload of this particular file is halted
- *
- * @param {object} up		The plupload.Uploader object
- * @param {object} file		The plupload.File object whose chunk has just
- * 	been uploaded
- * @param {object} response	The response object from the server
- */
+	/**
+	 * Fired when a single chunk of any given file is uploaded. This parses the
+	 * response from the server and checks for an error. If an error occurs it
+	 * is reported to the user and the upload of this particular file is halted
+	 *
+	 * @param {object} up		The plupload.Uploader object
+	 * @param {object} file		The plupload.File object whose chunk has just
+	 * 	been uploaded
+	 * @param {object} response	The response object from the server
+	 */
 	phpbb.plupload.uploader.bind('ChunkUploaded', (up, file, response) => {
 		if (response.chunk >= response.chunks - 1) {
 			return;
@@ -524,7 +526,7 @@ phpbb.plupload.ids = [];
 		let json = {};
 		try {
 			json = $.parseJSON(response.response);
-		} catch (e) {
+		} catch (err) {
 			file.status = plupload.FAILED;
 			up.trigger('FileUploaded', file, {
 				response: JSON.stringify({
@@ -535,7 +537,7 @@ phpbb.plupload.ids = [];
 			});
 		}
 
-	// If trigger_error() was called, then a permission error likely occurred.
+		// If trigger_error() was called, then a permission error likely occurred.
 		if (typeof json.title !== 'undefined') {
 			json.error = {message: json.message};
 		}
@@ -552,9 +554,9 @@ phpbb.plupload.ids = [];
 		}
 	});
 
-/**
- * Fires when files are added to the queue.
- */
+	/**
+	 * Fires when files are added to the queue.
+	 */
 	phpbb.plupload.uploader.bind('FilesAdded', (up, files) => {
 	// Prevent unnecessary requests to the server if the user already uploaded
 	// the maximum number of files allowed.
@@ -562,12 +564,12 @@ phpbb.plupload.ids = [];
 			return;
 		}
 
-	// Switch the active tab if the style supports it
+		// Switch the active tab if the style supports it
 		if (typeof activateSubPanel === 'function') {
 			activateSubPanel('attach-panel'); // jshint ignore: line
 		}
 
-	// Show the file list if there aren't any files currently.
+		// Show the file list if there aren't any files currently.
 		const $fileListContainer = $('#file-list-container');
 		if (!$fileListContainer.is(':visible')) {
 			$fileListContainer.show(100);
@@ -582,44 +584,44 @@ phpbb.plupload.ids = [];
 			$('#file-total-progress-bar').css('width', up.total.percent + '%');
 		});
 
-	// Do not allow more files to be added to the running queue.
+		// Do not allow more files to be added to the running queue.
 		phpbb.plupload.disableUploader();
 
-	// Start uploading the files once the user has selected them.
+		// Start uploading the files once the user has selected them.
 		up.start();
 	});
 
-/**
- * Fires when an entire file has been uploaded. It checks for errors
- * returned by the server otherwise parses the list of attachment data and
- * appends it to the next file upload so that the server can maintain state
- * with regards to the attachments in a given post
- *
- * @param {object} up		The plupload.Uploader object
- * @param {object} file		The plupload.File object that has just been
- * 	uploaded
- * @param {string} response	The response string from the server
- */
+	/**
+	 * Fires when an entire file has been uploaded. It checks for errors
+	 * returned by the server otherwise parses the list of attachment data and
+	 * appends it to the next file upload so that the server can maintain state
+	 * with regards to the attachments in a given post
+	 *
+	 * @param {object} up		The plupload.Uploader object
+	 * @param {object} file		The plupload.File object that has just been
+	 * 	uploaded
+	 * @param {string} response	The response string from the server
+	 */
 	phpbb.plupload.uploader.bind('FileUploaded', (up, file, response) => {
-		let json = {},
-			row = $('#' + file.id),
-			error;
+		let json = {};
+		const row = $('#' + file.id);
+		let error;
 
-	// Hide the progress indicator.
+		// Hide the progress indicator.
 		row.find('.file-progress').hide();
 
 		try {
 			json = JSON.parse(response.response);
-		} catch (e) {
+		} catch (err) {
 			error = 'Error parsing server response.';
 		}
 
-	// If trigger_error() was called, then a permission error likely occurred.
+		// If trigger_error() was called, then a permission error likely occurred.
 		if (typeof json.title !== 'undefined') {
 			error = json.message;
 			up.trigger('Error', {message: error});
 
-		// The rest of the queue will fail.
+			// The rest of the queue will fail.
 			phpbb.plupload.markQueuedFailed(error);
 		} else if (json.error) {
 			error = json.error.message;
@@ -637,20 +639,20 @@ phpbb.plupload.ids = [];
 		}
 	});
 
-/**
- * Fires when the entire queue of files have been uploaded.
- */
+	/**
+	 * Fires when the entire queue of files have been uploaded.
+	 */
 	phpbb.plupload.uploader.bind('UploadComplete', () => {
-	// Hide the progress bar
+		// Hide the progress bar
 		setTimeout(() => {
 			$('#file-total-progress-bar').fadeOut(500, function () {
 				$(this).css('width', 0).show();
 			});
 		}, 2000);
 
-	// Re-enable the uploader
+		// Re-enable the uploader
 		phpbb.plupload.enableUploader();
 	});
 })(jQuery); // Avoid conflicts with other libraries
 
-/* eslint-enable camelcase, no-unused-vars */
+/* eslint-enable camelcase, no-unused-vars, no-prototype-builtins */
