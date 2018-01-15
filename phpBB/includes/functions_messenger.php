@@ -699,9 +699,7 @@ class messenger
 			$phpbb_container->get('path_helper'),
 			$phpbb_container->getParameter('core.template.cache_path'),
 			$phpbb_container->get('ext.manager'),
-			new \phpbb\template\twig\loader(
-				$phpbb_container->get('filesystem')
-			),
+			new \phpbb\template\twig\loader(),
 			$phpbb_dispatcher,
 			array()
 		);

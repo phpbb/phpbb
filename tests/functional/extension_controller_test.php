@@ -90,6 +90,15 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	}
 
 	/**
+	* Check includejs/includecss when the request_uri is a subdirectory
+	*/
+	public function test_controller_template_include_js_css()
+	{
+		$crawler = self::request('GET', 'app.php/help/faq');
+		$this->assertContains("./../../assets/javascript/core.js", $crawler->filter('body')->html());
+	}
+
+	/**
 	* Check the error produced by calling a controller without a required
 	* argument.
 	*/

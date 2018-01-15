@@ -2097,9 +2097,10 @@ class acp_users
 				// Replace "error" strings with their real, localised form
 				$error = array_map(array($user, 'lang'), $error);
 
+				// fix ticket 15513
 				if ($request->is_set_post('preview'))
 				{
-					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_bitfield);
+					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_flags);
 				}
 
 				/** @var \phpbb\controller\helper $controller_helper */
