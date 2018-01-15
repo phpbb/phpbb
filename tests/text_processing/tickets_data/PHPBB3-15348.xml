@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_smilies">
+		<column>smiley_id</column>
+		<column>code</column>
+		<column>emotion</column>
+		<column>smiley_url</column>
+		<column>smiley_width</column>
+		<column>smiley_height</column>
+		<column>smiley_order</column>
+		<column>display_on_posting</column>
+		<row>
+			<value>13</value>
+			<value>:o</value>
+			<value>First half of :ok:</value>
+			<value>icon_e_surprised.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>14</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>99</value>
+			<value>k:</value>
+			<value>Second half of :ok:</value>
+			<value>icon_lol.gif</value>
+			<value>15</value>
+			<value>17</value>
+			<value>22</value>
+			<value>1</value>
+		</row>
+	</table>
+</dataset>

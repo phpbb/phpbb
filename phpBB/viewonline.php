@@ -37,6 +37,7 @@ if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NO_VIEW_USERS');
 	}
 
@@ -63,7 +64,10 @@ $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC
 // Whois requested
 if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
-	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	if (!function_exists('user_get_id_name'))
+	{
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	}
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
@@ -126,7 +130,6 @@ if (!$show_guests)
 {
 	switch ($db->get_sql_layer())
 	{
-		case 'sqlite':
 		case 'sqlite3':
 			$sql = 'SELECT COUNT(session_ip) as num_guests
 				FROM (
@@ -171,7 +174,7 @@ $sql_ary = array(
 * @var	int		guest_counter	Number of guests displayed
 * @var	array	forum_data		Array with forum data
 * @since 3.1.0-a1
-* @change 3.1.0-a2 Added vars guest_counter and forum_data
+* @changed 3.1.0-a2 Added vars guest_counter and forum_data
 */
 $vars = array('sql_ary', 'show_guests', 'guest_counter', 'forum_data');
 extract($phpbb_dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
@@ -396,7 +399,7 @@ while ($row = $db->sql_fetchrow($result))
 	* @var	string	location_url	Page url to displayed in the list
 	* @var	array	forum_data		Array with forum data
 	* @since 3.1.0-a1
-	* @change 3.1.0-a2 Added var forum_data
+	* @changed 3.1.0-a2 Added var forum_data
 	*/
 	$vars = array('on_page', 'row', 'location', 'location_url', 'forum_data');
 	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));

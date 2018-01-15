@@ -88,14 +88,24 @@ p.right {
 }
 
 p.jumpbox-return {
-	margin-top: 1em;
+	margin-top: 10px;
+	margin-bottom: 0;
+	float: left;
 }
 
 b, strong {
 	font-weight: bold;
 }
 
+.text-strong {
+	font-weight: bold;
+}
+
 i, em {
+	font-style: italic;
+}
+
+.text-italics {
 	font-style: italic;
 }
 
@@ -337,18 +347,19 @@ ul.linklist.bulletin > li.no-bulletin:before {
 	vertical-align: top;
 }
 
-.header-avatar:hover {
+a.header-avatar,
+a.header-avatar:hover {
 	text-decoration: none;
 }
 
-.header-avatar img {
+a.header-avatar img {
 	margin-bottom: 2px;
 	max-height: 20px;
 	vertical-align: middle;
 	width: auto;
 }
 
-.header-avatar span:after {
+a.header-avatar span:after {
 	content: '\f0dd';
 	display: inline-block;
 	font: normal normal normal 14px/1 FontAwesome;
@@ -875,7 +886,8 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Pagination in viewforum for multipage topics */
 .row .pagination {
 	display: block;
-	margin-top: -12px;
+	margin-top: 3px;
+	margin-bottom: 3px;
 }
 
 .row .pagination > ul {
@@ -884,8 +896,8 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .row .pagination li a, .row .pagination li span {
 	border-radius: 2px;
-    padding: 1px 3px;
-    font-size: 9px;
+	padding: 1px 3px;
+	font-size: 9px;
 }
 
 /* jQuery popups
@@ -1042,6 +1054,13 @@ ul.linklist:after,
 	clear: both;
 	content: '';
 	display: block;
+}
+
+.emoji {
+	min-height: 18px;
+	min-width: 18px;
+	height: 1em;
+	width: 1em;
 }
 
 .smilies {
@@ -1205,6 +1224,26 @@ ul.linklist:after,
 	margin-left: 58px;
 }
 
+.badge {
+	border-radius: 10px;
+	opacity: 0.8;
+	text-align: center;
+	white-space: nowrap;
+	font-size: 10px;
+	line-height: 1;
+	float: right;
+	display: inline-block;
+	margin-left: 3px;
+	vertical-align: baseline;
+	position: relative;
+	top: 3px;
+	padding: 4px 6px;
+}
+
+.badge.hidden {
+	display: none;
+}
+
 /* Navbar specific list items
 ----------------------------------------*/
 
@@ -1212,12 +1251,8 @@ ul.linklist:after,
 	margin: 0 7px 0 0;
 }
 
-.linklist.compact .rightside > a > span span {
+.linklist.compact .rightside > a > span {
 	display: none;
-}
-
-.linklist.compact .rightside > a strong {
-	padding-left: 2px;
 }
 
 .dropdown-page-jump .dropdown {

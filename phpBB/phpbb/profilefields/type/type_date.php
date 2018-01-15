@@ -72,7 +72,7 @@ class type_date extends type_base
 			'lang_options'			=> $field_data['lang_options'],
 		);
 
-		$always_now = $request->variable('always_now', -1);
+		$always_now = $this->request->variable('always_now', -1);
 		if ($always_now == -1)
 		{
 			$s_checked = ($field_data['field_default_value'] == 'now') ? true : false;
@@ -264,7 +264,7 @@ class type_date extends type_base
 		}
 
 		$profile_row['s_year_options'] = '<option value="0"' . ((!$year) ? ' selected="selected"' : '') . '>--</option>';
-		for ($i = $now['year'] - 100; $i <= $now['year'] + 100; $i++)
+		for ($i = 1901; $i <= $now['year'] + 50; $i++)
 		{
 			$profile_row['s_year_options'] .= '<option value="' . $i . '"' . (($i == $year) ? ' selected="selected"' : '') . ">$i</option>";
 		}

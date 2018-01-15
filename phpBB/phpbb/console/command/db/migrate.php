@@ -15,6 +15,7 @@ namespace phpbb\console\command\db;
 use phpbb\db\output_handler\log_wrapper_migrator_output_handler;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class migrate extends \phpbb\console\command\db\migration_command
 {
@@ -30,26 +31,28 @@ class migrate extends \phpbb\console\command\db\migration_command
 	/** @var \phpbb\language\language */
 	protected $language;
 
-	function __construct(\phpbb\user $user, \phpbb\language\language $language, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
+	public function __construct(\phpbb\user $user, \phpbb\language\language $language, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\log\log $log, \phpbb\filesystem\filesystem_interface $filesystem, $phpbb_root_path)
 	{
 		$this->language = $language;
 		$this->log = $log;
 		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		parent::__construct($user, $migrator, $extension_manager, $config, $cache);
-		$this->user->add_lang(array('common', 'install', 'migrator'));
+		$this->language->add_lang(array('common', 'install', 'migrator'));
 	}
 
 	protected function configure()
 	{
 		$this
 			->setName('db:migrate')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_DB_MIGRATE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_DB_MIGRATE'))
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$this->migrator->set_output_handler(new log_wrapper_migrator_output_handler($this->language, new console_migrator_output_handler($this->user, $output), $this->phpbb_root_path . 'store/migrations_' . time() . '.log', $this->filesystem));
 
 		$this->migrator->create_migrations_table();
@@ -66,7 +69,7 @@ class migrate extends \phpbb\console\command\db\migration_command
 			}
 			catch (\phpbb\db\migration\exception $e)
 			{
-				$output->writeln('<error>' . $e->getLocalisedMessage($this->user) . '</error>');
+				$io->error($e->getLocalisedMessage($this->user));
 				$this->finalise_update();
 				return 1;
 			}
@@ -78,6 +81,6 @@ class migrate extends \phpbb\console\command\db\migration_command
 		}
 
 		$this->finalise_update();
-		$output->writeln($this->user->lang['DATABASE_UPDATE_COMPLETE']);
+		$io->success($this->language->lang('INLINE_UPDATE_SUCCESSFUL'));
 	}
 }

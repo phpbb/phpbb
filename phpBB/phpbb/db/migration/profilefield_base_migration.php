@@ -191,6 +191,7 @@ abstract class profilefield_base_migration extends container_aware_migration
 		$insert_buffer = new \phpbb\db\sql_insert_buffer($this->db, $this->table_prefix . 'profile_fields_data');
 		$limit = 250;
 		$converted_users = 0;
+		$start = $start ?: 0;
 
 		$sql = 'SELECT user_id, ' . $this->user_column_name . '
 			FROM ' . $this->table_prefix . 'users

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_words">
+		<column>word_id</column>
+		<column>word</column>
+		<column>replacement</column>
+
+		<row>
+			<value>1</value>
+			<value>&lt;*&gt;</value>
+			<value>****</value>
+		</row>
+	</table>
+</dataset>

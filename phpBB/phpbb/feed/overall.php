@@ -55,6 +55,8 @@ class overall extends post_base
 			return false;
 		}
 
+		parent::fetch_attachments(array(), $topic_ids);
+
 		// Get the actual data
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, ' .

@@ -496,4 +496,17 @@ class path_helper
 
 		return $page;
 	}
+
+	/**
+	 * Tells if the router is currently in use (if the current page is a route or not)
+	 *
+	 * @return bool
+	 */
+	public function is_router_used()
+	{
+		// Script name URI (e.g. phpBB/app.php)
+		$script_name = $this->symfony_request->getScriptName();
+
+		return basename($script_name) === 'app.' . $this->php_ext;
+	}
 }

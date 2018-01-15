@@ -64,6 +64,7 @@ class help
 	 */
 	public function handle($mode)
 	{
+		$template_file = 'faq_body.html';
 		switch ($mode)
 		{
 			case 'faq':
@@ -85,13 +86,16 @@ class help
 				 * @var	string	lang_file		Language file containing the help data
 				 * @var	string	ext_name		Vendor and extension name where the help
 				 *								language file can be loaded from
+				 * @var	string	template_file	Template file name
 				 * @since 3.1.4-RC1
+				 * @changed 3.1.11-RC1 Added template_file var
 				 */
 				$vars = array(
 					'page_title',
 					'mode',
 					'lang_file',
 					'ext_name',
+					'template_file',
 				);
 				extract($this->dispatcher->trigger_event('core.faq_mode_validation', compact($vars)));
 
@@ -113,7 +117,7 @@ class help
 		$this->assign_to_template($this->user->help);
 
 		make_jumpbox(append_sid("{$this->root_path}viewforum.{$this->php_ext}"));
-		return $this->helper->render('faq_body.html', $page_title);
+		return $this->helper->render($template_file, $page_title);
 	}
 
 	/**

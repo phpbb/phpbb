@@ -1,0 +1,61 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_ACP_HELP_PHPBB}</h1>
+
+<form id="acp_help_phpbb" method="post" action="{U_ACTION}" data-ajax-action="{U_COLLECT_STATS}">
+<div class="send-stats-row">
+	<!-- EVENT acp_help_phpbb_stats_before -->
+	<div class="send-stats-tile">
+		<h2><i class="icon fa-bar-chart"></i>{L_SEND_STATISTICS}</h2>
+		<p>{L_EXPLAIN_SEND_STATISTICS}</p>
+		<div class="send-stats-row">
+			<div class="send-stats-data-row send-stats-data-only-row">
+				<a id="trigger-configlist" data-ajax="toggle_link" data-overlay="false" data-toggle-text="{L_HIDE_STATISTICS}"><span>{L_SHOW_STATISTICS}</span><i class="icon fa-angle-down"></i></a>
+			</div>
+			<div class="send-stats-data-row">
+				<div class="configlist" id="configlist">
+					<!-- BEGIN providers -->
+					<fieldset>
+						<legend>{providers.NAME}</legend>
+						<!-- BEGIN values -->
+						<dl>
+							<dt>{providers.values.KEY}</dt>
+							<dd>{providers.values.VALUE}</dd>
+						</dl>
+						<!-- END values -->
+					</fieldset>
+					<!-- END providers -->
+				</div>
+			</div>
+		</div>
+		<dl class="send-stats-settings">
+			<dt>
+				<input name="help_send_statistics" id="help_send_statistics" type="checkbox"<!-- IF S_COLLECT_STATS --> checked="checked"<!-- ENDIF --> />
+				<label for="help_send_statistics"></label>
+			</dt>
+			<dd>{L_SEND_STATISTICS_LONG}</dd>
+		</dl>
+	</div>
+	<!-- EVENT acp_help_phpbb_stats_after -->
+	<fieldset>
+		<p class="submit-buttons">
+			<input type="hidden" name="systemdata" value="{RAW_DATA}" />
+			<input type="hidden" name="help_send_statistics_time" value="{COLLECT_STATS_TIME}" />
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
+		</p>
+		{S_FORM_TOKEN}
+	</fieldset>
+</div>
+</form>
+<form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
+	<fieldset>
+		<p class="submit-buttons">
+			<input type="hidden" name="systemdata" value="{RAW_DATA}" />
+			<input class="button1" type="submit" id="submit_stats" name="submit" value="{L_SEND_STATISTICS}" />
+		</p>
+	</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

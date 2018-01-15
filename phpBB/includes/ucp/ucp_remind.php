@@ -30,7 +30,7 @@ class ucp_remind
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx, $request;
-		global $db, $user, $template, $phpbb_container;
+		global $db, $user, $template, $phpbb_container, $phpbb_dispatcher;
 
 		if (!$config['allow_password_reset'])
 		{
@@ -41,12 +41,39 @@ class ucp_remind
 		$email		= strtolower($request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
+		add_form_key('ucp_remind');
+
 		if ($submit)
 		{
-			$sql = 'SELECT user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
-				FROM ' . USERS_TABLE . "
-				WHERE user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
-					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+			if (!check_form_key('ucp_remind'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
+			$sql_array = array(
+				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason',
+				'FROM'		=> array(USERS_TABLE => 'u'),
+				'WHERE'		=> "user_email_hash = '" . $db->sql_escape(phpbb_email_hash($email)) . "'
+									AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'"
+			);
+
+			/**
+			* Change SQL query for fetching user data
+			*
+			* @event core.ucp_remind_modify_select_sql
+			* @var	string	email		User's email from the form
+			* @var	string	username	User's username from the form
+			* @var	array	sql_array	Fully assembled SQL query with keys SELECT, FROM, WHERE
+			* @since 3.1.11-RC1
+			*/
+			$vars = array(
+				'email',
+				'username',
+				'sql_array',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.ucp_remind_modify_select_sql', compact($vars)));
+
+			$sql = $db->sql_build_query('SELECT', $sql_array);
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -79,6 +106,7 @@ class ucp_remind
 
 			if (!$auth2->acl_get('u_chgpasswd'))
 			{
+				send_status_line(403, 'Forbidden');
 				trigger_error('NO_AUTH_PASSWORD_REMINDER');
 			}
 

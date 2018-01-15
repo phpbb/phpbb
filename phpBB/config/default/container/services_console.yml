@@ -3,7 +3,6 @@ services:
         class: phpbb\console\exception_subscriber
         arguments:
             - '@language'
-            - '%debug.exceptions%'
         tags:
             - { name: kernel.event_subscriber }
 
@@ -111,15 +110,7 @@ services:
 
     console.command.db.revert:
         class: phpbb\console\command\db\revert
-        arguments:
-            - '@user'
-            - '@language'
-            - '@migrator'
-            - '@ext.manager'
-            - '@config'
-            - '@cache'
-            - '@filesystem'
-            - '%core.root_path%'
+        parent: console.command.db.migrate
         tags:
             - { name: console.command }
 
@@ -175,6 +166,27 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.fixup.update_hashes:
+        class: phpbb\console\command\fixup\update_hashes
+        arguments:
+            - '@config'
+            - '@user'
+            - '@dbal.conn'
+            - '@passwords.manager'
+            - '@passwords.driver_collection'
+            - '%passwords.algorithms%'
+        tags:
+            - { name: console.command }
+
+    console.command.fixup.fix_left_right_ids:
+        class: phpbb\console\command\fixup\fix_left_right_ids
+        arguments:
+            - '@user'
+            - '@dbal.conn'
+            - '@cache.driver'
+        tags:
+            - { name: console.command }
+
     console.command.reparser.list:
         class: phpbb\console\command\reparser\list_all
         arguments:
@@ -217,6 +229,16 @@ services:
         class: phpbb\console\command\thumbnail\recreate
         arguments:
             - '@user'
+        tags:
+            - { name: console.command }
+
+    console.command.update.check:
+        class: phpbb\console\command\update\check
+        arguments:
+            - '@user'
+            - '@config'
+            - '@service_container'
+            - '@language'
         tags:
             - { name: console.command }
 

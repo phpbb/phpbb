@@ -115,7 +115,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			),
 			array(
 				'<r><E>:)</E></r>',
-				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" alt=":)" title="Smile">',
+				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" width="15" height="17" alt=":)" title="Smile">',
 				array('set_viewsmilies' => true)
 			),
 			array(
@@ -248,7 +248,7 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			),
 			array(
 				'<r><E>:)</E></r>',
-				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" alt=":)" title="Smile">'
+				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" width="15" height="17" alt=":)" title="Smile">'
 			),
 			array(
 				'<r><E>:)</E></r>',

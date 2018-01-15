@@ -89,6 +89,17 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
+.row-item a:hover {
+	text-decoration: none
+}
+
+.row-item .topictitle:hover,
+.row-item .subforum:hover,
+.row-item .username:hover,
+.row-item .username-coloured:hover {
+	text-decoration: underline;
+}
+
 /* Post body links */
 .postlink {
 	text-decoration: none;

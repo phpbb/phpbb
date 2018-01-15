@@ -30,7 +30,9 @@ Some of the functionality in phpBB and/or the test suite uses additional
 PHP extensions. If these extensions are not loaded, respective tests
 will be skipped:
 
-- apc (APC cache driver)
+- apc (APC cache driver, php5 only)
+- apcu (APCu cache driver - native API, php7+)
+- apcu_bc, apcu (APCu cache driver - APC API, php7+)
 - bz2 (compress tests)
 - mysql, pdo_mysql (MySQL database driver)
 - mysqli, pdo_mysql (MySQLi database driver)
@@ -116,6 +118,14 @@ Once the prerequisites are installed, run the tests from the project root
 directory (above phpBB):
 
     $ phpBB/vendor/bin/phpunit
+
+To generate an xml log file, run:
+
+    $ phpBB/vendor/bin/phpunit --log-junit tests/tmp/log/log.xml
+
+If you are getting a memory exhausted error after running a few tests, you can try running:
+
+    $ phpBB/vendor/bin/phpunit -d memory_limit=2048M
 
 Slow tests
 --------------

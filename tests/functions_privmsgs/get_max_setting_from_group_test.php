@@ -33,12 +33,12 @@ class phpbb_functions_privmsgs_get_max_setting_from_group_test extends phpbb_dat
 	static public function get_max_setting_from_group_data()
 	{
 		return array(
-			array(1, 0, 'message_limit'),
+			array(1, 2, 'message_limit'),
 			array(2, 2, 'message_limit'),
 			array(3, 0, 'message_limit'),
 			array(4, 0, 'message_limit'),
 			array(5, 2, 'message_limit'),
-			array(1, 0, 'max_recipients'),
+			array(1, 4, 'max_recipients'),
 			array(2, 4, 'max_recipients'),
 			array(3, 0, 'max_recipients'),
 			array(4, 5, 'max_recipients'),

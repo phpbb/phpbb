@@ -230,7 +230,7 @@ class manager
 	*/
 	public function update_profile_field_data($user_id, $cp_data)
 	{
-		if (!sizeof($cp_data))
+		if (!count($cp_data))
 		{
 			return;
 		}
@@ -258,7 +258,7 @@ class manager
 	*/
 	public function generate_profile_fields_template_headlines($restrict_option = '')
 	{
-		if (!sizeof($this->profile_cache))
+		if (!count($this->profile_cache))
 		{
 			$this->build_cache();
 		}
@@ -318,12 +318,12 @@ class manager
 			$user_ids = array($user_ids);
 		}
 
-		if (!sizeof($this->profile_cache))
+		if (!count($this->profile_cache))
 		{
 			$this->build_cache();
 		}
 
-		if (!sizeof($user_ids))
+		if (!count($user_ids))
 		{
 			return array();
 		}
@@ -486,7 +486,7 @@ class manager
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
 			FROM ' . $this->fields_language_table . ' l, ' . $this->fields_table . ' f
 			WHERE l.lang_id = ' . $this->user->get_iso_lang_id() . '
-				' . ((sizeof($sql_not_in)) ? ' AND ' . $this->db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
+				' . ((count($sql_not_in)) ? ' AND ' . $this->db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
 		$result = $this->db->sql_query($sql);
 

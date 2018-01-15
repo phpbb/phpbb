@@ -40,7 +40,7 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 	public function test_manager_finds_all_ready_tasks()
 	{
 		$tasks = $this->manager->find_all_ready_tasks();
-		$this->assertEquals(3, sizeof($tasks));
+		$this->assertEquals(3, count($tasks));
 	}
 
 	public function test_manager_finds_one_ready_task()

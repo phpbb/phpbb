@@ -26,7 +26,7 @@ phpbb.addAjaxCallback('mark_forums_read', function(res) {
 	});
 
 	// Mark subforums read
-	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read');
+	$('a.subforum[class*="unread"]').removeClass('unread').addClass('read').children('.icon.icon-red').removeClass('icon-red').addClass('icon-blue');
 
 	// Mark topics read if we are watching a category and showing active topics
 	if ($('#active_topics').length) {
@@ -132,9 +132,10 @@ phpbb.markNotifications = function($popup, unreadCount) {
 
 	// Update the unread count.
 	$('strong', '#notification_list_button').html(unreadCount);
-	// Remove the Mark all read link if there are no unread notifications.
+	// Remove the Mark all read link and hide notification count if there are no unread notifications.
 	if (!unreadCount) {
 		$('#mark_all_notifications').remove();
+		$('#notification_list_button > strong').addClass('hidden');
 	}
 
 	// Update page title

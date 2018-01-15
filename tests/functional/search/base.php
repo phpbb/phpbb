@@ -78,30 +78,34 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function create_search_index($backend = null)
 	{
 		$this->add_lang('acp/search');
-		$crawler = self::request(
-			'POST',
-			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
+		$form = $crawler->selectButton('Create index')->form();
+		$form_values = $form->getValues();
+		$form_values = array_merge($form_values,
 			array(
 				'search_type'	=> ( ($backend === null) ? $this->search_backend : $backend ),
 				'action'		=> 'create',
-				'submit'		=> true,
 			)
 		);
+		$form->setValues($form_values);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('SEARCH_INDEX_CREATED', $crawler->text());
 	}
 
 	protected function delete_search_index()
 	{
 		$this->add_lang('acp/search');
-		$crawler = self::request(
-			'POST',
-			'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid,
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
+		$form = $crawler->selectButton('Delete index')->form();
+		$form_values = $form->getValues();
+		$form_values = array_merge($form_values,
 			array(
 				'search_type'	=> $this->search_backend,
 				'action'		=> 'delete',
-				'submit'		=> true,
 			)
 		);
+		$form->setValues($form_values);
+		$crawler = self::submit($form);
 		$this->assertContainsLang('SEARCH_INDEX_REMOVED', $crawler->text());
 	}
 }

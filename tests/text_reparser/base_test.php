@@ -66,4 +66,19 @@ class phpbb_textreparser_base_test extends phpbb_database_test_case
 			$this->get_rows(array(1))
 		);
 	}
+
+	public function test_reparse_case_insensitive()
+	{
+		$this->get_reparser()->reparse_range(2, 2);
+
+		$this->assertEquals(
+			[
+				[
+					'id'   => '2',
+					'text' => '<r><IMG src="img.png"><s>[IMG]</s>img.png<e>[/IMG]</e></IMG></r>'
+				]
+			],
+			$this->get_rows([2])
+		);
+	}
 }

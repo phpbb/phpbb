@@ -32,7 +32,9 @@ class phpbb_ui_test_case extends phpbb_test_case
 	static protected $root_url;
 	static protected $already_installed = false;
 	static protected $install_success = false;
-	static protected $db;
+	protected $cache = null;
+	protected $db = null;
+	protected $extension_manager = null;
 
 	/**
 	 * Session ID for current test's session (each test makes its own)
@@ -76,14 +78,11 @@ class phpbb_ui_test_case extends phpbb_test_case
 			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
-		if (!self::$webDriver)
-		{
-			try {
-				$capabilities = DesiredCapabilities::firefox();
-				self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);
-			} catch (WebDriverCurlException $e) {
-				self::markTestSkipped('PhantomJS webserver is not running.');
-			}
+		try {
+			$capabilities = DesiredCapabilities::firefox();
+			self::$webDriver = RemoteWebDriver::create(self::$host . ':' . self::$port, $capabilities);
+		} catch (WebDriverCurlException $e) {
+			self::markTestSkipped('PhantomJS webserver is not running.');
 		}
 
 		if (!self::$already_installed)
@@ -91,6 +90,14 @@ class phpbb_ui_test_case extends phpbb_test_case
 			self::install_board();
 			self::$already_installed = true;
 		}
+	}
+
+	/**
+	 * @return array List of extensions that should be set up
+	 */
+	static protected function setup_extensions()
+	{
+		return array();
 	}
 
 	public function setUp()
@@ -104,22 +111,46 @@ class phpbb_ui_test_case extends phpbb_test_case
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+
+		$db = $this->get_db();
+
+		foreach (static::setup_extensions() as $extension)
+		{
+			$this->purge_cache();
+
+			$sql = 'SELECT ext_active
+				FROM ' . EXT_TABLE . "
+				WHERE ext_name = '" . $db->sql_escape($extension). "'";
+			$result = $db->sql_query($sql);
+			$status = (bool) $db->sql_fetchfield('ext_active');
+			$db->sql_freeresult($result);
+
+			if (!$status)
+			{
+				$this->install_ext($extension);
+			}
+		}
 	}
 
 	protected function tearDown()
 	{
 		parent::tearDown();
 
-		if (self::$db instanceof \phpbb\db\driver\driver_interface)
+		if ($this->db instanceof \phpbb\db\driver\driver_interface)
 		{
 			// Close the database connections again this test
-			self::$db->sql_close();
+			$this->db->sql_close();
 		}
 	}
 
-	static public function visit($path)
+	public function getDriver()
 	{
-		self::$webDriver->get(self::$root_url . $path);
+		return self::$webDriver;
+	}
+
+	public function visit($path)
+	{
+		$this->getDriver()->get(self::$root_url . $path);
 	}
 
 	static protected function recreate_database($config)
@@ -128,24 +159,22 @@ class phpbb_ui_test_case extends phpbb_test_case
 		$db_conn_mgr->recreate_db();
 	}
 
-	static public function find_element($type, $value)
+	public function find_element($type, $value)
 	{
-		return self::$webDriver->findElement(WebDriverBy::$type($value));
+		return $this->getDriver()->findElement(WebDriverBy::$type($value));
 	}
 
-	static public function submit($type = 'id', $value = 'submit')
+	public function submit($type = 'id', $value = 'submit')
 	{
-		$element = self::find_element($type, $value);
+		$element = $this->find_element($type, $value);
 		$element->click();
 	}
 
-	static public function install_board()
+	static protected function install_board()
 	{
 		global $phpbb_root_path, $phpEx, $db;
 
 		self::recreate_database(self::$config);
-
-		$db = self::get_db();
 
 		$config_file = $phpbb_root_path . "config.$phpEx";
 		$config_file_dev = $phpbb_root_path . "config_dev.$phpEx";
@@ -270,19 +299,112 @@ class phpbb_ui_test_case extends phpbb_test_case
 		}
 	}
 
-	static protected function get_db()
+	public function install_ext($extension)
+	{
+		$this->login();
+		$this->admin_login();
+
+		$ext_path = str_replace('/', '%2F', $extension);
+
+		$this->visit('adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
+		$this->assertNotEmpty(count($this->find_element('cssSelector', '.submit-buttons')));
+
+		$this->find_element('cssSelector', "input[value='Enable']")->submit();
+		$this->add_lang('acp/extensions');
+
+		try
+		{
+			$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
+
+			// Wait for extension to be fully enabled
+			while (count($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->getAttribute('content'), $match);
+				$this->getDriver()->execute(array('method' => 'post', 'url' => $match[1]));
+				$meta_refresh = $this->find_element('cssSelector', 'meta[http-equiv="refresh"]');
+			}
+		}
+		catch (\Facebook\WebDriver\Exception\NoSuchElementException $e)
+		{
+			// Probably no refresh triggered
+		}
+
+		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $this->find_element('cssSelector', 'div.successbox')->getText());
+
+		$this->logout();
+	}
+
+	protected function get_cache_driver()
+	{
+		if (!$this->cache)
+		{
+			$this->cache = new \phpbb\cache\driver\file;
+		}
+
+		return $this->cache;
+	}
+
+	protected function purge_cache()
+	{
+		$cache = $this->get_cache_driver();
+
+		$cache->purge();
+		$cache->unload();
+		$cache->load();
+	}
+
+	protected function get_extension_manager()
 	{
 		global $phpbb_root_path, $phpEx;
+
+		$config = new \phpbb\config\config(array());
+		$db = $this->get_db();
+		$db_tools = new \phpbb\db\tools($db);
+
+		$container = new phpbb_mock_container_builder();
+		$migrator = new \phpbb\db\migrator(
+			$container,
+			$config,
+			$db,
+			$db_tools,
+			self::$config['table_prefix'] . 'migrations',
+			$phpbb_root_path,
+			$phpEx,
+			self::$config['table_prefix'],
+			array(),
+			new \phpbb\db\migration\helper()
+		);
+		$container->set('migrator', $migrator);
+		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
+		$user = new \phpbb\user('\phpbb\datetime');
+
+		$extension_manager = new \phpbb\extension\manager(
+			$container,
+			$db,
+			$config,
+			new phpbb\filesystem(),
+			$user,
+			self::$config['table_prefix'] . 'ext',
+			dirname(__FILE__) . '/',
+			$phpEx,
+			$this->get_cache_driver()
+		);
+
+		return $extension_manager;
+	}
+
+	protected function get_db()
+	{
 		// so we don't reopen an open connection
-		if (!(self::$db instanceof \phpbb\db\driver\driver_interface))
+		if (!($this->db instanceof \phpbb\db\driver\driver_interface))
 		{
 			$dbms = self::$config['dbms'];
 			/** @var \phpbb\db\driver\driver_interface $db */
 			$db = new $dbms();
 			$db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
-			self::$db = $db;
+			$this->db = $db;
 		}
-		return self::$db;
+		return $this->db;
 	}
 
 	protected function logout()
@@ -295,7 +417,7 @@ class phpbb_ui_test_case extends phpbb_test_case
 		}
 
 		$this->visit('ucp.php?sid=' . $this->sid . '&mode=logout');
-		$this->assertContains($this->lang('REGISTER'), self::$webDriver->getPageSource());
+		$this->assertContains($this->lang('REGISTER'), $this->getDriver()->getPageSource());
 		unset($this->sid);
 
 	}
@@ -315,17 +437,17 @@ class phpbb_ui_test_case extends phpbb_test_case
 			return;
 		}
 
-		self::$webDriver->manage()->deleteAllCookies();
+		$this->getDriver()->manage()->deleteAllCookies();
 
 		$this->visit('adm/index.php?sid=' . $this->sid);
-		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), self::$webDriver->getPageSource());
+		$this->assertContains($this->lang('LOGIN_ADMIN_CONFIRM'), $this->getDriver()->getPageSource());
 
-		self::find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);
-		self::find_element('cssSelector', 'input[type=password]')->sendKeys($username . $username);
-		self::find_element('cssSelector', 'input[name=login]')->click();
+		$this->find_element('cssSelector', 'input[name=username]')->clear()->sendKeys($username);
+		$this->find_element('cssSelector', 'input[type=password]')->sendKeys($username . $username);
+		$this->find_element('cssSelector', 'input[name=login]')->click();
 		$this->assertContains($this->lang('ADMIN_PANEL'), $this->find_element('cssSelector', 'h1')->getText());
 
-		$cookies = self::$webDriver->manage()->getCookies();
+		$cookies = $this->getDriver()->manage()->getCookies();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $cookie)
@@ -430,17 +552,19 @@ class phpbb_ui_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
+		$this->getDriver()->manage()->deleteAllCookies();
+
 		$this->visit('ucp.php');
-		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), self::$webDriver->getPageSource());
+		$this->assertContains($this->lang('LOGIN_EXPLAIN_UCP'), $this->getDriver()->getPageSource());
 
-		self::$webDriver->manage()->deleteAllCookies();
+		$this->getDriver()->manage()->deleteAllCookies();
 
-		self::find_element('cssSelector', 'input[name=username]')->sendKeys($username);
-		self::find_element('cssSelector', 'input[name=password]')->sendKeys($username . $username);
-		self::find_element('cssSelector', 'input[name=login]')->click();
+		$this->find_element('cssSelector', 'input[name=username]')->sendKeys($username);
+		$this->find_element('cssSelector', 'input[name=password]')->sendKeys($username . $username);
+		$this->find_element('cssSelector', 'input[name=login]')->click();
 		$this->assertNotContains($this->lang('LOGIN'), $this->find_element('className', 'navbar')->getText());
 
-		$cookies = self::$webDriver->manage()->getCookies();
+		$cookies = $this->getDriver()->manage()->getCookies();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
 		foreach ($cookies as $cookie)
@@ -464,6 +588,6 @@ class phpbb_ui_test_case extends phpbb_test_case
 		// Change the Path to your own settings
 		$screenshot = time() . ".png";
 
-		self::$webDriver->takeScreenshot($screenshot);
+		$this->getDriver()->takeScreenshot($screenshot);
 	}
 }

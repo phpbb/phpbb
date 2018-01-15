@@ -1,0 +1,4 @@
+[color=#0000FF][list][*]text
+[*]text
+[*]text
+[*]text[/list][/color]

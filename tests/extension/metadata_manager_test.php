@@ -36,7 +36,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->cache = new phpbb_mock_cache();
 		$this->config = new \phpbb\config\config(array(
 			'version'		=> '3.1.0',
 		));
@@ -45,6 +44,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->db_tools = $factory->get($this->db);
 		$this->phpbb_root_path = dirname(__FILE__) . '/';
 		$this->phpEx = 'php';
+
+		$this->cache =  new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->db, $this->phpbb_root_path, $this->phpEx);
+
 		$this->table_prefix = 'phpbb_';
 
 		$container = new phpbb_mock_container_builder();
@@ -68,6 +70,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -75,8 +78,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 				'autoescape'	=> false,
 			)
 		);
-
-		$container = new phpbb_mock_container_builder();
 
 		$this->migrator = new \phpbb\db\migrator(
 			$container,
@@ -362,10 +363,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		return new phpbb_mock_metadata_manager(
 			$ext_name,
-			$this->config,
-			$this->extension_manager,
-			$this->template,
-			$this->phpbb_root_path
+			$this->extension_manager->get_extension_path($ext_name, true)
 		);
 	}
 }

@@ -114,12 +114,21 @@ function generate_smilies($mode, $forum_id)
 	}
 	$db->sql_freeresult($result);
 
-	if (sizeof($smilies))
+	if (count($smilies))
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_path_helper->get_web_root_path();
 
 		foreach ($smilies as $row)
 		{
+			/**
+			* Modify smiley root path before populating smiley list
+			*
+			* @event core.generate_smilies_before
+			* @var string  root_path root_path for smilies
+			* @since 3.1.11-RC1
+			*/
+			$vars = array('root_path');
+			extract($phpbb_dispatcher->trigger_event('core.generate_smilies_before', compact($vars)));
 			$template->assign_block_vars('smiley', array(
 				'SMILEY_CODE'	=> $row['code'],
 				'A_SMILEY_CODE'	=> addslashes($row['code']),
@@ -191,7 +200,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$topic_condition = '';
 	}
 
-	if (sizeof($ids) == 1)
+	if (count($ids) == 1)
 	{
 		$sql = 'SELECT MAX(p.post_id) as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
@@ -213,7 +222,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	$last_post_ids = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (sizeof($ids) == 1)
+		if (count($ids) == 1)
 		{
 			$row[$type . '_id'] = $ids[0];
 		}
@@ -247,7 +256,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		}
 	}
 
-	if (sizeof($last_post_ids))
+	if (count($last_post_ids))
 	{
 		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -268,7 +277,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	}
 	unset($empty_forums, $ids, $last_post_ids);
 
-	if ($return_update_sql || !sizeof($update_sql))
+	if ($return_update_sql || !count($update_sql))
 	{
 		return $update_sql;
 	}
@@ -301,7 +310,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 		$template->assign_var('S_NO_ICON_CHECKED', ' checked="checked"');
 	}
 
-	if (sizeof($icons))
+	if (count($icons))
 	{
 		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
 
@@ -681,7 +690,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 {
 	global $template;
 
-	if (sizeof($attachment_data))
+	if (count($attachment_data))
 	{
 		$s_inline_attachment_options = '';
 
@@ -703,20 +712,22 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user;
+	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 
 	// Some default template variables
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> $show_attach_box,
-		'S_HAS_ATTACHMENTS'	=> sizeof($attachment_data),
+		'S_HAS_ATTACHMENTS'	=> count($attachment_data),
 		'FILESIZE'			=> $config['max_filesize'],
 		'FILE_COMMENT'		=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 	));
 
-	if (sizeof($attachment_data))
+	if (count($attachment_data))
 	{
 		// We display the posted attachments within the desired order.
 		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
+
+		$attachrow_template_vars = [];
 
 		foreach ($attachment_data as $count => $attach_row)
 		{
@@ -730,7 +741,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 
 			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
 
-			$template->assign_block_vars('attach_row', array(
+			$attachrow_template_vars[(int) $attach_row['attach_id']] = array(
 				'FILENAME'			=> utf8_basename($attach_row['real_filename']),
 				'A_FILENAME'		=> addslashes(utf8_basename($attach_row['real_filename'])),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
@@ -740,12 +751,25 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 				'FILESIZE'			=> get_formatted_filesize($attach_row['filesize']),
 
 				'U_VIEW_ATTACHMENT'	=> $download_link,
-				'S_HIDDEN'			=> $hidden)
+				'S_HIDDEN'			=> $hidden,
 			);
 		}
+
+		/**
+		* Modify inline attachments template vars
+		*
+		* @event core.modify_inline_attachments_template_vars
+		* @var	array	attachment_data				Array containing attachments data
+		* @var	array	attachrow_template_vars		Array containing attachments template vars
+		* @since 3.2.2-RC1
+		*/
+		$vars = array('attachment_data', 'attachrow_template_vars');
+		extract($phpbb_dispatcher->trigger_event('core.modify_inline_attachments_template_vars', compact($vars)));
+
+		$template->assign_block_vars_array('attach_row', $attachrow_template_vars);
 	}
 
-	return sizeof($attachment_data);
+	return count($attachment_data);
 }
 
 //
@@ -793,13 +817,13 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	}
 	$db->sql_freeresult($result);
 
-	if (!sizeof($draft_rows))
+	if (!count($draft_rows))
 	{
 		return;
 	}
 
 	$topic_rows = array();
-	if (sizeof($topic_ids))
+	if (count($topic_ids))
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title, topic_poster
 			FROM ' . TOPICS_TABLE . '
@@ -912,7 +936,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	$db->sql_freeresult($result);
 
-	if (!sizeof($post_list))
+	if (!count($post_list))
 	{
 		return false;
 	}
@@ -924,7 +948,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	}
 
 	$sql_ary = array(
-		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe',
+		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*, z.friend, z.foe, uu.username as post_delete_username, uu.user_colour as post_delete_user_colour',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
@@ -935,6 +959,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			array(
 				'FROM'	=> array(ZEBRA_TABLE => 'z'),
 				'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id',
+			),
+			array(
+				'FROM'	=> array(USERS_TABLE => 'uu'),
+				'ON'	=> 'uu.user_id = p.post_delete_user',
 			),
 		),
 
@@ -1003,7 +1031,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	);
 	extract($phpbb_dispatcher->trigger_event('core.topic_review_modify_post_list', compact($vars)));
 
-	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
+	for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	{
 		// A non-existing rowset only happens if there was no user present for the entered poster_id
 		// This could be a broken posts table.
@@ -1042,6 +1070,31 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$post_anchor = ($mode == 'post_review') ? 'ppr' . $row['post_id'] : 'pr' . $row['post_id'];
 		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "f=$forum_id&amp;t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
 
+		$l_deleted_message = '';
+		if ($row['post_visibility'] == ITEM_DELETED)
+		{
+			$display_postername = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+
+			// User having deleted the post also being the post author?
+			if (!$row['post_delete_user'] || $row['post_delete_user'] == $poster_id)
+			{
+				$display_username = $display_postername;
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_delete_user'], $row['post_delete_username'], $row['post_delete_user_colour']);
+			}
+
+			if ($row['post_delete_reason'])
+			{
+				$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']);
+			}
+			else
+			{
+				$l_deleted_message = $user->lang('POST_DELETED_BY', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true));
+			}
+		}
+
 		$post_row = array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1052,6 +1105,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_FRIEND'			=> ($row['friend']) ? true : false,
 			'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
 			'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), "<a href=\"{$u_show_post}\" onclick=\"phpbb.toggleDisplay('{$post_anchor}', 1); return false;\">", '</a>') : '',
+			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED) ? true : false,
+			'L_DELETE_POST'		=> $l_deleted_message,
 
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
@@ -1125,7 +1180,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $softdelete_reason = '')
 {
-	global $db, $user, $phpbb_container;
+	global $db, $user, $phpbb_container, $phpbb_dispatcher;
 	global $config, $phpEx, $phpbb_root_path;
 
 	// Specify our post mode
@@ -1203,7 +1258,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 
 			foreach ($shadow_forum_ids as $updated_forum => $topic_count)
 			{
-				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
+				// counting is fun! we only have to do count($forum_ids) number of queries,
 				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
 					SET forum_topics_approved = forum_topics_approved - ' . $topic_count . '
@@ -1223,7 +1278,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 				$phpbb_content_visibility->remove_topic_from_statistic($data, $sql_data);
 
 				$update_sql = update_post_information('forum', $forum_id, true);
-				if (sizeof($update_sql))
+				if (count($update_sql))
 				{
 					$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
 					$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
@@ -1272,7 +1327,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 			{
 				// Update last post information when hard deleting. Soft delete already did that by itself.
 				$update_sql = update_post_information('forum', $forum_id, true);
-				if (sizeof($update_sql))
+				if (count($update_sql))
 				{
 					$sql_data[FORUMS_TABLE] = (($sql_data[FORUMS_TABLE]) ? $sql_data[FORUMS_TABLE] . ', ' : '') . implode(', ', $update_sql[$forum_id]);
 				}
@@ -1375,6 +1430,34 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	{
 		sync('topic_reported', 'topic_id', array($topic_id));
 	}
+
+	/**
+	* This event is used for performing actions directly after a post or topic
+	* has been deleted.
+	*
+	* @event core.delete_post_after
+	* @var	int		forum_id			Post forum ID
+	* @var	int		topic_id			Post topic ID
+	* @var	int		post_id				Post ID
+	* @var	array	data				Post data
+	* @var	bool	is_soft				Soft delete flag
+	* @var	string	softdelete_reason	Soft delete reason
+	* @var	string	post_mode			delete_topic, delete_first_post, delete_last_post or delete
+	* @var	mixed	next_post_id		Next post ID in the topic (post ID or false)
+	*
+	* @since 3.1.11-RC1
+	*/
+	$vars = array(
+		'forum_id',
+		'topic_id',
+		'post_id',
+		'data',
+		'is_soft',
+		'softdelete_reason',
+		'post_mode',
+		'next_post_id',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.delete_post_after', compact($vars)));
 
 	return $next_post_id;
 }
@@ -1636,7 +1719,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_first_poster_colour'	=> $user->data['user_colour'],
 				'topic_type'				=> $topic_type,
-				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data_ary['topic_time_limit'] * 86400) : 0,
+				'topic_time_limit'			=> $topic_type != POST_NORMAL ? ($data_ary['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'			=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
 				'topic_status'				=> (isset($data_ary['topic_status'])) ? $data_ary['topic_status'] : ITEM_UNLOCKED,
 			);
@@ -1731,7 +1814,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> $username,
 				'topic_type'				=> $topic_type,
-				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data_ary['topic_time_limit'] * 86400) : 0,
+				'topic_time_limit'			=> $topic_type != POST_NORMAL ? ($data_ary['topic_time_limit'] * 86400) : 0,
 				'poll_title'				=> (isset($poll_ary['poll_options'])) ? $poll_ary['poll_title'] : '',
 				'poll_start'				=> (isset($poll_ary['poll_options'])) ? $poll_start : 0,
 				'poll_max_options'			=> (isset($poll_ary['poll_options'])) ? $poll_ary['poll_max_options'] : 1,
@@ -1886,7 +1969,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 		$sql_insert_ary = array();
 
-		for ($i = 0, $size = sizeof($poll_ary['poll_options']); $i < $size; $i++)
+		for ($i = 0, $size = count($poll_ary['poll_options']); $i < $size; $i++)
 		{
 			if (strlen(trim($poll_ary['poll_options'][$i])))
 			{
@@ -1894,7 +1977,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				{
 					// If we add options we need to put them to the end to be able to preserve votes...
 					$sql_insert_ary[] = array(
-						'poll_option_id'	=> (int) sizeof($cur_poll_options) + 1 + sizeof($sql_insert_ary),
+						'poll_option_id'	=> (int) count($cur_poll_options) + 1 + count($sql_insert_ary),
 						'topic_id'			=> (int) $data_ary['topic_id'],
 						'poll_option_text'	=> (string) $poll_ary['poll_options'][$i]
 					);
@@ -1912,16 +1995,16 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 		$db->sql_multi_insert(POLL_OPTIONS_TABLE, $sql_insert_ary);
 
-		if (sizeof($poll_ary['poll_options']) < sizeof($cur_poll_options))
+		if (count($poll_ary['poll_options']) < count($cur_poll_options))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
-				WHERE poll_option_id > ' . sizeof($poll_ary['poll_options']) . '
+				WHERE poll_option_id > ' . count($poll_ary['poll_options']) . '
 					AND topic_id = ' . $data_ary['topic_id'];
 			$db->sql_query($sql);
 		}
 
 		// If edited, we would need to reset votes (since options can be re-ordered above, you can't be sure if the change is for changing the text or adding an option
-		if ($mode == 'edit' && sizeof($poll_ary['poll_options']) != sizeof($cur_poll_options))
+		if ($mode == 'edit' && count($poll_ary['poll_options']) != count($cur_poll_options))
 		{
 			$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id = ' . $data_ary['topic_id']);
 			$db->sql_query('UPDATE ' . POLL_OPTIONS_TABLE . ' SET poll_option_total = 0 WHERE topic_id = ' . $data_ary['topic_id']);
@@ -1939,7 +2022,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$orphan_rows[(int) $attach_row['attach_id']] = array();
 		}
 
-		if (sizeof($orphan_rows))
+		if (count($orphan_rows))
 		{
 			$sql = 'SELECT attach_id, filesize, physical_filename
 				FROM ' . ATTACHMENTS_TABLE . '
@@ -2346,7 +2429,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	* @var	string	url					The "Return to topic" URL
 	*
 	* @since 3.1.0-a3
-	* @change 3.1.0-RC3 Added vars mode, subject, username, topic_type,
+	* @changed 3.1.0-RC3 Added vars mode, subject, username, topic_type,
 	*		poll, update_message, update_search_index
 	*/
 	$vars = array(
@@ -2503,16 +2586,54 @@ function phpbb_upload_popup($forum_style = 0)
 
 /**
 * Do the various checks required for removing posts as well as removing it
+*
+* @param int		$forum_id		The id of the forum
+* @param int		$topic_id		The id of the topic
+* @param int		$post_id		The id of the post
+* @param array		$post_data		Array with the post data
+* @param bool		$is_soft		The flag indicating whether it is the soft delete mode
+* @param string		$delete_reason	Description for the post deletion reason
+*
+* @return null
 */
 function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {
 	global $user, $auth, $config, $request;
-	global $phpbb_root_path, $phpEx, $phpbb_log;
+	global $phpbb_root_path, $phpEx, $phpbb_log, $phpbb_dispatcher;
 
+	$force_delete_allowed = $force_softdelete_allowed = false;
 	$perm_check = ($is_soft) ? 'softdelete' : 'delete';
 
+	/**
+	* This event allows to modify the conditions for the post deletion
+	*
+	* @event core.handle_post_delete_conditions
+	* @var	int		forum_id		The id of the forum
+	* @var	int		topic_id		The id of the topic
+	* @var	int		post_id			The id of the post
+	* @var	array	post_data		Array with the post data
+	* @var	bool	is_soft			The flag indicating whether it is the soft delete mode
+	* @var	string	delete_reason	Description for the post deletion reason
+	* @var	bool	force_delete_allowed		Allow the user to delete the post (all permissions and conditions are ignored)
+	* @var	bool	force_softdelete_allowed	Allow the user to softdelete the post (all permissions and conditions are ignored)
+	* @var	string	perm_check		The deletion mode softdelete|delete
+	* @since 3.1.11-RC1
+	*/
+	$vars = array(
+		'forum_id',
+		'topic_id',
+		'post_id',
+		'post_data',
+		'is_soft',
+		'delete_reason',
+		'force_delete_allowed',
+		'force_softdelete_allowed',
+		'perm_check',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.handle_post_delete_conditions', compact($vars)));
+
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
+	if ($force_delete_allowed || ($is_soft && $force_softdelete_allowed) || $auth->acl_get("m_$perm_check", $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get("f_$perm_check", $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time'])))
 	{
 		$s_hidden_fields = array(
 			'p'		=> $post_id,
@@ -2582,10 +2703,10 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 		}
 		else
 		{
-			global $user, $template, $request;
+			global $template;
 
-			$can_delete = $auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id));
-			$can_softdelete = $auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id));
+			$can_delete = $force_delete_allowed || ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id)));
+			$can_softdelete = $force_softdelete_allowed || ($auth->acl_get('m_softdelete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_softdelete', $forum_id)));
 
 			$template->assign_vars(array(
 				'S_SOFTDELETED'			=> $post_data['post_visibility'] == ITEM_DELETED,

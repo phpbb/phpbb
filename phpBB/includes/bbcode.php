@@ -94,13 +94,13 @@ class bbcode
 						${$type}['replace'][] = $replace;
 					}
 
-					if (sizeof($str['search']))
+					if (count($str['search']))
 					{
 						$message = str_replace($str['search'], $str['replace'], $message);
 						$str = array('search' => array(), 'replace' => array());
 					}
 
-					if (sizeof($preg['search']))
+					if (count($preg['search']))
 					{
 						// we need to turn the entities back into their original form to allow the
 						// search patterns to work properly
@@ -191,7 +191,7 @@ class bbcode
 			}
 		}
 
-		if (sizeof($sql))
+		if (count($sql))
 		{
 			global $db;
 
@@ -501,7 +501,10 @@ class bbcode
 			// Turn template blocks into PHP assignment statements for the values of $bbcode_tpl..
 			$this->bbcode_template = array();
 
-			$matches = preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (?:.*?) -->#', $tpl, $match);
+			// Capture the BBCode template matches
+			// Allow phpBB template or the Twig syntax
+			$matches = (preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (?:.*?) -->#', $tpl, $match)) ?:
+							preg_match_all('#{% for (.*?) in .*? %}(.*?){% endfor %}#s', $tpl, $match);
 
 			for ($i = 0; $i < $matches; $i++)
 			{

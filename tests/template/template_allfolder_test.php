@@ -67,6 +67,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 			$cache_path,
 			$this->extension_manager,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

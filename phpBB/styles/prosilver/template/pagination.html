@@ -16,13 +16,13 @@
 <!-- ENDIF -->
 <!-- BEGIN pagination -->
 	<!-- IF pagination.S_IS_PREV -->
-		<li class="arrow previous"><a class="button button-icon-only" href="{pagination.PAGE_URL}" rel="prev" role="button"><i class="icon fa-chevron-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_PREVIOUS}</span></a></li>
+		<li class="arrow previous"><a class="button button-icon-only" href="{pagination.PAGE_URL}" rel="prev" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_BEGIN} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_PREVIOUS}</span></a></li>
 	<!-- ELSEIF pagination.S_IS_CURRENT -->
 	<li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
 	<!-- ELSEIF pagination.S_IS_ELLIPSIS -->
 	<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
 	<!-- ELSEIF pagination.S_IS_NEXT -->
-		<li class="arrow next"><a class="button button-icon-only" href="{pagination.PAGE_URL}" rel="next" role="button"><i class="icon fa-chevron-right fa-fw" aria-hidden="true"></i><span class="sr-only">{L_NEXT}</span></a></li>
+		<li class="arrow next"><a class="button button-icon-only" href="{pagination.PAGE_URL}" rel="next" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_END} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_NEXT}</span></a></li>
 	<!-- ELSE -->
 		<li><a class="button" href="{pagination.PAGE_URL}" role="button">{pagination.PAGE_NUMBER}</a></li>
 	<!-- ENDIF -->

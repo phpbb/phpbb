@@ -54,15 +54,6 @@ class database
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'mssql',
-			'DELIM'			=> ';',
-			'DRIVER'		=> 'phpbb\db\driver\mssql',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
-		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
@@ -98,15 +89,6 @@ class database
 			'DRIVER'		=> 'phpbb\db\driver\postgres',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
-		),
-		'sqlite'		=> array(
-			'LABEL'			=> 'SQLite',
-			'SCHEMA'		=> 'sqlite',
-			'MODULE'		=> 'sqlite',
-			'DELIM'			=> ';',
-			'DRIVER'		=> 'phpbb\db\driver\sqlite',
-			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
 		),
 		'sqlite3'		=> array(
 			'LABEL'			=> 'SQLite3',
@@ -354,6 +336,15 @@ class database
 			);
 		}
 
+		// Check if SQLite database is writable
+		if ($dbms_info['SCHEMA'] === 'sqlite'
+			&& (!$this->filesystem->is_writable($dbhost) || !$this->filesystem->is_writable(pathinfo($dbhost, PATHINFO_DIRNAME))))
+		{
+			$errors[] = array(
+				'title' =>'INST_ERR_DB_NO_WRITABLE',
+			);
+		}
+
 		// Try to connect to db
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpass, $dbname, $dbport, false, true)))
 		{
@@ -381,7 +372,7 @@ class database
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
 
-			if (sizeof($table_intersect))
+			if (count($table_intersect))
 			{
 				$errors[] = array(
 					'title' => 'INST_ERR_PREFIX',
@@ -396,14 +387,6 @@ class database
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_MYSQLI',
-						);
-					}
-				break;
-				case 'sqlite':
-					if (version_compare($db->sql_server_info(true), '2.8.2', '<'))
-					{
-						$errors[] = array(
-							'title' => 'INST_ERR_DB_NO_SQLITE',
 						);
 					}
 				break;

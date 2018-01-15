@@ -280,11 +280,6 @@
 		margin: 5px 0 0;
 	}
 
-	.row .pagination {
-		margin-top: 2px;
-		margin-bottom: 2px;
-	}
-
 	.row .pagination .ellipsis + li {
 		display: none !important;
 	}
@@ -349,7 +344,7 @@
 	}
 
 	fieldset dd, fieldset.fields1 dd, fieldset.fields2 dd {
-		margin-left: 20px;
+		margin-left: 0px;
 	}
 
 	textarea, dd textarea, .message-box textarea {
@@ -567,13 +562,11 @@
 
 @media (max-width: 850px) {
 	.postprofile { width: 28%; }
+
+
 }
 
 @media (min-width: 701px) and (max-width: 950px) {
-	.row .pagination {
-		margin-top: 2px;
-		margin-bottom: 2px;
-	}
 
 	ul.topiclist dt {
     	margin-right: -410px;
@@ -587,4 +580,3 @@
     	width: 80px;
 	}
 }
-

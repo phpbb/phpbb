@@ -55,7 +55,6 @@ class phpbb_database_test_connection_manager
 
 		switch ($this->dbms['PDO'])
 		{
-			case 'sqlite2':
 			case 'sqlite':	// SQLite3 driver
 				$dsn .= $this->config['dbhost'];
 			break;
@@ -193,7 +192,6 @@ class phpbb_database_test_connection_manager
 	{
 		switch ($this->config['dbms'])
 		{
-			case 'phpbb\db\driver\sqlite':
 			case 'phpbb\db\driver\sqlite3':
 				$this->connect();
 				// Drop all of the tables
@@ -221,6 +219,14 @@ class phpbb_database_test_connection_manager
 				{
 					$this->pdo->exec('DROP TABLE ' . $table . ' CASCADE');
 				}
+				$this->purge_extras();
+			break;
+
+			case 'phpbb\db\driver\mssql':
+			case 'phpbb\db\driver\mssqlnative':
+				$this->connect();
+				// Drop all tables
+				$this->pdo->exec("EXEC sp_MSforeachtable 'DROP TABLE ?'");
 				$this->purge_extras();
 			break;
 
@@ -267,12 +273,6 @@ class phpbb_database_test_connection_manager
 			case 'phpbb\db\driver\mysql':
 			case 'phpbb\db\driver\mysqli':
 				$sql = 'SHOW TABLES';
-			break;
-
-			case 'phpbb\db\driver\sqlite':
-				$sql = 'SELECT name
-					FROM sqlite_master
-					WHERE type = "table"';
 			break;
 
 			case 'phpbb\db\driver\sqlite3':
@@ -378,7 +378,7 @@ class phpbb_database_test_connection_manager
 			$classes = $finder->core_path('phpbb/db/migration/data/')
 				->get_classes();
 
-			$db = new \phpbb\db\driver\sqlite();
+			$db = new \phpbb\db\driver\sqlite3();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($db, true);
 
@@ -453,11 +453,6 @@ class phpbb_database_test_connection_manager
 				'SCHEMA'		=> 'postgres',
 				'DELIM'			=> ';',
 				'PDO'			=> 'pgsql',
-			),
-			'phpbb\db\driver\sqlite'		=> array(
-				'SCHEMA'		=> 'sqlite',
-				'DELIM'			=> ';',
-				'PDO'			=> 'sqlite2',
 			),
 			'phpbb\db\driver\sqlite3'		=> array(
 				'SCHEMA'		=> 'sqlite',
@@ -634,7 +629,7 @@ class phpbb_database_test_connection_manager
 				}
 
 				// Combine all of the SETVALs into one query
-				if (sizeof($setval_queries))
+				if (count($setval_queries))
 				{
 					$queries[] = 'SELECT ' . implode(', ', $setval_queries);
 				}

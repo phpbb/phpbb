@@ -1,3 +1,4 @@
+<!-- IF FORM_TITLE --><h1>{FORM_TITLE}</h1><!-- ENDIF -->
 <form id="<!-- IF FORM_ID -->{FORM_ID}<!-- ELSE -->install_install<!-- ENDIF -->" method="POST" action="{U_ACTION}">
 <!-- IF .options -->
 <!-- IF S_NOT_ONLY_BUTTON_FORM -->
@@ -8,9 +9,9 @@
 		<!-- IF options.S_LEGEND -->
 			<!-- IF not options.S_FIRST_ROW -->
 			</fieldset>
-
-			<fieldset>
 			<!-- ENDIF -->
+			<fieldset>
+
 		<legend>{options.LEGEND}</legend>
 		<!-- ELSE -->
 		<dl>
@@ -49,7 +50,7 @@
 <fieldset class="submit-buttons">
 	<legend>{L_SUBMIT}</legend>
 	<!-- BEGIN submit_buttons -->
-	<input class="button1" type="submit" name="{submit_buttons.KEY}" value="{submit_buttons.TITLE}" />
+	<input class="<!-- IF not submit_buttons.IS_SECONDARY -->button1<!-- ELSE -->button2<!-- ENDIF --><!-- IF submit_buttons.DISABLED --> disabled<!-- ENDIF -->" type="submit" name="{submit_buttons.KEY}" value="{submit_buttons.TITLE}"<!-- IF submit_buttons.DISABLED --> disabled="disabled"<!-- ENDIF --> />
 	<!-- END submit_buttons -->
 </fieldset>
 <!-- ENDIF -->

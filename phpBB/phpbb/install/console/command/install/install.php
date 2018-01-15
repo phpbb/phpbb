@@ -151,6 +151,7 @@ class install extends \phpbb\console\command\command
 		try
 		{
 			$this->installer->run();
+			return 0;
 		}
 		catch (installer_exception $e)
 		{
@@ -203,5 +204,7 @@ class install extends \phpbb\console\command\command
 		$iohandler->set_input('server_port', $config['server']['server_port']);
 		$iohandler->set_input('script_path', $config['server']['script_path']);
 		$iohandler->set_input('submit_server', 'submit');
+
+		$iohandler->set_input('install-extensions', $config['extensions']);
 	}
 }

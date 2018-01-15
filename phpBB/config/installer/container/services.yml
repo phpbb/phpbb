@@ -84,9 +84,16 @@ services:
             - '%core.template.cache_path%'
             - null
             - '@template.twig.loader'
+            - null
             - []
         calls:
             - [setLexer, ['@template.twig.lexer']]
+
+    user:
+        class: phpbb\user
+        arguments:
+            - '@language'
+            - '%datetime.class%'
 
     console.exception_subscriber:
         class: phpbb\console\exception_subscriber

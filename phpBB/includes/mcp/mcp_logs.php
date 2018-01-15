@@ -83,6 +83,7 @@ class mcp_logs
 
 				if (!in_array($forum_id, $forum_list))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NOT_AUTHORISED');
 				}
 
@@ -101,6 +102,7 @@ class mcp_logs
 
 				if (!in_array($forum_id, $forum_list))
 				{
+					send_status_line(403, 'Forbidden');
 					trigger_error('NOT_AUTHORISED');
 				}
 
@@ -113,7 +115,7 @@ class mcp_logs
 		{
 			if (confirm_box(true))
 			{
-				if ($deletemark && sizeof($marked))
+				if ($deletemark && count($marked))
 				{
 					$conditions = array(
 						'forum_id'	=> array('IN' => $forum_list),
@@ -219,7 +221,7 @@ class mcp_logs
 				'IP'			=> $row['ip'],
 				'DATE'			=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
-				'DATA'			=> (sizeof($data)) ? implode(' | ', $data) : '',
+				'DATA'			=> (count($data)) ? implode(' | ', $data) : '',
 				'ID'			=> $row['id'],
 				)
 			);

@@ -123,6 +123,14 @@ class ajax_iohandler extends iohandler_base
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_raw_input($name, $default)
+	{
+		return $this->request->raw_variable($name, $default);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function get_server_variable($name, $default = '')
 	{
 		return $this->request->server($name, $default);
@@ -178,6 +186,8 @@ class ajax_iohandler extends iohandler_base
 			$tpl_ary['TITLE'] = $this->language->lang($input_options['label']);
 			$tpl_ary['KEY'] = $input_name;
 			$tpl_ary['S_EXPLAIN'] = false;
+			$tpl_ary['DISABLED'] = isset($input_options['disabled']) ? $input_options['disabled'] : false;
+			$tpl_ary['IS_SECONDARY'] = isset($input_options['is_secondary']) ? $input_options['is_secondary'] : false;
 
 			if (isset($input_options['default']))
 			{
@@ -194,7 +204,7 @@ class ajax_iohandler extends iohandler_base
 
 			if (in_array($input_options['type'], array('select', 'radio'), true))
 			{
-				for ($i = 0, $total = sizeof($input_options['options']); $i < $total; $i++)
+				for ($i = 0, $total = count($input_options['options']); $i < $total; $i++)
 				{
 					if (isset($input_options['options'][$i]['label']))
 					{
@@ -209,7 +219,17 @@ class ajax_iohandler extends iohandler_base
 			$this->template->assign_block_vars($block_name, $tpl_ary);
 		}
 
+		if (isset($form['database_update_submit']) && !$form['database_update_submit']['disabled'])
+		{
+			$this->template->assign_var('FORM_TITLE', $this->language->lang('UPDATE_CONTINUE_UPDATE_PROCESS'));
+		}
+
 		$this->template->assign_var('S_NOT_ONLY_BUTTON_FORM', $not_button_form);
+
+		if (!$not_button_form)
+		{
+			$this->template->destroy_block_vars('options');
+		}
 
 		$this->template->set_filenames(array(
 			'form_install' => 'installer_form.html',
@@ -361,7 +381,7 @@ class ajax_iohandler extends iohandler_base
 	 */
 	public function set_active_stage_menu($menu_path)
 	{
-		$this->nav_data['active'] = $menu_path[sizeof($menu_path) - 1];
+		$this->nav_data['active'] = $menu_path[count($menu_path) - 1];
 		$this->send_response();
 	}
 
@@ -370,7 +390,7 @@ class ajax_iohandler extends iohandler_base
 	 */
 	public function set_finished_stage_menu($menu_path)
 	{
-		$this->nav_data['finished'][] = $menu_path[sizeof($menu_path) - 1];
+		$this->nav_data['finished'][] = $menu_path[count($menu_path) - 1];
 		$this->send_response();
 	}
 

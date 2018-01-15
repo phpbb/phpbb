@@ -22,88 +22,15 @@ if (!defined('IN_PHPBB'))
 $level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
 error_reporting($level);
 
-/*
-* Remove variables created by register_globals from the global scope
-* Thanks to Matt Kavanagh
+/**
+* Minimum Requirement: PHP 5.4.0
 */
-function deregister_globals()
+if (version_compare(PHP_VERSION, '5.4') < 0)
 {
-	$not_unset = array(
-		'GLOBALS'	=> true,
-		'_GET'		=> true,
-		'_POST'		=> true,
-		'_COOKIE'	=> true,
-		'_REQUEST'	=> true,
-		'_SERVER'	=> true,
-		'_SESSION'	=> true,
-		'_ENV'		=> true,
-		'_FILES'	=> true,
-		'phpEx'		=> true,
-		'phpbb_root_path'	=> true
-	);
-
-	// Not only will array_merge and array_keys give a warning if
-	// a parameter is not an array, array_merge will actually fail.
-	// So we check if _SESSION has been initialised.
-	if (!isset($_SESSION) || !is_array($_SESSION))
-	{
-		$_SESSION = array();
-	}
-
-	// Merge all into one extremely huge array; unset this later
-	$input = array_merge(
-		array_keys($_GET),
-		array_keys($_POST),
-		array_keys($_COOKIE),
-		array_keys($_SERVER),
-		array_keys($_SESSION),
-		array_keys($_ENV),
-		array_keys($_FILES)
-	);
-
-	foreach ($input as $varname)
-	{
-		if (isset($not_unset[$varname]))
-		{
-			// Hacking attempt. No point in continuing.
-			if (isset($_COOKIE[$varname]))
-			{
-				echo "Clear your cookies. ";
-			}
-			echo "Malicious variable name detected. Contact the administrator and ask them to disable register_globals.";
-			exit;
-		}
-
-		unset($GLOBALS[$varname]);
-	}
-
-	unset($input);
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.4.0 or higher before trying to install or update to phpBB 3.2');
 }
+// Register globals and magic quotes have been dropped in PHP 5.4 so no need for extra checks
 
-// Register globals and magic quotes have been dropped in PHP 5.4
-if (version_compare(PHP_VERSION, '5.4.0-dev', '>='))
-{
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
-}
-else
-{
-	if (get_magic_quotes_runtime())
-	{
-		// Deactivate
-		@set_magic_quotes_runtime(0);
-	}
-
-	// Be paranoid with passed vars
-	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on' || !function_exists('ini_get'))
-	{
-		deregister_globals();
-	}
-
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
-}
 
 // In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
 // because we show E_WARNING errors and do not set a default timezone.

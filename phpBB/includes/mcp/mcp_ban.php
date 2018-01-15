@@ -28,7 +28,10 @@ class mcp_ban
 		global $db, $user, $auth, $template, $request, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpEx;
 
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		if (!function_exists('user_ban'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
 
 		// Include the admin banning interface...
 		include($phpbb_root_path . 'includes/acp/acp_ban.' . $phpEx);
@@ -265,7 +268,7 @@ class mcp_ban
 		{
 			$post_info = phpbb_get_post_data($post_id, 'm_ban');
 
-			if (sizeof($post_info) && !empty($post_info[$post_id]))
+			if (count($post_info) && !empty($post_info[$post_id]))
 			{
 				switch ($mode)
 				{

@@ -705,10 +705,10 @@ class bbcode_firstpass extends bbcode
 			if ($tok == ']')
 			{
 				// if $tok is ']' the buffer holds a tag
-				if (strtolower($buffer) == '/list' && sizeof($list_end_tags))
+				if (strtolower($buffer) == '/list' && count($list_end_tags))
 				{
 					// valid [/list] tag, check nesting so that we don't hit false positives
-					if (sizeof($item_end_tags) && sizeof($item_end_tags) >= sizeof($list_end_tags))
+					if (count($item_end_tags) && count($item_end_tags) >= count($list_end_tags))
 					{
 						// current li tag has not been closed
 						$out = preg_replace('/\n?\[$/', '[', $out) . array_pop($item_end_tags) . '][';
@@ -733,10 +733,10 @@ class bbcode_firstpass extends bbcode
 				}
 				else
 				{
-					if (($buffer == '*' || substr($buffer, -2) == '[*') && sizeof($list_end_tags))
+					if (($buffer == '*' || substr($buffer, -2) == '[*') && count($list_end_tags))
 					{
 						// the buffer holds a bullet tag and we have a [list] tag open
-						if (sizeof($item_end_tags) >= sizeof($list_end_tags))
+						if (count($item_end_tags) >= count($list_end_tags))
 						{
 							if (substr($buffer, -2) == '[*')
 							{
@@ -780,11 +780,11 @@ class bbcode_firstpass extends bbcode
 		while ($in);
 
 		// do we have some tags open? close them now
-		if (sizeof($item_end_tags))
+		if (count($item_end_tags))
 		{
 			$out .= '[' . implode('][', $item_end_tags) . ']';
 		}
-		if (sizeof($list_end_tags))
+		if (count($list_end_tags))
 		{
 			$out .= '[' . implode('][', $list_end_tags) . ']';
 		}
@@ -835,7 +835,7 @@ class bbcode_firstpass extends bbcode
 
 			if ($tok == ']')
 			{
-				if (strtolower($buffer) == '/quote' && sizeof($close_tags) && substr($out, -1, 1) == '[')
+				if (strtolower($buffer) == '/quote' && count($close_tags) && substr($out, -1, 1) == '[')
 				{
 					// we have found a closing tag
 					$out .= array_pop($close_tags) . ']';
@@ -949,7 +949,7 @@ class bbcode_firstpass extends bbcode
 
 		$out .= $buffer;
 
-		if (sizeof($close_tags))
+		if (count($close_tags))
 		{
 			$out .= '[' . implode('][', $close_tags) . ']';
 		}
@@ -1072,7 +1072,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['force_server_vars'])
 		{
-			$check_path = $config['script_path'];
+			$check_path = !empty($config['script_path']) ? $config['script_path'] : '/';
 		}
 		else
 		{
@@ -1219,7 +1219,7 @@ class parse_message extends bbcode_firstpass
 		* @var bool		return					Do we return after the event is triggered if $warn_msg is not empty
 		* @var array	warn_msg				Array of the warning messages
 		* @since 3.1.2-RC1
-		* @change 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
+		* @changed 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
 		*/
 		$message = $this->message;
 		$warn_msg = $this->warn_msg;
@@ -1470,7 +1470,6 @@ class parse_message extends bbcode_firstpass
 			// For now setting the ttl to 10 minutes
 			switch ($db->get_sql_layer())
 			{
-				case 'mssql':
 				case 'mssql_odbc':
 				case 'mssqlnative':
 					$sql = 'SELECT *
@@ -1501,7 +1500,7 @@ class parse_message extends bbcode_firstpass
 			$db->sql_freeresult($result);
 		}
 
-		if (sizeof($match))
+		if (count($match))
 		{
 			if ($max_smilies)
 			{
@@ -1531,11 +1530,11 @@ class parse_message extends bbcode_firstpass
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
 		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
-		global $phpbb_container;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		$error = array();
 
-		$num_attachments = sizeof($this->attachment_data);
+		$num_attachments = count($this->attachment_data);
 		$this->filename_data['filecomment'] = $request->variable('filecomment', '', true);
 		$upload = $request->file($form_name);
 		$upload_file = (!empty($upload) && $upload['name'] !== 'none' && trim($upload['name']));
@@ -1572,7 +1571,7 @@ class parse_message extends bbcode_firstpass
 				$filedata = $attachment_manager->upload($form_name, $forum_id, false, '', $is_message);
 				$error = $filedata['error'];
 
-				if ($filedata['post_attach'] && !sizeof($error))
+				if ($filedata['post_attach'] && !count($error))
 				{
 					$sql_ary = array(
 						'physical_filename'	=> $filedata['physical_filename'],
@@ -1599,6 +1598,20 @@ class parse_message extends bbcode_firstpass
 					);
 
 					$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+
+					/**
+					* Modify attachment data on submit
+					*
+					* @event core.modify_attachment_data_on_submit
+					* @var	array	attachment_data		Array containing attachment data
+					* @since 3.2.2-RC1
+					*/
+					$attachment_data = $this->attachment_data;
+					$vars = array('attachment_data');
+					extract($phpbb_dispatcher->trigger_event('core.modify_attachment_data_on_submit', compact($vars)));
+					$this->attachment_data = $attachment_data;
+					unset($attachment_data);
+
 					$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', function ($match) {
 						return '[attachment='.($match[1] + 1).']' . $match[2] . '[/attachment]';
 					}, $this->message);
@@ -1622,7 +1635,7 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		if ($preview || $refresh || sizeof($error))
+		if ($preview || $refresh || count($error))
 		{
 			if (isset($this->plupload) && $this->plupload->is_active())
 			{
@@ -1693,7 +1706,7 @@ class parse_message extends bbcode_firstpass
 					$filedata = $attachment_manager->upload($form_name, $forum_id, false, '', $is_message);
 					$error = array_merge($error, $filedata['error']);
 
-					if (!sizeof($error))
+					if (!count($error))
 					{
 						$sql_ary = array(
 							'physical_filename'	=> $filedata['physical_filename'],
@@ -1720,6 +1733,20 @@ class parse_message extends bbcode_firstpass
 						);
 
 						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+
+						/**
+						* Modify attachment data on upload
+						*
+						* @event core.modify_attachment_data_on_upload
+						* @var	array	attachment_data		Array containing attachment data
+						* @since 3.2.2-RC1
+						*/
+						$attachment_data = $this->attachment_data;
+						$vars = array('attachment_data');
+						extract($phpbb_dispatcher->trigger_event('core.modify_attachment_data_on_upload', compact($vars)));
+						$this->attachment_data = $attachment_data;
+						unset($attachment_data);
+
 						$this->message = preg_replace_callback('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#', function ($match) {
 							return '[attachment=' . ($match[1] + 1) . ']' . $match[2] . '[/attachment]';
 						}, $this->message);
@@ -1775,7 +1802,7 @@ class parse_message extends bbcode_firstpass
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;
 
-		if (!sizeof($attachment_data))
+		if (!count($attachment_data))
 		{
 			return;
 		}
@@ -1795,7 +1822,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		// Regenerate already posted attachments
-		if (sizeof($not_orphan))
+		if (count($not_orphan))
 		{
 			// Get the attachment data, based on the poster id...
 			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
@@ -1815,13 +1842,13 @@ class parse_message extends bbcode_firstpass
 			$db->sql_freeresult($result);
 		}
 
-		if (sizeof($not_orphan))
+		if (count($not_orphan))
 		{
 			trigger_error('NO_ACCESS_ATTACHMENT', E_USER_ERROR);
 		}
 
 		// Regenerate newly uploaded attachments
-		if (sizeof($orphan))
+		if (count($orphan))
 		{
 			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment, filesize
 				FROM ' . ATTACHMENTS_TABLE . '
@@ -1841,7 +1868,7 @@ class parse_message extends bbcode_firstpass
 			$db->sql_freeresult($result);
 		}
 
-		if (sizeof($orphan))
+		if (count($orphan))
 		{
 			trigger_error('NO_ACCESS_ATTACHMENT', E_USER_ERROR);
 		}
@@ -1861,8 +1888,8 @@ class parse_message extends bbcode_firstpass
 		// Parse Poll Option text
 		$tmp_message = $this->message;
 
-		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
-		$poll['poll_options_size'] = sizeof($poll['poll_options']);
+		$poll['poll_options'] = preg_split('/\s*?\n\s*/', trim($poll['poll_option_text']));
+		$poll['poll_options_size'] = count($poll['poll_options']);
 
 		foreach ($poll['poll_options'] as &$poll_option)
 		{
@@ -1891,7 +1918,7 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		if (sizeof($poll['poll_options']) == 1)
+		if (count($poll['poll_options']) == 1)
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_POLL_OPTIONS'];
 		}

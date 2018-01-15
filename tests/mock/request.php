@@ -34,6 +34,11 @@ class phpbb_mock_request implements \phpbb\request\request_interface
 		$this->data[$super_global][$var_name] = $value;
 	}
 
+	public function raw_variable($var_name, $default, $super_global = \phpbb\request\request_interface::REQUEST)
+	{
+		return $this->variable($var_name, $default, true, $super_global);
+	}
+
 	public function variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST)
 	{
 		return isset($this->data[$super_global][$var_name]) ? $this->data[$super_global][$var_name] : $default;

@@ -34,3 +34,5 @@ installer:
         server_name: localhost
         server_port: 80
         script_path: /
+
+    extensions: ['phpbb/viglink']

@@ -417,7 +417,7 @@ function getCaretPosition(txtarea) {
 
 		$('textarea').on('keydown', function (e) {
 			if (e.which === 13 && (e.metaKey || e.ctrlKey)) {
-				$(this).closest('form').submit();
+				$(this).closest('form').find(':submit').click();
 			}
 		});
 	});

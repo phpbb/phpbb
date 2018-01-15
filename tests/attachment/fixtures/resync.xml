@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
     <table name="phpbb_attachments">
+        <column>attach_id</column>
         <column>post_msg_id</column>
         <column>topic_id</column>
         <column>in_message</column>
@@ -11,6 +12,7 @@
         <row>
             <value>1</value>
             <value>1</value>
+            <value>1</value>
             <value>0</value>
             <value>0</value>
             <value>foo</value>
@@ -18,6 +20,7 @@
             <value>0</value>
         </row>
         <row>
+            <value>2</value>
             <value>1</value>
             <value>1</value>
             <value>1</value>
@@ -27,6 +30,7 @@
             <value>0</value>
         </row>
         <row>
+            <value>3</value>
             <value>1</value>
             <value>1</value>
             <value>1</value>
@@ -37,13 +41,16 @@
         </row>
     </table>
     <table name="phpbb_extensions">
+        <column>extension_id</column>
         <column>extension</column>
         <column>group_id</column>
         <row>
+            <value>1</value>
             <value>jpg</value>
             <value>1</value>
         </row>
         <row>
+            <value>2</value>
             <value>png</value>
             <value>1</value>
         </row>

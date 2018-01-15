@@ -247,13 +247,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		$vars = array('renderer', 'xml');
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_before', compact($vars)));
 
+		$html = $this->renderer->render($xml);
 		if (isset($this->censor) && $this->viewcensors)
 		{
-			// NOTE: censorHtml() is XML-safe
-			$xml = $this->censor->censorHtml($xml, true);
+			$html = $this->censor->censorHtml($html, true);
 		}
-
-		$html = $this->renderer->render($xml);
 
 		/**
 		* Modify a rendered text

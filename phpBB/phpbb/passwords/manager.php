@@ -174,7 +174,7 @@ class manager
 
 		// Be on the lookout for multiple hashing algorithms
 		// 2 is correct: H\2a > 2, H\P > 2
-		if (strlen($match[1]) > 2)
+		if (strlen($match[1]) > 2 && strpos($match[1], '\\') !== false)
 		{
 			$hash_types = explode('\\', $match[1]);
 			$return_ary = array();
@@ -297,7 +297,14 @@ class manager
 		}
 		else
 		{
-			$this->convert_flag = false;
+			if ($stored_hash_type instanceof driver\rehashable_driver_interface)
+			{
+				$this->convert_flag = $stored_hash_type->needs_rehash($hash);
+			}
+			else
+			{
+				$this->convert_flag = false;
+			}
 		}
 
 		// Check all legacy hash types if prefix is $CP$

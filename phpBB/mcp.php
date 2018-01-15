@@ -36,7 +36,7 @@ $template->assign_var('S_IN_MCP', true);
 $id = $request->variable('i', '');
 
 $mode = $request->variable('mode', array(''));
-$mode = sizeof($mode) ? array_shift($mode) : $request->variable('mode', '');
+$mode = count($mode) ? array_shift($mode) : $request->variable('mode', '');
 
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
@@ -59,7 +59,7 @@ if ($forum_action !== '' && $request->variable('sort', false, false, \phpbb\requ
 	$action = $forum_action;
 }
 
-if (sizeof($action_ary))
+if (count($action_ary))
 {
 	list($action, ) = each($action_ary);
 }
@@ -127,6 +127,7 @@ if (!$auth->acl_getf_global('m_'))
 
 	if (!$allow_user)
 	{
+		send_status_line(403, 'Forbidden');
 		trigger_error('NOT_AUTHORISED');
 	}
 }
@@ -134,6 +135,7 @@ if (!$auth->acl_getf_global('m_'))
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
 if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
+	send_status_line(403, 'Forbidden');
 	trigger_error('NOT_AUTHORISED');
 }
 

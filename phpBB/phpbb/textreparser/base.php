@@ -16,6 +16,11 @@ namespace phpbb\textreparser;
 abstract class base implements reparser_interface
 {
 	/**
+	 * @var string The reparser name
+	 */
+	protected $name;
+
+	/**
 	* @var bool Whether to save changes to the database
 	*/
 	protected $save_changes = true;
@@ -90,6 +95,26 @@ abstract class base implements reparser_interface
 	}
 
 	/**
+	 * Returns the name of the reparser
+	 *
+	 * @return string Name of reparser
+	 */
+	public function get_name()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Sets the name of the reparser
+	 *
+	 * @param string $name The reparser name
+	 */
+	public function set_name($name)
+	{
+		$this->name = $name;
+	}
+
+	/**
 	* Disable saving changes to the database
 	*/
 	public function disable_save()
@@ -128,8 +153,8 @@ abstract class base implements reparser_interface
 		{
 			// Look for the closing tag inside of a e element, in an element of the same name, e.g.
 			// <e>[/url]</e></URL>
-			$match = '<e>[/' . $bbcode . ']</e></' . strtoupper($bbcode) . '>';
-			if (strpos($record['text'], $match) !== false)
+			$match = '<e>[/' . $bbcode . ']</e></' . $bbcode . '>';
+			if (stripos($record['text'], $match) !== false)
 			{
 				return true;
 			}
@@ -231,7 +256,7 @@ abstract class base implements reparser_interface
 			$unparsed['enable_flash_bbcode'],
 			$unparsed['enable_quote_bbcode'],
 			$unparsed['enable_url_bbcode'],
-			'reparse'
+			'text_reparser.' . $this->get_name()
 		);
 
 		// Save the new text if it has changed and it's not a dry run

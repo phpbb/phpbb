@@ -26,7 +26,7 @@ abstract class migration_command extends \phpbb\console\command\command
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
-	function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache)
+	public function __construct(\phpbb\user $user, \phpbb\db\migrator $migrator, \phpbb\extension\manager $extension_manager, \phpbb\config\config $config, \phpbb\cache\service $cache)
 	{
 		$this->migrator = $migrator;
 		$this->extension_manager = $extension_manager;

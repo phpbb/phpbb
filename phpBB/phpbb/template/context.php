@@ -87,6 +87,17 @@ class context
 	}
 
 	/**
+	* Retreive a single scalar value from a single key.
+	*
+	* @param string $varname Variable name
+	* @return mixed Variable value, or null if not set
+	*/
+	public function retrieve_var($varname)
+	{
+		return isset($this->rootref[$varname]) ? $this->rootref[$varname] : null;
+	}
+
+	/**
 	* Returns a reference to template data array.
 	*
 	* This function is public so that template renderer may invoke it.
@@ -131,7 +142,7 @@ class context
 	*/
 	protected function set_num_rows(&$loop_data)
 	{
-		$s_num_rows = sizeof($loop_data);
+		$s_num_rows = count($loop_data);
 		foreach ($loop_data as &$mod_block)
 		{
 			foreach ($mod_block as $sub_block_name => &$sub_block)
@@ -179,69 +190,49 @@ class context
 	public function assign_block_vars($blockname, array $vararray)
 	{
 		$this->num_rows_is_set = false;
-		if (strpos($blockname, '.') !== false)
+
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = count($blocks) - 1;
+
+		$block = &$this->tpldata;
+		for ($i = 0; $i < $blockcount; $i++)
 		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$str = &$this->tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
-			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
-			}
-
-			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
-			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blocks[$blockcount];
-
-			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
-			// This is much more clever than going through the complete template data on display (phew)
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($str[$blocks[$blockcount]][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Now we add the block that we're actually assigning to.
-			// We're adding a new iteration to this block with the given
-			// variable assignments.
-			$str[$blocks[$blockcount]][] = $vararray;
+			$pos = strpos($blocks[$i], '[');
+			$name = ($pos !== false) ? substr($blocks[$i], 0, $pos) : $blocks[$i];
+			$block = &$block[$name];
+			$index = (!$pos || strpos($blocks[$i], '[]') === $pos) ? (count($block) - 1) : (min((int) substr($blocks[$i], $pos + 1, -1), count($block) - 1));
+			$block = &$block[$index];
 		}
-		else
+
+		// $block = &$block[$blocks[$i]]; // Do not traverse the last block as it might be empty
+		$name = $blocks[$i];
+
+		// Assign S_ROW_COUNT and S_ROW_NUM
+		$s_row_count = isset($block[$name]) ? count($block[$name]) : 0;
+		$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
+
+		// Assign S_FIRST_ROW
+		if (!$s_row_count)
 		{
-			// Top-level block.
-			$s_row_count = (isset($this->tpldata[$blockname])) ? sizeof($this->tpldata[$blockname]) : 0;
-			$vararray['S_ROW_COUNT'] = $vararray['S_ROW_NUM'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blockname;
-
-			// We always assign S_LAST_ROW and remove the entry before
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($this->tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
-			// Add a new iteration to this block with the variable assignments we were given.
-			$this->tpldata[$blockname][] = $vararray;
+			$vararray['S_FIRST_ROW'] = true;
 		}
+
+		// Assign S_BLOCK_NAME
+		$vararray['S_BLOCK_NAME'] = $name;
+
+		// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
+		// This is much more clever than going through the complete template data on display (phew)
+		$vararray['S_LAST_ROW'] = true;
+		if ($s_row_count > 0)
+		{
+			unset($block[$name][($s_row_count - 1)]['S_LAST_ROW']);
+		}
+
+		// Now we add the block that we're actually assigning to.
+		// We're adding a new iteration to this block with the given
+		// variable assignments.
+		$block[$name][] = $vararray;
 
 		return true;
 	}
@@ -264,6 +255,138 @@ class context
 	}
 
 	/**
+	* Retrieve key variable pairs from the specified block
+	*
+	* @param string $blockname Name of block to retrieve $vararray from
+	* @param array $vararray An array of variable names, empty array retrieves all vars
+	* @return array of hashes with variable name as key and retrieved value or null as value
+	*/
+	public function retrieve_block_vars($blockname, array $vararray)
+	{
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = count($blocks) - 1;
+
+		$block = $this->tpldata;
+		for ($i = 0; $i <= $blockcount; $i++)
+		{
+			if (($pos = strpos($blocks[$i], '[')) !== false)
+			{
+				$name = substr($blocks[$i], 0, $pos);
+
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = count($block[$name]) - 1;
+				}
+				else
+				{
+					$index = min((int) substr($blocks[$i], $pos + 1, -1), count($block[$name]) - 1);
+				}
+			}
+			else
+			{
+				$name = $blocks[$i];
+				$index = count($block[$name]) - 1;
+			}
+			$block = $block[$name];
+			$block = $block[$index];
+		}
+
+		$result = array();
+		if ($vararray === array())
+		{
+			// The calculated vars that depend on the block position are excluded from the complete block returned results
+			$excluded_vars = array('S_FIRST_ROW', 'S_LAST_ROW', 'S_BLOCK_NAME', 'S_NUM_ROWS', 'S_ROW_COUNT', 'S_ROW_NUM');
+
+			foreach ($block as $varname => $varvalue)
+			{
+				if ($varname === strtoupper($varname) && !is_array($varvalue) && !in_array($varname, $excluded_vars))
+				{
+					$result[$varname] = $varvalue;
+				}
+			}
+		}
+		else
+		{
+			foreach ($vararray as $varname)
+			{
+				$result[$varname] = isset($block[$varname]) ? $block[$varname] : null;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	* Find the index for a specified key in the innermost specified block
+	*
+	* @param	string	$blockname	the blockname, for example 'loop'
+	* @param	mixed	$key		Key to search for
+	*
+	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
+	*
+	* int: Position [the position to search for]
+	*
+	* If key is false the position is set to 0
+	* If key is true the position is set to the last entry
+	*
+	* @return mixed false if not found, index position otherwise; be sure to test with ===
+	*/
+	public function find_key_index($blockname, $key)
+	{
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = count($blocks) - 1;
+
+		$block = $this->tpldata;
+		for ($i = 0; $i < $blockcount; $i++)
+		{
+			$pos = strpos($blocks[$i], '[');
+			$name = ($pos !== false) ? substr($blocks[$i], 0, $pos) : $blocks[$i];
+
+			if (!isset($block[$name]))
+			{
+				return false;
+			}
+
+			$index = (!$pos || strpos($blocks[$i], '[]') === $pos) ? (count($block[$name]) - 1) : (min((int) substr($blocks[$i], $pos + 1, -1), count($block[$name]) - 1));
+
+			if (!isset($block[$name][$index]))
+			{
+				return false;
+			}
+			$block = $block[$name][$index];
+		}
+
+		if (!isset($block[$blocks[$i]]))
+		{
+			return false;
+		}
+		$block = $block[$blocks[$i]]; // Traverse the last block
+
+		// Change key to zero (change first position) if false and to last position if true
+		if (is_bool($key))
+		{
+			return (!$key) ? 0 : count($block) - 1;
+		}
+
+		// Get correct position if array given
+		if (is_array($key))
+		{
+			// Search array to get correct position
+			list($search_key, $search_value) = @each($key);
+			foreach ($block as $i => $val_ary)
+			{
+				if ($val_ary[$search_key] === $search_value)
+				{
+					return $i;
+				}
+			}
+		}
+
+		return (is_int($key) && ((0 <= $key) && ($key < count($block)))) ? $key : false;
+	}
+
+	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
 	* An example of how to use this function:
@@ -280,10 +403,11 @@ class context
 	* If key is false the position is set to 0
 	* If key is true the position is set to the last entry
 	*
-	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
+	* @param	string	$mode		Mode to execute (valid modes are 'insert', 'change' and 'delete')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero).
 	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new \value).
+	*	If delete, the vararray is ignored, and the block at the given position (counting from zero) is removed.
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
@@ -293,49 +417,53 @@ class context
 	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
 		$this->num_rows_is_set = false;
-		if (strpos($blockname, '.') !== false)
+
+		// For nested block, $blockcount > 0, for top-level block, $blockcount == 0
+		$blocks = explode('.', $blockname);
+		$blockcount = count($blocks) - 1;
+
+		$block = &$this->tpldata;
+		for ($i = 0; $i < $blockcount; $i++)
 		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$block = &$this->tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
+			if (($pos = strpos($blocks[$i], '[')) !== false)
 			{
-				if (($pos = strpos($blocks[$i], '[')) !== false)
-				{
-					$name = substr($blocks[$i], 0, $pos);
+				$name = substr($blocks[$i], 0, $pos);
 
-					if (strpos($blocks[$i], '[]') === $pos)
-					{
-						$index = sizeof($block[$name]) - 1;
-					}
-					else
-					{
-						$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
-					}
+				if (strpos($blocks[$i], '[]') === $pos)
+				{
+					$index = count($block[$name]) - 1;
 				}
 				else
 				{
-					$name = $blocks[$i];
-					$index = sizeof($block[$name]) - 1;
+					$index = min((int) substr($blocks[$i], $pos + 1, -1), count($block[$name]) - 1);
 				}
-				$block = &$block[$name];
-				$block = &$block[$index];
 			}
+			else
+			{
+				$name = $blocks[$i];
+				$index = count($block[$name]) - 1;
+			}
+			$block = &$block[$name];
+			$block = &$block[$index];
+		}
+		$name = $blocks[$i];
 
-			$block = &$block[$blocks[$i]]; // Traverse the last block
-		}
-		else
+		// If last block does not exist and we are inserting, and not searching for key, we create it empty; otherwise, nothing to do
+		if (!isset($block[$name]))
 		{
-			// Top-level block.
-			$block = &$this->tpldata[$blockname];
+			if ($mode != 'insert' || is_array($key))
+			{
+				return false;
+			}
+			$block[$name] = array();
 		}
+
+		$block = &$block[$name]; // Now we can traverse the last block
 
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
-			$key = ($key === false) ? 0 : sizeof($block);
+			$key = ($key === false) ? 0 : count($block);
 		}
 
 		// Get correct position if array given
@@ -365,23 +493,24 @@ class context
 		if ($mode == 'insert')
 		{
 			// Make sure we are not exceeding the last iteration
-			if ($key >= sizeof($this->tpldata[$blockname]))
+			if ($key >= count($block))
 			{
-				$key = sizeof($this->tpldata[$blockname]);
-				unset($this->tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
+				$key = count($block);
+				unset($block[($key - 1)]['S_LAST_ROW']);
 				$vararray['S_LAST_ROW'] = true;
 			}
-			else if ($key === 0)
+			if ($key <= 0)
 			{
-				unset($this->tpldata[$blockname][0]['S_FIRST_ROW']);
+				$key = 0;
+				unset($block[0]['S_FIRST_ROW']);
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
 			// Assign S_BLOCK_NAME
-			$vararray['S_BLOCK_NAME'] = $blockname;
+			$vararray['S_BLOCK_NAME'] = $name;
 
 			// Re-position template blocks
-			for ($i = sizeof($block); $i > $key; $i--)
+			for ($i = count($block); $i > $key; $i--)
 			{
 				$block[$i] = $block[$i-1];
 
@@ -398,12 +527,57 @@ class context
 		// Which block to change?
 		if ($mode == 'change')
 		{
-			if ($key == sizeof($block))
+			// If key is out of bounds, do not change anything
+			if ($key > count($block) || $key < 0)
+			{
+				return false;
+			}
+
+			if ($key == count($block))
 			{
 				$key--;
 			}
 
 			$block[$key] = array_merge($block[$key], $vararray);
+
+			return true;
+		}
+
+		// Delete Block
+		if ($mode == 'delete')
+		{
+			// If we are exceeding last iteration, do not delete anything
+			if ($key > count($block) || $key < 0)
+			{
+				return false;
+			}
+
+			// If we are positioned at the end, we remove the last element
+			if ($key == count($block))
+			{
+				$key--;
+			}
+
+			// We are deleting the last element in the block, so remove the block
+			if (count($block) === 1)
+			{
+				$block = null; // unset($block); does not work on references
+				return true;
+			}
+
+			// Re-position template blocks
+			for ($i = $key; $i < count($block)-1; $i++)
+			{
+				$block[$i] = $block[$i+1];
+				$block[$i]['S_ROW_COUNT'] = $block[$i]['S_ROW_NUM'] = $i;
+			}
+
+			// Remove the last element
+			unset($block[$i]);
+
+			// Set first and last elements again, in case they were removed
+			$block[0]['S_FIRST_ROW'] = true;
+			$block[count($block)-1]['S_LAST_ROW'] = true;
 
 			return true;
 		}
@@ -424,13 +598,13 @@ class context
 		{
 			// Nested block.
 			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
+			$blockcount = count($blocks) - 1;
 
 			$str = &$this->tpldata;
 			for ($i = 0; $i < $blockcount; $i++)
 			{
 				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
+				$str = &$str[count($str) - 1];
 			}
 
 			unset($str[$blocks[$blockcount]]);

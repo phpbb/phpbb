@@ -151,6 +151,7 @@ class update extends \phpbb\console\command\command
 		try
 		{
 			$this->installer->run();
+			return 0;
 		}
 		catch (installer_exception $e)
 		{
@@ -175,5 +176,7 @@ class update extends \phpbb\console\command\command
 		$iohandler->set_input('submit_update_file', 'submit');
 
 		$iohandler->set_input('submit_continue_file_update', 'submit');
+
+		$iohandler->set_input('update-extensions', $config['extensions']);
 	}
 }

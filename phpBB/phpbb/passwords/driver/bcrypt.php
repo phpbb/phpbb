@@ -17,12 +17,42 @@ class bcrypt extends base
 {
 	const PREFIX = '$2a$';
 
+	/** @var int Hashing cost factor */
+	protected $cost_factor;
+
+	/**
+	 * Constructor of passwords driver object
+	 *
+	 * @param \phpbb\config\config $config phpBB config
+	 * @param \phpbb\passwords\driver\helper $helper Password driver helper
+	 * @param int $cost_factor Hashing cost factor (optional)
+	 */
+	public function __construct(\phpbb\config\config $config, helper $helper, $cost_factor = 10)
+	{
+		parent::__construct($config, $helper);
+
+		// Don't allow cost factor to be below default setting
+		$this->cost_factor = max(10, $cost_factor);
+	}
+
 	/**
 	* {@inheritdoc}
 	*/
 	public function get_prefix()
 	{
 		return self::PREFIX;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function needs_rehash($hash)
+	{
+		preg_match('/^' . preg_quote($this->get_prefix()) . '([0-9]+)\$/', $hash, $matches);
+
+		list(, $cost_factor) = $matches;
+
+		return empty($cost_factor) || $this->cost_factor !== intval($cost_factor);
 	}
 
 	/**
@@ -46,7 +76,7 @@ class bcrypt extends base
 
 		if ($salt == '')
 		{
-			$salt = $prefix . '10$' . $this->get_random_salt();
+			$salt = $prefix . $this->cost_factor . '$' . $this->get_random_salt();
 		}
 
 		$hash = crypt($password, $salt);

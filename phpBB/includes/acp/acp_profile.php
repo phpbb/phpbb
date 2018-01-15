@@ -56,6 +56,9 @@ class acp_profile
 
 		$error = array();
 
+		$form_key = 'acp_profile';
+		add_form_key($form_key);
+
 		if (!$field_id && in_array($action, array('delete','activate', 'deactivate', 'move_up', 'move_down', 'edit')))
 		{
 			trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -166,6 +169,11 @@ class acp_profile
 
 			case 'activate':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_profile'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
@@ -206,6 +214,11 @@ class acp_profile
 
 			case 'deactivate':
 
+				if (!check_link_hash($request->variable('hash', ''), 'acp_profile'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 0
 					WHERE field_id = $field_id";
@@ -234,6 +247,11 @@ class acp_profile
 
 			case 'move_up':
 			case 'move_down':
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_profile'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$sql = 'SELECT field_order
 					FROM ' . PROFILE_FIELDS_TABLE . "
@@ -428,7 +446,7 @@ class acp_profile
 				{
 					$exploded_options = (is_array($options)) ? $options : explode("\n", $options);
 
-					if (sizeof($exploded_options) == sizeof($lang_options) || $action == 'create')
+					if (count($exploded_options) == count($lang_options) || $action == 'create')
 					{
 						// The number of options in the field is equal to the number of options already in the database
 						// Or we are creating a new dropdown list.
@@ -549,7 +567,7 @@ class acp_profile
 					}
 				}
 
-				if (sizeof($error))
+				if (count($error))
 				{
 					$submit = false;
 				}
@@ -582,10 +600,15 @@ class acp_profile
 					$s_hidden_fields .= build_hidden_fields($_new_key_ary);
 				}
 
-				if (!sizeof($error))
+				if (!count($error))
 				{
-					if (($step == 3 && (sizeof($this->lang_defs['iso']) == 1 || $save)) || ($action == 'edit' && $save))
+					if (($step == 3 && (count($this->lang_defs['iso']) == 1 || $save)) || ($action == 'edit' && $save))
 					{
+						if (!check_form_key($form_key))
+						{
+							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
 						$this->save_profile_field($cp, $field_type, $action);
 					}
 				}
@@ -593,7 +616,7 @@ class acp_profile
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_EDIT_MODE'		=> ($action == 'edit') ? true : false,
-					'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
+					'ERROR_MSG'			=> (count($error)) ? implode('<br />', $error) : '',
 
 					'L_TITLE'			=> $user->lang['STEP_' . $step . '_TITLE_' . strtoupper($action)],
 					'L_EXPLAIN'			=> $user->lang['STEP_' . $step . '_EXPLAIN_' . strtoupper($action)],
@@ -641,7 +664,7 @@ class acp_profile
 
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
+							'L_NEXT_STEP'			=> (count($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
 						);
 
 						// Build options based on profile type
@@ -715,6 +738,32 @@ class acp_profile
 			break;
 		}
 
+		$tpl_name = $this->tpl_name;
+		$page_title = $this->page_title;
+		$u_action = $this->u_action;
+
+		/**
+		* Event to handle actions on the ACP profile fields page
+		*
+		* @event core.acp_profile_action
+		* @var	string	action		Action that is being performed
+		* @var	string	tpl_name	Template file to load
+		* @var	string	page_title	Page title
+		* @var	string	u_action	The URL we are at, read only
+		* @since 3.2.2-RC1
+		*/
+		$vars = array(
+			'action',
+			'tpl_name',
+			'page_title',
+			'u_action',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.acp_profile_action', compact($vars)));
+
+		$this->tpl_name = $tpl_name;
+		$this->page_title = $page_title;
+		unset($u_action);
+
 		$sql = 'SELECT *
 			FROM ' . PROFILE_FIELDS_TABLE . '
 			ORDER BY field_order';
@@ -727,28 +776,51 @@ class acp_profile
 			$active_value = (!$row['field_active']) ? 'activate' : 'deactivate';
 			$id = $row['field_id'];
 
-			$s_need_edit = (sizeof($this->lang_defs['diff'][$row['field_id']])) ? true : false;
+			$s_need_edit = (count($this->lang_defs['diff'][$row['field_id']])) ? true : false;
 
 			if ($s_need_edit)
 			{
 				$s_one_need_edit = true;
 			}
 
+			if (!isset($this->type_collection[$row['field_type']]))
+			{
+				continue;
+			}
 			$profile_field = $this->type_collection[$row['field_type']];
-			$template->assign_block_vars('fields', array(
+
+			$field_block = array(
 				'FIELD_IDENT'		=> $row['field_ident'],
 				'FIELD_TYPE'		=> $profile_field->get_name(),
 
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
-				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
+				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
 				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
 				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
-				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id",
-				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id",
+				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
+				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;field_id=$id" . '&amp;hash=' . generate_link_hash('acp_profile'),
 
-				'S_NEED_EDIT'				=> $s_need_edit)
+				'S_NEED_EDIT'				=> $s_need_edit,
 			);
+
+			/**
+			* Event to modify profile field data before it is assigned to the template
+			*
+			* @event core.acp_profile_modify_profile_row
+			* @var	array	row				Array with data for the current profile field
+			* @var	array	field_block		Template data that is being assigned to the 'fields' block
+			* @var	object	profile_field	A profile field instance, implements \phpbb\profilefields\type\type_base
+			* @since 3.2.2-RC1
+			*/
+			$vars = array(
+				'row',
+				'field_block',
+				'profile_field',
+			);
+			extract($phpbb_dispatcher->trigger_event('core.acp_profile_modify_profile_row', compact($vars)));
+
+			$template->assign_block_vars('fields', $field_block);
 		}
 		$db->sql_freeresult($result);
 
@@ -984,7 +1056,7 @@ class acp_profile
 			$this->update_insert(PROFILE_LANG_TABLE, $sql_ary, array('field_id' => $field_id, 'lang_id' => $default_lang_id));
 		}
 
-		if (is_array($cp->vars['l_lang_name']) && sizeof($cp->vars['l_lang_name']))
+		if (is_array($cp->vars['l_lang_name']) && count($cp->vars['l_lang_name']))
 		{
 			foreach ($cp->vars['l_lang_name'] as $lang_id => $data)
 			{
@@ -1060,7 +1132,7 @@ class acp_profile
 			}
 		}
 
-		if (is_array($cp->vars['l_lang_options']) && sizeof($cp->vars['l_lang_options']))
+		if (is_array($cp->vars['l_lang_options']) && count($cp->vars['l_lang_options']))
 		{
 			$empty_lang = array();
 
@@ -1071,7 +1143,7 @@ class acp_profile
 					$lang_ary = explode("\n", $lang_ary);
 				}
 
-				if (sizeof($lang_ary) != sizeof($cp->vars['lang_options']))
+				if (count($lang_ary) != count($cp->vars['lang_options']))
 				{
 					$empty_lang[$lang_id] = true;
 				}
@@ -1123,7 +1195,7 @@ class acp_profile
 			}
 		}
 
-		if (sizeof($profile_lang_fields))
+		if (count($profile_lang_fields))
 		{
 			foreach ($profile_lang_fields as $sql)
 			{
@@ -1186,7 +1258,7 @@ class acp_profile
 			$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . $db->sql_escape($value) . "'" : (int) $value);
 		}
 
-		if (!sizeof($where_sql))
+		if (!count($where_sql))
 		{
 			return;
 		}
@@ -1202,14 +1274,14 @@ class acp_profile
 		{
 			$sql_ary = array_merge($where_fields, $sql_ary);
 
-			if (sizeof($sql_ary))
+			if (count($sql_ary))
 			{
 				$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
 			}
 		}
 		else
 		{
-			if (sizeof($sql_ary))
+			if (count($sql_ary))
 			{
 				$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE ' . implode(' AND ', $where_sql);

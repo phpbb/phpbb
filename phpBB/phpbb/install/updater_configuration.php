@@ -32,6 +32,10 @@ class updater_configuration implements ConfigurationInterface
 			->addDefaultsIfNotSet()
 			->children()
 				->enumNode('type')->values(['all','db_only'])->defaultValue('all')->end()
+				->arrayNode('extensions')
+					->prototype('scalar')->end()
+					->defaultValue([])
+				->end()
 			->end()
 		;
 

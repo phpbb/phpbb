@@ -30,19 +30,19 @@ class phpbb_text_processing_smilies_test extends phpbb_test_case
 		return array(
 			array(
 				':) beginning',
-				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" alt=":)" title="Smile"> beginning'
+				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" width="15" height="17" alt=":)" title="Smile"> beginning'
 			),
 			array(
 				'end :)',
-				'end <img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" alt=":)" title="Smile">'
+				'end <img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" width="15" height="17" alt=":)" title="Smile">'
 			),
 			array(
 				':)',
-				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" alt=":)" title="Smile">'
+				'<img class="smilies" src="phpBB/images/smilies/icon_e_smile.gif" width="15" height="17" alt=":)" title="Smile">'
 			),
 			array(
 				'xx (18) 8) xx',
-				'xx (18) <img class="smilies" src="phpBB/images/smilies/custom.gif" alt="8)" title="8)"> xx'
+				'xx (18) <img class="smilies" src="phpBB/images/smilies/custom.gif" width="17" height="18" alt="8)" title="8)"> xx'
 			),
 		);
 	}

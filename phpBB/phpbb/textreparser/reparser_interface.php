@@ -23,6 +23,20 @@ interface reparser_interface
 	public function get_max_id();
 
 	/**
+	 * Returns the name of the reparser
+	 *
+	 * @return string Name of reparser
+	 */
+	public function get_name();
+
+	/**
+	 * Sets the name of the reparser
+	 *
+	 * @param string $name The reparser name
+	 */
+	public function set_name($name);
+
+	/**
 	* Reparse all records in given range
 	*
 	* @param integer $min_id Lower bound

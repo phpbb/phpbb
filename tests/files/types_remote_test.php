@@ -84,16 +84,16 @@ class phpbb_files_types_remote_test extends phpbb_test_case
 	public function data_get_max_file_size()
 	{
 		return array(
-			array('', 'http://example.com/foo/bar.png'),
-			array('2k', 'http://example.com/foo/bar.png'),
-			array('500k', 'http://example.com/foo/bar.png'),
-			array('500M', 'http://example.com/foo/bar.png'),
-			array('500m', 'http://example.com/foo/bar.png'),
+			array('', 'http://phpbb.com/foo/bar.png'),
+			array('2k', 'http://phpbb.com/foo/bar.png'),
+			array('500k', 'http://phpbb.com/foo/bar.png'),
+			array('500M', 'http://phpbb.com/foo/bar.png'),
+			array('500m', 'http://phpbb.com/foo/bar.png'),
 			array('500k', 'http://google.com/?.png', array('DISALLOWED_EXTENSION', 'DISALLOWED_CONTENT')),
 			array('1', 'http://google.com/?.png', array('WRONG_FILESIZE')),
-			array('500g', 'http://example.com/foo/bar.png'),
-			array('foobar', 'http://example.com/foo/bar.png'),
-			array('-5k', 'http://example.com/foo/bar.png'),
+			array('500g', 'http://phpbb.com/foo/bar.png'),
+			array('foobar', 'http://phpbb.com/foo/bar.png'),
+			array('-5k', 'http://phpbb.com/foo/bar.png'),
 		);
 	}
 

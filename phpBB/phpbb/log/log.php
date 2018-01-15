@@ -391,7 +391,7 @@ class log implements \phpbb\log\log_interface
 		{
 			$sql_where .= ' AND ';
 
-			if (is_array($field_value) && sizeof($field_value) == 2 && !is_array($field_value[1]))
+			if (is_array($field_value) && count($field_value) == 2 && !is_array($field_value[1]))
 			{
 				$sql_where .= $field . ' ' . $field_value[0] . ' ' . $field_value[1];
 			}
@@ -405,7 +405,7 @@ class log implements \phpbb\log\log_interface
 			}
 		}
 
-		$sql = 'DELETE FROM ' . LOG_TABLE . "
+		$sql = 'DELETE FROM ' . $this->log_table . "
 					$sql_where";
 		$this->db->sql_query($sql);
 
@@ -689,9 +689,9 @@ class log implements \phpbb\log\log_interface
 						}
 					}
 
-					if (($num_args - sizeof($log_data_ary)) > 0)
+					if (($num_args - count($log_data_ary)) > 0)
 					{
-						$log_data_ary = array_merge($log_data_ary, array_fill(0, $num_args - sizeof($log_data_ary), ''));
+						$log_data_ary = array_merge($log_data_ary, array_fill(0, $num_args - count($log_data_ary), ''));
 					}
 
 					$lang_arguments = array_merge(array($log[$i]['action']), $log_data_ary);
@@ -740,19 +740,19 @@ class log implements \phpbb\log\log_interface
 		$vars = array('log', 'topic_id_list', 'reportee_id_list');
 		extract($this->dispatcher->trigger_event('core.get_logs_get_additional_data', compact($vars)));
 
-		if (sizeof($topic_id_list))
+		if (count($topic_id_list))
 		{
 			$topic_auth = $this->get_topic_auth($topic_id_list);
 
 			foreach ($log as $key => $row)
 			{
 				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
-				$log[$key]['viewpost'] = (isset($topic_auth['f_read'][$row['topic_id']]) && $row['post_id']) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id'] . '&amp;p=' . $row['post_id']) : false;
+				$log[$key]['viewpost'] = (isset($topic_auth['f_read'][$row['topic_id']]) && $row['post_id']) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'f=' . $topic_auth['f_read'][$row['topic_id']] . '&amp;t=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']) : false;
 				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $this->user->session_id) : false;
 			}
 		}
 
-		if (sizeof($reportee_id_list))
+		if (count($reportee_id_list))
 		{
 			$reportee_data_list = $this->get_reportee_data($reportee_id_list);
 
@@ -838,7 +838,7 @@ class log implements \phpbb\log\log_interface
 			$keywords_pattern = array();
 
 			// Build pattern and keywords...
-			for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
+			for ($i = 0, $num_keywords = count($keywords); $i < $num_keywords; $i++)
 			{
 				$keywords_pattern[] = preg_quote($keywords[$i], '#');
 				$keywords[$i] = $this->db->sql_like_expression($this->db->get_any_char() . $keywords[$i] . $this->db->get_any_char());
@@ -898,9 +898,29 @@ class log implements \phpbb\log\log_interface
 		$forum_auth = array('f_read' => array(), 'm_' => array());
 		$topic_ids = array_unique($topic_ids);
 
-		$sql = 'SELECT topic_id, forum_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids));
+		$sql_ary = array(
+			'SELECT'	=> 'topic_id, forum_id',
+			'FROM'		=> array(
+				TOPICS_TABLE	=> 't',
+			),
+			'WHERE'		=> $this->db->sql_in_set('topic_id', array_map('intval', $topic_ids)),
+		);
+
+		/**
+		* Allow modifying SQL query before topic data is retrieved.
+		*
+		* @event core.phpbb_log_get_topic_auth_sql_before
+		* @var	array	topic_ids	Array with unique topic IDs
+		* @var	array	sql_ary		SQL array
+		* @since 3.1.11-RC1
+		*/
+		$vars = array(
+			'topic_ids',
+			'sql_ary',
+		);
+		extract($this->dispatcher->trigger_event('core.phpbb_log_get_topic_auth_sql_before', compact($vars)));
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
@@ -912,6 +932,20 @@ class log implements \phpbb\log\log_interface
 			{
 				$forum_auth['f_read'][$row['topic_id']] = $row['forum_id'];
 			}
+
+			/**
+			 * Allow modifying SQL query after topic data is retrieved (inside loop).
+			 *
+			 * @event core.phpbb_log_get_topic_auth_sql_after
+			 * @var	array	forum_auth	Forum permissions
+			 * @var	array	row			One row of data from SQL query
+			 * @since 3.2.2-RC1
+			 */
+			$vars = array(
+				'forum_auth',
+				'row',
+			);
+			extract($this->dispatcher->trigger_event('core.phpbb_log_get_topic_auth_sql_after', compact($vars)));
 
 			if ($this->auth->acl_gets('a_', 'm_', $row['forum_id']))
 			{

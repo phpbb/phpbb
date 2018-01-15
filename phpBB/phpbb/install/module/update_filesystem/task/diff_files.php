@@ -103,8 +103,8 @@ class diff_files extends task_base
 		$old_path = $this->update_helper->get_path_to_old_update_files();
 		$new_path = $this->update_helper->get_path_to_new_update_files();
 
-		$files_to_diff = $this->installer_config->get('update_files', array());
-		$files_to_diff = $files_to_diff['update_with_diff'];
+		$update_files = $this->installer_config->get('update_files', array());
+		$files_to_diff = $update_files['update_with_diff'];
 
 		// Set progress bar
 		$this->iohandler->set_task_count(count($files_to_diff), true);
@@ -132,41 +132,69 @@ class diff_files extends task_base
 			$file_contents = array();
 
 			// Handle the special case when user created a file with the filename that is now new in the core
-			$file_contents[0] = (file_exists($old_path . $filename)) ? file_get_contents($old_path . $filename) : '';
-
-			$filenames = array(
-				$this->phpbb_root_path . $filename,
-				$new_path . $filename
-			);
-
-			foreach ($filenames as $file_to_diff)
+			if (file_exists($old_path . $filename))
 			{
-				$file_contents[] = file_get_contents($file_to_diff);
+				$file_contents[0] = file_get_contents($old_path . $filename);
 
-				if ($file_contents[sizeof($file_contents) - 1] === false)
+				$filenames = array(
+					$this->phpbb_root_path . $filename,
+					$new_path . $filename
+				);
+
+				foreach ($filenames as $file_to_diff)
+				{
+					$file_contents[] = file_get_contents($file_to_diff);
+
+					if ($file_contents[count($file_contents) - 1] === false)
+					{
+						$this->iohandler->add_error_message(array('FILE_DIFFER_ERROR_FILE_CANNOT_BE_READ', $files_to_diff));
+						unset($file_contents);
+						throw new user_interaction_required_exception();
+					}
+				}
+
+				$diff = new \diff3($file_contents[0], $file_contents[1], $file_contents[2]);
+
+				// Handle conflicts
+				if ($diff->get_num_conflicts() !== 0)
+				{
+					$merge_conflicts[] = $filename;
+				}
+
+				if ($diff->merged_output() !== $file_contents[1])
+				{
+					// Save merged output
+					$this->cache->put(
+						'_file_' . md5($filename),
+						base64_encode(implode("\n", $diff->merged_output()))
+					);
+				}
+				else
+				{
+					unset($update_files['update_with_diff'][$key]);
+				}
+
+				unset($file_contents);
+				unset($diff);
+			}
+			else
+			{
+				$new_file_content = file_get_contents($new_path . $filename);
+
+				if ($new_file_content === false)
 				{
 					$this->iohandler->add_error_message(array('FILE_DIFFER_ERROR_FILE_CANNOT_BE_READ', $files_to_diff));
-					unset($file_contents);
+					unset($new_file_content );
 					throw new user_interaction_required_exception();
 				}
+
+				// Save new file content to cache
+				$this->cache->put(
+					'_file_' . md5($filename),
+					base64_encode($new_file_content)
+				);
+				unset($new_file_content);
 			}
-
-			$diff = new \diff3($file_contents[0], $file_contents[1], $file_contents[2]);
-			unset($file_contents);
-
-			// Handle conflicts
-			if ($diff->get_num_conflicts() !== 0)
-			{
-				$merge_conflicts[] = $filename;
-			}
-
-			// Save merged output
-			$this->cache->put(
-				'_file_' . md5($filename),
-				base64_encode(implode("\n", $diff->merged_output()))
-			);
-
-			unset($diff);
 
 			$progress_count++;
 			$this->iohandler->set_progress('UPDATE_FILE_DIFF', $progress_count);
@@ -178,6 +206,16 @@ class diff_files extends task_base
 				$this->installer_config->set('merge_conflict_list', $merge_conflicts);
 				$this->installer_config->set('file_diff_update_count', $progress_count);
 
+				foreach ($update_files as $type => $files)
+				{
+					if (empty($files))
+					{
+						unset($update_files[$type]);
+					}
+				}
+
+				$this->installer_config->set('update_files', $update_files);
+
 				// Request refresh
 				throw new resource_limit_reached_exception();
 			}
@@ -185,6 +223,16 @@ class diff_files extends task_base
 
 		$this->iohandler->finish_progress('ALL_FILES_DIFFED');
 		$this->installer_config->set('merge_conflict_list', $merge_conflicts);
+
+		foreach ($update_files as $type => $files)
+		{
+			if (empty($files))
+			{
+				unset($update_files[$type]);
+			}
+		}
+
+		$this->installer_config->set('update_files', $update_files);
 	}
 
 	/**

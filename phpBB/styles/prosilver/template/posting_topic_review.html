@@ -16,6 +16,10 @@
 	<div class="post bg3 post-ignore">
 		<div class="inner">
 			{topic_review_row.L_IGNORE_POST}
+	<!-- ELSE IF topic_review_row.S_POST_DELETED -->
+	<div class="post bg3 post-ignore">
+		<div class="inner">
+			{topic_review_row.L_DELETE_POST}
 	<!-- ELSE -->
 	<div class="post <!-- IF topic_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF topic_review_row.POST_ID == REPORTED_POST_ID --> reported<!-- ENDIF -->">
 		<div class="inner">

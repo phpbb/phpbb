@@ -1390,7 +1390,7 @@ function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
 	{
 		$words = explode(' ', $line);
 
-		for ($i = 0, $size = sizeof($words); $i < $size; $i++)
+		for ($i = 0, $size = count($words); $i < $size; $i++)
 		{
 			$word = $words[$i];
 

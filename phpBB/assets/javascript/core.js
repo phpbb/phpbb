@@ -27,27 +27,34 @@ phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', { 
-			id: 'loading_indicator', 
-			class: 'loading_indicator', 
+		$loadingIndicator = $('<div />', {
+			'id': 'loading_indicator',
+			'class': 'loading_indicator'
 		});
 		$loadingIndicator.appendTo('#page-footer');
 	}
 
 	if (!$loadingIndicator.is(':visible')) {
 		$loadingIndicator.fadeIn(phpbb.alertTime);
-		// Wait fifteen seconds and display an error if nothing has been returned by then.
+		// Wait 60 seconds and display an error if nothing has been returned by then.
 		phpbb.clearLoadingTimeout();
 		phpbbAlertTimer = setTimeout(function() {
-			var $alert = $('#phpbb_alert');
-
-			if ($loadingIndicator.is(':visible')) {
-				phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
-			}
-		}, 15000);
+			phpbb.showTimeoutMessage();
+		}, 60000);
 	}
 
 	return $loadingIndicator;
+};
+
+/**
+ * Show timeout message
+ */
+phpbb.showTimeoutMessage = function () {
+	var $alert = $('#phpbb_alert');
+
+	if ($loadingIndicator.is(':visible')) {
+		phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
+	}
 };
 
 /**
@@ -172,7 +179,7 @@ phpbb.alert.close = function($alert, fadedark) {
 phpbb.confirm = function(msg, callback, fadedark) {
 	var $confirmDiv = $('#phpbb_confirm');
 	$confirmDiv.find('.alert_text').html(msg);
-	fadedark = fadedark || true;
+	fadedark = typeof fadedark !== 'undefined' ? fadedark : true;
 
 	$(document).on('keydown.phpbb.alert', function(e) {
 		if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
@@ -187,9 +194,7 @@ phpbb.confirm = function(msg, callback, fadedark) {
 	$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
 		var confirmed = this.name === 'confirm';
 
-		if (confirmed) {
-			callback(true);
-		}
+		callback(confirmed);
 		$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
 		phpbb.alert.close($confirmDiv, fadedark || !confirmed);
 

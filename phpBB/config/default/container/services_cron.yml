@@ -219,3 +219,17 @@ services:
             - [set_reparser, [text_reparser.user_signature]]
         tags:
             - { name: cron.task }
+
+    cron.task.core.update_hashes:
+        class: phpbb\cron\task\core\update_hashes
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@passwords.update.lock'
+            - '@passwords.manager'
+            - '@passwords.driver_collection'
+            - '%passwords.algorithms%'
+        calls:
+            - [set_name, [cron.task.core.update_hashes]]
+        tags:
+            - { name: cron.task }

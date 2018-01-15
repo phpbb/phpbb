@@ -121,7 +121,7 @@ class filespec
 	 */
 	public function set_upload_ary($upload_ary)
 	{
-		if (!isset($upload_ary) || !sizeof($upload_ary))
+		if (!isset($upload_ary) || !count($upload_ary))
 		{
 			return $this;
 		}
@@ -129,7 +129,7 @@ class filespec
 		$this->class_initialized = true;
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$name = (STRIP) ? stripslashes($upload_ary['name']) : $upload_ary['name'];
+		$name = $upload_ary['name'];
 		$name = trim(utf8_basename($name));
 		$this->realname = $this->uploadname = $name;
 		$this->mimetype = $upload_ary['type'];
@@ -403,7 +403,7 @@ class filespec
 	 */
 	public function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		if (sizeof($this->error))
+		if (count($this->error))
 		{
 			return false;
 		}
@@ -478,7 +478,7 @@ class filespec
 			// Remove temporary filename
 			@unlink($this->filename);
 
-			if (sizeof($this->error))
+			if (count($this->error))
 			{
 				return false;
 			}

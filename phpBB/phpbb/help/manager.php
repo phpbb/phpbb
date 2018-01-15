@@ -18,7 +18,7 @@ namespace phpbb\help;
  */
 class manager
 {
-	/** @var \phpbb\event\dispatcher */
+	/** @var \phpbb\event\dispatcher_interface */
 	protected $dispatcher;
 
 	/** @var \phpbb\language\language */
@@ -33,11 +33,11 @@ class manager
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\event\dispatcher $dispatcher
+	 * @param \phpbb\event\dispatcher_interface $dispatcher
 	 * @param \phpbb\language\language $language
 	 * @param \phpbb\template\template $template
 	 */
-	public function __construct(\phpbb\event\dispatcher $dispatcher, \phpbb\language\language $language, \phpbb\template\template $template)
+	public function __construct(\phpbb\event\dispatcher_interface $dispatcher, \phpbb\language\language $language, \phpbb\template\template $template)
 	{
 		$this->dispatcher = $dispatcher;
 		$this->language = $language;

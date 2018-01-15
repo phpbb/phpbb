@@ -20,7 +20,7 @@
 			<value>acp</value>
 			<value>0</value>
 			<value>1</value>
-			<value>4</value>
+			<value>6</value>
 			<value>ACP_CAT</value>
 			<value></value>
 			<value></value>
@@ -36,6 +36,97 @@
 			<value>3</value>
 			<value>ACP_MODULE</value>
 			<value>test</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>acp</value>
+			<value>1</value>
+			<value>4</value>
+			<value>5</value>
+			<value>ACP_FORUM_BASED_PERMISSIONS</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>acp</value>
+			<value>0</value>
+			<value>7</value>
+			<value>12</value>
+			<value>ACP_CAT_FORUMS</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>acp</value>
+			<value>4</value>
+			<value>8</value>
+			<value>11</value>
+			<value>ACP_FORUM_BASED_PERMISSIONS</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>acp</value>
+			<value>5</value>
+			<value>9</value>
+			<value>10</value>
+			<value>ACP_FORUM_BASED_PERMISSIONS_CHILD_1</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>7</value>
+			<value>1</value>
+			<value>1</value>
+			<value></value>
+			<value>ucp</value>
+			<value>0</value>
+			<value>13</value>
+			<value>18</value>
+			<value>UCP_MAIN_CAT</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>1</value>
+			<value>1</value>
+			<value>ucp_subcat</value>
+			<value>ucp</value>
+			<value>7</value>
+			<value>14</value>
+			<value>17</value>
+			<value>UCP_SUBCATEGORY</value>
+			<value>ucp_test</value>
+			<value></value>
+		</row>
+		<row>
+			<value>9</value>
+			<value>1</value>
+			<value>1</value>
+			<value>ucp_module</value>
+			<value>ucp</value>
+			<value>8</value>
+			<value>15</value>
+			<value>16</value>
+			<value>UCP_MODULE</value>
+			<value>ucp_module_test</value>
 			<value></value>
 		</row>
 	</table>

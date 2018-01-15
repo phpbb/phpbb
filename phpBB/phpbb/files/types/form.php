@@ -119,7 +119,7 @@ class form extends base
 
 		// PHP Upload file size check
 		$file = $this->check_upload_size($file);
-		if (sizeof($file->error))
+		if (count($file->error))
 		{
 			return $file;
 		}

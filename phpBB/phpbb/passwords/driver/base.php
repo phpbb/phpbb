@@ -13,7 +13,7 @@
 
 namespace phpbb\passwords\driver;
 
-abstract class base implements driver_interface
+abstract class base implements rehashable_driver_interface
 {
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -21,7 +21,7 @@ abstract class base implements driver_interface
 	/** @var \phpbb\passwords\driver\helper */
 	protected $helper;
 
-	/** @var driver name */
+	/** @var string Driver name */
 	protected $name;
 
 	/**
@@ -48,6 +48,14 @@ abstract class base implements driver_interface
 	* {@inheritdoc}
 	*/
 	public function is_legacy()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function needs_rehash($hash)
 	{
 		return false;
 	}

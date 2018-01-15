@@ -32,9 +32,15 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		return __DIR__ . '/../../tmp/';
 	}
 
-	public function get_factory()
+	public function get_factory($styles_path = null)
 	{
-		global $config, $phpbb_root_path, $request, $user;
+		global $config, $phpbb_root_path, $request, $symfony_request, $user;
+
+		if (!isset($styles_path))
+		{
+			$styles_path = $phpbb_root_path . 'styles/';
+		}
+
 		$this->cache = new phpbb_mock_cache;
 		$dal = new \phpbb\textformatter\data_access(
 			$this->new_dbal(),
@@ -42,7 +48,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			'phpbb_smilies',
 			'phpbb_styles',
 			'phpbb_words',
-			$phpbb_root_path . 'styles/'
+			$styles_path
 		);
 		$factory = new \phpbb\textformatter\s9e\factory(
 			$dal,
@@ -63,15 +69,14 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 			'server_protocol'       => 'http://',
 		));
 		$request = new phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request($request);
 		$user = new phpbb_mock_user;
 
 		return $factory;
 	}
 
-	public function test_get_configurator()
+	public function run_configurator_assertions($configurator)
 	{
-		$configurator = $this->get_factory()->get_configurator();
-
 		$this->assertInstanceOf('s9e\\TextFormatter\\Configurator', $configurator);
 
 		$this->assertTrue(isset($configurator->plugins['Autoemail']));
@@ -95,6 +100,17 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$this->assertTrue(isset($configurator->BBCodes['CUSTOM']));
 
 		$this->assertTrue(isset($configurator->Emoticons[':D']));
+	}
+
+	public function test_get_configurator()
+	{
+		$configurator = $this->get_factory()->get_configurator();
+		$this->run_configurator_assertions($configurator);
+
+		// Test with twigified bbcode.html
+		$configurator = $this->get_factory(__DIR__ . '/fixtures/styles/')->get_configurator();
+		$this->run_configurator_assertions($configurator);
+
 	}
 
 	public function test_regenerate()
@@ -137,7 +153,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 	public function test_local_url()
 	{
-		global $config, $user, $request;
+		global $config, $user, $request, $symfony_request;
 		$config = new \phpbb\config\config(array(
 			'force_server_vars' => true,
 			'server_protocol' => 'http://',
@@ -148,6 +164,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		));
 		$user = new phpbb_mock_user;
 		$request = new phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request($request);
 
 		$fixture = __DIR__ . '/fixtures/local_url.xml';
 		$renderer = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.renderer');
@@ -165,7 +182,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$renderer = $this->get_test_case_helpers()->set_s9e_services(null, $fixture)->get('text_formatter.renderer');
 
 		$this->assertSame(
-			'<img class="smilies" src="phpBB/images/smilies/%22%27%3C&amp;%3E.png" alt="&quot;\'&lt;&amp;&gt;" title="&quot;\'&lt;&amp;&gt;">',
+			'<img class="smilies" src="phpBB/images/smilies/%22%27%3C&amp;%3E.png" width="15" height="17" alt="&quot;\'&lt;&amp;&gt;" title="&quot;\'&lt;&amp;&gt;">',
 			$renderer->render('<r><E>"\'&lt;&amp;&gt;</E></r>')
 		);
 	}
@@ -227,6 +244,22 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 		$original = '[xss=javascript:alert(1)]text[/xss]';
 		$expected = '<a href="javascript:alert(1)">text</a>';
+		$this->assertSame($expected, $renderer->render($parser->parse($original)));
+	}
+
+	/**
+	* @testdox Accepts unsafe default BBCodes
+	*/
+	public function test_unsafe_default_bbcodes()
+	{
+		$fixture   = __DIR__ . '/fixtures/unsafe_default_bbcodes.xml';
+		$style_dir = __DIR__ . '/fixtures/styles/';
+		$container = $this->get_test_case_helpers()->set_s9e_services(null, $fixture, $style_dir);
+		$parser    = $container->get('text_formatter.parser');
+		$renderer  = $container->get('text_formatter.renderer');
+
+		$original = '[b]alert(1)[/b]';
+		$expected = '<script>alert(1)</script>';
 		$this->assertSame($expected, $renderer->render($parser->parse($original)));
 	}
 

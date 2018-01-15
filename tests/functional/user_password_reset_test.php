@@ -113,6 +113,49 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->assertContains($this->lang('LOGIN_ERROR_PASSWORD', '', ''), $crawler->filter('html')->text());
 	}
 
+	/**
+	 * @depends test_login
+	 */
+	public function test_acivateAfterDeactivate()
+	{
+		// User is active, actkey should not exist
+		$this->get_user_data();
+		$this->assertEmpty($this->user_data['user_actkey']);
+
+		$this->login();
+		$this->admin_login();
+		$this->add_lang('acp/users');
+
+		// Go to user account page
+		$crawler = self::request('GET', 'adm/index.php?i=acp_users&mode=overview&sid=' . $this->sid);
+		$this->assertContainsLang('FIND_USERNAME', $crawler->filter('html')->text());
+
+		$form = $crawler->selectButton('Submit')->form();
+		$crawler = self::submit($form, array('username' => 'reset-password-test-user'));
+
+		// Deactivate account and go back to overview of current user
+		$this->assertContainsLang('USER_TOOLS', $crawler->filter('html')->text());
+		$form = $crawler->filter('input[name=update]')->selectButton('Submit')->form();
+		$crawler = self::submit($form, array('action' => 'active'));
+
+		$this->assertContainsLang('USER_ADMIN_DEACTIVED', $crawler->filter('html')->text());
+		$link = $crawler->selectLink('Back to previous page')->link();
+		$crawler = self::request('GET', preg_replace('#(.+)(adm/index.php.+)#', '$2', $link->getUri()));
+
+		// Ensure again that actkey is empty after deactivation
+		$this->get_user_data();
+		$this->assertEmpty($this->user_data['user_actkey']);
+
+		// Force reactivation of account and check that act key is not empty anymore
+		$this->assertContainsLang('USER_TOOLS', $crawler->filter('html')->text());
+		$form = $crawler->filter('input[name=update]')->selectButton('Submit')->form();
+		$crawler = self::submit($form, array('action' => 'reactivate'));
+		$this->assertContainsLang('FORCE_REACTIVATION_SUCCESS', $crawler->filter('html')->text());
+
+		$this->get_user_data();
+		$this->assertNotEmpty($this->user_data['user_actkey']);
+	}
+
 	protected function get_user_data()
 	{
 		$db = $this->get_db();

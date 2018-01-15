@@ -46,9 +46,9 @@ class phpbb_questionnaire_data_collector
 		$this->providers = array();
 	}
 
-	function add_data_provider(&$provider)
+	function add_data_provider($provider)
 	{
-		$this->providers[] = &$provider;
+		$this->providers[] = $provider;
 	}
 
 	/**
@@ -80,7 +80,7 @@ class phpbb_questionnaire_data_collector
 	{
 		foreach (array_keys($this->providers) as $key)
 		{
-			$provider = &$this->providers[$key];
+			$provider = $this->providers[$key];
 			$this->data[$provider->get_identifier()] = $provider->get_data();
 		}
 		$this->data['install_id'] = $this->install_id;
@@ -337,7 +337,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			'edit_time' => true,
 			'email_check_mx' => true,
 			'email_enable' => true,
-			'email_function_name' => true,
+			'email_force_sender' => true,
 			'email_package_size' => true,
 			'enable_confirm' => true,
 			'enable_pm_icons' => true,

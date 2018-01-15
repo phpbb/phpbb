@@ -27,4 +27,12 @@ class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 	{
 		return $this->phpbb_root_path . '../../tmp/autoload.' . $this->php_ext;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function inject_dbal_driver()
+	{
+		return;
+	}
 }

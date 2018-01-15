@@ -81,6 +81,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			$cache_path,
 			null,
 			new \phpbb\template\twig\loader($filesystem, ''),
+			new \phpbb\event\dispatcher($phpbb_container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

@@ -77,6 +77,8 @@ class topics_active extends topic_base
 			return false;
 		}
 
+		parent::fetch_attachments($post_ids);
+
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_posts_approved, t.topic_posts_unapproved, t.topic_posts_softdeleted, t.topic_views,
@@ -117,7 +119,7 @@ class topics_active extends topic_base
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_type = ' . FORUM_POST . '
 					AND ' . $this->db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
-					AND ' . $this->db->sql_bit_and('forum_flags', log(FORUM_FLAG_ACTIVE_TOPICS, 2), '<> 0');
+					AND ' . $this->db->sql_bit_and('forum_flags', round(log(FORUM_FLAG_ACTIVE_TOPICS, 2)), '<> 0');
 			$result = $this->db->sql_query($sql);
 
 			$forum_ids = array();

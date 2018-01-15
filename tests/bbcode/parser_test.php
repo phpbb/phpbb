@@ -66,11 +66,6 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 				'[code:]unparsed code[/code:]',
 			),
 			array(
-				'Test default bbcodes: simple php code',
-				'[code=php]unparsed code[/code]',
-				'[code=php:]<span class="syntaxdefault">unparsed&nbsp;code</span>[/code:]',
-			),
-			array(
 				'Test default bbcodes: simple list',
 				'[list]no item[/list]',
 				'[list:]no item[/list:u:]',
@@ -254,9 +249,10 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 			$this->markTestIncomplete($incomplete);
 		}
 
-		global $user, $request;
+		global $user, $request, $symfony_request;
 		$user = new phpbb_mock_user;
 		$request = new phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request($request);
 
 		$bbcode = new bbcode_firstpass();
 		$bbcode->message = $message;

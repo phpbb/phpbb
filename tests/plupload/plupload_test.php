@@ -24,7 +24,7 @@ class phpbb_plupload_test extends phpbb_test_case
 			array(
 				130,
 				150,
-				'resize: {width: 130, height: 150, quality: 100},'
+				'resize: {width: 130, height: 150, quality: 85},'
 			),
 		);
 	}

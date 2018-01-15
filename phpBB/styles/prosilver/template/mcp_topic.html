@@ -73,7 +73,7 @@
 	<dl>
 		<dt><label for="to_topic_id">{L_MERGE_TOPIC_ID}{L_COLON}</label></dt>
 		<dd>
-			<input class="inputbox autowidth" type="number" min="0" max="999999" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
+			<input class="inputbox autowidth" type="number" min="0" max="9999999999" name="to_topic_id" id="to_topic_id" value="{TO_TOPIC_ID}" />
 			<a href="{U_SELECT_TOPIC}" >{L_SELECT_TOPIC}</a>
 		</dd>
 		<!-- IF TO_TOPIC_INFO --><dd>{TO_TOPIC_INFO}</dd><!-- ENDIF -->
@@ -94,6 +94,7 @@
 
 	<div id="topicreview" class="topicreview">
 		<!-- BEGIN postrow -->
+		<!-- EVENT mcp_topic_postrow_post_before -->
 		<div class="post <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 			<div class="inner">
 
@@ -111,7 +112,9 @@
 					</li>
 				</ul>
 
+				<!-- EVENT mcp_topic_postrow_post_subject_before -->
 				<h3><a href="{postrow.U_POST_DETAILS}">{postrow.POST_SUBJECT}</a></h3>
+				<!-- EVENT mcp_topic_postrow_post_subject_after -->
 
 				<!-- EVENT mcp_topic_postrow_post_details_before -->
 				<p class="author">
@@ -141,6 +144,8 @@
 
 				<div class="content" id="message_{postrow.POST_ID}">{postrow.MESSAGE}</div>
 
+				<!-- EVENT mcp_topic_postrow_attachments_before -->
+
 				<!-- IF postrow.S_HAS_ATTACHMENTS -->
 					<dl class="attachbox">
 						<dt>{L_ATTACHMENTS}</dt>
@@ -149,6 +154,8 @@
 						<!-- END attachment -->
 					</dl>
 				<!-- ENDIF -->
+
+				<!-- EVENT mcp_topic_postrow_attachments_after -->
 
 			</div>
 

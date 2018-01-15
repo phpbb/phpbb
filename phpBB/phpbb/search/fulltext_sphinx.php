@@ -304,7 +304,7 @@ class fulltext_sphinx
 				array('sql_attr_string',			'post_subject'),
 			),
 			'source source_phpbb_' . $this->id . '_delta : source_phpbb_' . $this->id . '_main' => array(
-				array('sql_query_pre',				''),
+				array('sql_query_pre',				'SET NAMES \'utf8\''),
 				array('sql_query_range',			''),
 				array('sql_range_step',				''),
 				array('sql_query',					'SELECT
@@ -324,6 +324,7 @@ class fulltext_sphinx
 					WHERE
 						p.topic_id = t.topic_id
 						AND p.post_id >=  ( SELECT max_doc_id FROM ' . SPHINX_TABLE . ' WHERE counter_id=1 )'),
+				array('sql_query_post_index',		''),
 			),
 			'index index_phpbb_' . $this->id . '_main' => array(
 				array('path',						$this->config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_main'),
@@ -482,7 +483,7 @@ class fulltext_sphinx
 		global $user, $phpbb_log;
 
 		// No keywords? No posts.
-		if (!strlen($this->search_query) && !sizeof($author_ary))
+		if (!strlen($this->search_query) && !count($author_ary))
 		{
 			return false;
 		}
@@ -622,7 +623,7 @@ class fulltext_sphinx
 			break;
 		}
 
-		if (sizeof($author_ary))
+		if (count($author_ary))
 		{
 			$this->sphinx->SetFilter('poster_id', $author_ary);
 		}
@@ -632,14 +633,14 @@ class fulltext_sphinx
 		// but at least it will also cause the same for normal users.
 		$this->sphinx->SetFilter('post_visibility', array(ITEM_APPROVED));
 
-		if (sizeof($ex_fid_ary))
+		if (count($ex_fid_ary))
 		{
 			// All forums that a user is allowed to access
 			$fid_ary = array_unique(array_intersect(array_keys($this->auth->acl_getf('f_read', true)), array_keys($this->auth->acl_getf('f_search', true))));
 			// All forums that the user wants to and can search in
 			$search_forums = array_diff($fid_ary, $ex_fid_ary);
 
-			if (sizeof($search_forums))
+			if (count($search_forums))
 			{
 				$this->sphinx->SetFilter('forum_id', $search_forums);
 			}
@@ -648,7 +649,7 @@ class fulltext_sphinx
 		$this->sphinx->SetFilter('deleted', array(0));
 
 		$this->sphinx->SetLimits($start, (int) $per_page, SPHINX_MAX_MATCHES);
-		$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
@@ -656,7 +657,7 @@ class fulltext_sphinx
 		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 		{
 			usleep(SPHINX_CONNECT_WAIT_TIME);
-			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 		}
 
 		if ($this->sphinx->GetLastError())
@@ -679,7 +680,7 @@ class fulltext_sphinx
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
 			$this->sphinx->SetLimits((int) $start, (int) $per_page, SPHINX_MAX_MATCHES);
-			$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 
 			// Could be connection to localhost:9312 failed (errno=111,
 			// msg=Connection refused) during rotate, retry if so
@@ -687,7 +688,7 @@ class fulltext_sphinx
 			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 			{
 				usleep(SPHINX_CONNECT_WAIT_TIME);
-				$result = $this->sphinx->Query($search_query_prefix . str_replace('&quot;', '"', $this->search_query), $this->indexes);
+				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx->EscapeString(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
 			}
 		}
 
@@ -789,7 +790,7 @@ class fulltext_sphinx
 			}
 			$this->db->sql_freeresult($result);
 
-			if (sizeof($post_updates))
+			if (count($post_updates))
 			{
 				$this->sphinx->UpdateAttributes($this->indexes, array('topic_last_post_time'), $post_updates);
 			}

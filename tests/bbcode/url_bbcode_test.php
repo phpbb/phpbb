@@ -52,9 +52,10 @@ class phpbb_url_bbcode_test extends phpbb_test_case
 	*/
 	public function test_url($description, $message, $expected)
 	{
-		global $user, $request;
+		global $user, $request, $symfony_request;
 		$user = new phpbb_mock_user;
 		$request = new phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request($request);
 
 		$bbcode = new bbcode_firstpass();
 		$bbcode->message = $message;

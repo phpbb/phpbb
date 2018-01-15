@@ -53,7 +53,8 @@ $lang = array_merge($lang, array(
 	'NEW_POSTS_LOCKED'		=> 'New posts [ Locked ]',	// Not used anymore
 	'NO_NEW_POSTS_HOT'		=> 'No new posts [ Popular ]',	// Not used anymore
 	'NO_NEW_POSTS_LOCKED'	=> 'No new posts [ Locked ]',	// Not used anymore
-	'NO_READ_ACCESS'		=> 'You do not have the required permissions to read topics within this forum.',
+	'NO_READ_ACCESS'		=> 'You do not have the required permissions to view or read topics within this forum.',
+	'NO_FORUMS_IN_CATEGORY'	=> 'This category has no forums.',
 	'NO_UNREAD_POSTS_HOT'		=> 'No unread posts [ Popular ]',
 	'NO_UNREAD_POSTS_LOCKED'	=> 'No unread posts [ Locked ]',
 

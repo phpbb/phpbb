@@ -142,13 +142,12 @@
 			<li>MySQL 3.23 or above (MySQLi supported)</li>
 			<li>MariaDB 5.1 or above</li>
 			<li>PostgreSQL 8.3+</li>
-			<li>SQLite 2.8.2+</li>
 			<li>SQLite 3.6.15+</li>
-			<li>MS SQL Server 2000 or above (directly or via ODBC or the native adapter)</li>
+			<li>MS SQL Server 2000 or above (via ODBC or the native adapter)</li>
 			<li>Oracle</li>
 		</ul>
 		</li>
-		<li><strong>PHP 5.4.0+</strong> and <strong>PHP < 7.1</strong> with support for the database you intend to use.</li>
+		<li><strong>PHP 5.4.0+</strong> with support for the database you intend to use.</li>
 		<li>The following PHP modules are required:
 		<ul>
 			<li>json</li>
@@ -266,7 +265,7 @@
 
 <p>If you are currently using a stable release of phpBB, updating to this version is straightforward. You would have downloaded one of four packages and your choice determines what you need to do. <strong>Note</strong>: Before updating, we heavily recommend you do a <em>full backup of your database and existing phpBB files</em>! If you are unsure how to achieve this please ask your hosting provider for advice.</p>
 
-<p><strong>Please make sure you update your phpBB source files too, even if you run the <code>database_update.php</code> file.</strong> If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+<p><strong>Please make sure you update your phpBB source files too, even if you just run the database updater.</strong> If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_full"></a><h3>4.i. Full package</h3>
 
@@ -286,7 +285,7 @@
 
 	<p>The directory structure has been preserved, enabling you (if you wish) to simply upload the uncompressed contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any modifications (MODs) these files will overwrite the originals, possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
-	<p>As for the other update procedures, you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+	<p>As for the other update procedures, you should go to <code>/install/app.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_patch"></a><h3>4.iii. Patch file</h3>
 
@@ -298,7 +297,7 @@
 
 	<p>If you do get failures, you should look at using the <a href="#update_files">Changed Files</a> package to replace the files which failed to patch. Please note that you will need to manually re-add any MODs to these particular files. Alternatively, if you know how, you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
-	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should navigate to <code>/install/app.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_auto"></a><h3>4.iv. Automatic update package</h3>
 
@@ -457,9 +456,21 @@
 
 <a name="webserver_configuration"></a><h3>6.ii. Webserver configuration</h3>
 
-	<p>Depending on your web server, you may have to configure your server to deny web access to the <code>cache/</code>, <code>files/</code>, <code>store/</code> and other directories. This is to prevent users from accessing sensitive files.</p>
+	<p>Depending on your web server, you may have to configure your server to deny web access to the <code>cache/</code>, <code>files/</code>, <code>includes</code>, <code>phpbb</code>, <code>store/</code>, and <code>vendor</code> directories. This is to prevent users from accessing sensitive files.</p>
 
-	<p>For <strong>Apache</strong> there are <code>.htaccess</code> files already in place to do this for you. Similarly, for <strong>Windows</strong> based servers using <strong>IIS</strong> there are <code>web.config</code> files already in place to do this for you. For other webservers, you will have to adjust the configuration yourself. Sample files for <strong>nginx</strong> and <strong>lighttpd</strong> to help you get started may be found in <code>docs/</code> directory.</p>
+	<p>
+		For <strong>Apache</strong> there are <code>.htaccess</code> files already in place to do this for the most sensitive files and folders. We do however recommend to completely deny all access to the aforementioned folders and their respective subfolders in your Apache configuration.<br />
+		On Apache 2.4, denying access to the <code>phpbb</code> folder in a phpBB instance located at <code>/var/www/html/</code> would be accomplished by adding the following access rules to the Apache configuration file (typically apache.conf):
+		<pre>
+&lt;Directory /var/www/html/phpbb/*&gt;
+	Require all denied
+&lt;/Directory&gt;
+&lt;Directory /var/www/html/phpbb>
+	Require all denied
+&lt;/Directory&gt;</pre>
+		<br />
+	<p>The same settings can be applied to the other mentioned directories by replacing <code>phpbb</code> by the respective directory name. Please note that there are differences in syntax between Apache version <a href="https://httpd.apache.org/docs/2.2/howto/access.html">2.2</a> and <a href="https://httpd.apache.org/docs/2.4/howto/access.html">2.4</a>.</p>
+	<p>For <strong>Windows</strong> based servers using <strong>IIS</strong> there are <code>web.config</code> files already in place to do this for you. For other webservers, you will have to adjust the configuration yourself. Sample files for <strong>nginx</strong> and <strong>lighttpd</strong> to help you get started may be found in the <code>docs/</code> directory.</p>
 
 		</div>
 

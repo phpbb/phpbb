@@ -71,6 +71,11 @@ abstract class iohandler_base implements iohandler_interface
 	protected $current_task_name;
 
 	/**
+	 * @var bool
+	 */
+	protected $restart_progress_bar;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct()

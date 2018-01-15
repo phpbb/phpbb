@@ -40,6 +40,10 @@ class acp_icons
 		$action = (isset($_POST['edit'])) ? 'edit' : $action;
 		$action = (isset($_POST['import'])) ? 'import' : $action;
 		$icon_id = $request->variable('id', 0);
+		$submit = $request->is_set_post('submit', false);
+
+		$form_key = 'acp_icons';
+		add_form_key($form_key);
 
 		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
 
@@ -162,7 +166,7 @@ class acp_icons
 					}
 					$db->sql_freeresult($result);
 
-					if (sizeof($smilies))
+					if (count($smilies))
 					{
 						foreach ($smilies as $row)
 						{
@@ -297,7 +301,7 @@ class acp_icons
 				}
 
 				// Ok, another row for adding an addition code for a pre-existing image...
-				if ($action == 'add' && $mode == 'smilies' && sizeof($smilies))
+				if ($action == 'add' && $mode == 'smilies' && count($smilies))
 				{
 					$template->assign_vars(array(
 						'S_ADD_CODE'		=> true,
@@ -324,6 +328,11 @@ class acp_icons
 
 			case 'create':
 			case 'modify':
+
+				if (!check_form_key($form_key))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				// Get items to create/modify
 				$images = (isset($_POST['image'])) ? array_keys($request->variable('image', array('' => 0))) : array();
@@ -369,7 +378,7 @@ class acp_icons
 				{
 					$smiley_count = $this->item_count($table);
 
-					$addable_smileys_count = sizeof($images);
+					$addable_smileys_count = count($images);
 					foreach ($images as $image)
 					{
 						if (!isset($image_add[$image]))
@@ -522,6 +531,11 @@ class acp_icons
 				{
 					$order = 0;
 
+					if (!check_form_key($form_key))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
 					{
 						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -532,8 +546,8 @@ class acp_icons
 					{
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
-							if ((sizeof($data[1]) != 4 && $mode == 'icons') ||
-								((sizeof($data[1]) != 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode == 'smilies' ))
+							if ((count($data[1]) != 4 && $mode == 'icons') ||
+								((count($data[1]) != 6 || (empty($data[1][4]) || empty($data[1][5]))) && $mode == 'smilies' ))
 							{
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
@@ -549,7 +563,6 @@ class acp_icons
 					{
 						switch ($db->get_sql_layer())
 						{
-							case 'sqlite':
 							case 'sqlite3':
 								$db->sql_query('DELETE FROM ' . $table);
 							break;
@@ -592,7 +605,7 @@ class acp_icons
 					if ($mode == 'smilies')
 					{
 						$smiley_count = $this->item_count($table);
-						if ($smiley_count + sizeof($pak_ary) > SMILEY_LIMIT)
+						if ($smiley_count + count($pak_ary) > SMILEY_LIMIT)
 						{
 							trigger_error($user->lang('TOO_MANY_SMILIES', SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 						}
@@ -603,8 +616,8 @@ class acp_icons
 						$data = array();
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
-							if ((sizeof($data[1]) != 4 && $mode == 'icons') ||
-								(sizeof($data[1]) != 6 && $mode == 'smilies'))
+							if ((count($data[1]) != 4 && $mode == 'icons') ||
+								(count($data[1]) != 6 && $mode == 'smilies'))
 							{
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
@@ -708,7 +721,7 @@ class acp_icons
 
 				$template->assign_vars(array(
 					'MESSAGE_TITLE'		=> $user->lang['EXPORT_' . $lang],
-					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send">', '</a>'),
+					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send&amp;hash=' . generate_link_hash('acp_icons') . '">', '</a>'),
 
 					'S_USER_NOTICE'		=> true,
 					)
@@ -719,6 +732,11 @@ class acp_icons
 			break;
 
 			case 'send':
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$sql = "SELECT *
 					FROM $table
@@ -821,6 +839,11 @@ class acp_icons
 
 			case 'move_up':
 			case 'move_down':
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_icons'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				// Get current order id...
 				$sql = "SELECT {$fields}_order as current_order
@@ -941,8 +964,8 @@ class acp_icons
 				'EMOTION'		=> (isset($row['emotion'])) ? $row['emotion'] : '',
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start . '&amp;hash=' . generate_link_hash('acp_icons'),
 			));
 
 			if (!$spacer && !$row['display_on_posting'])

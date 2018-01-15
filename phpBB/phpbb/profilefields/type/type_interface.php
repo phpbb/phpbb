@@ -134,6 +134,14 @@ interface type_interface
 	public function get_field_ident($field_data);
 
 	/**
+	* Get the localized name of the field
+	*
+	* @param string $field_name		Unlocalized name of this field
+	* @return string 	Localized name of the field
+	*/
+	public function get_field_name($field_name);
+
+	/**
 	* Get the column type for the database
 	*
 	* @return string	Returns the database column type

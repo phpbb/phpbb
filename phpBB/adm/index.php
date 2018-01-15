@@ -41,6 +41,7 @@ if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
 // check specific permissions but this is a catchall
 if (!$auth->acl_get('a_'))
 {
+	send_status_line(403, 'Forbidden');
 	trigger_error('NO_ADMIN');
 }
 

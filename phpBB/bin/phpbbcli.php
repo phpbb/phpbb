@@ -42,6 +42,7 @@ require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 
 $phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file);
@@ -70,17 +71,17 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
 
+/** @var \phpbb\language\language $language */
+$language = $phpbb_container->get('language');
+$language->set_default_language($phpbb_container->get('config')['default_lang']);
+$language->add_lang(array('common', 'acp/common', 'cli'));
+
 /* @var $user \phpbb\user */
 $user = $phpbb_container->get('user');
 $user->data['user_id'] = ANONYMOUS;
 $user->ip = '127.0.0.1';
-$user->add_lang('acp/common');
-$user->add_lang('cli');
 
-/* @var $lang \phpbb\language\language */
-$lang = $phpbb_container->get('language');
-
-$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $lang);
+$application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $language);
 $application->setDispatcher($phpbb_container->get('dispatcher'));
 $application->register_container_commands($phpbb_container->get('console.command_collection'));
 $application->run($input);

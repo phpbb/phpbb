@@ -263,7 +263,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'] . 'ext',
 			dirname(__FILE__) . '/',
 			$phpEx,
-			$this->get_cache_driver()
+			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
 		);
 
 		return $extension_manager;
@@ -291,6 +291,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			}
 		}
 
+		$install_config_file = $phpbb_root_path . 'store/install_config.php';
+
+		if (file_exists($install_config_file))
+		{
+			unlink($install_config_file);
+		}
+
 		$container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 		$container = $container_builder
 			->with_environment('installer')
@@ -304,11 +311,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 				],
 				'cache.driver.class' => 'phpbb\cache\driver\file'
 			])
+			->with_config(new \phpbb\config_php_file($phpbb_root_path, $phpEx))
 			->without_compiled_container()
 			->get_container();
 
 		$container->register('installer.install_finish.notify_user')->setSynthetic(true);
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
+		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
+		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
 		$container->compile();
 
 		$language = $container->get('language');
@@ -415,7 +425,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
 		// Wait for extension to be fully enabled
-		while (sizeof($meta_refresh))
+		while (count($meta_refresh))
 		{
 			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 			$url = $match[1];
@@ -499,7 +509,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		else
 		{
 			$db->sql_multi_insert(STYLES_TABLE, array(array(
-				'style_id' => $style_id,
 				'style_name' => $style_path,
 				'style_copyright' => '',
 				'style_active' => 1,
@@ -561,6 +570,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$config['newest_user_colour'] = '';
 		$config['rand_seed'] = '';
 		$config['rand_seed_last_update'] = time() + 600;
+
+		// Prevent new user to have an invalid style
+		$config['default_style'] = 1;
 
 		// Required by user_add
 		global $db, $cache, $phpbb_dispatcher, $phpbb_container;
@@ -899,10 +911,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* status code. This assertion tries to catch that.
 	*
 	* @param int $status_code	Expected status code
-	* @return null
+	* @return void
 	*/
 	static public function assert_response_status_code($status_code = 200)
 	{
+		if ($status_code != self::$client->getResponse()->getStatus() &&
+			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatus()))
+		{
+			self::fail("Encountered unexpected server error:\n" . self::$client->getResponse()->getContent());
+		}
 		self::assertEquals($status_code, self::$client->getResponse()->getStatus(), 'HTTP status code does not match');
 	}
 
@@ -977,7 +994,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->assertEquals(
 			1,
-			sizeof($result),
+			count($result),
 			$message ?: 'Failed asserting that exactly one checkbox with name' .
 				" $name exists in crawler scope."
 		);

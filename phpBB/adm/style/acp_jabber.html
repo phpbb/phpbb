@@ -47,6 +47,21 @@
 	<dd><label><input type="radio" class="radio" id="jab_use_ssl" name="jab_use_ssl" value="1"<!-- IF JAB_USE_SSL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 		<label><input type="radio" class="radio" name="jab_use_ssl" value="0"<!-- IF not JAB_USE_SSL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
+<dl>
+	<dt><label for="jab_verify_peer">{L_JAB_VERIFY_PEER}{L_COLON}</label><br /><span>{L_JAB_VERIFY_PEER_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="jab_verify_peer" name="jab_verify_peer" value="1"<!-- IF JAB_VERIFY_PEER --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input type="radio" class="radio" name="jab_verify_peer" value="0"<!-- IF not JAB_VERIFY_PEER --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+</dl>
+<dl>
+	<dt><label for="jab_verify_peer_name">{L_JAB_VERIFY_PEER_NAME}{L_COLON}</label><br /><span>{L_JAB_VERIFY_PEER_NAME_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="jab_verify_peer_name" name="jab_verify_peer_name" value="1"<!-- IF JAB_VERIFY_PEER_NAME --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input type="radio" class="radio" name="jab_verify_peer_name" value="0"<!-- IF not JAB_VERIFY_PEER_NAME --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+</dl>
+<dl>
+	<dt><label for="jab_allow_self_signed">{L_JAB_ALLOW_SELF_SIGNED}{L_COLON}</label><br /><span>{L_JAB_ALLOW_SELF_SIGNED_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="jab_allow_self_signed" name="jab_allow_self_signed" value="1"<!-- IF JAB_ALLOW_SELF_SIGNED --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input type="radio" class="radio" name="jab_allow_self_signed" value="0"<!-- IF not JAB_ALLOW_SELF_SIGNED --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+</dl>
 <!-- ENDIF -->
 <dl>
 	<dt><label for="jab_package_size">{L_JAB_PACKAGE_SIZE}{L_COLON}</label><br /><span>{L_JAB_PACKAGE_SIZE_EXPLAIN}</span></dt>

@@ -146,7 +146,7 @@ class extension extends \Twig_Extension
 			//  of items to grab (length)
 
 			// Start must always be the actual starting number for this calculation (not negative)
-			$start = ($start < 0) ? sizeof($item) + $start : $start;
+			$start = ($start < 0) ? count($item) + $start : $start;
 			$end = $end - $start;
 		}
 
@@ -170,8 +170,7 @@ class extension extends \Twig_Extension
 		$args = func_get_args();
 		$key = $args[0];
 
-		$context = $this->context->get_data_ref();
-		$context_vars = $context['.'][0];
+		$context_vars = $this->context->get_root_ref();
 
 		if (isset($context_vars['L_' . $key]))
 		{

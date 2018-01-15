@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class increment extends command
 {
@@ -54,17 +55,19 @@ class increment extends command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return null
+	* @return void
 	* @see \phpbb\config\config::increment()
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$io = new SymfonyStyle($input, $output);
+
 		$key = $input->getArgument('key');
 		$increment = $input->getArgument('increment');
 		$use_cache = !$input->getOption('dynamic');
 
 		$this->config->increment($key, $increment, $use_cache);
 
-		$output->writeln('<info>' . $this->user->lang('CLI_CONFIG_INCREMENT_SUCCESS', $key) . '</info>');
+		$io->success($this->user->lang('CLI_CONFIG_INCREMENT_SUCCESS', $key));
 	}
 }

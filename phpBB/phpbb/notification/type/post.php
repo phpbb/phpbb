@@ -202,9 +202,9 @@ class post extends \phpbb\notification\type\base
 			'username'		=> $this->get_data('post_username'),
 		)), $responders);
 
-		$responders_cnt = sizeof($responders);
+		$responders_cnt = count($responders);
 		$responders = $this->trim_user_ary($responders);
-		$trimmed_responders_cnt = $responders_cnt - sizeof($responders);
+		$trimmed_responders_cnt = $responders_cnt - count($responders);
 
 		foreach ($responders as $responder)
 		{
@@ -337,7 +337,7 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function trim_user_ary($users)
 	{
-		if (sizeof($users) > 4)
+		if (count($users) > 4)
 		{
 			array_splice($users, 3);
 		}
@@ -357,7 +357,7 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function pre_create_insert_array($post, $notify_users)
 	{
-		if (!sizeof($notify_users) || !$this->inherit_read_status)
+		if (!count($notify_users) || !$this->inherit_read_status)
 		{
 			return array();
 		}
@@ -426,7 +426,7 @@ class post extends \phpbb\notification\type\base
 		// Do not add more than 25 responders,
 		// we trim the username list to "a, b, c and x others" anyway
 		// so there is no use to add all of them anyway.
-		if (sizeof($responders) > 25)
+		if (count($responders) > 25)
 		{
 			return array();
 		}
@@ -456,6 +456,12 @@ class post extends \phpbb\notification\type\base
 			return array();
 		}
 
-		return array('notification_data' => $serialized_data);
+		$data_array = array_merge(array(
+			'post_time'		=> $post['post_time'],
+			'post_id'		=> $post['post_id'],
+			'topic_id'		=> $post['topic_id']
+		), $this->get_data(false));
+
+		return $data_array;
 	}
 }

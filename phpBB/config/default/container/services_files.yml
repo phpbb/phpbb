@@ -37,7 +37,7 @@ services:
             - '@request'
 
     files.types.local:
-        class: phpbb\files\types\form
+        class: phpbb\files\types\local
         shared: false
         arguments:
             - '@files.factory'

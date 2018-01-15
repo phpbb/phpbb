@@ -133,7 +133,18 @@ ol, ul {
 /* Misc page elements */
 div.spacer { clear: both; }
 
+code { display: block; }
+
 /* Accessibility tweaks: Mozilla.org */
 .skip_link { display: none; }
 
 .codebox p { display: none; }
+
+/* stylelint-disable declaration-property-unit-whitelist */
+.emoji {
+	min-height: 18px;
+	min-width: 18px;
+	height: 1em;
+	width: 1em;
+}
+/* stylelint-enable declaration-property-unit-whitelist */

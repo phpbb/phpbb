@@ -348,7 +348,7 @@ class acp_permission_roles
 				{
 					$hold_ary = $this->auth_admin->get_role_mask($role_id);
 
-					if (sizeof($hold_ary))
+					if (count($hold_ary))
 					{
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
 
@@ -366,6 +366,11 @@ class acp_permission_roles
 
 			case 'move_up':
 			case 'move_down':
+
+				if (!check_link_hash($request->variable('hash', ''), 'acp_permission_roles'))
+				{
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$sql = 'SELECT role_order
 					FROM ' . ACL_ROLES_TABLE . "
@@ -441,8 +446,8 @@ class acp_permission_roles
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'],
-				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'],
+				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
+				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;role_id=' . $row['role_id'] . '&amp;hash=' . generate_link_hash('acp_permission_roles'),
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 
@@ -491,7 +496,7 @@ class acp_permission_roles
 
 		$content_array = $content_array[0];
 
-		$template->assign_var('S_NUM_PERM_COLS', sizeof($categories));
+		$template->assign_var('S_NUM_PERM_COLS', count($categories));
 
 		// Assign to template
 		foreach ($content_array as $cat => $cat_array)

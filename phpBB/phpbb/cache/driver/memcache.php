@@ -52,8 +52,8 @@ class memcache extends \phpbb\cache\driver\memory
 		$this->memcache = new \Memcache;
 		foreach (explode(',', PHPBB_ACM_MEMCACHE) as $u)
 		{
-			$parts = explode('/', $u);
-			$this->memcache->addServer(trim($parts[0]), trim($parts[1]));
+			preg_match('#(.*)/(\d+)#', $u, $parts);
+			$this->memcache->addServer(trim($parts[1]), (int) trim($parts[2]));
 		}
 		$this->flags = (PHPBB_ACM_MEMCACHE_COMPRESS) ? MEMCACHE_COMPRESSED : 0;
 	}

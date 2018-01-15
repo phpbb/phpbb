@@ -38,6 +38,9 @@ class acp_database
 
 		$action	= $request->variable('action', '');
 
+		$form_key = 'acp_database';
+		add_form_key($form_key);
+
 		$template->assign_vars(array(
 			'MODE'	=> $mode
 		));
@@ -56,9 +59,14 @@ class acp_database
 						$format	= $request->variable('method', '');
 						$where	= $request->variable('where', '');
 
-						if (!sizeof($table))
+						if (!count($table))
 						{
 							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						if (!check_form_key($form_key))
+						{
+							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$store = $download = $structure = $schema_data = false;
@@ -107,12 +115,10 @@ class acp_database
 								// We might wanna empty out all that junk :D
 								switch ($db->get_sql_layer())
 								{
-									case 'sqlite':
 									case 'sqlite3':
 										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
 									break;
 
-									case 'mssql':
 									case 'mssql_odbc':
 									case 'mssqlnative':
 										$extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
@@ -297,7 +303,6 @@ class acp_database
 								case 'mysql':
 								case 'mysql4':
 								case 'mysqli':
-								case 'sqlite':
 								case 'sqlite3':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
@@ -352,7 +357,6 @@ class acp_database
 									}
 								break;
 
-								case 'mssql':
 								case 'mssql_odbc':
 								case 'mssqlnative':
 									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
@@ -491,7 +495,7 @@ function sanitize_data_mssql($text)
 		{
 			$val[] = "'" . $value . "'";
 		}
-		if (sizeof($matches[0]))
+		if (count($matches[0]))
 		{
 			$val[] = 'char(' . ord(array_shift($matches[0])) . ')';
 		}
@@ -515,7 +519,7 @@ function sanitize_data_oracle($text)
 		{
 			$val[] = "'" . $value . "'";
 		}
-		if (sizeof($matches[0]))
+		if (count($matches[0]))
 		{
 			$val[] = 'chr(' . ord(array_shift($matches[0])) . ')';
 		}
@@ -537,7 +541,7 @@ function sanitize_data_generic($text)
 		{
 			$val[] = "'" . $value . "'";
 		}
-		if (sizeof($matches[0]))
+		if (count($matches[0]))
 		{
 			$val[] = "'" . array_shift($matches[0]) . "'";
 		}
@@ -579,7 +583,7 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 	static $array = array();
 	static $record = '';
 
-	if (!sizeof($array))
+	if (!count($array))
 	{
 		while (!$eof($fp))
 		{
@@ -601,7 +605,7 @@ function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 		}
 	}
 
-	if (sizeof($array))
+	if (count($array))
 	{
 		return array_shift($array);
 	}

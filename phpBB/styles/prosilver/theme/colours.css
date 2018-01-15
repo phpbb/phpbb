@@ -409,12 +409,7 @@ dl.faq dt {
 /* Quote block */
 blockquote {
 	background-color: #EBEADD;
-	background-image: url("./images/quote.gif");
 	border-color:#DBDBCE;
-}
-
-.rtl blockquote {
-	background-image: url("./images/quote_rtl.gif");
 }
 
 blockquote blockquote {
@@ -440,13 +435,6 @@ blockquote blockquote blockquote {
 .codebox code {
 	color: #2E8B57;
 }
-
-.syntaxbg		{ color: #FFFFFF; }
-.syntaxcomment	{ color: #FF8000; }
-.syntaxdefault	{ color: #0000BB; }
-.syntaxhtml		{ color: #000000; }
-.syntaxkeyword	{ color: #007700; }
-.syntaxstring	{ color: #DD0000; }
 
 /* Attachments
 ----------------------------------------*/
@@ -1167,4 +1155,9 @@ input.disabled {
 
 li.notification-reported strong, li.notification-disapproved strong {
 	color: #D31141;
+}
+
+.badge {
+	background-color: #D31141;
+	color: #ffffff;
 }

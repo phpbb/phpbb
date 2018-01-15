@@ -23,8 +23,8 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$php_ext = 'php';
 
 		$this->passwords_drivers = array(
-			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper),
-			'passwords.driver.bcrypt'	=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper),
+			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper, 10),
+			'passwords.driver.bcrypt'	=> new \phpbb\passwords\driver\bcrypt($config, $this->driver_helper, 10),
 			'passwords.driver.salted_md5'	=> new \phpbb\passwords\driver\salted_md5($config, $this->driver_helper),
 			'passwords.driver.phpass'	=> new \phpbb\passwords\driver\phpass($config, $this->driver_helper),
 			'passwords.driver.sha1_smf'	=> new \phpbb\passwords\driver\sha1_smf($config, $this->driver_helper),
@@ -412,5 +412,24 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 			"\xC3\xBF" => "\xFF"
 		);
 		return strtr($string, $transform);
+	}
+
+	public function data_needs_rehash()
+	{
+		return array(
+			array('passwords.driver.bcrypt_2y', '$2y$10$somerandomhash', false),
+			array('passwords.driver.bcrypt', '$2a$10$somerandomhash', false),
+			array('passwords.driver.salted_md5', 'foobar', false),
+			array('passwords.driver.bcrypt_2y', '$2y$9$somerandomhash', true),
+			array('passwords.driver.bcrypt', '$2a$04$somerandomhash', true),
+		);
+	}
+
+	/**
+	 * @dataProvider data_needs_rehash
+	 */
+	public function test_needs_rehash($driver, $hash, $expected)
+	{
+		$this->assertSame($this->passwords_drivers[$driver]->needs_rehash($hash), $expected);
 	}
 }

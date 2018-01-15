@@ -95,7 +95,7 @@ class md5_phpbb2 extends base
 
 		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
-		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
+		$password_old_format = addslashes($password_old_format);
 		$password_new_format = $this->request->variable('password', '', true);
 
 		if ($super_globals_disabled)

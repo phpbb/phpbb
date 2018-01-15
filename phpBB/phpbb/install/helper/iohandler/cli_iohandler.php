@@ -74,6 +74,20 @@ class cli_iohandler extends iohandler_base
 		return $result;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_raw_input($name, $default)
+	{
+		return $this->get_input($name, $default, true);
+	}
+
+	/**
+	 * Set input variable
+	 *
+	 * @param string $name Name of input variable
+	 * @param mixed $value Value of input variable
+	 */
 	public function set_input($name, $value)
 	{
 		$this->input_values[$name] = $value;

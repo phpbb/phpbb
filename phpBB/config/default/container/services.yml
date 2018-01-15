@@ -108,7 +108,7 @@ services:
             - '%tables.ext%'
             - '%core.root_path%'
             - '%core.php_ext%'
-            - '@cache.driver'
+            - '@cache'
 
     file_downloader:
         class: phpbb\file_downloader

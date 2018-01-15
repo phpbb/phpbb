@@ -105,6 +105,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$cache_path,
 			null,
 			$loader,
+			new \phpbb\event\dispatcher($container),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

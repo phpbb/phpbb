@@ -57,7 +57,12 @@ class dispatcher extends ContainerAwareEventDispatcher implements dispatcher_int
 			return $event;
 		}
 
-		return parent::dispatch($eventName, $event);
+		foreach ((array) $eventName as $name)
+		{
+			$event = parent::dispatch($name, $event);
+		}
+
+		return $event;
 	}
 
 	/**

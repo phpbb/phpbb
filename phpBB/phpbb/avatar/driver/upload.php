@@ -146,6 +146,16 @@ class upload extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
+			// Do not allow specifying the port (see RFC 3986) or IP addresses
+			// remote_upload() will do its own check for allowed filetypes
+			if (preg_match('@^(http|https|ftp)://[^/:?#]+:[0-9]+[/:?#]@i', $url) ||
+				preg_match('#^(http|https|ftp)://(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])#i', $url) ||
+				preg_match('#^(http|https|ftp)://(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){0,5}(?:[\dA-F]{1,4}(?::[\dA-F]{1,4})?|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d{1,2}|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:)|(?:::))#i', $url))
+			{
+				$error[] = 'AVATAR_URL_INVALID';
+				return false;
+			}
+
 			$file = $upload->handle_upload('files.types.remote', $url);
 		}
 		else
@@ -157,7 +167,7 @@ class upload extends \phpbb\avatar\driver\driver
 		$file->clean_filename('avatar', $prefix, $row['id']);
 
 		// If there was an error during upload, then abort operation
-		if (sizeof($file->error))
+		if (count($file->error))
 		{
 			$file->remove();
 			$error = $file->error;
@@ -211,7 +221,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		unset($filedata);
 
-		if (!sizeof($error))
+		if (!count($error))
 		{
 			// Move file and overwrite any existing image
 			$file->move_file($destination, true);
@@ -219,7 +229,7 @@ class upload extends \phpbb\avatar\driver\driver
 
 		// If there was an error during move, then clean up leftovers
 		$error = array_merge($error, $file->error);
-		if (sizeof($error))
+		if (count($error))
 		{
 			$file->remove();
 			return false;
@@ -281,12 +291,20 @@ class upload extends \phpbb\avatar\driver\driver
 		);
 		extract($this->dispatcher->trigger_event('core.avatar_driver_upload_delete_before', compact($vars)));
 
-		if (!sizeof($error) && file_exists($filename))
+		if (!count($error) && $this->filesystem->exists($filename))
 		{
-			@unlink($filename);
+			try
+			{
+				$this->filesystem->remove($filename);
+				return true;
+			}
+			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			{
+				// Fail is covered by return statement below
+			}
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
@@ -304,6 +322,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	protected function can_upload()
 	{
-		return (file_exists($this->phpbb_root_path . $this->config['avatar_path']) && $this->filesystem->is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
+		return ($this->filesystem->exists($this->phpbb_root_path . $this->config['avatar_path']) && $this->filesystem->is_writable($this->phpbb_root_path . $this->config['avatar_path']) && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on'));
 	}
 }

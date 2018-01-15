@@ -13,6 +13,8 @@
 
 namespace phpbb\extension;
 
+use phpbb\exception\runtime_exception;
+use phpbb\file_downloader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -42,10 +44,10 @@ class manager
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension, defaults to php
-	* @param \phpbb\cache\driver\driver_interface $cache A cache instance or null
+	* @param \phpbb\cache\service $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
@@ -146,12 +148,16 @@ class manager
 	* Instantiates the metadata manager for the extension with the given name
 	*
 	* @param string $name The extension name
-	* @param \phpbb\template\template $template The template manager
 	* @return \phpbb\extension\metadata_manager Instance of the metadata manager
 	*/
-	public function create_extension_metadata_manager($name, \phpbb\template\template $template)
+	public function create_extension_metadata_manager($name)
 	{
-		return new \phpbb\extension\metadata_manager($name, $this->config, $this, $template, $this->phpbb_root_path);
+		if (!isset($this->extensions[$name]['metadata']))
+		{
+			$metadata = new \phpbb\extension\metadata_manager($name, $this->get_extension_path($name, true));
+			$this->extensions[$name]['metadata'] = $metadata;
+		}
+		return $this->extensions[$name]['metadata'];
 	}
 
 	/**
@@ -167,7 +173,7 @@ class manager
 	public function enable_step($name)
 	{
 		// ignore extensions that are already enabled
-		if (isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'])
+		if ($this->is_enabled($name))
 		{
 			return false;
 		}
@@ -256,8 +262,8 @@ class manager
 	*/
 	public function disable_step($name)
 	{
-		// ignore extensions that are already disabled
-		if (!isset($this->extensions[$name]) || !$this->extensions[$name]['ext_active'])
+		// ignore extensions that are not enabled
+		if (!$this->is_enabled($name))
 		{
 			return false;
 		}
@@ -335,8 +341,8 @@ class manager
 	*/
 	public function purge_step($name)
 	{
-		// ignore extensions that do not exist
-		if (!isset($this->extensions[$name]))
+		// ignore extensions that are not configured
+		if (!$this->is_configured($name))
 		{
 			return false;
 		}
@@ -430,25 +436,11 @@ class manager
 			if ($file_info->isFile() && $file_info->getFilename() == 'composer.json')
 			{
 				$ext_name = $iterator->getInnerIterator()->getSubPath();
-				$composer_file = $iterator->getPath() . '/composer.json';
-
-				// Ignore the extension if there is no composer.json.
-				if (!is_readable($composer_file) || !($ext_info = file_get_contents($composer_file)))
-				{
-					continue;
-				}
-
-				$ext_info = json_decode($ext_info, true);
 				$ext_name = str_replace(DIRECTORY_SEPARATOR, '/', $ext_name);
-
-				// Ignore the extension if directory depth is not correct or if the directory structure
-				// does not match the name value specified in composer.json.
-				if (substr_count($ext_name, '/') !== 1 || !isset($ext_info['name']) || $ext_name != $ext_info['name'])
+				if ($this->is_available($ext_name))
 				{
-					continue;
+					$available[$ext_name] = $this->get_extension_path($ext_name, true);
 				}
-
-				$available[$ext_name] = $this->phpbb_root_path . 'ext/' . $ext_name . '/';
 			}
 		}
 		ksort($available);
@@ -471,8 +463,12 @@ class manager
 		$configured = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
-			$configured[$name] = $data;
+			if ($this->is_configured($name))
+			{
+				unset($data['metadata']);
+				$data['ext_path'] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
+				$configured[$name] = $data;
+			}
 		}
 		return $configured;
 	}
@@ -489,7 +485,7 @@ class manager
 		$enabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			if ($data['ext_active'])
+			if ($this->is_enabled($name))
 			{
 				$enabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
@@ -510,7 +506,7 @@ class manager
 		$disabled = array();
 		foreach ($this->extensions as $name => $data)
 		{
-			if (!$data['ext_active'])
+			if ($this->is_disabled($name))
 			{
 				$disabled[$name] = ($phpbb_relative ? $this->phpbb_root_path : '') . $data['ext_path'];
 			}
@@ -526,7 +522,15 @@ class manager
 	*/
 	public function is_available($name)
 	{
-		return file_exists($this->get_extension_path($name, true));
+		$md_manager = $this->create_extension_metadata_manager($name);
+		try
+		{
+			return $md_manager->get_metadata('all') && $md_manager->validate_enable();
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -537,7 +541,7 @@ class manager
 	*/
 	public function is_enabled($name)
 	{
-		return isset($this->extensions[$name]) && $this->extensions[$name]['ext_active'];
+		return isset($this->extensions[$name]['ext_active']) && $this->extensions[$name]['ext_active'];
 	}
 
 	/**
@@ -548,7 +552,7 @@ class manager
 	*/
 	public function is_disabled($name)
 	{
-		return isset($this->extensions[$name]) && !$this->extensions[$name]['ext_active'];
+		return isset($this->extensions[$name]['ext_active']) && !$this->extensions[$name]['ext_active'];
 	}
 
 	/**
@@ -562,7 +566,36 @@ class manager
 	*/
 	public function is_configured($name)
 	{
-		return isset($this->extensions[$name]);
+		return isset($this->extensions[$name]['ext_active']);
+	}
+
+	/**
+	* Check the version and return the available updates (for an extension).
+	*
+	* @param \phpbb\extension\metadata_manager $md_manager The metadata manager for the version to check.
+	* @param bool $force_update Ignores cached data. Defaults to false.
+	* @param bool $force_cache Force the use of the cache. Override $force_update.
+	* @param string $stability Force the stability (null by default).
+	* @return array
+	* @throws runtime_exception
+	*/
+	public function version_check(\phpbb\extension\metadata_manager $md_manager, $force_update = false, $force_cache = false, $stability = null)
+	{
+		$meta = $md_manager->get_metadata('all');
+
+		if (!isset($meta['extra']['version-check']))
+		{
+			throw new runtime_exception('NO_VERSIONCHECK');
+		}
+
+		$version_check = $meta['extra']['version-check'];
+
+		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new file_downloader());
+		$version_helper->set_current_version($meta['version']);
+		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename'], isset($version_check['ssl']) ? $version_check['ssl'] : false);
+		$version_helper->force_stability($stability);
+
+		return $version_helper->get_ext_update_on_branch($force_update, $force_cache);
 	}
 
 	/**

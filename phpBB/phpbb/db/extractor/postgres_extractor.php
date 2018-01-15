@@ -85,7 +85,7 @@ class postgres_extractor extends base_extractor
 		// We don't even care about storing the results. We already know the answer if we get rows back.
 		if ($this->db->sql_fetchrow($result))
 		{
-			$sql_data .= "DROP SEQUENCE {$table_name}_seq;\n";
+			$sql_data .= "DROP SEQUENCE IF EXISTS {$table_name}_seq;\n";
 			$sql_data .= "CREATE SEQUENCE {$table_name}_seq;\n";
 		}
 		$this->db->sql_freeresult($result);

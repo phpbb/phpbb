@@ -243,6 +243,34 @@ class migrator
 	}
 
 	/**
+	 * Get a valid migration name from the migration state array in case the
+	 * supplied name is not in the migration state list.
+	 *
+	 * @param string $name Migration name
+	 * @return string Migration name
+	 */
+	protected function get_valid_name($name)
+	{
+		// Try falling back to a valid migration name with or without leading backslash
+		if (!isset($this->migration_state[$name]))
+		{
+			$prepended_name = ($name[0] == '\\' ? '' : '\\') . $name;
+			$prefixless_name = $name[0] == '\\' ? substr($name, 1) : $name;
+
+			if (isset($this->migration_state[$prepended_name]))
+			{
+				$name = $prepended_name;
+			}
+			else if (isset($this->migration_state[$prefixless_name]))
+			{
+				$name = $prefixless_name;
+			}
+		}
+
+		return $name;
+	}
+
+	/**
 	 * Effectively runs a single update step from the next migration to be applied.
 	 *
 	 * @return null
@@ -251,6 +279,8 @@ class migrator
 	{
 		foreach ($this->migrations as $name)
 		{
+			$name = $this->get_valid_name($name);
+
 			if (!isset($this->migration_state[$name]) ||
 				!$this->migration_state[$name]['migration_schema_done'] ||
 				!$this->migration_state[$name]['migration_data_done'])
@@ -306,6 +336,9 @@ class migrator
 
 		foreach ($state['migration_depends_on'] as $depend)
 		{
+			$depend = $this->get_valid_name($depend);
+
+			// Test all possible namings before throwing exception
 			if ($this->unfulfillable($depend) !== false)
 			{
 				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $depend);
@@ -470,11 +503,14 @@ class migrator
 			return;
 		}
 
-		foreach ($this->migration_state as $name => $state)
+		foreach ($this->migrations as $name)
 		{
-			if (!empty($state['migration_depends_on']) && in_array($migration, $state['migration_depends_on']))
+			$state = $this->migration_state($name);
+
+			if ($state && in_array($migration, $state['migration_depends_on']) && ($state['migration_schema_done'] || $state['migration_data_done']))
 			{
 				$this->revert_do($name);
+				return;
 			}
 		}
 
@@ -596,7 +632,7 @@ class migrator
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
 	{
-		if (sizeof($steps) === 0)
+		if (count($steps) === 0)
 		{
 			return true;
 		}
@@ -623,7 +659,7 @@ class migrator
 			// Result will be null or true if everything completed correctly
 			// Stop after each update step, to let the updater control the script runtime
 			$result = $this->run_step($steps[$step], $last_result, $revert);
-			if (($result !== null && $result !== true) || $step + 1 < sizeof($steps))
+			if (($result !== null && $result !== true) || $step + 1 < count($steps))
 			{
 				return array(
 					'result'	=> $result,
@@ -829,6 +865,8 @@ class migrator
 	*/
 	public function unfulfillable($name)
 	{
+		$name = $this->get_valid_name($name);
+
 		if (isset($this->migration_state[$name]) || isset($this->fulfillable_migrations[$name]))
 		{
 			return false;
@@ -844,6 +882,7 @@ class migrator
 
 		foreach ($depends as $depend)
 		{
+			$depend = $this->get_valid_name($depend);
 			$unfulfillable = $this->unfulfillable($depend);
 			if ($unfulfillable !== false)
 			{
