@@ -156,9 +156,7 @@ class bbcode
 					$phpbb_container->get('path_helper'),
 					$phpbb_container->getParameter('core.cache_dir'),
 					$phpbb_container->get('ext.manager'),
-					new \phpbb\template\twig\loader(
-						$phpbb_filesystem
-					)
+					new \phpbb\template\twig\loader()
 				),
 				$phpbb_container->getParameter('core.cache_dir'),
 				$phpbb_container->get('user'),

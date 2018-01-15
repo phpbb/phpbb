@@ -54,7 +54,7 @@ interface request_interface
 	* 										then specifying array("var", 1) as the name will return "a".
 	* @param	mixed			$default	A default value that is returned if the variable was not set.
 	* 										This function will always return a value of the same type as the default.
-	* @param	bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+	* @param	bool			$multibyte	If $default is a string this parameter has to be true if the variable may contain any UTF-8 characters
 	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
 	* @param	\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE	$super_global
 	* 										Specifies which super global should be used

@@ -110,6 +110,13 @@ class db
 		// process we failed to acquire the lock.
 		$this->locked = $this->config->set_atomic($this->config_name, $lock_value, $this->unique_id, false);
 
+		if ($this->locked == true)
+		{
+			if ($this->config->ensure_lock($this->config_name, $this->unique_id))
+			{
+				return true;
+			}
+		}
 		return $this->locked;
 	}
 

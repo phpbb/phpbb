@@ -1,0 +1,14 @@
+<!-- INCLUDE overall_header.html -->
+
+<div {% if S_USER_NOTICE %}class="successbox"{% else %}class="errorbox"{% endif %}>
+	<h3>{{ MESSAGE_TITLE }}</h3>
+	<p>{{ MESSAGE_TEXT }}</p>
+</div>
+
+<div>
+	<fieldset class="console-output">
+		<pre>{{ MESSAGE_DETAIL }}</pre>
+	</fieldset>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

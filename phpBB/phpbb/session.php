@@ -13,6 +13,8 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * Session class
 */
@@ -38,7 +40,7 @@ class session
 	 */
 	static function extract_current_page($root_path)
 	{
-		global $request, $symfony_request, $phpbb_filesystem;
+		global $request, $symfony_request;
 
 		$page_array = array();
 
@@ -85,7 +87,7 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name));
 
-		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		$symfony_request_path = filesystem_helper::clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
@@ -99,8 +101,8 @@ class session
 		else
 		{
 			// current directory within the phpBB root (for example: adm)
-			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+			$root_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath('./')));
 		}
 
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
@@ -250,7 +252,7 @@ class session
 			$ips = explode(' ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
-				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
+				// check IPv4 first, the IPv6 is hopefully only going to be used very seldom
 				if (!empty($ip) && !preg_match(get_preg_expression('ipv4'), $ip) && !preg_match(get_preg_expression('ipv6'), $ip))
 				{
 					// contains invalid data, don't use the forwarded for header
@@ -478,7 +480,7 @@ class session
 				}
 				else
 				{
-					// Added logging temporarly to help debug bugs...
+					// Added logging temporarily to help debug bugs...
 					if (defined('DEBUG') && $this->data['user_id'] != ANONYMOUS)
 					{
 						if ($referer_valid)
@@ -1331,7 +1333,7 @@ class session
 	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
 	*
 	* @author satmd (from the php manual)
-	* @param string 		$mode	register/post - spamcop for example is ommitted for posting
+	* @param string 		$mode	register/post - spamcop for example is omitted for posting
 	* @param string|false	$ip		the IPv4 address to check
 	*
 	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
@@ -1390,7 +1392,7 @@ class session
 
 	/**
 	* Check if URI is blacklisted
-	* This should be called only where absolutly necessary, for example on the submitted website field
+	* This should be called only where absolutely necessary, for example on the submitted website field
 	* This function is not in use at the moment and is only included for testing purposes, it may not work at all!
 	* This means it is untested at the moment and therefore commented out
 	*
