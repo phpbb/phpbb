@@ -74,7 +74,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)), $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)), $this->extension_manager);
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->template_path = $this->test_path . '/templates';

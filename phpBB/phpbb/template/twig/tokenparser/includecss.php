@@ -29,7 +29,7 @@ class includecss extends \Twig_TokenParser
 		$stream = $this->parser->getStream();
 		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-		return new \phpbb\template\twig\node\includecss($expr, $this->parser->getEnvironment(), $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\includecss($expr, $token->getLine(), $this->getTag());
 	}
 
 	/**

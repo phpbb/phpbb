@@ -121,7 +121,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $this->user)));
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
