@@ -18,6 +18,9 @@ class extension extends \Twig_Extension
 	/** @var \phpbb\template\context */
 	protected $context;
 
+	/** @var \phpbb\template\twig\environment */
+	protected $environment;
+
 	/** @var \phpbb\language\language */
 	protected $language;
 
@@ -25,12 +28,14 @@ class extension extends \Twig_Extension
 	* Constructor
 	*
 	* @param \phpbb\template\context $context
+	* @param \phpbb\template\twig\environment $environment
 	* @param \phpbb\language\language $language
 	* @return \phpbb\template\twig\extension
 	*/
-	public function __construct(\phpbb\template\context $context, $language)
+	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
 	{
 		$this->context = $context;
+		$this->environment = $environment;
 		$this->language = $language;
 	}
 
@@ -56,9 +61,9 @@ class extension extends \Twig_Extension
 			new \phpbb\template\twig\tokenparser\includeparser,
 			new \phpbb\template\twig\tokenparser\includejs,
 			new \phpbb\template\twig\tokenparser\includecss,
-			new \phpbb\template\twig\tokenparser\event,
-			new \phpbb\template\twig\tokenparser\includephp,
-			new \phpbb\template\twig\tokenparser\php,
+			new \phpbb\template\twig\tokenparser\event($this->environment),
+			new \phpbb\template\twig\tokenparser\includephp($this->environment),
+			new \phpbb\template\twig\tokenparser\php($this->environment),
 		);
 	}
 

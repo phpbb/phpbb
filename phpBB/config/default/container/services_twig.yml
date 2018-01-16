@@ -38,6 +38,7 @@ services:
         class: phpbb\template\twig\extension
         arguments:
             - '@template_context'
+            - '@template.twig.environment'
             - '@language'
         tags:
             - { name: twig.extension }

@@ -29,7 +29,7 @@ class includejs extends \Twig_TokenParser
 		$stream = $this->parser->getStream();
 		$stream->expect(\Twig_Token::BLOCK_END_TYPE);
 
-		return new \phpbb\template\twig\node\includejs($expr, $this->parser->getEnvironment(), $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\includejs($expr, $token->getLine(), $this->getTag());
 	}
 
 	/**
