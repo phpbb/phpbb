@@ -1240,6 +1240,12 @@ textarea {
 	border-left: 1px solid #d5d5c8;
 }
 
+.rtl input[type="email"],
+.rtl input[type="url"],
+.rtl .always-ltr {
+	direction: ltr;
+}
+
 input:hover,
 textarea:hover {
 	background-color: #e9e9e2;
