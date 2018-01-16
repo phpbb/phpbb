@@ -1431,6 +1431,8 @@ class acp_forums
 			return $errors;
 		}
 
+		$db->sql_transaction('begin');
+
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
 		$from_data = $moved_forums[0];
 		$diff = count($moved_forums) * 2;
@@ -1501,6 +1503,8 @@ class acp_forums
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
 			WHERE " . $db->sql_in_set('forum_id', $moved_ids);
 		$db->sql_query($sql);
+
+		$db->sql_transaction('commit');
 
 		return $errors;
 	}
