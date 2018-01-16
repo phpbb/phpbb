@@ -64,3 +64,8 @@
 }
 
 .affix { position: fixed }
+
+.rtl input[type="email"], .rtl input[type="url"],
+.rtl .always-ltr {
+	direction: ltr;
+}

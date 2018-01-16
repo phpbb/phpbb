@@ -1125,6 +1125,11 @@ input, textarea {
 	border-bottom: 1px solid #D5D5C8;
 }
 
+.rtl input[type="email"], .rtl input[type="url"],
+.rtl .always-ltr {
+	direction: ltr;
+}
+
 input:hover, textarea:hover {
 	border-left: 1px solid #AFAEAA;
 	border-top: 1px solid #AFAEAA;
