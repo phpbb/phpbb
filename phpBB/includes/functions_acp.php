@@ -250,6 +250,14 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 	switch ($tpl_type[0])
 	{
+		case 'path':
+		case 'textltr':
+			$size = (int) $tpl_type[1];
+			$maxlength = (int) $tpl_type[2];
+
+			$tpl = '<input id="' . $key . '" class="always-ltr" type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
+			break;
+
 		case 'password':
 			if ($new_ary[$config_key] !== '')
 			{
