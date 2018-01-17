@@ -71,7 +71,7 @@ class assets_bag
 		$output = '';
 		foreach ($this->stylesheets as $stylesheet)
 		{
-			$output .= "<link href=\"{$stylesheet->get_url()}\" rel=\"stylesheet\" type=\"text/css\" media=\"screen\" />\n";
+			$output .= "<link href=\"{$stylesheet->get_url()}\" rel=\"stylesheet\" media=\"screen\" />\n";
 		}
 
 		return $output;
@@ -87,7 +87,7 @@ class assets_bag
 		$output = '';
 		foreach ($this->scripts as $script)
 		{
-			$output .= "<script type=\"text/javascript\" src=\"{$script->get_url()}\"></script>\n";
+			$output .= "<script src=\"{$script->get_url()}\"></script>\n";
 		}
 
 		return $output;
