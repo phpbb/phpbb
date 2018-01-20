@@ -153,8 +153,14 @@
 		<td><strong>{PHP_VERSION_INFO}</strong></td>
 	<!-- IF S_TOTAL_ORPHAN -->
 		<td>{L_NUMBER_ORPHAN}{L_COLON} </td>
-		<td><strong>{TOTAL_ORPHAN}</strong></td>
-	<!-- ELSE -->
+		<td>
+		<!-- IF TOTAL_ORPHAN > 0 -->
+			<a href="{U_ATTACH_ORPHAN}" title="{L_MORE_INFORMATION}"><strong>{TOTAL_ORPHAN}</strong></a>
+		<!-- ELSE -->
+			<strong>{TOTAL_ORPHAN}</strong>
+		<!-- ENDIF -->
+		</td>
+		<!-- ELSE -->
 		<td>&nbsp;</td>
 		<td>&nbsp;</td>
 	<!-- ENDIF -->
