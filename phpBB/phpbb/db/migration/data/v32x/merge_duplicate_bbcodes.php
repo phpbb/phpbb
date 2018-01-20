@@ -65,11 +65,11 @@ class merge_duplicate_bbcodes extends \phpbb\db\migration\container_aware_migrat
 
 		$sql = 'UPDATE ' . BBCODES_TABLE . '
 			SET ' . $this->db->sql_build_array('UPDATE', $bbcode_data) . '
-			WHERE bbcode_id = ' . $without['bbcode_id'];
+			WHERE bbcode_id = ' . (int) $without['bbcode_id'];
 		$this->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . BBCODES_TABLE . '
-			WHERE bbcode_id = ' . $with['bbcode_id'];
+			WHERE bbcode_id = ' . (int) $with['bbcode_id'];
 		$this->sql_query($sql);
 	}
 }
