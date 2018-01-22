@@ -13,7 +13,6 @@
 
 namespace phpbb\textformatter\s9e;
 
-use Exception;
 use s9e\TextFormatter\Configurator;
 use s9e\TextFormatter\Configurator\Items\AttributeFilters\RegexpFilter;
 use s9e\TextFormatter\Configurator\Items\UnsafeTemplate;
@@ -430,7 +429,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		{
 			$configurator->BBCodes->addCustom($usage, new UnsafeTemplate($template));
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$this->log->add('critical', null, null, 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
 		}
