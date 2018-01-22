@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\data\v32x;
 
+use Exception;
+
 class merge_duplicate_bbcodes extends \phpbb\db\migration\container_aware_migration
 {
 	public function update_data()
@@ -46,16 +48,25 @@ class merge_duplicate_bbcodes extends \phpbb\db\migration\container_aware_migrat
 
 	protected function merge_bbcodes(array $without, array $with)
 	{
-		$merged = $this->container->get('text_formatter.s9e.bbcode_merger')->merge_bbcodes(
-			[
-				'usage'    => $without['bbcode_match'],
-				'template' => $without['bbcode_tpl']
-			],
-			[
-				'usage'    => $with['bbcode_match'],
-				'template' => $with['bbcode_tpl']
-			]
-		);
+		try
+		{
+			$merged = $this->container->get('text_formatter.s9e.bbcode_merger')->merge_bbcodes(
+				[
+					'usage'    => $without['bbcode_match'],
+					'template' => $without['bbcode_tpl']
+				],
+				[
+					'usage'    => $with['bbcode_match'],
+					'template' => $with['bbcode_tpl']
+				]
+			);
+		}
+		catch (Exception $e)
+		{
+			// Ignore the pair and move on. The BBCodes would have to be fixed manually
+			return;
+		}
+
 		$bbcode_data = [
 			'bbcode_tag'      => $without['bbcode_tag'],
 			'bbcode_helpline' => $without['bbcode_helpline'] . ' | ' . $with['bbcode_helpline'],

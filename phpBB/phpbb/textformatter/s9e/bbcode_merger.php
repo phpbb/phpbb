@@ -37,6 +37,9 @@ class bbcode_merger
 	*
 	* All of the arrays contain a "usage" element and a "template" element
 	*
+	* @throws InvalidArgumentException if a definition cannot be interpreted
+	* @throws RuntimeException if something unexpected occurs
+	*
 	* @param  array $without BBCode definition without an attribute
 	* @param  array $with    BBCode definition with an attribute
 	* @return array          Merged definition
