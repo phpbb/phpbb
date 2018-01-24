@@ -926,7 +926,7 @@ class acp_groups
 		);
 
 		// Get us all the groups
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type, g.group_colour
 			FROM ' . GROUPS_TABLE . ' g
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $db->sql_query($sql);
@@ -985,6 +985,7 @@ class acp_groups
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 
 					'GROUP_NAME'	=> $group_name,
+					'GROUP_COLOR'	=> $row['group_colour'],
 					'TOTAL_MEMBERS'	=> $row['total_members'],
 					'PENDING_MEMBERS' => $row['pending_members']
 				));
