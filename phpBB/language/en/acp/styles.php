@@ -80,6 +80,7 @@ $lang = array_merge($lang, array(
 	'STYLE_UNINSTALL'			=> 'Uninstall',
 	'STYLE_UNINSTALL_DEPENDENT'	=> 'Style "%s" cannot be uninstalled because it has one or more child styles.',
 	'STYLE_UNINSTALLED'			=> 'Style "%s" uninstalled successfully.',
+	'STYLE_PHPBB_VERSION'		=> 'phpBB Version',
 	'STYLE_USED_BY'				=> 'Used by (including robots)',
 	'STYLE_VERSION'				=> 'Style version',
 

@@ -952,6 +952,7 @@ class acp_styles
 			// Style data
 			'STYLE_ID'		=> $style['style_id'],
 			'STYLE_NAME'	=> htmlspecialchars($style['style_name']),
+			'STYLE_PHPBB_VERSION'	=> $this->read_style_cfg($style['style_path'])['phpbb_version'],
 			'STYLE_PATH'	=> htmlspecialchars($style['style_path']),
 			'STYLE_COPYRIGHT'	=> strip_tags($style['style_copyright']),
 			'STYLE_ACTIVE'	=> $style['style_active'],
