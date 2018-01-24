@@ -13,8 +13,6 @@
 
 namespace phpbb\db\migration\data\v32x;
 
-use Exception;
-
 class merge_duplicate_bbcodes extends \phpbb\db\migration\container_aware_migration
 {
 	public function update_data()
@@ -61,7 +59,7 @@ class merge_duplicate_bbcodes extends \phpbb\db\migration\container_aware_migrat
 				]
 			);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			// Ignore the pair and move on. The BBCodes would have to be fixed manually
 			return;
