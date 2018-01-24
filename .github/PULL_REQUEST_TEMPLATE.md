@@ -1,9 +1,9 @@
 Checklist:
 
-- [ ] Correct branch: master for new features; 3.2.x, 3.1.x for fixes
+- [ ] Correct branch: master for new features; 3.2.x for fixes
 - [ ] Tests pass
-- [ ] Code follows coding guidelines: [master / 3.2.x](https://area51.phpbb.com/docs/master/coding-guidelines.html), [3.1.x](https://area51.phpbb.com/docs/31x/coding-guidelines.html)
-- [ ] Commit follows commit message [format](https://wiki.phpbb.com/Git#Commit_Messages)
+- [ ] Code follows coding guidelines: [master](https://area51.phpbb.com/docs/dev/master/development/coding_guidelines.html) and [3.2.x](https://area51.phpbb.com/docs/dev/3.2.x/development/coding_guidelines.html)
+- [ ] Commit follows commit message [format](https://area51.phpbb.com/docs/dev/3.2.x/development/git.html)
 
 Tracker ticket (set the ticket ID to **your ticket ID**):
 
