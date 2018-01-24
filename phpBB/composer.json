@@ -4,7 +4,7 @@
 	"type": "project",
 	"keywords": ["phpbb", "forum"],
 	"homepage": "https://www.phpbb.com",
-	"license": "GPL-2.0",
+	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "phpBB Limited",
