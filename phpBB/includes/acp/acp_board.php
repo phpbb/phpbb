@@ -34,6 +34,9 @@ class acp_board
 		global $config, $phpbb_root_path, $phpEx;
 		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
+		$config_text = $phpbb_container->get('config_text');
+		$config_text_keys = array();
+
 		$user->add_lang('acp/board');
 
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
@@ -270,20 +273,41 @@ class acp_board
 						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
 						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 
-						'legend2'				=> 'GENERAL_OPTIONS',
+						'legend2'				=> 'TERMS_OF_USE',
+					)
+				);
+
+				global $db;
+
+				$sql = 'SELECT lang_iso, lang_local_name, lang_english_name
+					FROM ' . LANG_TABLE . '
+					ORDER BY lang_english_name';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$display_vars['vars']['terms_of_use_'. $row['lang_iso']] = array(
+						'lang' =>  sprintf($user->lang['TERMS_OF_USE_FOR_LANGUAGE'], ($user->lang_name==$row['lang_iso'])? $row['lang_local_name'] : $row['lang_english_name']),
+						'validate' => 'text',	'type' => 'textarea:20:100', 'explain' => true, 'lang_explain' => 'TERMS_OF_USE_EXPLAIN');
+					$config_text_keys[] = 'terms_of_use_'. $row['lang_iso'];
+				}
+
+				$db->sql_freeresult($result);
+
+				$display_vars['vars'] = $display_vars['vars'] + array(
+						'legend3'				=> 'GENERAL_OPTIONS',
 						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_emailreuse'		=> array('lang' => 'ALLOW_EMAIL_REUSE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => true),
 						'max_reg_attempts'		=> array('lang' => 'REG_LIMIT',				'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
 
-						'legend3'			=> 'COPPA',
+						'legend4'			=> 'COPPA',
 						'coppa_enable'		=> array('lang' => 'ENABLE_COPPA',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'coppa_mail'		=> array('lang' => 'COPPA_MAIL',		'validate' => 'string',	'type' => 'textarea:5:40', 'explain' => true),
 						'coppa_fax'			=> array('lang' => 'COPPA_FAX',			'validate' => 'string',	'type' => 'text:25:100', 'explain' => false),
 
-						'legend4'			=> 'ACP_SUBMIT_CHANGES',
-					)
+						'legend5'			=> 'ACP_SUBMIT_CHANGES',
 				);
 			break;
 
@@ -492,6 +516,16 @@ class acp_board
 		}
 
 		$this->new_config = clone $config;
+
+		if (!empty($config_text_keys))
+		{
+			$config_text_array = $config_text->get_array($config_text_keys);
+			foreach ($config_text_array as $key => $value)
+			{
+				$this->new_config[$key] = $value;
+			}
+		}
+
 		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', array('' => ''), true) : $this->new_config;
 		$error = array();
 
@@ -526,6 +560,15 @@ class acp_board
 				if (isset($cfg_array[$config_name]))
 				{
 					$this->guest_style_set($cfg_array[$config_name]);
+				}
+				continue;
+			}
+
+			if (in_array($config_name, $config_text_keys))
+			{
+				if (isset($cfg_array[$config_name]))
+				{
+					$config_text->set($config_name, html_entity_decode($cfg_array[$config_name]));
 				}
 				continue;
 			}

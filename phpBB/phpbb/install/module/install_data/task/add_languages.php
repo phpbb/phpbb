@@ -53,6 +53,9 @@ class add_languages extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
+		global $phpbb_container;
+		$config_text = $phpbb_container->get('config_text');
+
 		$this->db->sql_return_on_error(true);
 
 		$languages = $this->language_helper->get_available_languages();
@@ -76,6 +79,9 @@ class add_languages extends \phpbb\install\task_base
 				$error = $this->db->sql_error($this->db->get_sql_error_sql());
 				$this->iohandler->add_error_message($error['message']);
 			}
+
+			$config_text->set('terms_of_use_' . $lang_info['iso'], $this->get_terms_of_use_from_lang($lang_info['iso']));
+
 		}
 
 		$sql = 'SELECT * FROM ' . PROFILE_FIELDS_TABLE;
@@ -101,6 +107,16 @@ class add_languages extends \phpbb\install\task_base
 		$this->db->sql_freeresult($result);
 
 		$insert_buffer->flush();
+	}
+
+	private function get_terms_of_use_from_lang($lang_iso)
+	{
+		global $phpEx, $phpbb_root_path;
+		$lang = array();
+
+		include($phpbb_root_path . 'language/' . $lang_iso . "/ucp." . $phpEx);
+		return $lang['TERMS_OF_USE_CONTENT'];
+
 	}
 
 	/**

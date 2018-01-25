@@ -261,6 +261,11 @@ $lang = array_merge($lang, array(
 	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are: space, -, +, _, [ and ].',
 	'USERNAME_LENGTH'			=> 'Username length',
 	'USERNAME_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in usernames.',
+	'TERMS_OF_USE'				=> 'The terms of use',
+	'TERMS_OF_USE_EXPLAIN'		=> 'You can use HTML, Use %1$s for your Site Name, Use %2$s for your Site URL',
+	'TERMS_OF_USE_FOR_LANGUAGE'	=> 'Terms of use for %s language',
+
+
 ));
 
 // Feeds

@@ -33,6 +33,7 @@ class acp_language
 	{
 		global $config, $db, $user, $template, $phpbb_log, $phpbb_container;
 		global $phpbb_root_path, $phpEx, $request, $phpbb_dispatcher;
+		$config_text = $phpbb_container->get('config_text');
 
 		if (!function_exists('validate_language_iso_name'))
 		{
@@ -227,6 +228,7 @@ class acp_language
 					$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
 					$db->sql_query($sql);
 
+					$config_text->delete('terms_of_use_'. $row['lang_iso']);
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_DELETED', false, array($row['lang_english_name']));
 
 					$delete_message = sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']);
@@ -349,6 +351,13 @@ class acp_language
 					$notify_cpf_update = true;
 				}
 				$db->sql_freeresult($result);
+
+				$lang = array();
+
+				include($phpbb_root_path . 'language/' . $lang_pack['iso'] . "/ucp." . $phpEx);
+				$config_text->set('terms_of_use_' . $lang_pack['iso'], $lang['TERMS_OF_USE_CONTENT']);
+
+				unset($lang);
 
 				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_LANGUAGE_PACK_INSTALLED', false, array($lang_pack['name']));
 

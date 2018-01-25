@@ -31,6 +31,7 @@ class ucp_register
 	{
 		global $config, $db, $user, $template, $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
+		$config_text = $phpbb_container->get('config_text');
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE ||
@@ -186,7 +187,7 @@ class ucp_register
 			{
 				$template_vars = array(
 					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
-					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
+					'L_TERMS_OF_USE'	=> sprintf($config_text->get('terms_of_use_' . $user->lang_name), $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
