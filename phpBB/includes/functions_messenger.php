@@ -24,8 +24,9 @@ if (!defined('IN_PHPBB'))
 */
 class messenger
 {
-	var $msg, $extra_headers, $replyto, $from, $subject;
+	var $msg, $replyto, $from, $subject;
 	var $addresses = array();
+	var $extra_headers = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
 	var $use_queue = true;
