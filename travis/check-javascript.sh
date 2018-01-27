@@ -32,5 +32,5 @@ then
 	npm install -g > /dev/null
 	npm install > /dev/null
 	set -x
-	xo "phpBB/**/*.js"
+	xo phpbb/
 fi
