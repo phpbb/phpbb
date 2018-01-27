@@ -1994,6 +1994,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'S_FIRST_UNREAD'	=> $s_first_unread,
 		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && count($cp_row['row'])) ? true : false,
 		'S_TOPIC_POSTER'	=> ($topic_data['topic_poster'] == $poster_id) ? true : false,
+		'S_FIRST_POST'		=> ($topic_data['topic_first_post_id'] == $row['post_id']) ? true : false,
 
 		'S_IGNORE_POST'		=> ($row['foe']) ? true : false,
 		'L_IGNORE_POST'		=> ($row['foe']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
