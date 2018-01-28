@@ -1447,6 +1447,8 @@ class fulltext_native extends \phpbb\search\base
 		* @var array	words				Grouped lists of words added to or remove from the index
 		* @var array	split_text			Array of words from the message
 		* @var array	split_title			Array of words from the title
+		* @var array	cur_words			Array of words currently in the index for comparing to new words
+		* 									when mode is edit. Empty for other modes.
 		* @since 3.2.3-RC1
 		*/
 		$vars = array(
@@ -1459,6 +1461,7 @@ class fulltext_native extends \phpbb\search\base
 			'words',
 			'split_text',
 			'split_title',
+			'cur_words',
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_native_index_before', compact($vars)));
 
