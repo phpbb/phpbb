@@ -1125,6 +1125,24 @@ input, textarea {
 	border-bottom: 1px solid #D5D5C8;
 }
 
+.rtl input[type="email"], .rtl input[type="url"],
+.rtl #add_extension, .rtl #ban,
+.rtl #bbcode_match, .rtl #bbcode_tpl,
+.rtl #bot_name, .rtl #bot_agent, .rtl #bot_ip,
+.rtl #forum_image, .rtl #forum_link, .rtl #forum_rules_link,
+.rtl #jab_host, .rtl #jab_username,
+.rtl #email,
+.rtl #upload_path, .rtl #img_imagick,
+.rtl #allowed_schemes_links, .rtl #cookie_domain, .rtl #cookie_name, .rtl #cookie_path,
+.rtl #smilies_path, .rtl #icons_path, .rtl #upload_icons_path, .rtl #ranks_path,
+.rtl #server_protocol, .rtl #server_name, .rtl #script_path,
+.rtl #smtp_host, .rtl #smtp_username,
+.rtl #default_dateformat,
+.rtl #avatar_gallery_path, .rtl #avatar_path,
+.rtl #fulltext_sphinx_data_path, .rtl #fulltext_sphinx_host {
+	direction:ltr;
+}
+
 input:hover, textarea:hover {
 	border-left: 1px solid #AFAEAA;
 	border-top: 1px solid #AFAEAA;
