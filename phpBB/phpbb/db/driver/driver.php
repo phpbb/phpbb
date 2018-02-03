@@ -903,9 +903,10 @@ abstract class driver implements driver_interface
 
 							// Subquery with {left hand} {operator} {compare kind} {SELECT Kind } {Sub Query}
 
-							$condition = $condition[self::LEFT_STMT] . ' ' . $condition[self::COMPARE_OP] . ' ' . $condition[self::SUBQUERY_OP] . ' ( ';
-							$condition .= $this->sql_build_query($condition[self::SUBQUERY_SELECT_TYPE], $condition[self::SUBQUERY_BUILD]);
-							$condition .= ' )';
+							$result = $condition[self::LEFT_STMT] . ' ' . $condition[self::COMPARE_OP] . ' ' . $condition[self::SUBQUERY_OP] . ' ( ';
+							$result .= $this->sql_build_query($condition[self::SUBQUERY_SELECT_TYPE], $condition[self::SUBQUERY_BUILD]);
+							$result .= ' )';
+							$condition = $result;
 
 						break;
 
