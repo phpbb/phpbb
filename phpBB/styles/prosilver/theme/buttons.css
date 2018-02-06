@@ -158,10 +158,6 @@
 	margin-bottom: 3px;
 }
 
-.format-buttons input, .format-buttons select {
-	vertical-align: middle;
-}
-
 /* Browser-specific tweaks */
 button::-moz-focus-inner {
 	padding: 0;
