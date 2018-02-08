@@ -206,6 +206,14 @@ class upload
 		if (count($this->file->error))
 		{
 			$this->file->remove($this->storage);
+
+			// Remove thumbnail if exists
+			$thumbnail_file = 'thumb_' . $this->file->get('realname');
+			if ($this->storage->exists($thumbnail_file))
+			{
+				$this->storage->delete($thumbnail_file);
+			}
+
 			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
 			$this->file_data['post_attach'] = false;
 
