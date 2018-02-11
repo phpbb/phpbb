@@ -306,18 +306,20 @@ class storage
 
 			if ($row)
 			{
-				$sql = 'UPDATE ' . $this->storage_table . '
-					SET filesize = filesize + ' . strlen($content) . '
-					WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
-				$this->db->sql_query($sql);
+				//$sql = 'UPDATE ' . $this->storage_table . '
+				//	SET filesize = filesize + ' . strlen($content) . '
+				//	WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+				//$this->db->sql_query($sql);
 			}
 			else
 			{
-				$sql_ary['filesize'] = strlen($content);
+				//$sql_ary['filesize'] = strlen($content);
+				$sql_ary['filesize'] = 0;
 
 				$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
 				$this->db->sql_query($sql);
 			}
+
 		}
 		else
 		{
@@ -363,8 +365,8 @@ class storage
 	public function get_size()
 	{
 		$sql = 'SELECT SUM(filesize) AS total
-			FROM ' .  $this->storage_table . '
-			WHERE storage = ' . $this->get_name();
+			FROM ' .  $this->storage_table . "
+			WHERE storage = '" . $this->get_name() . "'";
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

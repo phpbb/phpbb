@@ -500,10 +500,12 @@ class acp_main
 		$users_per_day = sprintf('%.2f', $total_users / $boarddays);
 		$files_per_day = sprintf('%.2f', $total_files / $boarddays);
 
+		//$storage_attachment = $phpbb_container->get('storage.attachments');
+		//$upload_dir_size = get_formatted_filesize($storage_attachment->get_size());
 		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
 
-		// Couldn't open Avatar dir.
-		$avatar_dir_size = $user->lang['NOT_AVAILABLE'];
+		$storage_avatar = $phpbb_container->get('storage.avatar');
+		$avatar_dir_size = get_formatted_filesize($storage_avatar->get_size());
 
 		if ($posts_per_day > $total_posts)
 		{
