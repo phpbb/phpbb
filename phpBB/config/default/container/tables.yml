@@ -60,6 +60,7 @@ parameters:
     tables.sitelist: '%core.table_prefix%sitelist'
     tables.smilies: '%core.table_prefix%smilies'
     tables.sphinx: '%core.table_prefix%sphinx'
+    tables.storage: '%core.table_prefix%storage'
     tables.styles: '%core.table_prefix%styles'
     tables.styles_template: '%core.table_prefix%styles_template'
     tables.styles_template_data: '%core.table_prefix%styles_template_data'

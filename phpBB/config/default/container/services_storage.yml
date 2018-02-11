@@ -12,14 +12,17 @@ services:
     storage.avatar:
         class: phpbb\storage\storage
         arguments:
+            - '@dbal.conn'
             - '@storage.adapter.factory'
             - 'avatar'
+            - '%tables.storage%'
         tags:
             - { name: storage }
 
     storage.backup:
         class: phpbb\storage\storage
         arguments:
+            - '@dbal.conn'
             - '@storage.adapter.factory'
             - 'backup'
         tags:

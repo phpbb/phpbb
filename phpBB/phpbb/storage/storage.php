@@ -13,15 +13,27 @@
 
 namespace phpbb\storage;
 
+use phpbb\db\driver\driver_interface;
+
 /**
  * @internal Experimental
  */
 class storage
 {
 	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $db;
+
+	/**
 	 * @var string
 	 */
 	protected $storage_name;
+
+	/**
+	 * @var string
+	 */
+	protected $storage_table;
 
 	/**
 	 * @var \phpbb\storage\adapter_factory
@@ -36,13 +48,16 @@ class storage
 	/**
 	 * Constructor
 	 *
+	 * @param \phpbb\db\driver\driver_interface	$db
 	 * @param \phpbb\storage\adapter_factory	$factory
 	 * @param string							$storage_name
 	 */
-	public function __construct(adapter_factory $factory, $storage_name)
+	public function __construct(driver_interface $db, adapter_factory $factory, $storage_name, $storage_table)
 	{
+		$this->db = $db;
 		$this->factory = $factory;
 		$this->storage_name = $storage_name;
+		$this->storage_table = $storage_table;
 	}
 
 	/**
@@ -81,7 +96,23 @@ class storage
 	 */
 	public function put_contents($path, $content)
 	{
-		$this->get_adapter()->put_contents($path, $content);
+		try
+		{
+			$this->get_adapter()->put_contents($path, $content);
+
+			$sql_ary = array(
+				'file_path'		=> $path,
+				'storage'		=> $this->get_name(),
+				'filesize'		=> strlen($content),
+			);
+
+			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+		catch (\Exception $e)
+		{
+			throw $e;
+		}
 	}
 
 	/**
@@ -121,7 +152,23 @@ class storage
 	 */
 	public function delete($path)
 	{
-		$this->get_adapter()->delete($path);
+		try
+		{
+			$this->get_adapter()->delete($path);
+
+			$sql_ary = array(
+				'file_path'		=> $path,
+				'storage'		=> $this->get_name(),
+			);
+
+			$sql = 'DELETE FROM ' . $this->storage_table . '
+				WHERE ' . $this->db->sql_build_array('DELETE', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+		catch (\Exception $e)
+		{
+			throw $e;
+		}
 	}
 
 	/**
@@ -135,7 +182,28 @@ class storage
 	 */
 	public function rename($path_orig, $path_dest)
 	{
-		$this->get_adapter()->rename($path_orig, $path_dest);
+		try
+		{
+			$this->get_adapter()->rename($path_orig, $path_dest);
+
+			$sql_ary1 = array(
+				'file_path'		=> $path_dest,
+			);
+
+			$sql_ary2 = array(
+				'file_path'		=> $path_orig,
+				'storage'		=> $this->get_name(),
+			);
+
+			$sql = 'UPDATE ' . $this->storage_table . '
+				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary1) . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary2);
+			$this->db->sql_query($sql);
+		}
+		catch (\Exception $e)
+		{
+			throw $e;
+		}
 	}
 
 	/**
@@ -149,7 +217,34 @@ class storage
 	 */
 	public function copy($path_orig, $path_dest)
 	{
-		$this->get_adapter()->copy($path_orig, $path_dest);
+		try
+		{
+			$this->get_adapter()->copy($path_orig, $path_dest);
+
+			$sql_ary = array(
+				'file_path'		=> $path_orig,
+				'storage'		=> $this->get_name(),
+			);
+
+			$sql = 'SELECT filesize FROM ' . $this->storage_table . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$sql_ary = array(
+				'file_path'		=> $path_dest,
+				'storage'		=> $this->get_name(),
+				'filesize'		=> (int) $row['filesize'],
+			);
+
+			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+		catch (\Exception $e)
+		{
+			throw $e;
+		}
 	}
 
 	/**
@@ -158,7 +253,7 @@ class storage
 	 * @param string	$path	File to read
 	 *
 	 * @throws \phpbb\storage\exception\exception		When unable to open file
-
+	 *
 	 * @return resource	Returns a file pointer
 	 */
 	public function read_stream($path)
@@ -186,7 +281,8 @@ class storage
 	 *
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
-	 *										When target file cannot be created
+	 *
+	 * @throws \phpbb\storage\exception\exception		When target file cannot be created
 	 */
 	public function write_stream($path, $resource)
 	{
@@ -195,6 +291,33 @@ class storage
 		if ($adapter instanceof stream_interface)
 		{
 			$adapter->write_stream($path, $resource);
+
+			$sql_ary = array(
+				'file_path'		=> $path,
+				'storage'		=> $this->get_name(),
+			);
+
+			// Get file, if exist update filesize, if not add new record
+			$sql = 'SELECT * FROM ' .  $this->storage_table . '
+					WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+			$result = $this->db->sql_query($sql);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			if ($row)
+			{
+				$sql = 'UPDATE ' . $this->storage_table . '
+					SET filesize = filesize + ' . strlen($content) . '
+					WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+				$this->db->sql_query($sql);
+			}
+			else
+			{
+				$sql_ary['filesize'] = strlen($content);
+
+				$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
+				$this->db->sql_query($sql);
+			}
 		}
 		else
 		{
@@ -228,5 +351,24 @@ class storage
 	public function get_link($path)
 	{
 		return $this->get_adapter()->get_link($path);
+	}
+
+	/**
+	 * Get total storage size.
+	 *
+	 * @param string	$path	The file
+	 *
+	 * @return int	Size in bytes
+	 */
+	public function get_size()
+	{
+		$sql = 'SELECT SUM(filesize) AS total
+			FROM ' .  $this->storage_table . '
+			WHERE storage = ' . $this->get_name();
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $row['total'];
 	}
 }
