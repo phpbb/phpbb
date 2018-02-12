@@ -948,7 +948,7 @@ $lang = array_merge($lang, array(
 		'Dec'		=> 'Dec',
 
 	),
-	
+
 	'am'	=> 'am',
 	'AM'	=> 'AM',
 	'pm'	=> 'pm',
