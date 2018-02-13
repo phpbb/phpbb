@@ -203,16 +203,17 @@ class upload extends \phpbb\avatar\driver\driver
 		*
 		* @event core.avatar_driver_upload_move_file_before
 		* @var	array	filedata			Array containing uploaded file data
-		* @var	string	destination			Destination directory where the file is going to be moved
+		* @var	object	file				Instance of \phpbb\files\filespec class
 		* @var	string	prefix				Prefix for the avatar filename
 		* @var	array	row					Array with avatar row data
 		* @var	array	error				Array of errors, if filled in by this event file will not be moved
 		* @since 3.1.6-RC1
 		* @changed 3.1.9-RC1 Added filedata
+		* @changed 3.2.3-RC1 Added file
 		*/
 		$vars = array(
 			'filedata',
-			'destination',
+			'file',
 			'prefix',
 			'row',
 			'error',
