@@ -2710,6 +2710,10 @@ fieldset.permissions .permissions-switch {
 	margin: 0;
 }
 
+.rtl .dropdown li {
+	text-align: right;
+}
+
 .wrap .dropdown li,
 .dropdown.wrap li {
 	white-space: normal;
@@ -2724,6 +2728,10 @@ fieldset.permissions .permissions-switch {
 	top: 3.2em;
 	left: auto;
 	width: 250px;
+}
+
+.rtl .roles-options > .dropdown {
+	right: auto;
 }
 
 .roles-options {
@@ -2742,6 +2750,10 @@ fieldset.permissions .permissions-switch {
 	display: none;
 	width: 250px;
 	padding: 4px;
+}
+
+.rtl .roles-options > span {
+	background: url('../images/arrow_down.gif') no-repeat 7px .7em;
 }
 
 .roles-options li {
