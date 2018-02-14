@@ -1331,6 +1331,8 @@ phpbb.toggleDropdown = function() {
 			$this.css({
 				marginLeft: 0,
 				left: 0,
+				marginRight: 0,
+				right: 0,
 				maxWidth: (windowWidth - 4) + 'px'
 			});
 
