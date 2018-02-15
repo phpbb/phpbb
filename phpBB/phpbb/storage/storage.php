@@ -99,15 +99,7 @@ class storage
 		try
 		{
 			$this->get_adapter()->put_contents($path, $content);
-
-			$sql_ary = array(
-				'file_path'		=> $path,
-				'storage'		=> $this->get_name(),
-				'filesize'		=> strlen($content),
-			);
-
-			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
-			$this->db->sql_query($sql);
+			$this->track_file($path);
 		}
 		catch (\Exception $e)
 		{
@@ -155,15 +147,7 @@ class storage
 		try
 		{
 			$this->get_adapter()->delete($path);
-
-			$sql_ary = array(
-				'file_path'		=> $path,
-				'storage'		=> $this->get_name(),
-			);
-
-			$sql = 'DELETE FROM ' . $this->storage_table . '
-				WHERE ' . $this->db->sql_build_array('DELETE', $sql_ary);
-			$this->db->sql_query($sql);
+			$this->untrack_file($path);
 		}
 		catch (\Exception $e)
 		{
@@ -185,20 +169,8 @@ class storage
 		try
 		{
 			$this->get_adapter()->rename($path_orig, $path_dest);
-
-			$sql_ary1 = array(
-				'file_path'		=> $path_dest,
-			);
-
-			$sql_ary2 = array(
-				'file_path'		=> $path_orig,
-				'storage'		=> $this->get_name(),
-			);
-
-			$sql = 'UPDATE ' . $this->storage_table . '
-				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary1) . '
-				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary2);
-			$this->db->sql_query($sql);
+			$this->untrack_file($path_orig);
+			$this->track_file($path_dest);
 		}
 		catch (\Exception $e)
 		{
@@ -220,26 +192,7 @@ class storage
 		try
 		{
 			$this->get_adapter()->copy($path_orig, $path_dest);
-
-			$sql_ary = array(
-				'file_path'		=> $path_orig,
-				'storage'		=> $this->get_name(),
-			);
-
-			$sql = 'SELECT filesize FROM ' . $this->storage_table . '
-				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
-			$result = $this->db->sql_query($sql);
-			$row = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-
-			$sql_ary = array(
-				'file_path'		=> $path_dest,
-				'storage'		=> $this->get_name(),
-				'filesize'		=> (int) $row['filesize'],
-			);
-
-			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
-			$this->db->sql_query($sql);
+			$this->track_file($path_dest);
 		}
 		catch (\Exception $e)
 		{
@@ -291,41 +244,57 @@ class storage
 		if ($adapter instanceof stream_interface)
 		{
 			$adapter->write_stream($path, $resource);
-
-			$sql_ary = array(
-				'file_path'		=> $path,
-				'storage'		=> $this->get_name(),
-			);
-
-			// Get file, if exist update filesize, if not add new record
-			$sql = 'SELECT * FROM ' .  $this->storage_table . '
-					WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
-			$result = $this->db->sql_query($sql);
-			$row = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-
-			if ($row)
-			{
-				//$sql = 'UPDATE ' . $this->storage_table . '
-				//	SET filesize = filesize + ' . strlen($content) . '
-				//	WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
-				//$this->db->sql_query($sql);
-			}
-			else
-			{
-				//$sql_ary['filesize'] = strlen($content);
-				$sql_ary['filesize'] = 0;
-
-				$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
-				$this->db->sql_query($sql);
-			}
-
+			$this->track_file($path); // Not sure if here, or after close the file
 		}
 		else
 		{
 			// Simulate the stream
 			$adapter->put_contents($path, stream_get_contents($resource));
 		}
+	}
+
+	protected function track_file($path, $update = false)
+	{
+		$sql_ary = array(
+			'file_path'		=> $path,
+			'storage'		=> $this->get_name(),
+		);
+
+		// Get file, if exist update filesize, if not add new record
+		$sql = 'SELECT * FROM ' .  $this->storage_table . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			$file = $this->file_info($path);
+			$sql_ary['filesize'] = $file->size;
+
+			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+		else if ($update)
+		{
+			$file = $this->file_info($path);
+			$sql = 'UPDATE ' . $this->storage_table . '
+				SET filesize = ' . $file->size . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+			$this->db->sql_query($sql);
+		}
+	}
+
+	protected function untrack_file($path)
+	{
+		$sql_ary = array(
+			'file_path'		=> $path,
+			'storage'		=> $this->get_name(),
+		);
+
+		$sql = 'DELETE FROM ' . $this->storage_table . '
+			WHERE ' . $this->db->sql_build_array('DELETE', $sql_ary);
+		$this->db->sql_query($sql);
 	}
 
 	/**
