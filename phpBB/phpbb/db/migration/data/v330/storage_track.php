@@ -40,4 +40,28 @@ class storage_track extends \phpbb\db\migration\migration
 			),
 		);
 	}
+
+	public function update_data()
+	{
+		return [
+			['custom', [[$this, 'track_avatars']]],
+			['custom', [[$this, 'track_attachments']]],
+			['custom', [[$this, 'track_backups']]],
+		];
+	}
+
+	public function track_avatars()
+	{
+
+	}
+
+	public function track_attachments()
+	{
+
+	}
+
+	public function track_backups()
+	{
+
+	}
 }

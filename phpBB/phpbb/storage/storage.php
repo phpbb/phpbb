@@ -253,7 +253,7 @@ class storage
 		}
 	}
 
-	protected function track_file($path, $update = false)
+	public function track_file($path, $update = false)
 	{
 		$sql_ary = array(
 			'file_path'		=> $path,
@@ -285,7 +285,7 @@ class storage
 		}
 	}
 
-	protected function untrack_file($path)
+	public function untrack_file($path)
 	{
 		$sql_ary = array(
 			'file_path'		=> $path,
