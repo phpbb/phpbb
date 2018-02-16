@@ -997,17 +997,37 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter_list[] = $alter_entry;
 		}
 
-		if (count($alter_list))
+		$sql_queries = [];
+
+		foreach ($alter_list as $alter)
 		{
-			foreach ($alter_list as $alter)
-			{
-				$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
-			}
+			$sql_queries[] = 'ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter);
 		}
 
 		if (!isset($this->stats['post_text']))
 		{
-			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT post_text (post_text)');
+			$sql_queries[] = 'ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT post_text (post_text)';
+		}
+
+		$stats = $this->stats;
+
+		/**
+		* Event to modify SQL queries before the MySQL search index is created
+		*
+		* @event core.search_mysql_create_index_before
+		* @var array	sql_queries			Array with queries for creating the search index
+		* @var array	stats				Array with statistics of the current index (read only)
+		* @since 3.2.3-RC1
+		*/
+		$vars = array(
+			'sql_queries',
+			'stats',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_create_index_before', compact($vars)));
+
+		foreach ($sql_queries as $sql_query)
+		{
+			$this->db->sql_query($sql_query);
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -1050,9 +1070,32 @@ class fulltext_mysql extends \phpbb\search\base
 			$alter[] = 'DROP INDEX post_text';
 		}
 
+		$sql_queries = [];
+
 		if (count($alter))
 		{
-			$this->db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			$sql_queries[] = 'ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter);
+		}
+
+		$stats = $this->stats;
+
+		/**
+		* Event to modify SQL queries before the MySQL search index is deleted
+		*
+		* @event core.search_mysql_delete_index_before
+		* @var array	sql_queries			Array with queries for deleting the search index
+		* @var array	stats				Array with statistics of the current index (read only)
+		* @since 3.2.3-RC1
+		*/
+		$vars = array(
+			'sql_queries',
+			'stats',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_delete_index_before', compact($vars)));
+
+		foreach ($sql_queries as $sql_query)
+		{
+			$this->db->sql_query($sql_query);
 		}
 
 		$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
