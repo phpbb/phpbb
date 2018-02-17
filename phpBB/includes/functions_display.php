@@ -488,6 +488,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
 					$subforums_list[] = array(
+						'id'		=> $subforum_id,
 						'link'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
 						'name'		=> $subforum_row['name'],
 						'unread'	=> $subforum_unread,
@@ -649,8 +650,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		* @var	array	subforums_row	Template data of subforums
 		* @since 3.1.0-a1
 		* @changed 3.1.0-b5 Added var subforums_row
+		* @changed 3.2.3 Added vars forum_id subforums_list
 		*/
-		$vars = array('forum_row', 'row', 'subforums_row');
+		$vars = array('forum_id', 'forum_row', 'row', 'subforums_list', 'subforums_row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_template_vars', compact($vars)));
 
 		$template->assign_block_vars('forumrow', $forum_row);
