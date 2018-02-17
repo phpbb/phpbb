@@ -216,4 +216,14 @@ class storage
 	{
 		return new file_info($this->adapter, $path);
 	}
+
+	/**
+	 * Get direct link
+	 *
+	 * @param string	$path	The file
+	 */
+	public function get_link($path)
+	{
+		return $this->get_adapter()->get_link($path);
+	}
 }

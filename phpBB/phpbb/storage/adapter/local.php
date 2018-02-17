@@ -58,6 +58,11 @@ class local implements adapter_interface, stream_interface
 	protected $root_path;
 
 	/**
+	 * @var string path
+	 */
+	protected $path;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct(filesystem $filesystem, FastImageSize $imagesize, guesser $mimetype_guesser, $phpbb_root_path)
@@ -73,12 +78,13 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function configure($options)
 	{
-		$this->root_path = $this->phpbb_root_path . $options['path'];
-
-		if (substr($this->root_path, -1, 1) !== DIRECTORY_SEPARATOR)
+		if (substr($options['path'], -1, 1) !== DIRECTORY_SEPARATOR)
 		{
-			$this->root_path = $this->root_path . DIRECTORY_SEPARATOR;
+			$options['path'] = $options['path'] . DIRECTORY_SEPARATOR;
 		}
+
+		$this->path = $options['path'];
+		$this->root_path = $this->phpbb_root_path . $options['path'];
 	}
 
 	/**
@@ -330,5 +336,13 @@ class local implements adapter_interface, stream_interface
 	public function file_image_height($path)
 	{
 		return $this->image_dimensions($path);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_link($path)
+	{
+		return generate_board_url() . $this->root_path . $path;
 	}
 }

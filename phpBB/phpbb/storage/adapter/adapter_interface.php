@@ -85,4 +85,11 @@ interface adapter_interface
 	 * 													When the file cannot be copied
 	 */
 	public function copy($path_orig, $path_dest);
+
+	/**
+	 * Get direct link.
+	 *
+	 * @param string	$path	The file
+	 */
+	public function get_link($path);
 }
