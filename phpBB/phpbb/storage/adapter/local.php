@@ -343,6 +343,6 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function get_link($path)
 	{
-		return generate_board_url() . $this->root_path . $path;
+		return generate_board_url() . $this->path . $path;
 	}
 }
