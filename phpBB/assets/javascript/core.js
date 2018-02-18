@@ -1650,6 +1650,50 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 	});
 };
 
+// reCAPTCHA-related variables
+var recaptcha_form = $('.g-recaptcha').parents('form'),
+	submit_button = null,
+	programatically_submitted = false;
+
+/**
+ * Function is called when reCAPTCHA code is loaded
+ */
+phpbb.recaptchaOnLoad = function() {
+	console.log('ahoj');
+	// listen to submit buttons in order to know which one was pressed
+	$('input[type="submit"]').each(function() {
+		$(this).on('click', function() {
+			submit_button = this;
+		});
+	});
+
+	recaptcha_form.on('submit', function(e) {
+		if (!programatically_submitted) {
+			grecaptcha.execute();
+			e.preventDefault();
+		}
+	});
+}
+
+/**
+ * Function is called after successful solving of reCAPTCHA
+ */
+phpbb.recaptchaOnSubmit = function() {
+	console.log('submit');
+	programatically_submitted = true;
+	// if concrete button was clicked (e.g. preview instead of submit),
+	// let's trigger the same action
+	if (submit_button) {
+		submit_button.click();
+	} else {
+		// rename input[name="submit"] so that we can submit the form
+		if (typeof recaptcha_form.submit !== 'function') {
+			recaptcha_form.submit.name = 'submit_btn';
+		}
+		recaptcha_form.submit();
+	}
+}
+
 $(window).on('load', phpbb.lazyLoadAvatars);
 
 /**
@@ -1682,3 +1726,12 @@ $(function() {
 });
 
 })(jQuery); // Avoid conflicts with other libraries
+
+// reCAPTCHA doesn't accept callback functions nested inside objects
+// so we need to make this helper functions here
+function phpbbRecaptchaOnLoad() {
+	phpbb.recaptchaOnLoad();
+}
+function phpbbRecaptchaOnSubmit() {
+	phpbb.recaptchaOnSubmit();
+}
