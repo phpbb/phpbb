@@ -1656,7 +1656,7 @@ $(function() {
 
 	phpbb.registerPageDropdowns();
 
-	$('#color_palette_placeholder').each(function() {
+	$('[data-orientation]').each(function() {
 		phpbb.registerPalette($(this));
 	});
 
