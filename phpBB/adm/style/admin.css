@@ -2753,7 +2753,7 @@ fieldset.permissions .permissions-switch {
 }
 
 .rtl .roles-options > span {
-	background: url('../images/arrow_down.gif') no-repeat 7px .7em;
+	background: url("../images/arrow_down.gif") no-repeat 7px 0.7em;
 }
 
 .roles-options li {
