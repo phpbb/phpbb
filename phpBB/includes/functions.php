@@ -4181,7 +4181,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 	else
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login');
+		// if user enter password wrong and then correct
+		$redirect = !empty($request->variable('redirect', '')) ? $request->variable('redirect', '') : rawurlencode($user->page['page']);
+		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . $redirect);
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
