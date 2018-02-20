@@ -889,6 +889,34 @@ class fulltext_postgres extends \phpbb\search\base
 
 		$words = array_unique(array_merge($split_text, $split_title));
 
+		/**
+		* Event to modify method arguments and words before the PostgreSQL search index is updated
+		*
+		* @event core.search_postgres_index_before
+		* @var string	mode				Contains the post mode: edit, post, reply, quote
+		* @var int		post_id				The id of the post which is modified/created
+		* @var string	message				New or updated post content
+		* @var string	subject				New or updated post subject
+		* @var int		poster_id			Post author's user id
+		* @var int		forum_id			The id of the forum in which the post is located
+		* @var array	words				Array of words added to the index
+		* @var array	split_text			Array of words from the message
+		* @var array	split_title			Array of words from the title
+		* @since 3.2.3-RC1
+		*/
+		$vars = array(
+			'mode',
+			'post_id',
+			'message',
+			'subject',
+			'poster_id',
+			'forum_id',
+			'words',
+			'split_text',
+			'split_title',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_postgres_index_before', compact($vars)));
+
 		unset($split_text);
 		unset($split_title);
 
