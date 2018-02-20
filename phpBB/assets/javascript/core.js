@@ -1650,47 +1650,39 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 	});
 };
 
-// reCAPTCHA-related variables
-var recaptcha_form = $('.g-recaptcha').parents('form'),
-	submit_button = null,
-	programatically_submitted = false;
+const recaptchaForm = $('.g-recaptcha').parents('form');
+let submitButton = null;
+let programaticallySubmitted = false;
 
-/**
- * Function is called when reCAPTCHA code is loaded
- */
-phpbb.recaptchaOnLoad = function() {
+phpbb.recaptchaOnLoad = function () {
 	console.log('ahoj');
-	// listen to submit buttons in order to know which one was pressed
-	$('input[type="submit"]').each(function() {
-		$(this).on('click', function() {
-			submit_button = this;
+	// Listen to submit buttons in order to know which one was pressed
+	$('input[type="submit"]').each(() => {
+		$(this).on('click', () => {
+			submitButton = this;
 		});
 	});
 
-	recaptcha_form.on('submit', function(e) {
-		if (!programatically_submitted) {
+	recaptchaForm.on('submit', e => {
+		if (!programaticallySubmitted) {
 			grecaptcha.execute();
 			e.preventDefault();
 		}
 	});
 }
 
-/**
- * Function is called after successful solving of reCAPTCHA
- */
-phpbb.recaptchaOnSubmit = function() {
-	console.log('submit');
-	programatically_submitted = true;
-	// if concrete button was clicked (e.g. preview instead of submit),
+phpbb.recaptchaOnSubmit = function () {
+	programaticallySubmitted = true;
+	// If concrete button was clicked (e.g. preview instead of submit),
 	// let's trigger the same action
-	if (submit_button) {
-		submit_button.click();
+	if (submitButton) {
+		submitButton.click();
 	} else {
-		// rename input[name="submit"] so that we can submit the form
-		if (typeof recaptcha_form.submit !== 'function') {
-			recaptcha_form.submit.name = 'submit_btn';
+		// Rename input[name="submit"] so that we can submit the form
+		if (typeof recaptchaForm.submit !== 'function') {
+			recaptchaForm.submit.name = 'submit_btn';
 		}
-		recaptcha_form.submit();
+		recaptchaForm.submit();
 	}
 }
 
