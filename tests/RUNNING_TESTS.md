@@ -143,14 +143,14 @@ If you want all tests, run:
 
 
 Functional tests
------------------
+================
 
 Functional tests test software the way a user would. They simulate a user
 browsing the website, but they do these steps in an automated way.
 phpBB allows you to write such tests.
 
 Running
-=======
+-------
 
 Running the tests requires your phpBB3 repository to be accessible through a
 local web server. You will need to supply the URL to the webserver in
@@ -169,6 +169,27 @@ If you only want the functional tests, run:
 
 This will change your board's config.php file, but it makes a backup at
 config_dev.php, so you can restore it after the test run is complete.
+
+UI tests
+========
+
+UI tests are functional tests that also support running JavaScript in a
+headless browser. These should be used when functionality that is only
+executed using JS needs to be tested. They require a running
+[PhantomJS WebDriver instance](http://phantomjs.org/). The executable can
+either be downloaded from [PhantomJS](http://phantomjs.org/download.html)
+or alternatively be installed with npm:
+
+    $ npm install -g phantomjs-prebuilt
+
+You might have to run the command as superuser / administrator on some
+systems. Afterwards, a new WebDriver instance can be started via command
+line:
+
+    $ phantomjs --webdriver=127.0.0.1:8910
+
+Port 8910 is the default port that will be used by UI tests to connect
+to the WebDriver instance.
 
 More Information
 ================
