@@ -344,6 +344,33 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_table_exists('prefix_test_table'));
 	}
 
+	public function test_table_truncate()
+	{
+		$this->tools->sql_create_table('prefix_test_table',
+			array('COLUMNS' => array(
+				'foo' => array('UINT', 42)))
+		);
+
+		$this->assertTrue($this->tools->sql_table_exists('prefix_test_table'));
+
+		// insert line in table to test truncate command
+		$sql_arr = array(
+    		'foo'    => 0,   
+		);
+		$sql = 'INSERT INTO prefix_test_table' . $this->db->sql_build_array('INSERT', $sql_arr);
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals(!0, $this->db->get_row_count('prefix_test_table'));
+		$this->db->sql_freeresult($result);
+
+		$this->tools->sql_table_truncate('prefix_test_table');
+
+		// table empty after truncate
+		$sql = 'SELECT * FROM prefix_test_table';
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals(0, $this->db->get_row_count('prefix_test_table'));
+		$this->db->sql_freeresult($result);
+	}
+
 	public function test_perform_schema_changes_drop_tables()
 	{
 		$db_tools = $this->getMock('\phpbb\db\tools\tools', array(

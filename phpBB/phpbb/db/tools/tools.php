@@ -335,7 +335,7 @@ class tools implements tools_interface
 				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
 			}
 
-			// create sequence DDL based off of the existance of auto incrementing columns
+			// create sequence DDL based off of the existence of auto incrementing columns
 			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
 			{
 				$create_sequence = $column_name;
@@ -1407,6 +1407,36 @@ class tools implements tools_interface
 					$statements[] = "DROP SEQUENCE {$row['referenced_name']}";
 				}
 				$this->db->sql_freeresult($result);
+			break;
+		}
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	function sql_table_truncate($table_name)
+	{
+		$statements = array();
+
+		if (!$this->sql_table_exists($table_name))
+		{
+			return $this->_sql_run_sql($statements);
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'sqlite':
+			case 'sqlite3':
+				$statements[] = 'DELETE FROM ' . $table_name;
+			break;
+
+			default:
+				$statements[] = 'TRUNCATE TABLE ' . $table_name;
+
+				// // reset the auto-inc counter
+				// $statements[] = 'DELETE FROM  sqlite_sequence WHERE name = ' . $table_name;
 			break;
 		}
 
