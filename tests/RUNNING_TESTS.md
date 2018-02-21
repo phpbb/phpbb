@@ -175,7 +175,7 @@ UI tests
 
 UI tests are functional tests that also support running JavaScript in a
 headless browser. These should be used when functionality that is only
-executed using JS needs to be tested. The require a running
+executed using JS needs to be tested. They require a running
 [PhantomJS WebDriver instance](http://phantomjs.org/). The executable can
 either be downloaded from [PhantomJS](http://phantomjs.org/download.html)
 or alternatively be installed with npm:
