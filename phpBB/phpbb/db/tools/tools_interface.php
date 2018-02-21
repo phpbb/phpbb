@@ -23,6 +23,7 @@ interface tools_interface
 	 * Expected structure...
 	 * Key being one of the following
 	 *	drop_tables: Drop tables
+	 *  truncate_tables: Truncate tables (clear entire table safely)
 	 *	add_tables: Add tables
 	 *	change_columns: Column changes (only type, not name)
 	 *	add_columns: Add columns to a table
@@ -75,6 +76,14 @@ interface tools_interface
 	 * @return array|true	Statements to run, or true if the statements have been executed
 	 */
 	public function sql_table_drop($table_name);
+
+	/**
+	 * Truncate Table
+	 *
+	 * @param string	$table_name		The table name to truncate
+	 * @return array|true	Statements to run, or true if the statements have been executed
+	 */
+	public function sql_table_truncate($table_name);
 
 	/**
 	 * Gets a list of columns of a table.

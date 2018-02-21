@@ -1416,6 +1416,36 @@ class tools implements tools_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	function sql_table_truncate($table_name)
+	{
+		$statements = array();
+
+		if (!$this->sql_table_exists($table_name))
+		{
+			return $this->_sql_run_sql($statements);
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'sqlite':
+			case 'sqlite3':
+				$statements[] = 'DELETE FROM ' . $table_name;
+			break;
+
+			default:
+				$statements[] = 'TRUNCATE TABLE ' . $table_name;
+
+				// // reset the auto-inc counter
+				// $statements[] = 'DELETE FROM  sqlite_sequence WHERE name = ' . $table_name;
+			break;
+		}
+
+		return $this->_sql_run_sql($statements);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	function sql_create_primary_key($table_name, $column, $inline = false)
 	{
 		$statements = array();
