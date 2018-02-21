@@ -105,6 +105,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_force_sender', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_max_chunk_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_accurate_pm_button', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_mod_rewrite', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_board_notifications', '1');
