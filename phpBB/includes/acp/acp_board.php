@@ -356,6 +356,7 @@ class acp_board
 						'load_user_activity_limit'		=> array('lang' => 'LOAD_USER_ACTIVITY_LIMIT',		'validate' => 'int:0:99999999',	'type' => 'number:0:99999999', 'explain' => true),
 						'load_tplcompile'		=> array('lang' => 'RECOMPILE_STYLES',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_cdn'				=> array('lang' => 'ALLOW_CDN',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'enable_accurate_pm_button'	=> array('lang' => 'YES_ACCURATE_PM_BUTTON',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_live_searches'	=> array('lang' => 'ALLOW_LIVE_SEARCHES',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'				=> 'CUSTOM_PROFILE_FIELDS',

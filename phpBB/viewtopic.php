@@ -1576,12 +1576,20 @@ if (count($attach_list))
 	}
 }
 
-// Get the list of users who can receive private messages
-$can_receive_pm_list = $auth->acl_get_list(array_keys($user_cache), 'u_readpm');
-$can_receive_pm_list = (empty($can_receive_pm_list) || !isset($can_receive_pm_list[0]['u_readpm'])) ? array() : $can_receive_pm_list[0]['u_readpm'];
+if ($config['enable_accurate_pm_button'])
+{
+	// Get the list of users who can receive private messages
+	$can_receive_pm_list = $auth->acl_get_list(array_keys($user_cache), 'u_readpm');
+	$can_receive_pm_list = (empty($can_receive_pm_list) || !isset($can_receive_pm_list[0]['u_readpm'])) ? array() : $can_receive_pm_list[0]['u_readpm'];
 
-// Get the list of permanently banned users
-$permanently_banned_users = phpbb_get_banned_user_ids(array_keys($user_cache), false);
+	// Get the list of permanently banned users
+	$permanently_banned_users = phpbb_get_banned_user_ids(array_keys($user_cache), false);
+}
+else
+{
+	$can_receive_pm_list = array_keys($user_cache);
+	$permanently_banned_users = [];
+}
 
 $i_total = count($rowset) - 1;
 $prev_post_id = '';
