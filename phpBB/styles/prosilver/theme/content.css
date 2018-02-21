@@ -491,7 +491,6 @@ ul.searchresults {
 
 /* Quote block */
 blockquote {
-	font-size: 10px;
 	border: 1px solid transparent;
 	overflow: hidden;
 	margin: 10px 1px 10px 25px;
@@ -500,21 +499,15 @@ blockquote {
 
 blockquote blockquote {
 	/* Nested quotes */
-	font-size: 10px;
 	margin: 10px 1px 10px 15px;
 }
 
 blockquote cite {
-	font-size: 9px;
 	font-weight: bold;
 
 	/* Username/source of quoter */
 	font-style: normal;
 	display: block;
-}
-
-blockquote cite cite {
-	font-size: 10px;
 }
 
 blockquote cite:before,
