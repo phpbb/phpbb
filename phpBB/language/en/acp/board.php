@@ -265,7 +265,6 @@ $lang = array_merge($lang, array(
 	'TERMS_OF_USE_EXPLAIN'		=> 'You can use HTML, Use %1$s for your Site Name, Use %2$s for your Site URL',
 	'TERMS_OF_USE_FOR_LANGUAGE'	=> 'Terms of use for %s language',
 
-
 ));
 
 // Feeds

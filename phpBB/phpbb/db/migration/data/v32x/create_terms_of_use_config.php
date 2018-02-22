@@ -43,9 +43,7 @@ class create_terms_of_use_config extends \phpbb\db\migration\migration
 	private function get_terms_of_use_from_lang($lang_iso)
 	{
 		$lang = array();
-
 		include($this->phpbb_root_path . 'language/' . $lang_iso . "/ucp." . $this->php_ext);
 		return $lang['TERMS_OF_USE_CONTENT'];
-
 	}
 }

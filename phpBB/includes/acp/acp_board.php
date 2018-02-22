@@ -564,7 +564,7 @@ class acp_board
 				continue;
 			}
 
-			if (in_array($config_name, $config_text_keys))
+			if (in_array($config_name, $config_text_keys, true))
 			{
 				if (isset($cfg_array[$config_name]))
 				{

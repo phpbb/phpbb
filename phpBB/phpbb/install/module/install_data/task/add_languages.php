@@ -81,7 +81,6 @@ class add_languages extends \phpbb\install\task_base
 			}
 
 			$config_text->set('terms_of_use_' . $lang_info['iso'], $this->get_terms_of_use_from_lang($lang_info['iso']));
-
 		}
 
 		$sql = 'SELECT * FROM ' . PROFILE_FIELDS_TABLE;
@@ -116,7 +115,6 @@ class add_languages extends \phpbb\install\task_base
 
 		include($phpbb_root_path . 'language/' . $lang_iso . "/ucp." . $phpEx);
 		return $lang['TERMS_OF_USE_CONTENT'];
-
 	}
 
 	/**
