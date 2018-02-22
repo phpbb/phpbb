@@ -1696,19 +1696,42 @@ class fulltext_native extends \phpbb\search\base
 	*/
 	public function delete_index($acp_module, $u_action)
 	{
+		$sql_queries = [];
+
 		switch ($this->db->get_sql_layer())
 		{
 			case 'sqlite3':
-				$this->db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
-				$this->db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
-				$this->db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);
+				$sql_queries[] = 'DELETE FROM ' . SEARCH_WORDLIST_TABLE;
+				$sql_queries[] = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE;
+				$sql_queries[] = 'DELETE FROM ' . SEARCH_RESULTS_TABLE;
 			break;
 
 			default:
-				$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE);
-				$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE);
-				$this->db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+				$sql_queries[] = 'TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE;
+				$sql_queries[] = 'TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE;
+				$sql_queries[] = 'TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE;
 			break;
+		}
+
+		$stats = $this->stats;
+
+		/**
+		* Event to modify SQL queries before the native search index is deleted
+		*
+		* @event core.search_native_delete_index_before
+		* @var array	sql_queries			Array with queries for deleting the search index
+		* @var array	stats				Array with statistics of the current index (read only)
+		* @since 3.2.3-RC1
+		*/
+		$vars = array(
+			'sql_queries',
+			'stats',
+		);
+		extract($this->phpbb_dispatcher->trigger_event('core.search_native_delete_index_before', compact($vars)));
+
+		foreach ($sql_queries as $sql_query)
+		{
+			$this->db->sql_query($sql_query);
 		}
 	}
 
