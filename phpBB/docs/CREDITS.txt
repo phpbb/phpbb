@@ -20,8 +20,6 @@
 
 phpBB Project Manager:   Marshalrusty (Yuriy Rusko)
 
-phpBB Product Manager:   naderman (Nils Adermann)
-
 phpBB Lead Developer:    Marc (Marc Alexander)
 
 phpBB Developers:        bantu (Andreas Fischer)
@@ -43,7 +41,10 @@ https://github.com/phpbb/phpbb/graphs/contributors
 phpBB Project Manager:   theFinn (James Atkinson)      [Founder - 04/2007]
                          SHS` (Jonathan Stanley)
 
-phpBB Lead Developer:    Acyd Burn (Meik Sievertsen)   [09/2005 - 01/2010]
+phpBB Product Manager:   naderman (Nils Adermann)      [02/2016 - 02/2017]
+
+phpBB Lead Developer:    naderman (Nils Adermann)      [01/2010 - 02/2016]
+                         Acyd Burn (Meik Sievertsen)   [09/2005 - 01/2010]
                          psoTFX (Paul S. Owen)         [2001 - 09/2005]
 
 phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
