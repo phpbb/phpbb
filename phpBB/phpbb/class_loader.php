@@ -64,7 +64,7 @@ class class_loader
 
 	/**
 	* Provide the class loader with a cache to store paths. If set to null, the
-	* the class loader will resolve paths by checking for the existance of every
+	* the class loader will resolve paths by checking for the existence of every
 	* directory in the class name every time.
 	*
 	* @param \phpbb\cache\driver\driver_interface $cache An implementation of the phpBB cache interface.

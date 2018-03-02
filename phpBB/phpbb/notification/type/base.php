@@ -336,7 +336,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Get the reference of the notifcation (fall back)
+	* Get the reference of the notification (fall back)
 	*
 	* @return string
 	*/
@@ -356,7 +356,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
-	* Get the reason for the notifcation (fall back)
+	* Get the reason for the notification (fall back)
 	*
 	* @return string
 	*/

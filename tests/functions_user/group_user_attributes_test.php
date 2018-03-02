@@ -134,11 +134,11 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_clear_prefetch');
 		$cache_driver = new \phpbb\cache\driver\dummy();
-		$phpbb_container = $this->getMock('Symfony\Component\DependencyInjection\ContainerInterface');
+		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
 		$phpbb_container
 			->expects($this->any())
 			->method('get')

@@ -65,8 +65,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Eliminate . and .. from the path
 	require($phpbb_root_path . 'phpbb/filesystem.' . $phpEx);
-	$phpbb_filesystem = new phpbb\filesystem\filesystem();
-	$script_path = $phpbb_filesystem->clean_path($script_path);
+	$script_path = \phpbb\filesystem\helper::clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -135,6 +134,11 @@ $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
+
+if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+{
+	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+}
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);

@@ -13,20 +13,18 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * Class to handle viewonline related tasks
 */
 class viewonline_helper
 {
-	/** @var \phpbb\filesystem\filesystem_interface */
-	protected $filesystem;
-
 	/**
-	* @param \phpbb\filesystem\filesystem_interface $filesystem	phpBB's filesystem service
+	*
 	*/
-	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem)
+	public function __construct()
 	{
-		$this->filesystem = $filesystem;
 	}
 
 	/**
@@ -37,7 +35,7 @@ class viewonline_helper
 	*/
 	public function get_user_page($session_page)
 	{
-		$session_page = $this->filesystem->clean_path($session_page);
+		$session_page = filesystem_helper::clean_path($session_page);
 		if (strpos($session_page, './') === 0)
 		{
 			$session_page = substr($session_page, 2);

@@ -300,7 +300,7 @@ class mysql_extractor extends base_extractor
 	}
 
 	/**
-	* Extracts database table structure (for MySQL verisons older than 3.23.20)
+	* Extracts database table structure (for MySQL versions older than 3.23.20)
 	*
 	* @param	string	$table_name	name of the database table
 	* @return null
