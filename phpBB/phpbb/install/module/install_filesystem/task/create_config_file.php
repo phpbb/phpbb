@@ -241,4 +241,3 @@ class create_config_file extends \phpbb\install\task_base
 		return 'TASK_CREATE_CONFIG_FILE';
 	}
 }
-
