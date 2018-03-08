@@ -784,7 +784,7 @@ class migrator
 				{
 					return array(
 						$parameters[0],
-						array($last_result),
+						isset($parameters[1]) ? array_merge($parameters[1], array($last_result)) : array($last_result),
 					);
 				}
 			break;

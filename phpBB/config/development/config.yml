@@ -11,3 +11,7 @@ core:
         debug: true
         auto_reload: true
         enable_debug_extension: true
+
+    extensions:
+        composer_debug: true
+        composer_verbose: true

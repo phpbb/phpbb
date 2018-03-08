@@ -129,6 +129,11 @@ $phpbb_content_visibility = $phpbb_container->get('content.visibility');
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
+$template->assign_block_vars('navlinks', array(
+	'FORUM_NAME'	=> $user->lang('SEARCH'),
+	'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}search.$phpEx"),
+));
+
 /**
 * This event allows you to alter the above parameters, such as keywords and submit
 *
