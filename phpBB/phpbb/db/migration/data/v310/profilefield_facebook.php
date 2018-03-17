@@ -44,7 +44,7 @@ class profilefield_facebook extends \phpbb\db\migration\profilefield_base_migrat
 		'field_maxlen'			=> '255',
 		'field_novalue'			=> '',
 		'field_default_value'	=> '',
-		'field_validation'		=> '[\w.]+',
+		'field_validation'		=> '',
 		'field_required'		=> 0,
 		'field_show_novalue'	=> 0,
 		'field_show_on_reg'		=> 0,
