@@ -37,14 +37,14 @@ class profilefield_facebook extends \phpbb\db\migration\profilefield_base_migrat
 
 	protected $profilefield_data = array(
 		'field_name'			=> 'phpbb_facebook',
-		'field_type'			=> 'profilefields.type.string',
+		'field_type'			=> 'profilefields.type.url',
 		'field_ident'			=> 'phpbb_facebook',
-		'field_length'			=> '20',
-		'field_minlen'			=> '5',
-		'field_maxlen'			=> '50',
+		'field_length'			=> '40',
+		'field_minlen'			=> '12',
+		'field_maxlen'			=> '255',
 		'field_novalue'			=> '',
 		'field_default_value'	=> '',
-		'field_validation'		=> '[\w.]+',
+		'field_validation'		=> '',
 		'field_required'		=> 0,
 		'field_show_novalue'	=> 0,
 		'field_show_on_reg'		=> 0,
@@ -56,6 +56,6 @@ class profilefield_facebook extends \phpbb\db\migration\profilefield_base_migrat
 		'field_active'			=> 1,
 		'field_is_contact'		=> 1,
 		'field_contact_desc'	=> 'VIEW_FACEBOOK_PROFILE',
-		'field_contact_url'		=> 'http://facebook.com/%s/',
+		'field_contact_url'		=> '%s',
 	);
 }
