@@ -13,14 +13,32 @@
 
 namespace phpbb\cron\task;
 
+use phpbb\routing\helper;
+
 /**
 * Cron task wrapper class.
 * Enhances cron tasks with convenience methods that work identically for all tasks.
 */
 class wrapper
 {
+	/**
+	 * @var helper
+	 */
+	protected $routing_helper;
+
+	/**
+	 * @var task
+	 */
 	protected $task;
+
+	/**
+	 * @var string
+	 */
 	protected $phpbb_root_path;
+
+	/**
+	 * @var string
+	 */
 	protected $php_ext;
 
 	/**
@@ -28,13 +46,15 @@ class wrapper
 	*
 	* Wraps a task $task, which must implement cron_task interface.
 	*
-	* @param \phpbb\cron\task\task $task The cron task to wrap.
-	* @param string $phpbb_root_path Relative path to phpBB root
-	* @param string $php_ext PHP file extension
+	* @param task	$task				The cron task to wrap.
+	* @param helper	$routing_helper		Routing helper for route generation
+	* @param string	$phpbb_root_path	Relative path to phpBB root
+	* @param string	$php_ext			PHP file extension
 	*/
-	public function __construct(\phpbb\cron\task\task $task, $phpbb_root_path, $php_ext)
+	public function __construct(task $task, helper $routing_helper, $phpbb_root_path, $php_ext)
 	{
 		$this->task = $task;
+		$this->routing_helper = $routing_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -49,7 +69,7 @@ class wrapper
 	*/
 	public function is_parametrized()
 	{
-		return $this->task instanceof \phpbb\cron\task\parametrized;
+		return $this->task instanceof parametrized;
 	}
 
 	/**
@@ -76,22 +96,13 @@ class wrapper
 	*/
 	public function get_url()
 	{
-		$name = $this->get_name();
+		$params['cron_type'] = $this->get_name();
 		if ($this->is_parametrized())
 		{
-			$params = $this->task->get_parameters();
-			$extra = '';
-			foreach ($params as $key => $value)
-			{
-				$extra .= '&amp;' . $key . '=' . urlencode($value);
-			}
+			$params = array_merge($params, $this->task->get_parameters());
 		}
-		else
-		{
-			$extra = '';
-		}
-		$url = append_sid($this->phpbb_root_path . 'cron.' . $this->php_ext, 'cron_type=' . $name . $extra);
-		return $url;
+
+		return $this->routing_helper->route('phpbb_cron_run', $params);
 	}
 
 	/**

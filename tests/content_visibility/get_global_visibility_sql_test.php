@@ -129,7 +129,7 @@ class phpbb_content_visibility_get_global_visibility_sql_test extends phpbb_data
 		$db = $this->new_dbal();
 
 		// Create auth mock
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$auth->expects($this->any())
 			->method('acl_getf')
 			->with($this->stringContains('_'), $this->anything())

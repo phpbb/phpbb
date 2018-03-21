@@ -14,7 +14,7 @@
 namespace phpbb;
 
 /**
- * @deprecated	3.2.0-dev	(To be removed 3.3.0) use \phpbb\filesystem\filesystem instead
+ * @deprecated	3.2.0-dev	(To be removed 4.0.0) use \phpbb\filesystem\filesystem instead
  */
 class filesystem extends \phpbb\filesystem\filesystem
 {

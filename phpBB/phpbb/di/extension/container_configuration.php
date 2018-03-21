@@ -45,6 +45,13 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('enable_debug_extension')->defaultValue(false)->end()
 					->end()
 				->end()
+				->arrayNode('extensions')
+					->addDefaultsIfNotSet()
+					->children()
+						->booleanNode('composer_debug')->defaultValue(false)->end()
+						->booleanNode('composer_verbose')->defaultValue(false)->end()
+					->end()
+				->end()
 			->end()
 		;
 		return $treeBuilder;
