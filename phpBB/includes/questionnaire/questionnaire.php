@@ -485,7 +485,7 @@ class phpbb_questionnaire_phpbb_data_provider
 		// Try to get user agent vendor and version
 		$match = array();
 		$user_agent = $request->header('User-Agent');
-		$agents = array('firefox', 'msie', 'opera', 'chrome', 'safari', 'mozilla', 'seamonkey', 'konqueror', 'netscape', 'gecko', 'navigator', 'mosaic', 'lynx', 'amaya', 'omniweb', 'avant', 'camino', 'flock', 'aol');
+		$agents = array('firefox', 'msie', 'opera', 'chrome', 'safari', 'mozilla', 'seamonkey', 'konqueror', 'netscape', 'gecko', 'navigator', 'mosaic', 'lynx', 'amaya', 'omniweb', 'avant', 'camino', 'flock');
 
 		// We check here 1 by 1 because some strings occur after others (for example Mozilla [...] Firefox/)
 		foreach ($agents as $agent)
