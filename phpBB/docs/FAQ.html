@@ -60,7 +60,6 @@
 	<li><a href="#viewonline">According to viewonline a user is doing/reading something they should not be able to!</a></li>
 	<li><a href="#mail">I keep getting Mail sending errors when I (or my users) post/send PM's/etc.!</a></li>
 	<li><a href="#mail_language">My users are complaining that emails are not in their selected language!</a></li>
-	<li><a href="#aol_browser">My AOL based users keep getting logged out!</a></li>
 	<li><a href="#avatars">I am unable to upload avatars from my computer, regardless of the settings.</a></li>
 	<li><a href="#gallery_avatars">I just cannot get gallery avatars to appear!</a></li>
 	<li><a href="#permissions">How do I use/set permissions?</a></li>
@@ -172,28 +171,6 @@ I want to sue you because i think you host an illegal board!</h2>
 <p>You must have deleted a language pack or the language pack is incomplete. phpBB will try to send emails in the users selected language. If it cannot find a suitable email template it will switch to the boards default language.</p>
 
 <!-- additional entry about encoded emails -->
-
-		</div>
-
-		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
-
-		</div>
-	</div>
-
-	<hr />
-
-<a name="aol_browser"></a><h2>My AOL based users keep getting logged out!</h2>
-
-	<div class="paragraph">
-		<div class="inner">
-
-		<div class="content">
-
-<p>phpBB uses sessions to keep track of users as they browse the board. These sessions use a combination of a unique session id, the users IP and if specified the users browser and/or the users x-forwarded-for header to identify each user. We make use of all of this as an extra safe-guard to help prevent sessions being hijacked (by discovering the unique session id).</p>
-
-<p>Unfortunately this only works when the users IP is constant as they browse the board. For most users this will be the case. However certain providers route their users via a cluster of proxys. In some cases, particularly the AOL browser, this results in different IPs being forwarded as the user moves between pages. We take account of this by not checking the entire IP by default but only the first "three quads" (<samp>A.B.C</samp>). Again in most cases this will be fine. However again AOL uses IPs which can vary so much that checking only the first two quads results in a fairly static IP being available for session validation.</p>
-
-<p>If you are experiencing problems related to this you can set the Session IP validation parameter found in <code>Admin-&gt;General-&gt;Server Configuration-&gt;Security Settings</code> to <samp>A.B</samp>. Please note that reducing the IP validation length does potentially increase the risk of sessions being hijacked (this is something for you to consider, phpBB Limited takes no responsibility should anything happen!). We suggest to at least additionally enable the browser validation.</p>
 
 		</div>
 
