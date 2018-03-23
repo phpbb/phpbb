@@ -1855,7 +1855,7 @@ $page_data = array(
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 	'S_ATTACH_DATA'			=> json_encode($message_parser->attachment_data),
 	'S_IN_POSTING'			=> true,
-	//'S_INLINE_ATTACHMENT_OPTIONS' =>  ($bbcode_status) ? 1 : 0,
+	
 );
 
 
