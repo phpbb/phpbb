@@ -1,0 +1,27 @@
+services:
+    phpbb.help.manager:
+        class: phpbb\help\manager
+        arguments:
+            - '@dispatcher'
+            - '@language'
+            - '@template'
+
+    phpbb.help.controller.bbcode:
+        class: phpbb\help\controller\bbcode
+        arguments:
+            - '@controller.helper'
+            - '@phpbb.help.manager'
+            - '@template'
+            - '@language'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbb.help.controller.faq:
+        class: phpbb\help\controller\faq
+        arguments:
+            - '@controller.helper'
+            - '@phpbb.help.manager'
+            - '@template'
+            - '@language'
+            - '%core.root_path%'
+            - '%core.php_ext%'

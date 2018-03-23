@@ -1,0 +1,88 @@
+<!-- INCLUDE mcp_header.html -->
+
+<h2>{L_TITLE}</h2>
+
+<form method="post" id="mcp" action="{U_POST_ACTION}">
+
+<div class="panel">
+	<div class="inner">
+
+	<div class="action-bar bar-top">
+		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		<div class="pagination">
+			{TOTAL}
+			<!-- IF .pagination -->
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE -->
+				 &bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	</div>
+
+	<table class="table1">
+	<thead>
+	<tr>
+		<th class="name">{L_USERNAME}</th>
+		<th class="center">{L_IP}</th>
+		<th class="center">{L_TIME}</th>
+		<th class="name">{L_ACTION}</th>
+		<!-- IF S_CLEAR_ALLOWED --><th>{L_MARK}</th><!-- ENDIF -->
+	</tr>
+	</thead>
+		<tbody>
+	<!-- IF S_LOGS -->
+		<!-- BEGIN log -->
+		<!-- IF log.S_ROW_COUNT is even --><tr class="bg1"><!-- ELSE --><tr class="bg2"><!-- ENDIF -->
+			<td>{log.USERNAME}</td>
+			<td class="center">{log.IP}</td>
+			<td class="center">{log.DATE}</td>
+			<td>{log.ACTION}<br />
+			{log.DATA}
+		</td>
+			<!-- IF S_CLEAR_ALLOWED --><td style="width: 5%" align="center"><input type="checkbox" name="mark[]" value="{log.ID}" /></td><!-- ENDIF -->
+		</tr>
+		<!-- END log -->
+	<!-- ELSE -->
+		<tr>
+			<td class="bg1" colspan="<!-- IF S_CLEAR_ALLOWED -->5<!-- ELSE -->4<!-- ENDIF -->" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
+		</tr>
+	<!-- ENDIF -->
+	</tbody>
+	</table>
+
+	<!-- IF .log -->
+		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
+
+			<div class="pagination">
+				{TOTAL}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+		{S_FORM_TOKEN}
+		</div>
+	</div>
+
+		<!-- IF S_CLEAR_ALLOWED -->
+			<fieldset class="display-actions">
+				<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
+				&nbsp;<input class="button1" type="submit" value="{L_DELETE_MARKED}" name="action[del_marked]" />
+
+				<div><a href="#" onclick="marklist('mcp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'mark', false); return false;">{L_UNMARK_ALL}</a></div>
+			</fieldset>
+		<!-- ENDIF -->
+	<!-- ELSE -->
+			{S_FORM_TOKEN}
+			</div>
+		</div>
+	<!-- ENDIF -->
+</form>
+
+<br />
+
+<!-- INCLUDE mcp_footer.html -->

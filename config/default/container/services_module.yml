@@ -1,0 +1,10 @@
+services:
+    module.manager:
+        class: phpbb\module\module_manager
+        arguments:
+            - '@cache.driver'
+            - '@dbal.conn'
+            - '@ext.manager'
+            - '%tables.modules%'
+            - '%core.root_path%'
+            - '%core.php_ext%'

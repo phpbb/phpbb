@@ -1,0 +1,3 @@
+updater:
+    type: all
+    extensions: ['phpbb/viglink']

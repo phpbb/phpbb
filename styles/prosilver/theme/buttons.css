@@ -1,0 +1,193 @@
+/* Button Styles
+---------------------------------------- */
+
+.button {
+	display: inline-block;
+	padding: 2px 8px;
+	font-size: 13px;
+	font-weight: 600;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
+	line-height: 1.4;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	-ms-touch-action: manipulation;
+	    touch-action: manipulation;
+	cursor: pointer;
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	    -ms-user-select: none;
+	        user-select: none;
+	border: 1px solid transparent;
+	border-radius: 4px;
+}
+
+.button:focus,
+.button:hover {
+ 	text-decoration: none;
+ 	outline: none;
+}
+
+.caret {
+	border-left: 1px solid;
+	position: relative;
+	right: -6px;
+}
+
+.caret i {
+	vertical-align: top;
+}
+
+/* Posting page styles
+----------------------------------------*/
+.button-search,
+.button-search-end  {
+	float: left;
+	border-radius: 0;
+	margin: 0;
+	padding: 2px 5px;
+}
+
+.button-search-end {
+	border-left-width: 0;
+	border-radius: 0 4px 4px 0;
+}
+
+.search-header .button-search,
+.search-header .button-search-end {
+	border-top-width: 0;
+	border-bottom-width: 0;
+	padding: 3px 5px;
+}
+
+.search-header .button-search-end {
+	border-right-width: 0;
+}
+
+.button-icon-only {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+/* Poster contact icons
+----------------------------------------*/
+.contact-icons.dropdown-contents {
+	min-width: 0;
+	padding: 0;
+	font-size: 0;
+}
+
+.contact-icon {
+	background-repeat: no-repeat;
+	display: block;
+	height: 16px;
+	width: 16px;
+}
+.contact-icons a {
+	border-bottom: 1px dotted;
+	border-right: 1px dotted;
+	display: block;
+	float: left;
+	padding: 8px;
+}
+
+.contact-icons .last-cell {
+	border-right: none;
+}
+
+.contact-icons div:last-child a {
+	border-bottom: none;
+}
+
+.contact-icons div {
+	clear: left;
+}
+
+/* Post control buttons
+--------------------------------------------- */
+.post-buttons {
+	float: right;
+	list-style: none;
+	margin-top: 2px;
+}
+
+.has-profile .post-buttons {
+	float: none;
+	position: absolute;
+	margin: 0;
+	right: 0;
+	top: 5px;
+}
+
+.post-buttons > li {
+	float: left;
+	margin-right: 3px;
+}
+
+.post-buttons .button, .format-buttons .button {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+.hastouch .post-buttons {
+	margin-right: 10px;
+}
+
+.post-buttons .button span {
+	font-size: 0;
+}
+
+/* Responsive buttons in post body */
+.post-buttons .dropdown {
+	top: 18px;
+}
+
+.post-buttons .dropdown a {
+	display: block;
+	font-size: 1.2em;
+	text-align: right;
+}
+
+.hasjs .postbody .post-buttons {
+	max-width: 40%;
+}
+
+/* Browser-specific tweaks */
+button::-moz-focus-inner {
+	padding: 0;
+	border: 0
+}
+
+/* Deprecated as of version 3.2
+-------------------------------------------------*/
+.small-icon {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: none;
+}
+
+.dropdown .small-icon {
+	background-position: 5px 50%;
+	padding: 5px;
+}
+
+.small-icon > a {
+	padding: 0 0 0 18px;
+}
+
+ul.linklist.bulletin > li.small-icon:before {
+	display: none;
+}
+
+.dropdown .small-icon > a {
+	display: block;
+}
+
+.rtl .small-icon {
+	background-position: 100% 50%;
+}
+
+.rtl .small-icon > a {
+	padding-left: 0;
+	padding-right: 19px;
+}

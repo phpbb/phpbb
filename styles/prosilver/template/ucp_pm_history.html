@@ -1,0 +1,59 @@
+
+<h3 id="review" class="review">
+	<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
+	{L_MESSAGE_HISTORY}{L_COLON}
+</h3>
+
+<!-- EVENT ucp_pm_history_review_before -->
+<div id="topicreview" class="topicreview">
+	<script type="text/javascript">
+	// <![CDATA[
+		bbcodeEnabled = {S_BBCODE_ALLOWED};
+	// ]]>
+	</script>
+	<!-- BEGIN history_row -->
+	<div class="post <!-- IF history_row.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+		<div class="inner">
+
+		<div class="postbody" id="pr{history_row.MSG_ID}">
+			<h3><a href="{history_row.U_VIEW_MESSAGE}" <!-- IF history_row.S_CURRENT_MSG -->class="current"<!-- ENDIF -->>{history_row.SUBJECT}</a></h3>
+
+			<!-- DEFINE $SHOW_PM_HISTORY_POST_BUTTONS = (history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE) -->
+			<!-- EVENT ucp_pm_history_post_buttons_list_before -->
+			<!-- IF $SHOW_PM_HISTORY_POST_BUTTONS -->
+			<ul class="post-buttons">
+				<!-- EVENT ucp_pm_history_post_buttons_before -->
+				<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
+				<li>
+					<a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}', {time:{history_row.MESSAGE_TIME},user_id:{history_row.USER_ID}});"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}" class="button button-icon-only">
+						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
+					</a>
+				</li>
+				<!-- ENDIF -->
+				<!-- EVENT ucp_pm_history_post_buttons_after -->
+			</ul>
+			<!-- ENDIF -->
+			<!-- EVENT ucp_pm_history_post_buttons_list_after -->
+
+			<p class="author">
+				<span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{history_row.MINI_POST}</span></span> {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
+				<br />
+				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}
+			</p>
+			<div class="content"><!-- IF history_row.MESSAGE -->{history_row.MESSAGE}<!-- ELSE --><span class="error">{L_MESSAGE_REMOVED_FROM_OUTBOX}</span><!-- ENDIF --></div>
+			<div id="message_{history_row.MSG_ID}" style="display: none;">{history_row.DECODED_MESSAGE}</div>
+		</div>
+
+		</div>
+	</div>
+	<!-- END history_row -->
+</div>
+<!-- EVENT ucp_pm_history_review_after -->
+
+<hr />
+<p>
+	<a href="#cp-main" class="top">
+		<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span>{L_BACK_TO_TOP}</span>
+	</a>
+</p>
+

@@ -1,0 +1,2 @@
+imports:
+    - { resource: ../../default/container/services.yml }

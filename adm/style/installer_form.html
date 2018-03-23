@@ -1,0 +1,57 @@
+<!-- IF FORM_TITLE --><h1>{FORM_TITLE}</h1><!-- ENDIF -->
+<form id="<!-- IF FORM_ID -->{FORM_ID}<!-- ELSE -->install_install<!-- ENDIF -->" method="POST" action="{U_ACTION}">
+<!-- IF .options -->
+<!-- IF S_NOT_ONLY_BUTTON_FORM -->
+<fieldset>
+<!-- ENDIF -->
+
+	<!-- BEGIN options -->
+		<!-- IF options.S_LEGEND -->
+			<!-- IF not options.S_FIRST_ROW -->
+			</fieldset>
+			<!-- ENDIF -->
+			<fieldset>
+
+		<legend>{options.LEGEND}</legend>
+		<!-- ELSE -->
+		<dl>
+			<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span class="explain">{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd>
+				<!-- IF options.TYPE == 'text' -->
+				<input type="text" name="{options.KEY}" value="{options.DEFAULT}" />
+				<!-- ENDIF -->
+				<!-- IF options.TYPE == 'email' -->
+				<input type="email" name="{options.KEY}" value="{options.DEFAULT}" />
+				<!-- ENDIF -->
+				<!-- IF options.TYPE == 'password' -->
+				<input type="password" name="{options.KEY}" />
+				<!-- ENDIF -->
+				<!-- IF options.TYPE == 'select' -->
+				<select name="{options.KEY}">
+					<!-- BEGIN options.OPTIONS -->
+					<option value="{options.OPTIONS.value}"<!-- IF options.OPTIONS.selected --> selected<!-- ENDIF -->>{options.OPTIONS.label}</option>
+					<!-- END options.OPTIONS -->
+				</select>
+				<!-- ENDIF -->
+				<!-- IF options.TYPE == 'radio' -->
+					<!-- BEGIN options.OPTIONS -->
+				<input type="radio" name="{options.KEY}" value="{options.OPTIONS.value}" <!-- IF options.OPTIONS.selected -->checked<!-- ENDIF --> /> {options.OPTIONS.label}
+					<!-- END options.OPTIONS -->
+				<!-- ENDIF -->
+			</dd>
+		</dl>
+		<!-- ENDIF-->
+	<!-- END options -->
+<!-- IF S_NOT_ONLY_BUTTON_FORM -->
+</fieldset>
+<!-- ENDIF -->
+<!-- ENDIF -->
+<!-- IF .submit_buttons -->
+<fieldset class="submit-buttons">
+	<legend>{L_SUBMIT}</legend>
+	<!-- BEGIN submit_buttons -->
+	<input class="<!-- IF not submit_buttons.IS_SECONDARY -->button1<!-- ELSE -->button2<!-- ENDIF --><!-- IF submit_buttons.DISABLED --> disabled<!-- ENDIF -->" type="submit" name="{submit_buttons.KEY}" value="{submit_buttons.TITLE}"<!-- IF submit_buttons.DISABLED --> disabled="disabled"<!-- ENDIF --> />
+	<!-- END submit_buttons -->
+</fieldset>
+<!-- ENDIF -->
+</form>

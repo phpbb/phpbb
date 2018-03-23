@@ -1,0 +1,116 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<!-- IF S_DETAILS -->
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_LANGUAGE_PACK_DETAILS}</h1>
+
+	<form id="details" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{LANG_LOCAL_NAME}</legend>
+	<dl>
+		<dt><label for="lang_english_name">{L_LANG_ENGLISH_NAME}{L_COLON}</label></dt>
+		<dd><input type="text" id="lang_english_name" name="lang_english_name" value="{LANG_ENGLISH_NAME}" maxlength="100" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="lang_local_name">{L_LANG_LOCAL_NAME}{L_COLON}</label></dt>
+		<dd><input type="text" id="lang_local_name" name="lang_local_name" value="{LANG_LOCAL_NAME}" maxlength="255" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_LANG_ISO_CODE}{L_COLON}</label></dt>
+		<dd><strong>{LANG_ISO}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label for="lang_author">{L_LANG_AUTHOR}{L_COLON}</label></dt>
+		<dd><input type="text" id="lang_author" name="lang_author" value="{LANG_AUTHOR}" maxlength="255" /></dd>
+	</dl>
+
+	<p class="quick" style="margin-top: -15px;">
+		<input type="submit" name="update_details" class="button2" value="{L_SUBMIT}" />
+	</p>
+	{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+	<!-- IF .missing_files -->
+		<h3 class="error">{L_MISSING_FILES}</h3>
+
+		<fieldset>
+			<legend>{L_MISSING_LANG_FILES}</legend>
+			<!-- BEGIN missing_files -->
+			&raquo; {missing_files.FILE_NAME}<br />
+			<!-- END missing_files -->
+		</fieldset>
+	<!-- ENDIF -->
+
+	<!-- IF .missing_varfile -->
+		<h3 class="error">{L_MISSING_VARS_EXPLAIN}</h3>
+
+		<fieldset>
+			<legend>{L_MISSING_LANG_VARIABLES}</legend>
+			<!-- BEGIN missing_varfile -->
+			<dl>
+				<dt><label>{missing_varfile.FILE_NAME}</label></dt>
+				<!-- BEGIN variable -->
+				<dd>{missing_varfile.variable.VAR_NAME}</dd>
+				<!-- END variable -->
+			</dl>
+			<!-- END missing_varfile -->
+		</fieldset>
+	<!-- ENDIF -->
+<!-- ELSE -->
+
+	<h1>{L_ACP_LANGUAGE_PACKS}</h1>
+
+	<p>{L_ACP_LANGUAGE_PACKS_EXPLAIN}</p>
+
+	<fieldset class="quick">
+		<span class="small"><a href="https://www.phpbb.com/go/customise/language-packs/3.1" target="_blank">{L_BROWSE_LANGUAGE_PACKS_DATABASE}</a></span>
+	</fieldset>
+
+	<table class="table1 zebra-table">
+	<thead>
+	<tr>
+		<th>{L_LANGUAGE_PACK_NAME}</th>
+		<th>{L_LANGUAGE_PACK_LOCALNAME}</th>
+		<th>{L_LANGUAGE_PACK_ISO}</th>
+		<th>{L_LANGUAGE_PACK_USED_BY}</th>
+		<th>{L_OPTIONS}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td class="row3" colspan="5"><strong>{L_INSTALLED_LANGUAGE_PACKS}</strong></td>
+	</tr>
+	<!-- BEGIN lang -->
+	<tr>
+		<td><a href="{lang.U_DETAILS}">{lang.ENGLISH_NAME}</a> {lang.TAG}</td>
+		<td>{lang.LOCAL_NAME}</td>
+		<td style="text-align: center;"><strong>{lang.ISO}</strong></td>
+		<td style="text-align: center;">{lang.USED_BY}</td>
+		<td style="text-align: center;"><a href="{lang.U_DELETE}">{L_DELETE}</a></td>
+	</tr>
+	<!-- END lang -->
+	<!-- IF .notinst -->
+	<tr>
+		<td class="row3" colspan="5"><strong>{L_UNINSTALLED_LANGUAGE_PACKS}</strong></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- BEGIN notinst -->
+	<tr>
+		<td>{notinst.NAME}</td>
+		<td>{notinst.LOCAL_NAME}</td>
+		<td style="text-align: center;"><strong>{notinst.ISO}</strong></td>
+		<td colspan="2" style="text-align: center;"><a href="{notinst.U_INSTALL}">{L_INSTALL}</a></td>
+	</tr>
+	<!-- END notinst -->
+	</tbody>
+	</table>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

@@ -1,0 +1,36 @@
+	<form id="user_profile" method="post" action="{U_ACTION}"{S_FORM_ENCTYPE}>
+
+	<fieldset>
+		<legend>{L_USER_PROFILE}</legend>
+	<!-- EVENT acp_users_profile_before -->
+	<dl>
+		<dt><label for="jabber">{L_UCP_JABBER}{L_COLON}</label></dt>
+		<dd><input type="email" id="jabber" name="jabber" value="{JABBER}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="birthday">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
+		<dd>{L_DAY}{L_COLON} <select id="birthday" name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> {L_MONTH}{L_COLON} <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> {L_YEAR}{L_COLON} <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></dd>
+	</dl>
+	<!-- EVENT acp_users_profile_after -->
+	</fieldset>
+
+	<!-- IF .profile_fields -->
+		<fieldset>
+			<legend>{L_USER_CUSTOM_PROFILE_FIELDS}</legend>
+		<!-- BEGIN profile_fields -->
+		<dl>
+			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}</label><!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd>{profile_fields.FIELD}</dd>
+			<!-- IF profile_fields.ERROR -->
+				<dd><span class="small" style="color: red;">{profile_fields.ERROR}</span></dd>
+			<!-- ENDIF -->
+		</dl>
+		<!-- END profile_fields -->
+		</fieldset>
+	<!-- ENDIF -->
+	<!-- EVENT acp_users_profile_custom_after -->
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>

@@ -1,0 +1,50 @@
+
+<div class="action-bar actions-jump">
+	<!-- IF S_VIEWTOPIC -->
+	<p class="jumpbox-return">
+		<a href="{U_VIEW_FORUM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_TO_FORUM}</span>
+		</a>
+	</p>
+	<!-- ELSEIF S_VIEWFORUM -->
+	<p class="jumpbox-return">
+		<a href="{U_INDEX}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_TO_INDEX}</span>
+		</a>
+	</p>
+	<!-- ELSEIF SEARCH_TOPIC -->
+	<p class="jumpbox-return">
+		<a class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}" accesskey="r">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_TO_TOPIC}</span>
+		</a>
+	</p>
+	<!-- ELSEIF S_SEARCH_ACTION -->
+	<p class="jumpbox-return">
+		<a class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}" accesskey="r">
+			<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_GO_TO_SEARCH_ADV}</span>
+		</a>
+	</p>
+	<!-- ENDIF -->
+
+	<!-- IF S_DISPLAY_JUMPBOX -->
+	<div class="jumpbox dropdown-container dropdown-container-right<!-- IF not S_IN_MCP --> dropdown-up<!-- ENDIF --> dropdown-{S_CONTENT_FLOW_BEGIN} dropdown-button-control" id="jumpbox">
+			<span title="<!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF -->" class="button button-secondary dropdown-trigger dropdown-select">
+				<span><!-- IF S_IN_MCP and S_MERGE_SELECT -->{L_SELECT_TOPICS_FROM}<!-- ELSEIF S_IN_MCP -->{L_MODERATE_FORUM}<!-- ELSE -->{L_JUMP_TO}<!-- ENDIF --></span>
+				<span class="caret"><i class="icon fa-sort-down fa-fw" aria-hidden="true"></i></span>
+			</span>
+		<div class="dropdown">
+			<div class="pointer"><div class="pointer-inner"></div></div>
+			<ul class="dropdown-contents">
+				<!-- BEGIN jumpbox_forums -->
+				<!-- IF jumpbox_forums.FORUM_ID neq -1 -->
+				<li><a href="{jumpbox_forums.LINK}" class="<!-- IF jumpbox_forums.level -->jumpbox-sub-link<!-- ELSEIF jumpbox_forums.S_IS_CAT -->jumpbox-cat-link<!-- ELSE -->jumpbox-forum-link<!-- ENDIF -->"><!-- BEGIN level --><span class="spacer"></span><!-- END level --> <span><!-- IF jumpbox_forums.level --><!-- IF S_CONTENT_DIRECTION eq 'rtl' -->&#8626;<!-- ELSE -->&#8627;<!-- ENDIF --> &nbsp;<!-- ENDIF --> {jumpbox_forums.FORUM_NAME}</span></a></li>
+				<!-- ENDIF -->
+				<!-- END jumpbox_forums -->
+			</ul>
+		</div>
+	</div>
+
+	<!-- ELSE -->
+	<br /><br />
+	<!-- ENDIF -->
+</div>

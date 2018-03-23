@@ -1,0 +1,75 @@
+{
+	"name": "phpbb/phpbb",
+	"description": "phpBB Forum Software application",
+	"type": "project",
+	"keywords": ["phpbb", "forum"],
+	"homepage": "https://www.phpbb.com",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "phpBB Limited",
+			"email": "operations@phpbb.com",
+			"homepage": "https://www.phpbb.com/go/authors"
+		}
+	],
+	"support": {
+		"issues": "https://tracker.phpbb.com",
+		"forum": "https://www.phpbb.com/community/",
+		"wiki": "https://wiki.phpbb.com",
+		"irc": "irc://irc.freenode.org/phpbb"
+	},
+	"scripts": {
+		"post-update-cmd": "echo 'You MUST manually modify the clean-vendor-dir target in build/build.xml when adding or upgrading dependencies.'"
+	},
+	"replace": {
+		"phpbb/phpbb-core": "self.version"
+	},
+	"require": {
+		"php": ">=5.4",
+		"bantu/ini-get-wrapper": "1.0.*",
+		"google/recaptcha": "~1.1",
+		"guzzlehttp/guzzle": "~5.3",
+		"lusitanian/oauth": "^0.8.1",
+		"marc1706/fast-image-size": "^1.1",
+		"paragonie/random_compat": "^1.4",
+		"patchwork/utf8": "^1.1",
+		"s9e/text-formatter": "~0.13.0",
+		"symfony/config": "^2.8",
+		"symfony/console": "^2.8",
+		"symfony/debug": "^2.8",
+		"symfony/dependency-injection": "^2.8",
+		"symfony/event-dispatcher": "^2.8",
+		"symfony/filesystem": "^2.8",
+		"symfony/finder": "^2.8",
+		"symfony/http-foundation": "^2.8",
+		"symfony/http-kernel": "^2.8",
+		"symfony/proxy-manager-bridge": "^2.8",
+		"symfony/routing": "^2.8",
+		"symfony/twig-bridge": "^2.8",
+		"symfony/yaml": "^2.8",
+		"twig/twig": "^1.0"
+	},
+	"require-dev": {
+		"fabpot/goutte": "~2.0",
+		"facebook/webdriver": "~1.1",
+		"laravel/homestead": "~2.2",
+		"phing/phing": "2.4.*",
+		"phpunit/dbunit": "1.3.*",
+		"phpunit/phpunit": "^4.1",
+		"sami/sami": "1.*",
+		"squizlabs/php_codesniffer": "2.*",
+		"symfony/browser-kit": "^2.8",
+		"symfony/css-selector": "^2.8",
+		"symfony/dom-crawler": "^2.8"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.2.x-dev"
+		}
+	},
+	"config": {
+		"platform": {
+			"php": "5.4.7"
+		}
+	}
+}

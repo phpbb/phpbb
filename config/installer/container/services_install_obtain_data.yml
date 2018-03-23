@@ -1,0 +1,66 @@
+services:
+    installer.obtain_data.obtain_admin_data:
+        class: phpbb\install\module\obtain_data\task\obtain_admin_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: install_obtain_data, order: 10 }
+
+    installer.obtain_data.obtain_board_data:
+        class: phpbb\install\module\obtain_data\task\obtain_board_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@language.helper.language_file'
+        tags:
+            - { name: install_obtain_data, order: 50 }
+
+    installer.obtain_data.obtain_database_data:
+        class: phpbb\install\module\obtain_data\task\obtain_database_data
+        arguments:
+            - '@installer.helper.database'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: install_obtain_data, order: 20 }
+
+    installer.obtain_data.obtain_email_data:
+        class: phpbb\install\module\obtain_data\task\obtain_email_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: install_obtain_data, order: 40 }
+
+    installer.obtain_data.obtain_imagick_path:
+        class: phpbb\install\module\obtain_data\task\obtain_imagick_path
+        arguments:
+            - '@installer.helper.config'
+        tags:
+            - { name: install_obtain_data, order: 60 }
+
+    installer.obtain_data.obtain_server_data:
+        class: phpbb\install\module\obtain_data\task\obtain_server_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: install_obtain_data, order: 30 }
+
+    installer.module.install_obtain_data_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: install_obtain_data, class_name_aware: true }
+
+    installer.module.obtain_data_install:
+        class: phpbb\install\module\obtain_data\install_module
+        parent: installer.module_base
+        arguments:
+            - '@installer.module.install_obtain_data_collection'
+            - true
+            - false
+        tags:
+            - { name: installer_install_module, order: 20 }

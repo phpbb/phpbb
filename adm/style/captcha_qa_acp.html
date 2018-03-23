@@ -1,0 +1,90 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+
+	<a href="<!-- IF U_LIST -->{U_LIST}<!-- ELSE -->{U_ACTION}<!-- ENDIF -->" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_QUESTIONS}</h1>
+
+	<p>{L_QUESTIONS_EXPLAIN}</p>
+<!-- IF S_LIST -->
+	<form id="captcha_qa" method="post" action="{U_ACTION}">
+
+	<fieldset class="tabulated">
+	<legend>{L_QUESTIONS}</legend>
+
+	<table class="table1 zebra-table">
+	<thead>
+	<tr>
+		<th colspan="3">{L_QUESTIONS}</th>
+	</tr>
+	<tr class="row3">
+		<td style="text-align: center;">{L_QUESTION_TEXT}</td>
+		<td style="width: 5%; text-align: center;">{L_QUESTION_LANG}</td>
+		<td style="vertical-align: top; width: 50px; text-align: center; white-space: nowrap;">{L_ACTION}</td>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN questions -->
+	<tr>
+		<td style="text-align: left;">{questions.QUESTION_TEXT}</td>
+		<td style="text-align: center;">{questions.QUESTION_LANG}</td>
+		<td style="text-align: center;"><a href="{questions.U_EDIT}">{ICON_EDIT}</a>&nbsp;<a href="{questions.U_DELETE}">{ICON_DELETE}</a></td>
+	</tr>
+	<!-- END questions -->
+	</tbody>
+	</table>
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="add" value="{L_ADD}" />
+		<input  type="hidden" name="action" value="add" />
+		<input  type="hidden" name="configure" value="1" />
+		<input  type="hidden" name="select_captcha" value="{CLASS}" />
+
+		{S_FORM_TOKEN}
+	</fieldset>
+	{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+<!-- ELSE -->
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{L_QA_ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+	<form id="captcha_qa" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_EDIT_QUESTION}</legend>
+	<dl>
+		<dt><label for="strict">{L_QUESTION_STRICT}{L_COLON}</label><br /><span>{L_QUESTION_STRICT_EXPLAIN}</span></dt>
+		<dd><label><input type="radio" class="radio" name="strict" value="1"<!-- IF STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="strict" value="0"<!-- IF not STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+
+	<dl>
+		<dt><label for="lang_iso">{L_QUESTION_LANG}</label><br /><span>{L_QUESTION_LANG_EXPLAIN}</span></dt>
+		<dd><select id="lang_iso" name="lang_iso"><!-- BEGIN langs --><option value="{langs.ISO}" <!-- IF langs.ISO == LANG_ISO --> selected="selected" <!-- ENDIF -->>{langs.NAME}</option><!-- END langs --></select></dd>
+	</dl>
+	<dl>
+		<dt><label for="question_text">{L_QUESTION_TEXT}</label><br /><span>{L_QUESTION_TEXT_EXPLAIN}</span></dt>
+		<dd><input id="question_text" maxlength="255" size="60" name="question_text" type="text" value="{QUESTION_TEXT}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="answers">{L_QUESTION_ANSWERS}</label><br /><span>{L_ANSWERS_EXPLAIN}</span></dt>
+		<dd><textarea id="answers" style="word-wrap: normal; overflow-x: scroll;" name="answers" rows="15" cols="800" >{ANSWERS}</textarea></dd>
+	</dl>
+	</fieldset>
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="submit" value="{L_SUBMIT}" />
+		<input type="hidden" name="question_id" value="{QUESTION_ID}" />
+		<input type="hidden" name="action" value="add" />
+		<input  type="hidden" name="configure" value="1" />
+		<input  type="hidden" name="select_captcha" value="{CLASS}" />
+
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

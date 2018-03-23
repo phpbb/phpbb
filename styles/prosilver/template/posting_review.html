@@ -1,0 +1,44 @@
+<h3>{L_POST_REVIEW}</h3>
+
+<p>{L_POST_REVIEW_EXPLAIN}</p>
+
+<!-- BEGIN post_review_row -->
+<!-- IF post_review_row.S_IGNORE_POST -->
+<div class="post bg3 post-ignore">
+	<div class="inner">
+		{post_review_row.L_IGNORE_POST}
+<!-- ELSE -->
+<div class="post <!-- IF post_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+	<div class="inner">
+<!-- ENDIF -->
+
+	<div class="postbody" id="ppr{post_review_row.POST_ID}">
+		<h3><a href="#ppr{post_review_row.POST_ID}">{post_review_row.POST_SUBJECT}</a></h3>
+		<p class="author">
+			<!-- IF S_IS_BOT -->
+				<span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{post_review_row.MINI_POST}</span></span>
+			<!-- ELSE -->
+				<a href="{post_review_row.U_MINI_POST}" title="{post_review_row.MINI_POST}">
+					<i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{post_review_row.MINI_POST}</span>
+				</a>
+			<!-- ENDIF -->
+			{L_POST_BY_AUTHOR}<strong>  {post_review_row.POST_AUTHOR_FULL}</strong> &raquo; {post_review_row.POST_DATE}
+		</p>
+		<div class="content">{post_review_row.MESSAGE}</div>
+
+		<!-- IF post_review_row.S_HAS_ATTACHMENTS -->
+			<dl class="attachbox">
+				<dt>{L_ATTACHMENTS}</dt>
+				<!-- BEGIN attachment -->
+					<dd>{post_review_row.attachment.DISPLAY_ATTACHMENT}</dd>
+				<!-- END attachment -->
+			</dl>
+		<!-- ENDIF -->
+
+	</div>
+
+	</div>
+</div>
+<!-- END post_review_row -->
+
+<hr />

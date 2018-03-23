@@ -1,0 +1,169 @@
+imports:
+    - { resource: services_attachment.yml }
+    - { resource: services_auth.yml }
+    - { resource: services_avatar.yml }
+    - { resource: services_captcha.yml }
+    - { resource: services_console.yml }
+    - { resource: services_content.yml }
+    - { resource: services_cron.yml }
+    - { resource: services_db.yml }
+    - { resource: services_event.yml }
+    - { resource: services_feed.yml }
+    - { resource: services_files.yml }
+    - { resource: services_filesystem.yml }
+    - { resource: services_help.yml }
+    - { resource: services_hook.yml }
+    - { resource: services_http.yml }
+    - { resource: services_language.yml }
+    - { resource: services_migrator.yml }
+    - { resource: services_mimetype_guesser.yml }
+    - { resource: services_module.yml }
+    - { resource: services_notification.yml }
+    - { resource: services_password.yml }
+    - { resource: services_php.yml }
+    - { resource: services_profilefield.yml }
+    - { resource: services_report.yml }
+    - { resource: services_routing.yml }
+    - { resource: services_text_formatter.yml }
+    - { resource: services_text_reparser.yml }
+    - { resource: services_twig.yml }
+    - { resource: services_user.yml }
+
+    - { resource: tables.yml }
+    - { resource: parameters.yml }
+
+services:
+    cache:
+        class: phpbb\cache\service
+        arguments:
+             - '@cache.driver'
+             - '@config'
+             - '@dbal.conn'
+             - '%core.root_path%'
+             - '%core.php_ext%'
+
+    cache.driver:
+        class: '%cache.driver.class%'
+
+    class_loader:
+        class: phpbb\class_loader
+        arguments:
+            - phpbb\
+            - '%core.root_path%includes/'
+            - '%core.php_ext%'
+        calls:
+            - [register, []]
+            - [set_cache, ['@cache.driver']]
+
+    class_loader.ext:
+        class: phpbb\class_loader
+        arguments:
+            - \
+            - '%core.root_path%ext/'
+            - '%core.php_ext%'
+        calls:
+            - [register, []]
+            - [set_cache, ['@cache.driver']]
+
+    config:
+        class: phpbb\config\db
+        arguments:
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '%tables.config%'
+
+    config.php:
+        synthetic: true
+
+    config_text:
+        class: phpbb\config\db_text
+        arguments:
+            - '@dbal.conn'
+            - '%tables.config_text%'
+
+    controller.helper:
+        class: phpbb\controller\helper
+        arguments:
+            - '@template'
+            - '@user'
+            - '@config'
+            - '@symfony_request'
+            - '@request'
+            - '@routing.helper'
+
+    controller.resolver:
+        class: phpbb\controller\resolver
+        arguments:
+            - '@service_container'
+            - '%core.root_path%'
+            - '@template'
+
+    ext.manager:
+        class: phpbb\extension\manager
+        arguments:
+            - '@service_container'
+            - '@dbal.conn'
+            - '@config'
+            - '@filesystem'
+            - '%tables.ext%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@cache'
+
+    file_downloader:
+        class: phpbb\file_downloader
+
+    file_locator:
+        class: phpbb\routing\file_locator
+        arguments:
+            - '@filesystem'
+            - '%core.root_path%'
+
+    group_helper:
+        class: phpbb\group\helper
+        arguments:
+            - '@language'
+
+    log:
+        class: phpbb\log\log
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@auth'
+            - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'
+            - '%tables.log%'
+
+    path_helper:
+        class: phpbb\path_helper
+        arguments:
+            - '@symfony_request'
+            - '@filesystem'
+            - '@request'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%core.adm_relative_path%'
+
+    plupload:
+        class: phpbb\plupload\plupload
+        arguments:
+            - '%core.root_path%'
+            - '@config'
+            - '@request'
+            - '@user'
+            - '@php_ini'
+            - '@mimetype.guesser'
+
+    upload_imagesize:
+        class: FastImageSize\FastImageSize
+
+    version_helper:
+        class: phpbb\version_helper
+        shared: false
+        arguments:
+            - '@cache'
+            - '@config'
+            - '@file_downloader'
+            - '@user'

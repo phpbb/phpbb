@@ -1,0 +1,34 @@
+<!-- INCLUDE overall_header.html -->
+
+	<a id="maincontent"></a>
+
+	<h1>{L_EXTENSIONS_ADMIN}</h1>
+
+	<p>{L_EXTENSIONS_EXPLAIN}</p>
+	<p>{L_EXTENSION_DISABLE_EXPLAIN}</p>
+
+	<!-- IF PRE -->
+	<fieldset>
+		<h2>{L_CONFIRM}</h2>
+		<p>{L_CONFIRM_MESSAGE}</p>
+	</fieldset>
+
+	<form id="acp_extensions" method="post" action="{U_DISABLE}">
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" name="disable" value="{L_EXTENSION_DISABLE}" />
+		<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
+	</fieldset>
+	</form>
+	<!-- ELSEIF S_NEXT_STEP -->
+		<div class="successbox notice">
+			<p>{L_EXTENSION_DISABLE_IN_PROGRESS}</p>
+		</div>
+	<!-- ELSE -->
+		<div class="successbox">
+			<p>{L_EXTENSION_DISABLE_SUCCESS}</p>
+			<br />
+			<p><a href="{U_RETURN}">{L_RETURN_TO_EXTENSION_LIST}</a></p>
+		</div>
+	<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

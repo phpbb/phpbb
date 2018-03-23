@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- IF META -->{META}<!-- ENDIF -->
+<title>{PAGE_TITLE}</title>
+
+<link href="{T_FONT_AWESOME_LINK}" rel="stylesheet">
+<link href="style/admin.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet" type="text/css" media="screen" />
+
+<script type="text/javascript">
+// <![CDATA[
+var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
+var on_page = '{CURRENT_PAGE}';
+var per_page = '{PER_PAGE}';
+var base_url = '{BASE_URL|e('js')}';
+
+/**
+* Jump to page
+*/
+function jumpto()
+{
+	var page = prompt(jump_page, on_page);
+
+	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0)
+	{
+		if (base_url.indexOf('?') == -1)
+		{
+			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
+		}
+		else
+		{
+			document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
+		}
+	}
+}
+
+/**
+* Mark/unmark checkboxes
+* id = ID of parent container, name = name prefix, state = state [true/false]
+*/
+function marklist(id, name, state)
+{
+	var parent = document.getElementById(id) || document[id];
+
+	if (!parent)
+	{
+		return;
+	}
+
+	var rb = parent.getElementsByTagName('input');
+
+	for (var r = 0; r < rb.length; r++)
+	{
+		if (rb[r].name.substr(0, name.length) == name && rb[r].disabled !== true)
+		{
+			rb[r].checked = state;
+		}
+	}
+}
+
+/**
+* Find a member
+*/
+function find_username(url)
+{
+	popup(url, 760, 570, '_usersearch');
+	return false;
+}
+
+/**
+* Window popup
+*/
+function popup(url, width, height, name)
+{
+	if (!name)
+	{
+		name = '_popup';
+	}
+
+	window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes, width=' + width);
+	return false;
+}
+
+// ]]>
+</script>
+
+<!-- EVENT acp_overall_header_head_append -->
+
+{$STYLESHEETS}
+
+<!-- EVENT acp_overall_header_stylesheets_after -->
+
+</head>
+
+<body class="{S_CONTENT_DIRECTION} {BODY_CLASS} nojs">
+
+<!-- EVENT acp_overall_header_body_before -->
+
+<div id="wrap">
+	<div id="page-header">
+		<h1>{L_ADMIN_PANEL}</h1>
+		<p><a href="{U_ADM_INDEX}">{L_ADMIN_INDEX}</a> &bull; <a href="{U_INDEX}">{L_FORUM_INDEX}</a></p>
+		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
+	</div>
+
+	<div id="page-body">
+		<div id="tabs">
+			<ul>
+			<!-- BEGIN t_block1 -->
+				<li class="tab<!-- IF t_block1.S_SELECTED --> activetab<!-- ENDIF -->"><a href="{t_block1.U_TITLE}">{t_block1.L_TITLE}</a></li>
+			<!-- END t_block1 -->
+			</ul>
+		</div>
+
+		<div id="acp">
+				<div id="content">
+					<div id="menu">
+						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+						<!-- DEFINE $LI_USED = 0 -->
+						<!-- BEGIN l_block1 -->
+							<!-- IF l_block1.S_SELECTED -->
+
+						<!-- BEGIN l_block2 -->
+							<!-- IF .l_block1.l_block2.l_block3 -->
+							<!-- IF $LI_USED --></ul></div><!-- ENDIF -->
+							<div class="menu-block">
+								<a class="header" href="javascript:void(0);">{l_block1.l_block2.L_TITLE}</a>
+								<ul>
+							<!-- DEFINE $LI_USED = 1 -->
+							<!-- ENDIF -->
+
+							<!-- BEGIN l_block3 -->
+								<li<!-- IF l_block1.l_block2.l_block3.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.l_block2.l_block3.U_TITLE}"><span>{l_block1.l_block2.l_block3.L_TITLE}</span></a></li>
+								<!-- DEFINE $LI_USED = 1 -->
+							<!-- END l_block3 -->
+						<!-- END l_block2 -->
+
+							<!-- ENDIF -->
+						<!-- END l_block1 -->
+						<!-- IF $LI_USED -->
+								</ul>
+							</div>
+						<!-- ENDIF -->
+					</div>
+
+					<div id="main">
+						<div class="main">
+							{% if CONTAINER_EXCEPTION !== false %}
+							<div class="errorbox">
+								<p>{{ lang('CONTAINER_EXCEPTION') }}</p><br />
+								<p>{{ lang('EXCEPTION') }}{{ lang('COLON') }} {{ CONTAINER_EXCEPTION.getMessage() }}</p>
+								<pre>{{ CONTAINER_EXCEPTION.getTraceAsString() }}</pre>
+							</div>
+							{% endif %}

@@ -1,0 +1,27 @@
+		<div style="text-align: {S_CONTENT_FLOW_END};"><a href="#" onclick="self.close(); return false;">{L_CLOSE_WINDOW}</a></div>
+	<br /><br />
+</div>
+
+<div id="page-footer">
+
+	<!-- IF S_COPYRIGHT_HTML -->
+		<br />{CREDIT_LINE}
+		<!-- IF TRANSLATION_INFO --><br />{TRANSLATION_INFO}<!-- ENDIF -->
+	<!-- ENDIF -->
+
+	<!-- IF DEBUG_OUTPUT -->
+		<!-- IF S_COPYRIGHT_HTML --><br /><br /><!-- ENDIF -->
+		{DEBUG_OUTPUT}
+	<!-- ENDIF -->
+
+</div>
+
+<script type="text/javascript" src="{T_JQUERY_LINK}"></script>
+<!-- IF S_ALLOW_CDN --><script type="text/javascript">window.jQuery || document.write('\x3Cscript src="{T_ASSETS_PATH}/javascript/jquery.min.js?assets_version={T_ASSETS_VERSION}">\x3C/script>');</script><!-- ENDIF -->
+<script type="text/javascript" src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
+
+<!-- EVENT acp_simple_footer_after -->
+{$SCRIPTS}
+
+</body>
+</html>

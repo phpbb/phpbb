@@ -1,0 +1,35 @@
+imports:
+    - { resource: cron.yml }
+
+services:
+    phpbb.viglink.listener:
+        class: phpbb\viglink\event\listener
+        arguments:
+            - '@config'
+            - '@template'
+        tags:
+            - { name: event.listener }
+
+    phpbb.viglink.acp_listener:
+        class: phpbb\viglink\event\acp_listener
+        arguments:
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@phpbb.viglink.helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }
+
+    phpbb.viglink.helper:
+        class: phpbb\viglink\acp\viglink_helper
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@file_downloader'
+            - '@language'
+            - '@log'
+            - '@user'

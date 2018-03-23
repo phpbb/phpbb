@@ -1,0 +1,174 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<!-- IF S_STYLE_DETAILS -->
+	<a href="{U_ACTION}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+<!-- ENDIF -->
+
+<!-- IF S_CONFIRM_ACTION -->
+<form id="confirm" method="post" action="{S_CONFIRM_ACTION}">
+
+<fieldset>
+	<h1>{MESSAGE_TITLE}</h1>
+	<p>{MESSAGE_TEXT}</p>
+	<!-- IF S_CONFIRM_DELETE -->
+	<label><input type="checkbox" class="checkbox" name="confirm_delete_files" /> {L_DELETE_FROM_FS}</label>
+	<!-- ENDIF -->
+
+	{S_HIDDEN_FIELDS}
+
+	<div style="text-align: center;">
+		<input type="submit" name="confirm" value="{L_YES}" class="button2" />&nbsp;
+		<input type="submit" name="cancel" value="{L_NO}" class="button2" />
+	</div>
+
+</fieldset>
+
+</form>
+<!-- ELSE -->
+
+<!-- IF L_TITLE --><h1>{L_TITLE}</h1><!-- ENDIF -->
+
+<!-- IF L_EXPLAIN --><p>{L_EXPLAIN}</p><!-- ENDIF -->
+
+<fieldset class="quick">
+	<span class="small"><a href="https://www.phpbb.com/go/customise/styles/3.1" target="_blank">{L_BROWSE_STYLES_DATABASE}</a></span>
+</fieldset>
+
+<form id="acp_styles" method="post" action="{U_ACTION}">
+{S_HIDDEN_FIELDS}
+{S_FORM_TOKEN}
+
+<!-- IF S_STYLE_DETAILS -->
+	<input type="hidden" name="id" value="{STYLE_ID}" />
+	<fieldset>
+	<dl>
+		<dt><label for="name">{L_STYLE_NAME}{L_COLON}</label></dt>
+		<dd><input type="text" id="name" name="style_name" value="{STYLE_NAME}" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_STYLE_PATH}{L_COLON}</label></dt>
+		<dd><strong>{STYLE_PATH}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_STYLE_VERSION}{L_COLON}</label></dt>
+		<dd><strong>{STYLE_VERSION}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label for="name">{L_COPYRIGHT}{L_COLON}</label></dt>
+		<dd><strong>{STYLE_COPYRIGHT}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label for="style_parent">{L_INHERITING_FROM}{L_COLON}</label></dt>
+		<dd><select id="style_parent" name="style_parent">
+			<option value=""<!-- IF STYLE_PARENT == 0 --> selected="selected"<!-- ENDIF -->> - </option>
+			<!-- BEGIN parent_styles -->
+				<option value="{parent_styles.STYLE_ID}"<!-- IF parent_styles.STYLE_ID == STYLE_PARENT --> selected="selected"<!-- ENDIF -->>{parent_styles.SPACER}{parent_styles.STYLE_NAME}</option>
+			<!-- END parent_styles -->
+		</select></dd>
+	</dl>
+	<dl>
+		<dt><label for="style_active">{L_STYLE_ACTIVE}{L_COLON}</label></dt>
+		<dd><label><input type="radio" class="radio" name="style_active" value="1"<!-- IF S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="style_active" value="0"<!-- IF not S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+	</dl>
+	<!-- IF not S_STYLE_DEFAULT -->
+		<dl>
+			<dt><label for="style_default">{L_STYLE_DEFAULT}{L_COLON}</label></dt>
+			<dd><label><input type="radio" class="radio" name="style_default" value="1" /> {L_YES}</label>
+				<label><input type="radio" class="radio" id="style_default" name="style_default" value="0" checked="checked" /> {L_NO}</label></dd>
+		</dl>
+	<!-- ENDIF -->
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+<!-- ENDIF -->
+
+<!-- IF .styles_list -->
+	<!-- EVENT acp_styles_list_before -->
+	<table class="table1 styles">
+	<thead>
+	<tr>
+		<th>{L_STYLE_NAME}</th>
+		<!-- IF not STYLES_LIST_HIDE_COUNT --><th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_USED_BY}</th><!-- ENDIF -->
+		<th width="25%" style="white-space: nowrap; text-align: center;">{L_ACTIONS}</th>
+		{STYLES_LIST_EXTRA}
+		<th>&nbsp;</th>
+	</tr>
+	</thead>
+	<!-- BEGIN styles_list -->
+	<tbody id="styles-list-{styles_list.S_ROW_COUNT}">
+	<tr class="row-highlight<!-- IF styles_list.STYLE_ID and not styles_list.STYLE_ACTIVE --> row-inactive<!-- ENDIF -->">
+		<!-- IF styles_list.LEVEL is odd -->
+			<!-- IF $ROW_CLASS == 'row1a' --><!-- DEFINE $ROW_CLASS = 'row1b' --><!-- ELSE --><!-- DEFINE $ROW_CLASS = 'row1a' --><!-- ENDIF -->
+		<!-- ELSE -->
+			<!-- IF $ROW_CLASS == 'row2a' --><!-- DEFINE $ROW_CLASS = 'row2b' --><!-- ELSE --><!-- DEFINE $ROW_CLASS = 'row2a' --><!-- ENDIF -->
+		<!-- ENDIF -->
+		<td class="{$ROW_CLASS}" style="padding-{S_CONTENT_FLOW_BEGIN}: {styles_list.PADDING}px;">
+			<!-- IF styles_list.STYLE_ID and styles_list.COMMENT == '' and styles_list.STYLE_ACTIVE -->
+				<div class="default-style" style="display: none; float: {S_CONTENT_FLOW_END};">
+					<input class="radio" type="radio" name="default" value="{styles_list.STYLE_ID}"<!-- IF styles_list.DEFAULT --> checked="checked"<!-- ELSE --><!-- DEFINE $S_DEFAULT = 1 --><!-- ENDIF --> title="{L_STYLE_DEFAULT}" />
+				</div>
+			<!-- ENDIF -->
+			<!-- IF styles_list.DEFAULT or styles_list.SHOW_COPYRIGHT -->
+				<strong>{styles_list.STYLE_NAME}</strong>
+				<!-- IF styles_list.SHOW_COPYRIGHT and styles_list.COMMENT == '' --><span><br />{styles_list.STYLE_COPYRIGHT}</span><!-- ENDIF -->
+			<!-- ELSE -->
+				<span>{styles_list.STYLE_NAME}</span>
+			<!-- ENDIF -->
+			<!-- IF styles_list.COMMENT != '' -->
+				<span class="error"><br />{styles_list.COMMENT}</span>
+			<!-- ENDIF -->
+			<!-- IF not styles_list.STYLE_ID and styles_list.COMMENT == '' -->
+				<span class="style-path"><br />{L_STYLE_PATH}{L_COLON} {styles_list.STYLE_PATH_FULL}</span>
+			<!-- ENDIF -->
+		</td>
+		<!-- IF not STYLES_LIST_HIDE_COUNT -->
+			<td class="{$ROW_CLASS} users">{styles_list.USERS}</td>
+		<!-- ENDIF -->
+		<td class="{$ROW_CLASS} actions">
+			<!-- BEGIN actions -->
+				<!-- IF styles_list.actions.S_ROW_COUNT > 0 --> | <!-- ENDIF -->
+				<!-- IF styles_list.actions.U_ACTION -->
+					<a href="{styles_list.actions.U_ACTION}"{styles_list.actions.U_ACTION_ATTR}>{styles_list.actions.L_ACTION}</a>
+				<!-- ENDIF -->
+				{styles_list.actions.HTML}
+			<!-- END actions -->
+		</td>
+		{styles_list.EXTRA}
+		<td class="{$ROW_CLASS} mark" width="20">
+			<!-- IF styles_list.STYLE_ID -->
+				<input class="checkbox" type="checkbox" name="ids[]" value="{styles_list.STYLE_ID}" />
+			<!-- ELSE -->
+				<!-- IF styles_list.COMMENT != '' -->
+					&nbsp;
+				<!-- ELSE -->
+					<input class="checkbox" type="checkbox" name="dirs[]" value="{styles_list.STYLE_PATH}" />
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+		</td>
+	</tr>
+	</tbody>
+	<!-- END styles_list -->
+	</table>
+<!-- ENDIF -->
+
+<!-- IF .extra_actions -->
+	<fieldset class="quick">
+		<!-- BEGIN extra_actions -->
+			<input type="submit" name="{extra_actions.ACTION_NAME}" class="button2" value="{extra_actions.L_ACTION}" />
+		<!-- END extra_actions -->
+	</fieldset>
+<!-- ENDIF -->
+
+</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

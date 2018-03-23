@@ -1,0 +1,53 @@
+<div class="panel bg3" id="poll-panel">
+	<div class="inner">
+
+	<!-- IF S_SHOW_POLL_BOX -->
+	<p>{L_ADD_POLL_EXPLAIN}</p>
+	<!-- ENDIF -->
+
+	<fieldset class="fields2">
+	<!-- IF S_POLL_DELETE -->
+		<dl>
+			<dt><label for="poll_delete">{L_POLL_DELETE}{L_COLON}</label></dt>
+			<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> </label></dd>
+		</dl>
+	<!-- ENDIF -->
+
+	<!-- IF S_SHOW_POLL_BOX -->
+		<dl>
+			<dt><label for="poll_title">{L_POLL_QUESTION}{L_COLON}</label></dt>
+			<dd><input type="text" name="poll_title" id="poll_title" maxlength="255" value="{POLL_TITLE}" class="inputbox" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="poll_option_text">{L_POLL_OPTIONS}{L_COLON}</label><br /><span>{L_POLL_OPTIONS_EXPLAIN}</span></dt>
+			<dd><textarea name="poll_option_text" id="poll_option_text" rows="5" cols="35" class="inputbox">{POLL_OPTIONS}</textarea></dd>
+		</dl>
+
+		<hr class="dashed" />
+
+		<dl>
+			<dt><label for="poll_max_options">{L_POLL_MAX_OPTIONS}{L_COLON}</label></dt>
+			<dd><input type="number" min="0" max="999" name="poll_max_options" id="poll_max_options" value="{POLL_MAX_OPTIONS}" class="inputbox autowidth" /></dd>
+			<dd>{L_POLL_MAX_OPTIONS_EXPLAIN}</dd>
+		</dl>
+		<dl>
+			<dt><label for="poll_length">{L_POLL_FOR}{L_COLON}</label></dt>
+			<dd><label for="poll_length"><input type="number" min="0" max="999" name="poll_length" id="poll_length" value="{POLL_LENGTH}" class="inputbox autowidth" /> {L_DAYS}</label></dd>
+			<dd>{L_POLL_FOR_EXPLAIN}</dd>
+		</dl>
+
+		<!-- IF S_POLL_VOTE_CHANGE -->
+			<hr class="dashed" />
+
+			<dl>
+				<dt><label for="poll_vote_change">{L_POLL_VOTE_CHANGE}{L_COLON}</label></dt>
+				<dd><label for="poll_vote_change"><input type="checkbox" id="poll_vote_change" name="poll_vote_change"{VOTE_CHANGE_CHECKED} /> {L_POLL_VOTE_CHANGE_EXPLAIN}</label></dd>
+			</dl>
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+
+	<!-- EVENT posting_poll_body_options_after -->
+	</fieldset>
+
+	</div>
+</div>

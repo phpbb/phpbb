@@ -1,0 +1,27 @@
+<form method="post" action="{U_QR_ACTION}" id="qr_postform">
+<!-- EVENT quickreply_editor_panel_before -->
+	<div class="panel">
+		<div class="inner">
+				<h2 class="quickreply-title">{L_QUICKREPLY}</h2>
+				<fieldset class="fields1">
+				<!-- EVENT quickreply_editor_subject_before -->
+					<dl style="clear: left;">
+						<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
+						<dd><input type="text" name="subject" id="subject" size="45" maxlength="124" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
+					</dl>
+				<!-- EVENT quickreply_editor_message_before -->
+				<div id="message-box" class="message-box">
+					<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
+				</div>
+				<!-- EVENT quickreply_editor_message_after -->
+				</fieldset>
+				<fieldset class="submit-buttons">
+					{S_FORM_TOKEN}
+					{QR_HIDDEN_FIELDS}
+					<input type="submit" accesskey="f" tabindex="6" name="preview" value="{L_FULL_EDITOR}" class="button2" id="qr_full_editor" />&nbsp;
+					<input type="submit" accesskey="s" tabindex="7" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
+				</fieldset>
+		</div>
+	</div>
+<!-- EVENT quickreply_editor_panel_after -->
+</form>

@@ -1,0 +1,18 @@
+
+<div id="auth_oauth_settings">
+	<p>{L_AUTH_PROVIDER_OAUTH_EXPLAIN}</p>
+
+	<!-- BEGIN oauth_services -->
+	<fieldset>
+		<legend>{oauth_services.ACTUAL_NAME}</legend>
+		<dl>
+			<dt><label for="oauth_service_{oauth_services.NAME}_key">{L_AUTH_PROVIDER_OAUTH_KEY}{L_COLON}</label></dt>
+			<dd><input type="text" id="oauth_service_{oauth_services.NAME}_key" size="40" name="config[auth_oauth_{oauth_services.NAME}_key]" value="{oauth_services.KEY}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="oauth_service_{oauth_services.NAME}_secret">{L_AUTH_PROVIDER_OAUTH_SECRET}{L_COLON}</label></dt>
+			<dd><input type="text" id="oauth_service_{oauth_services.NAME}_secret" size="40" name="config[auth_oauth_{oauth_services.NAME}_secret]" value="{oauth_services.SECRET}" /></dd>
+		</dl>
+	</fieldset>
+	<!-- END oauth_services -->
+</div>

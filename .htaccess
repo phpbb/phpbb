@@ -1,0 +1,85 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+
+#
+# Uncomment the statement below if URL rewriting doesn't
+# work properly. If you installed phpBB in a subdirectory
+# of your site, properly set the argument for the statement.
+# e.g.: if your domain is test.com and you installed phpBB
+# in http://www.test.com/phpBB/index.php you have to set
+# the statement RewriteBase /phpBB/
+#
+#RewriteBase /
+
+#
+# Uncomment the statement below if you want to make use of
+# HTTP authentication and it does not already work.
+# This could be required if you are for example using PHP via Apache CGI.
+#
+#RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+
+#
+# The following 3 lines will rewrite URLs passed through the front controller
+# to not require app.php in the actual URL. In other words, a controller is
+# by default accessed at /app.php/my/controller, but can also be accessed at
+# /my/controller
+#
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ app.php [QSA,L]
+
+#
+# If symbolic links are not already being followed,
+# uncomment the line below.
+# http://anothersysadmin.wordpress.com/2008/06/10/mod_rewrite-forbidden-403-with-apache-228/
+#
+#Options +FollowSymLinks
+</IfModule>
+
+# With Apache 2.4 the "Order, Deny" syntax has been deprecated and moved from
+# module mod_authz_host to a new module called mod_access_compat (which may be
+# disabled) and a new "Require" syntax has been introduced to mod_authz_host.
+# We could just conditionally provide both versions, but unfortunately Apache
+# does not explicitly tell us its version if the module mod_version is not
+# available. In this case, we check for the availability of module
+# mod_authz_core (which should be on 2.4 or higher only) as a best guess.
+<IfModule mod_version.c>
+	<IfVersion < 2.4>
+		<Files "config.php">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+		<Files "common.php">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+	</IfVersion>
+	<IfVersion >= 2.4>
+		<Files "config.php">
+			Require all denied
+		</Files>
+		<Files "common.php">
+			Require all denied
+		</Files>
+	</IfVersion>
+</IfModule>
+<IfModule !mod_version.c>
+	<IfModule !mod_authz_core.c>
+		<Files "config.php">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+		<Files "common.php">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+	</IfModule>
+	<IfModule mod_authz_core.c>
+		<Files "config.php">
+			Require all denied
+		</Files>
+		<Files "common.php">
+			Require all denied
+		</Files>
+	</IfModule>
+</IfModule>

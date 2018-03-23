@@ -1,0 +1,37 @@
+services:
+    installer.requirements.check_filesystem:
+        class: phpbb\install\module\requirements\task\check_filesystem
+        arguments:
+            - '@filesystem'
+            - '@installer.helper.iohandler'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: installer_requirements, order: 10 }
+
+    installer.requirements.check_server_environment:
+        class: phpbb\install\module\requirements\task\check_server_environment
+        arguments:
+            - '@installer.helper.database'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: installer_requirements, order: 20 }
+            - { name: update_requirements, order: 20 }
+
+    installer.module.install_requirements_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: installer_requirements, class_name_aware: true }
+
+# Please note, that the name of this module is hard coded in the installer service
+    installer.module.requirements_install:
+        class: phpbb\install\module\requirements\install_module
+        parent: installer.module_base
+        arguments:
+            - '@installer.module.install_requirements_collection'
+            - true
+            - false
+        tags:
+            - { name: installer_install_module, order: 10 }

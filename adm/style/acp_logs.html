@@ -1,0 +1,90 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_TITLE}</h1>
+
+<p>{L_EXPLAIN}</p>
+
+<form id="list" method="post" action="{U_ACTION}">
+
+<fieldset class="display-options search-box">
+	{L_SEARCH_KEYWORDS}{L_COLON} <input type="text" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+</fieldset>
+
+<!-- IF .pagination -->
+<div class="pagination top-pagination">
+	<!-- INCLUDE pagination.html -->
+</div>
+<!-- ENDIF -->
+
+<!-- IF .log -->
+	<table class="table1 zebra-table fixed-width-table">
+	<thead>
+	<tr>
+		<th style="width: 15%;">{L_USERNAME}</th>
+		<th style="width: 15%;">{L_IP}</th>
+		<th style="width: 20%;">{L_TIME}</th>
+		<th>{L_ACTION}</th>
+		<!-- IF S_CLEARLOGS -->
+			<th style="width: 50px;">{L_MARK}</th>
+		<!-- ENDIF -->
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN log -->
+		<tr>
+			<td>
+				{log.USERNAME}
+				<!-- IF log.REPORTEE_USERNAME -->
+				<br />&raquo; {log.REPORTEE_USERNAME}
+				<!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">{log.IP}</td>
+			<td style="text-align: center;">{log.DATE}</td>
+			<td>{log.ACTION}<!-- IF log.DATA --><br /><span>{log.DATA}</span><!-- ENDIF --></td>
+			<!-- IF S_CLEARLOGS -->
+				<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{log.ID}" /></td>
+			<!-- ENDIF -->
+		</tr>
+	<!-- END log -->
+	</tbody>
+	</table>
+
+<!-- IF .pagination -->
+	<div class="pagination">
+		<!-- INCLUDE pagination.html -->
+	</div>
+<!-- ENDIF -->
+
+<!-- ELSE -->
+	<div class="errorbox">
+		<p>{L_NO_ENTRIES}</p>
+	</div>
+<!-- ENDIF -->
+
+<fieldset class="display-options">
+	{L_DISPLAY_LOG}{L_COLON} &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}{L_COLON} {S_SORT_KEY} {S_SORT_DIR}
+	<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	{S_FORM_TOKEN}
+</fieldset>
+<hr />
+
+<!-- IF S_SHOW_FORUMS -->
+	<fieldset class="quick">
+		{L_SELECT_FORUM}{L_COLON} <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{S_FORUM_BOX}</select>
+		<!-- EVENT acp_logs_quick_select_forum_button_prepend --><input class="button2" type="submit" value="{L_GO}" /><!-- EVENT acp_logs_quick_select_forum_button_append -->
+	</fieldset>
+<!-- ENDIF -->
+
+<!-- IF .log and S_CLEARLOGS -->
+	<fieldset class="quick">
+		<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
+		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" /><br />
+		<p class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>
+	</fieldset>
+<!-- ENDIF -->
+
+</form>
+
+<!-- INCLUDE overall_footer.html -->

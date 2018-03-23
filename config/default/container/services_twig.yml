@@ -1,0 +1,68 @@
+parameters:
+    core.template.cache_path: '%core.cache_dir%twig/'
+
+services:
+    template.twig.environment:
+        class: phpbb\template\twig\environment
+        arguments:
+            - '@config'
+            - '@filesystem'
+            - '@path_helper'
+            - '%core.template.cache_path%'
+            - '@ext.manager'
+            - '@template.twig.loader'
+            - '@dispatcher'
+            - []
+        calls:
+            - [setLexer, ['@template.twig.lexer']]
+
+    template.twig.lexer:
+        class: phpbb\template\twig\lexer
+        lazy: true
+        arguments:
+            - '@template.twig.environment'
+
+    template.twig.loader:
+        class: phpbb\template\twig\loader
+        arguments:
+            - '@filesystem'
+
+    template.twig.extensions.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: twig.extension }
+
+    template.twig.extensions.phpbb:
+        class: phpbb\template\twig\extension
+        arguments:
+            - '@template_context'
+            - '@language'
+        tags:
+            - { name: twig.extension }
+
+    template.twig.extensions.routing:
+        class: phpbb\template\twig\extension\routing
+        arguments:
+            - '@routing.helper'
+        tags:
+            - { name: twig.extension }
+
+    template.twig.extensions.debug:
+        class: Twig_Extension_Debug
+
+    template:
+        class: phpbb\template\twig\twig
+        arguments:
+            - '@path_helper'
+            - '@config'
+            - '@template_context'
+            - '@template.twig.environment'
+            - '%core.template.cache_path%'
+            - '@user'
+            - '@template.twig.extensions.collection'
+            - '@ext.manager'
+
+    template_context:
+        class: phpbb\template\context

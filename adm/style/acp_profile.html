@@ -1,0 +1,250 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<!-- IF S_EDIT -->
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<!-- IF ERROR_MSG -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="add_profile_field" method="post" action="{U_ACTION}"{S_FORM_ENCTYPE}>
+
+	<!-- IF S_STEP_ONE -->
+
+		<fieldset>
+			<legend>{L_TITLE}</legend>
+		<dl>
+			<dt><label>{L_FIELD_TYPE}{L_COLON}</label><br /><span>{L_FIELD_TYPE_EXPLAIN}</span></dt>
+			<dd><strong>{FIELD_TYPE}</strong></dd>
+		</dl>
+		<!-- IF S_EDIT_MODE -->
+		<dl>
+			<dt><label>{L_FIELD_IDENT}{L_COLON}</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
+			<dd><input type="hidden" name="field_ident" value="{FIELD_IDENT}" /><strong>{FIELD_IDENT}</strong></dd>
+		</dl>
+		<!-- ELSE -->
+		<dl>
+			<dt><label for="field_ident">{L_FIELD_IDENT}{L_COLON}</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
+			<dd><input class="text medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
+		</dl>
+		<!-- ENDIF -->
+		<dl>
+			<dt><label for="field_no_view">{L_DISPLAY_PROFILE_FIELD}{L_COLON}</label><br /><span>{L_DISPLAY_PROFILE_FIELD_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		</dl>
+		</fieldset>
+
+		<fieldset>
+			<legend>{L_VISIBILITY_OPTION}</legend>
+		<dl>
+			<dt><label for="field_show_profile">{L_DISPLAY_AT_PROFILE}{L_COLON}</label><br /><span>{L_DISPLAY_AT_PROFILE_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_profile" name="field_show_profile" value="1"<!-- IF S_SHOW_PROFILE --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_on_reg">{L_DISPLAY_AT_REGISTER}{L_COLON}</label><br /><span>{L_DISPLAY_AT_REGISTER_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_on_reg" name="field_show_on_reg" value="1"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_on_pm">{L_DISPLAY_ON_PM}{L_COLON}</label><br /><span>{L_DISPLAY_ON_PM_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_on_pm" name="field_show_on_pm" value="1"<!-- IF S_SHOW_ON_PM --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_on_vt">{L_DISPLAY_ON_VT}{L_COLON}</label><br /><span>{L_DISPLAY_ON_VT_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_on_vt" name="field_show_on_vt" value="1"<!-- IF S_SHOW_ON_VT --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_on_ml">{L_DISPLAY_ON_MEMBERLIST}{L_COLON}</label><br /><span>{L_DISPLAY_ON_MEMBERLIST_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_on_ml" name="field_show_on_ml" value="1"<!-- IF S_SHOW_ON_MEMBERLIST --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_required">{L_REQUIRED_FIELD}{L_COLON}</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_required" name="field_required" value="1"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_novalue">{L_SHOW_NOVALUE_FIELD}{L_COLON}</label><br /><span>{L_SHOW_NOVALUE_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_show_novalue" name="field_show_novalue" value="1"<!-- IF S_FIELD_SHOW_NOVALUE --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}{L_COLON}</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_hide" name="field_hide" value="1"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<!-- EVENT acp_profile_contact_before -->
+		<dl>
+			<dt><label for="field_is_contact">{L_FIELD_IS_CONTACT}{L_COLON}</label><br /><span>{L_FIELD_IS_CONTACT_EXPLAIN}</span></dt>
+			<dd><input type="checkbox" class="radio" id="field_is_contact" name="field_is_contact" value="1"<!-- IF S_FIELD_CONTACT --> checked="checked"<!-- ENDIF --> /></dd>
+			<dd><input class="text medium" type="text" name="field_contact_desc" id="field_contact_desc" value="{FIELD_CONTACT_DESC}" /> <label for="field_contact_desc">{L_FIELD_CONTACT_DESC}</label></dd>
+			<dd><input class="text medium" type="text" name="field_contact_url" id="field_contact_url" value="{FIELD_CONTACT_URL}" /> <label for="field_contact_url">{L_FIELD_CONTACT_URL}</label></dd>
+			<!-- EVENT acp_profile_contact_last -->
+		</dl>
+		</fieldset>
+
+		<!-- IF S_EDIT_MODE -->
+			<fieldset class="quick">
+				<input class="button1" type="submit" name="save" value="{L_SAVE}" />
+			</fieldset>
+		<!-- ENDIF -->
+
+		<fieldset>
+			<legend>{L_LANG_SPECIFIC}</legend>
+		<dl>
+			<dt><label for="lang_name">{L_USER_FIELD_NAME}{L_COLON}</label></dt>
+			<dd><input class="text medium" type="text" id="lang_name" name="lang_name" value="{LANG_NAME}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="lang_explain">{L_FIELD_DESCRIPTION}{L_COLON}</label><br /><span>{L_FIELD_DESCRIPTION_EXPLAIN}</span></dt>
+			<dd><textarea id="lang_explain" name="lang_explain" rows="3" cols="80">{LANG_EXPLAIN}</textarea></dd>
+		</dl>
+		<!-- IF S_TEXT or S_STRING -->
+			<dl>
+				<dt><label for="lang_default_value">{L_DEFAULT_VALUE}{L_COLON}</label><br /><span>{L_DEFAULT_VALUE_EXPLAIN}</span></dt>
+				<dd><!-- IF S_STRING --><input class="text medium" type="text" id="lang_default_value" name="lang_default_value" value="{LANG_DEFAULT_VALUE}" /><!-- ELSE --><textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">{LANG_DEFAULT_VALUE}</textarea><!-- ENDIF --></dd>
+			</dl>
+		<!-- ENDIF -->
+		<!-- IF S_BOOL or S_DROPDOWN -->
+			<dl>
+				<dt><label for="lang_options">{L_ENTRIES}{L_COLON}</label>
+					<!-- IF S_EDIT_MODE and S_DROPDOWN -->
+						<br /><span>{L_EDIT_DROPDOWN_LANG_EXPLAIN}</span>
+					<!-- ELSE -->
+						<br /><span>{L_LANG_OPTIONS_EXPLAIN}</span>
+					<!-- ENDIF -->
+				</dt>
+			<!-- IF S_DROPDOWN -->
+				<dd><textarea id="lang_options" name="lang_options" rows="5" cols="80">{LANG_OPTIONS}</textarea></dd>
+			<!-- ELSE -->
+				<dd><input class="medium" id="lang_options" name="lang_options[0]" value="{FIRST_LANG_OPTION}" /> {L_FIRST_OPTION}</dd>
+				<dd><input class="medium" name="lang_options[1]" value="{SECOND_LANG_OPTION}" /> {L_SECOND_OPTION}</dd>
+			<!-- ENDIF -->
+			</dl>
+		<!-- ENDIF -->
+		<!-- EVENT acp_profile_step_one_lang_after -->
+		</fieldset>
+
+		<fieldset class="quick">
+			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
+			<input class="button1" type="submit" name="next" value="{L_PROFILE_TYPE_OPTIONS}" />
+		</fieldset>
+
+	<!-- ELSEIF S_STEP_TWO -->
+
+		<fieldset>
+			<legend>{L_TITLE}</legend>
+		<!-- BEGIN option -->
+			<dl>
+				<dt><label>{option.TITLE}{L_COLON}</label><!-- IF option.EXPLAIN --><br /><span>{option.EXPLAIN}</span><!-- ENDIF --></dt>
+				<dd>{option.FIELD}</dd>
+			</dl>
+		<!-- END option -->
+		</fieldset>
+
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
+			<input class="button1" type="submit" name="prev" value="{L_PROFILE_BASIC_OPTIONS}" />
+		</fieldset>
+
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
+			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
+			<input class="button1" type="submit" name="next" value="{L_NEXT_STEP}" />
+		</fieldset>
+
+	<!-- ELSEIF S_STEP_THREE -->
+
+		<!-- BEGIN options -->
+			<fieldset>
+				<legend>{options.LANGUAGE}</legend>
+			<!-- BEGIN field -->
+				<dl>
+					<dt><label>{options.field.L_TITLE}{L_COLON}</label><!-- IF options.field.L_EXPLAIN --><br /><span>{options.field.L_EXPLAIN}</span><!-- ENDIF --></dt>
+					{options.field.FIELD}
+				</dl>
+			<!-- END field -->
+			</fieldset>
+		<!-- END options -->
+
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
+			<input class="button1" type="submit" name="prev" value="{L_PROFILE_TYPE_OPTIONS}" />
+		</fieldset>
+
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
+			{S_HIDDEN_FIELDS}
+			<input class="button1" type="submit" name="save" value="{L_SAVE}" />
+			{S_FORM_TOKEN}
+		</fieldset>
+
+	<!-- ENDIF -->
+
+	</form>
+
+<!-- ELSE -->
+
+	<h1>{L_ACP_CUSTOM_PROFILE_FIELDS}</h1>
+
+	<!-- IF S_NEED_EDIT -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{L_CUSTOM_FIELDS_NOT_TRANSLATED}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<table class="table1 zebra-table">
+	<thead>
+	<tr>
+		<th>{L_FIELD_IDENT}</th>
+		<th>{L_FIELD_TYPE}</th>
+		<th colspan="2">{L_OPTIONS}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN fields -->
+	<tr>
+		<td>{fields.FIELD_IDENT}</td>
+		<td>{fields.FIELD_TYPE}</td>
+		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_TRANSLATE}" style="color: red;">{L_TRANSLATE}</a><!-- ENDIF --></td>
+
+		<td class="actions" style="width: 80px;">
+			<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+			<span class="up"><a href="{fields.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
+			<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+			<span class="down"><a href="{fields.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
+			<!-- IF not fields.S_NEED_EDIT -->
+				<a href="{fields.U_EDIT}">{ICON_EDIT}</a>
+			<!-- ELSE -->
+				{ICON_EDIT_DISABLED}
+			<!-- ENDIF -->
+			<a href="{fields.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
+		</td>
+
+	</tr>
+	<!-- BEGINELSE -->
+	<tr class="row3">
+		<td colspan="4">{L_ACP_NO_ITEMS}</td>
+	</tr>
+	<!-- END fields -->
+	</tbody>
+	</table>
+
+	<form id="profile_fields" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		<input class="text small" type="text" name="field_ident" /> <select name="field_type">{S_TYPE_OPTIONS}</select>
+		<input class="button1" type="submit" name="submit" value="{L_CREATE_NEW_FIELD}" />
+		<input type="hidden" name="create" value="1" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

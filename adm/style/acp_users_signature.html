@@ -1,0 +1,52 @@
+<script type="text/javascript">
+// <![CDATA[
+
+	var form_name = 'user_signature';
+	var text_name = 'signature';
+	var load_draft = false;
+	var upload = false;
+	var imageTag = false;
+
+// ]]>
+</script>
+
+<form id="user_signature" method="post" action="{U_ACTION}">
+
+	<!-- IF SIGNATURE_PREVIEW -->
+		<fieldset>
+			<legend>{L_ADMIN_SIG_PREVIEW}</legend>
+			<p>{SIGNATURE_PREVIEW}</p>
+		</fieldset>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_SIGNATURE}</legend>
+		<p>{L_SIGNATURE_EXPLAIN}</p>
+
+		<!-- INCLUDE acp_posting_buttons.html -->
+
+		<dl class="responsive-columns">
+			<dt style="width: 90px;" id="color_palette_placeholder" data-orientation="v" data-height="12" data-width="15" data-bbcode="true">
+			</dt>
+			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px;"><textarea name="signature" rows="10" cols="60" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{SIGNATURE}</textarea></dd>
+			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px; margin-top: 5px;">
+			<!-- IF S_BBCODE_ALLOWED -->
+				<label><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label>
+			<!-- ENDIF -->
+			<!-- IF S_SMILIES_ALLOWED -->
+				<label><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /> {L_DISABLE_SMILIES}</label>
+			<!-- ENDIF -->
+			<!-- IF S_LINKS_ALLOWED -->
+				<label><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /> {L_DISABLE_MAGIC_URL}</label>
+			<!-- ENDIF -->
+			</dd>
+			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px; margin-top: 10px;"><strong>{L_OPTIONS}{L_COLON} </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>

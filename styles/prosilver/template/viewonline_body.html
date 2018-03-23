@@ -1,0 +1,63 @@
+<!-- INCLUDE overall_header.html -->
+
+<h2 class="viewonline-title">{TOTAL_REGISTERED_USERS_ONLINE}</h2>
+<p>{TOTAL_GUEST_USERS_ONLINE}<!-- IF S_SWITCH_GUEST_DISPLAY --> &bull; <a href="{U_SWITCH_GUEST_DISPLAY}">{L_SWITCH_GUEST_DISPLAY}</a><!-- ENDIF --></p>
+
+<div class="action-bar bar-top">
+	<div class="pagination">
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			{PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<div class="forumbg forumbg-table">
+	<div class="inner">
+
+	<table class="table1">
+
+	<!-- IF .user_row -->
+		<thead>
+		<tr>
+			<th class="name"><a href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
+			<th class="info"><a href="{U_SORT_LOCATION}">{L_FORUM_LOCATION}</a></th>
+			<th class="active"><a href="{U_SORT_UPDATED}">{L_LAST_UPDATED}</a></th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- BEGIN user_row -->
+		<tr class="<!-- IF user_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+			<td>{user_row.USERNAME_FULL}<!-- IF user_row.USER_IP --> <span style="float: {S_CONTENT_FLOW_END};">{L_IP}{L_COLON} <a href="{user_row.U_USER_IP}">{user_row.USER_IP}</a> &#187; <a href="{user_row.U_WHOIS}" onclick="popup(this.href, 750, 500); return false;">{L_WHOIS}</a></span><!-- ENDIF -->
+				<!-- IF user_row.USER_BROWSER --><br />{user_row.USER_BROWSER}<!-- ENDIF --></td>
+			<td class="info"><a href="{user_row.U_FORUM_LOCATION}">{user_row.FORUM_LOCATION}</a></td>
+			<td class="active">{user_row.LASTUPDATE}</td>
+		</tr>
+		<!-- END user_row -->
+	<!-- ELSE -->
+		<tbody>
+		<tr class="bg1">
+			<td colspan="3">{L_NO_ONLINE_USERS}<!-- IF S_SWITCH_GUEST_DISPLAY --> &bull; <a href="{U_SWITCH_GUEST_DISPLAY}">{L_SWITCH_GUEST_DISPLAY}</a><!-- ENDIF --></td>
+		</tr>
+	<!-- ENDIF -->
+	</tbody>
+	</table>
+
+	</div>
+</div>
+
+<!-- IF LEGEND --><p><em>{L_LEGEND}{L_COLON} {LEGEND}</em></p><!-- ENDIF -->
+
+<div class="action-bar bar-bottom">
+	<div class="pagination">
+		<!-- IF .pagination -->
+			<!-- INCLUDE pagination.html -->
+		<!-- ELSE -->
+			{PAGE_NUMBER}
+		<!-- ENDIF -->
+	</div>
+</div>
+
+<!-- INCLUDE jumpbox.html -->
+<!-- INCLUDE overall_footer.html -->

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html dir="{S_CONTENT_DIRECTION}" lang="{S_USER_LANG}">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="noindex" />
+{META}
+<title>{SITENAME} &bull; {PAGE_TITLE}</title>
+
+<link href="{T_THEME_PATH}/print.css" rel="stylesheet">
+<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet">
+<!-- EVENT viewtopic_print_head_append -->
+</head>
+<body id="phpbb" class="{S_CONTENT_DIRECTION}">
+<div id="wrap" class="wrap">
+	<a id="top" class="top-anchor" accesskey="t"></a>
+
+	<div id="page-header">
+		<h1>{SITENAME}</h1>
+		<p>{SITE_DESCRIPTION}<br /><a href="{U_FORUM}">{U_FORUM}</a></p>
+
+		<h2>{TOPIC_TITLE}</h2>
+		<p><a href="{U_TOPIC}">{U_TOPIC}</a></p>
+	</div>
+
+	<div id="page-body" class="page-body">
+		<div class="page-number">{PAGE_NUMBER}</div>
+		<!-- BEGIN postrow -->
+			<div class="post">
+				<h3>{postrow.POST_SUBJECT}</h3>
+				<div class="date">{L_POSTED}{L_COLON} <strong>{postrow.POST_DATE}</strong></div>
+				<div class="author">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR}</strong></div>
+				<div class="content">{postrow.MESSAGE}</div>
+			</div>
+			<hr />
+		<!-- END postrow -->
+	</div>
+
+	<div id="page-footer" class="page-footer">
+		<div class="page-number">{S_TIMEZONE}<br />{PAGE_NUMBER}</div>
+		<div class="copyright">Powered by phpBB&reg; Forum Software &copy; phpBB Limited<br />https://www.phpbb.com/</div>
+	</div>
+</div>
+
+</body>
+</html>

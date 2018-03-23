@@ -1,0 +1,3 @@
+services:
+    php_ini:
+        class: bantu\IniGetWrapper\IniGetWrapper

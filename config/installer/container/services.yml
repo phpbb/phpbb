@@ -1,0 +1,104 @@
+imports:
+    - { resource: services_installer.yml }
+    - { resource: ../../default/container/services_event.yml }
+    - { resource: ../../default/container/services_filesystem.yml }
+    - { resource: ../../default/container/services_http.yml }
+    - { resource: ../../default/container/services_language.yml }
+    - { resource: ../../default/container/services_php.yml }
+    - { resource: ../../default/container/services_routing.yml }
+    - { resource: ../../default/container/services_twig.yml }
+
+services:
+    cache.driver:
+        class: '%cache.driver.class%'
+        arguments:
+            - '%core.cache_dir%'
+
+    config:
+        class: phpbb\config\config
+        arguments:
+            -
+                rand_seed: 'installer_seed'
+                rand_seed_last_update: 0
+
+    controller.resolver:
+        class: phpbb\controller\resolver
+        arguments:
+            - '@service_container'
+            - '%core.root_path%'
+            - '@template'
+
+    file_locator:
+        class: phpbb\routing\file_locator
+        arguments:
+            - '@filesystem'
+            - '%core.root_path%'
+
+    kernel_exception_subscriber:
+        class: phpbb\install\event\kernel_exception_subscriber
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '@language'
+            - '@template'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    language.loader:
+        parent: language.loader_abstract
+
+    path_helper:
+        class: phpbb\path_helper
+        arguments:
+            - '@symfony_request'
+            - '@filesystem'
+            - '@request'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    routing.resources_locator.default:
+        class: phpbb\routing\resources_locator\installer_resources_locator
+        arguments:
+            - '@filesystem'
+            - '%core.root_path%'
+            - '%core.environment%'
+        tags:
+            - { name: routing.resources_locator }
+
+    template:
+        class: phpbb\template\twig\twig
+        arguments:
+            - '@path_helper'
+            - '@config'
+            - '@template_context'
+            - '@template.twig.environment'
+            - '%core.template.cache_path%'
+            - null
+            - '@template.twig.extensions.collection'
+
+    template.twig.environment:
+        class: phpbb\template\twig\environment
+        arguments:
+            - '@config'
+            - '@filesystem'
+            - '@path_helper'
+            - '%core.template.cache_path%'
+            - null
+            - '@template.twig.loader'
+            - null
+            - []
+        calls:
+            - [setLexer, ['@template.twig.lexer']]
+
+    user:
+        class: phpbb\user
+        arguments:
+            - '@language'
+            - '%datetime.class%'
+
+    console.exception_subscriber:
+        class: phpbb\console\exception_subscriber
+        arguments:
+            - '@language'
+            - '%debug.exceptions%'
+        tags:
+            - { name: kernel.event_subscriber }

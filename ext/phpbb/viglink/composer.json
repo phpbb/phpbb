@@ -1,0 +1,27 @@
+{
+	"name": "phpbb/viglink",
+	"type": "phpbb-extension",
+	"description": "The VigLink extension for phpBB makes it possible to earn revenue, without any change to the user experience, when users post and follow links to commercial sites.",
+	"homepage": "https://www.phpbb.com",
+	"version": "1.0.3",
+	"keywords": ["phpbb", "extension", "viglink"],
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "phpBB Limited",
+			"email": "operations@phpbb.com",
+			"homepage": "https://www.phpbb.com/go/authors"
+		}
+	],
+	"require": {
+		"php": ">=5.4",
+		"phpbb/phpbb": ">=3.2.0-b1",
+		"composer/installers": "~1.0"
+	},
+	"extra": {
+		"display-name": "VigLink",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.2.0-b1,<3.3"
+		}
+	}
+}

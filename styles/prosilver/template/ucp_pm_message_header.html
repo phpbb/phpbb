@@ -1,0 +1,70 @@
+<h2>{L_TITLE}<!-- IF CUR_FOLDER_NAME -->{L_COLON} {CUR_FOLDER_NAME}<!-- ENDIF --></h2>
+
+<form id="viewfolder" method="post" action="{S_PM_ACTION}">
+
+<div class="panel">
+	<div class="inner">
+	<!-- IF FOLDER_STATUS and FOLDER_MAX_MESSAGES neq 0 --><p>{FOLDER_STATUS}</p><!-- ENDIF -->
+
+	<div class="action-bar bar-top">
+	<!-- IF U_POST_REPLY_PM or U_POST_NEW_TOPIC or U_FORWARD_PM -->
+		<!-- IF U_POST_REPLY_PM -->
+			<a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}" class="button">
+				<span>{L_BUTTON_PM_REPLY}</span> <i class="icon fa-reply fa-fw" aria-hidden="true"></i>
+			</a>
+		<!-- ELSEIF U_POST_NEW_TOPIC -->
+			<a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}" class="button">
+				<span>{L_BUTTON_PM_NEW}</span> <i class="icon fa-pencil fa-fw" aria-hidden="true"></i>
+			</a>
+		<!-- ENDIF -->
+		<!-- IF U_FORWARD_PM -->
+			<a title="{L_POST_FORWARD_PM}" href="{U_FORWARD_PM}" class="button">
+				<span>{L_BUTTON_PM_FORWARD}</span> <i class="icon fa-mail-forward fa-fw" aria-hidden="true"></i>
+			</a>
+		<!-- ENDIF -->
+		<!-- IF U_POST_REPLY_PM and S_PM_RECIPIENTS gt 1 -->
+			<a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}" class="button">
+				<span>{L_BUTTON_PM_REPLY_ALL}</span> <i class="icon fa-pencil fa-fw" aria-hidden="true"></i>
+			</a>
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+
+	<!-- IF not S_IS_BOT and U_PRINT_PM -->
+		<div class="dropdown-container dropdown-button-control topic-tools">
+			<span title="{L_PM_TOOLS}" class="button button-secondary dropdown-trigger dropdown-select">
+				<i class="icon fa-wrench fa-fw" aria-hidden="true"></i>
+				<span class="caret"><i class="icon fa-sort-down fa-fw" aria-hidden="true"></i></span>
+			</span>
+			<div class="dropdown">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents">
+					<!-- IF U_PRINT_PM -->
+						<li>
+							<a href="{U_PRINT_PM}" title="{L_PRINT_PM}" accesskey="p">
+								<i class="icon fa-print fa-fw" aria-hidden="true"></i><span>{L_PRINT_PM}</span>
+							</a>
+						</li>
+					<!-- ENDIF -->
+				</ul>
+			</div>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
+		<div class="pagination">
+			<!-- IF S_VIEW_MESSAGE -->
+				<a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_CURRENT_FOLDER}">
+					<i class="icon fa-angle-{S_CONTENT_FLOW_BEGIN} fa-fw icon-black" aria-hidden="true"></i><span>{L_RETURN_TO_FOLDER}</span>
+				</a>
+			<!-- ELSEIF FOLDER_CUR_MESSAGES neq 0 -->
+				<!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}" class="mark">{L_PM_MARK_ALL_READ}</a> &bull; <!-- ENDIF -->
+				{TOTAL_MESSAGES}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+		</div>
+	<!-- ENDIF -->
+	</div>

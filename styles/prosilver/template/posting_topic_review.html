@@ -1,0 +1,89 @@
+
+<h3 id="review" class="review">
+	<span class="right-box"><a href="#review" onclick="viewableArea(getElementById('topicreview'), true); var rev_text = getElementById('review').getElementsByTagName('a').item(0).firstChild; if (rev_text.data == '{LA_EXPAND_VIEW}'){rev_text.data = '{LA_COLLAPSE_VIEW}'; } else if (rev_text.data == '{LA_COLLAPSE_VIEW}'){rev_text.data = '{LA_EXPAND_VIEW}'};">{L_EXPAND_VIEW}</a></span>
+	{L_TOPIC_REVIEW}{L_COLON} {TOPIC_TITLE}
+</h3>
+
+<div id="topicreview" class="topicreview">
+<script type="text/javascript">
+// <![CDATA[
+	bbcodeEnabled = {S_BBCODE_ALLOWED};
+// ]]>
+</script>
+	<!-- BEGIN topic_review_row -->
+
+	<!-- IF topic_review_row.S_IGNORE_POST -->
+	<div class="post bg3 post-ignore">
+		<div class="inner">
+			{topic_review_row.L_IGNORE_POST}
+	<!-- ELSE IF topic_review_row.S_POST_DELETED -->
+	<div class="post bg3 post-ignore">
+		<div class="inner">
+			{topic_review_row.L_DELETE_POST}
+	<!-- ELSE -->
+	<div class="post <!-- IF topic_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF topic_review_row.POST_ID == REPORTED_POST_ID --> reported<!-- ENDIF -->">
+		<div class="inner">
+	<!-- ENDIF -->
+
+		<div class="postbody" id="pr{topic_review_row.POST_ID}">
+			<h3><a href="#pr{topic_review_row.POST_ID}">{topic_review_row.POST_SUBJECT}</a></h3>
+
+			<!-- IF (topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE) or topic_review_row.U_MCP_DETAILS -->
+			<ul class="post-buttons">
+			<!-- IF topic_review_row.U_MCP_DETAILS -->
+				<li>
+					<a href="{topic_review_row.U_MCP_DETAILS}" title="{L_POST_DETAILS}" class="button button-icon-only">
+						<i class="icon fa-info fa-fw" aria-hidden="true"></i><span class="sr-only">{L_POST_DETAILS}</span>
+					</a>
+				<li>
+			<!-- ENDIF -->
+			<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE -->
+				<li>
+					<a href="#postingbox" onclick="addquote({topic_review_row.POST_ID}, '{topic_review_row.POSTER_QUOTE}', '{LA_WROTE}', {post_id:{topic_review_row.POST_ID},time:{topic_review_row.POST_TIME},user_id:{topic_review_row.USER_ID}});" title="{L_QUOTE} {topic_review_row.POST_AUTHOR}" class="button button-icon-only">
+						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUOTE} {topic_review_row.POST_AUTHOR}</span>
+					</a>
+				</li>
+			<!-- ENDIF -->
+			</ul>
+			<!-- ENDIF -->
+
+			<!-- EVENT posting_topic_review_row_post_details_before -->
+			<p class="author">
+				<!-- IF S_IS_BOT -->
+					<span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{topic_review_row.MINI_POST}</span></span>
+				<!-- ELSE -->
+					<a href="{topic_review_row.U_MINI_POST}" title="{topic_review_row.MINI_POST}">
+						<i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{topic_review_row.MINI_POST}</span>
+					</a>
+				<!-- ENDIF -->
+				{L_POST_BY_AUTHOR} <strong>{topic_review_row.POST_AUTHOR_FULL}</strong> &raquo; {topic_review_row.POST_DATE}
+			</p>
+			<!-- EVENT posting_topic_review_row_post_details_after -->
+
+			<div class="content">{topic_review_row.MESSAGE}</div>
+
+			<!-- IF topic_review_row.S_HAS_ATTACHMENTS -->
+				<dl class="attachbox">
+					<dt>{L_ATTACHMENTS}</dt>
+					<!-- BEGIN attachment -->
+						<dd>{topic_review_row.attachment.DISPLAY_ATTACHMENT}</dd>
+					<!-- END attachment -->
+				</dl>
+			<!-- ENDIF -->
+
+			<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE -->
+				<div id="message_{topic_review_row.POST_ID}" style="display: none;">{topic_review_row.DECODED_MESSAGE}</div>
+			<!-- ENDIF -->
+		</div>
+		</div>
+	</div>
+	<!-- END topic_review_row -->
+</div>
+
+<hr />
+
+<p>
+	<a href="<!-- IF S_MCP_REPORT -->#report<!-- ELSE -->#postingbox<!-- ENDIF -->" class="top">
+		<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span>{L_BACK_TO_TOP}</span>
+	</a>
+</p>

@@ -1,0 +1,50 @@
+<!-- INCLUDE overall_header.html -->
+
+<h2 class="faq-title">{L_FAQ_TITLE}</h2>
+
+
+<div class="panel bg1" id="faqlinks">
+	<div class="inner">
+		<div class="column1">
+		<!-- BEGIN faq_block -->
+			<!-- IF faq_block.SWITCH_COLUMN or (SWITCH_COLUMN_MANUALLY and faq_block.S_ROW_COUNT == 4) -->
+				</div>
+
+				<div class="column2">
+			<!-- ENDIF -->
+
+			<dl class="faq">
+				<dt><strong>{faq_block.BLOCK_TITLE}</strong></dt>
+				<!-- BEGIN faq_row -->
+					<dd><a href="#f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}">{faq_block.faq_row.FAQ_QUESTION}</a></dd>
+				<!-- END faq_row -->
+			</dl>
+		<!-- END faq_block -->
+		</div>
+	</div>
+</div>
+
+<!-- BEGIN faq_block -->
+	<div class="panel <!-- IF faq_block.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+		<div class="inner">
+
+		<div class="content">
+			<h2 class="faq-title">{faq_block.BLOCK_TITLE}</h2>
+			<!-- BEGIN faq_row -->
+				<dl class="faq">
+					<dt id="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
+					<dd>{faq_block.faq_row.FAQ_ANSWER}</dd>
+				</dl>
+				<a href="#faqlinks" class="top">
+					<i class="icon fa-chevron-circle-up fa-fw icon-gray" aria-hidden="true"></i><span>{L_BACK_TO_TOP}</span>
+				</a>
+				<!-- IF not faq_block.faq_row.S_LAST_ROW --><hr class="dashed" /><!-- ENDIF -->
+			<!-- END faq_row -->
+		</div>
+
+		</div>
+	</div>
+<!-- END faq_block -->
+
+<!-- INCLUDE jumpbox.html -->
+<!-- INCLUDE overall_footer.html -->

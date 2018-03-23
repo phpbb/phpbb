@@ -1,0 +1,169 @@
+<form id="user_overview" method="post" action="{U_ACTION}">
+
+<fieldset>
+	<legend>{L_ACP_USER_OVERVIEW}</legend>
+<dl>
+	<dt><label for="user">{L_USERNAME}{L_COLON}</label><br /><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
+	<dd><input type="text" id="user" name="user" value="{USER}" /></dd>
+	<!-- IF U_SWITCH_PERMISSIONS --><dd>[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</dd><!-- ENDIF -->
+</dl>
+<!-- IF S_USER_INACTIVE -->
+<dl>
+	<dt><label>{L_USER_IS_INACTIVE}{L_COLON}</label></dt>
+	<dd><strong>{USER_INACTIVE_REASON}</strong></dd>
+</dl>
+<!-- ENDIF -->
+<dl>
+	<dt><label>{L_REGISTERED}{L_COLON}</label></dt>
+	<dd><strong>{USER_REGISTERED}</strong></dd>
+</dl>
+<!-- IF S_USER_IP -->
+<dl>
+	<dt><label>{L_REGISTERED_IP}{L_COLON}</label></dt>
+	<dd><a href="{U_SHOW_IP}">{REGISTERED_IP}</a></dd>
+	<dd>[ <a href="{U_WHOIS}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_WHOIS}</a> ]</dd>
+</dl>
+<!-- ENDIF -->
+<dl>
+	<dt><label>{L_LAST_ACTIVE}{L_COLON}</label></dt>
+	<dd><strong>{USER_LASTACTIVE}</strong></dd>
+</dl>
+<dl>
+	<dt><label>{L_POSTS}{L_COLON}</label></dt>
+	<dd>
+		<strong>
+			<!-- IF USER_HAS_POSTS and U_SEARCH_USER -->
+				<a href="{U_SEARCH_USER}">{USER_POSTS}</a>
+			<!-- ELSE -->
+				{USER_POSTS}
+			<!-- ENDIF -->
+		</strong>
+		<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE -->
+			(<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>)
+		<!-- ELSEIF POSTS_IN_QUEUE -->
+			({L_POSTS_IN_QUEUE})
+		<!-- ENDIF -->
+	</dd>
+</dl>
+<dl>
+	<dt><label>{L_WARNINGS}{L_COLON}</label></dt>
+	<dd><strong>{USER_WARNINGS}</strong></dd>
+</dl>
+<dl>
+	<dt><label for="user_founder">{L_FOUNDER}{L_COLON}</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_NO}</label></dd>
+</dl>
+<dl>
+	<dt><label for="user_email">{L_EMAIL}{L_COLON}</label></dt>
+	<dd><input class="text medium" type="email" id="user_email" name="user_email" value="{USER_EMAIL}" autocomplete="off" /></dd>
+</dl>
+<dl>
+	<dt><label for="new_password">{L_NEW_PASSWORD}{L_COLON}</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
+	<dd><input type="password" id="new_password" name="new_password" value="" autocomplete="off" /></dd>
+</dl>
+<dl>
+	<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}{L_COLON}</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
+	<dd><input type="password" id="password_confirm" name="password_confirm" value="" autocomplete="off" /></dd>
+</dl>
+<!-- EVENT acp_users_overview_options_append -->
+
+<p class="quick">
+	<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	<input type="hidden" name="action" value="" />
+	{S_FORM_TOKEN}
+</p>
+
+</fieldset>
+</form>
+
+<!-- IF not S_USER_FOUNDER or S_FOUNDER -->
+
+	<script type="text/javascript">
+	// <![CDATA[
+
+		function display_reason(option)
+		{
+			if (option != 'banuser' && option != 'banemail' && option != 'banip')
+			{
+				phpbb.toggleDisplay('reasons', -1);
+				return;
+			}
+
+			phpbb.toggleDisplay('reasons', 1);
+
+			element = document.getElementById('user_quick_tools').ban_reason;
+
+			if (element.value && element.value != '{LA_USER_ADMIN_BAN_NAME_REASON}' && element.value != '{LA_USER_ADMIN_BAN_EMAIL_REASON}' && element.value != '{LA_USER_ADMIN_BAN_IP_REASON}')
+			{
+				return;
+			}
+
+			if (option == 'banuser')
+			{
+				element.value = '{LA_USER_ADMIN_BAN_NAME_REASON}';
+			}
+			else if (option == 'banemail')
+			{
+				element.value = '{LA_USER_ADMIN_BAN_EMAIL_REASON}';
+			}
+			else if (option == 'banip')
+			{
+				element.value = '{LA_USER_ADMIN_BAN_IP_REASON}';
+			}
+		}
+
+	// ]]>
+	</script>
+
+	<form id="user_quick_tools" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_USER_TOOLS}</legend>
+	<dl>
+		<dt><label for="quicktools">{L_QUICK_TOOLS}{L_COLON}</label></dt>
+		<dd><select id="quicktools" name="action" onchange="display_reason(this.options[this.selectedIndex].value);">{S_ACTION_OPTIONS}</select></dd>
+	</dl>
+	<div style="display: none;" id="reasons">
+		<dl>
+			<dt><label for="ban_reason">{L_BAN_REASON}{L_COLON}</label></dt>
+			<dd><input name="ban_reason" type="text" class="text medium" maxlength="3000" id="ban_reason" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="ban_give_reason">{L_BAN_GIVE_REASON}{L_COLON}</label></dt>
+			<dd><input name="ban_give_reason" type="text" class="text medium" maxlength="3000" id="ban_give_reason" /></dd>
+		</dl>
+	</div>
+
+	<p class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		{S_FORM_TOKEN}
+	</p>
+
+	</fieldset>
+
+	</form>
+
+	<!-- IF not S_OWN_ACCOUNT -->
+		<form id="user_delete" method="post" action="{U_ACTION}">
+			<fieldset>
+				<legend>{L_DELETE_USER}</legend>
+				<dl>
+					<dt><label for="delete_type">{L_DELETE_USER}{L_COLON}</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
+					<dd>
+					<!-- IF USER_HAS_POSTS -->
+						<select id="delete_type" name="delete_type"><option class="sep" value="">{L_SELECT_OPTION}</option><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select>
+					<!-- ELSE -->
+						{L_USER_NO_POSTS_TO_DELETE}<input type="hidden" id="delete_type" name="delete_type" value="retain" />
+					<!-- ENDIF -->
+					</dd>
+				</dl>
+				<p class="quick">
+					<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+					<input type="hidden" name="delete" value="1" />
+					{S_FORM_TOKEN}
+				</p>
+			</fieldset>
+		</form>
+	<!-- ENDIF -->
+<!-- ENDIF -->
