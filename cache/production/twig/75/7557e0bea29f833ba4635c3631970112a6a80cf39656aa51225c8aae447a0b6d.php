@@ -168,10 +168,12 @@ class __TwigTemplate_1578aae54013918ffa3984f9443cfcbaa4ff5b1c1d120423ea8f1f0fead
             echo "<div id=\"colour_palette\" style=\"display: none;\">
 \t<dl style=\"clear: left;\">
 \t\t<dt><label>";
+			// hiding place inline button for attachements when bbcode is disabled
 			echo "<input type=\"button\" value=\"Place inline\" class=\"button2 hidden file-inline-bbcode\" style=\"display: none;\">";
             // line 57
             echo $this->env->getExtension('phpbb\template\twig\extension')->lang("FONT_COLOR");
             echo $this->env->getExtension('phpbb\template\twig\extension')->lang("COLON");
+			
             echo "</label></dt>
 \t\t<dd id=\"color_palette_placeholder\" class=\"color_palette_placeholder\" data-orientation=\"h\" data-height=\"12\" data-width=\"15\" data-bbcode=\"true\"></dd>
 \t</dl>
