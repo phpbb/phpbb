@@ -486,7 +486,13 @@ phpbb.plupload.uploader.bind('Error', function(up, error) {
 	if (error.code === plupload.FILE_EXTENSION_ERROR) {
 		error.message = plupload.translate('Invalid file extension:') + ' ' + error.file.name;
 	} else if (error.code === plupload.FILE_SIZE_ERROR) {
-		error.message = plupload.translate('File too large:') + ' ' + error.file.name;
+		var fileSize = phpbb.makeSizeReadable(error.file.origSize);
+		var maxFileSize = phpbb.makeSizeReadable(phpbb.plupload.config.max_file_size);
+		var fileSizeText = fileSize[0].toString() + ' ' + plupload.translate(fileSize[1]);
+		var maxFileSizeText = maxFileSize[0].toString() + ' ' + plupload.translate(maxFileSize[1]);
+
+		error.message = plupload.translate('File too large:') + ' ' + error.file.name + '. ';
+		error.message += plupload.sprintf(plupload.translate('File size: %s, max file size: %s'), fileSizeText, maxFileSizeText);
 	}
 	phpbb.alert(phpbb.plupload.lang.ERROR, error.message);
 });

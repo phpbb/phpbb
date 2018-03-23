@@ -56,6 +56,7 @@ $lang = array_merge($lang, array(
 	'PLUPLOAD_EXTENSION_ERROR'	=> 'File extension error.',
 	'PLUPLOAD_FILE'				=> 'File: %s',
 	'PLUPLOAD_FILE_DETAILS'		=> 'File: %s, size: %d, max file size: %d',
+	'PLUPLOAD_FILE_SIZE_DETAILS'=> 'File size: %s, max file size: %s',
 	'PLUPLOAD_FILENAME'			=> 'Filename',
 	'PLUPLOAD_FILES_QUEUED'		=> '%d files queued',
 	'PLUPLOAD_GENERIC_ERROR'	=> 'Generic error.',
