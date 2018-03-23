@@ -1,0 +1,50 @@
+<!-- IF not S_IS_BOT and (U_WATCH_TOPIC or U_BOOKMARK_TOPIC or U_BUMP_TOPIC or U_EMAIL_TOPIC or U_PRINT_TOPIC or S_DISPLAY_TOPIC_TOOLS) -->
+	<div class="dropdown-container dropdown-button-control topic-tools">
+		<span title="{L_TOPIC_TOOLS}" class="button button-secondary dropdown-trigger dropdown-select">
+			<i class="icon fa-wrench fa-fw" aria-hidden="true"></i>
+			<span class="caret"><i class="icon fa-sort-down fa-fw" aria-hidden="true"></i></span>
+		</span>
+		<div class="dropdown">
+			<div class="pointer"><div class="pointer-inner"></div></div>
+			<ul class="dropdown-contents">
+				<!-- EVENT viewtopic_topic_tools_before -->
+				<!-- IF U_WATCH_TOPIC -->
+					<li>
+						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-class="icon <!-- IF S_WATCHING_TOPIC -->fa-check-square-o<!-- ELSE -->fa-square-o<!-- ENDIF --> fa-fw" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">
+							<i class="icon <!-- IF S_WATCHING_FORUM -->fa-square-o<!-- ELSE -->fa-check-square-o<!-- ENDIF --> fa-fw" aria-hidden="true"></i><span>{S_WATCH_TOPIC_TITLE}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_BOOKMARK_TOPIC -->
+					<li>
+						<a href="{U_BOOKMARK_TOPIC}" class="bookmark-link" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}" data-update-all=".bookmark-link">
+							<i class="icon fa-bookmark-o fa-fw" aria-hidden="true"></i><span>{S_BOOKMARK_TOPIC}</span>
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_BUMP_TOPIC -->
+				<li>
+					<a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}" data-ajax="true">
+						<i class="icon fa-level-up fa-fw" aria-hidden="true"></i><span>{L_BUMP_TOPIC}</span>
+					</a>
+				</li>
+				<!-- ENDIF -->
+				<!-- IF U_EMAIL_TOPIC -->
+				<li>
+					<a href="{U_EMAIL_TOPIC}" title="{L_EMAIL_TOPIC}">
+						<i class="icon fa-envelope-o fa-fw" aria-hidden="true"></i><span>{L_EMAIL_TOPIC}</span>
+					</a>
+				</li>
+				<!-- ENDIF -->
+				<!-- IF U_PRINT_TOPIC -->
+				<li>
+					<a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}" accesskey="p">
+						<i class="icon fa-print fa-fw" aria-hidden="true"></i><span>{L_PRINT_TOPIC}</span>
+					</a>
+				</li>
+				<!-- ENDIF -->
+				<!-- EVENT viewtopic_topic_tools_after -->
+			</ul>
+		</div>
+	</div>
+<!-- ENDIF -->

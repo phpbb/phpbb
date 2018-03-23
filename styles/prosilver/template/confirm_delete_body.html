@@ -1,0 +1,70 @@
+<!-- IF S_AJAX_REQUEST -->
+	<form action="{S_CONFIRM_ACTION}" method="post">
+		<p>{MESSAGE_TEXT}</p>
+
+		<!-- IF not S_SHADOW_TOPICS -->
+		<!-- IF not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+			<label>
+				<strong>{L_DELETE_PERMANENTLY}{L_COLON}</strong>
+				<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
+				<!-- IF S_TOPIC_MODE -->{DELETE_TOPIC_PERMANENTLY_EXPLAIN}<!-- ELSE -->{DELETE_POST_PERMANENTLY_EXPLAIN}<!-- ENDIF -->
+			</label>
+		<!-- ENDIF -->
+
+		<label for="delete_reason">
+			<strong>{L_DELETE_REASON}{L_COLON}</strong><br /><span>{L_DELETE_REASON_EXPLAIN}</span><br />
+			<input type="text" name="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" />
+		</label>
+		<!-- ENDIF -->
+
+		<fieldset class="submit-buttons">
+			<input type="button" name="confirm" value="{L_YES}" class="button1" />&nbsp;
+			<input type="button" name="cancel" value="{L_NO}" class="button2" />
+		</fieldset>
+	</form>
+
+<!-- ELSE -->
+
+<!-- INCLUDE overall_header.html -->
+
+<form id="confirm" action="{S_CONFIRM_ACTION}" method="post">
+<div class="panel">
+	<div class="inner">
+
+	<h2 class="message-title">{MESSAGE_TITLE}</h2>
+
+	<p>{MESSAGE_TEXT}</p>
+
+	<!-- IF not S_SHADOW_TOPICS -->
+	<fieldset class="fields1">
+		<!-- IF not S_SOFTDELETED and S_ALLOWED_DELETE and S_ALLOWED_SOFTDELETE -->
+			<dl>
+				<dt><label for="delete_permanent">{L_DELETE_PERMANENTLY}{L_COLON}</label></dt>
+				<dd>
+					<label for="delete_permanent">
+						<input id="delete_permanent" name="delete_permanent" type="checkbox" value="1" {S_CHECKED_PERMANENT} />
+						<!-- IF S_TOPIC_MODE -->{DELETE_TOPIC_PERMANENTLY_EXPLAIN}<!-- ELSE -->{DELETE_POST_PERMANENTLY_EXPLAIN}<!-- ENDIF -->
+					</label>
+				</dd>
+			</dl>
+		<!-- ENDIF -->
+
+		<dl>
+			<dt><label for="delete_reason">{L_DELETE_REASON}{L_COLON}</label><br /><span>{L_DELETE_REASON_EXPLAIN}</span></dt>
+			<dd><input type="text" name="delete_reason" id="delete_reason" value="" class="inputbox autowidth" maxlength="120" size="45" /></dd>
+		</dl>
+	</fieldset>
+	<!-- ENDIF -->
+
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}
+		<input type="submit" name="confirm" value="{L_YES}" class="button1" />&nbsp;
+		<input type="submit" name="cancel" value="{L_NO}" class="button2" />
+	</fieldset>
+
+	</div>
+</div>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
+<!-- ENDIF -->

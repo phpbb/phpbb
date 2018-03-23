@@ -1,0 +1,73 @@
+services:
+    phpbb.installer.controller.welcome:
+        class: phpbb\install\controller\installer_index
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '@language'
+            - '@template'
+            - '%core.root_path%'
+
+    phpbb.installer.controller.helper:
+        class: phpbb\install\controller\helper
+        arguments:
+            - '@installer.helper.config'
+            - '@language'
+            - '@language.helper.language_file'
+            - '@installer.navigation.provider'
+            - '@template'
+            - '@path_helper'
+            - '@request'
+            - '@symfony_request'
+            - '@router'
+            - '%core.root_path%'
+
+    phpbb.installer.controller.install:
+        class: phpbb\install\controller\install
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '@installer.helper.iohandler_factory'
+            - '@installer.navigation.provider'
+            - '@language'
+            - '@template'
+            - '@request'
+            - '@installer.installer.install'
+            - '@installer.helper.install_helper'
+
+    phpbb.installer.controller.update:
+        class: phpbb\install\controller\update
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '@installer.installer.update'
+            - '@installer.helper.install_helper'
+            - '@installer.helper.iohandler_factory'
+            - '@language'
+            - '@installer.navigation.provider'
+            - '@request'
+            - '@template'
+
+    phpbb.installer.controller.file_downloader:
+        class: phpbb\install\controller\archive_download
+        arguments:
+            - '@installer.helper.config'
+
+    phpbb.installer.controller.convert:
+        class: phpbb\convert\controller\convertor
+        arguments:
+            - '@cache.driver'
+            - '@installer.helper.container_factory'
+            - '@installer.helper.database'
+            - '@phpbb.installer.controller.helper'
+            - '@installer.helper.install_helper'
+            - '@installer.helper.iohandler_factory'
+            - '@language'
+            - '@installer.navigation.provider'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbb.installer.controller.status:
+        class: phpbb\install\controller\timeout_check
+        arguments:
+            - '@phpbb.installer.controller.helper'
+            - '%core.root_path%'

@@ -1,0 +1,48 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_ACP_VIGLINK_SETTINGS}</h1>
+
+<p>{L_ACP_VIGLINK_SETTINGS_EXPLAIN}</p>
+
+<!-- IF S_ERROR -->
+<div class="errorbox">
+	<h3>{L_WARNING}</h3>
+	<p>{ERROR_MSG}</p>
+</div>
+<!-- ENDIF -->
+
+<form id="acp_viglink" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_ACP_VIGLINK_SETTINGS}</legend>
+		<dl>
+			<dt><label for="viglink_enabled">{L_ACP_VIGLINK_ENABLE}{L_COLON}</label><br /><span>{L_ACP_VIGLINK_ENABLE_EXPLAIN}</span></dt>
+			<dd><label><input type="radio" class="radio" id="viglink_enabled" name="viglink_enabled" value="1"<!-- IF VIGLINK_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+				<label><input type="radio" class="radio" name="viglink_enabled" value="0"<!-- IF not VIGLINK_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
+		</dl>
+	</fieldset>
+
+	<h1>{L_ACP_VIGLINK_EARNINGS}</h1>
+
+	<p>{L_ACP_VIGLINK_EARNINGS_EXPLAIN}</p>
+
+	<fieldset>
+		<legend>{L_ACP_VIGLINK_EARNINGS}</legend>
+		<!-- IF U_VIGLINK_CONVERT -->
+		<dl>
+			<dt><label>{L_ACP_VIGLINK_CLAIM}{L_COLON}</label><br /><span>{L_ACP_VIGLINK_CLAIM_EXPLAIN}</span></dt>
+			<dd><a href="{U_VIGLINK_CONVERT}">{L_ACP_VIGLINK_CONVERT_ACCOUNT}</a></dd>
+		</dl>
+		<!-- ENDIF -->
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

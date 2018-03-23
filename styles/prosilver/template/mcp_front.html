@@ -1,0 +1,193 @@
+<!-- INCLUDE mcp_header.html -->
+
+<h2>{PAGE_TITLE}</h2>
+
+<!-- EVENT mcp_front_latest_unapproved_before -->
+
+<!-- IF S_SHOW_UNAPPROVED -->
+
+	<form id="mcp_queue" method="post" action="{S_MCP_QUEUE_ACTION}">
+
+	<div class="panel">
+		<div class="inner">
+
+		<h3>{L_LATEST_UNAPPROVED}</h3>
+		<p>{L_UNAPPROVED_TOTAL}</p>
+
+		<!-- IF .unapproved -->
+			<ul class="topiclist missing-column">
+				<li class="header">
+					<dl>
+						<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
+						<dd class="moderation"><span>{L_TOPIC} &amp; {L_FORUM}</span></dd>
+					</dl>
+				</li>
+			</ul>
+			<ul class="topiclist cplist missing-column responsive-show-all">
+
+			<!-- BEGIN unapproved -->
+			<li class="row<!-- IF unapproved.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<a href="{unapproved.U_POST_DETAILS}" class="topictitle">{unapproved.SUBJECT}</a> <!-- IF unapproved.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF --> <br />
+							{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} &raquo; {unapproved.POST_TIME}
+						</div>
+					</dt>
+					<dd class="moderation"><span>
+						{L_TOPIC}{L_COLON} <a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a> [<a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a>]<br />
+						{L_FORUM}{L_COLON} <!-- IF unapproved.U_FORUM --><a href="{unapproved.U_FORUM}">{unapproved.FORUM_NAME}</a><!-- ELSE -->{unapproved.FORUM_NAME}<!-- ENDIF --><!-- IF unapproved.U_MCP_FORUM --> [<a href="{unapproved.U_MCP_FORUM}">{L_MODERATE}</a>]<!-- ENDIF --></span>
+					</dd>
+
+			 		<dd class="mark"><input type="checkbox" name="post_id_list[]" value="{unapproved.POST_ID}" /></dd>
+				</dl>
+			</li>
+			<!-- END unapproved -->
+			</ul>
+		<!-- ENDIF -->
+
+		</div>
+	{S_FORM_TOKEN}
+	</div>
+
+	<!-- IF .unapproved -->
+	<fieldset class="display-actions">
+		{S_HIDDEN_FIELDS}
+		<input class="button2" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" />&nbsp;
+		<input class="button1" type="submit" name="action[approve]" value="{L_APPROVE}" />
+		<div><a href="#" onclick="marklist('mcp_queue', 'post_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp_queue', 'post_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
+	</fieldset>
+	<!-- ENDIF -->
+		</form>
+<!-- ENDIF -->
+
+<!-- EVENT mcp_front_latest_reported_before -->
+
+<!-- IF S_SHOW_REPORTS -->
+	<div class="panel">
+		<div class="inner">
+
+		<h3>{L_LATEST_REPORTED}</h3>
+		<p>{L_REPORTS_TOTAL}</p>
+
+		<!-- IF .report -->
+			<ul class="topiclist two-long-columns">
+				<li class="header">
+					<dl>
+						<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
+						<dd class="moderation"><span>{L_REPORTER} &amp; {L_FORUM}</span></dd>
+					</dl>
+				</li>
+			</ul>
+			<ul class="topiclist cplist two-long-columns responsive-show-all">
+
+			<!-- BEGIN report -->
+			<li class="row<!-- IF report.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<a href="{report.U_POST_DETAILS}#reports" class="topictitle">{report.SUBJECT}</a> <!-- IF report.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF --> <br />
+							<span>{L_POSTED} {L_POST_BY_AUTHOR} {report.AUTHOR_FULL} &raquo; {report.POST_TIME}</span>
+						</div>
+					</dt>
+					<dd class="moderation">
+						<span>{L_REPORTED} {L_POST_BY_AUTHOR} {report.REPORTER_FULL} {L_REPORTED_ON_DATE} <br />
+						{L_FORUM}{L_COLON} <a href="{report.U_FORUM}">{report.FORUM_NAME}</a></span>
+					</dd>
+				</dl>
+			</li>
+			<!-- END report -->
+			</ul>
+		<!-- ENDIF -->
+
+		</div>
+	</div>
+<!-- ENDIF -->
+
+<!-- EVENT mcp_front_latest_reported_pms_before -->
+
+<!-- IF S_SHOW_PM_REPORTS -->
+	<div class="panel">
+		<div class="inner">
+
+		<h3>{L_LATEST_REPORTED_PMS}</h3>
+		<p>{L_PM_REPORTS_TOTAL}</p>
+
+		<!-- IF .pm_report -->
+			<ul class="topiclist two-long-columns">
+				<li class="header">
+					<dl>
+						<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
+						<dd class="moderation"><span>{L_REPORTER}</span></dd>
+					</dl>
+				</li>
+			</ul>
+			<ul class="topiclist cplist two-long-columns responsive-show-all">
+
+			<!-- BEGIN pm_report -->
+			<li class="row<!-- IF pm_report.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<a href="{pm_report.U_PM_DETAILS}" class="topictitle">{pm_report.PM_SUBJECT}</a> <!-- IF pm_report.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i><!-- ENDIF --> <br />
+							<span>{L_MESSAGE_BY_AUTHOR} {pm_report.PM_AUTHOR_FULL} &raquo; {pm_report.PM_TIME}</span><br />
+							<span>{L_MESSAGE_TO} {pm_report.RECIPIENTS}</span>
+						</div>
+					</dt>
+					<dd class="moderation">
+						<span>{L_REPORTED} {L_POST_BY_AUTHOR} {pm_report.REPORTER_FULL} {L_REPORTED_ON_DATE} {pm_report.REPORT_TIME}</span>
+					</dd>
+				</dl>
+			</li>
+			<!-- END pm_report -->
+			</ul>
+		<!-- ENDIF -->
+
+		</div>
+	</div>
+<!-- ENDIF -->
+
+<!-- EVENT mcp_front_latest_logs_before -->
+
+<!-- IF S_SHOW_LOGS -->
+	<div class="panel">
+		<div class="inner">
+
+		<h3>{L_LATEST_LOGS}</h3>
+
+		<table class="table1">
+		<thead>
+		<tr>
+			<th class="name">{L_ACTION}</th>
+			<th class="name">{L_USERNAME}</th>
+			<th class="name">{L_IP}</th>
+			<th class="name">{L_VIEW_TOPIC}</th>
+			<th class="name">{L_VIEW_TOPIC_LOGS}</th>
+			<th class="name">{L_TIME}</th>
+		</tr>
+		</thead>
+		<tbody>
+	<!-- BEGIN log -->
+		<tr class="<!-- IF log.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+			<td>{log.ACTION}</td>
+			<td><span>{log.USERNAME}</span></td>
+			<td><span>{log.IP}</span></td>
+			<td><span><!-- IF log.U_VIEW_TOPIC --><a href="{log.U_VIEW_TOPIC}" title="{L_VIEW_TOPIC}">{L_VIEW_TOPIC}</a><!-- ENDIF -->&nbsp;</span></td>
+			<td><span><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF -->&nbsp;</span></td>
+			<td><span>{log.TIME}</span></td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr>
+			<td colspan="6">{L_NO_ENTRIES}</td>
+		</tr>
+	<!-- END log -->
+		</tbody>
+		</table>
+
+		</div>
+	</div>
+<!-- ENDIF -->
+
+<!-- EVENT mcp_front_latest_logs_after -->
+
+<!-- INCLUDE mcp_footer.html -->

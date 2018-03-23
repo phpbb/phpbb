@@ -1,0 +1,18 @@
+/*  phpBB VigLink Extension Style Sheet
+	------------------------------------------------------------------------
+	Copyright (c) phpBB Limited <https://www.phpbb.com>
+
+	For full copyright and license information, please see
+	the docs/CREDITS.txt file.
+	------------------------------------------------------------------------
+*/
+
+.viglink-header {
+	background: url('images/VigLink_logo.png') no-repeat 0 0;
+	padding-bottom: 18px;
+	padding-left: 142px;
+}
+
+.send-stats-tile > .viglink-header-h2 {
+	margin-bottom: 10px;
+}

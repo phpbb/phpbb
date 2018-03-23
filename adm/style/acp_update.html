@@ -1,0 +1,72 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_VERSION_CHECK}</h1>
+
+<p>{L_VERSION_CHECK_EXPLAIN}</p>
+
+<!-- IF S_UPDATE_INCOMPLETE -->
+	<div class="errorbox">
+		<p>{L_UPDATE_INCOMPLETE} {L_UPDATE_INCOMPLETE_MORE}</p>
+	</div>
+<!-- ENDIF -->
+<!-- IF S_UP_TO_DATE -->
+	<div class="successbox">
+		<p>{L_VERSION_UP_TO_DATE_ACP} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+<!-- ELSEIF not S_UPDATE_INCOMPLETE -->
+	<div class="errorbox">
+		<p>{L_VERSION_NOT_UP_TO_DATE_ACP} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a></p>
+	</div>
+<!-- ENDIF -->
+<!-- IF S_VERSION_UPGRADEABLE -->
+	<div class="errorbox notice">
+		<p>{UPGRADE_INSTRUCTIONS}</p>
+	</div>
+<!-- ENDIF -->
+
+<fieldset>
+	<legend></legend>
+	<!-- IF not S_UPDATE_INCOMPLETE -->
+	<dl>
+		<dt><label>{L_CURRENT_VERSION}</label></dt>
+		<dd><strong>{CURRENT_VERSION}</strong></dd>
+	</dl>
+	<!-- ELSE -->
+	<dl>
+		<dt><label>{L_FILES_VERSION}</label></dt>
+		<dd><strong>{FILES_VERSION}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_DATABASE_VERSION}</label></dt>
+		<dd><strong>{CURRENT_VERSION}</strong></dd>
+	</dl>
+	<!-- ENDIF -->
+</fieldset>
+
+<!-- BEGIN updates_available -->
+	<fieldset>
+		<legend></legend>
+		<dl>
+			<dt><label>{L_LATEST_VERSION}</label></dt>
+			<dd><strong>{updates_available.current}</strong></dd>
+		</dl>
+		<dl>
+			<dt><label>{L_RELEASE_ANNOUNCEMENT}</label></dt>
+			<dd><strong><a href="{updates_available.announcement}">{updates_available.announcement}</a></strong></dd>
+		</dl>
+	</fieldset>
+<!-- END updates_available -->
+
+<!-- IF S_UPDATE_INCOMPLETE -->
+	{INCOMPLETE_INSTRUCTIONS}
+	<br>
+<!-- ENDIF -->
+
+<!-- IF not S_UP_TO_DATE -->
+	{UPDATE_INSTRUCTIONS}
+	<br /><br />
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

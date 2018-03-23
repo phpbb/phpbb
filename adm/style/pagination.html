@@ -1,0 +1,12 @@
+
+ 	<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE_CLICK}">{PAGE_NUMBER}</a> &bull; 
+	<ul>
+	<!-- BEGIN pagination -->
+		<!-- IF pagination.S_IS_PREV --><li><a href="{pagination.PAGE_URL}">{L_PREVIOUS}</a></li>
+		<!-- ELSEIF pagination.S_IS_CURRENT --><li class="active"><span>{pagination.PAGE_NUMBER}</span></li>
+		<!-- ELSEIF pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+		<!-- ELSEIF pagination.S_IS_NEXT --><li><a href="{pagination.PAGE_URL}">{L_NEXT}</a></li>
+		<!-- ELSE --><li><a href="{pagination.PAGE_URL}">{pagination.PAGE_NUMBER}</a></li>
+		<!-- ENDIF -->
+	<!-- END pagination -->
+	</ul>

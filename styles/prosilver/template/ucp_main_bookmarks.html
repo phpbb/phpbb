@@ -1,0 +1,124 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2>{L_TITLE}</h2>
+
+<div class="panel">
+	<div class="inner">
+
+	<p>{L_BOOKMARKS_EXPLAIN}</p>
+
+<!-- IF S_NO_DISPLAY_BOOKMARKS -->
+	<p class="error">{L_BOOKMARKS_DISABLED}</p>
+<!-- ELSE -->
+
+<!-- IF .topicrow -->
+	<ul class="topiclist missing-column">
+		<li class="header">
+			<dl class="row-item">
+				<dt><div class="list-inner">{L_BOOKMARKS}</div></dt>
+				<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
+				<dd class="mark">{L_MARK}</dd>
+			</dl>
+		</li>
+	</ul>
+	<ul class="topiclist cplist missing-column">
+
+	<!-- BEGIN topicrow -->
+		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+			<!-- IF topicrow.S_DELETED_TOPIC -->
+				<dl>
+					<dt><div class="list-inner"><strong>{L_DELETED_TOPIC}</strong></div></dt>
+					<dd class="lastpost"><span>&nbsp;</span></dd>
+					<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
+				</dl>
+			<!-- ELSE -->
+			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
+				<dt<!-- IF topicrow.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
+					<div class="list-inner">
+						<!-- IF topicrow.S_UNREAD_TOPIC -->
+							<a class="unread" href="{topicrow.U_NEWEST_POST}">
+								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
+							</a>
+						<!-- ENDIF --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
+							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
+								<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
+							</a>
+						<!-- ENDIF -->
+						<!-- IF topicrow.S_TOPIC_REPORTED -->
+							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
+								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_REPORTED}</span>
+							</a>
+						<!-- ENDIF -->
+						<br />
+						<!-- IF .topicrow.pagination -->
+						<div class="pagination">
+							<ul>
+							<!-- BEGIN pagination -->
+								<!-- IF topicrow.pagination.S_IS_PREV -->
+								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
+								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+								<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
+								<!-- ENDIF -->
+							<!-- END pagination -->
+							</ul>
+						</div>
+						<!-- ENDIF -->
+						<div class="responsive-hide">
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
+							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
+						</div>
+						<div class="responsive-show" style="display: none;">
+							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
+							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo;
+							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
+						</div>
+					</div>
+				</dt>
+				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
+					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
+						<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+					</a>
+					<br />{topicrow.LAST_POST_TIME}</span>
+				</dd>
+				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
+			</dl>
+			<!-- ENDIF -->
+		</li>
+	<!-- END topicrow -->
+	</ul>
+
+	<div class="action-bar bar-bottom">
+		<div class="pagination">
+			{TOTAL_TOPICS}
+			<!-- IF .pagination -->
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE -->
+				 &bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	</div>
+
+<!-- ELSE -->
+	<p><strong>{L_NO_BOOKMARKS}</strong></p>
+<!-- ENDIF -->
+
+<!-- ENDIF -->
+
+	</div>
+</div>
+
+<!-- IF .topicrow and not S_NO_DISPLAY_BOOKMARKS -->
+	<fieldset class="display-actions">
+		<input type="submit" name="unbookmark" value="{L_REMOVE_BOOKMARK_MARKED}" class="button2" />
+		<div><a href="#" onclick="marklist('ucp', '', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', '', false); return false;">{L_UNMARK_ALL}</a></div>
+		{S_FORM_TOKEN}
+	</fieldset>
+<!-- ENDIF -->
+</form>
+
+<!-- INCLUDE ucp_footer.html -->

@@ -1,0 +1,51 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2>{L_TITLE} <span class="small">[ <a href="{U_USER_PROFILE}" title="{L_VIEW_PROFILE}">{L_VIEW_PROFILE}</a> ]</span></h2>
+
+<div class="panel">
+	<div class="inner">
+	<p>{L_PROFILE_INFO_NOTICE}</p>
+
+	<fieldset>
+	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
+	<!-- EVENT ucp_profile_profile_info_before -->
+	<!-- IF S_BIRTHDAYS_ENABLED -->
+		<dl>
+			<dt><label for="bday_day">{L_BIRTHDAY}{L_COLON}</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
+			<dd>
+				<label for="bday_day">{L_DAY}{L_COLON} <select name="bday_day" id="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select></label>
+				<label for="bday_month">{L_MONTH}{L_COLON} <select name="bday_month" id="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select></label>
+				<label for="bday_year">{L_YEAR}{L_COLON} <select name="bday_year" id="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></label>
+			</dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_JABBER_ENABLED -->
+		<dl>
+			<dt><label for="jabber">{L_UCP_JABBER}{L_COLON}</label></dt>
+			<dd><input type="email" name="jabber" id="jabber" maxlength="255" value="{JABBER}" class="inputbox" /></dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- BEGIN profile_fields -->
+		<dl>
+			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}{L_COLON}<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
+			<!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
+			<!-- IF profile_fields.ERROR --><dd class="error">{profile_fields.ERROR}</dd><!-- ENDIF -->
+			<dd>{profile_fields.FIELD}</dd>
+		</dl>
+	<!-- END profile_fields -->
+	<!-- EVENT ucp_profile_profile_info_after -->
+	</fieldset>
+
+	</div>
+</div>
+
+<fieldset class="submit-buttons">
+	{S_HIDDEN_FIELDS}<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
+	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE ucp_footer.html -->

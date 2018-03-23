@@ -1,0 +1,112 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form id="mcp" method="post" action="{S_MCP_ACTION}">
+
+<!-- IF not S_PM -->
+<fieldset class="forum-selection">
+	<label for="fo">{L_FORUM}{L_COLON} <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
+	<input type="submit" name="sort" value="{L_GO}" class="button2" />
+	{S_FORM_TOKEN}
+</fieldset>
+<!-- ENDIF -->
+
+<h2>{L_TITLE}</h2>
+
+<div class="panel">
+	<div class="inner">
+
+	<p>{L_EXPLAIN}</p>
+
+	<!-- IF .postrow -->
+		<div class="action-bar bar-top">
+			<div class="pagination">
+				{TOTAL_REPORTS}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+		<ul class="topiclist missing-column">
+			<li class="header">
+				<dl>
+					<dt><div class="list-inner">{L_VIEW_DETAILS}</div></dt>
+					<dd class="moderation"><span>{L_REPORTER}<!-- IF not S_PM --> &amp; {L_FORUM}<!-- ENDIF --></span></dd>
+					<dd class="mark">{L_MARK}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist cplist missing-column">
+
+		<!-- BEGIN postrow -->
+			<li class="row<!-- IF postrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+				<dl>
+					<!-- IF S_PM -->
+					<dt>
+						<div class="list-inner">
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.PM_SUBJECT}</a> <i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <br />
+							<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
+							<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
+							<div class="responsive-show" style="display: none;">
+								{L_REPORTER}{L_COLON} {postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}
+							</div>
+						</div>
+					</dt>
+					<dd class="moderation">
+						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}</span>
+					</dd>
+					<!-- ELSE -->
+					<dt>
+						<div class="list-inner">
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <br />
+							<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
+							<div class="responsive-show" style="display: none;">
+								{L_REPORTER}{L_COLON} {postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
+								<!-- IF postrow.U_VIEWFORUM -->{L_FORUM}{L_COLON} <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF -->
+							</div>
+						</div>
+					</dt>
+					<dd class="moderation">
+						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
+						<!-- IF postrow.U_VIEWFORUM -->{L_FORUM}{L_COLON} <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span>
+					</dd>
+					<!-- ENDIF -->
+					<dd class="mark"><input type="checkbox" name="report_id_list[]" value="{postrow.REPORT_ID}" /></dd>
+				</dl>
+			</li>
+		<!-- END postrow -->
+		</ul>
+
+		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
+			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" onClick="document.getElementById('mcp').submit()" /> <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
+
+			<div class="pagination">
+				{TOTAL_REPORTS}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+	<!-- ELSE -->
+		<p><strong>{L_NO_REPORTS}</strong></p>
+	<!-- ENDIF -->
+
+	</div>
+</div>
+
+<!-- IF .postrow -->
+	<fieldset class="display-actions">
+		<input class="button2" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
+		<!-- IF not S_CLOSED -->&nbsp;<input class="button1" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
+		<div><a href="#" onclick="marklist('mcp', 'report_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'report_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
+	</fieldset>
+<!-- ENDIF -->
+</form>
+
+<!-- INCLUDE mcp_footer.html -->

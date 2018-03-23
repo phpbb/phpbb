@@ -1,0 +1,76 @@
+<!-- INCLUDE overall_header.html -->
+
+<script type="text/javascript">
+// <![CDATA[
+
+	var form_name = 'acp_contact';
+	var text_name = 'contact_admin_info';
+	var load_draft = false;
+	var upload = false;
+	var imageTag = false;
+
+// ]]>
+</script>
+
+<a id="maincontent"></a>
+
+<h1>{L_ACP_CONTACT_SETTINGS}</h1>
+
+<p>{L_ACP_CONTACT_SETTINGS_EXPLAIN}</p>
+
+<form id="acp_contact" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_GENERAL_OPTIONS}</legend>
+		<dl>
+			<dt><label for="contact_admin_form_enable">{L_CONTACT_US_ENABLE}{L_COLON}</label><br /><span>{L_CONTACT_US_ENABLE_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="contact_admin_form_enable" name="contact_admin_form_enable" value="1"<!-- IF CONTACT_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+				<label><input type="radio" class="radio" name="contact_admin_form_enable" value="0"<!-- IF not CONTACT_ENABLED --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<!-- IF CONTACT_US_INFO_PREVIEW -->
+	<fieldset>
+		<legend>{L_CONTACT_US_INFO_PREVIEW}</legend>
+		<p>{CONTACT_US_INFO_PREVIEW}</p>
+	</fieldset>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_CONTACT_US_INFO}</legend>
+		<p>{L_CONTACT_US_INFO_EXPLAIN}</p>
+
+		<!-- INCLUDE acp_posting_buttons.html -->
+
+		<dl class="responsive-columns">
+			<dt style="width: 90px;" id="color_palette_placeholder" data-orientation="v" data-height="12" data-width="15" data-bbcode="true">
+			</dt>
+
+			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px;">
+				<textarea name="contact_admin_info" rows="10" cols="60" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{CONTACT_US_INFO}</textarea>
+			</dd>
+
+			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px; margin-top: 5px;">
+				<!-- IF S_BBCODE_ALLOWED -->
+				<label><input type="checkbox" class="radio" name="disable_bbcode"<!-- IF S_BBCODE_DISABLE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_DISABLE_BBCODE}</label>
+				<!-- ENDIF -->
+				<!-- IF S_SMILIES_ALLOWED -->
+				<label><input type="checkbox" class="radio" name="disable_smilies"<!-- IF S_SMILIES_DISABLE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_DISABLE_SMILIES}</label>
+				<!-- ENDIF -->
+				<!-- IF S_LINKS_ALLOWED -->
+				<label><input type="checkbox" class="radio" name="disable_magic_url"<!-- IF S_MAGIC_URL_DISABLE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_DISABLE_MAGIC_URL}</label>
+				<!-- ENDIF -->
+			</dd>
+			<dd style="margin-{S_CONTENT_FLOW_BEGIN}: 90px; margin-top: 10px;"><strong>{L_OPTIONS}{L_COLON} </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

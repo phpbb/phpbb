@@ -1,0 +1,14 @@
+<!-- IF S_RECAPTCHA_AVAILABLE -->
+	<dl>
+	<dd>
+	<noscript>
+		<div>{L_RECAPTCHA_NOSCRIPT}</div>
+	</noscript>
+
+		<script src="{RECAPTCHA_SERVER}.js?hl={LA_RECAPTCHA_LANG}" async defer></script>
+		<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}"></div>
+	</dd>
+	</dl>
+<!-- ELSE -->
+{L_RECAPTCHA_NOT_AVAILABLE}
+<!-- ENDIF -->

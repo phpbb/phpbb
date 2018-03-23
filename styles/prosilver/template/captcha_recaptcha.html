@@ -1,0 +1,30 @@
+<!-- IF S_TYPE == 1 -->
+<div class="panel captcha-panel">
+	<div class="inner">
+
+	<h3 class="captcha-title">{L_CONFIRMATION}</h3>
+	<p>{L_CONFIRM_EXPLAIN}</p>
+
+	<fieldset class="fields2">
+<!-- ENDIF -->
+
+<!-- IF S_RECAPTCHA_AVAILABLE -->
+	<dl>
+	<dt><label>{L_CONFIRM_CODE}{L_COLON}</label><br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
+	<dd class="captcha">
+		<noscript>
+			<div>{L_RECAPTCHA_NOSCRIPT}</div>
+		</noscript>
+		<script src="{RECAPTCHA_SERVER}.js?hl={LA_RECAPTCHA_LANG}" async defer></script>
+		<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}" data-tabindex="<!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->"></div>
+	</dd>
+	</dl>
+<!-- ELSE -->
+{L_RECAPTCHA_NOT_AVAILABLE}
+<!-- ENDIF -->
+
+<!-- IF S_TYPE == 1 -->
+	</fieldset>
+	</div>
+</div>
+<!-- ENDIF -->

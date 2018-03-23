@@ -1,0 +1,3 @@
+services:
+    filesystem:
+        class: phpbb\filesystem\filesystem

@@ -1,0 +1,80 @@
+<!-- INCLUDE overall_header.html -->
+
+<a id="maincontent"></a>
+
+<h1>{L_ACP_PRUNE_USERS}</h1>
+
+<p>{L_ACP_PRUNE_USERS_EXPLAIN}</p>
+
+<form id="acp_prune" method="post" action="{U_ACTION}">
+	
+<fieldset>
+	<legend>{L_CRITERIA}</legend>
+<dl>
+	<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
+	<dd><input type="text" id="username" name="username" /></dd>
+</dl>
+<dl>
+	<dt><label for="email">{L_EMAIL}{L_COLON}</label></dt>
+	<dd><input type="text" id="email" name="email" /></dd>
+</dl>
+<dl>
+	<dt><label for="joined_after">{L_JOINED}{L_COLON}</label><br /><span>{L_JOINED_EXPLAIN}</span></dt>
+	<dd>
+		<strong>{L_AFTER}</strong> <input type="text" id="joined_after" name="joined_after" />
+		<br /> <br /> <strong>{L_BEFORE}</strong> <input type="text" id="joined_before" name="joined_before" />
+	</dd>
+</dl>
+<dl>
+	<dt><label for="active">{L_LAST_ACTIVE}{L_COLON}</label><br /><span>{L_LAST_ACTIVE_EXPLAIN}</span></dt>
+	<dd><select name="active_select">{S_ACTIVE_OPTIONS}</select> <input type="text" id="active" name="active" /></dd>
+</dl>
+<dl>
+	<dt><label for="count">{L_POSTS}{L_COLON}</label></dt>
+	<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input type="number" id="count" name="count" /></dd>
+</dl>
+<dl>
+	<dt><label for="posts_on_queue">{L_POSTS_ON_QUEUE}{L_COLON}</label></dt>
+	<dd><select name="queue_select">{S_COUNT_OPTIONS}</select> <input type="number" id="posts_on_queue" name="posts_on_queue" /></dd>
+</dl>
+<!-- IF S_GROUP_LIST -->
+<dl>
+	<dt><label for="group_id">{L_GROUP}{L_COLON}</label><br /><span>{L_PRUNE_USERS_GROUP_EXPLAIN}</span></dt>
+	<dd><select id="group_id" name="group_id">{S_GROUP_LIST}</select></dd>
+</dl>
+<!-- ENDIF -->
+</fieldset>
+
+<fieldset>
+	<legend>{L_USERNAMES}</legend>
+<dl>
+	<dt><label for="users">{L_ACP_PRUNE_USERS}{L_COLON}</label><br /><span>{L_SELECT_USERS_EXPLAIN}</span></dt>
+	<dd><textarea id="users" name="users" cols="40" rows="5"></textarea></dd>
+	<dd><!-- EVENT acp_prune_users_find_username_prepend -->[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]<!-- EVENT acp_prune_users_find_username_append --></dd>
+</dl>
+</fieldset>
+
+<fieldset>
+	<legend>{L_OPTIONS}</legend>
+<dl>
+	<dt><label for="deleteposts">{L_DELETE_USER_POSTS}{L_COLON}</label><br /><span>{L_DELETE_USER_POSTS_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" name="deleteposts" value="1" /> {L_YES}</label>
+		<label><input type="radio" class="radio" id="deleteposts" name="deleteposts" value="0" checked="checked" /> {L_NO}</label></dd>
+</dl>
+<dl>
+	<dt><label for="deactivate">{L_DEACTIVATE_DELETE}{L_COLON}</label><br /><span>{L_DEACTIVATE_DELETE_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" name="action" value="delete" /> {L_DELETE_USERS}</label>
+		<label><input type="radio" class="radio" id="deactivate" name="action" value="deactivate" checked="checked" /> {L_DEACTIVATE}</label></dd>
+</dl>
+
+<p class="submit-buttons">
+	<input type="hidden" name="prune" value="1" />
+
+	<input class="button1" type="submit" id="update" name="update" value="{L_SUBMIT}" />&nbsp;
+	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	{S_FORM_TOKEN}
+</p>
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

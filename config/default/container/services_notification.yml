@@ -1,0 +1,224 @@
+services:
+    notification_manager:
+        class: phpbb\notification\manager
+        arguments:
+            - '@notification.type_collection'
+            - '@notification.method_collection'
+            - '@service_container'
+            - '@user_loader'
+            - '@dispatcher'
+            - '@dbal.conn'
+            - '@cache'
+            - '@language'
+            - '@user'
+            - '%tables.notification_types%'
+            - '%tables.user_notifications%'
+
+# ----- Notification's types -----
+# Service MUST NOT be shared for all the plugins to work.
+    notification.type_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: notification.type }
+
+    notification.type.base:
+        abstract: true
+        arguments:
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '@auth'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.user_notifications%'
+
+    notification.type.admin_activate_user:
+        class: phpbb\notification\type\admin_activate_user
+        shared: false
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
+        tags:
+            - { name: notification.type }
+
+    notification.type.approve_post:
+        class: phpbb\notification\type\approve_post
+        shared: false
+        parent: notification.type.post
+        tags:
+            - { name: notification.type }
+
+    notification.type.approve_topic:
+        class: phpbb\notification\type\approve_topic
+        shared: false
+        parent: notification.type.topic
+        tags:
+            - { name: notification.type }
+
+    notification.type.bookmark:
+        class: phpbb\notification\type\bookmark
+        shared: false
+        parent: notification.type.post
+        tags:
+            - { name: notification.type }
+
+    notification.type.disapprove_post:
+        class: phpbb\notification\type\disapprove_post
+        shared: false
+        parent: notification.type.post
+        tags:
+            - { name: notification.type }
+
+    notification.type.disapprove_topic:
+        class: phpbb\notification\type\disapprove_topic
+        shared: false
+        parent: notification.type.topic
+        tags:
+            - { name: notification.type }
+
+    notification.type.group_request:
+        class: phpbb\notification\type\group_request
+        shared: false
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ['@user_loader']]
+        tags:
+            - { name: notification.type }
+
+    notification.type.group_request_approved:
+        class: phpbb\notification\type\group_request_approved
+        shared: false
+        parent: notification.type.base
+        tags:
+            - { name: notification.type }
+
+    notification.type.pm:
+        class: phpbb\notification\type\pm
+        shared: false
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
+        tags:
+            - { name: notification.type }
+
+    notification.type.post:
+        class: phpbb\notification\type\post
+        shared: false
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
+        tags:
+            - { name: notification.type }
+
+    notification.type.post_in_queue:
+        class: phpbb\notification\type\post_in_queue
+        shared: false
+        parent: notification.type.post
+        tags:
+            - { name: notification.type }
+
+    notification.type.quote:
+        class: phpbb\notification\type\quote
+        shared: false
+        parent: notification.type.post
+        calls:
+            - [set_utils, ['@text_formatter.utils']]
+        tags:
+            - { name: notification.type }
+
+    notification.type.report_pm:
+        class: phpbb\notification\type\report_pm
+        shared: false
+        parent: notification.type.pm
+        tags:
+            - { name: notification.type }
+
+    notification.type.report_pm_closed:
+        class: phpbb\notification\type\report_pm_closed
+        shared: false
+        parent: notification.type.pm
+        tags:
+            - { name: notification.type }
+
+    notification.type.report_post:
+        class: phpbb\notification\type\report_post
+        shared: false
+        parent: notification.type.post
+        tags:
+            - { name: notification.type }
+
+    notification.type.report_post_closed:
+        class: phpbb\notification\type\report_post_closed
+        shared: false
+        parent: notification.type.post
+        tags:
+            - { name: notification.type }
+
+    notification.type.topic:
+        class: phpbb\notification\type\topic
+        shared: false
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
+        tags:
+            - { name: notification.type }
+
+    notification.type.topic_in_queue:
+        class: phpbb\notification\type\topic_in_queue
+        shared: false
+        parent: notification.type.topic
+        tags:
+            - { name: notification.type }
+
+# ----- Notification's methods -----
+# Service MUST NOT be shared for all the plugins to work.
+    notification.method_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: notification.method }
+
+    notification.method.board:
+        class: phpbb\notification\method\board
+        shared: false
+        arguments:
+            - '@user_loader'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@config'
+            - '%tables.notification_types%'
+            - '%tables.notifications%'
+        tags:
+            - { name: notification.method }
+
+    notification.method.email:
+        class: phpbb\notification\method\email
+        shared: false
+        arguments:
+            - '@user_loader'
+            - '@user'
+            - '@config'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: notification.method }
+
+    notification.method.jabber:
+        class: phpbb\notification\method\jabber
+        shared: false
+        arguments:
+            - '@user_loader'
+            - '@user'
+            - '@config'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: notification.method }

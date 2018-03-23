@@ -1,0 +1,21 @@
+Subject: Welcome to "{SITENAME}"
+
+{WELCOME_MSG}
+
+Please keep this email for your records. Your account information is as follows:
+
+----------------------------
+Username: {USERNAME}
+
+Board URL: {U_BOARD}
+----------------------------
+
+Please visit the following link in order to activate your account:
+
+{U_ACTIVATE}
+
+Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.
+
+Thank you for registering.
+
+{EMAIL_SIG}

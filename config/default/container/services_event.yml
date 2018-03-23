@@ -1,0 +1,26 @@
+services:
+    dispatcher:
+        class: phpbb\event\dispatcher
+        arguments:
+            - '@service_container'
+
+    kernel_exception_subscriber:
+        class: phpbb\event\kernel_exception_subscriber
+        arguments:
+            - '@template'
+            - '@language'
+            - '%debug.exceptions%'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    kernel_terminate_subscriber:
+        class: phpbb\event\kernel_terminate_subscriber
+        tags:
+            - { name: kernel.event_subscriber }
+
+    symfony_response_listener:
+        class: Symfony\Component\HttpKernel\EventListener\ResponseListener
+        arguments:
+            - UTF-8
+        tags:
+            - { name: kernel.event_subscriber }

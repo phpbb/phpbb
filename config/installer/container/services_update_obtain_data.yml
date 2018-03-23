@@ -1,0 +1,53 @@
+services:
+    installer.obtain_data.update_options:
+        class: phpbb\install\module\obtain_data\task\obtain_update_settings
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: update_obtain_data, order: 10 }
+
+    installer.obtain_data.file_updater_method:
+        class: phpbb\install\module\obtain_data\task\obtain_file_updater_method
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: update_obtain_data, order: 20 }
+
+    installer.obtain_data.update_files:
+        class: phpbb\install\module\obtain_data\task\obtain_update_files
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: update_obtain_data, order: 30 }
+
+    installer.obtain_data.update_ftp_settings:
+        class: phpbb\install\module\obtain_data\task\obtain_update_ftp_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.update_helper'
+            - '%core.php_ext%'
+        tags:
+            - { name: update_obtain_data, order: 40 }
+
+    installer.module.update_obtain_data_collection:
+        class: phpbb\di\ordered_service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: update_obtain_data, class_name_aware: true }
+
+    installer.module.obtain_data_update:
+        class: phpbb\install\module\obtain_data\update_module
+        parent: installer.module_base
+        arguments:
+            - '@installer.module.update_obtain_data_collection'
+            - true
+            - false
+        tags:
+            - { name: installer_update_module, order: 20 }

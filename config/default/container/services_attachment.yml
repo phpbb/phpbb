@@ -1,0 +1,40 @@
+services:
+    attachment.delete:
+        class: phpbb\attachment\delete
+        shared: false
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@filesystem'
+            - '@attachment.resync'
+            - '%core.root_path%'
+
+    attachment.manager:
+        class: phpbb\attachment\manager
+        shared: false
+        arguments:
+            - '@attachment.delete'
+            - '@attachment.resync'
+            - '@attachment.upload'
+
+    attachment.resync:
+        class: phpbb\attachment\resync
+        shared: false
+        arguments:
+            - '@dbal.conn'
+
+    attachment.upload:
+        class: phpbb\attachment\upload
+        shared: false
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@files.upload'
+            - '@language'
+            - '@mimetype.guesser'
+            - '@dispatcher'
+            - '@plupload'
+            - '@user'
+            - '%core.root_path%'

@@ -1,0 +1,38 @@
+services:
+    installer.file_updater.factory:
+        class: phpbb\install\helper\file_updater\factory
+        arguments:
+            - '@installer.file_updater.collection'
+
+    installer.file_updater.collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: file_updater }
+
+    installer.file_updater.compress:
+        class: phpbb\install\helper\file_updater\compression_file_updater
+        arguments:
+            - '@installer.helper.update_helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: file_updater }
+
+    installer.file_updater.ftp:
+        class: phpbb\install\helper\file_updater\ftp_file_updater
+        arguments:
+            - '@installer.helper.update_helper'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: file_updater }
+
+    installer.file_updater.file:
+        class: phpbb\install\helper\file_updater\file_updater
+        arguments:
+            - '@filesystem'
+            - '%core.root_path%'
+        tags:
+            - { name: file_updater }

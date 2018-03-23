@@ -1,0 +1,46 @@
+<!-- INCLUDE simple_header.html -->
+
+<h2>{L_SEND_IM}</h2>
+
+<form method="post" action="{S_IM_ACTION}">
+
+<div class="panel bg2">
+	<div class="inner">
+
+	<p>{L_SEND_IM_EXPLAIN}</p>
+
+	<!-- IF S_SENT_JABBER -->
+		<p>{L_IM_SENT_JABBER}</p>
+	<!-- ENDIF -->
+
+	<fieldset>
+	<dl class="fields2">
+		<dt><label>{L_IM_RECIPIENT}{L_COLON}</label></dt>
+		<dd><strong>{USERNAME}</strong><!-- IF S_NO_SEND_JABBER --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
+	</dl>
+
+	<!-- IF S_SEND_JABBER -->
+		<dl class="fields2">
+			<dt><label for="message">{L_IM_MESSAGE}{L_COLON}</label></dt>
+			<dd><textarea class="inputbox autowidth" name="message" id="message" rows="5" cols="45"></textarea></dd>
+		</dl>
+		<dl class="fields2">
+			<dt>&nbsp;</dt>
+			<dd><input class="button1" name="submit" type="submit" value="{L_IM_SEND}" /></dd>
+		</dl>
+	<!-- ELSE IF S_NO_SEND_JABBER -->
+		<dl class="fields2">
+			<dt>&nbsp;</dt>
+			<dd>{L_IM_NO_JABBER}</dd>
+		</dl>
+	<!-- ENDIF -->
+	{S_FORM_TOKEN}
+	</fieldset>
+
+	</div>
+</div>
+</form>
+
+<a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
+
+<!-- INCLUDE simple_footer.html -->

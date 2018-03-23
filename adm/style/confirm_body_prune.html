@@ -1,0 +1,36 @@
+<!-- INCLUDE overall_header.html -->
+
+<form id="confirm" method="post" action="{S_CONFIRM_ACTION}">
+
+<fieldset id="userlist">
+	<h2>{L_PRUNE_USERS_LIST}</h2>
+	<!-- IF S_DEACTIVATE --><p>{L_PRUNE_USERS_LIST_DEACTIVATE}</p><!-- ELSE --><p>{L_PRUNE_USERS_LIST_DELETE}</p><!-- ENDIF -->
+
+	<br />
+	<!-- BEGIN users -->
+	&raquo; <input type="checkbox" name="user_ids[]" value="{users.USER_ID}" checked="checked" />
+	<a href="{users.U_PROFILE}">{users.USERNAME}</a>
+	<!-- IF users.U_USER_ADMIN --> [ <a href="{users.U_USER_ADMIN}">{L_USER_ADMIN}</a> ]<!-- ENDIF --><br />
+	<!-- END users -->
+	<br />
+	<span class="small">
+	<a href="#" onclick="marklist('userlist', 'user_ids', true)">{L_MARK_ALL}</a> &bull;
+	<a href="#" onclick="marklist('userlist', 'user_ids', false)">{L_UNMARK_ALL}</a>
+	</span>
+</fieldset>
+
+<fieldset>
+	<h1>{MESSAGE_TITLE}</h1>
+	<p>{MESSAGE_TEXT}</p>
+
+	{S_HIDDEN_FIELDS}
+
+	<div style="text-align: center;">
+		<input type="submit" name="confirm" value="{L_YES}" class="button2" />&nbsp; 
+		<input type="submit" name="cancel" value="{L_NO}" class="button2" />
+	</div>
+</fieldset>
+
+</form>
+
+<!-- INCLUDE overall_footer.html -->

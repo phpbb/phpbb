@@ -1,0 +1,79 @@
+<!-- INCLUDE overall_header.html -->
+
+<p class="{S_CONTENT_FLOW_END} responsive-center time<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
+<!-- IF S_USER_LOGGED_IN --><p class="responsive-center time">{CURRENT_TIME}</p><!-- ENDIF -->
+
+<!-- EVENT index_body_markforums_before -->
+<!-- IF U_MARK_FORUMS -->
+	<div class="action-bar compact">
+		<a href="{U_MARK_FORUMS}" class="mark-read rightside" accesskey="m" data-ajax="mark_forums_read">{L_MARK_FORUMS_READ}</a>
+	</div>
+<!-- ENDIF -->
+<!-- EVENT index_body_markforums_after -->
+
+<!-- INCLUDE forumlist_body.html -->
+
+<!-- EVENT index_body_forumlist_body_after -->
+
+<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
+	<form method="post" action="{S_LOGIN_ACTION}" class="headerspace">
+	<h3><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a><!-- IF S_REGISTER_ENABLED -->&nbsp; &bull; &nbsp;<a href="{U_REGISTER}">{L_REGISTER}</a><!-- ENDIF --></h3>
+		<fieldset class="quick-login">
+			<label for="username"><span>{L_USERNAME}{L_COLON}</span> <input type="text" tabindex="1" name="username" id="username" size="10" class="inputbox" title="{L_USERNAME}" /></label>
+			<label for="password"><span>{L_PASSWORD}{L_COLON}</span> <input type="password" tabindex="2" name="password" id="password" size="10" class="inputbox" title="{L_PASSWORD}" autocomplete="off" /></label>
+			<!-- IF U_SEND_PASSWORD -->
+				<a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a>
+			<!-- ENDIF -->
+			<!-- IF S_AUTOLOGIN_ENABLED -->
+				<span class="responsive-hide">|</span> <label for="autologin">{L_LOG_ME_IN} <input type="checkbox" tabindex="4" name="autologin" id="autologin" /></label>
+			<!-- ENDIF -->
+			<input type="submit" tabindex="5" name="login" value="{L_LOGIN}" class="button2" />
+			{S_LOGIN_REDIRECT}
+		</fieldset>
+	</form>
+<!-- ENDIF -->
+
+<!-- EVENT index_body_stat_blocks_before -->
+
+<!-- IF S_DISPLAY_ONLINE_LIST -->
+	<div class="stat-block online-list">
+		<!-- IF U_VIEWONLINE --><h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3><!-- ELSE --><h3>{L_WHO_IS_ONLINE}</h3><!-- ENDIF -->
+		<p>
+			<!-- EVENT index_body_block_online_prepend -->
+			{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /> 
+			<!-- IF U_VIEWONLINE -->
+				<br />{LOGGED_IN_USER_LIST}
+				<!-- IF LEGEND --><br /><em>{L_LEGEND}{L_COLON} {LEGEND}</em><!-- ENDIF -->
+			<!-- ENDIF -->
+			<!-- EVENT index_body_block_online_append -->
+		</p>
+	</div>
+<!-- ENDIF -->
+
+<!-- EVENT index_body_birthday_block_before -->
+
+<!-- IF S_DISPLAY_BIRTHDAY_LIST -->
+	<div class="stat-block birthday-list">
+		<h3>{L_BIRTHDAYS}</h3>
+		<p>
+			<!-- EVENT index_body_block_birthday_prepend -->
+			<!-- IF .birthdays -->{L_CONGRATULATIONS}{L_COLON} <strong><!-- BEGIN birthdays -->{birthdays.USERNAME}<!-- IF birthdays.AGE !== '' --> ({birthdays.AGE})<!-- ENDIF --><!-- IF not birthdays.S_LAST_ROW -->, <!-- ENDIF --><!-- END birthdays --></strong><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF -->
+			<!-- EVENT index_body_block_birthday_append -->
+		</p>
+	</div>
+<!-- ENDIF -->
+
+<!-- IF NEWEST_USER -->
+	<div class="stat-block statistics">
+		<h3>{L_STATISTICS}</h3>
+		<p>
+			<!-- EVENT index_body_block_stats_prepend -->
+			{TOTAL_POSTS} &bull; {TOTAL_TOPICS} &bull; {TOTAL_USERS} &bull; {NEWEST_USER}
+			<!-- EVENT index_body_block_stats_append -->
+		</p>
+	</div>
+<!-- ENDIF -->
+
+<!-- EVENT index_body_stat_blocks_after -->
+
+<!-- INCLUDE overall_footer.html -->

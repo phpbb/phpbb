@@ -1,0 +1,17 @@
+phpbb_report_pm_controller:
+    path:             /pm/{id}/report
+    methods:          [GET, POST]
+    defaults:
+        _controller:  phpbb.report.controller:handle
+        mode:         'pm'
+    requirements:
+        id:           \d+
+
+phpbb_report_post_controller:
+    path:             /post/{id}/report
+    methods:          [GET, POST]
+    defaults:
+        _controller:  phpbb.report.controller:handle
+        mode:         'post'
+    requirements:
+        id:           \d+
