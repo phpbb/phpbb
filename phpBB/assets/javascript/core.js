@@ -252,7 +252,7 @@ phpbb.makeSizeReadable = function(sizeInBytes, sizeUnit){
 	var finalSize = parseFloat(sizeInBytes);
 	var unitStep = 1024 * nextUnitFrom;
 	var i; // Unit nr.
-	for(i = unit; i < units.length && finalSize >= unitStep; i++){
+	for(i = unit; i < units.length-1 && finalSize >= unitStep; i++){
 		finalSize = finalSize / 1024;
 	}
 	finalSize = Math.floor(finalSize * 10) / 10;
