@@ -19,6 +19,7 @@ input {
 	font-weight: normal;
 	vertical-align: middle;
 	padding: 0 3px;
+	moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
 }
 
 select {
@@ -29,6 +30,7 @@ select {
 	border: 1px solid transparent;
 	padding: 1px;
 	cursor: pointer;
+	moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
 }
 
 select:focus {
@@ -50,6 +52,7 @@ textarea {
 	line-height: 18px;
 	width: 60%;
 	padding: 2px;
+	-moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;
 }
 
 label {
