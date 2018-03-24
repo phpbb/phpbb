@@ -224,6 +224,44 @@ phpbb.parseQuerystring = function(string) {
 	return params;
 };
 
+/**
+ * Turns a size in bytes (or any unit) in a human-readable format
+ *
+ * Function can get params like: ('2048kb'), (2048, 'mb'), (512), and will
+ * return arrays like [2, 'mb'], [2, 'gb'], [0.5, 'kb']
+ *
+ * @param {string|number} sizeInBytes  Contains the unformatted size as a number.
+ * 		Can also contain the unit name.
+ * @param {string} sizeUnit  Optional. Contains the unit for the sizeInBytes param.
+ * @returns {array} The array that contains the resulting size as number, and the
+ *		corresponding unit as string.
+ */
+phpbb.makeSizeReadable = function(sizeInBytes, sizeUnit){
+	var units = ['b', 'kb', 'mb', 'gb'];
+	var nextUnitFrom = 0.5; // The percent when to jump to the next unit (eg.: 512kb => 0.5mb)
+	var unit = 0;
+
+	if(typeof sizeUnit === 'undefined'){
+		if(typeof sizeInBytes === 'string' && parseFloat(sizeInBytes) != sizeInBytes){
+			var unitName = sizeInBytes.substr(parseFloat(sizeInBytes).toString().length).trim();
+			unit = units.indexOf(unitName);
+			if(unit < 0) unit = 0;
+		}else{
+            unit = 0;
+        }
+	}else{
+		unit = units.indexOf(sizeUnit);
+	}
+
+	var finalSize = parseFloat(sizeInBytes);
+	var unitStep = 1024 * nextUnitFrom;
+	var i; // Unit nr.
+	for(i = unit; i < units.length-1 && finalSize >= unitStep; i++){
+		finalSize = finalSize / 1024;
+	}
+	finalSize = Math.floor(finalSize * 10) / 10;
+	return [finalSize, units[i]];
+}
 
 /**
  * Makes a link use AJAX instead of loading an entire page.
