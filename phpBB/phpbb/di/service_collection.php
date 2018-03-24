@@ -103,4 +103,35 @@ class service_collection extends \ArrayObject
 	{
 		return $this->service_classes;
 	}
+
+	/**
+	 * Returns the service associated to a class
+	 *
+	 * @return mixed
+	 * @throw \RuntimeException if the
+	 */
+	public function get_by_class($class)
+	{
+		$service_id = null;
+
+		foreach ($this->service_classes as $id => $service_class)
+		{
+			if ($service_class === $class)
+			{
+				if ($service_id !== null)
+				{
+					throw new \RuntimeException('More than one service definitions found for class "'.$class.'" in collection.');
+				}
+
+				$service_id = $id;
+			}
+		}
+
+		if ($service_id === null)
+		{
+			throw new \RuntimeException('No service found for class "'.$class.'" in collection.');
+		}
+
+		return $this->offsetGet($service_id);
+	}
 }

@@ -352,7 +352,7 @@ class post extends \phpbb\notification\type\base
 	*
 	* @param array $post Post data from submit_post
 	* @param array $notify_users Notify users list
-	* 		Formated from find_users_for_notification()
+	* 		Formatted from find_users_for_notification()
 	* @return array Whatever you want to send to create_insert_array().
 	*/
 	public function pre_create_insert_array($post, $notify_users)
