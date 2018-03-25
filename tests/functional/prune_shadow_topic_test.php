@@ -130,7 +130,16 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}");
 		$this->assertNotEmpty($crawler->filter('img')->last()->attr('src'));
-		self::request('GET', "cron.php?cron_type=cron.task.core.prune_shadow_topics&f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}", array(), false);
+		self::request('GET', "app.php/cron/cron.task.core.prune_shadow_topics?f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}", array(), false);
+
+		// Try to ensure that the cron can actually run before we start to wait for it
+		sleep(1);
+		$cron_lock = new \phpbb\lock\db('cron_lock', new \phpbb\config\db($this->db, new \phpbb\cache\driver\dummy(), 'phpbb_config'), $this->db);
+		while (!$cron_lock->acquire())
+		{
+			// do nothing
+		}
+ 		$cron_lock->release();
 
 		$this->assert_forum_details($this->data['forums']['Prune Shadow'], array(
 			'forum_posts_approved'		=> 0,

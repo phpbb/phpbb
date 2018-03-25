@@ -5,7 +5,7 @@
 <!-- IF not S_PM -->
 <fieldset class="forum-selection">
 	<label for="fo">{L_FORUM}{L_COLON} <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
-	<input type="submit" name="sort" value="{L_GO}" class="button2" />
+	<input type="submit" name="sort" value="{L_GO}" class="button1 button button-form-bold" />
 	{S_FORM_TOKEN}
 </fieldset>
 <!-- ENDIF -->
@@ -102,8 +102,8 @@
 
 <!-- IF .postrow -->
 	<fieldset class="display-actions">
-		<input class="button2" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
-		<!-- IF not S_CLOSED -->&nbsp;<input class="button1" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
+		<input class="button1 button button-form-bold" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
+		<!-- IF not S_CLOSED -->&nbsp;<input class="button1 button button-form" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
 		<div><a href="#" onclick="marklist('mcp', 'report_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'report_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
 	</fieldset>
 <!-- ENDIF -->

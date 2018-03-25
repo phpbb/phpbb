@@ -390,7 +390,7 @@ class mysql extends \phpbb\db\driver\mysql_base
 	{
 		static $test_prof;
 
-		// current detection method, might just switch to see the existance of INFORMATION_SCHEMA.PROFILING
+		// current detection method, might just switch to see the existence of INFORMATION_SCHEMA.PROFILING
 		if ($test_prof === null)
 		{
 			$test_prof = false;
