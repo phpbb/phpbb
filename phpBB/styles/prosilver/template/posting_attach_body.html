@@ -1,3 +1,20 @@
+
+
+<script type="text/javascript">
+        function bbcode() {
+		
+		if({ALLOWED_BBCODE}==0)
+          {
+			document.getElementById("inline").style.visibility = 'hidden';
+        }
+		else {
+		document.getElementById("inline").style.visibility = 'visible';
+			}
+		}
+        window.onload = bbcode;
+  </script>
+
+
 <div class="panel bg3 panel-container" id="attach-panel">
 	<div class="inner">
 
@@ -37,7 +54,7 @@
 							<td class="attach-name">
 								<span class="file-name ellipsis-text"></span>
 								<span class="attach-controls">
-									<input type="button" value="{L_PLACE_INLINE}" class="button1 button button-form-bold hidden file-inline-bbcode" />&nbsp;
+									<input type="button" value="{L_PLACE_INLINE}"  class="button1 button button-form-bold hidden file-inline-bbcode" id = "inline" />&nbsp;
 									<input type="button" value="{L_DELETE_FILE}" class="button1 button button-form-bold file-delete" />
 								</span>
 								<span class="clear"></span>
