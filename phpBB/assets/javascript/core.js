@@ -1676,3 +1676,19 @@ $(function() {
 });
 
 })(jQuery); // Avoid conflicts with other libraries
+$(function(){
+
+jQuery( document ).ready(function() {
+var allowed_bbcode = jQuery("#inline").val();
+//From here you can the whaterver you like with you js Value
+if(allowed_bbcode == 0)
+{
+jQuery("#inlineButton").style.visibility='hidden';
+}
+else{
+	jQuery("#inlineButton").style.visibility='visible';
+}
+	
+
+});
+});
