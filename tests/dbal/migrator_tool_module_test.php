@@ -52,11 +52,39 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			array(
 				'',
 				'ACP_CAT',
+				false,
 				true,
 			),
 			array(
 				0,
 				'ACP_CAT',
+				false,
+				true,
+			),
+			array(
+				false,
+				'ACP_CAT',
+				false,
+				true,
+			),
+
+			// Test the existing category lazily
+			array(
+				'',
+				'ACP_CAT',
+				true,
+				true,
+			),
+			array(
+				0,
+				'ACP_CAT',
+				true,
+				true,
+			),
+			array(
+				false,
+				'ACP_CAT',
+				true,
 				true,
 			),
 
@@ -65,15 +93,38 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'ACP_MODULE',
 				false,
+				false,
 			),
 			array(
 				false,
 				'ACP_MODULE',
+				false,
 				true,
 			),
 			array(
 				'ACP_CAT',
 				'ACP_MODULE',
+				false,
+				true,
+			),
+
+			// Test the existing module lazily
+			array(
+				'',
+				'ACP_MODULE',
+				true,
+				false,
+			),
+			array(
+				false,
+				'ACP_MODULE',
+				true,
+				true,
+			),
+			array(
+				'ACP_CAT',
+				'ACP_MODULE',
+				true,
 				true,
 			),
 
@@ -82,10 +133,38 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'ACP_NON_EXISTANT_CAT',
 				false,
+				false,
+			),
+			array(
+				false,
+				'ACP_NON_EXISTANT_CAT',
+				false,
+				false,
 			),
 			array(
 				'ACP_CAT',
 				'ACP_NON_EXISTANT_MODULE',
+				false,
+				false,
+			),
+
+			// Test for non-existant modules lazily
+			array(
+				'',
+				'ACP_NON_EXISTANT_CAT',
+				true,
+				false,
+			),
+			array(
+				false,
+				'ACP_NON_EXISTANT_CAT',
+				true,
+				false,
+			),
+			array(
+				'ACP_CAT',
+				'ACP_NON_EXISTANT_MODULE',
+				true,
 				false,
 			),
 		);
@@ -94,9 +173,9 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 	/**
 	* @dataProvider exists_data_acp
 	*/
-	public function test_exists_acp($parent, $module, $expected)
+	public function test_exists_acp($parent, $module, $lazy, $expected)
 	{
-		$this->assertEquals($expected, $this->tool->exists('acp', $parent, $module));
+		$this->assertEquals($expected, $this->tool->exists('acp', $parent, $module, $lazy));
 	}
 
 	public function exists_data_ucp()
@@ -106,11 +185,39 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 			array(
 				'',
 				'UCP_MAIN_CAT',
+				false,
 				true,
 			),
 			array(
 				0,
 				'UCP_MAIN_CAT',
+				false,
+				true,
+			),
+			array(
+				false,
+				'UCP_MAIN_CAT',
+				false,
+				true,
+			),
+
+			// Test the existing category lazily
+			array(
+				'',
+				'UCP_MAIN_CAT',
+				true,
+				true,
+			),
+			array(
+				0,
+				'UCP_MAIN_CAT',
+				true,
+				true,
+			),
+			array(
+				false,
+				'UCP_MAIN_CAT',
+				true,
 				true,
 			),
 
@@ -119,20 +226,50 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'UCP_SUBCATEGORY',
 				false,
+				false,
 			),
 			array(
 				false,
 				'UCP_SUBCATEGORY',
+				false,
+				true,
+			),
+			array(
+				'UCP_MAIN_CAT',
+				'UCP_SUBCATEGORY',
+				false,
+				true,
+			),
+			array(
+				'UCP_SUBCATEGORY',
+				'UCP_MODULE',
+				false,
+				true,
+			),
+
+			// Test the existing module lazily
+			array(
+				'',
+				'UCP_SUBCATEGORY',
+				true,
+				false,
+			),
+			array(
+				false,
+				'UCP_SUBCATEGORY',
+				true,
 				true,
 			),
 			array(
 				'UCP_MAIN_CAT',
 				'UCP_SUBCATEGORY',
 				true,
+				true,
 			),
 			array(
 				'UCP_SUBCATEGORY',
 				'UCP_MODULE',
+				true,
 				true,
 			),
 
@@ -141,10 +278,26 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 				'',
 				'UCP_NON_EXISTANT_CAT',
 				false,
+				false,
 			),
 			array(
 				'UCP_MAIN_CAT',
 				'UCP_NON_EXISTANT_MODULE',
+				false,
+				false,
+			),
+
+			// Test for non-existant modules lazily
+			array(
+				'',
+				'UCP_NON_EXISTANT_CAT',
+				true,
+				false,
+			),
+			array(
+				'UCP_MAIN_CAT',
+				'UCP_NON_EXISTANT_MODULE',
+				true,
 				false,
 			),
 		);
@@ -153,9 +306,9 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 	/**
 	* @dataProvider exists_data_ucp
 	*/
-	public function test_exists_ucp($parent, $module, $expected)
+	public function test_exists_ucp($parent, $module, $lazy, $expected)
 	{
-		$this->assertEquals($expected, $this->tool->exists('ucp', $parent, $module));
+		$this->assertEquals($expected, $this->tool->exists('ucp', $parent, $module, $lazy));
 	}
 
 	public function test_add()

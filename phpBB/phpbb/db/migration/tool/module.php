@@ -86,7 +86,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* 		check for to see if it exists
 	* @param bool $lazy Checks lazily if the module exists. Returns true if it exists in at
 	*       least one given parent.
-	* @return bool true if module exists in *all* given parents, false if not
+	* @return bool true if module exists in *all* given parents, false if not in any given parent;
+	 *      true if ignoring parent check and module exists class wide, false if not found at all.
 	*/
 	public function exists($class, $parent, $module, $lazy = false)
 	{
@@ -110,6 +111,10 @@ class module implements \phpbb\db\migration\tool\tool_interface
 				$parent_sqls[] = 'AND parent_id = ' . (int) $parent_id;
 			}
 		}
+		else
+		{
+			$parent_sqls[] = '';
+		}
 
 		foreach ($parent_sqls as $parent_sql)
 		{
@@ -126,7 +131,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			{
 				return false;
 			}
-			else if ($lazy && $module_id)
+			if ($lazy && $module_id)
 			{
 				return true;
 			}
