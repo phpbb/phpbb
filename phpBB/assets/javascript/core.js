@@ -1676,3 +1676,17 @@ $(function() {
 });
 
 })(jQuery); // Avoid conflicts with other libraries
+
+$(document).ready(function(){
+var allow_bbcode = $("#inline").val();
+
+if(allow_bbcode == 0)
+{
+$("#inlineButton").css("visibility", "hidden");
+}
+else{
+	$("#inlineButton").css("visibility", "visible");
+}
+	
+
+});
