@@ -1655,7 +1655,6 @@ let submitButton = null;
 let programaticallySubmitted = false;
 
 phpbb.recaptchaOnLoad = function () {
-	console.log('ahoj');
 	// Listen to submit buttons in order to know which one was pressed
 	$('input[type="submit"]').each(() => {
 		$(this).on('click', () => {
