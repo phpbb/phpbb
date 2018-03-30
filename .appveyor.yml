@@ -64,9 +64,9 @@ before_test:
       if ($env:db -eq "mssql") {
         cd c:\tools\php\ext
         $DLLVersion = "4.1.6.1"
-        appveyor DownloadFile http://windows.php.net/downloads/pecl/releases/sqlsrv/$($:DLLVersion)/php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
+        curl -o php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/sqlsrv/$($:DLLVersion)/php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
         7z x -y php_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip > $null
-        appveyor-retry appveyor DownloadFile http://windows.php.net/downloads/pecl/releases/pdo_sqlsrv/$($DLLVersion)/php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
+        curl -o php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip https://windows.php.net/downloads/pecl/releases/pdo_sqlsrv/$($DLLVersion)/php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip
         7z x -y php_pdo_sqlsrv-$($DLLVersion)-$($env:php -replace '([0-9])[.]([0-9])[.]?([0-9]+)?','$1.$2')-nts-vc14-x64.zip > $null
         Remove-Item c:\tools\php\* -include .zip
         cd c:\tools\php
