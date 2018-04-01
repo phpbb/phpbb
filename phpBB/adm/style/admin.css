@@ -1711,33 +1711,55 @@ input.button1 {
 }
 
 /* Alternative button */
-a.button2,
+.button2 {
+	
+  border-radius: 4px;
+  background-color: #62A5CC;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+	
+}
+
+/*a.button2,
 input.button2 {
 	border: 1px solid #666666;
-}
+}*/
 
 /* <a> button in the style of the form buttons */
 a.button1,
 a.button1:link,
 a.button1:visited,
 a.button1:active,
-a.button2,
-a.button2:link,
-a.button2:visited,
-a.button2:active {
+ {
 	text-decoration: none;
 	color: #000000;
 	padding: 4px 8px;
 }
 
+
+a.button2,
+a.button2:link,
+a.button2:visited,
+a.button2:active{
+	text-decoration: none;
+	color: #FFFFFF;
+	padding: 4px 8px;
+}
+
+
 /* Hover states */
 a.button1:hover,
-input.button1:hover,
-a.button2:hover,
-input.button2:hover {
+input.button1:hover
+ {
 	background: #efefef url("../images/bg_button.gif") repeat bottom;
 	border: 1px solid #bc2a4d;
 	color: #bc2a4d;
+}
+
+a.button2:hover,
+input.button2:hover {
+	opacity:0.75;
 }
 
 input.disabled {
