@@ -236,27 +236,29 @@ phpbb.parseQuerystring = function(string) {
  * @returns {array} The array that contains the resulting size as number, and the
  *		corresponding unit as string.
  */
-phpbb.makeSizeReadable = function(sizeInBytes, sizeUnit){
+phpbb.makeSizeReadable = function(sizeInBytes, sizeUnit) {
 	var units = ['b', 'kb', 'mb', 'gb'];
 	var nextUnitFrom = 0.5; // The percent when to jump to the next unit (eg.: 512kb => 0.5mb)
 	var unit = 0;
 
-	if(typeof sizeUnit === 'undefined'){
-		if(typeof sizeInBytes === 'string' && parseFloat(sizeInBytes) != sizeInBytes){
+	if (typeof sizeUnit === 'undefined') {
+		if (typeof sizeInBytes === 'string' && parseFloat(sizeInBytes) != sizeInBytes) {
 			var unitName = sizeInBytes.substr(parseFloat(sizeInBytes).toString().length).trim();
 			unit = units.indexOf(unitName);
-			if(unit < 0) unit = 0;
-		}else{
+			if (unit < 0) {
+				unit = 0;
+			}
+		} else {
             unit = 0;
         }
-	}else{
+	} else {
 		unit = units.indexOf(sizeUnit);
 	}
 
 	var finalSize = parseFloat(sizeInBytes);
 	var unitStep = 1024 * nextUnitFrom;
-	var i; // Unit nr.
-	for(i = unit; i < units.length-1 && finalSize >= unitStep; i++){
+	var i;
+	for (i = unit; i < units.length - 1 && finalSize >= unitStep; i++) {
 		finalSize = finalSize / 1024;
 	}
 	finalSize = Math.floor(finalSize * 10) / 10;
