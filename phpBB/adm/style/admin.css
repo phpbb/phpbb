@@ -1555,11 +1555,31 @@ a.button2, input.button2 {
 	border: 1px solid #666666;
 }
 
+a.runbutton,
+input.runbutton {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 0.85em;
+	color: #000000;
+	border-radius: 4px;
+	width: auto !important;
+	padding: 1px 3px 0;
+	cursor: pointer;
+}
+
 /* <a> button in the style of the form buttons */
 a.button1, a.button1:link, a.button1:visited, a.button1:active,
 a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	text-decoration: none;
 	color: #000000;
+	padding: 4px 8px;
+}
+
+a.runbutton,
+a.runbutton:link,
+a.runbutton:visited,
+a.runbutton:active {
+	text-decoration: none;
+	color: #ffffff;
 	padding: 4px 8px;
 }
 
@@ -1569,6 +1589,11 @@ a.button2:hover, input.button2:hover {
 	border: 1px solid #BC2A4D;
 	background: #EFEFEF url("../images/bg_button.gif") repeat bottom;
 	color: #BC2A4D;
+}
+
+a.runbutton:hover,
+input.runbutton:hover {
+	opacity:0.75;
 }
 
 input.disabled {
