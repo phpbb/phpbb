@@ -1650,19 +1650,19 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 	});
 };
 
-const recaptchaForm = $('.g-recaptcha').parents('form');
-let submitButton = null;
-let programaticallySubmitted = false;
+var recaptchaForm = $('.g-recaptcha').parents('form');
+var submitButton = null;
+var programaticallySubmitted = false;
 
 phpbb.recaptchaOnLoad = function () {
 	// Listen to submit buttons in order to know which one was pressed
-	$('input[type="submit"]').each(() => {
-		$(this).on('click', () => {
+	$('input[type="submit"]').each(function () {
+		$(this).on('click', function () {
 			submitButton = this;
 		});
 	});
 
-	recaptchaForm.on('submit', e => {
+	recaptchaForm.on('submit', function (e) {
 		if (!programaticallySubmitted) {
 			grecaptcha.execute();
 			e.preventDefault();
