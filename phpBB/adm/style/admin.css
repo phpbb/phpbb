@@ -724,9 +724,8 @@ td {
 
 .table1 {
 	border-spacing: 1px;
+	display: inline-block;
 	border-collapse: separate;
-	display:inline-block;
-
 }
 
 #lside {
