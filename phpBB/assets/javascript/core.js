@@ -1685,6 +1685,15 @@ phpbb.recaptchaOnSubmit = function () {
 	}
 }
 
+// reCAPTCHA doesn't accept callback functions nested inside objects
+// so we need to make this helper functions here
+function phpbbRecaptchaOnLoad() {
+	phpbb.recaptchaOnLoad();
+}
+function phpbbRecaptchaOnSubmit() {
+	phpbb.recaptchaOnSubmit();
+}
+
 $(window).on('load', phpbb.lazyLoadAvatars);
 
 /**
@@ -1717,12 +1726,3 @@ $(function() {
 });
 
 })(jQuery); // Avoid conflicts with other libraries
-
-// reCAPTCHA doesn't accept callback functions nested inside objects
-// so we need to make this helper functions here
-function phpbbRecaptchaOnLoad() {
-	phpbb.recaptchaOnLoad();
-}
-function phpbbRecaptchaOnSubmit() {
-	phpbb.recaptchaOnSubmit();
-}
