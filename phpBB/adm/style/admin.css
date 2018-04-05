@@ -723,10 +723,21 @@ td {
 }
 
 .table1 {
-	border-collapse: separate;
 	border-spacing: 1px;
-	clear: both;
+	border-collapse: separate;
+	display:inline-block;
+
 }
+
+#lside {
+	display: inline-block;
+	width: 40%;
+}
+
+.table1 td {
+	width: 25%;
+}
+
 
 dt#color_palette_placeholder table {
 	margin-right: 5px;
