@@ -750,8 +750,8 @@ td {
 }
 
 .table1 {
-	border-spacing: 1px;
 	display: inline-block;
+	border-spacing: 1px;
 	border-collapse: separate;
 }
 
