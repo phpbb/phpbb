@@ -582,9 +582,7 @@
 	}
 
 	.has-profile .post-buttons {
-		margin-top: 5px;
-		margin-right: 5px;
-		margin-left: auto;
+		margin: 5px;
 	}
 
 	/* Misc stuff
