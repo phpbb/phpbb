@@ -755,15 +755,14 @@ td {
 	border-collapse: separate;
 }
 
-#lside {
+.lside {
 	display: inline-block;
 	width: 40%;
 }
 
-.table1 td {
+.tabled {
 	width: 25%;
 }
-
 
 dt#color_palette_placeholder table {
 	width: 80px;
