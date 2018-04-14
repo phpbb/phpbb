@@ -508,7 +508,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_BAN_EXCLUDE_USER'	=> '<strong>Excluded user from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_EXCLUDE_IP'	=> '<strong>Excluded IP from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
-	'LOG_BAN_EXCLUDE_EMAIL' => '<strong>Excluded email from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
+	'LOG_BAN_EXCLUDE_EMAIL'	=> '<strong>Excluded email from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_USER'			=> '<strong>Banned user</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_IP'			=> '<strong>Banned IP</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_EMAIL'			=> '<strong>Banned email</strong> for reason “<em>%1$s</em>”<br>» %2$s',
@@ -781,8 +781,8 @@ $lang = array_merge($lang, array(
 
 	'LOG_WARNING_DELETED'		=> '<strong>Deleted user warning</strong><br>» %s',
 	'LOG_WARNINGS_DELETED'		=> array(
-		1 => '<strong>Deleted user warning</strong><br>» %1$s',
-		2 => '<strong>Deleted %2$d user warnings</strong><br>» %1$s', // Example: '<strong>Deleted 2 user warnings</strong><br>» username'
+		1	=> '<strong>Deleted user warning</strong><br>» %1$s',
+		2	=> '<strong>Deleted %2$d user warnings</strong><br>» %1$s', // Example: '<strong>Deleted 2 user warnings</strong><br>» username'
 	),
 	'LOG_WARNINGS_DELETED_ALL'	=> '<strong>Deleted all user warnings</strong><br>» %s',
 

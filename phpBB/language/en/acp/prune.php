@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'DEACTIVATE_DELETE_EXPLAIN'	=> 'Choose whether to deactivate users or delete them entirely. Please note that deleted users cannot be restored!',
 	'DELETE_USERS'				=> 'Delete',
 	'DELETE_USER_POSTS'			=> 'Delete pruned user posts',
-	'DELETE_USER_POSTS_EXPLAIN' => 'Removes posts made by deleted users, has no effect if users are deactivated.',
+	'DELETE_USER_POSTS_EXPLAIN'	=> 'Removes posts made by deleted users, has no effect if users are deactivated.',
 
 	'JOINED_EXPLAIN'			=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format. You may use both fields to specify an interval, or leave one blank for an open date range.',
 
