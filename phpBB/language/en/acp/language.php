@@ -66,7 +66,7 @@ $lang = array_merge($lang, array(
 
 	'NO_FILE_SELECTED'				=> 'You haven’t specified a language file.',
 	'NO_LANG_ID'					=> 'You haven’t specified a language pack.',
-	'NO_REMOVE_DEFAULT_LANG'		=> 'You are not able to remove the default language pack.<br />If you want to remove this language pack, change your board’s default language first.',
+	'NO_REMOVE_DEFAULT_LANG'		=> 'You are not able to remove the default language pack.<br>If you want to remove this language pack, change your board’s default language first.',
 	'NO_UNINSTALLED_LANGUAGE_PACKS'	=> 'No uninstalled language packs',
 
 	'THOSE_MISSING_LANG_FILES'			=> 'The following language files are missing from the “%s” language folder',

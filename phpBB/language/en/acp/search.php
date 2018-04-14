@@ -110,13 +110,13 @@ $lang = array_merge($lang, array(
 	'SEARCH_GUEST_INTERVAL'					=> 'Guest search flood interval',
 	'SEARCH_GUEST_INTERVAL_EXPLAIN'			=> 'Number of seconds guests must wait between searches. If one guest searches all others have to wait until the time interval passed.',
 	'SEARCH_INDEX_CREATE_REDIRECT'			=> array(
-		2	=> 'All posts up to post id %2$d have now been indexed, of which %1$d posts were within this step.<br />',
+		2	=> 'All posts up to post id %2$d have now been indexed, of which %1$d posts were within this step.<br>',
 	),
 	'SEARCH_INDEX_CREATE_REDIRECT_RATE'		=> array(
-		2	=> 'The current rate of indexing is approximately %1$.1f posts per second.<br />Indexing in progress…',
+		2	=> 'The current rate of indexing is approximately %1$.1f posts per second.<br>Indexing in progress…',
 	),
 	'SEARCH_INDEX_DELETE_REDIRECT'			=> array(
-		2	=> 'All posts up to post id %2$d have been removed from the search index.<br />Deleting in progress…',
+		2	=> 'All posts up to post id %2$d have been removed from the search index.<br>Deleting in progress…',
 	),
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',

@@ -61,7 +61,7 @@ $help = array(
 	),
 	array(
 		0 => 'I’ve lost my password!',
-		1 => 'Don’t panic! While your password cannot be retrieved, it can easily be reset. Visit the login page and click <em>I forgot my password</em>. Follow the instructions and you should be able to log in again shortly.<br />However, if you are not able to reset your password, contact a board administrator.',
+		1 => 'Don’t panic! While your password cannot be retrieved, it can easily be reset. Visit the login page and click <em>I forgot my password</em>. Follow the instructions and you should be able to log in again shortly.<br>However, if you are not able to reset your password, contact a board administrator.',
 	),
 	array(
 		0 => 'Why do I get logged off automatically?',
@@ -310,7 +310,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I bookmark or subscribe to specific topics?',
-		1 => 'You can bookmark or subscribe to a specific topic by clicking the appropriate link in the “Topic tools” menu, conveniently located near the top and bottom of a topic discussion.<br />Replying to a topic with the “Notify me when a reply is posted” option checked will also subscribe you to the topic.',
+		1 => 'You can bookmark or subscribe to a specific topic by clicking the appropriate link in the “Topic tools” menu, conveniently located near the top and bottom of a topic discussion.<br>Replying to a topic with the “Notify me when a reply is posted” option checked will also subscribe you to the topic.',
 	),
 	array(
 		0 => 'How do I subscribe to specific forums?',
@@ -350,6 +350,6 @@ $help = array(
 	),
 	array(
 		0 => 'How do I contact a board administrator?',
-		1 => 'All users of the board can use the “Contact us” form, if the option was enabled by the board administrator.<br />Members of the board can also use the “The team” link.',
+		1 => 'All users of the board can use the “Contact us” form, if the option was enabled by the board administrator.<br>Members of the board can also use the “The team” link.',
 	),
 );

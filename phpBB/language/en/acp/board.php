@@ -107,7 +107,7 @@ $lang = array_merge($lang, array(
 	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 
 	'ALLOW_AVATARS'					=> 'Enable avatars',
-	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br />If you disable avatars in general or avatars of a certain mode, the disabled avatars will no longer be shown on the board, but users will still be able to download their own avatars in the User Control Panel.',
+	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br>If you disable avatars in general or avatars of a certain mode, the disabled avatars will no longer be shown on the board, but users will still be able to download their own avatars in the User Control Panel.',
 	'ALLOW_GRAVATAR'				=> 'Enable gravatar avatars',
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'					=> 'Enable remote avatars',
@@ -116,9 +116,9 @@ $lang = array_merge($lang, array(
 	'ALLOW_REMOTE_UPLOAD_EXPLAIN'	=> 'Allow uploading of avatars from another website.',
 	'ALLOW_UPLOAD'					=> 'Enable avatar uploading',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar gallery path',
-	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.<br />Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
+	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.<br>Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
 	'AVATAR_STORAGE_PATH'			=> 'Avatar storage path',
-	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>.<br />Avatar uploading <strong>will not be available</strong> if this path is not writable.<br />Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
+	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>.<br>Avatar uploading <strong>will not be available</strong> if this path is not writable.<br>Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
 	'MAX_AVATAR_SIZE'				=> 'Maximum avatar dimensions',
 	'MAX_AVATAR_SIZE_EXPLAIN'		=> 'Width x Height in pixels.',
 	'MAX_FILESIZE'					=> 'Maximum avatar file size',
@@ -272,7 +272,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_SETTINGS_OTHER'			=> 'Other feeds and settings',
 
 	'ACP_FEED_ENABLE'					=> 'Enable feeds',
-	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM feeds for the entire board.<br />Disabling this switches off all feeds, no matter how the options below are set.',
+	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM feeds for the entire board.<br>Disabling this switches off all feeds, no matter how the options below are set.',
 	'ACP_FEED_LIMIT'					=> 'Number of items',
 	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',
 
@@ -288,7 +288,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_TOPICS_ACTIVE'			=> 'Enable active topics feed',
 	'ACP_FEED_TOPICS_ACTIVE_EXPLAIN'	=> 'Enables the “Active Topics” feed, which displays the last active topics including the last post.',
 	'ACP_FEED_NEWS'						=> 'News feed',
-	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>CTRL</samp> and clicking.',
+	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br>Select multiple forums by holding <samp>CTRL</samp> and clicking.',
 
 	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable forums feed',
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'Enables the “All forums” feed, which displays a list of forums.',
@@ -296,9 +296,9 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_HTTP_AUTH'				=> 'Allow HTTP Authentication',
 	'ACP_FEED_HTTP_AUTH_EXPLAIN'		=> 'Enables HTTP authentication, which allows users to receive content that is hidden to guest users by adding the <samp>auth=http</samp> parameter to the feed URL. Please note that some PHP setups require additional changes to the .htaccess file. Instructions can be found in that file.',
 	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
-	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(e.g. posted by, date and time, replies, views)',
+	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br>(e.g. posted by, date and time, replies, views)',
 	'ACP_FEED_EXCLUDE_ID'				=> 'Exclude these forums',
-	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br />Select/Deselect multiple forums by holding <samp>CTRL</samp> and clicking.',
+	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br>Select/Deselect multiple forums by holding <samp>CTRL</samp> and clicking.',
 ));
 
 // Visual Confirmation Settings
@@ -421,7 +421,7 @@ $lang = array_merge($lang, array(
 	'AUTH_METHOD'				=> 'Select an authentication method',
 
 	'AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'	=> 'Both the key and secret of each enabled OAuth service provider must be provided. Only one was provided for an OAuth service provider.',
-	'AUTH_PROVIDER_OAUTH_EXPLAIN'				=> 'Each OAuth provider requires a unique secret and key in order to authenticate with the external server. These should be supplied by the OAuth service when you register your website with them and should be entered exactly as provided to you.<br />Any service that does not have both a key and a secret entered here will not be available for use by the forum users. Also note, that user can still register and login using the DB authentication plug-in.',
+	'AUTH_PROVIDER_OAUTH_EXPLAIN'				=> 'Each OAuth provider requires a unique secret and key in order to authenticate with the external server. These should be supplied by the OAuth service when you register your website with them and should be entered exactly as provided to you.<br>Any service that does not have both a key and a secret entered here will not be available for use by the forum users. Also note, that user can still register and login using the DB authentication plug-in.',
 	'AUTH_PROVIDER_OAUTH_KEY'					=> 'Key',
 	'AUTH_PROVIDER_OAUTH_TITLE'					=> 'OAuth',
 	'AUTH_PROVIDER_OAUTH_SECRET'				=> 'Secret',
@@ -437,7 +437,7 @@ $lang = array_merge($lang, array(
 	'LDAP_NO_EMAIL'					=> 'The specified email attribute does not exist.',
 	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
-	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding, otherwise fill in the password for the above user. Required for Active Directory Servers.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
+	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding, otherwise fill in the password for the above user. Required for Active Directory Servers.<br><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
 	'LDAP_PORT'						=> 'LDAP server port',
 	'LDAP_PORT_EXPLAIN'				=> 'Optionally you can specify a port which should be used to connect to the LDAP server instead of the default port 389.',
 	'LDAP_SERVER'					=> 'LDAP server name',
@@ -518,7 +518,7 @@ $lang = array_merge($lang, array(
 	'IP_LOGIN_LIMIT_TIME'			=> 'IP address login attempt expiration time',
 	'IP_LOGIN_LIMIT_TIME_EXPLAIN'	=> 'Login attempts expire after this period.',
 	'IP_LOGIN_LIMIT_USE_FORWARDED'	=> 'Limit login attempts by <var>X_FORWARDED_FOR</var> header',
-	'IP_LOGIN_LIMIT_USE_FORWARDED_EXPLAIN'	=> 'Instead of limiting login attempts by IP address they are limited by <var>X_FORWARDED_FOR</var> values. <br /><em><strong>Warning:</strong> Only enable this if you are operating a proxy server that sets <var>X_FORWARDED_FOR</var> to trustworthy values.</em>',
+	'IP_LOGIN_LIMIT_USE_FORWARDED_EXPLAIN'	=> 'Instead of limiting login attempts by IP address they are limited by <var>X_FORWARDED_FOR</var> values. <br><em><strong>Warning:</strong> Only enable this if you are operating a proxy server that sets <var>X_FORWARDED_FOR</var> to trustworthy values.</em>',
 	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts per username',
 	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'The number of login attempts allowed for a single account before the anti-spambot task is triggered. Enter 0 to prevent the anti-spambot task from being triggered for distinct user accounts.',
 	'NO_IP_VALIDATION'				=> 'None',
@@ -567,7 +567,7 @@ $lang = array_merge($lang, array(
 	'SMTP_DIGEST_MD5'				=> 'DIGEST-MD5',
 	'SMTP_LOGIN'					=> 'LOGIN',
 	'SMTP_PASSWORD'					=> 'SMTP password',
-	'SMTP_PASSWORD_EXPLAIN'			=> 'Only enter a password if your SMTP server requires it.<br /><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
+	'SMTP_PASSWORD_EXPLAIN'			=> 'Only enter a password if your SMTP server requires it.<br><em><strong>Warning:</strong> This password will be stored as plain text in the database, visible to everybody who can access your database or who can view this configuration page.</em>',
 	'SMTP_PLAIN'					=> 'PLAIN',
 	'SMTP_POP_BEFORE_SMTP'			=> 'POP-BEFORE-SMTP',
 	'SMTP_PORT'						=> 'SMTP server port',
@@ -576,7 +576,7 @@ $lang = array_merge($lang, array(
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
-	'TEST_EMAIL_SENT'				=> 'The test email has been sent.<br />If you don’t receive it, please check your emails configuration.<br /><br />If you require assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.',
+	'TEST_EMAIL_SENT'				=> 'The test email has been sent.<br>If you don’t receive it, please check your emails configuration.<br><br>If you require assistance, please visit the <a href="https://www.phpbb.com/community/">phpBB support forums</a>.',
 	'USE_SMTP'						=> 'Use SMTP server for email',
 	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
 ));

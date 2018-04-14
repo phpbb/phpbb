@@ -137,8 +137,8 @@ $lang = array_merge($lang, array(
 	'USER_FORUM'			=> 'User statistics',
 	'USER_LAST_REMINDED'	=> array(
 		0		=> 'No reminder sent at this time',
-		1		=> '%1$d reminder sent<br />» %2$s',
-		2		=> '%1$d reminder sent<br />» %2$s',
+		1		=> '%1$d reminder sent<br>» %2$s',
+		2		=> '%1$d reminder sent<br>» %2$s',
 	),
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Board presence',
