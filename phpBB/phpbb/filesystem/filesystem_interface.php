@@ -89,6 +89,8 @@ interface filesystem_interface
 	/**
 	 * Eliminates useless . and .. components from specified path.
 	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+	 *
 	 * @param string $path Path to clean
 	 *
 	 * @return string Cleaned path
@@ -132,6 +134,8 @@ interface filesystem_interface
 	/**
 	 * Checks if a path is absolute or not
 	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+	 *
 	 * @param string	$path	Path to check
 	 *
 	 * @return	bool	true if the path is absolute, false otherwise
@@ -160,6 +164,8 @@ interface filesystem_interface
 
 	/**
 	 * Given an existing path, convert it to a path relative to a given starting path
+	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
 	 *
 	 * @param string $end_path		Absolute path of target
 	 * @param string $start_path	Absolute path where traversal begins
@@ -204,7 +210,7 @@ interface filesystem_interface
 	 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
 	 * The function determines owner and group from common.php file and sets the same to the provided file.
 	 * The function uses bit fields to build the permissions.
-	 * The function sets the appropiate execute bit on directories.
+	 * The function sets the appropriate execute bit on directories.
 	 *
 	 * Supported constants representing bit fields are:
 	 *
@@ -227,6 +233,8 @@ interface filesystem_interface
 
 	/**
 	 * A wrapper for PHP's realpath
+	 *
+	 * @deprecated 3.3.0-a1 (To be removed: 4.0.0)
 	 *
 	 * Try to resolve realpath when PHP's realpath is not available, or
 	 * known to be buggy.

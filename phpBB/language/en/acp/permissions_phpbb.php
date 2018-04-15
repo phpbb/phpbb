@@ -125,9 +125,9 @@ $lang = array_merge($lang, array(
 	'ACL_F_REPLY'		=> 'Can reply to topics',
 	'ACL_F_EDIT'		=> 'Can edit own posts',
 	'ACL_F_DELETE'		=> 'Can permanently delete own posts',
-	'ACL_F_SOFTDELETE'	=> 'Can soft delete own posts<br /><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>',
+	'ACL_F_SOFTDELETE'	=> 'Can soft delete own posts<br><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>',
 	'ACL_F_IGNOREFLOOD' => 'Can ignore flood limit',
-	'ACL_F_POSTCOUNT'	=> 'Increment post counter<br /><em>Please note that this setting only affects new posts.</em>',
+	'ACL_F_POSTCOUNT'	=> 'Increment post counter<br><em>Please note that this setting only affects new posts.</em>',
 	'ACL_F_NOAPPROVE'	=> 'Can post without approval',
 
 	'ACL_F_ATTACH'		=> 'Can attach files',
@@ -147,7 +147,7 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACL_M_EDIT'		=> 'Can edit posts',
 	'ACL_M_DELETE'		=> 'Can permanently delete posts',
-	'ACL_M_SOFTDELETE'	=> 'Can soft delete posts<br /><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>',
+	'ACL_M_SOFTDELETE'	=> 'Can soft delete posts<br><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>',
 	'ACL_M_APPROVE'		=> 'Can approve and restore posts',
 	'ACL_M_REPORT'		=> 'Can close and delete reports',
 	'ACL_M_CHGPOSTER'	=> 'Can change post author',
@@ -158,9 +158,9 @@ $lang = array_merge($lang, array(
 	'ACL_M_MERGE'	=> 'Can merge topics',
 
 	'ACL_M_INFO'		=> 'Can view post details',
-	'ACL_M_WARN'		=> 'Can issue warnings<br /><em>This setting is only assigned globally. It is not forum based.</em>', // This moderator setting is only global (and not local)
-	'ACL_M_PM_REPORT'	=> 'Can close and delete reports of private messages<br /><em>This setting is only assigned globally. It is not forum based.</em>', // This moderator setting is only global (and not local)
-	'ACL_M_BAN'			=> 'Can manage bans<br /><em>This setting is only assigned globally. It is not forum based.</em>', // This moderator setting is only global (and not local)
+	'ACL_M_WARN'		=> 'Can issue warnings<br><em>This setting is only assigned globally. It is not forum based.</em>', // This moderator setting is only global (and not local)
+	'ACL_M_PM_REPORT'	=> 'Can close and delete reports of private messages<br><em>This setting is only assigned globally. It is not forum based.</em>', // This moderator setting is only global (and not local)
+	'ACL_M_BAN'			=> 'Can manage bans<br><em>This setting is only assigned globally. It is not forum based.</em>', // This moderator setting is only global (and not local)
 ));
 
 // Admin Permissions
@@ -180,7 +180,7 @@ $lang = array_merge($lang, array(
 	'ACL_A_BBCODE'		=> 'Can define BBCode tags',
 	'ACL_A_ATTACH'		=> 'Can alter attachment related settings',
 
-	'ACL_A_USER'		=> 'Can manage users<br /><em>This also includes seeing the users browser agent within the viewonline list.</em>',
+	'ACL_A_USER'		=> 'Can manage users<br><em>This also includes seeing the users browser agent within the viewonline list.</em>',
 	'ACL_A_USERDEL'		=> 'Can delete/prune users',
 	'ACL_A_GROUP'		=> 'Can manage groups',
 	'ACL_A_GROUPADD'	=> 'Can add new groups',
@@ -200,6 +200,7 @@ $lang = array_merge($lang, array(
 	'ACL_A_ROLES'		=> 'Can manage roles',
 	'ACL_A_SWITCHPERM'	=> 'Can use others permissions',
 
+	'ACL_A_STORAGE'		=> 'Can manage storages',
 	'ACL_A_STYLES'		=> 'Can manage styles',
 	'ACL_A_EXTENSIONS'	=> 'Can manage extensions',
 	'ACL_A_VIEWLOGS'	=> 'Can view logs',

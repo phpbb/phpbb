@@ -24,8 +24,8 @@
 	</div>
 	<fieldset class="submit-buttons">
 		<input type="hidden" name="export_option" value="CSV" />
-		<input class="button1" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" />&nbsp;
-		<input class="button2" type="reset" value="{L_RESET}" name="reset" />&nbsp;
+		<input class="button1 button button-form" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" />&nbsp;
+		<input class="button1 button button-form-bold" type="reset" value="{L_RESET}" name="reset" />&nbsp;
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
@@ -100,8 +100,8 @@
 
 	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
 		<fieldset class="display-actions">
-			<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}{L_COLON} <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button2" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
-			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
+			<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}{L_COLON} <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button1 button button-form-bold" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
+			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button1 button button-form-bold" type="submit" name="submit_mark" value="{L_GO}" />
 			<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>
 		</fieldset>
 

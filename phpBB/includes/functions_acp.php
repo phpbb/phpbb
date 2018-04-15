@@ -66,6 +66,9 @@ function adm_page_header($page_title)
 		}
 	}
 
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
 		'USERNAME'				=> $user->data['username'],
@@ -75,6 +78,8 @@ function adm_page_header($page_title)
 		'SESSION_ID'			=> $user->session_id,
 		'ROOT_PATH'				=> $phpbb_root_path,
 		'ADMIN_ROOT_PATH'		=> $phpbb_admin_path,
+		'PHPBB_VERSION'			=> PHPBB_VERSION,
+		'PHPBB_MAJOR'			=> $phpbb_major,
 
 		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
 		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
@@ -83,7 +88,6 @@ function adm_page_header($page_title)
 
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",

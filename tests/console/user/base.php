@@ -39,7 +39,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$phpbb_container->set('cache.driver', new phpbb_mock_cache());
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
 
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$cache = $phpbb_container->get('cache.driver');
 
@@ -62,7 +62,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$this->language->expects($this->any())
 			->method('lang')
 			->will($this->returnArgument(0));
-		$user = $this->user = $this->getMock('\phpbb\user', array(), array(
+		$user = $this->user = $this->createMock('\phpbb\user', array(), array(
 			$this->language,
 			'\phpbb\datetime'
 		));
