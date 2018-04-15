@@ -274,7 +274,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 				// Offset that will be returned from the function
 				'expected_returned'	=> 0,
 				// view_log parameters (see includes/functions_admin.php for docblock)
-				// $log is ommited!
+				// $log is omitted!
 				'mod', 5, 0, 12, 45,
 			),
 			*/
@@ -378,7 +378,7 @@ class phpbb_log_function_view_log_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Create auth mock
-		$auth = $this->getMock('\phpbb\auth\auth');
+		$auth = $this->createMock('\phpbb\auth\auth');
 		$acl_get_map = array(
 			array('f_read', 23, true),
 			array('m_', 23, true),
