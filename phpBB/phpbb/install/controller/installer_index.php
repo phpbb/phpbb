@@ -67,7 +67,7 @@ class installer_index
 			break;
 			case "license":
 				$title = $this->language->lang('LICENSE_TITLE');
-				$body = implode("<br/>\n", file($this->phpbb_root_path . 'docs/LICENSE.txt'));
+				$body = implode("<br>\n", file($this->phpbb_root_path . 'docs/LICENSE.txt'));
 			break;
 		}
 
