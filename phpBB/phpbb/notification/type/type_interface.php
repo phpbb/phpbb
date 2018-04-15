@@ -170,7 +170,7 @@ interface type_interface
 	*
 	* @param array $type_data The type specific data
 	* @param array $notify_users Notify users list
-	* 		Formated from find_users_for_notification()
+	* 		Formatted from find_users_for_notification()
 	* @return array Whatever you want to send to create_insert_array().
 	*/
 	public function pre_create_insert_array($type_data, $notify_users);

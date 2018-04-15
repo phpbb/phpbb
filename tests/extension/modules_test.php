@@ -46,7 +46,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 
 		$this->module_manager = new \phpbb\module\module_manager(
 			new \phpbb\cache\driver\dummy(),
-			$this->getMock('\phpbb\db\driver\driver_interface'),
+			$this->createMock('\phpbb\db\driver\driver_interface'),
 			$this->extension_manager,
 			MODULES_TABLE,
 			dirname(__FILE__) . '/',

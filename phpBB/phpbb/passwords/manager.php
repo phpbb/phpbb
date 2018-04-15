@@ -250,7 +250,7 @@ class manager
 
 	/**
 	* Check supplied password against hash and set convert_flag if password
-	* needs to be converted to different format (preferrably newer one)
+	* needs to be converted to different format (preferably newer one)
 	*
 	* @param string $password Password that should be checked
 	* @param string $hash Stored hash

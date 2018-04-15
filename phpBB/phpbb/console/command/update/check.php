@@ -77,7 +77,7 @@ class check extends \phpbb\console\command\command
 	*
 	* @param InputInterface $input Input stream, used to get the options.
 	* @param OutputInterface $output Output stream, used to print messages.
-	* @return int 0 if the board is up to date, 1 if it is not and 2 if an error occured.
+	* @return int 0 if the board is up to date, 1 if it is not and 2 if an error occurred.
 	* @throws \RuntimeException
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
