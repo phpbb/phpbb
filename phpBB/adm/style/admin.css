@@ -868,6 +868,7 @@ table.zebra-table tbody tr:nth-child(odd) {
 
 .row2 {
 	background-color: #dcebfe;
+	word-break: break-all;
 }
 
 table.zebra-table tbody tr:nth-child(even) {
