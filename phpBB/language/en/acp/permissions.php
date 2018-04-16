@@ -37,8 +37,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ACP_PERMISSIONS_EXPLAIN'	=> '
-		<p>Permissions are highly granular and grouped into four major sections, which are:</p>
+	'ACP_PERMISSIONS_EXPLAIN'	=> '		<p>Permissions are highly granular and grouped into four major sections, which are:</p>
 
 		<h2>Global Permissions</h2>
 		<p>These are used to control access on a global level and apply to the entire bulletin board. They are further divided into User Permissions, Group Permissions, Administrators and Global Moderators.</p>
@@ -54,8 +53,7 @@ $lang = array_merge($lang, array(
 
 		<br />
 
-		<p>For further information on setting up and managing permissions on your phpBB3 board, please see the section on <a href="https://www.phpbb.com/support/docs/en/3.1/ug/quickstart/permissions/">Setting permissions of our Quick Start Guide</a>.</p>
-	',
+		<p>For further information on setting up and managing permissions on your phpBB3 board, please see the section on <a href="https://www.phpbb.com/support/docs/en/3.1/ug/quickstart/permissions/">Setting permissions of our Quick Start Guide</a>.</p>',
 
 	'ACL_NEVER'				=> 'Never',
 	'ACL_SET'				=> 'Setting permissions',
