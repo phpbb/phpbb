@@ -138,8 +138,8 @@ $lang = array_merge($lang, array(
 	'USER_FORUM'			=> 'User statistics',
 	'USER_LAST_REMINDED'	=> array(
 		0		=> 'No reminder sent at this time',
-		1		=> '%1$d reminder sent<br />» %2$s',
-		2		=> '%1$d reminder sent<br />» %2$s',
+		1		=> '%1$d reminder sent<br>» %2$s',
+		2		=> '%1$d reminder sent<br>» %2$s',
 	),
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Board presence',
@@ -150,5 +150,5 @@ $lang = array_merge($lang, array(
 	'VIEW_SKYPE_PROFILE'	=> 'View Skype Profile',
 	'VIEW_TWITTER_PROFILE'	=> 'View Twitter Profile',
 	'VIEW_YOUTUBE_CHANNEL'	=> 'View YouTube Channel',
-	'VIEW_GOOGLEPLUS_PROFILE' => 'View Google+ Profile',
+	'VIEW_GOOGLEPLUS_PROFILE'	=> 'View Google+ Profile',
 ));

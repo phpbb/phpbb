@@ -218,7 +218,7 @@ $lang = array_merge($lang, array(
 	'MCP_WARN_USER'			=> 'Warn user',
 
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to move the selected posts?',
-	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can move selected posts into another topic. The posts will be split from this topic and merged into the other topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on “Select topic” to search for one.',
+	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can move selected posts into another topic. The posts will be split from this topic and merged into the other topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br>Please enter the destination topic id or click on “Select topic” to search for one.',
 	'MERGE_TOPIC_ID'		=> 'Destination topic identification number',
 	'MERGE_TOPICS'			=> 'Merge topics',
 	'MERGE_TOPICS_CONFIRM'	=> 'Are you sure you want to merge the selected topics?',
@@ -259,7 +259,7 @@ $lang = array_merge($lang, array(
 	'ONLY_TOPIC'			=> 'Only topic “%s”',
 	'OTHER_USERS'			=> 'Other users posting from this IP',
 
-	'QUICKMOD_ACTION_NOT_ALLOWED' => "%s not allowed as quickmod",
+	'QUICKMOD_ACTION_NOT_ALLOWED'	=> "%s not allowed as quickmod",
 
 	'PM_REPORT_CLOSED_SUCCESS'	=> 'The selected PM report has been closed successfully.',
 	'PM_REPORT_DELETED_SUCCESS'	=> 'The selected PM report has been deleted successfully.',
@@ -424,7 +424,7 @@ $lang = array_merge($lang, array(
 			'OFF_TOPIC'	=> 'Off-topic',
 			'OTHER'		=> 'Other',
 		),
-		'DESCRIPTION' => array(
+		'DESCRIPTION'	=> array(
 			'WAREZ'		=> 'The message contains links to illegal or pirated software.',
 			'SPAM'		=> 'The reported message has the only purpose to advertise for a website or another product.',
 			'OFF_TOPIC'	=> 'The reported message is off topic.',
