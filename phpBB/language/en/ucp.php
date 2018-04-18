@@ -146,7 +146,7 @@ $lang = array_merge($lang, array(
 	'CURRENT_IMAGE'				=> 'Current image',
 	'CURRENT_PASSWORD'			=> 'Current password',
 	'CURRENT_PASSWORD_EXPLAIN'	=> 'You must enter your current password if you wish to alter your email address or username.',
-	'CURRENT_CHANGE_PASSWORD_EXPLAIN' => 'To change your password, your email address, or your username, you must enter your current password.',
+	'CURRENT_CHANGE_PASSWORD_EXPLAIN'	=> 'To change your password, your email address, or your username, you must enter your current password.',
 	'CUR_PASSWORD_EMPTY'		=> 'You did not enter your current password.',
 	'CUR_PASSWORD_ERROR'		=> 'The current password you entered is incorrect.',
 	'CUSTOM_DATEFORMAT'			=> 'Custom…',
@@ -613,20 +613,20 @@ $lang = array_merge($lang, array(
 	'YOUR_FRIENDS_EXPLAIN'		=> 'To remove usernames select them and click submit.',
 	'YOUR_WARNINGS'				=> 'Your warning level',
 
-	'PM_ACTION' => array(
+	'PM_ACTION'	=> array(
 		'PLACE_INTO_FOLDER'	=> 'Place into folder',
 		'MARK_AS_READ'		=> 'Mark as read',
 		'MARK_AS_IMPORTANT'	=> 'Mark message',
 		'DELETE_MESSAGE'	=> 'Delete message',
 	),
-	'PM_CHECK' => array(
+	'PM_CHECK'	=> array(
 		'SUBJECT'	=> 'Subject',
 		'SENDER'	=> 'Sender',
 		'MESSAGE'	=> 'Message',
 		'STATUS'	=> 'Message status',
 		'TO'		=> 'Sent To',
 	),
-	'PM_RULE' => array(
+	'PM_RULE'	=> array(
 		'IS_LIKE'		=> 'is like',
 		'IS_NOT_LIKE'	=> 'is not like',
 		'IS'			=> 'is',

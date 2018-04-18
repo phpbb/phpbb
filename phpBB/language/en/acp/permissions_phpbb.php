@@ -107,7 +107,7 @@ $lang = array_merge($lang, array(
 // Forum Permissions
 $lang = array_merge($lang, array(
 	'ACL_F_LIST'		=> 'Can see forum',
-	'ACL_F_LIST_TOPICS' => 'Can see topics',
+	'ACL_F_LIST_TOPICS'	=> 'Can see topics',
 	'ACL_F_READ'		=> 'Can read forum',
 	'ACL_F_SEARCH'		=> 'Can search the forum',
 	'ACL_F_SUBSCRIBE'	=> 'Can subscribe forum',
@@ -126,7 +126,7 @@ $lang = array_merge($lang, array(
 	'ACL_F_EDIT'		=> 'Can edit own posts',
 	'ACL_F_DELETE'		=> 'Can permanently delete own posts',
 	'ACL_F_SOFTDELETE'	=> 'Can soft delete own posts<br><em>Moderators, who have the approve posts permission, can restore soft deleted posts.</em>',
-	'ACL_F_IGNOREFLOOD' => 'Can ignore flood limit',
+	'ACL_F_IGNOREFLOOD'	=> 'Can ignore flood limit',
 	'ACL_F_POSTCOUNT'	=> 'Increment post counter<br><em>Please note that this setting only affects new posts.</em>',
 	'ACL_F_NOAPPROVE'	=> 'Can post without approval',
 

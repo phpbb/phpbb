@@ -244,8 +244,8 @@ $lang = array_merge($lang, array(
 	'CANNOT_RENAME_FILE'	=> 'Unable to rename a file from the system',
 	'CANNOT_TOUCH_FILES'	=> 'Unable to determine if the file exists',
 
-	'CONTAINER_EXCEPTION' => 'phpBB encountered an error building the container due to an installed extension. For this reason, all extensions have been temporarily disabled. Please try purging your forum cache. All extensions will automatically be re-enabled once the container error is resolved. If this error continues, please visit <a href="https://www.phpbb.com/support">phpBB.com</a> for support.',
-	'EXCEPTION' => 'Exception',
+	'CONTAINER_EXCEPTION'	=> 'phpBB encountered an error building the container due to an installed extension. For this reason, all extensions have been temporarily disabled. Please try purging your forum cache. All extensions will automatically be re-enabled once the container error is resolved. If this error continues, please visit <a href="https://www.phpbb.com/support">phpBB.com</a> for support.',
+	'EXCEPTION'	=> 'Exception',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 
@@ -560,7 +560,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_BAN_EXCLUDE_USER'	=> '<strong>Excluded user from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_EXCLUDE_IP'	=> '<strong>Excluded IP from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
-	'LOG_BAN_EXCLUDE_EMAIL' => '<strong>Excluded email from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
+	'LOG_BAN_EXCLUDE_EMAIL'	=> '<strong>Excluded email from ban</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_USER'			=> '<strong>Banned user</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_IP'			=> '<strong>Banned IP</strong> for reason “<em>%1$s</em>”<br>» %2$s',
 	'LOG_BAN_EMAIL'			=> '<strong>Banned email</strong> for reason “<em>%1$s</em>”<br>» %2$s',
@@ -835,8 +835,8 @@ $lang = array_merge($lang, array(
 
 	'LOG_WARNING_DELETED'		=> '<strong>Deleted user warning</strong><br>» %s',
 	'LOG_WARNINGS_DELETED'		=> array(
-		1 => '<strong>Deleted user warning</strong><br>» %1$s',
-		2 => '<strong>Deleted %2$d user warnings</strong><br>» %1$s', // Example: '<strong>Deleted 2 user warnings</strong><br>» username'
+		1	=> '<strong>Deleted user warning</strong><br>» %1$s',
+		2	=> '<strong>Deleted %2$d user warnings</strong><br>» %1$s', // Example: '<strong>Deleted 2 user warnings</strong><br>» username'
 	),
 	'LOG_WARNINGS_DELETED_ALL'	=> '<strong>Deleted all user warnings</strong><br>» %s',
 
