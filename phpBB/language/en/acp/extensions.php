@@ -35,7 +35,6 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-
 	'EXTENSION_ALREADY_INSTALLED'				=> 'The “%s” extension has already been installed.',
 	'EXTENSION_ALREADY_INSTALLED_MANUALLY'		=> 'The “%s” extension has already been installed manually.',
 	'EXTENSION_ALREADY_MANAGED'					=> 'The “%s” extension is already managed.',
@@ -177,5 +176,4 @@ $lang = array_merge($lang, array(
 
 	'COMPOSER_MINIMUM_STABILITY'			=> 'Minimum stability',
 	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use <samp>stable</samp> versions on a live forum. Non-stable versions may still be in development and could cause unexpected problems with your forum and should only be used for development purposes in local or staging environments.',
-
 ));
