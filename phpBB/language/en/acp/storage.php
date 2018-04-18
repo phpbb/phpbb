@@ -37,7 +37,6 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-
 	// Template
 	'STORAGE_TITLE'					=> 'Storage Settings',
 	'STORAGE_TITLE_EXPLAIN'			=> 'Change storage providers for the file storage types of phpBB. Choose local or remote providers to store files added to or created by phpBB.',
@@ -54,11 +53,11 @@ $lang = array_merge($lang, array(
 	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'		=> 'Path',
 
 	// Form validation
-	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storage types were successfully updated.',
-	'STORAGE_NO_CHANGES'						=>	'No changes have been applied.',
-	'STORAGE_PROVIDER_NOT_EXISTS'				=>	'Provider selected for %s doesn’t exist.',
-	'STORAGE_PROVIDER_NOT_AVAILABLE'			=>	'Provider selected for %s is not available.',
-	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=>	'Incorrect email for %s of %s.',
-	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=>	'Text is too long for %s of %s.',
-	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=>	'Selected value is not available for %s of %s.',
+	'STORAGE_UPDATE_SUCCESSFUL' 				=> 'All storage types were successfully updated.',
+	'STORAGE_NO_CHANGES'						=> 'No changes have been applied.',
+	'STORAGE_PROVIDER_NOT_EXISTS'				=> 'Provider selected for %s doesn’t exist.',
+	'STORAGE_PROVIDER_NOT_AVAILABLE'			=> 'Provider selected for %s is not available.',
+	'STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT'	=> 'Incorrect email for %s of %s.',
+	'STORAGE_FORM_TYPE_TEXT_TOO_LONG'			=> 'Text is too long for %s of %s.',
+	'STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE'	=> 'Selected value is not available for %s of %s.',
 ));

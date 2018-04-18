@@ -11,14 +11,14 @@
 *
 */
 
+/**
+* DO NOT CHANGE
+*/
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* DO NOT CHANGE
-*/
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -35,7 +35,6 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-
 	'EXTENSION_ALREADY_INSTALLED'				=> 'The “%s” extension has already been installed.',
 	'EXTENSION_ALREADY_INSTALLED_MANUALLY'		=> 'The “%s” extension has already been installed manually.',
 	'EXTENSION_ALREADY_MANAGED'					=> 'The “%s” extension is already managed.',
@@ -55,7 +54,7 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS'				=> 'Extensions',
 	'EXTENSIONS_ADMIN'			=> 'Extensions Manager',
 	'EXTENSIONS_EXPLAIN'		=> 'The Extensions Manager is a tool in your phpBB Board which allows you to manage all of your extensions statuses and view information about them.',
-	'EXTENSION_INVALID_LIST'	=> 'The “%s” extension is not valid.<br />%s<br /><br />',
+	'EXTENSION_INVALID_LIST'	=> 'The “%s” extension is not valid.<br>%s<br><br>',
 	'EXTENSION_NOT_AVAILABLE'	=> 'The selected extension is not available for this board, please verify your phpBB and PHP versions are allowed (see the details page).',
 	'EXTENSION_DIR_INVALID'		=> 'The selected extension has an invalid directory structure and cannot be enabled.',
 	'EXTENSION_NOT_ENABLEABLE'	=> 'The selected extension cannot be enabled, please verify the extension’s requirements.',
@@ -106,7 +105,7 @@ $lang = array_merge($lang, array(
 			<li>Delete the extension’s files from the filesystem</li>
 		</ol>',
 
-	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
+	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br><br>This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
 	'EXTENSION_ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable the “%s” extension?',
 	'EXTENSION_FORCE_UNSTABLE_CONFIRM'	=> 'Are you sure that you wish to force the use of unstable version?',
@@ -177,5 +176,4 @@ $lang = array_merge($lang, array(
 
 	'COMPOSER_MINIMUM_STABILITY'			=> 'Minimum stability',
 	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use <samp>stable</samp> versions on a live forum. Non-stable versions may still be in development and could cause unexpected problems with your forum and should only be used for development purposes in local or staging environments.',
-
 ));
