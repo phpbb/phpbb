@@ -14,6 +14,7 @@ parameters:
 
     # List of default password driver types
     passwords.algorithms:
+        - passwords.driver.argon2i
         - passwords.driver.bcrypt_2y
         - passwords.driver.bcrypt
         - passwords.driver.salted_md5
