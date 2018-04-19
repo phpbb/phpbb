@@ -47,6 +47,11 @@ require($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 $phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
 $phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file);
 
+if (defined('PHPBB_CACHE_PATH'))
+{
+	$phpbb_container_builder->with_cache_dir(PHPBB_CACHE_PATH);
+}
+
 $input = new ArgvInput();
 
 if ($input->hasParameterOption(array('--env')))
