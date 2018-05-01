@@ -52,6 +52,7 @@ $lang = array_merge($lang, array(
 	// Local adapter
 	'STORAGE_ADAPTER_LOCAL_NAME'			=> 'Local',
 	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'		=> 'Path',
+	'STORAGE_ADAPTER_LOCAL_OPTION_DEPTH'	=> 'Depth',
 
 	// Form validation
 	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storage types were successfully updated.',
