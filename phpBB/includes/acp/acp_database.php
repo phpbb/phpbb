@@ -113,11 +113,13 @@ class acp_database
 								// Get the table structure
 								if ($structure)
 								{
+									// Add table structure to the backup
+									// This method also add a "drop the table if exists" after trying to write the table structure
 									$extractor->write_table($table_name);
 								}
 								else
 								{
-									// We might wanna empty out all that junk :D
+									// Add command to empty table before write data on it
 									switch ($db->get_sql_layer())
 									{
 										case 'sqlite3':
@@ -139,7 +141,7 @@ class acp_database
 									}
 								}
 
-								// Data
+								// Write schema data if it exists
 								if ($schema_data)
 								{
 									$extractor->write_data($table_name);
