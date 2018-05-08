@@ -289,7 +289,7 @@ class acp_database
 
 									// Remove from database
 									$sql = "DELETE FROM " . $table_prefix . "backups
-										WHERE filename = '" . $file_name . "';";
+										WHERE filename = '" . $db->sql_escape($file_name) . "';";
 									$db->sql_query($sql);
 								}
 								catch (\Exception $e)
