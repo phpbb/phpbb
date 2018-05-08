@@ -206,28 +206,20 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		header('X-Content-Type-Options: nosniff');
 	}
 
-	if ($category == ATTACHMENT_CATEGORY_FLASH && $request->variable('view', 0) === 1)
+	if (empty($user->browser) || ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7)))
 	{
-		// We use content-disposition: inline for flash files and view=1 to let it correctly play with flash player 10 - any other disposition will fail to play inline
-		header('Content-Disposition: inline');
+		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+		if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
+		{
+			header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+		}
 	}
 	else
 	{
-		if (empty($user->browser) || ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7)))
+		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+		if (phpbb_is_greater_ie_version($user->browser, 7) && (strpos($attachment['mimetype'], 'image') !== 0))
 		{
-			header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-			if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
-			{
-				header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
-			}
-		}
-		else
-		{
-			header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-			if (phpbb_is_greater_ie_version($user->browser, 7) && (strpos($attachment['mimetype'], 'image') !== 0))
-			{
-				header('X-Download-Options: noopen');
-			}
+			header('X-Download-Options: noopen');
 		}
 	}
 

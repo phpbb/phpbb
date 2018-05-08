@@ -257,11 +257,6 @@ else
 		$display_cat = ATTACHMENT_CATEGORY_NONE;
 	}
 
-	if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
-	{
-		$display_cat = ATTACHMENT_CATEGORY_NONE;
-	}
-
 	/**
 	* Event to modify data before sending file to browser
 	*
