@@ -261,11 +261,6 @@ else
 		$display_cat = ATTACHMENT_CATEGORY_NONE;
 	}
 
-	if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
-	{
-		$display_cat = ATTACHMENT_CATEGORY_NONE;
-	}
-
 	if ($thumbnail)
 	{
 		$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];

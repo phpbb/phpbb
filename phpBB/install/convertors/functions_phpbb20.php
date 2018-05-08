@@ -1399,10 +1399,6 @@ function phpbb_attachment_category($cat_id)
 		case 2:
 			return ATTACHMENT_CATEGORY_WM;
 		break;
-
-		case 3:
-			return ATTACHMENT_CATEGORY_FLASH;
-		break;
 	}
 
 	return ATTACHMENT_CATEGORY_NONE;
