@@ -1161,3 +1161,7 @@ li.notification-reported strong, li.notification-disapproved strong {
 	background-color: #D31141;
 	color: #ffffff;
 }
+
+p.information {
+	background-color: #b8d3e0;
+}
