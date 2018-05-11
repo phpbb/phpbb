@@ -146,9 +146,16 @@ class content_visibility
 	{
 		$visibility = $data[$mode . '_visibility'];
 		$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id';
+<<<<<<< HEAD
 		$is_visible = $this->auth->acl_get('m_approve', $forum_id) ||
 			(($visibility == ITEM_APPROVED) ||
 			($this->user->data['user_id'] <> ANONYMOUS) && ($this->user->data['user_id'] === $data[$poster_key]) && ($visibility == ITEM_DRAFT));
+=======
+		$is_visible = $this->auth->acl_get('m_approve', $forum_id) || $visibility == ITEM_APPROVED || (
+			($visibility == ITEM_UNAPPROVED || $visibility == ITEM_REAPPROVE) &&
+			$this->user->data['user_id'] === $data[$poster_key]
+		);
+>>>>>>> eb94fe9... [ticket/9837] Display unapproved posts to their authors
 
 		/**
 		* Allow changing the result of calling is_visible
