@@ -144,7 +144,12 @@ class content_visibility
 	*/
 	public function is_visible($mode, $forum_id, $data)
 	{
-		$is_visible = $this->auth->acl_get('m_approve', $forum_id) || $data[$mode . '_visibility'] == ITEM_APPROVED;
+		$visibility = $data[$mode . '_visibility'];
+		$poster_key = ($mode === 'topic') ? 'topic_poster' : 'poster_id';
+		$is_visible = $this->auth->acl_get('m_approve', $forum_id) || $visibility == ITEM_APPROVED || (
+			($visibility == ITEM_UNAPPROVED || $visibility == ITEM_REAPPROVE) &&
+			$this->user->data['user_id'] === $data[$poster_key]
+		);
 
 		/**
 		* Allow changing the result of calling is_visible
@@ -216,7 +221,13 @@ class content_visibility
 		}
 		else
 		{
-			$where_sql .= $table_alias . $mode . '_visibility = ' . ITEM_APPROVED;
+			$field_name = ($mode === 'topic') ? 'topic_poster' : 'poster_id';
+			$visibility_query = $table_alias . $mode . '_visibility = ';
+
+			$where_sql .= '(' . $visibility_query . ITEM_APPROVED . ')';
+			$where_sql .= ' OR (';
+			$where_sql .= '(' . $visibility_query . ITEM_UNAPPROVED . ' OR ' . $visibility_query . ITEM_REAPPROVE . ')';
+			$where_sql .= ' AND ' . $table_alias . $field_name . ' = ' . ((int) $this->user->data['user_id']) . ')';
 		}
 
 		return '(' . $where_sql . ')';

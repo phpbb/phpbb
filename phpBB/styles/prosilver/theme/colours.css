@@ -1151,3 +1151,7 @@ input.disabled {
 	background-color: #d41142;
 	color: #ffffff;
 }
+
+p.information {
+	background-color: #b8d3e0;
+}
