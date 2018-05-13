@@ -1167,6 +1167,6 @@ li.notification-reported strong, li.notification-disapproved strong {
 	color: #ffffff;
 }
 
-p.information {
+.information {
 	background-color: #b8d3e0;
 }
