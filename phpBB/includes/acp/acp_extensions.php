@@ -182,13 +182,19 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				$this->tpl_name = 'acp_ext_enable';
-
-				$this->template->assign_vars(array(
-					'PRE'				=> true,
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_ENABLE'			=> $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name),
-				));
+				if (confirm_box(true))
+				{
+					redirect($this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
+				}
+				else
+				{
+					confirm_box(false, $this->user->lang('EXTENSION_ENABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> 'enable_pre',
+						'ext_name'	=> $ext_name,
+					)));
+				}
 			break;
 
 			case 'enable':
@@ -215,9 +221,8 @@ class acp_extensions
 						// Are we approaching the time limit? If so we want to pause the update and continue after refreshing
 						if ((time() - $start_time) >= $safe_time_limit)
 						{
-							$this->template->assign_var('S_NEXT_STEP', true);
-
 							meta_refresh(0, $this->u_action . '&amp;action=enable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('enable.' . $ext_name));
+							trigger_error('EXTENSION_ENABLE_IN_PROGRESS', E_USER_NOTICE);
 						}
 					}
 
@@ -233,14 +238,22 @@ class acp_extensions
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
+					trigger_error($this->user->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
 				}
 
-				$this->tpl_name = 'acp_ext_enable';
+				if ($this->request->is_ajax())
+				{
+					$actions = $this->output_actions('enabled', [
+						'DISABLE'	=> $this->u_action . '&amp;action=disable_pre&amp;ext_name=' . urlencode($ext_name),
+					]);
 
-				$this->template->assign_vars(array(
-					'U_RETURN'		=> $this->u_action . '&amp;action=list',
-				));
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'EXT_ENABLE_SUCCESS'	=> true,
+						'ACTIONS'				=> $actions,
+					));
+				}
+				trigger_error($this->user->lang('EXTENSION_ENABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
 			case 'disable_pre':
@@ -249,13 +262,19 @@ class acp_extensions
 					redirect($this->u_action);
 				}
 
-				$this->tpl_name = 'acp_ext_disable';
-
-				$this->template->assign_vars(array(
-					'PRE'				=> true,
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_DISABLE'			=> $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name),
-				));
+				if (confirm_box(true))
+				{
+					redirect($this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
+				}
+				else
+				{
+					confirm_box(false, $this->user->lang('EXTENSION_DISABLE_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> 'disable_pre',
+						'ext_name'	=> $ext_name,
+					)));
+				}
 			break;
 
 			case 'disable':
@@ -272,15 +291,25 @@ class acp_extensions
 						$this->template->assign_var('S_NEXT_STEP', true);
 
 						meta_refresh(0, $this->u_action . '&amp;action=disable&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('disable.' . $ext_name));
+						trigger_error('EXTENSION_DISABLE_IN_PROGRESS', E_USER_NOTICE);
 					}
 				}
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
 
-				$this->tpl_name = 'acp_ext_disable';
+				if ($this->request->is_ajax())
+				{
+					$actions = $this->output_actions('disabled', [
+						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
+						'DELETE_DATA'	=> $this->u_action . '&amp;action=delete_data_pre&amp;ext_name=' . urlencode($ext_name),
+					]);
 
-				$this->template->assign_vars(array(
-					'U_RETURN'	=> $this->u_action . '&amp;action=list',
-				));
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'EXT_DISABLE_SUCCESS'	=> true,
+						'ACTIONS'				=> $actions,
+					));
+				}
+				trigger_error($this->user->lang('EXTENSION_DISABLE_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
 			case 'delete_data_pre':
@@ -288,13 +317,20 @@ class acp_extensions
 				{
 					redirect($this->u_action);
 				}
-				$this->tpl_name = 'acp_ext_delete_data';
 
-				$this->template->assign_vars(array(
-					'PRE'				=> true,
-					'L_CONFIRM_MESSAGE'	=> $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')),
-					'U_PURGE'			=> $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name),
-				));
+				if (confirm_box(true))
+				{
+					redirect($this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
+				}
+				else
+				{
+					confirm_box(false, $this->user->lang('EXTENSION_DELETE_DATA_CONFIRM', $md_manager->get_metadata('display-name')), build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> 'delete_data_pre',
+						'ext_name'	=> $ext_name,
+					)));
+				}
 			break;
 
 			case 'delete_data':
@@ -313,20 +349,29 @@ class acp_extensions
 							$this->template->assign_var('S_NEXT_STEP', true);
 
 							meta_refresh(0, $this->u_action . '&amp;action=delete_data&amp;ext_name=' . urlencode($ext_name) . '&amp;hash=' . generate_link_hash('delete_data.' . $ext_name));
+							trigger_error('EXTENSION_DELETE_DATA_IN_PROGRESS', E_USER_NOTICE);
 						}
 					}
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_PURGE', time(), array($ext_name));
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
-					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
+					trigger_error($this->user->lang('MIGRATION_EXCEPTION_ERROR', $e->getLocalisedMessage($this->user)), E_USER_WARNING);
 				}
 
-				$this->tpl_name = 'acp_ext_delete_data';
+				if ($this->request->is_ajax())
+				{
+					$actions = $this->output_actions('disabled', [
+						'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($ext_name),
+					]);
 
-				$this->template->assign_vars(array(
-					'U_RETURN'	=> $this->u_action . '&amp;action=list',
-				));
+					$json_response = new \phpbb\json_response;
+					$json_response->send(array(
+						'EXT_DELETE_DATA_SUCCESS'	=> true,
+						'ACTIONS'					=> $actions,
+					));
+				}
+				trigger_error($this->user->lang('EXTENSION_DELETE_DATA_SUCCESS') . adm_back_link($this->u_action), E_USER_NOTICE);
 			break;
 
 			case 'details':
@@ -605,17 +650,37 @@ class acp_extensions
 	*
 	* @param string $block
 	* @param array $actions
+	* @return array List of actions to be performed on the extension
 	*/
 	private function output_actions($block, $actions)
 	{
-		foreach ($actions as $lang => $url)
+		$vars_ary = array();
+		foreach ($actions as $lang => $options)
 		{
-			$this->template->assign_block_vars($block . '.actions', array(
+			$url = $options;
+			if (is_array($options))
+			{
+				$url = $options['url'];
+			}
+
+			$vars = array(
 				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
 				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
-			));
+				'ACTION_AJAX'		=> 'ext_' . strtolower($lang),
+			);
+
+			if (isset($options['color']))
+			{
+				$vars['COLOR'] = $options['color'];
+			}
+
+			$this->template->assign_block_vars($block . '.actions', $vars);
+
+			$vars_ary[] = $vars;
 		}
+
+		return $vars_ary;
 	}
 
 	/**
