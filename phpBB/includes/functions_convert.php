@@ -496,7 +496,7 @@ function import_attachment_files($category_name = '')
 
 	$sql = 'SELECT config_value AS upload_path
 		FROM ' . CONFIG_TABLE . "
-		WHERE config_name = 'upload_path'";
+		WHERE config_name = 'storage\\attachment\\config\\path'";
 	$result = $db->sql_query($sql);
 	$config['upload_path'] = $db->sql_fetchfield('upload_path');
 	$db->sql_freeresult($result);

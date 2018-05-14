@@ -157,11 +157,6 @@ define('FULL_FOLDER_NONE', -3);
 define('FULL_FOLDER_DELETE', -2);
 define('FULL_FOLDER_HOLD', -1);
 
-// Download Modes - Attachments
-define('INLINE_LINK', 1);
-// This mode is only used internally to allow modders extending the attachment functionality
-define('PHYSICAL_LINK', 2);
-
 // Confirm types
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
