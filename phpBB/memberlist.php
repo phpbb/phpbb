@@ -1159,18 +1159,11 @@ switch ($mode)
 			}
 		}
 
-		$first_char = $request->variable('first_char', '');
+		$first_char = $request->variable('first_char', '', true);
 
-		if ($first_char == 'other')
+		if ($first_char)
 		{
-			for ($i = 97; $i < 123; $i++)
-			{
-				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->get_any_char());
-			}
-		}
-		else if ($first_char)
-		{
-			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->get_any_char());
+			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(mb_substr($first_char, 0, 1) . $db->get_any_char());
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -1390,21 +1383,37 @@ switch ($mode)
 
 		$first_characters = array();
 		$first_characters[''] = $user->lang['ALL'];
-		for ($i = 97; $i < 123; $i++)
+
+		if ($db->get_sql_layer() === 'sqlite3')
 		{
-			$first_characters[chr($i)] = chr($i - 32);
+			$sql = 'SELECT DISTINCT substr(username_clean,1,1) first_char
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
+				ORDER BY first_char';
 		}
-		$first_characters['other'] = $user->lang['OTHER'];
+		else
+		{
+			$sql = 'SELECT DISTINCT substring(username_clean,1,1) first_char
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_type', $user_types) . '
+				ORDER BY first_char';
+		}
+
+		$result = $db->sql_query($sql);
 
 		$first_char_block_vars = [];
 
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
+		}
 		foreach ($first_characters as $char => $desc)
 		{
 			$first_char_block_vars[] = [
 				'DESC'			=> $desc,
 				'VALUE'			=> $char,
 				'S_SELECTED'	=> ($first_char == $char) ? true : false,
-				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . $char) . '#memberlist',
+				'U_SORT'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", $u_first_char_params . 'first_char=' . urlencode($char)) . '#memberlist',
 			];
 		}
 
