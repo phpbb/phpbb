@@ -4,8 +4,10 @@ services:
     storage.attachment:
         class: phpbb\storage\storage
         arguments:
+            - '@dbal.conn'
             - '@storage.adapter.factory'
             - 'attachment'
+            - '%tables.storage%'
         tags:
             - { name: storage }
 
@@ -25,6 +27,7 @@ services:
             - '@dbal.conn'
             - '@storage.adapter.factory'
             - 'backup'
+            - '%tables.storage%'
         tags:
             - { name: storage }
 
