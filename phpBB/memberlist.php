@@ -1407,7 +1407,7 @@ switch ($mode)
 		{
 			$first_characters[$row['first_char']] = mb_strtoupper($row['first_char']);
 		}
-		$db->sql_freeresult($result);		
+		$db->sql_freeresult($result);
 
 		foreach ($first_characters as $char => $desc)
 		{
