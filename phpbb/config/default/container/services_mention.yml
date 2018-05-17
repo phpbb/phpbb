@@ -1,0 +1,25 @@
+services:
+# ----- Controller -----
+    phpbb.mention.controller:
+        class: phpbb\mention\controller\mention
+        arguments:
+            - '@request'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# ----- Sources for mention -----
+    phpbb.mention.source_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: mention.source }
+
+    phpbb.mention.source.topic:
+        class: phpbb\mention\source\topic
+        arguments:
+            - '@dbal.conn'
+            - '@request'
+        tags:
+            - { name: mention.source }
+
