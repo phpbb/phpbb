@@ -61,7 +61,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
 			->willReturn($adapter);
-		$this->storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+		$this->storage = new \phpbb\storage\storage($db, $adapter_factory_mock, '', '');
 		$this->dispatcher = new \phpbb_mock_event_dispatcher();
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 	}

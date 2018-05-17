@@ -41,7 +41,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
 			->willReturn($adapter);
-		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+		$storage = new \phpbb\storage\storage($db, $adapter_factory_mock, '', '');
 
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage));

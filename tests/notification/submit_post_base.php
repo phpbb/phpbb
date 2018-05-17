@@ -98,7 +98,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$adapter_factory_mock->expects($this->any())
 			->method('get')
 			->willReturn($adapter);
-		$storage = new \phpbb\storage\storage($adapter_factory_mock, '');
+		$storage = new \phpbb\storage\storage($db, $adapter_factory_mock, '', '');
 
 		// User
 		$user = $this->createMock('\phpbb\user', array(), array(
